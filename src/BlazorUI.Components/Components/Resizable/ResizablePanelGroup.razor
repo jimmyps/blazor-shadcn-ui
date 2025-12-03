@@ -1,7 +1,7 @@
 @namespace BlazorUI.Components.Resizable
 
 @* ResizablePanelGroup - container for resizable panels *@
-<div @attributes="GetAttributes()">
+<div @ref="_groupRef" @attributes="GetAttributes()">
     <CascadingValue Value="this" IsFixed="false">
         @ChildContent
     </CascadingValue>
@@ -10,7 +10,10 @@
 @code {
     private readonly List<ResizablePanel> _panels = new();
     private readonly List<double> _sizes = new();
+    private readonly object _lock = new();
     private int _panelCount = 0;
+    private ElementReference _groupRef;
+    private bool _sizesInitialized = false;
 
     /// <summary>
     /// The content to render within the panel group.
@@ -53,88 +56,197 @@
 
     internal ResizableDirection GetDirection() => Direction;
 
+    internal ElementReference? GetGroupElement() => _groupRef.Id != null ? _groupRef : null;
+
     internal int RegisterPanel(ResizablePanel panel)
     {
-        var index = _panelCount++;
-        _panels.Add(panel);
-        
-        if (DefaultSizes != null && index < DefaultSizes.Length)
+        lock (_lock)
         {
-            _sizes.Add(DefaultSizes[index]);
+            var index = _panelCount++;
+            _panels.Add(panel);
+            
+            if (DefaultSizes != null && index < DefaultSizes.Length)
+            {
+                _sizes.Add(DefaultSizes[index]);
+            }
+            else
+            {
+                // Equal distribution if no default sizes
+                var equalSize = 100.0 / Math.Max(_panelCount, 1);
+                _sizes.Add(equalSize);
+            }
+            
+            return index;
         }
-        else
-        {
-            _sizes.Add(0); // Will be calculated in OnAfterRender
-        }
-        
-        return index;
     }
 
     internal void UnregisterPanel(ResizablePanel panel)
     {
-        _panels.Remove(panel);
+        lock (_lock)
+        {
+            _panels.Remove(panel);
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && !_sizesInitialized)
+        {
+            InitializeSizes();
+            _sizesInitialized = true;
+            StateHasChanged();
+        }
+    }
+
+    private void InitializeSizes()
+    {
+        lock (_lock)
+        {
+            if (DefaultSizes != null && DefaultSizes.Length == _panels.Count)
+            {
+                _sizes.Clear();
+                _sizes.AddRange(DefaultSizes);
+            }
+            else
+            {
+                // Recalculate equal sizes
+                var equalSize = 100.0 / Math.Max(_panels.Count, 1);
+                _sizes.Clear();
+                for (int i = 0; i < _panels.Count; i++)
+                {
+                    _sizes.Add(equalSize);
+                }
+            }
+        }
     }
 
     internal double GetPanelSize(int index)
     {
-        if (DefaultSizes != null && index < DefaultSizes.Length)
+        lock (_lock)
         {
-            return DefaultSizes[index];
+            if (index >= 0 && index < _sizes.Count)
+            {
+                return _sizes[index];
+            }
+            
+            // Fallback to equal distribution
+            var panelCount = _panels.Count;
+            return panelCount > 0 ? 100.0 / panelCount : 100.0;
         }
-        
-        // Equal distribution if no default sizes
-        var panelCount = _panels.Count;
-        return panelCount > 0 ? 100.0 / panelCount : 100.0;
     }
 
     internal async Task ResizePanels(int handleIndex, double delta)
     {
-        if (handleIndex < 0 || handleIndex >= _panels.Count - 1)
-            return;
-
-        var currentPanel = _panels[handleIndex];
-        var nextPanel = _panels[handleIndex + 1];
-
-        var currentSize = GetPanelSize(handleIndex);
-        var nextSize = GetPanelSize(handleIndex + 1);
-
-        var newCurrentSize = currentSize + delta;
-        var newNextSize = nextSize - delta;
-
-        // Apply min/max constraints
-        if (newCurrentSize < (currentPanel.MinSize ?? 0))
+        double[] newSizes;
+        
+        lock (_lock)
         {
-            newCurrentSize = currentPanel.MinSize ?? 0;
-            newNextSize = currentSize + nextSize - newCurrentSize;
-        }
-        if (currentPanel.MaxSize.HasValue && newCurrentSize > currentPanel.MaxSize.Value)
-        {
-            newCurrentSize = currentPanel.MaxSize.Value;
-            newNextSize = currentSize + nextSize - newCurrentSize;
-        }
-        if (newNextSize < (nextPanel.MinSize ?? 0))
-        {
-            newNextSize = nextPanel.MinSize ?? 0;
-            newCurrentSize = currentSize + nextSize - newNextSize;
-        }
-        if (nextPanel.MaxSize.HasValue && newNextSize > nextPanel.MaxSize.Value)
-        {
-            newNextSize = nextPanel.MaxSize.Value;
-            newCurrentSize = currentSize + nextSize - newNextSize;
-        }
+            if (handleIndex < 0 || handleIndex >= _panels.Count - 1)
+                return;
 
-        // Update sizes
-        if (_sizes.Count > handleIndex)
-            _sizes[handleIndex] = newCurrentSize;
-        if (_sizes.Count > handleIndex + 1)
-            _sizes[handleIndex + 1] = newNextSize;
+            var currentPanel = _panels[handleIndex];
+            var nextPanel = _panels[handleIndex + 1];
+
+            var currentSize = _sizes.Count > handleIndex ? _sizes[handleIndex] : GetPanelSize(handleIndex);
+            var nextSize = _sizes.Count > handleIndex + 1 ? _sizes[handleIndex + 1] : GetPanelSize(handleIndex + 1);
+
+            var newCurrentSize = currentSize + delta;
+            var newNextSize = nextSize - delta;
+
+            // Apply min/max constraints
+            var currentMinSize = currentPanel.MinSize ?? 0;
+            var currentMaxSize = currentPanel.MaxSize ?? 100;
+            var nextMinSize = nextPanel.MinSize ?? 0;
+            var nextMaxSize = nextPanel.MaxSize ?? 100;
+
+            // Clamp to min/max constraints
+            if (newCurrentSize < currentMinSize)
+            {
+                var adjustment = currentMinSize - newCurrentSize;
+                newCurrentSize = currentMinSize;
+                newNextSize -= adjustment;
+            }
+            else if (newCurrentSize > currentMaxSize)
+            {
+                var adjustment = newCurrentSize - currentMaxSize;
+                newCurrentSize = currentMaxSize;
+                newNextSize += adjustment;
+            }
+
+            if (newNextSize < nextMinSize)
+            {
+                var adjustment = nextMinSize - newNextSize;
+                newNextSize = nextMinSize;
+                newCurrentSize -= adjustment;
+            }
+            else if (newNextSize > nextMaxSize)
+            {
+                var adjustment = newNextSize - nextMaxSize;
+                newNextSize = nextMaxSize;
+                newCurrentSize += adjustment;
+            }
+
+            // Final boundary checks
+            newCurrentSize = Math.Max(currentMinSize, Math.Min(currentMaxSize, newCurrentSize));
+            newNextSize = Math.Max(nextMinSize, Math.Min(nextMaxSize, newNextSize));
+
+            // Update sizes
+            if (_sizes.Count > handleIndex)
+                _sizes[handleIndex] = newCurrentSize;
+            if (_sizes.Count > handleIndex + 1)
+                _sizes[handleIndex + 1] = newNextSize;
+
+            newSizes = _sizes.ToArray();
+        }
 
         if (OnLayoutChange.HasDelegate)
         {
-            await OnLayoutChange.InvokeAsync(_sizes.ToArray());
+            await OnLayoutChange.InvokeAsync(newSizes);
         }
 
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    internal async Task CollapsePanel(int handleIndex, string target)
+    {
+        double[] newSizes;
+        
+        lock (_lock)
+        {
+            if (handleIndex < 0 || handleIndex >= _panels.Count - 1)
+                return;
+
+            var currentPanel = _panels[handleIndex];
+            var nextPanel = _panels[handleIndex + 1];
+
+            var currentSize = _sizes.Count > handleIndex ? _sizes[handleIndex] : GetPanelSize(handleIndex);
+            var nextSize = _sizes.Count > handleIndex + 1 ? _sizes[handleIndex + 1] : GetPanelSize(handleIndex + 1);
+            var totalSize = currentSize + nextSize;
+
+            if (target == "previous" && currentPanel.Collapsible)
+            {
+                // Collapse the previous panel (to its minimum)
+                var minSize = currentPanel.MinSize ?? 0;
+                _sizes[handleIndex] = minSize;
+                _sizes[handleIndex + 1] = totalSize - minSize;
+            }
+            else if (target == "next" && nextPanel.Collapsible)
+            {
+                // Collapse the next panel (to its minimum)
+                var minSize = nextPanel.MinSize ?? 0;
+                _sizes[handleIndex + 1] = minSize;
+                _sizes[handleIndex] = totalSize - minSize;
+            }
+
+            newSizes = _sizes.ToArray();
+        }
+
+        if (OnLayoutChange.HasDelegate)
+        {
+            await OnLayoutChange.InvokeAsync(newSizes);
+        }
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private Dictionary<string, object> GetAttributes()
