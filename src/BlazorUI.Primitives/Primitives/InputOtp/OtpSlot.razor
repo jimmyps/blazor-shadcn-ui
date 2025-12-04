@@ -1,17 +1,21 @@
 @namespace BlazorUI.Primitives.InputOtp
+@inject IJSRuntime JS
 
 @* OtpSlot - individual input slot for a single OTP character *@
 <input @ref="_inputRef"
        type="text"
-       inputmode="numeric"
+       inputmode="text"
        autocomplete="one-time-code"
        id="@Context.GetSlotId(Index)"
        maxlength="@(Index == 0 ? Context.Length : 1)"
        value="@DisplayValue"
        disabled="@Context.IsDisabled"
+       aria-invalid="@(Context.IsInvalid ? "true" : null)"
+       class="text-center"
        @oninput="HandleInput"
        @onkeydown="HandleKeyDown"
        @onfocus="HandleFocus"
+       @onblur="HandleBlur"
        @onpaste="HandlePaste"
        @attributes="AdditionalAttributes"
        aria-label="@AriaLabel"
@@ -54,8 +58,9 @@
 
     /// <summary>
     /// Gets whether this slot is currently active (focused).
+    /// Only shows active state when the OTP control actually has focus.
     /// </summary>
-    private bool IsActive => Context.FocusedIndex == Index;
+    private bool IsActive => Context.HasFocus && Context.FocusedIndex == Index;
 
     /// <summary>
     /// Gets whether this slot has a value.
@@ -91,7 +96,7 @@
         if (Context.IsDisabled) return;
 
         var input = args.Value?.ToString() ?? "";
-        
+
         // Handle paste (multiple characters)
         if (input.Length > 1 && Index == 0)
         {
@@ -104,18 +109,19 @@
         if (input.Length > 0)
         {
             var lastChar = input[^1]; // Take the last character
-            
+
             // Validate character if pattern is set
             if (Root != null && !Root.IsValidChar(lastChar))
             {
-                // Invalid character, don't accept
+                // Invalid character - use JS interop to clear the input display
+                await ClearInputValue();
                 return;
             }
 
             Context.SetSlotValue(Index, lastChar);
-            
-            // Move to next slot if not at the end
-            if (Index < Context.Length - 1)
+
+            // Move to next slot only if next slot is empty
+            if (Index < Context.Length - 1 && Context.GetSlotValue(Index + 1) == '\0')
             {
                 Context.FocusNext();
                 await FocusSlot(Index + 1);
@@ -124,7 +130,21 @@
         else
         {
             // Input was cleared
-            Context.SetSlotValue(Index, '\0');
+            // Context.SetSlotValue(Index, '\0'); // Already handled in key down
+        }
+    }
+
+    private async Task ClearInputValue()
+    {
+        try
+        {
+            // Use JS interop to set the input value to the current valid slot value
+            var validValue = DisplayValue;
+            await JS.InvokeVoidAsync("eval", $"document.getElementById('{Context.GetSlotId(Index)}').value = '{validValue}'");
+        }
+        catch
+        {
+            // Ignore JS errors
         }
     }
 
@@ -138,7 +158,7 @@
                 if (Context.GetSlotValue(Index) == '\0')
                 {
                     // Slot is empty, move to previous and clear it
-                    if (Index > 0)
+                    if (Index == Context.Value.Length)
                     {
                         Context.SetSlotValue(Index - 1, '\0');
                         Context.FocusPrevious();
@@ -149,7 +169,17 @@
                 {
                     // Clear current slot
                     Context.SetSlotValue(Index, '\0');
+
+                    if (Index < Context.Length - 1)
+                    {
+                        if (Context.GetSlotValue(Index + 1) != '\0')
+                        {
+                            Context.FocusNext();
+                            await FocusSlot(Context.Value.Length - 1);
+                        }
+                    }
                 }
+
                 break;
 
             case "Delete":
@@ -159,34 +189,78 @@
             case "ArrowLeft":
                 if (Index > 0)
                 {
+                    Context.SetKeyboardNavigation(true);
                     Context.FocusPrevious();
                     await FocusSlot(Index - 1);
                 }
                 break;
 
             case "ArrowRight":
-                if (Index < Context.Length - 1)
+                if (Index < Context.Value.Length)
                 {
+                    Context.SetKeyboardNavigation(true);
                     Context.FocusNext();
                     await FocusSlot(Index + 1);
                 }
                 break;
 
             case "Home":
+                Context.SetKeyboardNavigation(true);
                 Context.SetFocusedIndex(0);
                 await FocusSlot(0);
                 break;
 
             case "End":
+                Context.SetKeyboardNavigation(true);
                 Context.SetFocusedIndex(Context.Length - 1);
                 await FocusSlot(Context.Length - 1);
                 break;
         }
     }
 
-    private void HandleFocus()
+    private async Task HandleFocus()
     {
-        Context.SetFocusedIndex(Index);
+        // Mark that the OTP control has focus
+        Context.SetHasFocus(true);
+        
+        // If this focus is from keyboard navigation, allow it without redirecting
+        if (Context.IsKeyboardNavigation)
+        {
+            Context.SetKeyboardNavigation(false); // Reset the flag
+            Context.SetFocusedIndex(Index);
+            return;
+        }
+        
+        // For OTP UX: on click/tab, focus on the first empty slot or last slot if all filled
+        // Find the first empty slot index
+        int targetIndex = Context.Length - 1; // Default to last slot if all filled
+        for (int i = 0; i < Context.Length; i++)
+        {
+            if (Context.GetSlotValue(i) == '\0')
+            {
+                targetIndex = i;
+                break;
+            }
+        }
+
+        // If user clicked on a different slot than the target, redirect focus
+        if (Index != targetIndex)
+        {
+            Context.SetFocusedIndex(targetIndex);
+            await FocusSlot(targetIndex);
+        }
+        else
+        {
+            Context.SetFocusedIndex(Index);
+        }
+    }
+
+    private void HandleBlur()
+    {
+        // Mark that the OTP control lost focus
+        // Note: Don't reset IsKeyboardNavigation here because blur fires before the new slot's focus
+        // The flag will be reset in HandleFocus after it's been checked
+        Context.SetHasFocus(false);
     }
 
     private async Task HandlePaste(ClipboardEventArgs args)

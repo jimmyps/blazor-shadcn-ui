@@ -123,12 +123,14 @@
         <h2 class="text-2xl font-semibold">Controlled with Verification</h2>
         <p class="text-sm text-muted-foreground">
             This example shows controlled mode with a simulated verification process when the OTP is complete.
+            The input shows error styling when verification fails.
         </p>
 
         <div class="flex flex-col gap-4">
             <InputOtp Length="6" 
                       @bind-Value="controlledOtp" 
-                      OnComplete="HandleVerification">
+                      OnComplete="HandleVerification"
+                      AriaInvalid="@(verificationResult == false)">
                 <InputOtpGroup>
                     <InputOtpSlot Index="0" />
                     <InputOtpSlot Index="1" />
@@ -159,6 +161,32 @@
             <p class="text-xs text-muted-foreground">
                 Hint: Enter <strong>123456</strong> for successful verification.
             </p>
+        </div>
+    </section>
+
+    <!-- Error State -->
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">Error State</h2>
+        <p class="text-sm text-muted-foreground">
+            Use <code>AriaInvalid</code> to display the OTP input in an error state with destructive (red) styling.
+        </p>
+
+        <div class="flex flex-col gap-4">
+            <InputOtp Length="6" @bind-Value="errorOtp" AriaInvalid="true">
+                <InputOtpGroup>
+                    <InputOtpSlot Index="0" />
+                    <InputOtpSlot Index="1" />
+                    <InputOtpSlot Index="2" />
+                </InputOtpGroup>
+                <InputOtpSeparator />
+                <InputOtpGroup>
+                    <InputOtpSlot Index="3" />
+                    <InputOtpSlot Index="4" />
+                    <InputOtpSlot Index="5" />
+                </InputOtpGroup>
+            </InputOtp>
+
+            <p class="text-sm text-destructive">This input is in an error state.</p>
         </div>
     </section>
 
@@ -198,6 +226,7 @@
     private string pinValue = "";
     private string alphaOtp = "";
     private string keyboardOtp = "";
+    private string errorOtp = "";
     
     private string controlledOtp = "";
     private bool isVerifying = false;
