@@ -22,6 +22,11 @@ public class OtpState
     /// Gets or sets whether the OTP input is disabled.
     /// </summary>
     public bool IsDisabled { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets whether the OTP input is in an invalid/error state.
+    /// </summary>
+    public bool IsInvalid { get; set; } = false;
 }
 
 /// <summary>
@@ -81,6 +86,11 @@ public class OtpContext : PrimitiveContextWithEvents<OtpState>
     /// Gets whether the OTP input is disabled.
     /// </summary>
     public bool IsDisabled => State.IsDisabled;
+
+    /// <summary>
+    /// Gets whether the OTP input is in an invalid/error state.
+    /// </summary>
+    public bool IsInvalid => State.IsInvalid;
 
     /// <summary>
     /// Registers a slot element reference for focus management.
@@ -220,6 +230,18 @@ public class OtpContext : PrimitiveContextWithEvents<OtpState>
         UpdateState(state =>
         {
             state.IsDisabled = disabled;
+        });
+    }
+
+    /// <summary>
+    /// Sets the invalid/error state.
+    /// </summary>
+    /// <param name="invalid">Whether the input is in an invalid state.</param>
+    public void SetInvalid(bool invalid)
+    {
+        UpdateState(state =>
+        {
+            state.IsInvalid = invalid;
         });
     }
 }

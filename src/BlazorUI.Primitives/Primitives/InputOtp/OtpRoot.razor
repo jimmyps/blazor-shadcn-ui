@@ -84,6 +84,13 @@
     public string AriaLabel { get; set; } = "One-time password";
 
     /// <summary>
+    /// Whether the OTP input is in an invalid/error state.
+    /// When true, aria-invalid="true" is set on the slots.
+    /// </summary>
+    [Parameter]
+    public bool AriaInvalid { get; set; } = false;
+
+    /// <summary>
     /// Additional attributes to apply to the container element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
@@ -112,6 +119,9 @@
         // Set disabled state
         _context.SetDisabled(Disabled);
 
+        // Set invalid state
+        _context.SetInvalid(AriaInvalid);
+
         // Subscribe to context state changes
         _context.OnStateChanged += HandleContextStateChanged;
     }
@@ -129,6 +139,12 @@
         if (_context.IsDisabled != Disabled)
         {
             _context.SetDisabled(Disabled);
+        }
+
+        // Update invalid state
+        if (_context.IsInvalid != AriaInvalid)
+        {
+            _context.SetInvalid(AriaInvalid);
         }
     }
 
