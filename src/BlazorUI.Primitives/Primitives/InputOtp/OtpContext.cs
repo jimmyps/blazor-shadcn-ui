@@ -27,6 +27,11 @@ public class OtpState
     /// Gets or sets whether the OTP input is in an invalid/error state.
     /// </summary>
     public bool IsInvalid { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets whether the OTP input currently has focus.
+    /// </summary>
+    public bool HasFocus { get; set; } = false;
 }
 
 /// <summary>
@@ -91,6 +96,11 @@ public class OtpContext : PrimitiveContextWithEvents<OtpState>
     /// Gets whether the OTP input is in an invalid/error state.
     /// </summary>
     public bool IsInvalid => State.IsInvalid;
+
+    /// <summary>
+    /// Gets whether the OTP input currently has focus.
+    /// </summary>
+    public bool HasFocus => State.HasFocus;
 
     /// <summary>
     /// Registers a slot element reference for focus management.
@@ -242,6 +252,18 @@ public class OtpContext : PrimitiveContextWithEvents<OtpState>
         UpdateState(state =>
         {
             state.IsInvalid = invalid;
+        });
+    }
+
+    /// <summary>
+    /// Sets the focus state.
+    /// </summary>
+    /// <param name="hasFocus">Whether the input has focus.</param>
+    public void SetHasFocus(bool hasFocus)
+    {
+        UpdateState(state =>
+        {
+            state.HasFocus = hasFocus;
         });
     }
 }

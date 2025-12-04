@@ -14,6 +14,7 @@
        @oninput="HandleInput"
        @onkeydown="HandleKeyDown"
        @onfocus="HandleFocus"
+       @onblur="HandleBlur"
        @onpaste="HandlePaste"
        @attributes="AdditionalAttributes"
        aria-label="@AriaLabel"
@@ -56,8 +57,9 @@
 
     /// <summary>
     /// Gets whether this slot is currently active (focused).
+    /// Only shows active state when the OTP control actually has focus.
     /// </summary>
-    private bool IsActive => Context.FocusedIndex == Index;
+    private bool IsActive => Context.HasFocus && Context.FocusedIndex == Index;
 
     /// <summary>
     /// Gets whether this slot has a value.
@@ -188,9 +190,12 @@
 
     private async Task HandleFocus()
     {
-        // For OTP UX: always focus on the first empty slot
+        // Mark that the OTP control has focus
+        Context.SetHasFocus(true);
+        
+        // For OTP UX: always focus on the first empty slot or last slot if all filled
         // Find the first empty slot index
-        int targetIndex = -1;
+        int targetIndex = Context.Length - 1; // Default to last slot if all filled
         for (int i = 0; i < Context.Length; i++)
         {
             if (Context.GetSlotValue(i) == '\0')
@@ -198,13 +203,6 @@
                 targetIndex = i;
                 break;
             }
-        }
-
-        // If all slots are filled, stay on current slot (allow editing)
-        if (targetIndex == -1)
-        {
-            Context.SetFocusedIndex(Index);
-            return;
         }
 
         // If user clicked on a different slot than the target, redirect focus
@@ -217,6 +215,12 @@
         {
             Context.SetFocusedIndex(Index);
         }
+    }
+
+    private void HandleBlur()
+    {
+        // Mark that the OTP control lost focus
+        Context.SetHasFocus(false);
     }
 
     private async Task HandlePaste(ClipboardEventArgs args)
