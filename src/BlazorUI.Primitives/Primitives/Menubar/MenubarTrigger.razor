@@ -72,7 +72,7 @@
     private void HandleClick(MouseEventArgs args)
     {
         if (Disabled) return;
-        MenuContext.Toggle();
+        MenuContext.Toggle(_triggerRef);
     }
 
     private void HandleKeyDown(KeyboardEventArgs args)
@@ -83,12 +83,12 @@
         {
             case "Enter":
             case " ":
-                MenuContext.Toggle();
+                MenuContext.Toggle(_triggerRef);
                 break;
             case "ArrowDown":
                 if (!MenuContext.IsOpen)
                 {
-                    MenuContext.Open();
+                    MenuContext.Open(_triggerRef);
                 }
                 break;
         }
