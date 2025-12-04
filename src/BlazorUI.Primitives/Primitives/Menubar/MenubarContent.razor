@@ -183,8 +183,11 @@
                 _contentRef,
                 options);
 
-            // Apply position and make visible
-            await PositioningService.ApplyPositionAsync(_contentRef, position, makeVisible: true);
+            // Apply position but don't set visibility/opacity - let CSS animations handle it
+            await PositioningService.ApplyPositionAsync(_contentRef, position, makeVisible: false);
+            
+            // Enable pointer events now that positioning is done
+            await JSRuntime.InvokeVoidAsync("eval", $"document.getElementById('{MenuContext.ContentId}').style.pointerEvents = 'auto'");
 
             // Set up auto-update for dynamic positioning
             _positioningCleanup = await PositioningService.AutoUpdateAsync(
@@ -252,9 +255,9 @@
     {
         var baseStyle = $"z-index: {ZIndex};";
 
-        // Position offscreen initially - JavaScript will reposition and show
-        // Using visibility:hidden + offscreen positioning prevents layout jumping
-        baseStyle += " position: absolute; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
+        // Position offscreen initially - JavaScript will reposition
+        // Don't set opacity here - let CSS animations handle fade-in via animate-in classes
+        baseStyle += " position: absolute; top: -9999px; left: -9999px; pointer-events: none;";
 
         return baseStyle;
     }
@@ -329,15 +332,8 @@
                 await FocusLastEnabled();
                 break;
 
-            case "ArrowRight":
-                // Move to next menu in menubar
-                Context.FocusNextTrigger();
-                break;
-
-            case "ArrowLeft":
-                // Move to previous menu in menubar
-                Context.FocusPreviousTrigger();
-                break;
+            // Note: ArrowRight/ArrowLeft are handled by MenubarRoot
+            // to avoid double-handling due to event bubbling
         }
     }
 

@@ -70,6 +70,12 @@
         }
     }
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        // Always update the trigger element reference so keyboard navigation can position correctly
+        MenuContext.TriggerElement = _triggerRef;
+    }
+
     private void HandleClick(MouseEventArgs args)
     {
         if (Disabled) return;
