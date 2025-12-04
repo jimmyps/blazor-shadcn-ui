@@ -7,6 +7,7 @@
         @onclick="HandleClick"
         @onkeydown="HandleKeyDown"
         @onfocus="HandleFocus"
+        @onmouseenter="HandleMouseEnter"
         @attributes="AdditionalAttributes"
         role="menuitem"
         aria-haspopup="menu"
@@ -97,5 +98,16 @@
     private void HandleFocus()
     {
         Context.SetFocusedTriggerIndex(MenuContext.Index);
+    }
+
+    private void HandleMouseEnter()
+    {
+        if (Disabled) return;
+        
+        // If any menu in the menubar is already open, open this one on hover
+        if (Context.ActiveIndex >= 0 && Context.ActiveIndex != MenuContext.Index)
+        {
+            MenuContext.Open(_triggerRef);
+        }
     }
 }
