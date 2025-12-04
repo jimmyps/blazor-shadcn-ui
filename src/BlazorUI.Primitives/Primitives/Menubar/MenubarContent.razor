@@ -183,11 +183,9 @@
                 _contentRef,
                 options);
 
-            // Apply position but don't set visibility/opacity - let CSS animations handle it
-            await PositioningService.ApplyPositionAsync(_contentRef, position, makeVisible: false);
-            
-            // Enable pointer events now that positioning is done
-            await JSRuntime.InvokeVoidAsync("eval", $"document.getElementById('{MenuContext.ContentId}').style.pointerEvents = 'auto'");
+            // Apply position and make visible (enables pointer-events)
+            // CSS animations handle the fade-in via animate-in classes
+            await PositioningService.ApplyPositionAsync(_contentRef, position, makeVisible: true);
 
             // Set up auto-update for dynamic positioning
             _positioningCleanup = await PositioningService.AutoUpdateAsync(
