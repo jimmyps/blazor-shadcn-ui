@@ -1,0 +1,251 @@
+@page "/components/kbd"
+
+<PageTitle>Kbd Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Kbd Component</h1>
+            <p class="text-xl text-muted-foreground">
+                Displays a keyboard key or shortcut in a styled badge.
+            </p>
+        </div>
+    </div>
+
+    <!-- Basic Kbd -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic Usage</h2>
+            <p class="text-sm text-muted-foreground">
+                Display individual keyboard keys.
+            </p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <Kbd>Ctrl</Kbd>
+            <Kbd>Shift</Kbd>
+            <Kbd>Alt</Kbd>
+            <Kbd>Enter</Kbd>
+            <Kbd>Esc</Kbd>
+            <Kbd>Tab</Kbd>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Keyboard Shortcuts</h2>
+            <p class="text-sm text-muted-foreground">
+                Display common keyboard shortcuts.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <div class="flex items-center gap-2">
+                <span class="text-sm w-32">Copy:</span>
+                <Kbd>Ctrl</Kbd>
+                <span class="text-muted-foreground">+</span>
+                <Kbd>C</Kbd>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-sm w-32">Paste:</span>
+                <Kbd>Ctrl</Kbd>
+                <span class="text-muted-foreground">+</span>
+                <Kbd>V</Kbd>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-sm w-32">Undo:</span>
+                <Kbd>Ctrl</Kbd>
+                <span class="text-muted-foreground">+</span>
+                <Kbd>Z</Kbd>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-sm w-32">Save:</span>
+                <Kbd>Ctrl</Kbd>
+                <span class="text-muted-foreground">+</span>
+                <Kbd>S</Kbd>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-sm w-32">Find:</span>
+                <Kbd>Ctrl</Kbd>
+                <span class="text-muted-foreground">+</span>
+                <Kbd>F</Kbd>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mac Shortcuts -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Mac Shortcuts</h2>
+            <p class="text-sm text-muted-foreground">
+                Using Mac-specific modifier symbols.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <div class="flex items-center gap-2">
+                <span class="text-sm w-32">Command:</span>
+                <Kbd>⌘</Kbd>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-sm w-32">Option:</span>
+                <Kbd>⌥</Kbd>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-sm w-32">Shift:</span>
+                <Kbd>⇧</Kbd>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-sm w-32">Control:</span>
+                <Kbd>⌃</Kbd>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-sm w-32">Spotlight:</span>
+                <Kbd>⌘</Kbd>
+                <Kbd>Space</Kbd>
+            </div>
+        </div>
+    </div>
+
+    <!-- In Context -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">In Context</h2>
+            <p class="text-sm text-muted-foreground">
+                Kbd elements used inline with text.
+            </p>
+        </div>
+        <div class="border rounded-lg p-6 space-y-4 bg-muted/30">
+            <p class="text-sm">
+                Press <Kbd>⌘</Kbd> <Kbd>K</Kbd> to open the command palette.
+            </p>
+            <p class="text-sm">
+                Use <Kbd>↑</Kbd> and <Kbd>↓</Kbd> to navigate, then <Kbd>Enter</Kbd> to select.
+            </p>
+            <p class="text-sm">
+                Press <Kbd>Esc</Kbd> to close the dialog, or <Kbd>Tab</Kbd> to move focus.
+            </p>
+        </div>
+    </div>
+
+    <!-- Command Menu Example -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Command Menu Example</h2>
+            <p class="text-sm text-muted-foreground">
+                Typical use in a command menu or settings panel.
+            </p>
+        </div>
+        <div class="border rounded-lg divide-y max-w-md">
+            <div class="flex items-center justify-between px-4 py-3">
+                <span class="text-sm">Toggle Dark Mode</span>
+                <div class="flex items-center gap-1">
+                    <Kbd>⌘</Kbd>
+                    <Kbd>D</Kbd>
+                </div>
+            </div>
+            <div class="flex items-center justify-between px-4 py-3">
+                <span class="text-sm">Search</span>
+                <div class="flex items-center gap-1">
+                    <Kbd>⌘</Kbd>
+                    <Kbd>K</Kbd>
+                </div>
+            </div>
+            <div class="flex items-center justify-between px-4 py-3">
+                <span class="text-sm">Settings</span>
+                <div class="flex items-center gap-1">
+                    <Kbd>⌘</Kbd>
+                    <Kbd>,</Kbd>
+                </div>
+            </div>
+            <div class="flex items-center justify-between px-4 py-3">
+                <span class="text-sm">Quick Actions</span>
+                <div class="flex items-center gap-1">
+                    <Kbd>⌘</Kbd>
+                    <Kbd>⇧</Kbd>
+                    <Kbd>P</Kbd>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Special Keys -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Special Keys</h2>
+            <p class="text-sm text-muted-foreground">
+                Navigation and special keys.
+            </p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <Kbd>↑</Kbd>
+            <Kbd>↓</Kbd>
+            <Kbd>←</Kbd>
+            <Kbd>→</Kbd>
+            <Kbd>Space</Kbd>
+            <Kbd>Delete</Kbd>
+            <Kbd>Backspace</Kbd>
+            <Kbd>Home</Kbd>
+            <Kbd>End</Kbd>
+            <Kbd>Page Up</Kbd>
+            <Kbd>Page Down</Kbd>
+        </div>
+    </div>
+
+    <!-- Function Keys -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Function Keys</h2>
+            <p class="text-sm text-muted-foreground">
+                Standard function keys.
+            </p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <Kbd>F1</Kbd>
+            <Kbd>F2</Kbd>
+            <Kbd>F3</Kbd>
+            <Kbd>F4</Kbd>
+            <Kbd>F5</Kbd>
+            <Kbd>F6</Kbd>
+            <Kbd>F7</Kbd>
+            <Kbd>F8</Kbd>
+            <Kbd>F9</Kbd>
+            <Kbd>F10</Kbd>
+            <Kbd>F11</Kbd>
+            <Kbd>F12</Kbd>
+        </div>
+    </div>
+
+    <!-- API Reference -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+        </div>
+        <div class="border rounded-lg p-6 space-y-4">
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Kbd</h3>
+                <p class="text-sm text-muted-foreground">
+                    The keyboard key component that renders a styled <code class="text-xs bg-muted px-1 py-0.5 rounded">&lt;kbd&gt;</code> element.
+                </p>
+            </div>
+            <Separator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Class</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    Additional CSS classes to apply to the kbd element.
+                </p>
+            </div>
+            <Separator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">ChildContent</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">RenderFragment?</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    The key name or symbol to display (e.g., "Ctrl", "⌘", "Enter").
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

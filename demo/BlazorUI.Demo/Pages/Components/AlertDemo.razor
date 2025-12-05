@@ -1,0 +1,161 @@
+@page "/components/alert"
+
+<PageTitle>Alert Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Alert Component</h1>
+            <p class="text-xl text-muted-foreground">
+                Displays a callout for important information or feedback.
+            </p>
+        </div>
+    </div>
+
+    <!-- Default Alert -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Default Alert</h2>
+            <p class="text-sm text-muted-foreground">
+                A simple informational alert with title and description.
+            </p>
+        </div>
+        <Alert>
+            <LucideIcon Name="terminal" Class="size-4" />
+            <AlertTitle>Heads up!</AlertTitle>
+            <AlertDescription>
+                You can add components and dependencies to your app using the CLI.
+            </AlertDescription>
+        </Alert>
+    </div>
+
+    <!-- Destructive Alert -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Destructive Alert</h2>
+            <p class="text-sm text-muted-foreground">
+                An alert for errors or critical warnings.
+            </p>
+        </div>
+        <Alert Variant="AlertVariant.Destructive">
+            <LucideIcon Name="circle-alert" Class="size-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+                Your session has expired. Please log in again.
+            </AlertDescription>
+        </Alert>
+    </div>
+
+    <!-- Alert Variants -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Variants</h2>
+            <p class="text-sm text-muted-foreground">
+                Two alert variants for different use cases.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <Alert>
+                <LucideIcon Name="info" Class="size-4" />
+                <AlertTitle>Information</AlertTitle>
+                <AlertDescription>
+                    This is a default alert with informational content.
+                </AlertDescription>
+            </Alert>
+            <Alert Variant="AlertVariant.Destructive">
+                <LucideIcon Name="triangle-alert" Class="size-4" />
+                <AlertTitle>Warning</AlertTitle>
+                <AlertDescription>
+                    This is a destructive alert for errors and warnings.
+                </AlertDescription>
+            </Alert>
+        </div>
+    </div>
+
+    <!-- Without Icon -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Without Icon</h2>
+            <p class="text-sm text-muted-foreground">
+                Alerts can be used without an icon.
+            </p>
+        </div>
+        <Alert>
+            <AlertTitle>Note</AlertTitle>
+            <AlertDescription>
+                This alert doesn't have an icon but is still informative.
+            </AlertDescription>
+        </Alert>
+    </div>
+
+    <!-- Title Only -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Title Only</h2>
+            <p class="text-sm text-muted-foreground">
+                An alert with just a title for brief messages.
+            </p>
+        </div>
+        <Alert>
+            <LucideIcon Name="check-circle" Class="size-4" />
+            <AlertTitle>Successfully saved your changes.</AlertTitle>
+        </Alert>
+    </div>
+
+    <!-- Custom Styling -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Styling</h2>
+            <p class="text-sm text-muted-foreground">
+                Override styles with the Class parameter.
+            </p>
+        </div>
+        <Alert Class="border-blue-500 bg-blue-50 dark:bg-blue-950 [&>svg]:text-blue-500">
+            <LucideIcon Name="lightbulb" Class="size-4" />
+            <AlertTitle>Pro Tip</AlertTitle>
+            <AlertDescription>
+                You can customize alert appearance with custom classes.
+            </AlertDescription>
+        </Alert>
+    </div>
+
+    <!-- API Reference -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+        </div>
+        <div class="border rounded-lg p-6 space-y-4">
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Alert</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    The main alert container component.
+                </p>
+            </div>
+            <Separator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Variant</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">AlertVariant</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    The visual style variant. Options: Default, Destructive.
+                    Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">Default</code>
+                </p>
+            </div>
+            <Separator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">AlertTitle</h3>
+                <p class="text-sm text-muted-foreground">
+                    A title component for the alert heading.
+                </p>
+            </div>
+            <Separator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">AlertDescription</h3>
+                <p class="text-sm text-muted-foreground">
+                    A description component for additional details.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
