@@ -218,7 +218,7 @@
         {
             try
             {
-                await _clickOutsideCleanup.InvokeVoidAsync("cleanup");
+                await _clickOutsideCleanup.InvokeVoidAsync("dispose");
                 await _clickOutsideCleanup.DisposeAsync();
             }
             catch (JSDisconnectedException)
