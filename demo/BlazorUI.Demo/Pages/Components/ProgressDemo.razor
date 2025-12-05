@@ -1,0 +1,187 @@
+@page "/components/progress"
+
+<PageTitle>Progress Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Progress Component</h1>
+            <p class="text-xl text-muted-foreground">
+                Displays an indicator showing the completion progress of a task.
+            </p>
+        </div>
+    </div>
+
+    <!-- Basic Progress -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Default Progress</h2>
+            <p class="text-sm text-muted-foreground">
+                A simple progress bar showing completion status.
+            </p>
+        </div>
+        <Progress Value="33" />
+    </div>
+
+    <!-- Different Values -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Progress Values</h2>
+            <p class="text-sm text-muted-foreground">
+                Progress bars with different completion values.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span>0%</span>
+                    <span>0 / 100</span>
+                </div>
+                <Progress Value="0" />
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span>25%</span>
+                    <span>25 / 100</span>
+                </div>
+                <Progress Value="25" />
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span>50%</span>
+                    <span>50 / 100</span>
+                </div>
+                <Progress Value="50" />
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span>75%</span>
+                    <span>75 / 100</span>
+                </div>
+                <Progress Value="75" />
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span>100%</span>
+                    <span>100 / 100</span>
+                </div>
+                <Progress Value="100" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Progress -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Interactive Progress</h2>
+            <p class="text-sm text-muted-foreground">
+                Adjust the progress value with the slider.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <Progress Value="@progressValue" />
+            <div class="flex items-center gap-4">
+                <input type="range" min="0" max="100" @bind="progressValue" @bind:event="oninput" class="w-full" />
+                <span class="text-sm font-mono w-12">@progressValue%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Styling -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Styling</h2>
+            <p class="text-sm text-muted-foreground">
+                Override styles with the Class parameter.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <span class="text-sm text-muted-foreground">Taller height</span>
+                <Progress Value="60" Class="h-6" />
+            </div>
+            <div class="space-y-2">
+                <span class="text-sm text-muted-foreground">Smaller height</span>
+                <Progress Value="60" Class="h-2" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Use Cases -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Use Cases</h2>
+            <p class="text-sm text-muted-foreground">
+                Common scenarios for progress indicators.
+            </p>
+        </div>
+        <div class="space-y-6">
+            <div class="border rounded-lg p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="font-medium">File Upload</span>
+                    <span class="text-sm text-muted-foreground">67%</span>
+                </div>
+                <Progress Value="67" />
+                <p class="text-sm text-muted-foreground">Uploading document.pdf (2.3 MB of 3.4 MB)</p>
+            </div>
+            <div class="border rounded-lg p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="font-medium">Course Progress</span>
+                    <span class="text-sm text-muted-foreground">8 of 12 lessons</span>
+                </div>
+                <Progress Value="@(8.0/12*100)" />
+            </div>
+            <div class="border rounded-lg p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="font-medium">Storage Used</span>
+                    <span class="text-sm text-muted-foreground">4.2 GB of 10 GB</span>
+                </div>
+                <Progress Value="42" />
+            </div>
+        </div>
+    </div>
+
+    <!-- API Reference -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+        </div>
+        <div class="border rounded-lg p-6 space-y-4">
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Value</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">double</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    The current progress value. Should be between 0 and Max.
+                    Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">0</code>
+                </p>
+            </div>
+            <Separator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Max</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">double</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    The maximum value for progress calculation.
+                    Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">100</code>
+                </p>
+            </div>
+            <Separator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Class</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    Additional CSS classes to apply to the progress bar container.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private double progressValue = 66;
+}

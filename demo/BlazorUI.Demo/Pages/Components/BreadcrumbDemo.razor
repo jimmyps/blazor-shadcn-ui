@@ -1,0 +1,213 @@
+@page "/components/breadcrumb"
+
+<PageTitle>Breadcrumb Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Breadcrumb Component</h1>
+            <p class="text-xl text-muted-foreground">
+                Displays the path to the current resource using a hierarchy of links.
+            </p>
+        </div>
+    </div>
+
+    <!-- Basic Breadcrumb -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic Breadcrumb</h2>
+            <p class="text-sm text-muted-foreground">
+                A simple breadcrumb navigation with links and current page.
+            </p>
+        </div>
+        <Breadcrumb>
+            <BreadcrumbList>
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/">Home</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/components">Components</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+                </BreadcrumbItem>
+            </BreadcrumbList>
+        </Breadcrumb>
+    </div>
+
+    <!-- With Dropdown -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Three Levels Deep</h2>
+            <p class="text-sm text-muted-foreground">
+                A breadcrumb with multiple navigation levels.
+            </p>
+        </div>
+        <Breadcrumb>
+            <BreadcrumbList>
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/">Home</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/docs">Documentation</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/docs/components">Components</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+                </BreadcrumbItem>
+            </BreadcrumbList>
+        </Breadcrumb>
+    </div>
+
+    <!-- With Ellipsis -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">With Ellipsis</h2>
+            <p class="text-sm text-muted-foreground">
+                Use ellipsis when there are too many items to display.
+            </p>
+        </div>
+        <Breadcrumb>
+            <BreadcrumbList>
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/">Home</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbEllipsis />
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/components">Components</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+                </BreadcrumbItem>
+            </BreadcrumbList>
+        </Breadcrumb>
+    </div>
+
+    <!-- Custom Separator -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Separator</h2>
+            <p class="text-sm text-muted-foreground">
+                Use a custom separator instead of the default chevron.
+            </p>
+        </div>
+        <Breadcrumb>
+            <BreadcrumbList>
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/">Home</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator>
+                    <span>/</span>
+                </BreadcrumbSeparator>
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/components">Components</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator>
+                    <span>/</span>
+                </BreadcrumbSeparator>
+                <BreadcrumbItem>
+                    <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+                </BreadcrumbItem>
+            </BreadcrumbList>
+        </Breadcrumb>
+    </div>
+
+    <!-- With Icons -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">With Icons</h2>
+            <p class="text-sm text-muted-foreground">
+                Breadcrumb links can include icons.
+            </p>
+        </div>
+        <Breadcrumb>
+            <BreadcrumbList>
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/">
+                        <LucideIcon Name="home" Class="size-4" />
+                    </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/components">
+                        <LucideIcon Name="component" Class="size-4 mr-1" />
+                        Components
+                    </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+                </BreadcrumbItem>
+            </BreadcrumbList>
+        </Breadcrumb>
+    </div>
+
+    <!-- API Reference -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+        </div>
+        <div class="border rounded-lg p-6 space-y-4">
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Breadcrumb</h3>
+                <p class="text-sm text-muted-foreground">
+                    The main container component with nav element and aria-label.
+                </p>
+            </div>
+            <Separator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">BreadcrumbList</h3>
+                <p class="text-sm text-muted-foreground">
+                    An ordered list container for breadcrumb items.
+                </p>
+            </div>
+            <Separator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">BreadcrumbItem</h3>
+                <p class="text-sm text-muted-foreground">
+                    A list item wrapper for links and separators.
+                </p>
+            </div>
+            <Separator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">BreadcrumbLink</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    A clickable link component for navigation. Accepts <code class="text-xs bg-muted px-1 py-0.5 rounded">Href</code> parameter.
+                </p>
+            </div>
+            <Separator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">BreadcrumbPage</h3>
+                <p class="text-sm text-muted-foreground">
+                    The current page indicator (non-clickable).
+                </p>
+            </div>
+            <Separator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">BreadcrumbSeparator</h3>
+                <p class="text-sm text-muted-foreground">
+                    A separator between items. Default is a chevron icon, but can be customized.
+                </p>
+            </div>
+            <Separator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">BreadcrumbEllipsis</h3>
+                <p class="text-sm text-muted-foreground">
+                    An ellipsis component for collapsed navigation items.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
