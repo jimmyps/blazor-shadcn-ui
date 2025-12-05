@@ -2,12 +2,12 @@
 @using System.Globalization
 
 @* Calendar - accessible month/day grid for date selection *@
-<div @attributes="GetAttributes()" role="application" aria-label="Calendar">
+<div @ref="_calendarRef" @attributes="GetAttributes()" role="application" aria-label="Calendar" tabindex="0" @onkeydown="HandleKeyDown">
     @* Header with navigation *@
     <div class="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
         <div class="space-y-4">
             @* Month navigation *@
-            <div class="relative flex w-full items-center justify-between pt-1">
+            <div class="relative flex w-full items-center justify-center pt-1">
                 <button type="button"
                         @onclick="PreviousMonth"
                         disabled="@(!CanNavigatePrevious)"
@@ -17,9 +17,29 @@
                         <path d="m15 18-6-6 6-6"/>
                     </svg>
                 </button>
-                <div class="text-sm font-medium" aria-live="polite">
-                    @DisplayedMonth.ToString("MMMM yyyy", Culture)
-                </div>
+                @if (CaptionLayout == CalendarCaptionLayout.Dropdown)
+                {
+                    <div class="flex items-center gap-1">
+                        <select @bind="SelectedMonth" class="@GetDropdownClass()" aria-label="Select month">
+                            @foreach (var month in GetMonths())
+                            {
+                                <option value="@month.Value">@month.Name</option>
+                            }
+                        </select>
+                        <select @bind="SelectedYear" class="@GetDropdownClass()" aria-label="Select year">
+                            @foreach (var year in GetYears())
+                            {
+                                <option value="@year">@year</option>
+                            }
+                        </select>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-sm font-medium" aria-live="polite">
+                        @DisplayedMonth.ToString("MMMM yyyy", Culture)
+                    </div>
+                }
                 <button type="button"
                         @onclick="NextMonth"
                         disabled="@(!CanNavigateNext)"
@@ -77,6 +97,8 @@
 
 @code {
     private DateOnly _displayedMonth;
+    private DateOnly _focusedDate;
+    private ElementReference _calendarRef;
     
     /// <summary>
     /// The currently selected date.
@@ -134,12 +156,52 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// The caption layout mode for month/year display.
+    /// Default is Label (static text). Dropdown allows quick month/year selection.
+    /// </summary>
+    [Parameter]
+    public CalendarCaptionLayout CaptionLayout { get; set; } = CalendarCaptionLayout.Label;
+
     private DateOnly DisplayedMonth => _displayedMonth;
+
+    /// <summary>
+    /// Property for binding the selected month in dropdown mode.
+    /// </summary>
+    private int SelectedMonth
+    {
+        get => _displayedMonth.Month;
+        set
+        {
+            if (value != _displayedMonth.Month)
+            {
+                _displayedMonth = new DateOnly(_displayedMonth.Year, value, 1);
+                _focusedDate = new DateOnly(_displayedMonth.Year, _displayedMonth.Month, 1);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Property for binding the selected year in dropdown mode.
+    /// </summary>
+    private int SelectedYear
+    {
+        get => _displayedMonth.Year;
+        set
+        {
+            if (value != _displayedMonth.Year)
+            {
+                _displayedMonth = new DateOnly(value, _displayedMonth.Month, 1);
+                _focusedDate = new DateOnly(_displayedMonth.Year, _displayedMonth.Month, 1);
+            }
+        }
+    }
 
     protected override void OnInitialized()
     {
         _displayedMonth = InitialMonth ?? SelectedDate ?? DateOnly.FromDateTime(DateTime.Today);
         _displayedMonth = new DateOnly(_displayedMonth.Year, _displayedMonth.Month, 1);
+        _focusedDate = SelectedDate ?? DateOnly.FromDateTime(DateTime.Today);
     }
 
     protected override void OnParametersSet()
@@ -152,8 +214,120 @@
             {
                 _displayedMonth = selectedMonth;
             }
+            _focusedDate = SelectedDate.Value;
         }
     }
+
+    /// <summary>
+    /// Gets the list of months for dropdown selection.
+    /// </summary>
+    private IEnumerable<(int Value, string Name)> GetMonths()
+    {
+        for (int i = 1; i <= 12; i++)
+        {
+            var date = new DateOnly(2000, i, 1);
+            yield return (i, date.ToString("MMMM", Culture));
+        }
+    }
+
+    /// <summary>
+    /// Gets the list of years for dropdown selection.
+    /// </summary>
+    private IEnumerable<int> GetYears()
+    {
+        var startYear = MinDate?.Year ?? DateTime.Today.Year - 100;
+        var endYear = MaxDate?.Year ?? DateTime.Today.Year + 100;
+        for (int year = startYear; year <= endYear; year++)
+        {
+            yield return year;
+        }
+    }
+
+    /// <summary>
+    /// Handles keyboard navigation within the calendar.
+    /// </summary>
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case "ArrowLeft":
+                await MoveFocus(-1);
+                break;
+            case "ArrowRight":
+                await MoveFocus(1);
+                break;
+            case "ArrowUp":
+                await MoveFocus(-7);
+                break;
+            case "ArrowDown":
+                await MoveFocus(7);
+                break;
+            case "Enter":
+            case " ":
+                if (IsDateEnabled(_focusedDate))
+                {
+                    await SelectDate(_focusedDate);
+                }
+                break;
+            case "Home":
+                _focusedDate = new DateOnly(_focusedDate.Year, _focusedDate.Month, 1);
+                EnsureVisibleMonth();
+                break;
+            case "End":
+                _focusedDate = new DateOnly(_focusedDate.Year, _focusedDate.Month, DateTime.DaysInMonth(_focusedDate.Year, _focusedDate.Month));
+                EnsureVisibleMonth();
+                break;
+            case "PageUp":
+                if (e.ShiftKey)
+                {
+                    _focusedDate = _focusedDate.AddYears(-1);
+                }
+                else
+                {
+                    _focusedDate = _focusedDate.AddMonths(-1);
+                }
+                EnsureVisibleMonth();
+                break;
+            case "PageDown":
+                if (e.ShiftKey)
+                {
+                    _focusedDate = _focusedDate.AddYears(1);
+                }
+                else
+                {
+                    _focusedDate = _focusedDate.AddMonths(1);
+                }
+                EnsureVisibleMonth();
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Moves focus by the specified number of days.
+    /// </summary>
+    private Task MoveFocus(int days)
+    {
+        _focusedDate = _focusedDate.AddDays(days);
+        EnsureVisibleMonth();
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Ensures the focused date's month is visible.
+    /// </summary>
+    private void EnsureVisibleMonth()
+    {
+        var focusedMonth = new DateOnly(_focusedDate.Year, _focusedDate.Month, 1);
+        if (focusedMonth != _displayedMonth)
+        {
+            _displayedMonth = focusedMonth;
+        }
+    }
+
+    /// <summary>
+    /// Checks if the date is the currently focused date (for keyboard navigation).
+    /// </summary>
+    private bool IsFocused(DateOnly date) => date == _focusedDate;
 
     private bool CanNavigatePrevious =>
         !MinDate.HasValue || 
@@ -287,6 +461,12 @@
             classes.Add("bg-accent text-accent-foreground");
         }
 
+        // Add focus ring for keyboard navigation
+        if (IsFocused(date) && !IsSelected(date))
+        {
+            classes.Add("ring-2 ring-ring ring-offset-2");
+        }
+
         if (!IsCurrentMonth(date))
         {
             classes.Add("text-muted-foreground opacity-50");
@@ -300,9 +480,17 @@
         return string.Join(" ", classes);
     }
 
+    private string GetDropdownClass()
+    {
+        return "h-7 px-2 text-sm font-medium rounded-md border border-input bg-background " +
+               "hover:bg-accent hover:text-accent-foreground cursor-pointer " +
+               "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2";
+    }
+
     private Dictionary<string, object> GetAttributes()
     {
-        var baseClass = "p-3";
+        // Apply border, shadow, and pointer cursor at container level (following shadcn implementation)
+        var baseClass = "p-3 rounded-md border shadow-sm cursor-default";
         var classValue = string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
 
         var attributes = new Dictionary<string, object>
