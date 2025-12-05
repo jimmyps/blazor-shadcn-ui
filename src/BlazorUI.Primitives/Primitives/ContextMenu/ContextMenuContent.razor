@@ -5,6 +5,13 @@
 @* ContextMenuContent - the dropdown content for the context menu *@
 @if (Context.IsOpen)
 {
+    @* Transparent overlay to capture clicks outside the menu *@
+    <div @ref="_overlayRef"
+         class="@OverlayClass"
+         style="@GetOverlayStyle()"
+         data-state="open">
+    </div>
+    
     <div @ref="_contentRef"
          id="@Context.ContentId"
          role="menu"
@@ -13,7 +20,7 @@
          @attributes="GetAttributes()"
          aria-labelledby="@Context.TriggerId"
          data-state="open"
-         style="@GetStyle()">
+         style="@GetInitialStyle()">
         <CascadingValue Value="this" IsFixed="false">
             @ChildContent
         </CascadingValue>
@@ -25,10 +32,21 @@
     private ContextMenuContext Context { get; set; } = null!;
 
     private ElementReference _contentRef;
+    private ElementReference _overlayRef;
     private IJSObjectReference? _clickOutsideModule;
     private IJSObjectReference? _clickOutsideCleanup;
+    private IJSObjectReference? _keyboardNavModule;
+    private IJSObjectReference? _keyboardNavCleanup;
+    private IJSObjectReference? _portalModule;
+    private IJSObjectReference? _scrollLockCleanup;
+    private IJSObjectReference? _positionModule;
+    private IJSObjectReference? _positionCleanup;
     private DotNetObjectReference<ContextMenuContent>? _dotNetRef;
     private bool _isInitialized = false;
+
+    // Track menu items for keyboard navigation (consistent with DropdownMenu/Menubar pattern)
+    private readonly List<IContextMenuItem> _menuItems = new();
+    private int _focusedItemIndex = -1;
 
     /// <summary>
     /// The content to render inside the menu.
@@ -60,8 +78,32 @@
     [Parameter]
     public int ZIndex { get; set; } = 50;
 
-    // Track menu items for keyboard navigation
-    private readonly List<IContextMenuItem> _menuItems = new();
+    /// <summary>
+    /// Whether to enable keyboard loop navigation.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool Loop { get; set; } = true;
+
+    /// <summary>
+    /// CSS class for the overlay element.
+    /// </summary>
+    [Parameter]
+    public string? OverlayClass { get; set; }
+
+    /// <summary>
+    /// Whether to lock body scroll when menu is open.
+    /// Default is true (industry standard for context menus).
+    /// </summary>
+    [Parameter]
+    public bool LockScroll { get; set; } = true;
+
+    /// <summary>
+    /// Padding from viewport edges when repositioning the menu.
+    /// Default is 8 pixels.
+    /// </summary>
+    [Parameter]
+    public int ViewportPadding { get; set; } = 8;
 
     protected override void OnInitialized()
     {
@@ -80,9 +122,21 @@
         {
             _isInitialized = true;
 
+            // Set up viewport-aware positioning (adjusts if menu would overflow)
+            await SetupPositioningAsync();
+
             if (CloseOnClickOutside)
             {
                 await SetupClickOutsideAsync();
+            }
+
+            // Set up keyboard navigation (prevents scroll on arrow keys)
+            await SetupKeyboardNavAsync();
+
+            // Lock body scroll when menu is open
+            if (LockScroll)
+            {
+                await SetupScrollLockAsync();
             }
 
             try
@@ -118,6 +172,56 @@
         }
     }
 
+    private async Task SetupKeyboardNavAsync()
+    {
+        try
+        {
+            _keyboardNavModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/BlazorUI.Primitives/js/primitives/keyboard-nav.js");
+
+            _dotNetRef ??= DotNetObjectReference.Create(this);
+
+            _keyboardNavCleanup = await _keyboardNavModule.InvokeAsync<IJSObjectReference>(
+                "setupKeyboardNav", _contentRef, _dotNetRef);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to set up keyboard navigation: {ex.Message}");
+        }
+    }
+
+    private async Task SetupScrollLockAsync()
+    {
+        try
+        {
+            _portalModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/BlazorUI.Primitives/js/primitives/portal.js");
+
+            _scrollLockCleanup = await _portalModule.InvokeAsync<IJSObjectReference>(
+                "lockBodyScroll");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to set up scroll lock: {ex.Message}");
+        }
+    }
+
+    private async Task SetupPositioningAsync()
+    {
+        try
+        {
+            _positionModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/BlazorUI.Primitives/js/primitives/context-menu-position.js");
+
+            _positionCleanup = await _positionModule.InvokeAsync<IJSObjectReference>(
+                "setupContextMenuPosition", _contentRef, Context.X, Context.Y, ViewportPadding);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to set up context menu positioning: {ex.Message}");
+        }
+    }
+
     [JSInvokable]
     public Task HandleClickOutside()
     {
@@ -147,37 +251,149 @@
         }
     }
 
-    private void HandleKeyDown(KeyboardEventArgs args)
+    private async Task HandleKeyDown(KeyboardEventArgs args)
     {
+        if (args.Key == "Escape")
+        {
+            if (CloseOnEscape)
+            {
+                Context.Close();
+            }
+            return;
+        }
+
+        // Arrow navigation - filter enabled items first (following DropdownMenu pattern)
+        var enabledItems = _menuItems.Where(item => !item.Disabled).ToList();
+        if (enabledItems.Count == 0) return;
+
         switch (args.Key)
         {
-            case "Escape":
-                if (CloseOnEscape)
-                {
-                    Context.Close();
-                }
-                break;
-
             case "ArrowDown":
-                Context.FocusNext();
+                await NavigateNext(enabledItems);
                 break;
 
             case "ArrowUp":
-                Context.FocusPrevious();
+                await NavigatePrevious(enabledItems);
                 break;
 
             case "Home":
-                Context.FocusFirst();
+                await FocusItem(enabledItems, 0);
                 break;
 
             case "End":
-                Context.FocusLast();
+                await FocusItem(enabledItems, enabledItems.Count - 1);
                 break;
         }
     }
 
-    private string GetStyle()
+    private async Task NavigateNext(List<IContextMenuItem> enabledItems)
     {
+        int nextIndex;
+
+        if (_focusedItemIndex == -1)
+        {
+            // No item focused, focus first
+            nextIndex = 0;
+        }
+        else
+        {
+            // Find current item in enabled list
+            var currentEnabledIndex = GetEnabledItemIndex(enabledItems, _focusedItemIndex);
+
+            if (currentEnabledIndex == -1)
+            {
+                // Current item not in enabled list, focus first
+                nextIndex = 0;
+            }
+            else if (currentEnabledIndex == enabledItems.Count - 1)
+            {
+                // At last item
+                if (Loop)
+                {
+                    nextIndex = 0; // Wrap to first
+                }
+                else
+                {
+                    return; // Don't move
+                }
+            }
+            else
+            {
+                nextIndex = currentEnabledIndex + 1;
+            }
+        }
+
+        await FocusItem(enabledItems, nextIndex);
+    }
+
+    private async Task NavigatePrevious(List<IContextMenuItem> enabledItems)
+    {
+        int prevIndex;
+
+        if (_focusedItemIndex == -1)
+        {
+            // No item focused, focus last
+            prevIndex = enabledItems.Count - 1;
+        }
+        else
+        {
+            // Find current item in enabled list
+            var currentEnabledIndex = GetEnabledItemIndex(enabledItems, _focusedItemIndex);
+
+            if (currentEnabledIndex == -1)
+            {
+                // Current item not in enabled list, focus last
+                prevIndex = enabledItems.Count - 1;
+            }
+            else if (currentEnabledIndex == 0)
+            {
+                // At first item
+                if (Loop)
+                {
+                    prevIndex = enabledItems.Count - 1; // Wrap to last
+                }
+                else
+                {
+                    return; // Don't move
+                }
+            }
+            else
+            {
+                prevIndex = currentEnabledIndex - 1;
+            }
+        }
+
+        await FocusItem(enabledItems, prevIndex);
+    }
+
+    private int GetEnabledItemIndex(List<IContextMenuItem> enabledItems, int absoluteIndex)
+    {
+        if (absoluteIndex < 0 || absoluteIndex >= _menuItems.Count) return -1;
+
+        var currentItem = _menuItems[absoluteIndex];
+        return enabledItems.IndexOf(currentItem);
+    }
+
+    private async Task FocusItem(List<IContextMenuItem> enabledItems, int enabledIndex)
+    {
+        if (enabledIndex < 0 || enabledIndex >= enabledItems.Count) return;
+
+        var item = enabledItems[enabledIndex];
+        var absoluteIndex = _menuItems.IndexOf(item);
+
+        _focusedItemIndex = absoluteIndex;
+        await item.FocusAsync();
+    }
+
+    private string GetOverlayStyle()
+    {
+        var overlayZIndex = Math.Max(0, ZIndex - 1);
+        return $"position: fixed; inset: 0; z-index: {overlayZIndex};";
+    }
+
+    private string GetInitialStyle()
+    {
+        // Initial position at mouse coordinates - JS will adjust if needed for viewport bounds
         return $"position: fixed; left: {Context.X}px; top: {Context.Y}px; z-index: {ZIndex};";
     }
 
@@ -194,7 +410,7 @@
     /// <summary>
     /// Registers a menu item for keyboard navigation.
     /// </summary>
-    public void RegisterItem(IContextMenuItem item)
+    internal void RegisterItem(IContextMenuItem item)
     {
         if (!_menuItems.Contains(item))
         {
@@ -205,7 +421,7 @@
     /// <summary>
     /// Unregisters a menu item.
     /// </summary>
-    public void UnregisterItem(IContextMenuItem item)
+    internal void UnregisterItem(IContextMenuItem item)
     {
         _menuItems.Remove(item);
     }
@@ -213,12 +429,12 @@
     /// <summary>
     /// Focuses the content container for keyboard navigation.
     /// </summary>
-    public async Task FocusContainerAsync()
+    internal async Task FocusContainerAsync()
     {
         try
         {
             await _contentRef.FocusAsync();
-            Context.SetFocusedIndex(-1);
+            _focusedItemIndex = -1;
         }
         catch
         {
@@ -229,6 +445,7 @@
     private async Task CleanupAsync()
     {
         _isInitialized = false;
+        _focusedItemIndex = -1;
 
         if (_clickOutsideCleanup != null)
         {
@@ -248,6 +465,62 @@
             _clickOutsideCleanup = null;
         }
 
+        if (_keyboardNavCleanup != null)
+        {
+            try
+            {
+                await _keyboardNavCleanup.InvokeVoidAsync("dispose");
+                await _keyboardNavCleanup.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnection, ignore
+            }
+            catch (ObjectDisposedException)
+            {
+                // Already disposed, ignore
+            }
+            _keyboardNavCleanup = null;
+        }
+
+        // Unlock body scroll
+        if (_scrollLockCleanup != null)
+        {
+            try
+            {
+                await _scrollLockCleanup.InvokeVoidAsync("apply");
+                await _scrollLockCleanup.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnection, ignore
+            }
+            catch (ObjectDisposedException)
+            {
+                // Already disposed, ignore
+            }
+            _scrollLockCleanup = null;
+        }
+
+        // Clean up position cleanup object
+        if (_positionCleanup != null)
+        {
+            try
+            {
+                await _positionCleanup.InvokeVoidAsync("dispose");
+                await _positionCleanup.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnection, ignore
+            }
+            catch (ObjectDisposedException)
+            {
+                // Already disposed, ignore
+            }
+            _positionCleanup = null;
+        }
+
         if (_clickOutsideModule != null)
         {
             try
@@ -263,6 +536,57 @@
                 // Already disposed, ignore
             }
             _clickOutsideModule = null;
+        }
+
+        if (_keyboardNavModule != null)
+        {
+            try
+            {
+                await _keyboardNavModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnection, ignore
+            }
+            catch (ObjectDisposedException)
+            {
+                // Already disposed, ignore
+            }
+            _keyboardNavModule = null;
+        }
+
+        if (_portalModule != null)
+        {
+            try
+            {
+                await _portalModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnection, ignore
+            }
+            catch (ObjectDisposedException)
+            {
+                // Already disposed, ignore
+            }
+            _portalModule = null;
+        }
+
+        if (_positionModule != null)
+        {
+            try
+            {
+                await _positionModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnection, ignore
+            }
+            catch (ObjectDisposedException)
+            {
+                // Already disposed, ignore
+            }
+            _positionModule = null;
         }
 
         _dotNetRef?.Dispose();
