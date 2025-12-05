@@ -217,8 +217,8 @@
         // Search backward for previous enabled item
         for (int i = 0; i < _menuItems.Count; i++)
         {
-            var index = startIndex - i;
-            if (index < 0) index = _menuItems.Count + index;
+            // Use proper modulo arithmetic to handle negative indices
+            var index = (startIndex - i + _menuItems.Count) % _menuItems.Count;
             
             if (!_menuItems[index].Disabled)
             {

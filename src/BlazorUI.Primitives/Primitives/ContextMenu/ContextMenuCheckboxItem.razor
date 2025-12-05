@@ -128,29 +128,36 @@
 
     private async void HandleMouseEnter(MouseEventArgs args)
     {
-        bool hadActiveSubmenu = false;
-        
-        if (ParentSubContext != null)
+        try
         {
-            hadActiveSubmenu = ParentSubContext.ActiveSubMenu != null;
-            ParentSubContext.CloseActiveSubMenu();
-        }
-        else
-        {
-            hadActiveSubmenu = Context?.ActiveSubMenu != null;
-            Context?.CloseActiveSubMenu();
-        }
-        
-        if (hadActiveSubmenu)
-        {
-            if (SubContentContext != null)
+            bool hadActiveSubmenu = false;
+            
+            if (ParentSubContext != null)
             {
-                await SubContentContext.FocusContainerAsync();
+                hadActiveSubmenu = ParentSubContext.ActiveSubMenu != null;
+                ParentSubContext.CloseActiveSubMenu();
             }
-            else if (ContentContainer != null)
+            else
             {
-                await ContentContainer.FocusContainerAsync();
+                hadActiveSubmenu = Context?.ActiveSubMenu != null;
+                Context?.CloseActiveSubMenu();
             }
+            
+            if (hadActiveSubmenu)
+            {
+                if (SubContentContext != null)
+                {
+                    await SubContentContext.FocusContainerAsync();
+                }
+                else if (ContentContainer != null)
+                {
+                    await ContentContainer.FocusContainerAsync();
+                }
+            }
+        }
+        catch
+        {
+            // Ignore focus errors in event handlers
         }
     }
 
