@@ -42,6 +42,66 @@
         </div>
     </section>
 
+    <!-- With Icons -->
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">With Icons</h2>
+        <p class="text-sm text-muted-foreground">
+            Add Lucide icons to menu items for better visual hierarchy.
+        </p>
+
+        <div class="flex items-start gap-2">
+            <DropdownMenu>
+                <DropdownMenuTrigger Class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                    <LucideIcon Name="settings" Size="16" Class="mr-2" />
+                    Settings
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem OnClick="@(() => HandleIconsAction("Profile"))">
+                        <LucideIcon Name="user" Size="16" Class="mr-2" />
+                        Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem OnClick="@(() => HandleIconsAction("Settings"))">
+                        <LucideIcon Name="settings" Size="16" Class="mr-2" />
+                        Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuItem OnClick="@(() => HandleIconsAction("Keyboard"))">
+                        <LucideIcon Name="keyboard" Size="16" Class="mr-2" />
+                        Keyboard shortcuts
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem OnClick="@(() => HandleIconsAction("Team"))">
+                        <LucideIcon Name="users" Size="16" Class="mr-2" />
+                        Team
+                    </DropdownMenuItem>
+                    <DropdownMenuItem OnClick="@(() => HandleIconsAction("New Team"))">
+                        <LucideIcon Name="user-plus" Size="16" Class="mr-2" />
+                        Invite users
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem OnClick="@(() => HandleIconsAction("GitHub"))">
+                        <LucideIcon Name="github" Size="16" Class="mr-2" />
+                        GitHub
+                    </DropdownMenuItem>
+                    <DropdownMenuItem OnClick="@(() => HandleIconsAction("Support"))">
+                        <LucideIcon Name="life-buoy" Size="16" Class="mr-2" />
+                        Support
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem OnClick="@(() => HandleIconsAction("Log out"))">
+                        <LucideIcon Name="log-out" Size="16" Class="mr-2" />
+                        Log out
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+            @if (!string.IsNullOrEmpty(iconsAction))
+            {
+                <p class="text-sm">Last action: <strong>@iconsAction</strong></p>
+            }
+        </div>
+    </section>
+
     <!-- With Labels and Separators -->
     <section class="space-y-4">
         <h2 class="text-2xl font-semibold">With Labels and Separators</h2>
@@ -415,6 +475,7 @@
 
     // Independent state for each menu section
     private string? basicAction;
+    private string? iconsAction;
     private string? labelsAction;
     private string? groupsAction;
     private string? shortcutsAction;
@@ -433,6 +494,7 @@
 
     // Individual handlers for each section
     private void HandleBasicAction(string action) => basicAction = action;
+    private void HandleIconsAction(string action) => iconsAction = action;
     private void HandleLabelsAction(string action) => labelsAction = action;
     private void HandleGroupsAction(string action) => groupsAction = action;
     private void HandleShortcutsAction(string action) => shortcutsAction = action;
