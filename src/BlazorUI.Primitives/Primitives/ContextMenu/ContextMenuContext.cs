@@ -162,6 +162,14 @@ public class ContextMenuContext : PrimitiveContextWithEvents<ContextMenuState>
     }
 
     /// <summary>
+    /// Sets the focused item index.
+    /// </summary>
+    public void SetFocusedIndex(int index)
+    {
+        _focusedItemIndex = index;
+    }
+
+    /// <summary>
     /// Focuses the next enabled item.
     /// </summary>
     public void FocusNext()

@@ -38,6 +38,7 @@
 
     // Track menu items for keyboard navigation
     private readonly List<IContextMenuItem> _menuItems = new();
+    private int _focusedIndex = -1;
 
     /// <summary>
     /// The content to render inside the submenu.
@@ -151,8 +152,8 @@
             case "Escape":
                 if (CloseOnEscape)
                 {
-                    SubContext.Close();
-                    // Focus will be handled by parent menu
+                    // Close ALL menus including root when Escape is pressed
+                    MenuContext?.Close();
                 }
                 break;
 
@@ -174,41 +175,92 @@
                 break;
 
             case "ArrowDown":
-                FocusNextItem();
+                await FocusNextItem();
                 break;
 
             case "ArrowUp":
-                FocusPreviousItem();
+                await FocusPreviousItem();
                 break;
         }
     }
 
-    private void FocusNextItem()
+    private async Task FocusNextItem()
     {
         if (_menuItems.Count == 0) return;
 
-        for (int i = 0; i < _menuItems.Count; i++)
+        var enabledItems = _menuItems.Where(item => !item.Disabled).ToList();
+        if (enabledItems.Count == 0) return;
+
+        int nextIndex;
+        if (_focusedIndex == -1)
         {
-            if (!_menuItems[i].Disabled)
+            nextIndex = 0;
+        }
+        else
+        {
+            var currentEnabledIndex = GetEnabledItemIndex(enabledItems, _focusedIndex);
+            if (currentEnabledIndex == -1)
             {
-                _ = _menuItems[i].FocusAsync();
-                return;
+                nextIndex = 0;
+            }
+            else if (currentEnabledIndex >= enabledItems.Count - 1)
+            {
+                nextIndex = 0; // Wrap to first
+            }
+            else
+            {
+                nextIndex = currentEnabledIndex + 1;
             }
         }
+
+        await FocusItem(enabledItems, nextIndex);
     }
 
-    private void FocusPreviousItem()
+    private async Task FocusPreviousItem()
     {
         if (_menuItems.Count == 0) return;
 
-        for (int i = _menuItems.Count - 1; i >= 0; i--)
+        var enabledItems = _menuItems.Where(item => !item.Disabled).ToList();
+        if (enabledItems.Count == 0) return;
+
+        int prevIndex;
+        if (_focusedIndex == -1)
         {
-            if (!_menuItems[i].Disabled)
+            prevIndex = enabledItems.Count - 1;
+        }
+        else
+        {
+            var currentEnabledIndex = GetEnabledItemIndex(enabledItems, _focusedIndex);
+            if (currentEnabledIndex == -1)
             {
-                _ = _menuItems[i].FocusAsync();
-                return;
+                prevIndex = enabledItems.Count - 1;
+            }
+            else if (currentEnabledIndex <= 0)
+            {
+                prevIndex = enabledItems.Count - 1; // Wrap to last
+            }
+            else
+            {
+                prevIndex = currentEnabledIndex - 1;
             }
         }
+
+        await FocusItem(enabledItems, prevIndex);
+    }
+
+    private int GetEnabledItemIndex(List<IContextMenuItem> enabledItems, int absoluteIndex)
+    {
+        if (absoluteIndex < 0 || absoluteIndex >= _menuItems.Count) return -1;
+        var currentItem = _menuItems[absoluteIndex];
+        return enabledItems.IndexOf(currentItem);
+    }
+
+    private async Task FocusItem(List<IContextMenuItem> enabledItems, int enabledIndex)
+    {
+        if (enabledIndex < 0 || enabledIndex >= enabledItems.Count) return;
+        var item = enabledItems[enabledIndex];
+        _focusedIndex = _menuItems.IndexOf(item);
+        await item.FocusAsync();
     }
 
     private void HandleMouseLeave(MouseEventArgs args)
@@ -282,5 +334,21 @@
     internal void UnregisterItem(IContextMenuItem item)
     {
         _menuItems.Remove(item);
+    }
+
+    /// <summary>
+    /// Focuses the content container for keyboard navigation.
+    /// </summary>
+    internal async Task FocusContainerAsync()
+    {
+        try
+        {
+            await _contentRef.FocusAsync();
+            _focusedIndex = -1;
+        }
+        catch
+        {
+            // Focus may fail
+        }
     }
 }
