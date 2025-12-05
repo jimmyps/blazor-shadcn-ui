@@ -27,6 +27,8 @@
     private ElementReference _contentRef;
     private IJSObjectReference? _clickOutsideModule;
     private IJSObjectReference? _clickOutsideCleanup;
+    private IJSObjectReference? _keyboardNavModule;
+    private IJSObjectReference? _keyboardNavCleanup;
     private DotNetObjectReference<ContextMenuContent>? _dotNetRef;
     private bool _isInitialized = false;
 
@@ -93,6 +95,9 @@
                 await SetupClickOutsideAsync();
             }
 
+            // Set up keyboard navigation (prevents scroll on arrow keys)
+            await SetupKeyboardNavAsync();
+
             try
             {
                 await _contentRef.FocusAsync();
@@ -123,6 +128,24 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Failed to set up click-outside: {ex.Message}");
+        }
+    }
+
+    private async Task SetupKeyboardNavAsync()
+    {
+        try
+        {
+            _keyboardNavModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/BlazorUI.Primitives/js/primitives/keyboard-nav.js");
+
+            _dotNetRef ??= DotNetObjectReference.Create(this);
+
+            _keyboardNavCleanup = await _keyboardNavModule.InvokeAsync<IJSObjectReference>(
+                "setupKeyboardNav", _contentRef, _dotNetRef);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to set up keyboard navigation: {ex.Message}");
         }
     }
 
@@ -337,6 +360,24 @@
             _clickOutsideCleanup = null;
         }
 
+        if (_keyboardNavCleanup != null)
+        {
+            try
+            {
+                await _keyboardNavCleanup.InvokeVoidAsync("dispose");
+                await _keyboardNavCleanup.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnection, ignore
+            }
+            catch (ObjectDisposedException)
+            {
+                // Already disposed, ignore
+            }
+            _keyboardNavCleanup = null;
+        }
+
         if (_clickOutsideModule != null)
         {
             try
@@ -352,6 +393,23 @@
                 // Already disposed, ignore
             }
             _clickOutsideModule = null;
+        }
+
+        if (_keyboardNavModule != null)
+        {
+            try
+            {
+                await _keyboardNavModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnection, ignore
+            }
+            catch (ObjectDisposedException)
+            {
+                // Already disposed, ignore
+            }
+            _keyboardNavModule = null;
         }
 
         _dotNetRef?.Dispose();
