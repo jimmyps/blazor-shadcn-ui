@@ -83,7 +83,6 @@ public partial class Alert : ComponentBase
         // Variant-specific styles
         Variant switch
         {
-            AlertVariant.Default => "bg-background text-foreground",
             AlertVariant.Destructive => "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
             _ => "bg-background text-foreground"
         },

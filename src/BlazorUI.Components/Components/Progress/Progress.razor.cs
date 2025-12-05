@@ -68,7 +68,8 @@ public partial class Progress : ComponentBase
     {
         get
         {
-            var percentage = Max > 0 ? (Value / Max * 100) : 0;
+            var maxValue = Math.Max(0, Max); // Ensure Max is non-negative
+            var percentage = maxValue > 0 ? (Value / maxValue * 100) : 0;
             percentage = Math.Max(0, Math.Min(100, percentage));
             return $"transform: translateX(-{100 - percentage}%)";
         }
