@@ -151,7 +151,21 @@
 
     public async ValueTask DisposeAsync()
     {
-        KeyboardShortcuts.UnregisterShortcut("k");
+        if (KeyboardShortcuts != null)
+        {
+            try
+            {
+                KeyboardShortcuts.UnregisterShortcut("k");
+            }
+            catch (ObjectDisposedException)
+            {
+                // Service already disposed, ignore
+            }
+            catch (InvalidOperationException)
+            {
+                // Shortcut not registered or already removed, ignore
+            }
+        }
         await ValueTask.CompletedTask;
     }
 }

@@ -55,16 +55,25 @@ public class KeyboardShortcutService : IAsyncDisposable
     }
 
     /// <summary>
+    /// Triggers a registered shortcut programmatically.
+    /// </summary>
+    /// <param name="shortcut">The shortcut key to trigger.</param>
+    public async Task TriggerShortcutAsync(string shortcut)
+    {
+        if (_handlers.TryGetValue(shortcut, out var handler))
+        {
+            await handler.Invoke();
+        }
+    }
+
+    /// <summary>
     /// Called from JavaScript when a shortcut is pressed.
     /// </summary>
     /// <param name="shortcut">The shortcut that was pressed.</param>
     [JSInvokable]
     public async Task OnShortcutPressed(string shortcut)
     {
-        if (_handlers.TryGetValue(shortcut, out var handler))
-        {
-            await handler.Invoke();
-        }
+        await TriggerShortcutAsync(shortcut);
     }
 
     /// <inheritdoc/>

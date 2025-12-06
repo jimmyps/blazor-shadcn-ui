@@ -423,14 +423,21 @@
     private string? shortcutSelected;
     private string? disabledSelected;
     private string? complexSelected;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && KeyboardShortcuts != null)
+        {
+            await KeyboardShortcuts.InitializeAsync();
+        }
+    }
 
     // Method to open the global spotlight palette
     private async Task OpenSpotlight()
     {
         if (KeyboardShortcuts != null)
         {
-            await KeyboardShortcuts.InitializeAsync();
-            await KeyboardShortcuts.OnShortcutPressed("k");
+            await KeyboardShortcuts.TriggerShortcutAsync("k");
         }
     }
 
