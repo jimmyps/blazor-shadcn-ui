@@ -8,7 +8,8 @@
 <Dialog @bind-Open="_isOpen">
     <DialogContent 
         ShowClose="false" 
-        Class="max-w-2xl border-border/40 bg-background/95 p-0 shadow-2xl backdrop-blur-xl backdrop-saturate-150 gap-0">
+        Class="max-w-2xl border-border/40 p-0 rounded-2xl shadow-xl gap-0"
+        OverlayClass="!bg-background/70 backdrop-blur backdrop-saturate-150">
         
         <div class="spotlight-command-palette">
             <BlazorUI.Components.Command.Command OnSelect="@HandleSelect">
