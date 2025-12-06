@@ -110,9 +110,10 @@
     /// Gets the computed CSS classes for the dialog overlay/backdrop.
     /// Merges built-in defaults with user-defined OverlayClass.
     /// </summary>
-    private string GetOverlayClass() => ClassNames.cn(OverlayClass,
+    private string GetOverlayClass() => ClassNames.cn(
         "fixed inset-0 z-50 bg-black/80",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
-        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        OverlayClass
     );
 }

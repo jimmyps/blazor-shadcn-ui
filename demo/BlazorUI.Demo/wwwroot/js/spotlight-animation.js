@@ -10,6 +10,9 @@ let containerElement = null;
 export function setupHeightAnimation(container) {
     if (!container) return;
     
+    // Clean up any existing observers first
+    cleanup();
+    
     containerElement = container;
     
     // Find the command list element
@@ -18,9 +21,6 @@ export function setupHeightAnimation(container) {
     
     // Set initial height
     updateHeight(container, listElement);
-    
-    // Clean up any existing observers
-    cleanup();
     
     // Observe size changes to the list content
     resizeObserver = new ResizeObserver(() => {

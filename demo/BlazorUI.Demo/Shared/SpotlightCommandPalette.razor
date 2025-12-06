@@ -179,6 +179,7 @@
         // Handle navigation based on selected value
         // In a real app, you would use NavigationManager here
         _isOpen = false;
+        StateHasChanged();
     }
 
     public async ValueTask DisposeAsync()
@@ -213,6 +214,5 @@
         }
 
         _dotNetRef?.Dispose();
-        await ValueTask.CompletedTask;
     }
 }
