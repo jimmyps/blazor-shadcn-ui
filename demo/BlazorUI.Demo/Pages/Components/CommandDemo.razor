@@ -16,6 +16,44 @@
     <div class="space-y-6">
     </div>
 
+    <!-- Spotlight Command Palette -->
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">Spotlight Command Palette</h2>
+        <p class="text-sm text-muted-foreground">
+            A beautiful, production-ready command palette with glassmorphism effect inspired by kokonutui.com and Fumadocs. 
+            Features smooth animations, backdrop blur, and global <kbd class="px-2 py-1 text-xs bg-muted rounded border">⌘K</kbd> / <kbd class="px-2 py-1 text-xs bg-muted rounded border">Ctrl+K</kbd> support.
+        </p>
+
+        <div class="flex flex-col gap-4">
+            <!-- Search Box Styled Trigger -->
+            <button 
+                @onclick="OpenSpotlight"
+                class="group flex items-center gap-3 w-full max-w-md px-4 py-2.5 text-sm text-muted-foreground bg-background hover:bg-accent/50 border border-border/40 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <LucideIcon Name="search" Size="16" Class="text-muted-foreground" />
+                <span class="flex-1 text-left">Search documentation...</span>
+                <div class="flex items-center gap-1">
+                    <kbd class="px-2 py-1 text-xs bg-muted/50 border border-border/40 rounded font-mono">⌘</kbd>
+                    <kbd class="px-2 py-1 text-xs bg-muted/50 border border-border/40 rounded font-mono">K</kbd>
+                </div>
+            </button>
+
+            <div class="rounded-lg border bg-muted/20 p-4 text-sm">
+                <h3 class="font-medium mb-2 flex items-center gap-2">
+                    <LucideIcon Name="keyboard" Size="16" />
+                    Features:
+                </h3>
+                <ul class="space-y-1 text-muted-foreground ml-6 list-disc">
+                    <li>Global keyboard shortcut: <kbd class="px-1.5 py-0.5 text-xs bg-muted rounded">⌘K</kbd> / <kbd class="px-1.5 py-0.5 text-xs bg-muted rounded">Ctrl+K</kbd></li>
+                    <li>Glassmorphism with backdrop-blur and subtle transparency</li>
+                    <li>Smooth height animations for list changes</li>
+                    <li>Elegant fade-in/fade-out transitions</li>
+                    <li>Works across all pages in the demo site</li>
+                    <li>Built with Dialog and Command primitives only</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
     <!-- Command Palette Overlay (Modal) -->
     <section class="space-y-4">
         <h2 class="text-2xl font-semibold">Command Palette (Overlay)</h2>
@@ -375,6 +413,8 @@
 </div>
 
 @code {
+    [Inject] private KeyboardShortcutService? KeyboardShortcuts { get; set; }
+    
     // Independent state for each section
     private bool isCommandPaletteOpen;
     private string? paletteSelected;
@@ -383,6 +423,16 @@
     private string? shortcutSelected;
     private string? disabledSelected;
     private string? complexSelected;
+
+    // Method to open the global spotlight palette
+    private async Task OpenSpotlight()
+    {
+        if (KeyboardShortcuts != null)
+        {
+            await KeyboardShortcuts.InitializeAsync();
+            await KeyboardShortcuts.OnShortcutPressed("k");
+        }
+    }
 
     // Individual handlers for each section
     private void HandlePaletteSelect(string value)

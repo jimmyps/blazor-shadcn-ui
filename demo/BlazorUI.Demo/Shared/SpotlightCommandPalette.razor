@@ -1,0 +1,157 @@
+@using BlazorUI.Components.Command
+@using BlazorUI.Components.Dialog
+@using BlazorUI.Demo.Services
+@inject KeyboardShortcutService KeyboardShortcuts
+@implements IAsyncDisposable
+
+@* Spotlight Command Palette - Global search and command interface *@
+<Dialog @bind-Open="_isOpen">
+    <DialogContent 
+        ShowClose="false" 
+        Class="max-w-2xl border-border/40 bg-background/95 p-0 shadow-2xl backdrop-blur-xl backdrop-saturate-150 gap-0">
+        
+        <div class="spotlight-command-palette">
+            <BlazorUI.Components.Command.Command OnSelect="@HandleSelect">
+                <CommandInput 
+                    Placeholder="Type a command or search..." 
+                    Class="border-0 border-b border-border/40 rounded-none focus-visible:ring-0" />
+                
+                <CommandList Class="max-h-[400px] scrollbar-thin">
+                    <CommandEmpty>
+                        <div class="flex flex-col items-center gap-2 py-6 text-muted-foreground">
+                            <LucideIcon Name="search-x" Size="32" />
+                            <p class="text-sm">No results found.</p>
+                        </div>
+                    </CommandEmpty>
+                    
+                    <CommandGroup Heading="Navigation">
+                        <CommandItem Value="home">
+                            <LucideIcon Name="house" Size="16" Class="mr-2" />
+                            <span>Home</span>
+                        </CommandItem>
+                        <CommandItem Value="components">
+                            <LucideIcon Name="layout-grid" Size="16" Class="mr-2" />
+                            <span>Components</span>
+                        </CommandItem>
+                        <CommandItem Value="primitives">
+                            <LucideIcon Name="box" Size="16" Class="mr-2" />
+                            <span>Primitives</span>
+                        </CommandItem>
+                        <CommandItem Value="architecture">
+                            <LucideIcon Name="git-branch" Size="16" Class="mr-2" />
+                            <span>Architecture</span>
+                        </CommandItem>
+                    </CommandGroup>
+                    
+                    <CommandSeparator />
+                    
+                    <CommandGroup Heading="Components">
+                        <CommandItem Value="button">
+                            <LucideIcon Name="hand" Size="16" Class="mr-2" />
+                            <span>Button</span>
+                            <CommandShortcut>Component</CommandShortcut>
+                        </CommandItem>
+                        <CommandItem Value="dialog">
+                            <LucideIcon Name="square" Size="16" Class="mr-2" />
+                            <span>Dialog</span>
+                            <CommandShortcut>Component</CommandShortcut>
+                        </CommandItem>
+                        <CommandItem Value="command">
+                            <LucideIcon Name="terminal" Size="16" Class="mr-2" />
+                            <span>Command</span>
+                            <CommandShortcut>Component</CommandShortcut>
+                        </CommandItem>
+                        <CommandItem Value="card">
+                            <LucideIcon Name="credit-card" Size="16" Class="mr-2" />
+                            <span>Card</span>
+                            <CommandShortcut>Component</CommandShortcut>
+                        </CommandItem>
+                        <CommandItem Value="input">
+                            <LucideIcon Name="type" Size="16" Class="mr-2" />
+                            <span>Input</span>
+                            <CommandShortcut>Component</CommandShortcut>
+                        </CommandItem>
+                    </CommandGroup>
+                    
+                    <CommandSeparator />
+                    
+                    <CommandGroup Heading="Actions">
+                        <CommandItem Value="search">
+                            <LucideIcon Name="search" Size="16" Class="mr-2" />
+                            <span>Search Documentation</span>
+                            <CommandShortcut>⌘S</CommandShortcut>
+                        </CommandItem>
+                        <CommandItem Value="theme">
+                            <LucideIcon Name="moon" Size="16" Class="mr-2" />
+                            <span>Toggle Theme</span>
+                            <CommandShortcut>⌘T</CommandShortcut>
+                        </CommandItem>
+                        <CommandItem Value="github">
+                            <LucideIcon Name="github" Size="16" Class="mr-2" />
+                            <span>View on GitHub</span>
+                            <CommandShortcut>⌘G</CommandShortcut>
+                        </CommandItem>
+                    </CommandGroup>
+                </CommandList>
+            </BlazorUI.Components.Command.Command>
+        </div>
+    </DialogContent>
+</Dialog>
+
+<style>
+    .spotlight-command-palette {
+        /* Smooth height transitions using cmdk variable */
+        --cmdk-list-height: 400px;
+    }
+    
+    .spotlight-command-palette [cmdk-list] {
+        transition: height 150ms ease;
+        height: var(--cmdk-list-height);
+    }
+</style>
+
+@code {
+    private bool _isOpen = false;
+
+    /// <summary>
+    /// Opens the spotlight command palette.
+    /// </summary>
+    public void Open()
+    {
+        _isOpen = true;
+    }
+
+    /// <summary>
+    /// Closes the spotlight command palette.
+    /// </summary>
+    public void Close()
+    {
+        _isOpen = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await KeyboardShortcuts.InitializeAsync();
+            KeyboardShortcuts.RegisterShortcut("k", async () =>
+            {
+                _isOpen = !_isOpen;
+                await InvokeAsync(StateHasChanged);
+            });
+        }
+    }
+
+    private void HandleSelect(string value)
+    {
+        // Handle navigation based on selected value
+        // In a real app, you would use NavigationManager here
+        _isOpen = false;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        KeyboardShortcuts.UnregisterShortcut("k");
+        await ValueTask.CompletedTask;
+    }
+}
