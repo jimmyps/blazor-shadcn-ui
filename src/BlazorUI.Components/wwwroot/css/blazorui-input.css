@@ -26,9 +26,6 @@
     --dialog-item-easing: cubic-bezier(0.4, 0, 0.2, 1);
 
     --dialog-overlay-duration: 150ms;
-
-    --dialog-height-duration: 200ms;
-    --dialog-height-easing: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* Reduced motion: zero out durations for accessibility */
@@ -37,7 +34,6 @@
       --dialog-panel-duration: 0ms;
       --dialog-item-duration: 0ms;
       --dialog-overlay-duration: 0ms;
-      --dialog-height-duration: 0ms;
     }
   }
 }
@@ -68,13 +64,6 @@
 
   .dialog-overlay.dialog-animated[data-state="closed"] {
     @apply motion-safe:animate-dialog-overlay-out;
-  }
-
-  /* Content element (for height morphing) */
-  .dialog-content {
-    @apply transition-[height];
-    transition-duration: var(--dialog-height-duration);
-    transition-timing-function: var(--dialog-height-easing);
   }
 
   /* Item animations */
