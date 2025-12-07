@@ -55,6 +55,80 @@
         </div>
     </section>
 
+    <!-- Height Animation Component -->
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">Height Animation Component</h2>
+        <p class="text-sm text-muted-foreground">
+            The Spotlight Command Palette above uses the reusable <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">HeightAnimation</code> component 
+            to provide smooth transitions when content height changes. This component can be used with any dynamic content.
+        </p>
+
+        <div class="rounded-lg border bg-muted/20 p-4 text-sm space-y-4">
+            <div>
+                <h3 class="font-medium mb-2 flex items-center gap-2">
+                    <LucideIcon Name="settings" Size="16" />
+                    Customizable CSS Variables:
+                </h3>
+                <ul class="space-y-1 text-muted-foreground ml-6 list-disc">
+                    <li><code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">--height-animation-duration</code>: Animation duration (default: 200ms)</li>
+                    <li><code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">--height-animation-timing</code>: Timing function (default: cubic-bezier(0.4, 0, 0.2, 1))</li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="font-medium mb-2 flex items-center gap-2">
+                    <LucideIcon Name="code" Size="16" />
+                    Usage Example:
+                </h3>
+                <pre class="bg-background p-3 rounded text-xs overflow-x-auto"><code>&lt;HeightAnimation Config="@@_config"&gt;
+    &lt;Command&gt;
+        &lt;CommandInput /&gt;
+        &lt;CommandList&gt;
+            &lt;!-- Dynamic content --&gt;
+        &lt;/CommandList&gt;
+    &lt;/Command&gt;
+&lt;/HeightAnimation&gt;
+
+@@code {
+    private HeightAnimationConfig _config = new() {
+        ContentSelector = "[role=\"listbox\"]",
+        InputSelector = ".input-wrapper"
+    };
+}</code></pre>
+            </div>
+
+            <div>
+                <h3 class="font-medium mb-2 flex items-center gap-2">
+                    <LucideIcon Name="palette" Size="16" />
+                    Custom Animation Timing:
+                </h3>
+                <pre class="bg-background p-3 rounded text-xs overflow-x-auto"><code>.fast-animation {
+    --height-animation-duration: 150ms;
+}
+
+.bounce-animation {
+    --height-animation-timing: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="rounded-lg border border-blue-500/20 bg-blue-500/10 p-4 text-sm">
+            <div class="flex items-start gap-2">
+                <LucideIcon Name="info" Size="16" Class="mt-0.5 text-blue-500" />
+                <div>
+                    <p class="font-medium text-blue-900 dark:text-blue-100">Components that benefit from HeightAnimation</p>
+                    <ul class="mt-2 space-y-1 text-blue-900/80 dark:text-blue-100/80 ml-4 list-disc">
+                        <li>Command palette with filtering</li>
+                        <li>Combobox with dynamic options</li>
+                        <li>Select dropdowns with search</li>
+                        <li>Collapsible content sections</li>
+                        <li>Any component with content that changes height dynamically</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Command Palette Overlay (Modal) -->
     <section class="space-y-4">
         <h2 class="text-2xl font-semibold">Command Palette (Overlay)</h2>
