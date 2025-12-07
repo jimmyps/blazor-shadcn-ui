@@ -49,6 +49,16 @@
     color: var(--accent-foreground);
   }
 
+  .height-animation-container {
+    transition: height var(--height-animation-duration, 200ms) var(--height-animation-timing, cubic-bezier(0.4, 0, 0.2, 1));
+    will-change: height;
+  }
+
+  .height-animation-container [role="listbox"] {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
   /* Dialog Animation Classes - reusable for any component */
   /* Apply animations per instance using dialog-animated class on both panel and overlay */
   
@@ -90,11 +100,6 @@
     .dialog-item {
       animation: none !important;
       transition: none !important;
-    }
-
-    .dialog-item {
-      @apply opacity-100;
-    }
   }
 }
 

@@ -19,7 +19,7 @@
     - --height-animation-timing: Animation timing function (default: cubic-bezier(0.4, 0, 0.2, 1))
 *@
 
-<div @ref="_containerRef" class="@GetContainerClass()" style="@GetContainerStyle()">
+<div @ref="_containerRef" class="@GetContainerClass()">
     @ChildContent
 </div>
 
@@ -71,22 +71,6 @@
             classes.Add(Class);
         }
         return string.Join(" ", classes);
-    }
-
-    private string GetContainerStyle()
-    {
-        var styles = new List<string>
-        {
-            "transition: height var(--height-animation-duration, 200ms) var(--height-animation-timing, cubic-bezier(0.4, 0, 0.2, 1))",
-            "will-change: height"
-        };
-
-        if (!string.IsNullOrEmpty(Style))
-        {
-            styles.Add(Style);
-        }
-
-        return string.Join("; ", styles);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
