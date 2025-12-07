@@ -152,7 +152,8 @@
             try
             {
                 await _jsModule.InvokeVoidAsync("handleDialogClose", _containerRef);
-                await Task.Delay(250); // Wait for animation to complete
+                // Wait for animation to complete (200ms panel + small buffer)
+                await Task.Delay(220);
             }
             catch
             {

@@ -86,7 +86,7 @@
 
   /* Content element (for height morphing) */
   .dialog-content {
-    @apply transition-height;
+    @apply transition-[height];
     transition-duration: var(--dialog-height-duration);
     transition-timing-function: var(--dialog-height-easing);
   }
