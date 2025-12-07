@@ -107,9 +107,24 @@
             }
         }
 
-        // Setup or re-setup animation when config changes or component renders
-        if (_jsModule != null && _instanceId == -1)
+        // Setup or re-setup animation when dialog opens or config changes
+        if (_jsModule != null)
         {
+            // Clean up existing instance if any
+            if (_instanceId != -1)
+            {
+                try
+                {
+                    await _jsModule.InvokeVoidAsync("cleanupHeightAnimation", _instanceId);
+                    _instanceId = -1;
+                }
+                catch (JSException)
+                {
+                    // Cleanup failed, continue
+                }
+            }
+
+            // Setup new instance
             try
             {
                 _instanceId = await _jsModule.InvokeAsync<int>(

@@ -92,8 +92,9 @@ class HeightAnimationInstance {
 
         // Calculate max content height if specified
         if (this.maxHeight === null) {
-            // Cache the initial max height from the content element's actual height
-            this.maxHeight = this.contentElement.offsetHeight;
+            // Cache the initial max height from the content element's scrollHeight
+            // Use scrollHeight instead of offsetHeight to get the full content height
+            this.maxHeight = this.contentElement.scrollHeight;
         }
 
         // Calculate total height (input + content, capped at max-height)
