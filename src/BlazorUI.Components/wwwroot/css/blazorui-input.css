@@ -12,6 +12,10 @@
     --sidebar-width-mobile: 18rem;
     --sidebar-width-icon: 3rem;
 
+    /* Height animation variables */
+    --height-animation-duration: 200ms;
+    --height-animation-timing: cubic-bezier(0.4, 0, 0.2, 1);
+
     /* Dialog animation values - reusable for all components */
     --dialog-panel-translate-start: -8px;
     --dialog-panel-scale-start: 0.96;
