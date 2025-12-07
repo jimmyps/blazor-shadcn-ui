@@ -115,7 +115,6 @@
 
 @code {
     private bool _isOpen = false;
-    private bool _isClosing = false;
     private ElementReference _containerRef;
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<SpotlightCommandPalette>? _dotNetRef;
@@ -123,55 +122,17 @@
     /// <summary>
     /// Opens the spotlight command palette.
     /// </summary>
-    public async Task OpenAsync()
-    {
-        _isOpen = true;
-        await InvokeAsync(StateHasChanged);
-    }
-
-    /// <summary>
-    /// Opens the spotlight command palette (synchronous wrapper).
-    /// </summary>
     public void Open()
     {
-        _ = OpenAsync();
+        _isOpen = true;
     }
 
     /// <summary>
-    /// Closes the spotlight command palette with animation.
-    /// </summary>
-    public async Task CloseAsync()
-    {
-        if (_isClosing) return;
-        
-        _isClosing = true;
-        
-        // Trigger close animation
-        if (_jsModule != null)
-        {
-            try
-            {
-                await _jsModule.InvokeVoidAsync("handleDialogClose", _containerRef);
-                // Wait for animation to complete (200ms panel + small buffer)
-                await Task.Delay(220);
-            }
-            catch
-            {
-                // Animation failed, continue
-            }
-        }
-
-        _isOpen = false;
-        _isClosing = false;
-        await InvokeAsync(StateHasChanged);
-    }
-
-    /// <summary>
-    /// Closes the spotlight command palette (synchronous wrapper).
+    /// Closes the spotlight command palette.
     /// </summary>
     public void Close()
     {
-        _ = CloseAsync();
+        _isOpen = false;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -182,17 +143,11 @@
             await KeyboardShortcuts.InitializeAsync();
             KeyboardShortcuts.RegisterShortcut("k", async () =>
             {
-                if (_isOpen)
-                {
-                    await CloseAsync();
-                }
-                else
-                {
-                    await OpenAsync();
-                }
+                _isOpen = !_isOpen;
+                await InvokeAsync(StateHasChanged);
             });
 
-            // Initialize animation module
+            // Initialize height animation module
             try
             {
                 _dotNetRef = DotNetObjectReference.Create(this);
@@ -205,13 +160,12 @@
             }
         }
 
-        // Setup height observer and animations when dialog opens
-        if (_isOpen && _jsModule != null && !_isClosing)
+        // Setup height observer when dialog opens
+        if (_isOpen && _jsModule != null)
         {
             try
             {
                 await _jsModule.InvokeVoidAsync("setupHeightAnimation", _containerRef);
-                await _jsModule.InvokeVoidAsync("handleDialogOpen", _containerRef);
             }
             catch
             {
@@ -220,11 +174,12 @@
         }
     }
 
-    private async Task HandleSelect(string value)
+    private void HandleSelect(string value)
     {
         // Handle navigation based on selected value
         // In a real app, you would use NavigationManager here
-        await CloseAsync();
+        _isOpen = false;
+        StateHasChanged();
     }
 
     public async ValueTask DisposeAsync()

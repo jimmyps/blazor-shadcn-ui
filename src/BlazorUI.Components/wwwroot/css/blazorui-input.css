@@ -61,14 +61,12 @@
     @apply fixed inset-0 z-50;
   }
 
-  /* Overlay animations */
-  .dialog--open .dialog-overlay,
-  .dialog-overlay.dialog--open {
+  /* Overlay animations using data-state attribute */
+  .dialog-overlay[data-state="open"] {
     @apply motion-safe:animate-dialog-overlay-in;
   }
 
-  .dialog--closing .dialog-overlay,
-  .dialog-overlay.dialog--closing {
+  .dialog-overlay[data-state="closed"] {
     @apply motion-safe:animate-dialog-overlay-out;
   }
 
@@ -77,12 +75,12 @@
     @apply relative z-50;
   }
 
-  /* Panel animations */
-  .dialog--open .dialog-panel {
+  /* Panel animations using data-state attribute */
+  .dialog-panel[data-state="open"] {
     @apply motion-safe:animate-dialog-panel-in;
   }
 
-  .dialog--closing .dialog-panel {
+  .dialog-panel[data-state="closed"] {
     @apply motion-safe:animate-dialog-panel-out;
   }
 
