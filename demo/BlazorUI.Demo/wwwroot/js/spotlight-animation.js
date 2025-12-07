@@ -2,6 +2,7 @@
 let resizeObserver = null;
 let mutationObserver = null;
 let containerElement = null;
+let maxListHeight = null;
 
 /**
  * Sets up smooth height animation for the command palette
@@ -55,8 +56,10 @@ function updateHeight(container, listElement) {
     const inputWrapper = container.querySelector('.flex.items-center.border-b');
     const inputHeight = inputWrapper ? inputWrapper.offsetHeight : 0;
     
-    // Calculate total height (input + list content, capped at max-height)
-    const maxListHeight = 400; // matches max-h-[400px]
+  // Calculate total height (input + list content, capped at max-height)
+    if (maxListHeight === null)
+      maxListHeight = listElement.offsetHeight;
+
     const actualListHeight = Math.min(listHeight, maxListHeight);
     const totalHeight = inputHeight + actualListHeight;
     
