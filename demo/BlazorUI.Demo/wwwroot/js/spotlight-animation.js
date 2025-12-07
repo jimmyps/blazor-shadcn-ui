@@ -84,3 +84,44 @@ export function cleanup() {
     
     containerElement = null;
 }
+
+/**
+ * Handles dialog closing animation
+ * Adds closing class, waits for animation to complete, then calls the callback
+ * @param {HTMLElement} dialogElement - The dialog element
+ * @param {Function} onComplete - Callback to invoke after animation completes
+ */
+export function handleDialogClose(dialogElement, onComplete) {
+    if (!dialogElement) {
+        onComplete?.();
+        return;
+    }
+
+    // Add closing class to trigger exit animations
+    dialogElement.classList.add('dialog--closing');
+    dialogElement.classList.remove('dialog--open');
+
+    // Wait for animation to complete
+    const animationDuration = parseFloat(
+        getComputedStyle(document.documentElement)
+            .getPropertyValue('--dialog-panel-duration') || '200'
+    );
+
+    setTimeout(() => {
+        dialogElement.classList.remove('dialog--closing');
+        onComplete?.();
+    }, animationDuration);
+}
+
+/**
+ * Adds the open class to trigger enter animations
+ * @param {HTMLElement} dialogElement - The dialog element
+ */
+export function handleDialogOpen(dialogElement) {
+    if (!dialogElement) return;
+
+    // Add open class to trigger enter animations
+    dialogElement.classList.add('dialog--open');
+    dialogElement.classList.remove('dialog--closing');
+}
+

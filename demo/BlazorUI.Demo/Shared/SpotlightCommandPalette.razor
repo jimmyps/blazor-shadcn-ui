@@ -8,11 +8,12 @@
 @* Spotlight Command Palette - Global search and command interface *@
 <Dialog @bind-Open="_isOpen">
     <DialogContent 
+        @ref="_dialogContentRef"
         ShowClose="false" 
-        Class="max-w-lg border-border/40 p-0 rounded-2xl shadow-xl gap-0 overflow-hidden !top-[20vh] !translate-y-0"
-        OverlayClass="!bg-background/70 backdrop-blur backdrop-saturate-150">
+        Class="max-w-lg border-border/40 p-0 rounded-2xl shadow-xl gap-0 overflow-hidden !top-[20vh] !translate-y-0 dialog-panel"
+        OverlayClass="!bg-background/70 backdrop-blur backdrop-saturate-150 dialog-overlay">
         
-        <div @ref="_containerRef" class="spotlight-command-palette">
+        <div @ref="_containerRef" class="spotlight-command-palette dialog-content">
             <BlazorUI.Components.Command.Command OnSelect="@HandleSelect">
                 <CommandInput 
                     Placeholder="Type a command or search..." 
@@ -115,24 +116,89 @@
 
 @code {
     private bool _isOpen = false;
+    private bool _isClosing = false;
     private ElementReference _containerRef;
+    private ElementReference _dialogContentRef;
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<SpotlightCommandPalette>? _dotNetRef;
 
     /// <summary>
     /// Opens the spotlight command palette.
     /// </summary>
-    public void Open()
+    public async Task OpenAsync()
     {
         _isOpen = true;
+        await InvokeAsync(StateHasChanged);
+        
+        // Trigger open animation after state change
+        await Task.Delay(50); // Small delay to ensure DOM is rendered
+        if (_jsModule != null && _dialogContentRef.Id != null)
+        {
+            try
+            {
+                await _jsModule.InvokeVoidAsync("handleDialogOpen", _dialogContentRef);
+            }
+            catch
+            {
+                // Animation failed, continue without it
+            }
+        }
     }
 
     /// <summary>
-    /// Closes the spotlight command palette.
+    /// Opens the spotlight command palette (synchronous wrapper).
+    /// </summary>
+    public void Open()
+    {
+        _ = OpenAsync();
+    }
+
+    /// <summary>
+    /// Closes the spotlight command palette with animation.
+    /// </summary>
+    public async Task CloseAsync()
+    {
+        if (_isClosing) return;
+        
+        _isClosing = true;
+        
+        // Trigger close animation
+        if (_jsModule != null && _dialogContentRef.Id != null)
+        {
+            try
+            {
+                await _jsModule.InvokeVoidAsync("handleDialogClose", _dialogContentRef, 
+                    DotNetObjectReference.Create(new CloseCallback(this)));
+            }
+            catch
+            {
+                // Animation failed, close immediately
+                await CompleteClose();
+            }
+        }
+        else
+        {
+            await CompleteClose();
+        }
+    }
+
+    /// <summary>
+    /// Closes the spotlight command palette (synchronous wrapper).
     /// </summary>
     public void Close()
     {
+        _ = CloseAsync();
+    }
+
+    /// <summary>
+    /// Completes the close operation after animation finishes.
+    /// </summary>
+    [JSInvokable]
+    public async Task CompleteClose()
+    {
         _isOpen = false;
+        _isClosing = false;
+        await InvokeAsync(StateHasChanged);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -143,11 +209,17 @@
             await KeyboardShortcuts.InitializeAsync();
             KeyboardShortcuts.RegisterShortcut("k", async () =>
             {
-                _isOpen = !_isOpen;
-                await InvokeAsync(StateHasChanged);
+                if (_isOpen)
+                {
+                    await CloseAsync();
+                }
+                else
+                {
+                    await OpenAsync();
+                }
             });
 
-            // Initialize height animation module
+            // Initialize animation module
             try
             {
                 _dotNetRef = DotNetObjectReference.Create(this);
@@ -166,6 +238,12 @@
             try
             {
                 await _jsModule.InvokeVoidAsync("setupHeightAnimation", _containerRef);
+                
+                // Handle open animation
+                if (_dialogContentRef.Id != null)
+                {
+                    await _jsModule.InvokeVoidAsync("handleDialogOpen", _dialogContentRef);
+                }
             }
             catch
             {
@@ -174,12 +252,11 @@
         }
     }
 
-    private void HandleSelect(string value)
+    private async Task HandleSelect(string value)
     {
         // Handle navigation based on selected value
         // In a real app, you would use NavigationManager here
-        _isOpen = false;
-        StateHasChanged();
+        await CloseAsync();
     }
 
     public async ValueTask DisposeAsync()
@@ -214,5 +291,22 @@
         }
 
         _dotNetRef?.Dispose();
+    }
+
+    // Helper class for JS interop callback
+    private class CloseCallback
+    {
+        private readonly SpotlightCommandPalette _parent;
+
+        public CloseCallback(SpotlightCommandPalette parent)
+        {
+            _parent = parent;
+        }
+
+        [JSInvokable]
+        public async Task OnComplete()
+        {
+            await _parent.CompleteClose();
+        }
     }
 }

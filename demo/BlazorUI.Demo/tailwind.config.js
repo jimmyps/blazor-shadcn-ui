@@ -83,12 +83,69 @@ module.exports = {
           from: { height: "var(--radix-collapsible-content-height, auto)" },
           to: { height: "0" },
         },
+        "dialog-panel-in": {
+          from: {
+            opacity: "0",
+            transform: "translateY(var(--dialog-panel-translate-start, -8px)) scale(var(--dialog-panel-scale-start, 0.96))",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateY(0) scale(1)",
+          },
+        },
+        "dialog-panel-out": {
+          from: {
+            opacity: "1",
+            transform: "translateY(0) scale(1)",
+          },
+          to: {
+            opacity: "0",
+            transform: "translateY(var(--dialog-panel-translate-exit, 8px)) scale(var(--dialog-panel-scale-exit, 0.98))",
+          },
+        },
+        "dialog-item-in": {
+          from: {
+            opacity: "0",
+            transform: "translateY(var(--dialog-item-translate-start, -4px))",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
+        "dialog-item-out": {
+          from: {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+          to: {
+            opacity: "0",
+            transform: "translateY(var(--dialog-item-translate-exit, 4px))",
+          },
+        },
+        "dialog-overlay-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        "dialog-overlay-out": {
+          from: { opacity: "1" },
+          to: { opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "collapsible-down": "collapsible-down 0.2s ease-out",
         "collapsible-up": "collapsible-up 0.2s ease-out",
+        "dialog-panel-in": "dialog-panel-in var(--dialog-panel-duration, 200ms) var(--dialog-panel-easing, cubic-bezier(0.4, 0, 0.2, 1))",
+        "dialog-panel-out": "dialog-panel-out var(--dialog-panel-duration, 200ms) var(--dialog-panel-easing, cubic-bezier(0.4, 0, 0.2, 1))",
+        "dialog-item-in": "dialog-item-in var(--dialog-item-duration, 150ms) var(--dialog-item-easing, cubic-bezier(0.4, 0, 0.2, 1))",
+        "dialog-item-out": "dialog-item-out var(--dialog-item-duration, 150ms) var(--dialog-item-easing, cubic-bezier(0.4, 0, 0.2, 1))",
+        "dialog-overlay-in": "dialog-overlay-in var(--dialog-overlay-duration, 150ms) ease-out",
+        "dialog-overlay-out": "dialog-overlay-out var(--dialog-overlay-duration, 150ms) ease-in",
+      },
+      transitionProperty: {
+        height: "height",
       },
     },
   },
