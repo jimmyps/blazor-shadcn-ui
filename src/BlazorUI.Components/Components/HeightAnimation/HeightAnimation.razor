@@ -1,0 +1,172 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@namespace BlazorUI.Components.HeightAnimation
+
+@*
+    HeightAnimation Component
+    
+    Provides smooth height transitions for dynamic content using ResizeObserver and MutationObserver.
+    
+    Usage Example:
+    
+    <HeightAnimation Config="@_config">
+        <div>Your dynamic content here</div>
+    </HeightAnimation>
+    
+    CSS Variables (can be customized in your theme):
+    - --height-animation-duration: Animation duration (default: 200ms)
+    - --height-animation-timing: Animation timing function (default: cubic-bezier(0.4, 0, 0.2, 1))
+*@
+
+<div @ref="_containerRef" class="@GetContainerClass()" style="@GetContainerStyle()">
+    @ChildContent
+</div>
+
+@code {
+    private ElementReference _containerRef;
+    private IJSObjectReference? _jsModule;
+    private int _instanceId = -1;
+    private HeightAnimationConfig? _previousConfig;
+
+    /// <summary>
+    /// The content to be rendered inside the animated container.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Configuration for the height animation behavior.
+    /// </summary>
+    [Parameter]
+    public HeightAnimationConfig? Config { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes to apply to the container element.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply to the container element.
+    /// </summary>
+    [Parameter]
+    public string? Style { get; set; }
+
+    /// <summary>
+    /// Whether the animation is currently enabled.
+    /// When false, no animation setup will occur.
+    /// </summary>
+    [Parameter]
+    public bool Enabled { get; set; } = true;
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
+
+    private string GetContainerClass()
+    {
+        var classes = new List<string> { "height-animation-container" };
+        if (!string.IsNullOrEmpty(Class))
+        {
+            classes.Add(Class);
+        }
+        return string.Join(" ", classes);
+    }
+
+    private string GetContainerStyle()
+    {
+        var styles = new List<string>
+        {
+            "transition: height var(--height-animation-duration, 200ms) var(--height-animation-timing, cubic-bezier(0.4, 0, 0.2, 1))",
+            "will-change: height"
+        };
+
+        if (!string.IsNullOrEmpty(Style))
+        {
+            styles.Add(Style);
+        }
+
+        return string.Join("; ", styles);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!Enabled || Config == null) return;
+
+        if (firstRender)
+        {
+            try
+            {
+                // Load the height animation JavaScript module
+                _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorUI.Components/js/height-animation.js");
+            }
+            catch (JSException)
+            {
+                // JS module not available, continue without animations
+                return;
+            }
+        }
+
+        // Only setup/re-setup animation when config changes
+        if (_jsModule != null && Config != _previousConfig)
+        {
+            _previousConfig = Config;
+
+            // Clean up existing instance if any
+            if (_instanceId != -1)
+            {
+                try
+                {
+                    await _jsModule.InvokeVoidAsync("cleanupHeightAnimation", _instanceId);
+                    _instanceId = -1;
+                }
+                catch (JSException)
+                {
+                    // Cleanup failed, continue
+                }
+            }
+
+            // Setup new instance
+            try
+            {
+                _instanceId = await _jsModule.InvokeAsync<int>(
+                    "setupHeightAnimation",
+                    _containerRef,
+                    Config);
+            }
+            catch (JSException)
+            {
+                // Animation setup failed, continue without it
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule != null && _instanceId != -1)
+        {
+            try
+            {
+                await _jsModule.InvokeVoidAsync("cleanupHeightAnimation", _instanceId);
+            }
+            catch (JSException)
+            {
+                // Cleanup errors can be ignored
+            }
+        }
+
+        if (_jsModule != null)
+        {
+            try
+            {
+                await _jsModule.DisposeAsync();
+            }
+            catch
+            {
+                // Disposal errors can be ignored
+            }
+        }
+    }
+}

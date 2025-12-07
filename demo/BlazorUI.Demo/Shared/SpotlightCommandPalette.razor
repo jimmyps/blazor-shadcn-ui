@@ -1,8 +1,8 @@
 @using BlazorUI.Components.Command
 @using BlazorUI.Components.Dialog
+@using BlazorUI.Components.HeightAnimation
 @using BlazorUI.Demo.Services
 @inject KeyboardShortcutService KeyboardShortcuts
-@inject IJSRuntime JS
 @implements IAsyncDisposable
 
 @* Spotlight Command Palette - Global search and command interface *@
@@ -12,7 +12,7 @@
         Class="max-w-lg border-border/40 p-0 rounded-2xl shadow-xl gap-0 overflow-hidden !top-[20vh] !translate-y-0"
         OverlayClass="!bg-background/70 backdrop-blur backdrop-saturate-150">
         
-        <div @ref="_containerRef" class="spotlight-command-palette">
+        <HeightAnimation Config="@_heightAnimationConfig" Enabled="@_isOpen">
             <BlazorUI.Components.Command.Command OnSelect="@HandleSelect">
                 <CommandInput 
                     Placeholder="Type a command or search..." 
@@ -96,18 +96,12 @@
                     </CommandGroup>
                 </CommandList>
             </BlazorUI.Components.Command.Command>
-        </div>
+        </HeightAnimation>
     </DialogContent>
 </Dialog>
 
 <style>
-    .spotlight-command-palette {
-        /* Enable smooth height transitions */
-        transition: height 200ms cubic-bezier(0.4, 0, 0.2, 1);
-        will-change: height;
-    }
-    
-    .spotlight-command-palette [role="listbox"] {
+    .height-animation-container [role="listbox"] {
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -115,9 +109,12 @@
 
 @code {
     private bool _isOpen = false;
-    private ElementReference _containerRef;
-    private IJSObjectReference? _jsModule;
-    private DotNetObjectReference<SpotlightCommandPalette>? _dotNetRef;
+    private readonly HeightAnimationConfig _heightAnimationConfig = new()
+    {
+        ContentSelector = "[role=\"listbox\"]",
+        InputSelector = "[data-command-input-wrapper]",
+        IncludeInputHeight = true
+    };
 
     /// <summary>
     /// Opens the spotlight command palette.
@@ -146,31 +143,6 @@
                 _isOpen = !_isOpen;
                 await InvokeAsync(StateHasChanged);
             });
-
-            // Initialize height animation module
-            try
-            {
-                _dotNetRef = DotNetObjectReference.Create(this);
-                _jsModule = await JS.InvokeAsync<IJSObjectReference>(
-                    "import", "./js/spotlight-animation.js");
-            }
-            catch
-            {
-                // Module loading failed, continue without animations
-            }
-        }
-
-        // Setup height observer when dialog opens
-        if (_isOpen && _jsModule != null)
-        {
-            try
-            {
-                await _jsModule.InvokeVoidAsync("setupHeightAnimation", _containerRef);
-            }
-            catch
-            {
-                // Animation setup failed, continue without it
-            }
         }
     }
 
@@ -199,20 +171,5 @@
                 // Shortcut not registered or already removed, ignore
             }
         }
-
-        if (_jsModule != null)
-        {
-            try
-            {
-                await _jsModule.InvokeVoidAsync("cleanup");
-                await _jsModule.DisposeAsync();
-            }
-            catch
-            {
-                // Cleanup errors can be ignored
-            }
-        }
-
-        _dotNetRef?.Dispose();
     }
 }

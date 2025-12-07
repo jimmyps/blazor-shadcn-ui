@@ -11,6 +11,10 @@
     --sidebar-width: 16rem;
     --sidebar-width-mobile: 18rem;
     --sidebar-width-icon: 3rem;
+    
+    /* Height animation variables */
+    --height-animation-duration: 200ms;
+    --height-animation-timing: cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
