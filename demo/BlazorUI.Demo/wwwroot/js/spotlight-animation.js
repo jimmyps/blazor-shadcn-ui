@@ -15,8 +15,8 @@ export function setupHeightAnimation(container) {
     
     containerElement = container;
     
-    // Find the command list element
-    const listElement = container.querySelector('[cmdk-list]');
+    // Find the command list element (ComboboxContent renders as div with role="listbox")
+    const listElement = container.querySelector('[role="listbox"]');
     if (!listElement) return;
     
     // Set initial height
@@ -51,9 +51,9 @@ function updateHeight(container, listElement) {
     // Get the actual content height
     const listHeight = listElement.scrollHeight;
     
-    // Get the input element height
-    const inputElement = container.querySelector('[cmdk-input]');
-    const inputHeight = inputElement ? inputElement.offsetHeight : 0;
+    // Get the input element height (looking for role="combobox" or the wrapper div)
+    const inputWrapper = container.querySelector('.flex.items-center.border-b');
+    const inputHeight = inputWrapper ? inputWrapper.offsetHeight : 0;
     
     // Calculate total height (input + list content, capped at max-height)
     const maxListHeight = 400; // matches max-h-[400px]
