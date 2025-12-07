@@ -20,6 +20,34 @@
     --sidebar-width: 16rem;
     --sidebar-width-mobile: 18rem;
     --sidebar-width-icon: 3rem;
+
+    /* Dialog animation values for Spotlight demo */
+    --dialog-panel-translate-start: -8px;
+    --dialog-panel-scale-start: 0.96;
+    --dialog-panel-translate-exit: 8px;
+    --dialog-panel-scale-exit: 0.98;
+    --dialog-panel-duration: 200ms;
+    --dialog-panel-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+    --dialog-item-translate-start: -4px;
+    --dialog-item-translate-exit: 4px;
+    --dialog-item-duration: 150ms;
+    --dialog-item-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+    --dialog-overlay-duration: 150ms;
+
+    --dialog-height-duration: 200ms;
+    --dialog-height-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Reduced motion: zero out durations for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --dialog-panel-duration: 0ms;
+      --dialog-item-duration: 0ms;
+      --dialog-overlay-duration: 0ms;
+      --dialog-height-duration: 0ms;
+    }
   }
 }
 
@@ -29,6 +57,61 @@
   [role="option"][data-focused="true"] {
     background-color: var(--accent);
     color: var(--accent-foreground);
+  }
+
+  /* Dialog Animation Classes for Spotlight demo */
+  /* Apply animations per instance using dialog-animated class on both panel and overlay */
+  
+  /* Panel animations - when dialog-animated is on the panel element */
+  .dialog-panel.dialog-animated[data-state="open"] {
+    @apply motion-safe:animate-dialog-panel-in;
+  }
+
+  .dialog-panel.dialog-animated[data-state="closed"] {
+    @apply motion-safe:animate-dialog-panel-out;
+  }
+
+  /* Overlay animations - when dialog-animated is on the overlay element */
+  .dialog-overlay.dialog-animated[data-state="open"] {
+    @apply motion-safe:animate-dialog-overlay-in;
+  }
+
+  .dialog-overlay.dialog-animated[data-state="closed"] {
+    @apply motion-safe:animate-dialog-overlay-out;
+  }
+
+  /* Content element (for height morphing) */
+  .dialog-content {
+    @apply transition-[height];
+    transition-duration: var(--dialog-height-duration);
+    transition-timing-function: var(--dialog-height-easing);
+  }
+
+  /* Item animations */
+  .dialog-item {
+    @apply opacity-0;
+  }
+
+  .dialog-item.is-visible {
+    @apply motion-safe:animate-dialog-item-in opacity-100;
+  }
+
+  .dialog-item.is-hidden {
+    @apply motion-safe:animate-dialog-item-out;
+  }
+
+  /* Reduced motion fallbacks */
+  @media (prefers-reduced-motion: reduce) {
+    .dialog-overlay,
+    .dialog-panel,
+    .dialog-item {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    .dialog-item {
+      @apply opacity-100;
+    }
   }
 }
 
