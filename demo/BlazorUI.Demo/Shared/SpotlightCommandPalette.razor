@@ -6,12 +6,11 @@
 @implements IAsyncDisposable
 
 @* Spotlight Command Palette - Global search and command interface *@
-<div class="dialog-animated">
-    <Dialog @bind-Open="_isOpen">
-        <DialogContent 
-            ShowClose="false" 
-            Class="max-w-lg border-border/40 p-0 rounded-2xl shadow-xl gap-0 overflow-hidden !top-[20vh] !translate-y-0 dialog-panel"
-            OverlayClass="!bg-background/70 backdrop-blur backdrop-saturate-150 dialog-overlay">
+<Dialog @bind-Open="_isOpen">
+    <DialogContent 
+        ShowClose="false" 
+        Class="max-w-lg border-border/40 p-0 rounded-2xl shadow-xl gap-0 overflow-hidden !top-[20vh] !translate-y-0 dialog-panel dialog-animated"
+        OverlayClass="!bg-background/70 backdrop-blur backdrop-saturate-150 dialog-overlay dialog-animated">
         
         <div @ref="_containerRef" class="spotlight-command-palette dialog-content">
             <BlazorUI.Components.Command.Command OnSelect="@HandleSelect">
@@ -100,7 +99,6 @@
         </div>
     </DialogContent>
 </Dialog>
-</div>
 
 <style>
     .spotlight-command-palette {
