@@ -1,0 +1,218 @@
+@using BlazorUI.Components.Command
+@using BlazorUI.Components.Dialog
+@using BlazorUI.Demo.Services
+@inject KeyboardShortcutService KeyboardShortcuts
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+@* Spotlight Command Palette - Global search and command interface *@
+<Dialog @bind-Open="_isOpen">
+    <DialogContent 
+        ShowClose="false" 
+        Class="max-w-lg border-border/40 p-0 rounded-2xl shadow-xl gap-0 overflow-hidden !top-[20vh] !translate-y-0"
+        OverlayClass="!bg-background/70 backdrop-blur backdrop-saturate-150">
+        
+        <div @ref="_containerRef" class="spotlight-command-palette">
+            <BlazorUI.Components.Command.Command OnSelect="@HandleSelect">
+                <CommandInput 
+                    Placeholder="Type a command or search..." 
+                    Class="border-0 border-b border-border/40 rounded-none focus-visible:ring-0" />
+                
+                <CommandList Class="max-h-[400px] scrollbar-thin">
+                    <CommandEmpty>
+                        <div class="flex flex-col items-center gap-2 py-6 text-muted-foreground">
+                            <LucideIcon Name="search-x" Size="32" />
+                            <p class="text-sm">No results found.</p>
+                        </div>
+                    </CommandEmpty>
+                    
+                    <CommandGroup Heading="Navigation">
+                        <CommandItem Value="home">
+                            <LucideIcon Name="house" Size="16" Class="mr-2" />
+                            <span>Home</span>
+                        </CommandItem>
+                        <CommandItem Value="components">
+                            <LucideIcon Name="layout-grid" Size="16" Class="mr-2" />
+                            <span>Components</span>
+                        </CommandItem>
+                        <CommandItem Value="primitives">
+                            <LucideIcon Name="box" Size="16" Class="mr-2" />
+                            <span>Primitives</span>
+                        </CommandItem>
+                        <CommandItem Value="architecture">
+                            <LucideIcon Name="git-branch" Size="16" Class="mr-2" />
+                            <span>Architecture</span>
+                        </CommandItem>
+                    </CommandGroup>
+                    
+                    <CommandSeparator />
+                    
+                    <CommandGroup Heading="Components">
+                        <CommandItem Value="button">
+                            <LucideIcon Name="hand" Size="16" Class="mr-2" />
+                            <span>Button</span>
+                            <CommandShortcut>Component</CommandShortcut>
+                        </CommandItem>
+                        <CommandItem Value="dialog">
+                            <LucideIcon Name="square" Size="16" Class="mr-2" />
+                            <span>Dialog</span>
+                            <CommandShortcut>Component</CommandShortcut>
+                        </CommandItem>
+                        <CommandItem Value="command">
+                            <LucideIcon Name="terminal" Size="16" Class="mr-2" />
+                            <span>Command</span>
+                            <CommandShortcut>Component</CommandShortcut>
+                        </CommandItem>
+                        <CommandItem Value="card">
+                            <LucideIcon Name="credit-card" Size="16" Class="mr-2" />
+                            <span>Card</span>
+                            <CommandShortcut>Component</CommandShortcut>
+                        </CommandItem>
+                        <CommandItem Value="input">
+                            <LucideIcon Name="type" Size="16" Class="mr-2" />
+                            <span>Input</span>
+                            <CommandShortcut>Component</CommandShortcut>
+                        </CommandItem>
+                    </CommandGroup>
+                    
+                    <CommandSeparator />
+                    
+                    <CommandGroup Heading="Actions">
+                        <CommandItem Value="search">
+                            <LucideIcon Name="search" Size="16" Class="mr-2" />
+                            <span>Search Documentation</span>
+                            <CommandShortcut>⌘S</CommandShortcut>
+                        </CommandItem>
+                        <CommandItem Value="theme">
+                            <LucideIcon Name="moon" Size="16" Class="mr-2" />
+                            <span>Toggle Theme</span>
+                            <CommandShortcut>⌘T</CommandShortcut>
+                        </CommandItem>
+                        <CommandItem Value="github">
+                            <LucideIcon Name="github" Size="16" Class="mr-2" />
+                            <span>View on GitHub</span>
+                            <CommandShortcut>⌘G</CommandShortcut>
+                        </CommandItem>
+                    </CommandGroup>
+                </CommandList>
+            </BlazorUI.Components.Command.Command>
+        </div>
+    </DialogContent>
+</Dialog>
+
+<style>
+    .spotlight-command-palette {
+        /* Enable smooth height transitions */
+        transition: height 200ms cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: height;
+    }
+    
+    .spotlight-command-palette [role="listbox"] {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+</style>
+
+@code {
+    private bool _isOpen = false;
+    private ElementReference _containerRef;
+    private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<SpotlightCommandPalette>? _dotNetRef;
+
+    /// <summary>
+    /// Opens the spotlight command palette.
+    /// </summary>
+    public void Open()
+    {
+        _isOpen = true;
+    }
+
+    /// <summary>
+    /// Closes the spotlight command palette.
+    /// </summary>
+    public void Close()
+    {
+        _isOpen = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Initialize keyboard shortcuts
+            await KeyboardShortcuts.InitializeAsync();
+            KeyboardShortcuts.RegisterShortcut("k", async () =>
+            {
+                _isOpen = !_isOpen;
+                await InvokeAsync(StateHasChanged);
+            });
+
+            // Initialize height animation module
+            try
+            {
+                _dotNetRef = DotNetObjectReference.Create(this);
+                _jsModule = await JS.InvokeAsync<IJSObjectReference>(
+                    "import", "./js/spotlight-animation.js");
+            }
+            catch
+            {
+                // Module loading failed, continue without animations
+            }
+        }
+
+        // Setup height observer when dialog opens
+        if (_isOpen && _jsModule != null)
+        {
+            try
+            {
+                await _jsModule.InvokeVoidAsync("setupHeightAnimation", _containerRef);
+            }
+            catch
+            {
+                // Animation setup failed, continue without it
+            }
+        }
+    }
+
+    private void HandleSelect(string value)
+    {
+        // Handle navigation based on selected value
+        // In a real app, you would use NavigationManager here
+        _isOpen = false;
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (KeyboardShortcuts != null)
+        {
+            try
+            {
+                KeyboardShortcuts.UnregisterShortcut("k");
+            }
+            catch (ObjectDisposedException)
+            {
+                // Service already disposed, ignore
+            }
+            catch (InvalidOperationException)
+            {
+                // Shortcut not registered or already removed, ignore
+            }
+        }
+
+        if (_jsModule != null)
+        {
+            try
+            {
+                await _jsModule.InvokeVoidAsync("cleanup");
+                await _jsModule.DisposeAsync();
+            }
+            catch
+            {
+                // Cleanup errors can be ignored
+            }
+        }
+
+        _dotNetRef?.Dispose();
+    }
+}
