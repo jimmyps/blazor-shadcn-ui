@@ -50,37 +50,23 @@
   }
 
   /* Dialog Animation Classes - reusable for any component */
+  /* Apply animations per instance by wrapping in a container with specific class */
   
-  /* Base dialog container for animations */
-  .dialog-animated {
-    @apply relative;
-  }
-
-  /* Overlay element */
-  .dialog-overlay {
-    @apply fixed inset-0 z-50;
-  }
-
-  /* Overlay animations using data-state attribute */
-  .dialog-overlay[data-state="open"] {
+  /* Overlay animations - scoped to parent with dialog-animated class */
+  .dialog-animated .dialog-overlay[data-state="open"] {
     @apply motion-safe:animate-dialog-overlay-in;
   }
 
-  .dialog-overlay[data-state="closed"] {
+  .dialog-animated .dialog-overlay[data-state="closed"] {
     @apply motion-safe:animate-dialog-overlay-out;
   }
 
-  /* Panel element (the main dialog container) */
-  .dialog-panel {
-    @apply relative z-50;
-  }
-
-  /* Panel animations using data-state attribute */
-  .dialog-panel[data-state="open"] {
+  /* Panel animations - scoped to parent with dialog-animated class */
+  .dialog-animated .dialog-panel[data-state="open"] {
     @apply motion-safe:animate-dialog-panel-in;
   }
 
-  .dialog-panel[data-state="closed"] {
+  .dialog-animated .dialog-panel[data-state="closed"] {
     @apply motion-safe:animate-dialog-panel-out;
   }
 
