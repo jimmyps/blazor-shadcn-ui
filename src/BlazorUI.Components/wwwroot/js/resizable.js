@@ -51,6 +51,8 @@ export function initResizeHandle(handleElement, groupElement, dotNetRef, handleI
     const handleMouseMove = (e) => {
         if (!isDragging) return;
 
+        e.preventDefault();
+        
         const currentPos = isHorizontal ? e.clientX : e.clientY;
         const delta = currentPos - startPos;
 
@@ -60,6 +62,9 @@ export function initResizeHandle(handleElement, groupElement, dotNetRef, handleI
 
         // Convert delta to percentage
         const deltaPercent = (delta / totalSize) * 100;
+
+        // Update startPos to avoid accumulation
+        startPos = currentPos;
 
         try {
             if (dotNetRef && !dotNetRef._disposed) {
