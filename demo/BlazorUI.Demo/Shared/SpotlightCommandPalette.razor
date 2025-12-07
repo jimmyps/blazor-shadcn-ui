@@ -8,7 +8,6 @@
 @* Spotlight Command Palette - Global search and command interface *@
 <Dialog @bind-Open="_isOpen">
     <DialogContent 
-        @ref="_dialogContentRef"
         ShowClose="false" 
         Class="max-w-lg border-border/40 p-0 rounded-2xl shadow-xl gap-0 overflow-hidden !top-[20vh] !translate-y-0 dialog-panel"
         OverlayClass="!bg-background/70 backdrop-blur backdrop-saturate-150 dialog-overlay">
@@ -118,7 +117,6 @@
     private bool _isOpen = false;
     private bool _isClosing = false;
     private ElementReference _containerRef;
-    private ElementReference _dialogContentRef;
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<SpotlightCommandPalette>? _dotNetRef;
 
@@ -129,20 +127,6 @@
     {
         _isOpen = true;
         await InvokeAsync(StateHasChanged);
-        
-        // Trigger open animation after state change
-        await Task.Delay(50); // Small delay to ensure DOM is rendered
-        if (_jsModule != null && _dialogContentRef.Id != null)
-        {
-            try
-            {
-                await _jsModule.InvokeVoidAsync("handleDialogOpen", _dialogContentRef);
-            }
-            catch
-            {
-                // Animation failed, continue without it
-            }
-        }
     }
 
     /// <summary>
@@ -163,23 +147,22 @@
         _isClosing = true;
         
         // Trigger close animation
-        if (_jsModule != null && _dialogContentRef.Id != null)
+        if (_jsModule != null)
         {
             try
             {
-                await _jsModule.InvokeVoidAsync("handleDialogClose", _dialogContentRef, 
-                    DotNetObjectReference.Create(new CloseCallback(this)));
+                await _jsModule.InvokeVoidAsync("handleDialogClose", _containerRef);
+                await Task.Delay(250); // Wait for animation to complete
             }
             catch
             {
-                // Animation failed, close immediately
-                await CompleteClose();
+                // Animation failed, continue
             }
         }
-        else
-        {
-            await CompleteClose();
-        }
+
+        _isOpen = false;
+        _isClosing = false;
+        await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
@@ -188,17 +171,6 @@
     public void Close()
     {
         _ = CloseAsync();
-    }
-
-    /// <summary>
-    /// Completes the close operation after animation finishes.
-    /// </summary>
-    [JSInvokable]
-    public async Task CompleteClose()
-    {
-        _isOpen = false;
-        _isClosing = false;
-        await InvokeAsync(StateHasChanged);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -232,18 +204,13 @@
             }
         }
 
-        // Setup height observer when dialog opens
-        if (_isOpen && _jsModule != null)
+        // Setup height observer and animations when dialog opens
+        if (_isOpen && _jsModule != null && !_isClosing)
         {
             try
             {
                 await _jsModule.InvokeVoidAsync("setupHeightAnimation", _containerRef);
-                
-                // Handle open animation
-                if (_dialogContentRef.Id != null)
-                {
-                    await _jsModule.InvokeVoidAsync("handleDialogOpen", _dialogContentRef);
-                }
+                await _jsModule.InvokeVoidAsync("handleDialogOpen", _containerRef);
             }
             catch
             {
@@ -291,22 +258,5 @@
         }
 
         _dotNetRef?.Dispose();
-    }
-
-    // Helper class for JS interop callback
-    private class CloseCallback
-    {
-        private readonly SpotlightCommandPalette _parent;
-
-        public CloseCallback(SpotlightCommandPalette parent)
-        {
-            _parent = parent;
-        }
-
-        [JSInvokable]
-        public async Task OnComplete()
-        {
-            await _parent.CompleteClose();
-        }
     }
 }

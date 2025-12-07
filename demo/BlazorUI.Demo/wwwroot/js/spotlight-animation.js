@@ -87,41 +87,50 @@ export function cleanup() {
 
 /**
  * Handles dialog closing animation
- * Adds closing class, waits for animation to complete, then calls the callback
- * @param {HTMLElement} dialogElement - The dialog element
- * @param {Function} onComplete - Callback to invoke after animation completes
+ * Adds closing class, waits for animation to complete
+ * @param {HTMLElement} containerElement - The container element inside the dialog
  */
-export function handleDialogClose(dialogElement, onComplete) {
-    if (!dialogElement) {
-        onComplete?.();
+export function handleDialogClose(containerElement) {
+    if (!containerElement) {
         return;
     }
 
-    // Add closing class to trigger exit animations
-    dialogElement.classList.add('dialog--closing');
-    dialogElement.classList.remove('dialog--open');
+    // Find the dialog panel and overlay elements
+    const dialogPanel = containerElement.closest('[role="dialog"]');
+    const dialogOverlay = dialogPanel?.parentElement?.querySelector('[data-radix-dialog-overlay]');
 
-    // Wait for animation to complete
-    const animationDuration = parseFloat(
-        getComputedStyle(document.documentElement)
-            .getPropertyValue('--dialog-panel-duration') || '200'
-    );
+    if (dialogPanel) {
+        // Add closing class to trigger exit animations
+        dialogPanel.classList.add('dialog--closing');
+        dialogPanel.classList.remove('dialog--open');
+    }
 
-    setTimeout(() => {
-        dialogElement.classList.remove('dialog--closing');
-        onComplete?.();
-    }, animationDuration);
+    if (dialogOverlay) {
+        dialogOverlay.classList.add('dialog--closing');
+        dialogOverlay.classList.remove('dialog--open');
+    }
 }
 
 /**
  * Adds the open class to trigger enter animations
- * @param {HTMLElement} dialogElement - The dialog element
+ * @param {HTMLElement} containerElement - The container element inside the dialog
  */
-export function handleDialogOpen(dialogElement) {
-    if (!dialogElement) return;
+export function handleDialogOpen(containerElement) {
+    if (!containerElement) return;
 
-    // Add open class to trigger enter animations
-    dialogElement.classList.add('dialog--open');
-    dialogElement.classList.remove('dialog--closing');
+    // Find the dialog panel and overlay elements
+    const dialogPanel = containerElement.closest('[role="dialog"]');
+    const dialogOverlay = dialogPanel?.parentElement?.querySelector('[data-radix-dialog-overlay]');
+
+    if (dialogPanel) {
+        // Add open class to trigger enter animations
+        dialogPanel.classList.add('dialog--open');
+        dialogPanel.classList.remove('dialog--closing');
+    }
+
+    if (dialogOverlay) {
+        dialogOverlay.classList.add('dialog--open');
+        dialogOverlay.classList.remove('dialog--closing');
+    }
 }
 
