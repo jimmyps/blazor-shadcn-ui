@@ -27,6 +27,7 @@
     private ElementReference _containerRef;
     private IJSObjectReference? _jsModule;
     private int _instanceId = -1;
+    private HeightAnimationConfig? _previousConfig;
 
     /// <summary>
     /// The content to be rendered inside the animated container.
@@ -107,9 +108,11 @@
             }
         }
 
-        // Setup or re-setup animation when dialog opens or config changes
-        if (_jsModule != null)
+        // Only setup/re-setup animation when config changes
+        if (_jsModule != null && Config != _previousConfig)
         {
+            _previousConfig = Config;
+
             // Clean up existing instance if any
             if (_instanceId != -1)
             {

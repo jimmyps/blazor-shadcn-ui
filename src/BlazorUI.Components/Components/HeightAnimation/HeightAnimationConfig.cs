@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Components;
-
 namespace BlazorUI.Components.HeightAnimation;
 
 /// <summary>

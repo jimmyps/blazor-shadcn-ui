@@ -30,7 +30,7 @@ A reusable Blazor component that provides smooth height transitions for dynamic 
     private HeightAnimationConfig _config = new()
     {
         ContentSelector = "[role=\"listbox\"]",
-        InputSelector = ".command-input-wrapper",
+        InputSelector = "[data-command-input-wrapper]",
         IncludeInputHeight = true
     };
 }

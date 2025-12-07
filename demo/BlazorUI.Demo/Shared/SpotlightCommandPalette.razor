@@ -109,7 +109,7 @@
 
 @code {
     private bool _isOpen = false;
-    private HeightAnimationConfig _heightAnimationConfig = new()
+    private readonly HeightAnimationConfig _heightAnimationConfig = new()
     {
         ContentSelector = "[role=\"listbox\"]",
         InputSelector = "[data-command-input-wrapper]",
