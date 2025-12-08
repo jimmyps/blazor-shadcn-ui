@@ -153,19 +153,21 @@ public class NavigationMenuContext : PrimitiveContextWithEvents<NavigationMenuSt
 
     /// <summary>
     /// Gets the motion direction for an item based on its position relative to previous item.
+    /// Returns empty string if no previous item (for initial opening animation).
     /// </summary>
     public string GetMotionDirection(string itemValue)
     {
         lock (_lock)
         {
+            // No previous active item = first time opening, use default animation (not motion)
             if (string.IsNullOrEmpty(State.PreviousActiveValue))
-                return "from-start";
+                return "";
 
             var currentIndex = _items.IndexOf(itemValue);
             var previousIndex = _items.IndexOf(State.PreviousActiveValue);
 
             if (currentIndex == -1 || previousIndex == -1)
-                return "from-start";
+                return "";
 
             return currentIndex > previousIndex ? "from-end" : "from-start";
         }

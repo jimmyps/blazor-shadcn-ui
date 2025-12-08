@@ -107,19 +107,19 @@
 
     private string GetDataMotion()
     {
-        // When closing, use opposite direction
+        // When closing, use opposite direction if we have motion
         if (!IsActive && IsClosing)
         {
             var motionDir = Context.GetMotionDirection(ItemContext.Value);
+            if (string.IsNullOrEmpty(motionDir))
+                return ""; // No motion for initial close
             return motionDir == "from-end" ? "to-start" : "to-end";
         }
         
-        // When opening or active, show motion direction
+        // When opening or active, return motion direction (empty if first time)
         if (IsActive)
         {
-            var direction = Context.GetMotionDirection(ItemContext.Value);
-            // Ensure we always have a value for animation to work
-            return string.IsNullOrEmpty(direction) ? "from-start" : direction;
+            return Context.GetMotionDirection(ItemContext.Value);
         }
         
         // When fully closed (not active, not closing), no motion needed

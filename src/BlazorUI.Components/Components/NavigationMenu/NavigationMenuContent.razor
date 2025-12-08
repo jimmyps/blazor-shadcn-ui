@@ -39,7 +39,11 @@
         var baseClass = "absolute left-0 top-full w-full z-10 bg-popover rounded-md border shadow-md " +
                        "opacity-0 " + // Start with opacity 0
                        "data-[state=open]:opacity-100 " + // Full opacity when open
+                       // State-based animations (open/close)
                        "data-[state=open]:animate-in data-[state=closed]:animate-out " +
+                       "data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 " +
+                       "data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 " +
+                       // Motion-based animations (directional slides when moving between items)
                        "data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out " +
                        "data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out " +
                        "data-[motion=from-end]:slide-in-from-right-52 " +
