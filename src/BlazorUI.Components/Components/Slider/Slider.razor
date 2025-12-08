@@ -1,0 +1,14 @@
+@namespace BlazorUI.Components.Slider
+
+<div class="@ContainerCssClass">
+    <input 
+        type="range" 
+        min="@Min" 
+        max="@Max" 
+        step="@Step" 
+        value="@Value"
+        @oninput="OnInputAsync"
+        @onchange="OnChangeAsync"
+        disabled="@Disabled"
+        class="@CssClass" />
+</div>
