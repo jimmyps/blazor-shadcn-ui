@@ -38,8 +38,7 @@
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     private bool IsActive => Context?.IsItemActive(ItemContext?.Value ?? string.Empty) ?? false;
-    private System.Threading.Timer? _leaveTimer;
-    private bool _disposed = false;
+    private bool _shouldPreventDefault = false;
 
     protected override void OnInitialized()
     {
@@ -77,28 +76,18 @@
 
     private void HandleMouseEnter()
     {
-        // Cancel any pending close
-        _leaveTimer?.Dispose();
-        _leaveTimer = null;
-        
+        // Cancel any pending close and activate this item
         Context.SetActiveItem(ItemContext.Value);
     }
 
     private void HandleMouseLeave()
     {
-        // Add a small delay before closing to allow moving to content
-        _leaveTimer?.Dispose();
-        _leaveTimer = new System.Threading.Timer(_ =>
+        // Only schedule close if this trigger is currently active
+        if (IsActive)
         {
-            if (!_disposed && Context != null && Context.IsItemActive(ItemContext.Value))
-            {
-                // Only close if user hasn't moved to content
-                Context.ClearActiveItem();
-            }
-        }, null, 150, System.Threading.Timeout.Infinite);
+            Context.ScheduleClose();
+        }
     }
-
-    private bool _shouldPreventDefault = false;
 
     private void HandleKeyDown(KeyboardEventArgs args)
     {
@@ -117,9 +106,6 @@
 
     public void Dispose()
     {
-        _disposed = true;
-        _leaveTimer?.Dispose();
-        
         if (Context != null)
         {
             Context.OnStateChanged -= HandleContextStateChanged;

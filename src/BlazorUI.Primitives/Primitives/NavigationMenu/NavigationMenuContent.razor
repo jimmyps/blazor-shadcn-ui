@@ -97,12 +97,13 @@
 
     private void HandleMouseLeave()
     {
-        Context.ClearActiveItem();
+        // Schedule close with delay - will be cancelled if mouse enters trigger or another item
+        Context.ScheduleClose();
     }
 
     private void HandleMouseEnter()
     {
-        // Keep active when hovering over content - cancel any pending close from trigger
+        // Cancel any pending close and keep this item active
         Context.SetActiveItem(ItemContext.Value);
     }
 
@@ -134,23 +135,11 @@
 
     private string GetStyle()
     {
-        // When ForceMount is true, keep element mounted but hide with opacity/pointer-events
-        // This allows animations to work while keeping content inaccessible when closed
-        if (!IsActive && !IsClosing)
+        // Only use pointer-events:none when fully closed (not active, not closing)
+        // During IsClosing, keep pointer-events to allow mouse re-entry
+        if (!IsActive && !IsClosing && ForceMount)
         {
-            if (ForceMount)
-            {
-                // Use pointer-events to hide but keep in DOM for animations
-                // Don't use visibility:hidden as it breaks CSS animations
-                return "pointer-events: none;";
-            }
-            return "display: none;";
-        }
-        
-        // During closing animation, keep visible but start hiding
-        if (IsClosing && !IsActive)
-        {
-            return "pointer-events: none;"; // Make non-interactive during close animation
+            return "pointer-events: none;";
         }
         
         return "";
