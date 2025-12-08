@@ -125,8 +125,9 @@
         {
             if (ForceMount)
             {
-                // Use opacity and pointer-events to hide but keep in DOM for animations
-                return "opacity: 0; pointer-events: none; visibility: hidden;";
+                // Use pointer-events to hide but keep in DOM for animations
+                // Don't use visibility:hidden as it breaks CSS animations
+                return "pointer-events: none;";
             }
             return "display: none;";
         }
@@ -134,7 +135,7 @@
         // During closing animation, keep visible but start hiding
         if (IsClosing && !IsActive)
         {
-            return ""; // Let CSS animations handle the transition
+            return "pointer-events: none;"; // Make non-interactive during close animation
         }
         
         return "";
