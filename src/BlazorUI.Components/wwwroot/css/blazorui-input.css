@@ -19,8 +19,8 @@
     --dialog-panel-scale-start: 0.96;
     --dialog-panel-translate-exit: 8px;
     --dialog-panel-scale-exit: 0.98;
-    --dialog-panel-duration: 200ms;
-    --dialog-panel-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --dialog-panel-duration: 300ms;
+    --dialog-panel-easing: cubic-bezier(0.42, 0, 0.58, 1);
     --dialog-item-translate-start: -4px;
     --dialog-item-translate-exit: 4px;
     --dialog-item-duration: 150ms;

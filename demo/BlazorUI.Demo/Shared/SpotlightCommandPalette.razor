@@ -8,9 +8,9 @@
 @* Spotlight Command Palette - Global search and command interface *@
 <Dialog @bind-Open="_isOpen">
     <DialogContent 
-        ShowClose="false" 
-        Class="max-w-lg border-border/40 p-0 rounded-2xl shadow-xl gap-0 overflow-hidden !top-[20vh] !translate-y-0 dialog-panel !dialog-animated"
-        OverlayClass="!bg-background/70 backdrop-blur backdrop-saturate-150 dialog-overlay !dialog-animated">
+        ShowClose="false" UseCustomAnimations="true"
+        Class="max-w-lg border-border/40 p-0 rounded-2xl shadow-xl gap-0 overflow-hidden !top-[20vh] !translate-y-0 dialog-panel dialog-animated"
+        OverlayClass="!bg-background/70 backdrop-blur backdrop-saturate-150 dialog-overlay dialog-animated">
         
         <HeightAnimation Config="@_heightAnimationConfig" Enabled="@_isOpen">
             <BlazorUI.Components.Command.Command OnSelect="@HandleSelect">
