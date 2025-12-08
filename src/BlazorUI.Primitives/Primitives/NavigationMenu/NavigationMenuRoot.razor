@@ -1,8 +1,10 @@
 @namespace BlazorUI.Primitives.NavigationMenu
 @implements IDisposable
+@inject IJSRuntime JSRuntime
 
 @* NavigationMenuRoot primitive component - headless navigation behavior *@
-<nav @attributes="AdditionalAttributes"
+<nav @ref="_navRef"
+     @attributes="AdditionalAttributes"
      @onkeydown="HandleKeyDown"
      role="navigation"
      aria-label="@AriaLabel">
@@ -13,6 +15,9 @@
 
 @code {
     private readonly NavigationMenuContext _context = new();
+    private ElementReference _navRef;
+    private IJSObjectReference? _clickOutsideModule;
+    private DotNetObjectReference<NavigationMenuRoot>? _dotNetRef;
 
     /// <summary>
     /// The child content to render within the navigation context.
@@ -72,6 +77,30 @@
         _context.OnStateChanged += HandleContextStateChanged;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _dotNetRef = DotNetObjectReference.Create(this);
+                _clickOutsideModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorUI.Primitives/js/click-outside.js");
+                await _clickOutsideModule.InvokeVoidAsync("setupClickOutside", _navRef, _dotNetRef);
+            }
+            catch (Exception)
+            {
+                // Handle JS interop failures gracefully
+            }
+        }
+    }
+
+    [JSInvokable]
+    public void OnClickOutside()
+    {
+        _context.ClearActiveItem();
+    }
+
     protected override void OnParametersSet()
     {
         _context.State.Orientation = Orientation;
@@ -113,5 +142,20 @@
     public void Dispose()
     {
         _context.OnStateChanged -= HandleContextStateChanged;
+        
+        if (_clickOutsideModule != null)
+        {
+            try
+            {
+                _clickOutsideModule.InvokeVoidAsync("cleanup").AsTask().Wait(100);
+                _clickOutsideModule.DisposeAsync().AsTask().Wait(100);
+            }
+            catch
+            {
+                // Cleanup failures are acceptable
+            }
+        }
+        
+        _dotNetRef?.Dispose();
     }
 }
