@@ -96,11 +96,8 @@
 
     private void HandleMouseEnter()
     {
-        // Keep active when hovering over content
-        if (!IsActive)
-        {
-            Context.SetActiveItem(ItemContext.Value);
-        }
+        // Keep active when hovering over content - cancel any pending close from trigger
+        Context.SetActiveItem(ItemContext.Value);
     }
 
     private string GetDataState()
@@ -129,10 +126,17 @@
             if (ForceMount)
             {
                 // Use opacity and pointer-events to hide but keep in DOM for animations
-                return "opacity: 0; pointer-events: none;";
+                return "opacity: 0; pointer-events: none; visibility: hidden;";
             }
             return "display: none;";
         }
+        
+        // During closing animation, keep visible but start hiding
+        if (IsClosing && !IsActive)
+        {
+            return ""; // Let CSS animations handle the transition
+        }
+        
         return "";
     }
 

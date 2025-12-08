@@ -6,6 +6,7 @@
         id="@ItemContext.TriggerId"
         @onclick="HandleClick"
         @onmouseenter="HandleMouseEnter"
+        @onmouseleave="HandleMouseLeave"
         @onkeydown="HandleKeyDown"
         @onkeydown:preventDefault="@_shouldPreventDefault"
         @attributes="AdditionalAttributes"
@@ -37,6 +38,7 @@
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     private bool IsActive => Context?.IsItemActive(ItemContext?.Value ?? string.Empty) ?? false;
+    private System.Threading.Timer? _leaveTimer;
 
     protected override void OnInitialized()
     {
@@ -74,7 +76,25 @@
 
     private void HandleMouseEnter()
     {
+        // Cancel any pending close
+        _leaveTimer?.Dispose();
+        _leaveTimer = null;
+        
         Context.SetActiveItem(ItemContext.Value);
+    }
+
+    private void HandleMouseLeave()
+    {
+        // Add a small delay before closing to allow moving to content
+        _leaveTimer?.Dispose();
+        _leaveTimer = new System.Threading.Timer(_ =>
+        {
+            if (Context != null && Context.IsItemActive(ItemContext.Value))
+            {
+                // Only close if user hasn't moved to content
+                Context.ClearActiveItem();
+            }
+        }, null, 150, System.Threading.Timeout.Infinite);
     }
 
     private bool _shouldPreventDefault = false;
@@ -100,5 +120,6 @@
         {
             Context.OnStateChanged -= HandleContextStateChanged;
         }
+        _leaveTimer?.Dispose();
     }
 }
