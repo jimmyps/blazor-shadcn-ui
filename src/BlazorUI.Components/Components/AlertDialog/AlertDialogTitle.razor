@@ -1,0 +1,19 @@
+@namespace BlazorUI.Components.AlertDialog
+@using BlazorUI.Components.Utilities
+
+<h2 class="@CssClass">
+    @ChildContent
+</h2>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string CssClass => ClassNames.cn(
+        "text-lg font-semibold",
+        Class
+    );
+}

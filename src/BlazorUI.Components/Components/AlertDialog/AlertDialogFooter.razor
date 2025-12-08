@@ -1,0 +1,19 @@
+@namespace BlazorUI.Components.AlertDialog
+@using BlazorUI.Components.Utilities
+
+<div class="@CssClass">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string CssClass => ClassNames.cn(
+        "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+        Class
+    );
+}
