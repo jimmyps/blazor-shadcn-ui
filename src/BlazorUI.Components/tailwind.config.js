@@ -86,6 +86,54 @@ module.exports = {
             from: { opacity: "1", transform: "translate3d(0, 0, 0) scale3d(1, 1, 1) rotate(0)" },
             to: { opacity: "var(--tw-exit-opacity, 1)", transform: "translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0) scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0))" },
         },
+        "dialog-panel-in": {
+          from: {
+            opacity: "0",
+            transform: "translateY(var(--dialog-panel-translate-start, -8px)) scale(var(--dialog-panel-scale-start, 0.96))",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateY(0) scale(1)",
+          },
+        },
+        "dialog-panel-out": {
+          from: {
+            opacity: "1",
+            transform: "translateY(0) scale(1)",
+          },
+          to: {
+            opacity: "0",
+            transform: "translateY(var(--dialog-panel-translate-exit, 8px)) scale(var(--dialog-panel-scale-exit, 0.98))",
+          },
+        },
+        "dialog-item-in": {
+          from: {
+            opacity: "0",
+            transform: "translateY(var(--dialog-item-translate-start, -4px))",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
+        "dialog-item-out": {
+          from: {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+          to: {
+            opacity: "0",
+            transform: "translateY(var(--dialog-item-translate-exit, 4px))",
+          },
+        },
+        "dialog-overlay-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        "dialog-overlay-out": {
+          from: { opacity: "1" },
+          to: { opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -94,6 +142,15 @@ module.exports = {
         "collapsible-up": "collapsible-up 0.2s ease-out",
         "in": "enter 0.15s ease-out",
         "out": "exit 0.15s ease-in",
+        "dialog-panel-in": "dialog-panel-in var(--dialog-panel-duration, 200ms) var(--dialog-panel-easing, cubic-bezier(0.4, 0, 0.2, 1))",
+        "dialog-panel-out": "dialog-panel-out var(--dialog-panel-duration, 200ms) var(--dialog-panel-easing, cubic-bezier(0.4, 0, 0.2, 1))",
+        "dialog-item-in": "dialog-item-in var(--dialog-item-duration, 150ms) var(--dialog-item-easing, cubic-bezier(0.4, 0, 0.2, 1))",
+        "dialog-item-out": "dialog-item-out var(--dialog-item-duration, 150ms) var(--dialog-item-easing, cubic-bezier(0.4, 0, 0.2, 1))",
+        "dialog-overlay-in": "dialog-overlay-in var(--dialog-overlay-duration, 150ms) ease-out",
+        "dialog-overlay-out": "dialog-overlay-out var(--dialog-overlay-duration, 150ms) ease-in",
+      },
+      transitionProperty: {
+        height: "height",
       },
     },
   },

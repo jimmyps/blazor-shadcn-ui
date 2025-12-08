@@ -11,10 +11,30 @@
     --sidebar-width: 16rem;
     --sidebar-width-mobile: 18rem;
     --sidebar-width-icon: 3rem;
-    
     /* Height animation variables */
     --height-animation-duration: 200ms;
     --height-animation-timing: cubic-bezier(0.4, 0, 0.2, 1);
+    /* Dialog animation values - reusable for all components */
+    --dialog-panel-translate-start: -8px;
+    --dialog-panel-scale-start: 0.96;
+    --dialog-panel-translate-exit: 8px;
+    --dialog-panel-scale-exit: 0.98;
+    --dialog-panel-duration: 300ms;
+    --dialog-panel-easing: cubic-bezier(0.42, 0, 0.58, 1);
+    --dialog-item-translate-start: -4px;
+    --dialog-item-translate-exit: 4px;
+    --dialog-item-duration: 150ms;
+    --dialog-item-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --dialog-overlay-duration: 150ms;
+  }
+
+  /* Reduced motion: zero out durations for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --dialog-panel-duration: 0ms;
+      --dialog-item-duration: 0ms;
+      --dialog-overlay-duration: 0ms;
+    }
   }
 }
 
@@ -33,6 +53,50 @@
   .height-animation-container [role="listbox"] {
     overflow-y: auto;
     overflow-x: hidden;
+  }
+
+  /* Dialog Animation Classes - reusable for any component */
+  /* Apply animations per instance using dialog-animated class on both panel and overlay */
+
+  /* Panel animations - when dialog-animated is on the panel element */
+  .dialog-panel.dialog-animated[data-state="open"] {
+    @apply motion-safe:animate-dialog-panel-in;
+  }
+
+  .dialog-panel.dialog-animated[data-state="closed"] {
+    @apply motion-safe:animate-dialog-panel-out;
+  }
+
+  /* Overlay animations - when dialog-animated is on the overlay element */
+  .dialog-overlay.dialog-animated[data-state="open"] {
+    @apply motion-safe:animate-dialog-overlay-in;
+  }
+
+  .dialog-overlay.dialog-animated[data-state="closed"] {
+    @apply motion-safe:animate-dialog-overlay-out;
+  }
+
+  /* Item animations */
+  .dialog-item {
+    @apply opacity-0;
+  }
+
+  .dialog-item.is-visible {
+    @apply motion-safe:animate-dialog-item-in opacity-100;
+  }
+
+  .dialog-item.is-hidden {
+    @apply motion-safe:animate-dialog-item-out;
+  }
+
+  /* Reduced motion fallbacks */
+  @media (prefers-reduced-motion: reduce) {
+    .dialog-overlay,
+    .dialog-panel,
+    .dialog-item {
+      animation: none !important;
+      transition: none !important;
+    }
   }
 }
 
