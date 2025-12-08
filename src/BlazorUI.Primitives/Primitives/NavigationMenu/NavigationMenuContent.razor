@@ -122,9 +122,15 @@
 
     private string GetStyle()
     {
-        // Hide when not active and not animating
-        if (!IsActive && !IsClosing && !ForceMount)
+        // When ForceMount is true, keep element mounted but hide with opacity/pointer-events
+        // This allows animations to work while keeping content inaccessible when closed
+        if (!IsActive && !IsClosing)
         {
+            if (ForceMount)
+            {
+                // Use opacity and pointer-events to hide but keep in DOM for animations
+                return "opacity: 0; pointer-events: none;";
+            }
             return "display: none;";
         }
         return "";
