@@ -39,6 +39,7 @@
 
     private bool IsActive => Context?.IsItemActive(ItemContext?.Value ?? string.Empty) ?? false;
     private System.Threading.Timer? _leaveTimer;
+    private bool _disposed = false;
 
     protected override void OnInitialized()
     {
@@ -89,7 +90,7 @@
         _leaveTimer?.Dispose();
         _leaveTimer = new System.Threading.Timer(_ =>
         {
-            if (Context != null && Context.IsItemActive(ItemContext.Value))
+            if (!_disposed && Context != null && Context.IsItemActive(ItemContext.Value))
             {
                 // Only close if user hasn't moved to content
                 Context.ClearActiveItem();
@@ -116,10 +117,12 @@
 
     public void Dispose()
     {
+        _disposed = true;
+        _leaveTimer?.Dispose();
+        
         if (Context != null)
         {
             Context.OnStateChanged -= HandleContextStateChanged;
         }
-        _leaveTimer?.Dispose();
     }
 }
