@@ -12,6 +12,7 @@
          aria-labelledby="@ItemContext.TriggerId"
          data-state="@GetDataState()"
          data-motion="@GetDataMotion()"
+         data-activated="@IsActivated.ToString().ToLower()"
          style="@GetStyle()">
         @ChildContent
     </div>
@@ -45,6 +46,7 @@
     private bool IsActive => Context?.IsItemActive(ItemContext?.Value ?? string.Empty) ?? false;
     private bool IsClosing { get; set; }
     private bool WasActive { get; set; }
+    private bool IsActivated { get; set; }
     private System.Threading.Timer? _closingTimer;
 
     protected override void OnInitialized()
@@ -67,7 +69,7 @@
     protected override void OnParametersSet()
     {
         var currentActive = IsActive;
-        
+
         // Detect closing state
         if (WasActive && !currentActive)
         {
@@ -80,12 +82,16 @@
                 InvokeAsync(StateHasChanged);
             }, null, 300, System.Threading.Timeout.Infinite);
         }
-        
+
         WasActive = currentActive;
     }
 
     private void HandleContextStateChanged()
     {
+        // Set on first interaction
+        if (!IsActivated && IsActive)
+            IsActivated = true;
+
         InvokeAsync(StateHasChanged);
     }
 
@@ -115,13 +121,13 @@
                 return ""; // No motion for initial close
             return motionDir == "from-end" ? "to-start" : "to-end";
         }
-        
+
         // When opening or active, return motion direction (empty if first time)
         if (IsActive)
         {
             return Context.GetMotionDirection(ItemContext.Value);
         }
-        
+
         // When fully closed (not active, not closing), no motion needed
         return "";
     }

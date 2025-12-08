@@ -37,8 +37,8 @@
     private string GetClass()
     {
         var baseClass = "absolute left-0 top-full w-full z-10 bg-popover rounded-md border shadow-md " +
-                       "opacity-0 " + // Start with opacity 0
-                       "data-[state=open]:opacity-100 " + // Full opacity when open
+                       "data-[activated=false]:invisible data-[activated=true]:visible " + // Start with hidden
+                       "data-[activated=true]:data-[state=closed]:opacity-0 data-[state=open]:opacity-100 " + // Full opacity when open
                        // State-based animations (open/close)
                        "data-[state=open]:animate-in data-[state=closed]:animate-out " +
                        "data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 " +
