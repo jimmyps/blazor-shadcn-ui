@@ -14,6 +14,11 @@ public class NavigationMenuState
     public string ActiveValue { get; set; } = string.Empty;
 
     /// <summary>
+    /// Gets or sets the previously active item value for motion direction.
+    /// </summary>
+    public string PreviousActiveValue { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the orientation of the navigation menu.
     /// </summary>
     public NavigationMenuOrientation Orientation { get; set; } = NavigationMenuOrientation.Horizontal;
@@ -129,6 +134,7 @@ public class NavigationMenuContext : PrimitiveContextWithEvents<NavigationMenuSt
     {
         UpdateState(state =>
         {
+            state.PreviousActiveValue = state.ActiveValue;
             state.ActiveValue = value;
         });
     }
@@ -140,8 +146,29 @@ public class NavigationMenuContext : PrimitiveContextWithEvents<NavigationMenuSt
     {
         UpdateState(state =>
         {
+            state.PreviousActiveValue = state.ActiveValue;
             state.ActiveValue = string.Empty;
         });
+    }
+
+    /// <summary>
+    /// Gets the motion direction for an item based on its position relative to previous item.
+    /// </summary>
+    public string GetMotionDirection(string itemValue)
+    {
+        lock (_lock)
+        {
+            if (string.IsNullOrEmpty(State.PreviousActiveValue))
+                return "from-start";
+
+            var currentIndex = _items.IndexOf(itemValue);
+            var previousIndex = _items.IndexOf(State.PreviousActiveValue);
+
+            if (currentIndex == -1 || previousIndex == -1)
+                return "from-start";
+
+            return currentIndex > previousIndex ? "from-end" : "from-start";
+        }
     }
 
     /// <summary>

@@ -2,6 +2,10 @@
 let clickHandler = null;
 let element = null;
 
+// Delay before activating click detection to prevent immediate closure
+// when opening the menu with a click
+const ACTIVATION_DELAY_MS = 100;
+
 export function setupClickOutside(el, dotNetRef) {
     element = el;
     
@@ -15,7 +19,7 @@ export function setupClickOutside(el, dotNetRef) {
     // Add listener after a small delay to avoid immediate closure
     setTimeout(() => {
         document.addEventListener('click', clickHandler);
-    }, 100);
+    }, ACTIVATION_DELAY_MS);
 }
 
 export function cleanup() {

@@ -147,12 +147,13 @@
         {
             try
             {
-                _clickOutsideModule.InvokeVoidAsync("cleanup").AsTask().Wait(100);
-                _clickOutsideModule.DisposeAsync().AsTask().Wait(100);
+                // Fire-and-forget cleanup - don't block disposal
+                _ = _clickOutsideModule.InvokeVoidAsync("cleanup");
+                _ = _clickOutsideModule.DisposeAsync();
             }
             catch
             {
-                // Cleanup failures are acceptable
+                // Cleanup failures are acceptable during disposal
             }
         }
         

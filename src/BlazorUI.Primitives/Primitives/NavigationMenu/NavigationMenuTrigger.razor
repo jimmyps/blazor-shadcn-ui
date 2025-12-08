@@ -6,7 +6,6 @@
         id="@ItemContext.TriggerId"
         @onclick="HandleClick"
         @onmouseenter="HandleMouseEnter"
-        @onmouseleave="HandleMouseLeave"
         @onkeydown="HandleKeyDown"
         @onkeydown:preventDefault="@_shouldPreventDefault"
         @attributes="AdditionalAttributes"
@@ -76,12 +75,6 @@
     private void HandleMouseEnter()
     {
         Context.SetActiveItem(ItemContext.Value);
-    }
-
-    private void HandleMouseLeave()
-    {
-        // Don't clear immediately - let content handle mouseleave
-        // This allows moving from trigger to content
     }
 
     private bool _shouldPreventDefault = false;
