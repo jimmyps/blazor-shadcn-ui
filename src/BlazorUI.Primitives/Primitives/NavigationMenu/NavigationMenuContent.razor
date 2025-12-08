@@ -107,14 +107,23 @@
 
     private string GetDataMotion()
     {
+        // When closing, use opposite direction
         if (!IsActive && IsClosing)
         {
-            // Closing: motion direction is opposite
             var motionDir = Context.GetMotionDirection(ItemContext.Value);
             return motionDir == "from-end" ? "to-start" : "to-end";
         }
         
-        return IsActive ? Context.GetMotionDirection(ItemContext.Value) : "";
+        // When opening or active, show motion direction
+        if (IsActive)
+        {
+            var direction = Context.GetMotionDirection(ItemContext.Value);
+            // Ensure we always have a value for animation to work
+            return string.IsNullOrEmpty(direction) ? "from-start" : direction;
+        }
+        
+        // When fully closed (not active, not closing), no motion needed
+        return "";
     }
 
     private string GetStyle()
