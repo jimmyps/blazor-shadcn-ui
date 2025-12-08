@@ -2,14 +2,18 @@
 @implements IDisposable
 
 @* NavigationMenuContent - dropdown content panel *@
-@if (IsActive)
+@if (ForceMount || IsActive || IsClosing)
 {
     <div id="@ItemContext.ContentId"
          @onmouseleave="HandleMouseLeave"
+         @onmouseenter="HandleMouseEnter"
          @attributes="AdditionalAttributes"
          role="menu"
          aria-labelledby="@ItemContext.TriggerId"
-         data-state="open">
+         data-state="@GetDataState()"
+         data-motion="@GetDataMotion()"
+         data-activated="@IsActivated.ToString().ToLower()"
+         style="@GetStyle()">
         @ChildContent
     </div>
 }
@@ -28,12 +32,22 @@
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
+    /// When true, the content is always mounted in the DOM (for animations).
+    /// </summary>
+    [Parameter]
+    public bool ForceMount { get; set; }
+
+    /// <summary>
     /// Additional attributes to apply to the content element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     private bool IsActive => Context?.IsItemActive(ItemContext?.Value ?? string.Empty) ?? false;
+    private bool IsClosing { get; set; }
+    private bool WasActive { get; set; }
+    private bool IsActivated { get; set; }
+    private System.Threading.Timer? _closingTimer;
 
     protected override void OnInitialized()
     {
@@ -52,14 +66,83 @@
         Context.OnStateChanged += HandleContextStateChanged;
     }
 
+    protected override void OnParametersSet()
+    {
+        var currentActive = IsActive;
+
+        // Detect closing state
+        if (WasActive && !currentActive)
+        {
+            IsClosing = true;
+            // Keep element mounted for animation duration
+            _closingTimer?.Dispose();
+            _closingTimer = new System.Threading.Timer(_ =>
+            {
+                IsClosing = false;
+                InvokeAsync(StateHasChanged);
+            }, null, 300, System.Threading.Timeout.Infinite);
+        }
+
+        WasActive = currentActive;
+    }
+
     private void HandleContextStateChanged()
     {
+        // Set on first interaction
+        if (!IsActivated && IsActive)
+            IsActivated = true;
+
         InvokeAsync(StateHasChanged);
     }
 
     private void HandleMouseLeave()
     {
-        Context.ClearActiveItem();
+        // Schedule close with delay - will be cancelled if mouse enters trigger or another item
+        Context.ScheduleClose();
+    }
+
+    private void HandleMouseEnter()
+    {
+        // Cancel any pending close and keep this item active
+        Context.SetActiveItem(ItemContext.Value);
+    }
+
+    private string GetDataState()
+    {
+        return IsActive ? "open" : "closed";
+    }
+
+    private string GetDataMotion()
+    {
+        // When closing, use opposite direction if we have motion
+        if (!IsActive && IsClosing)
+        {
+            var motionDir = Context.GetMotionDirection(ItemContext.Value);
+            if (string.IsNullOrEmpty(motionDir))
+                return ""; // No motion for initial close
+            return motionDir == "from-end" ? "to-start" : "to-end";
+        }
+
+        // When opening or active, return motion direction (empty if first time)
+        if (IsActive)
+        {
+            return Context.GetMotionDirection(ItemContext.Value);
+        }
+
+        // When fully closed (not active, not closing), no motion needed
+        return "";
+    }
+
+    private string GetStyle()
+    {
+        // Only use pointer-events:none when fully closed (not active, not closing)
+        // During IsClosing, keep pointer-events to allow mouse re-entry
+        if (!IsActive && !IsClosing && ForceMount)
+        {
+            return "pointer-events: none;";
+        }
+        
+        return "";
     }
 
     public void Dispose()
@@ -68,5 +151,6 @@
         {
             Context.OnStateChanged -= HandleContextStateChanged;
         }
+        _closingTimer?.Dispose();
     }
 }

@@ -2,7 +2,7 @@
 
 @* ScrollArea - styled scrollable region with custom scrollbars *@
 <div @attributes="GetRootAttributes()">
-    <div class="h-full w-full rounded-[inherit]" style="@GetOverflowStyle()">
+    <div class="h-full w-full rounded-[inherit] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style="@GetOverflowStyle()">
         <div style="min-width: 100%; display: table;">
             @ChildContent
         </div>

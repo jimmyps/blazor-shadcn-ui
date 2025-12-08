@@ -14,6 +14,11 @@ public class NavigationMenuState
     public string ActiveValue { get; set; } = string.Empty;
 
     /// <summary>
+    /// Gets or sets the previously active item value for motion direction.
+    /// </summary>
+    public string PreviousActiveValue { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the orientation of the navigation menu.
     /// </summary>
     public NavigationMenuOrientation Orientation { get; set; } = NavigationMenuOrientation.Horizontal;
@@ -39,10 +44,18 @@ public enum NavigationMenuOrientation
 /// Context for NavigationMenu primitive component and its children.
 /// Manages active item state and provides IDs for ARIA attributes.
 /// </summary>
-public class NavigationMenuContext : PrimitiveContextWithEvents<NavigationMenuState>
+public class NavigationMenuContext : PrimitiveContextWithEvents<NavigationMenuState>, IDisposable
 {
     private readonly List<string> _items = new();
     private readonly object _lock = new();
+    private System.Threading.Timer? _closeTimer;
+    private bool _disposed;
+
+    /// <summary>
+    /// Delay in milliseconds before closing menu after mouse leave.
+    /// Default is 200ms.
+    /// </summary>
+    public int CloseDelay { get; set; } = 200;
 
     /// <summary>
     /// Initializes a new instance of the NavigationMenuContext.
@@ -122,13 +135,20 @@ public class NavigationMenuContext : PrimitiveContextWithEvents<NavigationMenuSt
     }
 
     /// <summary>
-    /// Sets the active item.
+    /// Sets the active item and cancels any pending close.
     /// </summary>
     /// <param name="value">The value of the item to activate.</param>
     public void SetActiveItem(string value)
     {
+        CancelCloseTimer();
+        
         UpdateState(state =>
         {
+            // Only track previous if switching between items (not from closed state)
+            if (!string.IsNullOrEmpty(state.ActiveValue))
+            {
+                state.PreviousActiveValue = state.ActiveValue;
+            }
             state.ActiveValue = value;
         });
     }
@@ -138,10 +158,76 @@ public class NavigationMenuContext : PrimitiveContextWithEvents<NavigationMenuSt
     /// </summary>
     public void ClearActiveItem()
     {
+        CancelCloseTimer();
+        
         UpdateState(state =>
         {
+            // Don't update PreviousActiveValue - keep it for motion direction
             state.ActiveValue = string.Empty;
         });
+    }
+
+    /// <summary>
+    /// Schedules closing the menu after the delay.
+    /// Call this on mouse leave from trigger or content.
+    /// The close will be cancelled if SetActiveItem is called before the delay expires.
+    /// </summary>
+    public void ScheduleClose()
+    {
+        CancelCloseTimer();
+
+        var currentValue = State.ActiveValue;
+        
+        _closeTimer = new System.Threading.Timer(_ =>
+        {
+            if (!_disposed)
+            {
+                // only close if still on the same active item
+                if (State.ActiveValue == currentValue)
+                {
+                    ClearActiveItem();
+
+                    // clear previous active since menu is fully closed
+                    State.PreviousActiveValue = string.Empty;
+                }
+            }
+        }, null, CloseDelay, System.Threading.Timeout.Infinite);
+    }
+
+    /// <summary>
+    /// Cancels any pending close operation.
+    /// </summary>
+    public void CancelCloseTimer()
+    {
+        _closeTimer?.Dispose();
+        _closeTimer = null;
+    }
+
+    /// <summary>
+    /// Gets the motion direction for an item based on its position relative to previous item.
+    /// Returns empty string if no previous item (for initial opening animation).
+    /// </summary>
+    public string GetMotionDirection(string itemValue)
+    {
+        lock (_lock)
+        {
+            // No previous active item = first time opening, use default animation (not motion)
+            if (string.IsNullOrEmpty(State.PreviousActiveValue))
+                return "";
+
+            // Same item re-opening, no directional motion needed
+            if (State.PreviousActiveValue == itemValue)
+                return "";
+
+            var currentIndex = _items.IndexOf(itemValue);
+            var previousIndex = _items.IndexOf(State.PreviousActiveValue);
+
+            // Items not found in registered list
+            if (currentIndex == -1 || previousIndex == -1)
+                return "";
+
+            return currentIndex > previousIndex ? "from-end" : "from-start";
+        }
     }
 
     /// <summary>
@@ -190,6 +276,12 @@ public class NavigationMenuContext : PrimitiveContextWithEvents<NavigationMenuSt
         {
             SetActiveItem(prevItem);
         }
+    }
+
+    public void Dispose()
+    {
+        _disposed = true;
+        _closeTimer?.Dispose();
     }
 }
 

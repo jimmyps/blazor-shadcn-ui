@@ -135,4 +135,20 @@
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
     transition-duration: var(--tw-duration, var(--default-transition-duration));
   }
+
+  .data-\[motion\=from-end\]\:slide-in-from-right-52[data-motion=from-end] {
+    --tw-enter-translate-x: 13rem !important;
+  }
+
+  .data-\[motion\=from-start\]\:slide-in-from-left-52[data-motion=from-start] {
+    --tw-enter-translate-x: -13rem !important;
+  }
+
+  .data-\[motion\=to-end\]\:slide-out-to-right-52[data-motion=to-end] {
+    --tw-exit-translate-x: 13rem !important;
+  }
+
+  .data-\[motion\=to-start\]\:slide-out-to-left-52[data-motion=to-start] {
+    --tw-exit-translate-x: -13rem !important;
+  }
 }

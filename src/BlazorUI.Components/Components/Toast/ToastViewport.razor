@@ -77,7 +77,7 @@
 
     private Dictionary<string, object> GetAttributes()
     {
-        var baseClass = $"fixed z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:flex-col md:max-w-[420px] {GetPositionClass()}";
+        var baseClass = $"fixed z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:flex-col md:max-w-[420px] gap-2 {GetPositionClass()}";
         var classValue = string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
 
         var attributes = new Dictionary<string, object>

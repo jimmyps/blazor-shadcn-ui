@@ -6,6 +6,7 @@
         id="@ItemContext.TriggerId"
         @onclick="HandleClick"
         @onmouseenter="HandleMouseEnter"
+        @onmouseleave="HandleMouseLeave"
         @onkeydown="HandleKeyDown"
         @onkeydown:preventDefault="@_shouldPreventDefault"
         @attributes="AdditionalAttributes"
@@ -37,6 +38,7 @@
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     private bool IsActive => Context?.IsItemActive(ItemContext?.Value ?? string.Empty) ?? false;
+    private bool _shouldPreventDefault = false;
 
     protected override void OnInitialized()
     {
@@ -74,10 +76,18 @@
 
     private void HandleMouseEnter()
     {
+        // Cancel any pending close and activate this item
         Context.SetActiveItem(ItemContext.Value);
     }
 
-    private bool _shouldPreventDefault = false;
+    private void HandleMouseLeave()
+    {
+        // Only schedule close if this trigger is currently active
+        if (IsActive)
+        {
+            Context.ScheduleClose();
+        }
+    }
 
     private void HandleKeyDown(KeyboardEventArgs args)
     {
