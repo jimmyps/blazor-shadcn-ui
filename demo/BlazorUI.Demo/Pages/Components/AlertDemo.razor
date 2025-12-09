@@ -1,0 +1,141 @@
+@page "/components/alert"
+@using BlazorUI.Components.Alert
+@using BlazorUI.Icons.Lucide.Components
+
+<PageTitle>Alert Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Alert Component</h1>
+            <p class="text-xl text-muted-foreground">
+                Displays a callout for user attention.
+            </p>
+        </div>
+    </div>
+
+    <!-- Default Alert -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Default</h2>
+            <p class="text-sm text-muted-foreground">
+                A simple informational alert.
+            </p>
+        </div>
+        <Alert>
+            <LucideIcon Name="terminal" Class="h-4 w-4" />
+            <AlertTitle>Heads up!</AlertTitle>
+            <AlertDescription>
+                You can add components to your app using the cli.
+            </AlertDescription>
+        </Alert>
+    </div>
+
+    <!-- Destructive Alert -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Destructive</h2>
+            <p class="text-sm text-muted-foreground">
+                Use the destructive variant for error messages and critical warnings.
+            </p>
+        </div>
+        <Alert Variant="AlertVariant.Destructive">
+            <LucideIcon Name="alert-circle" Class="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+                Your session has expired. Please log in again.
+            </AlertDescription>
+        </Alert>
+    </div>
+
+    <!-- Usage Examples -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Usage Examples</h2>
+            <p class="text-sm text-muted-foreground">
+                Common use cases for alert messages.
+            </p>
+        </div>
+        <div class="space-y-6">
+            <!-- Success Alert -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Success Message</h3>
+                <Alert>
+                    <LucideIcon Name="check-circle-2" Class="h-4 w-4" />
+                    <AlertTitle>Success</AlertTitle>
+                    <AlertDescription>
+                        Your changes have been saved successfully.
+                    </AlertDescription>
+                </Alert>
+            </div>
+
+            <!-- Warning Alert -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Warning Message</h3>
+                <Alert>
+                    <LucideIcon Name="alert-triangle" Class="h-4 w-4" />
+                    <AlertTitle>Warning</AlertTitle>
+                    <AlertDescription>
+                        This action cannot be undone. Please review before proceeding.
+                    </AlertDescription>
+                </Alert>
+            </div>
+
+            <!-- Info Alert -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Information</h3>
+                <Alert>
+                    <LucideIcon Name="info" Class="h-4 w-4" />
+                    <AlertTitle>Did you know?</AlertTitle>
+                    <AlertDescription>
+                        You can customize the appearance of alerts using CSS variables.
+                    </AlertDescription>
+                </Alert>
+            </div>
+
+            <!-- Error with Link -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Error with Action</h3>
+                <Alert Variant="AlertVariant.Destructive">
+                    <LucideIcon Name="x-circle" Class="h-4 w-4" />
+                    <AlertTitle>Payment Failed</AlertTitle>
+                    <AlertDescription>
+                        We couldn't process your payment. Please <a href="#" class="font-medium underline underline-offset-4">update your payment method</a>.
+                    </AlertDescription>
+                </Alert>
+            </div>
+
+            <!-- Alert without Icon -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Without Icon</h3>
+                <Alert>
+                    <AlertTitle>Maintenance Scheduled</AlertTitle>
+                    <AlertDescription>
+                        Our services will be temporarily unavailable on Sunday, December 10th from 2:00 AM to 4:00 AM EST.
+                    </AlertDescription>
+                </Alert>
+            </div>
+
+            <!-- Alert with only Description -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Description Only</h3>
+                <Alert>
+                    <LucideIcon Name="lightbulb" Class="h-4 w-4" />
+                    <AlertDescription>
+                        Tip: Use keyboard shortcuts to navigate faster through the application.
+                    </AlertDescription>
+                </Alert>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accessibility -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Accessibility</h2>
+            <p class="text-sm text-muted-foreground">
+                The Alert component uses the ARIA <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">role="alert"</code> attribute to announce important messages to screen readers.
+            </p>
+        </div>
+    </div>
+</div>

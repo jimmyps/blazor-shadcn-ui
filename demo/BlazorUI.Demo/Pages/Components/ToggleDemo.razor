@@ -1,0 +1,90 @@
+@page "/components/toggle"
+@using BlazorUI.Components.Toggle
+@using BlazorUI.Components.ToggleGroup
+@using BlazorUI.Icons.Lucide.Components
+
+<PageTitle>Toggle Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Toggle Component</h1>
+            <p class="text-xl text-muted-foreground">
+                A two-state button that can be either on or off.
+            </p>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic</h2>
+        </div>
+        <Toggle @bind-Pressed="isPressed">
+            <LucideIcon Name="bold" Class="h-4 w-4" />
+        </Toggle>
+        <p class="text-sm text-muted-foreground">Pressed: @isPressed</p>
+    </div>
+
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Variants</h2>
+        </div>
+        <div class="flex gap-4">
+            <Toggle Variant="ToggleVariant.Default">Default</Toggle>
+            <Toggle Variant="ToggleVariant.Outline">Outline</Toggle>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Sizes</h2>
+        </div>
+        <div class="flex gap-4 items-center">
+            <Toggle Size="ToggleSize.Small">Small</Toggle>
+            <Toggle Size="ToggleSize.Default">Default</Toggle>
+            <Toggle Size="ToggleSize.Large">Large</Toggle>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Toggle Group - Single</h2>
+        </div>
+        <ToggleGroup Type="ToggleGroupType.Single" @bind-Value="alignment">
+            <ToggleGroupItem Value="left">
+                <LucideIcon Name="align-left" Class="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem Value="center">
+                <LucideIcon Name="align-center" Class="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem Value="right">
+                <LucideIcon Name="align-right" Class="h-4 w-4" />
+            </ToggleGroupItem>
+        </ToggleGroup>
+        <p class="text-sm text-muted-foreground">Selected: @alignment</p>
+    </div>
+
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Toggle Group - Multiple</h2>
+        </div>
+        <ToggleGroup Type="ToggleGroupType.Multiple" @bind-Values="styles">
+            <ToggleGroupItem Value="bold">
+                <LucideIcon Name="bold" Class="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem Value="italic">
+                <LucideIcon Name="italic" Class="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem Value="underline">
+                <LucideIcon Name="underline" Class="h-4 w-4" />
+            </ToggleGroupItem>
+        </ToggleGroup>
+        <p class="text-sm text-muted-foreground">Selected: @string.Join(", ", styles ?? new List<string>())</p>
+    </div>
+</div>
+
+@code {
+    private bool isPressed = false;
+    private string? alignment = "left";
+    private List<string>? styles = new();
+}

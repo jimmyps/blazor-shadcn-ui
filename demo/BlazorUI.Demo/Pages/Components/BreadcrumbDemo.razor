@@ -1,0 +1,189 @@
+@page "/components/breadcrumb"
+@using BlazorUI.Components.Breadcrumb
+@using BlazorUI.Icons.Lucide.Components
+
+<PageTitle>Breadcrumb Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Breadcrumb Component</h1>
+            <p class="text-xl text-muted-foreground">
+                Displays the path to the current resource using a hierarchy of links.
+            </p>
+        </div>
+    </div>
+
+    <!-- Basic Breadcrumb -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic</h2>
+            <p class="text-sm text-muted-foreground">
+                A simple breadcrumb navigation.
+            </p>
+        </div>
+        <Breadcrumb>
+            <BreadcrumbList>
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/">Home</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/components">Components</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+                </BreadcrumbItem>
+            </BreadcrumbList>
+        </Breadcrumb>
+    </div>
+
+    <!-- Custom Separator -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Separator</h2>
+            <p class="text-sm text-muted-foreground">
+                Use a custom separator between breadcrumb items.
+            </p>
+        </div>
+        <Breadcrumb>
+            <BreadcrumbList>
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/">Home</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator>
+                    <LucideIcon Name="slash" Class="h-4 w-4" />
+                </BreadcrumbSeparator>
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/docs">Documentation</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator>
+                    <LucideIcon Name="slash" Class="h-4 w-4" />
+                </BreadcrumbSeparator>
+                <BreadcrumbItem>
+                    <BreadcrumbPage>Components</BreadcrumbPage>
+                </BreadcrumbItem>
+            </BreadcrumbList>
+        </Breadcrumb>
+    </div>
+
+    <!-- With Dropdown -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">With Ellipsis</h2>
+            <p class="text-sm text-muted-foreground">
+                Use ellipsis to indicate collapsed breadcrumb items.
+            </p>
+        </div>
+        <Breadcrumb>
+            <BreadcrumbList>
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/">Home</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbEllipsis />
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbLink Href="/components">Components</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                    <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+                </BreadcrumbItem>
+            </BreadcrumbList>
+        </Breadcrumb>
+    </div>
+
+    <!-- Usage Examples -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Usage Examples</h2>
+            <p class="text-sm text-muted-foreground">
+                Common breadcrumb patterns.
+            </p>
+        </div>
+        <div class="space-y-6">
+            <!-- File System Path -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">File System Navigation</h3>
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink Href="/files">Files</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbLink Href="/files/documents">Documents</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbLink Href="/files/documents/reports">Reports</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>Q4-2024.pdf</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+            </div>
+
+            <!-- E-commerce Path -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">E-commerce Category Path</h3>
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink Href="/shop">Shop</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbLink Href="/shop/electronics">Electronics</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbLink Href="/shop/electronics/laptops">Laptops</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>Gaming Laptops</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+            </div>
+
+            <!-- Settings Path -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Settings Navigation</h3>
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink Href="/settings">Settings</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbLink Href="/settings/profile">Profile</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>Privacy</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accessibility -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Accessibility</h2>
+            <p class="text-sm text-muted-foreground">
+                The Breadcrumb component uses semantic HTML with <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">nav</code> and 
+                <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">aria-label</code> attributes for proper screen reader support.
+            </p>
+        </div>
+    </div>
+</div>

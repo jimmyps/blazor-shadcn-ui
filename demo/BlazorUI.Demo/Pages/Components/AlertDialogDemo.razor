@@ -1,0 +1,192 @@
+@page "/components/alert-dialog"
+@using BlazorUI.Components.AlertDialog
+@using BlazorUI.Components.Button
+
+<PageTitle>Alert Dialog Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Alert Dialog Component</h1>
+            <p class="text-xl text-muted-foreground">
+                A modal dialog that interrupts the user with important content and expects a response.
+            </p>
+        </div>
+    </div>
+
+    <!-- Basic Alert Dialog -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic</h2>
+            <p class="text-sm text-muted-foreground">
+                A simple alert dialog with a destructive action.
+            </p>
+        </div>
+        <AlertDialog @bind-Open="isBasicOpen">
+            <AlertDialogTrigger AsChild="true">
+                <Button Variant="ButtonVariant.Outline" @onclick="() => isBasicOpen = true">Show Dialog</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete your account
+                        and remove your data from our servers.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel AsChild="true">
+                        <Button Variant="ButtonVariant.Outline" @onclick="() => isBasicOpen = false">Cancel</Button>
+                    </AlertDialogCancel>
+                    <AlertDialogAction AsChild="true">
+                        <Button Variant="ButtonVariant.Destructive" @onclick="HandleDelete">Continue</Button>
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    </div>
+
+    <!-- Confirmation Dialog -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Confirmation</h2>
+            <p class="text-sm text-muted-foreground">
+                Use for confirming non-destructive actions.
+            </p>
+        </div>
+        <AlertDialog @bind-Open="isConfirmOpen">
+            <AlertDialogTrigger AsChild="true">
+                <Button @onclick="() => isConfirmOpen = true">Save Changes</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Save your changes?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Your changes will be saved to your profile. You can edit them at any time.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel AsChild="true">
+                        <Button Variant="ButtonVariant.Outline" @onclick="() => isConfirmOpen = false">Cancel</Button>
+                    </AlertDialogCancel>
+                    <AlertDialogAction AsChild="true">
+                        <Button @onclick="HandleSave">Save</Button>
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+        @if (saveMessage != null)
+        {
+            <p class="text-sm text-muted-foreground">@saveMessage</p>
+        }
+    </div>
+
+    <!-- Warning Dialog -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Warning</h2>
+            <p class="text-sm text-muted-foreground">
+                Alert the user about potentially dangerous actions.
+            </p>
+        </div>
+        <AlertDialog @bind-Open="isWarningOpen">
+            <AlertDialogTrigger AsChild="true">
+                <Button Variant="ButtonVariant.Destructive" @onclick="() => isWarningOpen = true">Delete All Data</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Delete all data?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This will permanently delete all your data including:
+                        <ul class="list-disc list-inside mt-2 space-y-1">
+                            <li>All projects and files</li>
+                            <li>Team members and permissions</li>
+                            <li>Billing information</li>
+                        </ul>
+                        This action cannot be undone.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel AsChild="true">
+                        <Button Variant="ButtonVariant.Outline" @onclick="() => isWarningOpen = false">Cancel</Button>
+                    </AlertDialogCancel>
+                    <AlertDialogAction AsChild="true">
+                        <Button Variant="ButtonVariant.Destructive" @onclick="HandleDeleteAll">Delete Everything</Button>
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+        @if (deleteMessage != null)
+        {
+            <p class="text-sm text-destructive">@deleteMessage</p>
+        }
+    </div>
+
+    <!-- Information Dialog -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Information</h2>
+            <p class="text-sm text-muted-foreground">
+                Display important information that requires acknowledgment.
+            </p>
+        </div>
+        <AlertDialog @bind-Open="isInfoOpen">
+            <AlertDialogTrigger AsChild="true">
+                <Button Variant="ButtonVariant.Secondary" @onclick="() => isInfoOpen = true">View Terms</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Terms and Conditions</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        By continuing, you agree to our Terms of Service and Privacy Policy.
+                        We collect and use your data to provide and improve our services.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogAction AsChild="true">
+                        <Button @onclick="() => isInfoOpen = false">I Understand</Button>
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    </div>
+
+    <!-- Accessibility -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Accessibility</h2>
+            <p class="text-sm text-muted-foreground">
+                Alert dialogs trap focus and prevent interaction with the rest of the page. They can be closed with the Escape key for accessibility.
+            </p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isBasicOpen = false;
+    private bool isConfirmOpen = false;
+    private bool isWarningOpen = false;
+    private bool isInfoOpen = false;
+    private string? saveMessage;
+    private string? deleteMessage;
+
+    private void HandleDelete()
+    {
+        isBasicOpen = false;
+        // Handle delete logic
+    }
+
+    private void HandleSave()
+    {
+        isConfirmOpen = false;
+        saveMessage = "Changes saved successfully!";
+        StateHasChanged();
+    }
+
+    private void HandleDeleteAll()
+    {
+        isWarningOpen = false;
+        deleteMessage = "All data has been deleted.";
+        StateHasChanged();
+    }
+}
