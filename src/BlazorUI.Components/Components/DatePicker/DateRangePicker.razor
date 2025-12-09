@@ -55,6 +55,8 @@
     private bool _isOpen;
     private DateOnly? _startDate;
     private DateOnly? _endDate;
+    private DateOnly? _lastNotifiedStartDate;
+    private DateOnly? _lastNotifiedEndDate;
 
     /// <summary>
     /// The start date of the range.
@@ -221,28 +223,27 @@
     {
         await base.OnAfterRenderAsync(firstRender);
 
-        var startChanged = _startDate != StartDate;
-        var endChanged = _endDate != EndDate;
+        var startChanged = _startDate != _lastNotifiedStartDate;
+        var endChanged = _endDate != _lastNotifiedEndDate;
 
-        // Notify when dates change
+        // Notify when dates change (only once per change)
         if (startChanged)
         {
+            _lastNotifiedStartDate = _startDate;
             await StartDateChanged.InvokeAsync(_startDate);
         }
 
         if (endChanged)
         {
+            _lastNotifiedEndDate = _endDate;
             await EndDateChanged.InvokeAsync(_endDate);
         }
 
         // Close popover when both dates are selected
-        if (startChanged || endChanged)
+        if ((startChanged || endChanged) && _startDate.HasValue && _endDate.HasValue && _isOpen)
         {
-            if (_startDate.HasValue && _endDate.HasValue && _isOpen)
-            {
-                _isOpen = false;
-                StateHasChanged();
-            }
+            _isOpen = false;
+            StateHasChanged();
         }
     }
 

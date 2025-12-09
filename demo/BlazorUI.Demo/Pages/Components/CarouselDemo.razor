@@ -256,7 +256,7 @@
 @code {
     private int currentSlideIndex = 0;
     
-    private List<GalleryImage> galleryImages = new()
+    private readonly List<GalleryImage> galleryImages = new()
     {
         new GalleryImage { Icon = "🌄", Title = "Mountain Sunrise", Description = "Beautiful morning view" },
         new GalleryImage { Icon = "🏖️", Title = "Beach Paradise", Description = "Tropical getaway" },

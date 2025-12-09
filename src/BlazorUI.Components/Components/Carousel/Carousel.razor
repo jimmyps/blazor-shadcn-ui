@@ -60,7 +60,8 @@
     private ElementReference _containerRef;
     private IJSObjectReference? _module;
     private IJSObjectReference? _carouselInstance;
-    private string _carouselId = Guid.NewGuid().ToString();
+    private DotNetObjectReference<Carousel>? _dotNetRef;
+    private readonly string _carouselId = Guid.NewGuid().ToString();
     private int _currentIndex = 0;
     private int _totalSlides = 0;
 
@@ -162,9 +163,9 @@
                     enableDrag = EnableDrag
                 };
 
-                var dotNetRef = DotNetObjectReference.Create(this);
+                _dotNetRef = DotNetObjectReference.Create(this);
                 _carouselInstance = await _module.InvokeAsync<IJSObjectReference>(
-                    "initCarousel", _carouselRef, _viewportRef, _containerRef, dotNetRef, options);
+                    "initCarousel", _carouselRef, _viewportRef, _containerRef, _dotNetRef, options);
 
                 // Get initial state
                 _totalSlides = await _carouselInstance.InvokeAsync<int>("getTotalSlides");
@@ -323,6 +324,8 @@
             {
                 await _module.DisposeAsync();
             }
+            
+            _dotNetRef?.Dispose();
         }
         catch
         {

@@ -35,6 +35,7 @@
 @code {
     private bool _isOpen;
     private DateOnly? _selectedDate;
+    private DateOnly? _lastNotifiedDate;
 
     /// <summary>
     /// The selected date.
@@ -163,10 +164,11 @@
     {
         await base.OnAfterRenderAsync(firstRender);
 
-        // Close popover and notify when date is selected
-        if (_selectedDate.HasValue && _selectedDate != SelectedDate && _isOpen)
+        // Close popover and notify when date is selected (only once per selection)
+        if (_selectedDate.HasValue && _selectedDate != _lastNotifiedDate && _isOpen)
         {
             _isOpen = false;
+            _lastNotifiedDate = _selectedDate;
             await SelectedDateChanged.InvokeAsync(_selectedDate);
             StateHasChanged();
         }

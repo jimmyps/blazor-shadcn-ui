@@ -57,7 +57,9 @@ export function initCarousel(carouselElement, viewportElement, containerElement,
     // Get slide size
     function getSlideSize() {
         const viewport = viewportElement.getBoundingClientRect();
-        return isHorizontal ? viewport.width : viewport.height;
+        const viewportSize = isHorizontal ? viewport.width : viewport.height;
+        // Divide by slidesPerView to get actual slide size
+        return viewportSize / slidesPerView;
     }
 
     // Set container transform

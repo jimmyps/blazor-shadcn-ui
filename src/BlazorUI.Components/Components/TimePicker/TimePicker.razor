@@ -198,6 +198,13 @@
                 _isPM = true;
             }
         }
+        else
+        {
+            _hour12 = 12;
+            _hour24 = 0;
+            _minute = 0;
+            _isPM = false;
+        }
     }
 
     private async Task ApplyTime()
@@ -211,14 +218,7 @@
         else
         {
             // Convert 12-hour to 24-hour
-            if (_hour12 == 12)
-            {
-                hour = _isPM ? 12 : 0;
-            }
-            else
-            {
-                hour = _isPM ? _hour12 + 12 : _hour12;
-            }
+            hour = (_hour12 == 12) ? (_isPM ? 12 : 0) : (_isPM ? _hour12 + 12 : _hour12);
         }
 
         var newTime = new TimeOnly(hour, _minute);
