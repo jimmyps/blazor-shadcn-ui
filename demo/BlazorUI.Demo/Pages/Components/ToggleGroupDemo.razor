@@ -1,0 +1,101 @@
+@page "/components/toggle-group"
+@using BlazorUI.Components.Toggle
+@using BlazorUI.Components.ToggleGroup
+@using BlazorUI.Icons.Lucide.Components
+
+<PageTitle>Toggle Group Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Toggle Group Component</h1>
+            <p class="text-xl text-muted-foreground">
+                A set of two-state buttons that can be toggled on or off.
+            </p>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Single Selection</h2>
+            <p class="text-sm text-muted-foreground">
+                Only one item can be selected at a time (radio behavior).
+            </p>
+        </div>
+        <ToggleGroup Type="ToggleGroupType.Single" @bind-Value="alignment">
+            <ToggleGroupItem Value="left">
+                <LucideIcon Name="align-left" Class="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem Value="center">
+                <LucideIcon Name="align-center" Class="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem Value="right">
+                <LucideIcon Name="align-right" Class="h-4 w-4" />
+            </ToggleGroupItem>
+        </ToggleGroup>
+        <p class="text-sm text-muted-foreground">Selected: @alignment</p>
+    </div>
+
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Multiple Selection</h2>
+            <p class="text-sm text-muted-foreground">
+                Multiple items can be selected simultaneously (checkbox behavior).
+            </p>
+        </div>
+        <ToggleGroup Type="ToggleGroupType.Multiple" @bind-Values="styles">
+            <ToggleGroupItem Value="bold">
+                <LucideIcon Name="bold" Class="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem Value="italic">
+                <LucideIcon Name="italic" Class="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem Value="underline">
+                <LucideIcon Name="underline" Class="h-4 w-4" />
+            </ToggleGroupItem>
+        </ToggleGroup>
+        <p class="text-sm text-muted-foreground">Selected: @string.Join(", ", styles ?? new List<string>())</p>
+    </div>
+
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Text Formatting</h2>
+            <p class="text-sm text-muted-foreground">
+                Common use case for text editors.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <ToggleGroup Type="ToggleGroupType.Multiple" @bind-Values="formatting">
+                <ToggleGroupItem Value="bold">
+                    <LucideIcon Name="bold" Class="h-4 w-4" />
+                </ToggleGroupItem>
+                <ToggleGroupItem Value="italic">
+                    <LucideIcon Name="italic" Class="h-4 w-4" />
+                </ToggleGroupItem>
+                <ToggleGroupItem Value="strikethrough">
+                    <LucideIcon Name="strikethrough" Class="h-4 w-4" />
+                </ToggleGroupItem>
+            </ToggleGroup>
+            <div class="p-4 border rounded-lg">
+                <p class="@GetFormattingClass()">
+                    Sample text with formatting
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? alignment = "left";
+    private List<string>? styles = new();
+    private List<string>? formatting = new();
+
+    private string GetFormattingClass()
+    {
+        var classes = new List<string>();
+        if (formatting?.Contains("bold") == true) classes.Add("font-bold");
+        if (formatting?.Contains("italic") == true) classes.Add("italic");
+        if (formatting?.Contains("strikethrough") == true) classes.Add("line-through");
+        return string.Join(" ", classes);
+    }
+}

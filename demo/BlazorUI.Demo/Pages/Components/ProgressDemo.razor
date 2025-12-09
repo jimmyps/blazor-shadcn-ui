@@ -1,5 +1,6 @@
 @page "/components/progress"
 @using BlazorUI.Components.Progress
+@implements IDisposable
 
 <PageTitle>Progress Component - BlazorUI</PageTitle>
 
@@ -161,21 +162,36 @@
 @code {
     private double progressValue = 60;
     private double loadingProgress = 33;
+    private CancellationTokenSource? _cts;
 
     protected override async Task OnInitializedAsync()
     {
         // Simulate loading
-        _ = SimulateLoading();
+        _cts = new CancellationTokenSource();
+        _ = SimulateLoading(_cts.Token);
     }
 
-    private async Task SimulateLoading()
+    private async Task SimulateLoading(CancellationToken cancellationToken)
     {
-        while (loadingProgress < 100)
+        try
         {
-            await Task.Delay(100);
-            loadingProgress += 1;
-            StateHasChanged();
+            while (loadingProgress < 100 && !cancellationToken.IsCancellationRequested)
+            {
+                await Task.Delay(100, cancellationToken);
+                loadingProgress += 1;
+                StateHasChanged();
+            }
         }
+        catch (TaskCanceledException)
+        {
+            // Expected when component is disposed
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
     }
 
     private void IncreaseProgress()
