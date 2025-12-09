@@ -1,0 +1,327 @@
+@namespace BlazorUI.Components.Carousel
+@using BlazorUI.Components.Button
+@using BlazorUI.Icons.Lucide.Components
+@using BlazorUI.Components.Utilities
+@implements IAsyncDisposable
+@inject IJSRuntime JSRuntime
+
+@* Carousel - Slideshow component with animations and gestures *@
+
+<div @ref="_carouselRef" 
+     class="@GetCarouselClass()" 
+     @attributes="AdditionalAttributes"
+     data-carousel="true"
+     data-carousel-id="@_carouselId">
+    
+    <div class="overflow-hidden" @ref="_viewportRef">
+        <div class="@GetContentClass()" @ref="_containerRef">
+            @ChildContent
+        </div>
+    </div>
+
+    @if (ShowNavigation)
+    {
+        <button type="button"
+                @onclick="Previous"
+                disabled="@(!CanScrollPrevious())"
+                class="@GetPreviousButtonClass()"
+                aria-label="Previous slide">
+            <LucideIcon Name="chevron-left" Class="h-4 w-4" />
+        </button>
+
+        <button type="button"
+                @onclick="Next"
+                disabled="@(!CanScrollNext())"
+                class="@GetNextButtonClass()"
+                aria-label="Next slide">
+            <LucideIcon Name="chevron-right" Class="h-4 w-4" />
+        </button>
+    }
+
+    @if (ShowIndicators)
+    {
+        <div class="@GetIndicatorsClass()">
+            @for (int i = 0; i < _totalSlides; i++)
+            {
+                var index = i;
+                <button type="button"
+                        @onclick="@(() => ScrollTo(index))"
+                        class="@GetIndicatorButtonClass(i)"
+                        aria-label="@($"Go to slide {i + 1}")">
+                </button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private ElementReference _carouselRef;
+    private ElementReference _viewportRef;
+    private ElementReference _containerRef;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _carouselInstance;
+    private string _carouselId = Guid.NewGuid().ToString();
+    private int _currentIndex = 0;
+    private int _totalSlides = 0;
+
+    /// <summary>
+    /// The child content containing CarouselItem components.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Orientation of the carousel. Default is Horizontal.
+    /// </summary>
+    [Parameter]
+    public CarouselOrientation Orientation { get; set; } = CarouselOrientation.Horizontal;
+
+    /// <summary>
+    /// Whether to show navigation arrows. Default is true.
+    /// </summary>
+    [Parameter]
+    public bool ShowNavigation { get; set; } = true;
+
+    /// <summary>
+    /// Whether to show dot indicators. Default is false.
+    /// </summary>
+    [Parameter]
+    public bool ShowIndicators { get; set; } = false;
+
+    /// <summary>
+    /// Whether to enable auto-play. Default is false.
+    /// </summary>
+    [Parameter]
+    public bool AutoPlay { get; set; } = false;
+
+    /// <summary>
+    /// Auto-play interval in milliseconds. Default is 3000.
+    /// </summary>
+    [Parameter]
+    public int AutoPlayInterval { get; set; } = 3000;
+
+    /// <summary>
+    /// Whether to enable loop (infinite scroll). Default is false.
+    /// </summary>
+    [Parameter]
+    public bool Loop { get; set; } = false;
+
+    /// <summary>
+    /// Number of slides to show at once. Default is 1.
+    /// </summary>
+    [Parameter]
+    public int SlidesPerView { get; set; } = 1;
+
+    /// <summary>
+    /// Gap between slides in pixels. Default is 0.
+    /// </summary>
+    [Parameter]
+    public int Gap { get; set; } = 0;
+
+    /// <summary>
+    /// Whether to enable drag gestures. Default is true.
+    /// </summary>
+    [Parameter]
+    public bool EnableDrag { get; set; } = true;
+
+    /// <summary>
+    /// Additional CSS classes for the carousel container.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional HTML attributes.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Event callback invoked when the current slide index changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> OnSlideChange { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorUI.Components/js/carousel.js");
+
+                var options = new
+                {
+                    orientation = Orientation.ToString().ToLower(),
+                    autoPlay = AutoPlay,
+                    autoPlayInterval = AutoPlayInterval,
+                    loop = Loop,
+                    slidesPerView = SlidesPerView,
+                    gap = Gap,
+                    enableDrag = EnableDrag
+                };
+
+                var dotNetRef = DotNetObjectReference.Create(this);
+                _carouselInstance = await _module.InvokeAsync<IJSObjectReference>(
+                    "initCarousel", _carouselRef, _viewportRef, _containerRef, dotNetRef, options);
+
+                // Get initial state
+                _totalSlides = await _carouselInstance.InvokeAsync<int>("getTotalSlides");
+                _currentIndex = await _carouselInstance.InvokeAsync<int>("getCurrentIndex");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Carousel initialization error: {ex.Message}");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Move to the previous slide.
+    /// </summary>
+    public async Task Previous()
+    {
+        if (_carouselInstance != null)
+        {
+            await _carouselInstance.InvokeVoidAsync("previous");
+        }
+    }
+
+    /// <summary>
+    /// Move to the next slide.
+    /// </summary>
+    public async Task Next()
+    {
+        if (_carouselInstance != null)
+        {
+            await _carouselInstance.InvokeVoidAsync("next");
+        }
+    }
+
+    /// <summary>
+    /// Scroll to a specific slide index.
+    /// </summary>
+    public async Task ScrollTo(int index)
+    {
+        if (_carouselInstance != null)
+        {
+            await _carouselInstance.InvokeVoidAsync("scrollTo", index);
+        }
+    }
+
+    /// <summary>
+    /// Called from JavaScript when slide changes.
+    /// </summary>
+    [JSInvokable]
+    public async Task HandleSlideChange(int newIndex)
+    {
+        _currentIndex = newIndex;
+        await OnSlideChange.InvokeAsync(newIndex);
+        StateHasChanged();
+    }
+
+    private bool CanScrollPrevious()
+    {
+        return Loop || _currentIndex > 0;
+    }
+
+    private bool CanScrollNext()
+    {
+        return Loop || _currentIndex < _totalSlides - 1;
+    }
+
+    private string GetCarouselClass()
+    {
+        return ClassNames.cn(
+            "relative",
+            Class
+        );
+    }
+
+    private string GetContentClass()
+    {
+        var baseClass = "flex";
+        if (Orientation == CarouselOrientation.Horizontal)
+        {
+            baseClass += " flex-row";
+        }
+        else
+        {
+            baseClass += " flex-col";
+        }
+        
+        if (Gap > 0)
+        {
+            baseClass += $" gap-{Gap}";
+        }
+
+        return baseClass;
+    }
+
+    private string GetPreviousButtonClass()
+    {
+        return ClassNames.cn(
+            "absolute z-10 flex h-10 w-10 items-center justify-center rounded-full border bg-background shadow-sm transition-all",
+            "hover:bg-accent hover:text-accent-foreground",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "disabled:pointer-events-none disabled:opacity-50",
+            Orientation == CarouselOrientation.Horizontal
+                ? "left-4 top-1/2 -translate-y-1/2"
+                : "left-1/2 top-4 -translate-x-1/2"
+        );
+    }
+
+    private string GetNextButtonClass()
+    {
+        return ClassNames.cn(
+            "absolute z-10 flex h-10 w-10 items-center justify-center rounded-full border bg-background shadow-sm transition-all",
+            "hover:bg-accent hover:text-accent-foreground",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "disabled:pointer-events-none disabled:opacity-50",
+            Orientation == CarouselOrientation.Horizontal
+                ? "right-4 top-1/2 -translate-y-1/2"
+                : "left-1/2 bottom-4 -translate-x-1/2"
+        );
+    }
+
+    private string GetIndicatorsClass()
+    {
+        return ClassNames.cn(
+            "absolute z-10 flex gap-2",
+            Orientation == CarouselOrientation.Horizontal
+                ? "bottom-4 left-1/2 -translate-x-1/2"
+                : "right-4 top-1/2 -translate-y-1/2 flex-col"
+        );
+    }
+
+    private string GetIndicatorButtonClass(int index)
+    {
+        var isActive = index == _currentIndex;
+        return ClassNames.cn(
+            "h-2 w-2 rounded-full transition-all",
+            isActive ? "bg-primary w-4" : "bg-muted-foreground/50 hover:bg-muted-foreground"
+        );
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_carouselInstance != null)
+            {
+                await _carouselInstance.InvokeVoidAsync("dispose");
+                await _carouselInstance.DisposeAsync();
+            }
+
+            if (_module != null)
+            {
+                await _module.DisposeAsync();
+            }
+        }
+        catch
+        {
+            // Suppress errors during disposal
+        }
+    }
+}

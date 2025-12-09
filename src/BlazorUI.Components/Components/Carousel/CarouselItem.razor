@@ -1,0 +1,39 @@
+@namespace BlazorUI.Components.Carousel
+
+@* CarouselItem - Individual slide in a carousel *@
+
+<div class="@GetItemClass()" data-carousel-item="true">
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>
+    /// The content of the carousel item.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes for the item.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional HTML attributes.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string GetItemClass()
+    {
+        var baseClass = "flex-shrink-0 flex-grow-0 basis-full";
+        
+        if (!string.IsNullOrEmpty(Class))
+        {
+            return $"{baseClass} {Class}";
+        }
+
+        return baseClass;
+    }
+}
