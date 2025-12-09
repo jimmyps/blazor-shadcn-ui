@@ -14,7 +14,7 @@
      data-carousel-id="@_carouselId">
     
     <div class="overflow-hidden" @ref="_viewportRef">
-        <div class="@GetContentClass()" @ref="_containerRef">
+        <div class="@GetContentClass()" style="@GetContentStyle()" @ref="_containerRef">
             @ChildContent
         </div>
     </div>
@@ -241,22 +241,27 @@
 
     private string GetContentClass()
     {
-        var baseClass = "flex";
+        var classes = new List<string> { "flex" };
+        
         if (Orientation == CarouselOrientation.Horizontal)
         {
-            baseClass += " flex-row";
+            classes.Add("flex-row");
         }
         else
         {
-            baseClass += " flex-col";
-        }
-        
-        if (Gap > 0)
-        {
-            baseClass += $" gap-{Gap}";
+            classes.Add("flex-col");
         }
 
-        return baseClass;
+        return string.Join(" ", classes);
+    }
+
+    private string GetContentStyle()
+    {
+        if (Gap > 0)
+        {
+            return $"gap: {Gap}px;";
+        }
+        return "";
     }
 
     private string GetPreviousButtonClass()

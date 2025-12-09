@@ -152,7 +152,11 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        _selectedDate = SelectedDate;
+        
+        if (_selectedDate != SelectedDate)
+        {
+            _selectedDate = SelectedDate;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -160,10 +164,11 @@
         await base.OnAfterRenderAsync(firstRender);
 
         // Close popover and notify when date is selected
-        if (_selectedDate != SelectedDate)
+        if (_selectedDate.HasValue && _selectedDate != SelectedDate && _isOpen)
         {
             _isOpen = false;
             await SelectedDateChanged.InvokeAsync(_selectedDate);
+            StateHasChanged();
         }
     }
 

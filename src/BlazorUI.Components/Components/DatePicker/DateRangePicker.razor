@@ -205,30 +205,44 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        _startDate = StartDate;
-        _endDate = EndDate;
+        
+        if (_startDate != StartDate)
+        {
+            _startDate = StartDate;
+        }
+        
+        if (_endDate != EndDate)
+        {
+            _endDate = EndDate;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
 
+        var startChanged = _startDate != StartDate;
+        var endChanged = _endDate != EndDate;
+
         // Notify when dates change
-        if (_startDate != StartDate)
+        if (startChanged)
         {
             await StartDateChanged.InvokeAsync(_startDate);
         }
 
-        if (_endDate != EndDate)
+        if (endChanged)
         {
             await EndDateChanged.InvokeAsync(_endDate);
         }
 
         // Close popover when both dates are selected
-        if (_startDate.HasValue && _endDate.HasValue && _isOpen)
+        if (startChanged || endChanged)
         {
-            _isOpen = false;
-            StateHasChanged();
+            if (_startDate.HasValue && _endDate.HasValue && _isOpen)
+            {
+                _isOpen = false;
+                StateHasChanged();
+            }
         }
     }
 
