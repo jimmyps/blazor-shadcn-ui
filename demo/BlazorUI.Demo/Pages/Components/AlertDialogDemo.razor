@@ -22,9 +22,9 @@
                 A simple alert dialog with a destructive action.
             </p>
         </div>
-        <AlertDialog @bind-Open="isBasicOpen">
+        <AlertDialog>
             <AlertDialogTrigger>
-                <Button Variant="ButtonVariant.Outline" @onclick="() => isBasicOpen = true">Show Dialog</Button>
+                <Button Variant="ButtonVariant.Outline">Show Dialog</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
@@ -36,10 +36,10 @@
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>
-                        <Button Variant="ButtonVariant.Outline" @onclick="() => isBasicOpen = false">Cancel</Button>
+                        <Button Variant="ButtonVariant.Outline">Cancel</Button>
                     </AlertDialogCancel>
                     <AlertDialogAction>
-                        <Button Variant="ButtonVariant.Destructive" @onclick="HandleDelete">Continue</Button>
+                        <Button Variant="ButtonVariant.Destructive">Continue</Button>
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
@@ -54,9 +54,9 @@
                 Use for confirming non-destructive actions.
             </p>
         </div>
-        <AlertDialog @bind-Open="isConfirmOpen">
+        <AlertDialog>
             <AlertDialogTrigger>
-                <Button @onclick="() => isConfirmOpen = true">Save Changes</Button>
+                <Button>Save Changes</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
@@ -67,7 +67,7 @@
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>
-                        <Button Variant="ButtonVariant.Outline" @onclick="() => isConfirmOpen = false">Cancel</Button>
+                        <Button Variant="ButtonVariant.Outline">Cancel</Button>
                     </AlertDialogCancel>
                     <AlertDialogAction>
                         <Button @onclick="HandleSave">Save</Button>
@@ -89,9 +89,9 @@
                 Alert the user about potentially dangerous actions.
             </p>
         </div>
-        <AlertDialog @bind-Open="isWarningOpen">
+        <AlertDialog>
             <AlertDialogTrigger>
-                <Button Variant="ButtonVariant.Destructive" @onclick="() => isWarningOpen = true">Delete All Data</Button>
+                <Button Variant="ButtonVariant.Destructive">Delete All Data</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
@@ -108,7 +108,7 @@
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>
-                        <Button Variant="ButtonVariant.Outline" @onclick="() => isWarningOpen = false">Cancel</Button>
+                        <Button Variant="ButtonVariant.Outline">Cancel</Button>
                     </AlertDialogCancel>
                     <AlertDialogAction>
                         <Button Variant="ButtonVariant.Destructive" @onclick="HandleDeleteAll">Delete Everything</Button>
@@ -130,9 +130,9 @@
                 Display important information that requires acknowledgment.
             </p>
         </div>
-        <AlertDialog @bind-Open="isInfoOpen">
+        <AlertDialog>
             <AlertDialogTrigger>
-                <Button Variant="ButtonVariant.Secondary" @onclick="() => isInfoOpen = true">View Terms</Button>
+                <Button Variant="ButtonVariant.Secondary">View Terms</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
@@ -144,7 +144,7 @@
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogAction>
-                        <Button @onclick="() => isInfoOpen = false">I Understand</Button>
+                        <Button>I Understand</Button>
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
@@ -163,29 +163,17 @@
 </div>
 
 @code {
-    private bool isBasicOpen = false;
-    private bool isConfirmOpen = false;
-    private bool isWarningOpen = false;
-    private bool isInfoOpen = false;
     private string? saveMessage;
     private string? deleteMessage;
 
-    private void HandleDelete()
-    {
-        isBasicOpen = false;
-        // Handle delete logic
-    }
-
     private void HandleSave()
     {
-        isConfirmOpen = false;
         saveMessage = "Changes saved successfully!";
         StateHasChanged();
     }
 
     private void HandleDeleteAll()
     {
-        isWarningOpen = false;
         deleteMessage = "All data has been deleted.";
         StateHasChanged();
     }
