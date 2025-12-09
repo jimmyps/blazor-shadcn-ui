@@ -1,0 +1,18 @@
+@namespace BlazorUI.Components.AlertDialog
+@using BlazorUI.Primitives.Dialog
+
+@*
+    AlertDialog action button - performs the action and closes the dialog.
+*@
+
+<DialogClose>
+    @ChildContent
+</DialogClose>
+
+@code {
+    /// <summary>
+    /// The content to render as the action button.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

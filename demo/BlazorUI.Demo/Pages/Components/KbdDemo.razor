@@ -1,0 +1,180 @@
+@page "/components/kbd"
+@using BlazorUI.Components.Kbd
+
+<PageTitle>Kbd Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Kbd Component</h1>
+            <p class="text-xl text-muted-foreground">
+                Displays keyboard shortcuts and key combinations.
+            </p>
+        </div>
+    </div>
+
+    <!-- Basic Kbd -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic</h2>
+            <p class="text-sm text-muted-foreground">
+                Display single keyboard keys.
+            </p>
+        </div>
+        <div class="flex gap-2 items-center">
+            <span class="text-sm">Press</span>
+            <Kbd>Enter</Kbd>
+            <span class="text-sm">to submit</span>
+        </div>
+    </div>
+
+    <!-- Key Combinations -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Key Combinations</h2>
+            <p class="text-sm text-muted-foreground">
+                Combine multiple keys to show shortcuts.
+            </p>
+        </div>
+        <div class="space-y-3">
+            <div class="flex gap-2 items-center">
+                <Kbd>Ctrl</Kbd>
+                <span>+</span>
+                <Kbd>C</Kbd>
+                <span class="text-sm text-muted-foreground ml-2">Copy</span>
+            </div>
+            <div class="flex gap-2 items-center">
+                <Kbd>Ctrl</Kbd>
+                <span>+</span>
+                <Kbd>V</Kbd>
+                <span class="text-sm text-muted-foreground ml-2">Paste</span>
+            </div>
+            <div class="flex gap-2 items-center">
+                <Kbd>Ctrl</Kbd>
+                <span>+</span>
+                <Kbd>Z</Kbd>
+                <span class="text-sm text-muted-foreground ml-2">Undo</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- With Symbols -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">With Symbols</h2>
+            <p class="text-sm text-muted-foreground">
+                Use symbols for Mac-style keyboard shortcuts.
+            </p>
+        </div>
+        <div class="space-y-3">
+            <div class="flex gap-2 items-center">
+                <Kbd>⌘</Kbd>
+                <span>+</span>
+                <Kbd>K</Kbd>
+                <span class="text-sm text-muted-foreground ml-2">Open command palette</span>
+            </div>
+            <div class="flex gap-2 items-center">
+                <Kbd>⌘</Kbd>
+                <span>+</span>
+                <Kbd>⇧</Kbd>
+                <span>+</span>
+                <Kbd>P</Kbd>
+                <span class="text-sm text-muted-foreground ml-2">Open command palette (alternative)</span>
+            </div>
+            <div class="flex gap-2 items-center">
+                <Kbd>⌘</Kbd>
+                <span>+</span>
+                <Kbd>B</Kbd>
+                <span class="text-sm text-muted-foreground ml-2">Toggle sidebar</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Usage Examples -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Usage Examples</h2>
+            <p class="text-sm text-muted-foreground">
+                Common keyboard shortcut displays.
+            </p>
+        </div>
+        <div class="space-y-6">
+            <!-- Editor Shortcuts -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Editor Shortcuts</h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center p-2 rounded hover:bg-accent">
+                        <span class="text-sm">Save</span>
+                        <div class="flex gap-1">
+                            <Kbd>Ctrl</Kbd>
+                            <span class="text-xs">+</span>
+                            <Kbd>S</Kbd>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center p-2 rounded hover:bg-accent">
+                        <span class="text-sm">Find</span>
+                        <div class="flex gap-1">
+                            <Kbd>Ctrl</Kbd>
+                            <span class="text-xs">+</span>
+                            <Kbd>F</Kbd>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center p-2 rounded hover:bg-accent">
+                        <span class="text-sm">Replace</span>
+                        <div class="flex gap-1">
+                            <Kbd>Ctrl</Kbd>
+                            <span class="text-xs">+</span>
+                            <Kbd>H</Kbd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Navigation</h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center p-2 rounded hover:bg-accent">
+                        <span class="text-sm">Go to line</span>
+                        <div class="flex gap-1">
+                            <Kbd>Ctrl</Kbd>
+                            <span class="text-xs">+</span>
+                            <Kbd>G</Kbd>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center p-2 rounded hover:bg-accent">
+                        <span class="text-sm">Quick open</span>
+                        <div class="flex gap-1">
+                            <Kbd>Ctrl</Kbd>
+                            <span class="text-xs">+</span>
+                            <Kbd>P</Kbd>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arrow Keys -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Arrow Keys</h3>
+                <div class="flex gap-2 items-center">
+                    <span class="text-sm">Use arrow keys to navigate:</span>
+                    <Kbd>←</Kbd>
+                    <Kbd>↑</Kbd>
+                    <Kbd>↓</Kbd>
+                    <Kbd>→</Kbd>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accessibility -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Accessibility</h2>
+            <p class="text-sm text-muted-foreground">
+                The Kbd component uses semantic <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">&lt;kbd&gt;</code> HTML elements 
+                which are recognized by assistive technologies as keyboard input indicators.
+            </p>
+        </div>
+    </div>
+</div>

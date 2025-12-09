@@ -1,0 +1,18 @@
+@namespace BlazorUI.Components.AlertDialog
+@using BlazorUI.Primitives.Dialog
+
+@*
+    AlertDialog trigger button.
+*@
+
+<DialogTrigger>
+    @ChildContent
+</DialogTrigger>
+
+@code {
+    /// <summary>
+    /// The content to render as the trigger.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

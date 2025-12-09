@@ -1,0 +1,58 @@
+@page "/components/native-select"
+@using BlazorUI.Components.NativeSelect
+
+<PageTitle>Native Select Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Native Select Component</h1>
+            <p class="text-xl text-muted-foreground">
+                A styled native HTML select element with shadcn/ui design.
+            </p>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic</h2>
+            <p class="text-sm text-muted-foreground">A simple select dropdown.</p>
+        </div>
+        <NativeSelect @bind-Value="selectedValue" Placeholder="Select an option">
+            <NativeSelectOption Value="option1">Option 1</NativeSelectOption>
+            <NativeSelectOption Value="option2">Option 2</NativeSelectOption>
+            <NativeSelectOption Value="option3">Option 3</NativeSelectOption>
+        </NativeSelect>
+        <p class="text-sm text-muted-foreground">Selected: @selectedValue</p>
+    </div>
+
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">With Groups</h2>
+        </div>
+        <NativeSelect @bind-Value="selectedFruit">
+            <optgroup label="Fruits">
+                <NativeSelectOption Value="apple">Apple</NativeSelectOption>
+                <NativeSelectOption Value="banana">Banana</NativeSelectOption>
+            </optgroup>
+            <optgroup label="Vegetables">
+                <NativeSelectOption Value="carrot">Carrot</NativeSelectOption>
+                <NativeSelectOption Value="lettuce">Lettuce</NativeSelectOption>
+            </optgroup>
+        </NativeSelect>
+    </div>
+
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Disabled</h2>
+        </div>
+        <NativeSelect Value="disabled" Disabled="true">
+            <NativeSelectOption Value="disabled">This is disabled</NativeSelectOption>
+        </NativeSelect>
+    </div>
+</div>
+
+@code {
+    private string? selectedValue = "option1";
+    private string? selectedFruit = "apple";
+}

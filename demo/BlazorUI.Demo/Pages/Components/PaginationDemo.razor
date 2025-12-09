@@ -1,0 +1,169 @@
+@page "/components/pagination"
+@using BlazorUI.Components.Pagination
+
+<PageTitle>Pagination Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Pagination Component</h1>
+            <p class="text-xl text-muted-foreground">
+                Pagination with page navigation, built using the Pagination component.
+            </p>
+        </div>
+    </div>
+
+    <!-- Basic Pagination -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic</h2>
+            <p class="text-sm text-muted-foreground">
+                A simple pagination component.
+            </p>
+        </div>
+        <Pagination>
+            <PaginationContent>
+                <PaginationItem>
+                    <PaginationPrevious Href="#" />
+                </PaginationItem>
+                <PaginationItem>
+                    <PaginationLink Href="#">1</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                    <PaginationLink Href="#" IsActive="true">2</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                    <PaginationLink Href="#">3</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                    <PaginationNext Href="#" />
+                </PaginationItem>
+            </PaginationContent>
+        </Pagination>
+    </div>
+
+    <!-- With Ellipsis -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">With Ellipsis</h2>
+            <p class="text-sm text-muted-foreground">
+                Use ellipsis to indicate additional pages.
+            </p>
+        </div>
+        <Pagination>
+            <PaginationContent>
+                <PaginationItem>
+                    <PaginationPrevious Href="#" />
+                </PaginationItem>
+                <PaginationItem>
+                    <PaginationLink Href="#">1</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                    <PaginationLink Href="#" IsActive="true">2</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                    <PaginationLink Href="#">3</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                    <PaginationEllipsis />
+                </PaginationItem>
+                <PaginationItem>
+                    <PaginationLink Href="#">10</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                    <PaginationNext Href="#" />
+                </PaginationItem>
+            </PaginationContent>
+        </Pagination>
+    </div>
+
+    <!-- Interactive Example -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Interactive</h2>
+            <p class="text-sm text-muted-foreground">
+                A functional pagination with state management.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <div class="text-sm text-muted-foreground">
+                Page @currentPage of @totalPages
+            </div>
+            <Pagination>
+                <PaginationContent>
+                    <PaginationItem>
+                        <button @onclick="GoToPrevious" disabled="@(currentPage == 1)" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-1 pl-2.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                <path d="m15 18-6-6 6-6"/>
+                            </svg>
+                            <span>Previous</span>
+                        </button>
+                    </PaginationItem>
+                    @for (int page = 1; page <= totalPages; page++)
+                    {
+                        var pageNum = page;
+                        <PaginationItem>
+                            <button @onclick="() => GoToPage(pageNum)" class="@GetPageClass(pageNum)">
+                                @pageNum
+                            </button>
+                        </PaginationItem>
+                    }
+                    <PaginationItem>
+                        <button @onclick="GoToNext" disabled="@(currentPage == totalPages)" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-1 pr-2.5">
+                            <span>Next</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+                        </button>
+                    </PaginationItem>
+                </PaginationContent>
+            </Pagination>
+        </div>
+    </div>
+
+    <!-- Accessibility -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Accessibility</h2>
+            <p class="text-sm text-muted-foreground">
+                The Pagination component uses semantic HTML with <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">nav</code> and 
+                <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">aria-label</code> attributes for screen readers.
+                Current page is indicated with <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">aria-current="page"</code>.
+            </p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int currentPage = 1;
+    private int totalPages = 5;
+
+    private void GoToPrevious()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+        }
+    }
+
+    private void GoToNext()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+        }
+    }
+
+    private void GoToPage(int page)
+    {
+        currentPage = page;
+    }
+
+    private string GetPageClass(int page)
+    {
+        var baseClass = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2";
+        return currentPage == page
+            ? baseClass + " border border-input bg-background shadow-sm"
+            : baseClass;
+    }
+}

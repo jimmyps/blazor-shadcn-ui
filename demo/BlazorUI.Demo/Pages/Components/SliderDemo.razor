@@ -1,0 +1,168 @@
+@page "/components/slider"
+@using BlazorUI.Components.Slider
+
+<PageTitle>Slider Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Slider Component</h1>
+            <p class="text-xl text-muted-foreground">
+                An input where the user selects a value from within a given range.
+            </p>
+        </div>
+    </div>
+
+    <!-- Basic Slider -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic</h2>
+            <p class="text-sm text-muted-foreground">
+                A simple slider with default settings.
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Slider @bind-Value="basicValue" />
+            <p class="text-sm text-muted-foreground">Value: @basicValue</p>
+        </div>
+    </div>
+
+    <!-- With Min and Max -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Range</h2>
+            <p class="text-sm text-muted-foreground">
+                Set custom minimum and maximum values.
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Slider @bind-Value="rangeValue" Min="0" Max="200" />
+            <p class="text-sm text-muted-foreground">Value: @rangeValue (0-200)</p>
+        </div>
+    </div>
+
+    <!-- With Step -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Step Increment</h2>
+            <p class="text-sm text-muted-foreground">
+                Control the granularity with the step property.
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Slider @bind-Value="stepValue" Min="0" Max="100" Step="5" />
+            <p class="text-sm text-muted-foreground">Value: @stepValue (increments of 5)</p>
+        </div>
+    </div>
+
+    <!-- Disabled -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Disabled</h2>
+            <p class="text-sm text-muted-foreground">
+                A disabled slider cannot be interacted with.
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Slider Value="50" Disabled="true" />
+            <p class="text-sm text-muted-foreground">Value: 50 (disabled)</p>
+        </div>
+    </div>
+
+    <!-- Usage Examples -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Usage Examples</h2>
+            <p class="text-sm text-muted-foreground">
+                Common use cases for sliders.
+            </p>
+        </div>
+        <div class="space-y-6">
+            <!-- Volume Control -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Volume Control</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/>
+                            <path d="M16 9a5 5 0 0 1 0 6"/>
+                            <path d="M19.364 18.364a9 9 0 0 0 0-12.728"/>
+                        </svg>
+                        <Slider @bind-Value="volumeValue" Min="0" Max="100" Class="flex-1" />
+                        <span class="text-sm w-12 text-right">@volumeValue%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Range -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Price Filter</h3>
+                <div class="space-y-2">
+                    <Slider @bind-Value="priceValue" Min="0" Max="1000" Step="10" />
+                    <p class="text-sm text-muted-foreground">Maximum price: $@priceValue</p>
+                </div>
+            </div>
+
+            <!-- Quality Setting -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Quality Setting</h3>
+                <div class="space-y-2">
+                    <Slider @bind-Value="qualityValue" Min="1" Max="5" Step="1" />
+                    <p class="text-sm text-muted-foreground">@GetQualityLabel(qualityValue)</p>
+                </div>
+            </div>
+
+            <!-- Brightness -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Brightness</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="4"/>
+                            <path d="M12 2v2"/>
+                            <path d="M12 20v2"/>
+                            <path d="m4.93 4.93 1.41 1.41"/>
+                            <path d="m17.66 17.66 1.41 1.41"/>
+                            <path d="M2 12h2"/>
+                            <path d="M20 12h2"/>
+                            <path d="m6.34 17.66-1.41 1.41"/>
+                            <path d="m19.07 4.93-1.41 1.41"/>
+                        </svg>
+                        <Slider @bind-Value="brightnessValue" Min="0" Max="100" Class="flex-1" />
+                        <span class="text-sm w-12 text-right">@brightnessValue%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accessibility -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Accessibility</h2>
+            <p class="text-sm text-muted-foreground">
+                The Slider uses the native HTML range input which provides built-in keyboard navigation (arrow keys) and screen reader support.
+            </p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private double basicValue = 50;
+    private double rangeValue = 100;
+    private double stepValue = 50;
+    private double volumeValue = 75;
+    private double priceValue = 500;
+    private double qualityValue = 3;
+    private double brightnessValue = 80;
+
+    private string GetQualityLabel(double value) => value switch
+    {
+        1 => "Very Low Quality",
+        2 => "Low Quality",
+        3 => "Medium Quality",
+        4 => "High Quality",
+        5 => "Very High Quality",
+        _ => "Unknown"
+    };
+}
