@@ -23,7 +23,7 @@
             </p>
         </div>
         <AlertDialog @bind-Open="isBasicOpen">
-            <AlertDialogTrigger AsChild="true">
+            <AlertDialogTrigger>
                 <Button Variant="ButtonVariant.Outline" @onclick="() => isBasicOpen = true">Show Dialog</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -35,10 +35,10 @@
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel AsChild="true">
+                    <AlertDialogCancel>
                         <Button Variant="ButtonVariant.Outline" @onclick="() => isBasicOpen = false">Cancel</Button>
                     </AlertDialogCancel>
-                    <AlertDialogAction AsChild="true">
+                    <AlertDialogAction>
                         <Button Variant="ButtonVariant.Destructive" @onclick="HandleDelete">Continue</Button>
                     </AlertDialogAction>
                 </AlertDialogFooter>
@@ -55,7 +55,7 @@
             </p>
         </div>
         <AlertDialog @bind-Open="isConfirmOpen">
-            <AlertDialogTrigger AsChild="true">
+            <AlertDialogTrigger>
                 <Button @onclick="() => isConfirmOpen = true">Save Changes</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -66,10 +66,10 @@
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel AsChild="true">
+                    <AlertDialogCancel>
                         <Button Variant="ButtonVariant.Outline" @onclick="() => isConfirmOpen = false">Cancel</Button>
                     </AlertDialogCancel>
-                    <AlertDialogAction AsChild="true">
+                    <AlertDialogAction>
                         <Button @onclick="HandleSave">Save</Button>
                     </AlertDialogAction>
                 </AlertDialogFooter>
@@ -90,7 +90,7 @@
             </p>
         </div>
         <AlertDialog @bind-Open="isWarningOpen">
-            <AlertDialogTrigger AsChild="true">
+            <AlertDialogTrigger>
                 <Button Variant="ButtonVariant.Destructive" @onclick="() => isWarningOpen = true">Delete All Data</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -107,10 +107,10 @@
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel AsChild="true">
+                    <AlertDialogCancel>
                         <Button Variant="ButtonVariant.Outline" @onclick="() => isWarningOpen = false">Cancel</Button>
                     </AlertDialogCancel>
-                    <AlertDialogAction AsChild="true">
+                    <AlertDialogAction>
                         <Button Variant="ButtonVariant.Destructive" @onclick="HandleDeleteAll">Delete Everything</Button>
                     </AlertDialogAction>
                 </AlertDialogFooter>
@@ -131,7 +131,7 @@
             </p>
         </div>
         <AlertDialog @bind-Open="isInfoOpen">
-            <AlertDialogTrigger AsChild="true">
+            <AlertDialogTrigger>
                 <Button Variant="ButtonVariant.Secondary" @onclick="() => isInfoOpen = true">View Terms</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -143,7 +143,7 @@
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogAction AsChild="true">
+                    <AlertDialogAction>
                         <Button @onclick="() => isInfoOpen = false">I Understand</Button>
                     </AlertDialogAction>
                 </AlertDialogFooter>

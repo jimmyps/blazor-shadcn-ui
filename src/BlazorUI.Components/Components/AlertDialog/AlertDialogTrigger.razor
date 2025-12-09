@@ -5,7 +5,7 @@
     AlertDialog trigger button.
 *@
 
-<DialogTrigger AsChild="@AsChild">
+<DialogTrigger>
     @ChildContent
 </DialogTrigger>
 
@@ -15,10 +15,4 @@
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
-
-    /// <summary>
-    /// When true, the trigger will be rendered as a child element instead of a button.
-    /// </summary>
-    [Parameter]
-    public bool AsChild { get; set; }
 }

@@ -11,7 +11,7 @@
         class="@CssClass">
         @if (!string.IsNullOrEmpty(Placeholder))
         {
-            <option value="" disabled selected>@Placeholder</option>
+            <option value="" disabled selected="@(string.IsNullOrEmpty(Value))">@Placeholder</option>
         }
         @ChildContent
     </select>

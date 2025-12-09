@@ -92,15 +92,17 @@ public partial class ToggleGroup : ComponentBase
         }
         else
         {
-            Values ??= new List<string>();
-            if (Values.Contains(itemValue))
+            // Multiple selection - create new list to ensure change detection
+            var currentValues = Values?.ToList() ?? new List<string>();
+            if (currentValues.Contains(itemValue))
             {
-                Values.Remove(itemValue);
+                currentValues.Remove(itemValue);
             }
             else
             {
-                Values.Add(itemValue);
+                currentValues.Add(itemValue);
             }
+            Values = currentValues;
             await ValuesChanged.InvokeAsync(Values);
         }
     }
@@ -110,14 +112,9 @@ public partial class ToggleGroup : ComponentBase
     /// </summary>
     public bool IsItemSelected(string itemValue)
     {
-        if (Type == ToggleGroupType.Single)
-        {
-            return Value == itemValue;
-        }
-        else
-        {
-            return Values?.Contains(itemValue) ?? false;
-        }
+        return Type == ToggleGroupType.Single
+            ? Value == itemValue
+            : Values?.Contains(itemValue) ?? false;
     }
 
     private string CssClass => ClassNames.cn(

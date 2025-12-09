@@ -5,7 +5,7 @@
     AlertDialog cancel button - closes the dialog.
 *@
 
-<DialogClose AsChild="@AsChild">
+<DialogClose>
     @ChildContent
 </DialogClose>
 
@@ -15,10 +15,4 @@
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
-
-    /// <summary>
-    /// When true, the button will be rendered as a child element.
-    /// </summary>
-    [Parameter]
-    public bool AsChild { get; set; }
 }
