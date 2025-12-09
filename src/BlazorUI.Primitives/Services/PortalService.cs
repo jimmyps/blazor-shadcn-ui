@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Threading;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorUI.Primitives.Services;
@@ -7,9 +8,18 @@ namespace BlazorUI.Primitives.Services;
 /// Implementation of portal rendering service for Blazor.
 /// Manages a registry of portals that can be rendered at document body level.
 /// </summary>
-public class PortalService : IPortalService
+public class PortalService : IPortalService, IDisposable
 {
     private readonly ConcurrentDictionary<string, RenderFragment> _portals = new();
+
+    // Debounce support so multiple portal changes in quick succession
+    // only trigger a single OnPortalsChanged notification.
+    private readonly object _debounceLock = new();
+    private Timer? _debounceTimer;
+    private bool _pendingNotification;
+
+    // Small debounce window (ms) for batching; tweak if needed.
+    private const int DebounceDelayMs = 100;
 
     /// <inheritdoc />
     public event Action? OnPortalsChanged;
@@ -28,7 +38,7 @@ public class PortalService : IPortalService
         }
 
         _portals[id] = content;
-        OnPortalsChanged?.Invoke();
+        SchedulePortalsChanged();
     }
 
     /// <inheritdoc />
@@ -36,7 +46,7 @@ public class PortalService : IPortalService
     {
         if (_portals.TryRemove(id, out _))
         {
-            OnPortalsChanged?.Invoke();
+            SchedulePortalsChanged();
         }
     }
 
@@ -53,12 +63,47 @@ public class PortalService : IPortalService
             throw new InvalidOperationException($"Portal with ID '{id}' is not registered.");
         }
 
-        OnPortalsChanged?.Invoke();
+        SchedulePortalsChanged();
     }
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, RenderFragment> GetPortals()
     {
         return _portals;
+    }
+
+    private void SchedulePortalsChanged()
+    {
+        lock (_debounceLock)
+        {
+            _pendingNotification = true;
+
+            if (_debounceTimer == null)
+            {
+                _debounceTimer = new Timer(_ =>
+                {
+                    bool shouldRaise;
+                    lock (_debounceLock)
+                    {
+                        shouldRaise = _pendingNotification;
+                        _pendingNotification = false;
+                    }
+
+                    if (shouldRaise)
+                    {
+                        OnPortalsChanged?.Invoke();
+                    }
+
+                }, null, Timeout.Infinite, Timeout.Infinite);
+            }
+
+            // Restart timer for the debounce window
+            _debounceTimer.Change(DebounceDelayMs, Timeout.Infinite);
+        }
+    }
+
+    public void Dispose()
+    {
+        _debounceTimer?.Dispose();
     }
 }

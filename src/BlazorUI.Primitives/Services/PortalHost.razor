@@ -13,11 +13,17 @@
 @code {
     protected override void OnInitialized()
     {
-        PortalService.OnPortalsChanged += StateHasChanged;
+        PortalService.OnPortalsChanged += RaiseStateHasChanged;
     }
 
     public void Dispose()
     {
-        PortalService.OnPortalsChanged -= StateHasChanged;
+        PortalService.OnPortalsChanged -= RaiseStateHasChanged;
+    }
+
+    private void RaiseStateHasChanged()
+    {
+        // Fix: Use a void-returning lambda for Dispatcher.InvokeAsync
+        this.InvokeAsync(StateHasChanged);
     }
 }
