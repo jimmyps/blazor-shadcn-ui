@@ -1,0 +1,270 @@
+@namespace BlazorUI.Components.TimePicker
+@using BlazorUI.Components.Popover
+@using BlazorUI.Components.Button
+@using BlazorUI.Icons.Lucide.Components
+@using BlazorUI.Primitives.Services
+
+@* TimePicker - Time selection with hour/minute selectors *@
+
+<Popover @bind-Open="_isOpen">
+    <PopoverTrigger>
+        <Button Variant="@ButtonVariant" 
+                Size="@ButtonSize"
+                Class="@GetButtonClass()"
+                Disabled="@Disabled"
+                aria-label="@(AriaLabel ?? "Select time")">
+            @if (ShowIcon)
+            {
+                <LucideIcon Name="clock" Class="@GetIconClass()" />
+            }
+            <span>@GetDisplayText()</span>
+        </Button>
+    </PopoverTrigger>
+    <PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
+        <div class="flex items-center gap-2">
+            @if (!Use24HourFormat)
+            {
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-medium text-muted-foreground">Hour</label>
+                    <select @bind="_hour12" class="@GetSelectClass()" aria-label="Select hour">
+                        @for (int h = 1; h <= 12; h++)
+                        {
+                            <option value="@h">@h.ToString("D2")</option>
+                        }
+                    </select>
+                </div>
+            }
+            else
+            {
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-medium text-muted-foreground">Hour</label>
+                    <select @bind="_hour24" class="@GetSelectClass()" aria-label="Select hour">
+                        @for (int h = 0; h <= 23; h++)
+                        {
+                            <option value="@h">@h.ToString("D2")</option>
+                        }
+                    </select>
+                </div>
+            }
+            
+            <div class="flex flex-col gap-2">
+                <label class="text-xs font-medium text-muted-foreground">Minute</label>
+                <select @bind="_minute" class="@GetSelectClass()" aria-label="Select minute">
+                    @for (int m = 0; m < 60; m += MinuteStep)
+                    {
+                        <option value="@m">@m.ToString("D2")</option>
+                    }
+                </select>
+            </div>
+
+            @if (!Use24HourFormat)
+            {
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-medium text-muted-foreground">Period</label>
+                    <select @bind="_isPM" class="@GetSelectClass()" aria-label="Select AM or PM">
+                        <option value="false">AM</option>
+                        <option value="true">PM</option>
+                    </select>
+                </div>
+            }
+        </div>
+        <div class="mt-4 flex justify-end gap-2">
+            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" @onclick="@(() => _isOpen = false)">
+                Cancel
+            </Button>
+            <Button Variant="ButtonVariant.Default" Size="ButtonSize.Small" @onclick="ApplyTime">
+                Apply
+            </Button>
+        </div>
+    </PopoverContent>
+</Popover>
+
+@code {
+    private bool _isOpen;
+    private int _hour12 = 12;
+    private int _hour24 = 0;
+    private int _minute = 0;
+    private bool _isPM = false;
+
+    /// <summary>
+    /// The selected time.
+    /// </summary>
+    [Parameter]
+    public TimeOnly? SelectedTime { get; set; }
+
+    /// <summary>
+    /// Event callback invoked when the selected time changes.
+    /// Use with @bind-SelectedTime for two-way binding.
+    /// </summary>
+    [Parameter]
+    public EventCallback<TimeOnly?> SelectedTimeChanged { get; set; }
+
+    /// <summary>
+    /// Whether to use 24-hour format. Default is false (12-hour with AM/PM).
+    /// </summary>
+    [Parameter]
+    public bool Use24HourFormat { get; set; } = false;
+
+    /// <summary>
+    /// Minute step interval. Default is 1.
+    /// </summary>
+    [Parameter]
+    public int MinuteStep { get; set; } = 1;
+
+    /// <summary>
+    /// Button variant for the trigger button.
+    /// </summary>
+    [Parameter]
+    public ButtonVariant ButtonVariant { get; set; } = ButtonVariant.Outline;
+
+    /// <summary>
+    /// Button size for the trigger button.
+    /// </summary>
+    [Parameter]
+    public ButtonSize ButtonSize { get; set; } = ButtonSize.Default;
+
+    /// <summary>
+    /// Whether to show the clock icon in the button.
+    /// </summary>
+    [Parameter]
+    public bool ShowIcon { get; set; } = true;
+
+    /// <summary>
+    /// Placeholder text when no time is selected.
+    /// </summary>
+    [Parameter]
+    public string Placeholder { get; set; } = "Pick a time";
+
+    /// <summary>
+    /// Time format string for displaying the selected time.
+    /// If not specified, uses "hh:mm tt" for 12-hour or "HH:mm" for 24-hour.
+    /// </summary>
+    [Parameter]
+    public string? TimeFormat { get; set; }
+
+    /// <summary>
+    /// Whether the time picker is disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Alignment of the popover content.
+    /// </summary>
+    [Parameter]
+    public PopoverAlign Align { get; set; } = PopoverAlign.Start;
+
+    /// <summary>
+    /// Additional CSS classes for the button.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// ARIA label for the button.
+    /// </summary>
+    [Parameter]
+    public string? AriaLabel { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        
+        if (SelectedTime.HasValue)
+        {
+            var time = SelectedTime.Value;
+            _hour24 = time.Hour;
+            _minute = time.Minute;
+            
+            // Convert to 12-hour format
+            if (time.Hour == 0)
+            {
+                _hour12 = 12;
+                _isPM = false;
+            }
+            else if (time.Hour < 12)
+            {
+                _hour12 = time.Hour;
+                _isPM = false;
+            }
+            else if (time.Hour == 12)
+            {
+                _hour12 = 12;
+                _isPM = true;
+            }
+            else
+            {
+                _hour12 = time.Hour - 12;
+                _isPM = true;
+            }
+        }
+    }
+
+    private async Task ApplyTime()
+    {
+        int hour;
+        
+        if (Use24HourFormat)
+        {
+            hour = _hour24;
+        }
+        else
+        {
+            // Convert 12-hour to 24-hour
+            if (_hour12 == 12)
+            {
+                hour = _isPM ? 12 : 0;
+            }
+            else
+            {
+                hour = _isPM ? _hour12 + 12 : _hour12;
+            }
+        }
+
+        var newTime = new TimeOnly(hour, _minute);
+        _isOpen = false;
+        await SelectedTimeChanged.InvokeAsync(newTime);
+    }
+
+    private string GetDisplayText()
+    {
+        if (!SelectedTime.HasValue)
+            return Placeholder;
+
+        if (!string.IsNullOrEmpty(TimeFormat))
+            return SelectedTime.Value.ToString(TimeFormat);
+
+        if (Use24HourFormat)
+            return SelectedTime.Value.ToString("HH:mm");
+
+        return SelectedTime.Value.ToString("hh:mm tt");
+    }
+
+    private string GetButtonClass()
+    {
+        var classes = new List<string> { "w-[280px] justify-start text-left font-normal" };
+        
+        if (!SelectedTime.HasValue)
+            classes.Add("text-muted-foreground");
+
+        if (!string.IsNullOrEmpty(Class))
+            classes.Add(Class);
+
+        return string.Join(" ", classes);
+    }
+
+    private string GetIconClass()
+    {
+        return ShowIcon ? "mr-2 h-4 w-4" : "";
+    }
+
+    private string GetPopoverContentClass()
+    {
+        return "w-auto p-4";
+    }
+
+    private string GetSelectClass()
+    {
+        return "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
+    }
+}

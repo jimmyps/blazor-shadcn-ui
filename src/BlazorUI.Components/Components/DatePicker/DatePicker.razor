@@ -1,0 +1,205 @@
+@namespace BlazorUI.Components.DatePicker
+@using BlazorUI.Components.Popover
+@using BlazorUI.Components.Calendar
+@using BlazorUI.Components.Button
+@using BlazorUI.Icons.Lucide.Components
+@using BlazorUI.Primitives.Services
+
+@* DatePicker - Date selection with Calendar in Popover *@
+
+<Popover @bind-Open="_isOpen">
+    <PopoverTrigger>
+        <Button Variant="@ButtonVariant" 
+                Size="@ButtonSize"
+                Class="@GetButtonClass()"
+                Disabled="@Disabled"
+                aria-label="@(AriaLabel ?? "Select date")">
+            @if (ShowIcon)
+            {
+                <LucideIcon Name="calendar" Class="@GetIconClass()" />
+            }
+            <span>@GetDisplayText()</span>
+        </Button>
+    </PopoverTrigger>
+    <PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
+        <Calendar @bind-SelectedDate="_selectedDate"
+                  MinDate="@MinDate"
+                  MaxDate="@MaxDate"
+                  IsDateDisabled="@IsDateDisabled"
+                  Culture="@Culture"
+                  CaptionLayout="@CaptionLayout"
+                  Class="@CalendarClass" />
+    </PopoverContent>
+</Popover>
+
+@code {
+    private bool _isOpen;
+    private DateOnly? _selectedDate;
+
+    /// <summary>
+    /// The selected date.
+    /// </summary>
+    [Parameter]
+    public DateOnly? SelectedDate
+    {
+        get => _selectedDate;
+        set
+        {
+            if (_selectedDate != value)
+            {
+                _selectedDate = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Event callback invoked when the selected date changes.
+    /// Use with @bind-SelectedDate for two-way binding.
+    /// </summary>
+    [Parameter]
+    public EventCallback<DateOnly?> SelectedDateChanged { get; set; }
+
+    /// <summary>
+    /// Minimum selectable date.
+    /// </summary>
+    [Parameter]
+    public DateOnly? MinDate { get; set; }
+
+    /// <summary>
+    /// Maximum selectable date.
+    /// </summary>
+    [Parameter]
+    public DateOnly? MaxDate { get; set; }
+
+    /// <summary>
+    /// Function to determine if a specific date should be disabled.
+    /// </summary>
+    [Parameter]
+    public Func<DateOnly, bool>? IsDateDisabled { get; set; }
+
+    /// <summary>
+    /// Culture for date formatting.
+    /// </summary>
+    [Parameter]
+    public System.Globalization.CultureInfo? Culture { get; set; }
+
+    /// <summary>
+    /// Calendar caption layout (label or dropdown).
+    /// </summary>
+    [Parameter]
+    public CalendarCaptionLayout CaptionLayout { get; set; } = CalendarCaptionLayout.Label;
+
+    /// <summary>
+    /// Button variant for the trigger button.
+    /// </summary>
+    [Parameter]
+    public ButtonVariant ButtonVariant { get; set; } = ButtonVariant.Outline;
+
+    /// <summary>
+    /// Button size for the trigger button.
+    /// </summary>
+    [Parameter]
+    public ButtonSize ButtonSize { get; set; } = ButtonSize.Default;
+
+    /// <summary>
+    /// Whether to show the calendar icon in the button.
+    /// </summary>
+    [Parameter]
+    public bool ShowIcon { get; set; } = true;
+
+    /// <summary>
+    /// Placeholder text when no date is selected.
+    /// </summary>
+    [Parameter]
+    public string Placeholder { get; set; } = "Pick a date";
+
+    /// <summary>
+    /// Date format string for displaying the selected date.
+    /// </summary>
+    [Parameter]
+    public string? DateFormat { get; set; }
+
+    /// <summary>
+    /// Whether the date picker is disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Alignment of the popover content.
+    /// </summary>
+    [Parameter]
+    public PopoverAlign Align { get; set; } = PopoverAlign.Start;
+
+    /// <summary>
+    /// Additional CSS classes for the button.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes for the calendar.
+    /// </summary>
+    [Parameter]
+    public string? CalendarClass { get; set; }
+
+    /// <summary>
+    /// ARIA label for the button.
+    /// </summary>
+    [Parameter]
+    public string? AriaLabel { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        _selectedDate = SelectedDate;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        // Close popover and notify when date is selected
+        if (_selectedDate != SelectedDate)
+        {
+            _isOpen = false;
+            await SelectedDateChanged.InvokeAsync(_selectedDate);
+        }
+    }
+
+    private string GetDisplayText()
+    {
+        if (_selectedDate == null)
+            return Placeholder;
+
+        var culture = Culture ?? System.Globalization.CultureInfo.CurrentCulture;
+        
+        if (!string.IsNullOrEmpty(DateFormat))
+            return _selectedDate.Value.ToString(DateFormat, culture);
+
+        return _selectedDate.Value.ToString("D", culture);
+    }
+
+    private string GetButtonClass()
+    {
+        var classes = new List<string> { "w-[280px] justify-start text-left font-normal" };
+        
+        if (_selectedDate == null)
+            classes.Add("text-muted-foreground");
+
+        if (!string.IsNullOrEmpty(Class))
+            classes.Add(Class);
+
+        return string.Join(" ", classes);
+    }
+
+    private string GetIconClass()
+    {
+        return ShowIcon ? "mr-2 h-4 w-4" : "";
+    }
+
+    private string GetPopoverContentClass()
+    {
+        return "w-auto p-0";
+    }
+}

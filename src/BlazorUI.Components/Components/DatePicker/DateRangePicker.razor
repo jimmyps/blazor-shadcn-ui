@@ -1,0 +1,290 @@
+@namespace BlazorUI.Components.DatePicker
+@using BlazorUI.Components.Popover
+@using BlazorUI.Components.Calendar
+@using BlazorUI.Components.Button
+@using BlazorUI.Icons.Lucide.Components
+@using BlazorUI.Primitives.Services
+
+@* DateRangePicker - Date range selection with two dates *@
+
+<Popover @bind-Open="_isOpen">
+    <PopoverTrigger>
+        <Button Variant="@ButtonVariant" 
+                Size="@ButtonSize"
+                Class="@GetButtonClass()"
+                Disabled="@Disabled"
+                aria-label="@(AriaLabel ?? "Select date range")">
+            @if (ShowIcon)
+            {
+                <LucideIcon Name="calendar" Class="@GetIconClass()" />
+            }
+            <span>@GetDisplayText()</span>
+        </Button>
+    </PopoverTrigger>
+    <PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <div class="text-sm font-medium">
+                    @(StartDateLabel ?? "From")
+                </div>
+                <Calendar @bind-SelectedDate="_startDate"
+                          MinDate="@MinDate"
+                          MaxDate="@(_endDate ?? MaxDate)"
+                          IsDateDisabled="@GetStartDateDisabled"
+                          Culture="@Culture"
+                          CaptionLayout="@CaptionLayout"
+                          Class="@CalendarClass" />
+            </div>
+            <div class="space-y-2">
+                <div class="text-sm font-medium">
+                    @(EndDateLabel ?? "To")
+                </div>
+                <Calendar @bind-SelectedDate="_endDate"
+                          MinDate="@(_startDate ?? MinDate)"
+                          MaxDate="@MaxDate"
+                          IsDateDisabled="@GetEndDateDisabled"
+                          Culture="@Culture"
+                          CaptionLayout="@CaptionLayout"
+                          Class="@CalendarClass" />
+            </div>
+        </div>
+    </PopoverContent>
+</Popover>
+
+@code {
+    private bool _isOpen;
+    private DateOnly? _startDate;
+    private DateOnly? _endDate;
+
+    /// <summary>
+    /// The start date of the range.
+    /// </summary>
+    [Parameter]
+    public DateOnly? StartDate
+    {
+        get => _startDate;
+        set
+        {
+            if (_startDate != value)
+            {
+                _startDate = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Event callback invoked when the start date changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<DateOnly?> StartDateChanged { get; set; }
+
+    /// <summary>
+    /// The end date of the range.
+    /// </summary>
+    [Parameter]
+    public DateOnly? EndDate
+    {
+        get => _endDate;
+        set
+        {
+            if (_endDate != value)
+            {
+                _endDate = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Event callback invoked when the end date changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<DateOnly?> EndDateChanged { get; set; }
+
+    /// <summary>
+    /// Minimum selectable date.
+    /// </summary>
+    [Parameter]
+    public DateOnly? MinDate { get; set; }
+
+    /// <summary>
+    /// Maximum selectable date.
+    /// </summary>
+    [Parameter]
+    public DateOnly? MaxDate { get; set; }
+
+    /// <summary>
+    /// Function to determine if a specific date should be disabled.
+    /// </summary>
+    [Parameter]
+    public Func<DateOnly, bool>? IsDateDisabled { get; set; }
+
+    /// <summary>
+    /// Culture for date formatting.
+    /// </summary>
+    [Parameter]
+    public System.Globalization.CultureInfo? Culture { get; set; }
+
+    /// <summary>
+    /// Calendar caption layout (label or dropdown).
+    /// </summary>
+    [Parameter]
+    public CalendarCaptionLayout CaptionLayout { get; set; } = CalendarCaptionLayout.Label;
+
+    /// <summary>
+    /// Button variant for the trigger button.
+    /// </summary>
+    [Parameter]
+    public ButtonVariant ButtonVariant { get; set; } = ButtonVariant.Outline;
+
+    /// <summary>
+    /// Button size for the trigger button.
+    /// </summary>
+    [Parameter]
+    public ButtonSize ButtonSize { get; set; } = ButtonSize.Default;
+
+    /// <summary>
+    /// Whether to show the calendar icon in the button.
+    /// </summary>
+    [Parameter]
+    public bool ShowIcon { get; set; } = true;
+
+    /// <summary>
+    /// Placeholder text when no date range is selected.
+    /// </summary>
+    [Parameter]
+    public string Placeholder { get; set; } = "Pick a date range";
+
+    /// <summary>
+    /// Date format string for displaying dates.
+    /// </summary>
+    [Parameter]
+    public string? DateFormat { get; set; }
+
+    /// <summary>
+    /// Whether the date range picker is disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Alignment of the popover content.
+    /// </summary>
+    [Parameter]
+    public PopoverAlign Align { get; set; } = PopoverAlign.Start;
+
+    /// <summary>
+    /// Label for the start date calendar.
+    /// </summary>
+    [Parameter]
+    public string? StartDateLabel { get; set; }
+
+    /// <summary>
+    /// Label for the end date calendar.
+    /// </summary>
+    [Parameter]
+    public string? EndDateLabel { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes for the button.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes for the calendars.
+    /// </summary>
+    [Parameter]
+    public string? CalendarClass { get; set; }
+
+    /// <summary>
+    /// ARIA label for the button.
+    /// </summary>
+    [Parameter]
+    public string? AriaLabel { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        _startDate = StartDate;
+        _endDate = EndDate;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        // Notify when dates change
+        if (_startDate != StartDate)
+        {
+            await StartDateChanged.InvokeAsync(_startDate);
+        }
+
+        if (_endDate != EndDate)
+        {
+            await EndDateChanged.InvokeAsync(_endDate);
+        }
+
+        // Close popover when both dates are selected
+        if (_startDate.HasValue && _endDate.HasValue && _isOpen)
+        {
+            _isOpen = false;
+            StateHasChanged();
+        }
+    }
+
+    private string GetDisplayText()
+    {
+        var culture = Culture ?? System.Globalization.CultureInfo.CurrentCulture;
+        var format = DateFormat ?? "d";
+
+        if (_startDate == null && _endDate == null)
+            return Placeholder;
+
+        if (_startDate != null && _endDate == null)
+            return _startDate.Value.ToString(format, culture) + " - ...";
+
+        if (_startDate == null && _endDate != null)
+            return "... - " + _endDate.Value.ToString(format, culture);
+
+        return _startDate!.Value.ToString(format, culture) + " - " + _endDate!.Value.ToString(format, culture);
+    }
+
+    private string GetButtonClass()
+    {
+        var classes = new List<string> { "w-[300px] justify-start text-left font-normal" };
+        
+        if (_startDate == null && _endDate == null)
+            classes.Add("text-muted-foreground");
+
+        if (!string.IsNullOrEmpty(Class))
+            classes.Add(Class);
+
+        return string.Join(" ", classes);
+    }
+
+    private string GetIconClass()
+    {
+        return ShowIcon ? "mr-2 h-4 w-4" : "";
+    }
+
+    private string GetPopoverContentClass()
+    {
+        return "w-auto p-4";
+    }
+
+    private bool GetStartDateDisabled(DateOnly date)
+    {
+        if (IsDateDisabled != null && IsDateDisabled(date))
+            return true;
+
+        return false;
+    }
+
+    private bool GetEndDateDisabled(DateOnly date)
+    {
+        if (IsDateDisabled != null && IsDateDisabled(date))
+            return true;
+
+        return false;
+    }
+}
