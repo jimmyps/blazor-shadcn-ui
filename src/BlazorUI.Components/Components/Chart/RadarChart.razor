@@ -5,6 +5,21 @@
 
 <div class="@ContainerClass" style="position: relative; height: @(Height)px; width: 100%;">
     <canvas @ref="_canvasRef"></canvas>
+    
+    @if (ShowExportButton && _isInitialized)
+    {
+        <div style="position: absolute; top: 8px; right: 8px; z-index: 10;">
+            <button @onclick="ExportChart" 
+                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9"
+                    title="Export chart">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" x2="12" y1="15" y2="3"/>
+                </svg>
+            </button>
+        </div>
+    }
 </div>
 
 @code {
@@ -49,9 +64,53 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to initialize RadarChart: {ex.Message}");
+            Console.WriteLine($"RadarChart: Failed to initialize chart: {ex.Message}");
             // Chart initialization failed - component will render empty canvas
         }
+    }
+    
+    private async Task ExportChart()
+    {
+        if (_renderer == null || string.IsNullOrEmpty(_chartId))
+        {
+            Console.WriteLine("RadarChart: Cannot export - chart not initialized");
+            return;
+        }
+        
+        try
+        {
+            var format = Engine == ChartEngine.ECharts ? ImageFormat.Svg : ImageFormat.Png;
+            var dataUrl = await _renderer.ExportAsImageAsync(_chartId, format);
+            
+            if (string.IsNullOrEmpty(dataUrl))
+            {
+                Console.WriteLine("RadarChart: Export returned empty data URL");
+                return;
+            }
+            
+            var extension = format == ImageFormat.Svg ? "svg" : "png";
+            var filename = $"{ExportFileName}.{extension}";
+            await DownloadFile(dataUrl, filename);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"RadarChart: Export failed - {ex.Message}");
+        }
+    }
+    
+    private async Task DownloadFile(string dataUrl, string filename)
+    {
+        var script = @"
+            (function(url, name) {
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            })(arguments[0], arguments[1]);
+        ";
+        await JSRuntime.InvokeVoidAsync("eval", script, dataUrl, filename);
     }
     
     private async Task UpdateChartDataAsync()

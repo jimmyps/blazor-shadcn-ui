@@ -97,6 +97,18 @@ public class RadarChartBase<TData> : ComponentBase
     public string? Class { get; set; }
     
     /// <summary>
+    /// Gets or sets whether to show an export button for downloading the chart.
+    /// </summary>
+    [Parameter]
+    public bool ShowExportButton { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the filename to use when exporting (without extension).
+    /// </summary>
+    [Parameter]
+    public string ExportFileName { get; set; } = "chart";
+    
+    /// <summary>
     /// Gets the computed CSS classes for the container.
     /// </summary>
     protected string ContainerClass => ClassNames.cn(
