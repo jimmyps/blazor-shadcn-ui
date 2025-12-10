@@ -12,7 +12,7 @@
                 Size="@ButtonSize"
                 Class="@GetButtonClass()"
                 Disabled="@Disabled"
-                aria-label="@(AriaLabel ?? "Select time")">
+                AriaLabel="@(AriaLabel ?? "Select time")">
             @if (ShowIcon)
             {
                 <LucideIcon Name="clock" Class="@GetIconClass()" />

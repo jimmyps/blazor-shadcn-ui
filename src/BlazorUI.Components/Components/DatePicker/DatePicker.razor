@@ -13,7 +13,7 @@
                 Size="@ButtonSize"
                 Class="@GetButtonClass()"
                 Disabled="@Disabled"
-                aria-label="@(AriaLabel ?? "Select date")">
+                AriaLabel="@(AriaLabel ?? "Select date")">
             @if (ShowIcon)
             {
                 <LucideIcon Name="calendar" Class="@GetIconClass()" />

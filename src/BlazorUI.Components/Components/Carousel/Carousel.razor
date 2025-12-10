@@ -120,10 +120,10 @@
     public int Gap { get; set; } = 0;
 
     /// <summary>
-    /// Whether to enable drag gestures. Default is true.
+    /// Whether to enable drag gestures. Default is false.
     /// </summary>
     [Parameter]
-    public bool EnableDrag { get; set; } = true;
+    public bool EnableDrag { get; set; } = false;
 
     /// <summary>
     /// Additional CSS classes for the carousel container.
@@ -268,7 +268,7 @@
     private string GetPreviousButtonClass()
     {
         return ClassNames.cn(
-            "absolute z-10 flex h-10 w-10 items-center justify-center rounded-full border bg-background shadow-sm transition-all",
+            "absolute z-50 flex h-10 w-10 items-center justify-center rounded-full border bg-background shadow-sm transition-all",
             "hover:bg-accent hover:text-accent-foreground",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
             "disabled:pointer-events-none disabled:opacity-50",
@@ -281,7 +281,7 @@
     private string GetNextButtonClass()
     {
         return ClassNames.cn(
-            "absolute z-10 flex h-10 w-10 items-center justify-center rounded-full border bg-background shadow-sm transition-all",
+            "absolute z-50 flex h-10 w-10 items-center justify-center rounded-full border bg-background shadow-sm transition-all",
             "hover:bg-accent hover:text-accent-foreground",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
             "disabled:pointer-events-none disabled:opacity-50",
