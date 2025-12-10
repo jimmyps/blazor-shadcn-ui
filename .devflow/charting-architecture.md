@@ -344,7 +344,7 @@ public enum ChartType
     Line,
     Bar,
     Pie,
-    Doughnut,
+    Donut,
     Radar,
     Scatter,
     Bubble,
@@ -391,6 +391,14 @@ public class ChartJsRenderer : IChartRenderer
         if (_chartInstance != null)
         {
             await _chartInstance.InvokeVoidAsync("updateData", data);
+        }
+    }
+    
+    public async Task UpdateOptionsAsync(ChartOptions options)
+    {
+        if (_chartInstance != null)
+        {
+            await _chartInstance.InvokeVoidAsync("updateOptions", options);
         }
     }
     
@@ -471,6 +479,14 @@ public class EChartsRenderer : IChartRenderer
         if (_chartInstance != null)
         {
             await _chartInstance.InvokeVoidAsync("setOption", data);
+        }
+    }
+    
+    public async Task UpdateOptionsAsync(ChartOptions options)
+    {
+        if (_chartInstance != null)
+        {
+            await _chartInstance.InvokeVoidAsync("setOption", new { option = options });
         }
     }
     
@@ -869,7 +885,408 @@ private async Task ExportChartAsync()
 
 ---
 
-## 8. Accessibility
+## 8. Animation System
+
+### Animation Configuration
+
+Charts support rich animations on par with Recharts, with both generic and chart-specific animation types:
+
+```csharp
+/// <summary>
+/// Animation configuration for charts.
+/// </summary>
+public class ChartAnimation
+{
+    /// <summary>
+    /// Gets or sets whether animations are enabled.
+    /// </summary>
+    public bool Enabled { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the animation duration in milliseconds.
+    /// </summary>
+    public int Duration { get; set; } = 750;
+    
+    /// <summary>
+    /// Gets or sets the animation easing function.
+    /// </summary>
+    public AnimationEasing Easing { get; set; } = AnimationEasing.EaseInOutQuart;
+    
+    /// <summary>
+    /// Gets or sets the delay before animation starts in milliseconds.
+    /// </summary>
+    public int Delay { get; set; } = 0;
+    
+    /// <summary>
+    /// Gets or sets the animation type for initial render.
+    /// </summary>
+    public AnimationType Type { get; set; } = AnimationType.Default;
+}
+
+/// <summary>
+/// Animation easing functions matching Recharts.
+/// </summary>
+public enum AnimationEasing
+{
+    /// <summary>Linear animation with constant speed</summary>
+    Linear,
+    
+    /// <summary>Ease in using quadratic function</summary>
+    EaseInQuad,
+    
+    /// <summary>Ease out using quadratic function</summary>
+    EaseOutQuad,
+    
+    /// <summary>Ease in and out using quadratic function</summary>
+    EaseInOutQuad,
+    
+    /// <summary>Ease in using cubic function</summary>
+    EaseInCubic,
+    
+    /// <summary>Ease out using cubic function</summary>
+    EaseOutCubic,
+    
+    /// <summary>Ease in and out using cubic function</summary>
+    EaseInOutCubic,
+    
+    /// <summary>Ease in using quartic function</summary>
+    EaseInQuart,
+    
+    /// <summary>Ease out using quartic function</summary>
+    EaseOutQuart,
+    
+    /// <summary>Ease in and out using quartic function (default)</summary>
+    EaseInOutQuart,
+    
+    /// <summary>Ease in using quintic function</summary>
+    EaseInQuint,
+    
+    /// <summary>Ease out using quintic function</summary>
+    EaseOutQuint,
+    
+    /// <summary>Ease in and out using quintic function</summary>
+    EaseInOutQuint,
+    
+    /// <summary>Ease in using exponential function</summary>
+    EaseInExpo,
+    
+    /// <summary>Ease out using exponential function</summary>
+    EaseOutExpo,
+    
+    /// <summary>Ease in and out using exponential function</summary>
+    EaseInOutExpo,
+    
+    /// <summary>Ease in using back function (overshoots)</summary>
+    EaseInBack,
+    
+    /// <summary>Ease out using back function (overshoots)</summary>
+    EaseOutBack,
+    
+    /// <summary>Ease in and out using back function (overshoots)</summary>
+    EaseInOutBack,
+    
+    /// <summary>Elastic ease in (spring effect)</summary>
+    EaseInElastic,
+    
+    /// <summary>Elastic ease out (spring effect)</summary>
+    EaseOutElastic,
+    
+    /// <summary>Elastic ease in and out (spring effect)</summary>
+    EaseInOutElastic,
+    
+    /// <summary>Bounce ease in</summary>
+    EaseInBounce,
+    
+    /// <summary>Bounce ease out</summary>
+    EaseOutBounce,
+    
+    /// <summary>Bounce ease in and out</summary>
+    EaseInOutBounce
+}
+
+/// <summary>
+/// Animation types for different chart behaviors.
+/// </summary>
+public enum AnimationType
+{
+    /// <summary>Default animation for the chart type</summary>
+    Default,
+    
+    /// <summary>Fade in animation</summary>
+    FadeIn,
+    
+    /// <summary>Scale in animation (grow from center)</summary>
+    ScaleIn,
+    
+    /// <summary>Slide in from left animation</summary>
+    SlideInLeft,
+    
+    /// <summary>Slide in from right animation</summary>
+    SlideInRight,
+    
+    /// <summary>Slide in from top animation</summary>
+    SlideInTop,
+    
+    /// <summary>Slide in from bottom animation</summary>
+    SlideInBottom,
+    
+    /// <summary>Wave animation (sequential reveal)</summary>
+    Wave,
+    
+    /// <summary>Expand animation (bars grow from baseline)</summary>
+    Expand,
+    
+    /// <summary>Draw animation (lines/paths draw progressively)</summary>
+    Draw
+}
+```
+
+### Chart-Specific Animation Behaviors
+
+**LineChart Animations:**
+```razor
+<LineChart Data="@data" Height="350">
+    <ChartAnimation Type="AnimationType.Draw" 
+                    Duration="1000" 
+                    Easing="AnimationEasing.EaseOutCubic" />
+    <ChartLine DataKey="sales" />
+</LineChart>
+```
+
+- **Draw**: Lines draw progressively from left to right
+- **FadeIn**: Lines fade in while drawing
+- **Wave**: Data points appear sequentially with a wave effect
+
+**BarChart Animations:**
+```razor
+<BarChart Data="@data" Height="350">
+    <ChartAnimation Type="AnimationType.Expand" 
+                    Duration="800" 
+                    Easing="AnimationEasing.EaseOutQuart" />
+    <ChartBar DataKey="value" />
+</BarChart>
+```
+
+- **Expand**: Bars grow from baseline to their full height
+- **SlideInBottom**: Bars slide in from the bottom
+- **Wave**: Bars animate sequentially from left to right
+
+**PieChart/DonutChart Animations:**
+```razor
+<PieChart Data="@data" IsDonut="true">
+    <ChartAnimation Type="AnimationType.ScaleIn" 
+                    Duration="600" 
+                    Easing="AnimationEasing.EaseOutBack" />
+</PieChart>
+```
+
+- **ScaleIn**: Segments scale from center with rotation
+- **FadeIn**: Segments fade in with rotation
+- **Wave**: Segments appear sequentially clockwise
+
+**AreaChart Animations:**
+```razor
+<AreaChart Data="@data" Height="350">
+    <ChartAnimation Type="AnimationType.Draw" 
+                    Duration="1200" 
+                    Easing="AnimationEasing.EaseInOutQuart" />
+    <ChartArea DataKey="value" Fill="var(--chart-1)" />
+</AreaChart>
+```
+
+- **Draw**: Area fills progressively from left to right
+- **FadeIn**: Area fades in while filling
+- **Expand**: Area expands from baseline
+
+### Component API
+
+```csharp
+/// <summary>
+/// Base chart component with animation support.
+/// </summary>
+public abstract class ChartBase<TData> : ComponentBase
+{
+    /// <summary>
+    /// Gets or sets the animation configuration.
+    /// </summary>
+    [Parameter]
+    public ChartAnimation? Animation { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to disable animations (respects prefers-reduced-motion).
+    /// </summary>
+    [Parameter]
+    public bool DisableAnimations { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to animate on data updates.
+    /// </summary>
+    [Parameter]
+    public bool AnimateOnUpdate { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the animation duration for data updates in milliseconds.
+    /// </summary>
+    [Parameter]
+    public int UpdateAnimationDuration { get; set; } = 300;
+}
+```
+
+### Usage Examples
+
+**Basic animation with default settings:**
+```razor
+<LineChart Data="@data" Height="350">
+    <ChartLine DataKey="sales" />
+</LineChart>
+```
+
+**Custom animation configuration:**
+```razor
+<LineChart Data="@data" Height="350">
+    <ChartAnimation 
+        Type="AnimationType.Draw" 
+        Duration="1500" 
+        Easing="AnimationEasing.EaseOutCubic" 
+        Delay="200" />
+    <ChartLine DataKey="sales" />
+</LineChart>
+```
+
+**Disable animations:**
+```razor
+<LineChart Data="@data" Height="350" DisableAnimations="true">
+    <ChartLine DataKey="sales" />
+</LineChart>
+```
+
+**Different animations for multiple series:**
+```razor
+<LineChart Data="@data" Height="350">
+    <ChartAnimation Type="AnimationType.Wave" Duration="1000" />
+    <ChartLine DataKey="sales" AnimationDelay="0" />
+    <ChartLine DataKey="profit" AnimationDelay="200" />
+    <ChartLine DataKey="costs" AnimationDelay="400" />
+</LineChart>
+```
+
+### Accessibility: Reduced Motion
+
+Respect user's motion preferences:
+
+```csharp
+protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+    if (firstRender)
+    {
+        // Check for prefers-reduced-motion
+        var prefersReducedMotion = await JSRuntime.InvokeAsync<bool>(
+            "window.matchMedia", 
+            "(prefers-reduced-motion: reduce)"
+        );
+        
+        if (prefersReducedMotion || DisableAnimations)
+        {
+            // Disable or shorten animations
+            if (Animation != null)
+            {
+                Animation.Duration = 0;
+            }
+        }
+    }
+}
+```
+
+CSS media query fallback:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+    .chart-animation {
+        animation-duration: 0ms !important;
+        transition-duration: 0ms !important;
+    }
+}
+```
+
+### Animation Implementation Notes
+
+**Chart.js Integration:**
+```javascript
+// chartjs-renderer.js
+export function createChart(element, options) {
+    const config = {
+        type: options.type,
+        data: options.data,
+        options: {
+            animation: {
+                duration: options.animation?.duration || 750,
+                easing: mapEasingFunction(options.animation?.easing),
+                delay: options.animation?.delay || 0,
+                // Chart.js specific animation callbacks
+                onProgress: options.animation?.onProgress,
+                onComplete: options.animation?.onComplete
+            }
+        }
+    };
+    
+    return new Chart(element, config);
+}
+
+function mapEasingFunction(easing) {
+    const easingMap = {
+        'Linear': 'linear',
+        'EaseInOutQuart': 'easeInOutQuart',
+        'EaseOutCubic': 'easeOutCubic',
+        // ... map all easing functions
+    };
+    
+    return easingMap[easing] || 'easeInOutQuart';
+}
+```
+
+**ECharts Integration:**
+```javascript
+// echarts-renderer.js
+export function createChart(element, options) {
+    const chart = echarts.init(element);
+    
+    const option = {
+        animation: options.animation?.enabled !== false,
+        animationDuration: options.animation?.duration || 750,
+        animationEasing: mapEasingFunction(options.animation?.easing),
+        animationDelay: options.animation?.delay || 0,
+        animationDurationUpdate: options.updateAnimationDuration || 300
+    };
+    
+    chart.setOption(option);
+    return chart;
+}
+```
+
+### Animation Performance
+
+**Optimization strategies:**
+1. **Use CSS transforms** where possible (GPU accelerated)
+2. **Limit simultaneous animations** to prevent jank
+3. **Throttle animations** for large datasets (>500 points)
+4. **Progressive rendering** for complex charts
+
+**Performance monitoring:**
+```csharp
+[Parameter]
+public EventCallback<AnimationPerformance> OnAnimationComplete { get; set; }
+
+public class AnimationPerformance
+{
+    public TimeSpan Duration { get; set; }
+    public int FrameCount { get; set; }
+    public double AverageFps { get; set; }
+}
+```
+
+---
+
+## 9. Accessibility
 
 ### ARIA Attributes
 
@@ -930,7 +1347,7 @@ Provide data table alternative:
 
 ---
 
-## 9. Implementation Roadmap
+## 10. Implementation Roadmap
 
 ### Phase 1: Foundation (Weeks 1-2)
 
@@ -989,7 +1406,7 @@ Provide data table alternative:
 
 ---
 
-## 10. Engine Comparison & Trade-offs
+## 11. Engine Comparison & Trade-offs
 
 ### Chart.js (Default Engine)
 
@@ -1053,7 +1470,7 @@ Provide data table alternative:
 
 ---
 
-## 11. Security Considerations
+## 12. Security Considerations
 
 ### XSS Prevention
 
@@ -1110,7 +1527,7 @@ public async Task HandleChartClick(JsonElement dataPoint)
 
 ---
 
-## 12. Performance Optimizations
+## 13. Performance Optimizations
 
 ### Lazy Loading
 
@@ -1177,7 +1594,7 @@ private ChartEngine DetermineOptimalEngine()
 
 ---
 
-## 13. Testing Strategy
+## 14. Testing Strategy
 
 ### Component Tests
 
@@ -1243,7 +1660,7 @@ public async Task LineChart_MeetsAccessibilityStandards()
 
 ---
 
-## 14. Dependencies
+## 15. Dependencies
 
 ### NuGet Packages
 
@@ -1270,7 +1687,7 @@ public async Task LineChart_MeetsAccessibilityStandards()
 
 ---
 
-## 15. Documentation Requirements
+## 16. Documentation Requirements
 
 ### Usage Examples
 
@@ -1299,7 +1716,7 @@ Provide mapping guides showing equivalent APIs.
 
 ---
 
-## 16. Open Questions & Decisions Needed
+## 17. Open Questions & Decisions Needed
 
 ### 1. Chart.js vs. ECharts Priority
 
@@ -1325,11 +1742,17 @@ Provide mapping guides showing equivalent APIs.
 
 **Question:** Should charts have animations by default?
 
-**Recommendation:** Yes, with opt-out
-- Animations improve UX and data comprehension
-- Provide `DisableAnimations` parameter
-- Respect `prefers-reduced-motion` media query
-- Use subtle, fast animations (300ms default)
+**Decision:** Yes, with opt-out and comprehensive animation system
+- ✅ Animations improve UX and data comprehension
+- ✅ 24 easing functions matching Recharts (linear, quadratic, cubic, back, elastic, bounce)
+- ✅ 10 animation types (fade, scale, slide, wave, expand, draw)
+- ✅ Chart-specific animation behaviors (line draw, bar expand, pie rotate)
+- ✅ Configurable duration, delay, and easing per chart
+- ✅ `DisableAnimations` parameter for opt-out
+- ✅ Automatic respect for `prefers-reduced-motion` media query
+- ✅ Subtle, fast default animations (750ms with easeInOutQuart)
+- ✅ Update animations for data changes (300ms default)
+- See Section 8 for complete animation system specification
 
 ### 4. Data Binding Strategy
 
@@ -1342,7 +1765,7 @@ Provide mapping guides showing equivalent APIs.
 
 ---
 
-## 17. Success Criteria
+## 18. Success Criteria
 
 ### Functional
 
@@ -1370,7 +1793,7 @@ Provide mapping guides showing equivalent APIs.
 
 ---
 
-## 18. Future Enhancements
+## 19. Future Enhancements
 
 ### Phase 3+ (Post-MVP)
 
@@ -1398,7 +1821,7 @@ Provide mapping guides showing equivalent APIs.
 
 ---
 
-## 19. References
+## 20. References
 
 - [shadcn/ui Charts Documentation](https://ui.shadcn.com/docs/components/chart)
 - [Recharts Documentation](https://recharts.org/)
