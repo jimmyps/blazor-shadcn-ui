@@ -1,0 +1,260 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits RadarChartBase<TData>
+@implements IAsyncDisposable
+
+<div class="@ContainerClass" style="position: relative; height: @(Height)px; width: 100%;">
+    <canvas @ref="_canvasRef"></canvas>
+</div>
+
+@code {
+    private ElementReference _canvasRef;
+    private IJSObjectReference? _jsModule;
+    private string? _chartId;
+    private bool _isInitialized;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Data != null && Data.Any())
+        {
+            await InitializeChartAsync();
+        }
+    }
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_isInitialized && Data != null && Data.Any())
+        {
+            await UpdateChartDataAsync();
+        }
+    }
+    
+    private async Task InitializeChartAsync()
+    {
+        try
+        {
+            _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/BlazorUI.Components/js/chartjs-renderer.js");
+            
+            var chartConfig = BuildChartConfig();
+            _chartId = await _jsModule.InvokeAsync<string>("createChart", _canvasRef, chartConfig);
+            _isInitialized = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to initialize chart: {ex.Message}");
+        }
+    }
+    
+    private async Task UpdateChartDataAsync()
+    {
+        if (_jsModule != null && !string.IsNullOrEmpty(_chartId))
+        {
+            try
+            {
+                var chartData = BuildChartData();
+                await _jsModule.InvokeVoidAsync("updateData", _chartId, chartData);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to update chart data: {ex.Message}");
+            }
+        }
+    }
+    
+    private object BuildChartConfig()
+    {
+        return new
+        {
+            type = "radar",
+            data = BuildChartData(),
+            options = new
+            {
+                responsive = Responsive,
+                maintainAspectRatio = false,
+                plugins = new
+                {
+                    legend = new
+                    {
+                        display = ShowLegend
+                    },
+                    tooltip = new
+                    {
+                        enabled = ShowTooltip
+                    }
+                },
+                scales = new
+                {
+                    r = new
+                    {
+                        beginAtZero = true,
+                        grid = new
+                        {
+                            display = ShowGrid
+                        },
+                        pointLabels = new
+                        {
+                            display = ShowLabels
+                        }
+                    }
+                },
+                animation = new
+                {
+                    duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
+                    easing = MapEasingFunction(Animation?.Easing ?? AnimationEasing.EaseInOutQuart)
+                }
+            }
+        };
+    }
+    
+    private object BuildChartData()
+    {
+        if (Data == null || !Data.Any())
+        {
+            return new
+            {
+                labels = Array.Empty<string>(),
+                datasets = Array.Empty<object>()
+            };
+        }
+        
+        var labels = ExtractLabels();
+        var datasets = BuildDatasets();
+        
+        return new
+        {
+            labels,
+            datasets
+        };
+    }
+    
+    private string[] ExtractLabels()
+    {
+        if (Data == null || !Data.Any()) return Array.Empty<string>();
+        
+        if (!string.IsNullOrEmpty(LabelDataKey))
+        {
+            return Data.Select(item =>
+            {
+                var prop = item?.GetType().GetProperty(LabelDataKey);
+                return prop?.GetValue(item)?.ToString() ?? "";
+            }).ToArray();
+        }
+        
+        return Data.Select((_, i) => $"Metric {i + 1}").ToArray();
+    }
+    
+    private object[] BuildDatasets()
+    {
+        if (Series == null || !Series.Any())
+        {
+            return Array.Empty<object>();
+        }
+        
+        var datasets = new List<object>();
+        var colorIndex = 0;
+        
+        foreach (var series in Series)
+        {
+            var values = Data.Select(item =>
+            {
+                var prop = item?.GetType().GetProperty(series.DataKey);
+                var value = prop?.GetValue(item);
+                
+                if (value == null) return 0.0;
+                
+                return Convert.ToDouble(value);
+            }).ToArray();
+            
+            var color = series.Color ?? GetChartColor(colorIndex);
+            var backgroundColor = GetColorWithAlpha(color, FillOpacity);
+            
+            datasets.Add(new
+            {
+                label = series.Label ?? series.DataKey,
+                data = values,
+                borderColor = color,
+                backgroundColor = backgroundColor,
+                borderWidth = series.LineWidth,
+                pointBackgroundColor = color,
+                pointBorderColor = "#fff",
+                pointHoverBackgroundColor = "#fff",
+                pointHoverBorderColor = color
+            });
+            
+            colorIndex++;
+        }
+        
+        return datasets.ToArray();
+    }
+    
+    private string GetChartColor(int index)
+    {
+        var colors = new[]
+        {
+            "hsl(var(--chart-1))",
+            "hsl(var(--chart-2))",
+            "hsl(var(--chart-3))",
+            "hsl(var(--chart-4))",
+            "hsl(var(--chart-5))"
+        };
+        
+        return colors[index % colors.Length];
+    }
+    
+    private string GetColorWithAlpha(string color, double alpha)
+    {
+        // Convert HSL color to rgba with alpha
+        if (color.StartsWith("hsl(var(--chart-"))
+        {
+            var chartNum = color.Substring(16, 1);
+            return $"hsla(var(--chart-{chartNum}), {alpha})";
+        }
+        return color;
+    }
+    
+    private string MapEasingFunction(AnimationEasing easing)
+    {
+        return easing switch
+        {
+            AnimationEasing.Linear => "linear",
+            AnimationEasing.EaseInQuad => "easeInQuad",
+            AnimationEasing.EaseOutQuad => "easeOutQuad",
+            AnimationEasing.EaseInOutQuad => "easeInOutQuad",
+            AnimationEasing.EaseInCubic => "easeInCubic",
+            AnimationEasing.EaseOutCubic => "easeOutCubic",
+            AnimationEasing.EaseInOutCubic => "easeInOutCubic",
+            AnimationEasing.EaseInQuart => "easeInQuart",
+            AnimationEasing.EaseOutQuart => "easeOutQuart",
+            AnimationEasing.EaseInOutQuart => "easeInOutQuart",
+            _ => "easeInOutQuart"
+        };
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule != null && !string.IsNullOrEmpty(_chartId))
+        {
+            try
+            {
+                await _jsModule.InvokeVoidAsync("destroy", _chartId);
+            }
+            catch
+            {
+                // Ignore disposal errors
+            }
+        }
+        
+        if (_jsModule != null)
+        {
+            try
+            {
+                await _jsModule.DisposeAsync();
+            }
+            catch
+            {
+                // Ignore disposal errors
+            }
+        }
+    }
+}

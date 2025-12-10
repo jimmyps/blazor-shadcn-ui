@@ -218,6 +218,53 @@
         </ChartPanel>
     </div>
 
+    <!-- Multi-Series Line Chart -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Multi-Series Line Chart</h2>
+            <p class="text-sm text-muted-foreground">
+                Display multiple data series on the same chart for comparison.
+            </p>
+        </div>
+        
+        <ChartPanel>
+            <ChartPanelHeader>
+                <ChartPanelTitle>Performance Metrics</ChartPanelTitle>
+                <ChartPanelDescription>Comparing sales vs. target over time</ChartPanelDescription>
+            </ChartPanelHeader>
+            <ChartPanelContent>
+                <MultiSeriesLineChart Data="@performanceData" 
+                                     XAxisDataKey="Month"
+                                     Series="@lineSeries"
+                                     Height="350" />
+            </ChartPanelContent>
+        </ChartPanel>
+    </div>
+
+    <!-- Radar Chart -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Radar Chart</h2>
+            <p class="text-sm text-muted-foreground">
+                Visualize multivariate data across multiple dimensions.
+            </p>
+        </div>
+        
+        <ChartPanel>
+            <ChartPanelHeader>
+                <ChartPanelTitle>Skills Assessment</ChartPanelTitle>
+                <ChartPanelDescription>Comparing team member competencies</ChartPanelDescription>
+            </ChartPanelHeader>
+            <ChartPanelContent>
+                <RadarChart Data="@skillsData" 
+                           LabelDataKey="Skill"
+                           Series="@radarSeries"
+                           Height="400"
+                           FillOpacity="0.25" />
+            </ChartPanelContent>
+        </ChartPanel>
+    </div>
+
     <!-- Usage -->
     <div class="space-y-4">
         <div class="space-y-2">
@@ -271,7 +318,8 @@
             <p>✓ Smooth animations with reduced-motion support</p>
             <p>✓ Theme integration with CSS variables (--chart-1 through --chart-5)</p>
             <p>✓ Interactive tooltips and legends</p>
-            <p>✓ Multiple chart types: Line, Area, Bar, Pie, and Donut</p>
+            <p>✓ Multiple chart types: Line, Area, Bar, Pie, Donut, and Radar</p>
+            <p>✓ Multi-series support for comparing multiple datasets</p>
             <p>✓ Curved and straight line styles</p>
             <p>✓ Area fill support for line charts</p>
             <p>✓ Horizontal and vertical bar orientations</p>
@@ -342,6 +390,38 @@
         new() { Category = "Other", Amount = 3000 }
     };
     
+    private List<PerformanceData> performanceData = new()
+    {
+        new() { Month = "Jan", Sales = 4000, Target = 4500, Profit = 1200 },
+        new() { Month = "Feb", Sales = 3000, Target = 4500, Profit = 900 },
+        new() { Month = "Mar", Sales = 5000, Target = 4500, Profit = 1500 },
+        new() { Month = "Apr", Sales = 4500, Target = 4500, Profit = 1350 },
+        new() { Month = "May", Sales = 6000, Target = 4500, Profit = 1800 },
+        new() { Month = "Jun", Sales = 5500, Target = 4500, Profit = 1650 }
+    };
+    
+    private List<SkillsData> skillsData = new()
+    {
+        new() { Skill = "JavaScript", Developer1 = 90, Developer2 = 75 },
+        new() { Skill = "C#", Developer1 = 85, Developer2 = 95 },
+        new() { Skill = "Design", Developer1 = 70, Developer2 = 80 },
+        new() { Skill = "Testing", Developer1 = 80, Developer2 = 70 },
+        new() { Skill = "DevOps", Developer1 = 75, Developer2 = 85 }
+    };
+    
+    private List<ChartSeriesConfig> lineSeries = new()
+    {
+        new() { DataKey = "Sales", Label = "Actual Sales", Curved = true, Color = "hsl(var(--chart-1))" },
+        new() { DataKey = "Target", Label = "Target", Curved = true, Dashed = true, Color = "hsl(var(--chart-2))" },
+        new() { DataKey = "Profit", Label = "Profit", Curved = true, Color = "hsl(var(--chart-3))" }
+    };
+    
+    private List<RadarSeriesConfig> radarSeries = new()
+    {
+        new() { DataKey = "Developer1", Label = "Developer A", Color = "hsl(var(--chart-1))" },
+        new() { DataKey = "Developer2", Label = "Developer B", Color = "hsl(var(--chart-2))" }
+    };
+    
     public class SalesData
     {
         public string Month { get; set; } = "";
@@ -376,5 +456,20 @@
     {
         public string Category { get; set; } = "";
         public int Amount { get; set; }
+    }
+    
+    public class PerformanceData
+    {
+        public string Month { get; set; } = "";
+        public int Sales { get; set; }
+        public int Target { get; set; }
+        public int Profit { get; set; }
+    }
+    
+    public class SkillsData
+    {
+        public string Skill { get; set; } = "";
+        public int Developer1 { get; set; }
+        public int Developer2 { get; set; }
     }
 }

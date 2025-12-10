@@ -59,6 +59,59 @@ Compare values across categories with vertical or horizontal bars.
          Orientation="BarChartOrientation.Vertical" />
 ```
 
+### MultiSeriesLineChart
+Display multiple data series on the same line chart for comparison.
+
+**Features:**
+- Multiple data series with individual styling
+- Automatic color distribution
+- Curved or straight lines per series
+- Dashed line support
+- Area fill per series
+
+**Usage:**
+```razor
+<MultiSeriesLineChart Data="@performanceData" 
+                     XAxisDataKey="Month"
+                     Series="@lineSeries"
+                     Height="350" />
+
+@code {
+    private List<ChartSeriesConfig> lineSeries = new()
+    {
+        new() { DataKey = "Sales", Label = "Actual Sales", Curved = true },
+        new() { DataKey = "Target", Label = "Target", Dashed = true },
+        new() { DataKey = "Profit", Label = "Profit", Curved = true }
+    };
+}
+```
+
+### RadarChart
+Visualize multivariate data across multiple dimensions with a radar/spider chart.
+
+**Features:**
+- Multiple data series comparison
+- Customizable fill opacity
+- Axis label configuration
+- Automatic scaling
+
+**Usage:**
+```razor
+<RadarChart Data="@skillsData" 
+           LabelDataKey="Skill"
+           Series="@radarSeries"
+           Height="400"
+           FillOpacity="0.25" />
+
+@code {
+    private List<RadarSeriesConfig> radarSeries = new()
+    {
+        new() { DataKey = "Developer1", Label = "Developer A" },
+        new() { DataKey = "Developer2", Label = "Developer B" }
+    };
+}
+```
+
 ### PieChart / DonutChart
 Show composition and proportions with pie or donut charts.
 
