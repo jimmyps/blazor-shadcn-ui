@@ -79,6 +79,12 @@ public class MultiSeriesLineChartBase<TData> : ComponentBase
     public ChartAnimation? Animation { get; set; }
     
     /// <summary>
+    /// Gets or sets the rendering engine to use.
+    /// </summary>
+    [Parameter]
+    public ChartEngine Engine { get; set; } = ChartEngine.ECharts;
+    
+    /// <summary>
     /// Gets or sets whether to disable animations.
     /// </summary>
     [Parameter]

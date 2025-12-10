@@ -15,7 +15,7 @@
 
 @code {
     private ElementReference _canvasRef;
-    private IJSObjectReference? _jsModule;
+    private IChartRenderer? _renderer;
     private string? _chartId;
     private bool _isInitialized;
     
@@ -39,11 +39,19 @@
     {
         try
         {
-            _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/BlazorUI.Components/js/chartjs-renderer.js");
+            _renderer = ChartRendererFactory.CreateRenderer(Engine, JSRuntime);
             
-            var chartConfig = BuildChartConfig();
-            _chartId = await _jsModule.InvokeAsync<string>("createChart", _canvasRef, chartConfig);
+            var chartType = IsDonut ? ChartType.Donut : ChartType.Pie;
+            var chartConfig = new ChartConfig
+            {
+                Type = chartType,
+                Responsive = Responsive,
+                MaintainAspectRatio = false,
+                Data = BuildChartData(),
+                Options = BuildChartOptions()
+            };
+            
+            _chartId = await _renderer.InitializeAsync(_canvasRef, chartConfig);
             _isInitialized = true;
         }
         catch (Exception ex)
@@ -54,12 +62,12 @@
     
     private async Task UpdateChartDataAsync()
     {
-        if (_jsModule != null && !string.IsNullOrEmpty(_chartId))
+        if (_renderer != null && !string.IsNullOrEmpty(_chartId))
         {
             try
             {
                 var chartData = BuildChartData();
-                await _jsModule.InvokeVoidAsync("updateData", _chartId, chartData);
+                await _renderer.UpdateDataAsync(_chartId, chartData);
             }
             catch (Exception ex)
             {
@@ -68,36 +76,29 @@
         }
     }
     
-    private object BuildChartConfig()
+    private object BuildChartOptions()
     {
-        var chartType = IsDonut ? "doughnut" : "pie";
-        
         return new
         {
-            type = chartType,
-            data = BuildChartData(),
-            options = new
+            responsive = Responsive,
+            maintainAspectRatio = false,
+            plugins = new
             {
-                responsive = Responsive,
-                maintainAspectRatio = false,
-                plugins = new
+                legend = new
                 {
-                    legend = new
-                    {
-                        display = ShowLegend,
-                        position = MapLegendPosition(LegendPosition)
-                    },
-                    tooltip = new
-                    {
-                        enabled = ShowTooltip
-                    }
+                    display = ShowLegend,
+                    position = MapLegendPosition(LegendPosition)
                 },
-                cutout = IsDonut ? $"{DonutInnerRadius * 100}%" : null,
-                animation = new
+                tooltip = new
                 {
-                    duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
-                    easing = MapEasingFunction(Animation?.Easing ?? AnimationEasing.EaseInOutQuart)
+                    enabled = ShowTooltip
                 }
+            },
+            cutout = IsDonut ? $"{DonutInnerRadius * 100}%" : (string?)null,
+            animation = new
+            {
+                duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
+                easing = ChartUtilities.MapEasingFunction(Animation?.Easing ?? AnimationEasing.EaseInOutQuart)
             }
         };
     }
@@ -201,18 +202,14 @@
         };
     }
     
-    private string MapEasingFunction(AnimationEasing easing)
-    {
-        return ChartUtilities.MapEasingFunction(easing);
-    }
     
     public async ValueTask DisposeAsync()
     {
-        if (_jsModule != null && !string.IsNullOrEmpty(_chartId))
+        if (_renderer != null && !string.IsNullOrEmpty(_chartId))
         {
             try
             {
-                await _jsModule.InvokeVoidAsync("destroy", _chartId);
+                await _renderer.DestroyAsync(_chartId);
             }
             catch
             {
@@ -220,11 +217,11 @@
             }
         }
         
-        if (_jsModule != null)
+        if (_renderer != null)
         {
             try
             {
-                await _jsModule.DisposeAsync();
+                await _renderer.DisposeAsync();
             }
             catch
             {
