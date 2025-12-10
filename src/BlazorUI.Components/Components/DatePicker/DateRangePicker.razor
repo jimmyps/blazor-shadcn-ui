@@ -21,30 +21,37 @@
         }
     </PopoverTrigger>
     <PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
-        <div class="flex gap-4">
-            <div class="space-y-2">
-                <div class="text-sm font-medium">
+        <div class="flex gap-0 border rounded-md bg-card shadow-sm p-3">
+            <div class="space-y-2 flex-1">
+                <div class="text-sm font-medium px-3">
                     @(StartDateLabel ?? "From")
                 </div>
                 <Calendar @bind-SelectedDate="_startDate"
+                          InitialMonth="@_firstCalendarMonth"
                           MinDate="@MinDate"
                           MaxDate="@(_endDate ?? MaxDate)"
                           IsDateDisabled="@GetStartDateDisabled"
                           Culture="@EffectiveCulture"
                           CaptionLayout="@CaptionLayout"
-                          Class="@CalendarClass" />
+                          RangeStart="@_startDate"
+                          RangeEnd="@_endDate"
+                          Class="@GetFirstCalendarClass()" />
             </div>
-            <div class="space-y-2">
-                <div class="text-sm font-medium">
+            <div class="border-l mx-3"></div>
+            <div class="space-y-2 flex-1">
+                <div class="text-sm font-medium px-3">
                     @(EndDateLabel ?? "To")
                 </div>
                 <Calendar @bind-SelectedDate="_endDate"
+                          InitialMonth="@_secondCalendarMonth"
                           MinDate="@(_startDate ?? MinDate)"
                           MaxDate="@MaxDate"
                           IsDateDisabled="@GetEndDateDisabled"
                           Culture="@EffectiveCulture"
                           CaptionLayout="@CaptionLayout"
-                          Class="@CalendarClass" />
+                          RangeStart="@_startDate"
+                          RangeEnd="@_endDate"
+                          Class="@GetSecondCalendarClass()" />
             </div>
         </div>
     </PopoverContent>
@@ -56,6 +63,8 @@
     private DateOnly? _endDate;
     private DateOnly? _lastNotifiedStartDate;
     private DateOnly? _lastNotifiedEndDate;
+    private DateOnly? _firstCalendarMonth;
+    private DateOnly? _secondCalendarMonth;
 
     private System.Globalization.CultureInfo EffectiveCulture =>
         Culture ?? System.Globalization.CultureInfo.CurrentCulture;
@@ -225,6 +234,22 @@
         {
             _endDate = EndDate;
         }
+
+        // Initialize calendar months to show contiguous months
+        UpdateCalendarMonths();
+    }
+
+    private void UpdateCalendarMonths()
+    {
+        // Determine the base month (prefer start date, then end date, then current month)
+        var baseMonth = _startDate ?? _endDate ?? DateOnly.FromDateTime(DateTime.Today);
+        
+        // First calendar shows the month of the base date
+        _firstCalendarMonth = new DateOnly(baseMonth.Year, baseMonth.Month, 1);
+        
+        // Second calendar shows the next month
+        var nextMonth = baseMonth.AddMonths(1);
+        _secondCalendarMonth = new DateOnly(nextMonth.Year, nextMonth.Month, 1);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -343,6 +368,26 @@
     private string GetPopoverContentClass()
     {
         return "w-auto p-0 border-0 bg-transparent shadow-none";
+    }
+
+    private string GetFirstCalendarClass()
+    {
+        var classes = new List<string> { "border-0 bg-transparent shadow-none p-0" };
+        
+        if (!string.IsNullOrEmpty(CalendarClass))
+            classes.Add(CalendarClass);
+        
+        return string.Join(" ", classes);
+    }
+
+    private string GetSecondCalendarClass()
+    {
+        var classes = new List<string> { "border-0 bg-transparent shadow-none p-0" };
+        
+        if (!string.IsNullOrEmpty(CalendarClass))
+            classes.Add(CalendarClass);
+        
+        return string.Join(" ", classes);
     }
 
     private bool GetStartDateDisabled(DateOnly date)

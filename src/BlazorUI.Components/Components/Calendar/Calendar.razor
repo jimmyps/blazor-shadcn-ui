@@ -181,6 +181,18 @@
     [Parameter]
     public int YearRange { get; set; } = 20;
 
+    /// <summary>
+    /// The start date of a range selection (for visual styling).
+    /// </summary>
+    [Parameter]
+    public DateOnly? RangeStart { get; set; }
+
+    /// <summary>
+    /// The end date of a range selection (for visual styling).
+    /// </summary>
+    [Parameter]
+    public DateOnly? RangeEnd { get; set; }
+
     private DateOnly DisplayedMonth => _displayedMonth;
 
     /// <summary>
@@ -454,6 +466,16 @@
 
     private bool IsSelected(DateOnly date) => SelectedDate.HasValue && SelectedDate.Value == date;
 
+    private bool IsRangeStart(DateOnly date) => RangeStart.HasValue && RangeStart.Value == date;
+    
+    private bool IsRangeEnd(DateOnly date) => RangeEnd.HasValue && RangeEnd.Value == date;
+    
+    private bool IsInRange(DateOnly date)
+    {
+        if (!RangeStart.HasValue || !RangeEnd.HasValue) return false;
+        return date >= RangeStart.Value && date <= RangeEnd.Value;
+    }
+
     private bool IsToday(DateOnly date) => date == DateOnly.FromDateTime(DateTime.Today);
 
     private bool IsCurrentMonth(DateOnly date) => 
@@ -546,9 +568,18 @@
 
         var classes = new List<string> { baseClass };
 
-        if (IsSelected(date))
+        // Range selection styling
+        var isRangeStart = IsRangeStart(date);
+        var isRangeEnd = IsRangeEnd(date);
+        var inRange = IsInRange(date);
+
+        if (isRangeStart || isRangeEnd || IsSelected(date))
         {
             classes.Add("bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground");
+        }
+        else if (inRange)
+        {
+            classes.Add("bg-accent text-accent-foreground");
         }
         else if (IsToday(date))
         {
@@ -556,7 +587,7 @@
         }
 
         // Add focus ring for keyboard navigation
-        if (IsFocused(date) && !IsSelected(date))
+        if (IsFocused(date) && !IsSelected(date) && !isRangeStart && !isRangeEnd)
         {
             classes.Add("ring-2 ring-ring/50 ring-offset-2");
         }
