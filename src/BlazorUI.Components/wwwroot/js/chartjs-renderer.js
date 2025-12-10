@@ -149,7 +149,7 @@ export function destroy(chartId) {
  * @returns {string} - Unique identifier
  */
 function generateId() {
-    return `chart-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    return `chart-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 }
 
 /**

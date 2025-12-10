@@ -64,12 +64,11 @@
     
     private object BuildChartConfig()
     {
-        var chartType = Orientation == BarChartOrientation.Horizontal ? "bar" : "bar";
         var indexAxis = Orientation == BarChartOrientation.Horizontal ? "y" : "x";
         
         return new
         {
-            type = chartType,
+            type = "bar",
             data = BuildChartData(),
             options = new
             {
