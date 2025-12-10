@@ -89,7 +89,7 @@ public class PieChartBase<TData> : ComponentBase
     /// Gets or sets the rendering engine to use.
     /// </summary>
     [Parameter]
-    public ChartEngine Engine { get; set; } = ChartEngine.ECharts;
+    public ChartEngine Engine { get; set; } = ChartEngine.ChartJs;
     
     /// <summary>
     /// Gets or sets whether to disable animations.

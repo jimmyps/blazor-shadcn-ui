@@ -14,7 +14,7 @@ The chart components use a **pluggable renderer architecture** allowing you to c
 **Example:**
 ```razor
 <LineChart Data="@data" 
-          Engine="ChartEngine.ECharts"  @* or ChartEngine.ChartJs *@
+          Engine="ChartEngine.ChartJs"  @* or ChartEngine.ECharts *@
           ... />
 ```
 
@@ -206,16 +206,16 @@ All chart components share these parameters:
 
 ### Dependencies
 
-Charts support both **ECharts v5.4.3** (default) and **Chart.js v4.4.1** engines, loaded dynamically from CDN. By default, charts use ECharts for high-quality SVG rendering, but you can switch to Chart.js if desired. No additional packages need to be installed.
+Charts support both **Chart.js v4.4.1** (default) and **ECharts v5.4.3** engines, loaded dynamically from CDN. By default, charts use Chart.js for fast, lightweight canvas rendering, but you can switch to ECharts for high-quality SVG output if desired. No additional packages need to be installed.
 
 You can select the rendering engine per component:
 
 ```razor
-<!-- Use ECharts (default - SVG rendering) -->
-<LineChart Data="@data" Engine="ChartEngine.ECharts" ... />
-
-<!-- Use Chart.js (Canvas rendering) -->
+<!-- Use Chart.js (default - Canvas rendering) -->
 <LineChart Data="@data" Engine="ChartEngine.ChartJs" ... />
+
+<!-- Use ECharts (SVG rendering) -->
+<LineChart Data="@data" Engine="ChartEngine.ECharts" ... />
 ```
 
 ### Resource Management
