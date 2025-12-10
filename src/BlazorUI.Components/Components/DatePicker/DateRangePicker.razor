@@ -35,6 +35,7 @@
                           CaptionLayout="@CaptionLayout"
                           RangeStart="@_startDate"
                           RangeEnd="@_endDate"
+                          DisplayedMonthChanged="@OnFirstCalendarMonthChanged"
                           Class="@GetFirstCalendarClass()" />
             </div>
             <div class="border-l mx-3"></div>
@@ -51,6 +52,7 @@
                           CaptionLayout="@CaptionLayout"
                           RangeStart="@_startDate"
                           RangeEnd="@_endDate"
+                          DisplayedMonthChanged="@OnSecondCalendarMonthChanged"
                           Class="@GetSecondCalendarClass()" />
             </div>
         </div>
@@ -404,5 +406,27 @@
             return true;
 
         return false;
+    }
+
+    /// <summary>
+    /// Handles month changes from the first calendar to keep both calendars synchronized.
+    /// </summary>
+    private void OnFirstCalendarMonthChanged(DateOnly newMonth)
+    {
+        _firstCalendarMonth = newMonth;
+        // Keep the second calendar one month ahead
+        var nextMonth = newMonth.AddMonths(1);
+        _secondCalendarMonth = new DateOnly(nextMonth.Year, nextMonth.Month, 1);
+    }
+
+    /// <summary>
+    /// Handles month changes from the second calendar to keep both calendars synchronized.
+    /// </summary>
+    private void OnSecondCalendarMonthChanged(DateOnly newMonth)
+    {
+        _secondCalendarMonth = newMonth;
+        // Keep the first calendar one month before
+        var prevMonth = newMonth.AddMonths(-1);
+        _firstCalendarMonth = new DateOnly(prevMonth.Year, prevMonth.Month, 1);
     }
 }
