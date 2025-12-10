@@ -265,6 +265,50 @@
         </ChartPanel>
     </div>
 
+    <!-- Engine Selection - ECharts with SVG -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">ECharts Renderer (SVG)</h2>
+            <p class="text-sm text-muted-foreground">
+                Charts using ECharts renderer with SVG output for high-quality vector graphics and export capabilities.
+            </p>
+        </div>
+        
+        <div class="grid gap-4 md:grid-cols-2">
+            <ChartPanel>
+                <ChartPanelHeader>
+                    <ChartPanelTitle>Sales (ECharts)</ChartPanelTitle>
+                    <ChartPanelDescription>SVG rendering with ECharts engine</ChartPanelDescription>
+                </ChartPanelHeader>
+                <ChartPanelContent>
+                    <LineChart Data="@salesData" 
+                              XAxisDataKey="Month"
+                              YAxisDataKey="Sales"
+                              Label="Sales ($)"
+                              Height="300"
+                              Curved="true"
+                              Engine="ChartEngine.ECharts" />
+                </ChartPanelContent>
+            </ChartPanel>
+            
+            <ChartPanel>
+                <ChartPanelHeader>
+                    <ChartPanelTitle>Sales (Chart.js)</ChartPanelTitle>
+                    <ChartPanelDescription>Canvas rendering with Chart.js (for comparison)</ChartPanelDescription>
+                </ChartPanelHeader>
+                <ChartPanelContent>
+                    <LineChart Data="@salesData" 
+                              XAxisDataKey="Month"
+                              YAxisDataKey="Sales"
+                              Label="Sales ($)"
+                              Height="300"
+                              Curved="true"
+                              Engine="ChartEngine.ChartJs" />
+                </ChartPanelContent>
+            </ChartPanel>
+        </div>
+    </div>
+
     <!-- Usage -->
     <div class="space-y-4">
         <div class="space-y-2">
@@ -320,6 +364,8 @@
             <p>✓ Interactive tooltips and legends</p>
             <p>✓ Multiple chart types: Line, Area, Bar, Pie, Donut, and Radar</p>
             <p>✓ Multi-series support for comparing multiple datasets</p>
+            <p>✓ Pluggable rendering engines: Chart.js (Canvas) and ECharts (SVG)</p>
+            <p>✓ SVG export support with ECharts renderer</p>
             <p>✓ Curved and straight line styles</p>
             <p>✓ Area fill support for line charts</p>
             <p>✓ Horizontal and vertical bar orientations</p>

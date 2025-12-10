@@ -4,6 +4,20 @@ BlazorUI Chart components provide beautiful, themeable data visualizations built
 
 ## Available Components
 
+### Architecture
+
+The chart components use a **pluggable renderer architecture** allowing you to choose between different rendering engines:
+
+- **Chart.js (Canvas)** - Fast, lightweight, great for interactive dashboards
+- **ECharts (SVG)** - High-quality vector graphics, perfect for print and export
+
+**Example:**
+```razor
+<LineChart Data="@data" 
+          Engine="ChartEngine.ECharts"  @* or ChartEngine.ChartJs *@
+          ... />
+```
+
 ### ChartPanel
 Container component with header, content, and footer sections for consistent chart layouts.
 
