@@ -187,20 +187,7 @@
     
     private string MapEasingFunction(AnimationEasing easing)
     {
-        return easing switch
-        {
-            AnimationEasing.Linear => "linear",
-            AnimationEasing.EaseInQuad => "easeInQuad",
-            AnimationEasing.EaseOutQuad => "easeOutQuad",
-            AnimationEasing.EaseInOutQuad => "easeInOutQuad",
-            AnimationEasing.EaseInCubic => "easeInCubic",
-            AnimationEasing.EaseOutCubic => "easeOutCubic",
-            AnimationEasing.EaseInOutCubic => "easeInOutCubic",
-            AnimationEasing.EaseInQuart => "easeInQuart",
-            AnimationEasing.EaseOutQuart => "easeOutQuart",
-            AnimationEasing.EaseInOutQuart => "easeInOutQuart",
-            _ => "easeInOutQuart"
-        };
+        return ChartUtilities.MapEasingFunction(easing);
     }
     
     public async ValueTask DisposeAsync()

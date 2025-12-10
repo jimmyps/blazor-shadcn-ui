@@ -166,8 +166,8 @@
                 return Convert.ToDouble(value);
             }).ToArray();
             
-            var color = series.Color ?? GetChartColor(colorIndex);
-            var backgroundColor = GetColorWithAlpha(color, FillOpacity);
+            var color = series.Color ?? ChartUtilities.GetChartColor(colorIndex);
+            var backgroundColor = ChartUtilities.GetColorWithAlpha(color, FillOpacity);
             
             datasets.Add(new
             {
@@ -188,47 +188,9 @@
         return datasets.ToArray();
     }
     
-    private string GetChartColor(int index)
-    {
-        var colors = new[]
-        {
-            "hsl(var(--chart-1))",
-            "hsl(var(--chart-2))",
-            "hsl(var(--chart-3))",
-            "hsl(var(--chart-4))",
-            "hsl(var(--chart-5))"
-        };
-        
-        return colors[index % colors.Length];
-    }
-    
-    private string GetColorWithAlpha(string color, double alpha)
-    {
-        // Convert HSL color to rgba with alpha
-        if (color.StartsWith("hsl(var(--chart-"))
-        {
-            var chartNum = color.Substring(16, 1);
-            return $"hsla(var(--chart-{chartNum}), {alpha})";
-        }
-        return color;
-    }
-    
     private string MapEasingFunction(AnimationEasing easing)
     {
-        return easing switch
-        {
-            AnimationEasing.Linear => "linear",
-            AnimationEasing.EaseInQuad => "easeInQuad",
-            AnimationEasing.EaseOutQuad => "easeOutQuad",
-            AnimationEasing.EaseInOutQuad => "easeInOutQuad",
-            AnimationEasing.EaseInCubic => "easeInCubic",
-            AnimationEasing.EaseOutCubic => "easeOutCubic",
-            AnimationEasing.EaseInOutCubic => "easeInOutCubic",
-            AnimationEasing.EaseInQuart => "easeInQuart",
-            AnimationEasing.EaseOutQuart => "easeOutQuart",
-            AnimationEasing.EaseInOutQuart => "easeInOutQuart",
-            _ => "easeInOutQuart"
-        };
+        return ChartUtilities.MapEasingFunction(easing);
     }
     
     public async ValueTask DisposeAsync()

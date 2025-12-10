@@ -170,7 +170,7 @@
                 return Convert.ToDouble(value);
             }).ToArray();
             
-            var color = series.Color ?? GetChartColor(colorIndex);
+            var color = series.Color ?? ChartUtilities.GetChartColor(colorIndex);
             
             datasets.Add(new
             {
@@ -192,36 +192,9 @@
         return datasets.ToArray();
     }
     
-    private string GetChartColor(int index)
-    {
-        var colors = new[]
-        {
-            "hsl(var(--chart-1))",
-            "hsl(var(--chart-2))",
-            "hsl(var(--chart-3))",
-            "hsl(var(--chart-4))",
-            "hsl(var(--chart-5))"
-        };
-        
-        return colors[index % colors.Length];
-    }
-    
     private string MapEasingFunction(AnimationEasing easing)
     {
-        return easing switch
-        {
-            AnimationEasing.Linear => "linear",
-            AnimationEasing.EaseInQuad => "easeInQuad",
-            AnimationEasing.EaseOutQuad => "easeOutQuad",
-            AnimationEasing.EaseInOutQuad => "easeInOutQuad",
-            AnimationEasing.EaseInCubic => "easeInCubic",
-            AnimationEasing.EaseOutCubic => "easeOutCubic",
-            AnimationEasing.EaseInOutCubic => "easeInOutCubic",
-            AnimationEasing.EaseInQuart => "easeInQuart",
-            AnimationEasing.EaseOutQuart => "easeOutQuart",
-            AnimationEasing.EaseInOutQuart => "easeInOutQuart",
-            _ => "easeInOutQuart"
-        };
+        return ChartUtilities.MapEasingFunction(easing);
     }
     
     public async ValueTask DisposeAsync()
