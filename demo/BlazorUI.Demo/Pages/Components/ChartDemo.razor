@@ -1,0 +1,209 @@
+@page "/components/chart"
+@using BlazorUI.Components.Chart
+@using BlazorUI.Components.Card
+@using BlazorUI.Components.Button
+
+<PageTitle>Chart Components - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-6xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Chart Components</h1>
+            <p class="text-xl text-muted-foreground">
+                Beautiful, themeable charts for data visualization. Built with Chart.js and shadcn-inspired styling.
+            </p>
+        </div>
+    </div>
+
+    <!-- Basic Line Chart -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Line Chart</h2>
+            <p class="text-sm text-muted-foreground">
+                A line chart for displaying trends over time or continuous data.
+            </p>
+        </div>
+        
+        <ChartPanel>
+            <ChartPanelHeader>
+                <ChartPanelTitle>Monthly Sales</ChartPanelTitle>
+                <ChartPanelDescription>Sales performance from January to June 2024</ChartPanelDescription>
+            </ChartPanelHeader>
+            <ChartPanelContent>
+                <LineChart Data="@salesData" 
+                          XAxisDataKey="Month"
+                          YAxisDataKey="Sales"
+                          Label="Sales ($)"
+                          Height="300"
+                          Curved="true" />
+            </ChartPanelContent>
+        </ChartPanel>
+    </div>
+
+    <!-- Line Chart with Area Fill -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Area Chart</h2>
+            <p class="text-sm text-muted-foreground">
+                A line chart with filled area below the line.
+            </p>
+        </div>
+        
+        <ChartPanel>
+            <ChartPanelHeader>
+                <ChartPanelTitle>Website Traffic</ChartPanelTitle>
+                <ChartPanelDescription>Daily visitors over the past week</ChartPanelDescription>
+            </ChartPanelHeader>
+            <ChartPanelContent>
+                <LineChart Data="@trafficData" 
+                          XAxisDataKey="Day"
+                          YAxisDataKey="Visitors"
+                          Label="Visitors"
+                          Height="300"
+                          FillArea="true"
+                          Curved="true"
+                          LineColor="hsl(var(--chart-2))" />
+            </ChartPanelContent>
+        </ChartPanel>
+    </div>
+
+    <!-- Multiple Options -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Customization Options</h2>
+            <p class="text-sm text-muted-foreground">
+                Charts can be customized with various options for colors, line styles, and animations.
+            </p>
+        </div>
+        
+        <div class="grid gap-4 md:grid-cols-2">
+            <ChartPanel>
+                <ChartPanelHeader>
+                    <ChartPanelTitle>Straight Lines</ChartPanelTitle>
+                    <ChartPanelDescription>Without curve smoothing</ChartPanelDescription>
+                </ChartPanelHeader>
+                <ChartPanelContent>
+                    <LineChart Data="@salesData" 
+                              XAxisDataKey="Month"
+                              YAxisDataKey="Sales"
+                              Label="Sales"
+                              Height="250"
+                              Curved="false"
+                              LineColor="hsl(var(--chart-3))" />
+                </ChartPanelContent>
+            </ChartPanel>
+            
+            <ChartPanel>
+                <ChartPanelHeader>
+                    <ChartPanelTitle>No Data Points</ChartPanelTitle>
+                    <ChartPanelDescription>Line without dots</ChartPanelDescription>
+                </ChartPanelHeader>
+                <ChartPanelContent>
+                    <LineChart Data="@salesData" 
+                              XAxisDataKey="Month"
+                              YAxisDataKey="Sales"
+                              Label="Sales"
+                              Height="250"
+                              ShowDots="false"
+                              Curved="true"
+                              LineColor="hsl(var(--chart-4))" />
+                </ChartPanelContent>
+            </ChartPanel>
+        </div>
+    </div>
+
+    <!-- Usage -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Usage</h2>
+            <p class="text-sm text-muted-foreground">
+                Basic example of using the LineChart component.
+            </p>
+        </div>
+        <div class="rounded-lg border bg-card p-4">
+            <pre class="text-xs bg-muted p-3 rounded overflow-x-auto"><code>@@using BlazorUI.Components.Chart
+
+&lt;ChartPanel&gt;
+    &lt;ChartPanelHeader&gt;
+        &lt;ChartPanelTitle&gt;Monthly Sales&lt;/ChartPanelTitle&gt;
+        &lt;ChartPanelDescription&gt;Sales performance&lt;/ChartPanelDescription&gt;
+    &lt;/ChartPanelHeader&gt;
+    &lt;ChartPanelContent&gt;
+        &lt;LineChart Data="@@salesData" 
+                  XAxisDataKey="Month"
+                  YAxisDataKey="Sales"
+                  Label="Sales ($)"
+                  Height="300"
+                  Curved="true" /&gt;
+    &lt;/ChartPanelContent&gt;
+&lt;/ChartPanel&gt;
+
+@@code {
+    private List&lt;SalesData&gt; salesData = new()
+    {
+        new() { Month = "Jan", Sales = 4000 },
+        new() { Month = "Feb", Sales = 3000 },
+        new() { Month = "Mar", Sales = 5000 },
+    };
+    
+    public class SalesData
+    {
+        public string Month { get; set; } = "";
+        public int Sales { get; set; }
+    }
+}</code></pre>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Features</h2>
+        </div>
+        <div class="space-y-2 text-sm">
+            <p>✓ Responsive and adaptive layouts</p>
+            <p>✓ Smooth animations with reduced-motion support</p>
+            <p>✓ Theme integration with CSS variables</p>
+            <p>✓ Interactive tooltips and legends</p>
+            <p>✓ Curved and straight line styles</p>
+            <p>✓ Area fill support</p>
+            <p>✓ Customizable colors and styling</p>
+            <p>✓ TypeScript-based Chart.js integration</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<SalesData> salesData = new()
+    {
+        new() { Month = "Jan", Sales = 4000 },
+        new() { Month = "Feb", Sales = 3000 },
+        new() { Month = "Mar", Sales = 5000 },
+        new() { Month = "Apr", Sales = 4500 },
+        new() { Month = "May", Sales = 6000 },
+        new() { Month = "Jun", Sales = 5500 }
+    };
+    
+    private List<TrafficData> trafficData = new()
+    {
+        new() { Day = "Mon", Visitors = 1200 },
+        new() { Day = "Tue", Visitors = 1900 },
+        new() { Day = "Wed", Visitors = 1500 },
+        new() { Day = "Thu", Visitors = 2200 },
+        new() { Day = "Fri", Visitors = 2800 },
+        new() { Day = "Sat", Visitors = 2400 },
+        new() { Day = "Sun", Visitors = 1800 }
+    };
+    
+    public class SalesData
+    {
+        public string Month { get; set; } = "";
+        public int Sales { get; set; }
+    }
+    
+    public class TrafficData
+    {
+        public string Day { get; set; } = "";
+        public int Visitors { get; set; }
+    }
+}

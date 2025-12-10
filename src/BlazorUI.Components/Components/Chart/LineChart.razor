@@ -1,0 +1,233 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits LineChartBase<TData>
+@implements IAsyncDisposable
+
+<div class="@ContainerClass" style="position: relative; height: @(Height)px; width: 100%;">
+    <canvas @ref="_canvasRef"></canvas>
+</div>
+
+@code {
+    private ElementReference _canvasRef;
+    private IJSObjectReference? _jsModule;
+    private string? _chartId;
+    private bool _isInitialized;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Data != null && Data.Any())
+        {
+            await InitializeChartAsync();
+        }
+    }
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        // Update chart if data changes and chart is already initialized
+        if (_isInitialized && Data != null && Data.Any())
+        {
+            await UpdateChartDataAsync();
+        }
+    }
+    
+    private async Task InitializeChartAsync()
+    {
+        try
+        {
+            _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/BlazorUI.Components/js/chartjs-renderer.js");
+            
+            var chartConfig = BuildChartConfig();
+            _chartId = await _jsModule.InvokeAsync<string>("createChart", _canvasRef, chartConfig);
+            _isInitialized = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to initialize chart: {ex.Message}");
+        }
+    }
+    
+    private async Task UpdateChartDataAsync()
+    {
+        if (_jsModule != null && !string.IsNullOrEmpty(_chartId))
+        {
+            try
+            {
+                var chartData = BuildChartData();
+                await _jsModule.InvokeVoidAsync("updateData", _chartId, chartData);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to update chart data: {ex.Message}");
+            }
+        }
+    }
+    
+    private object BuildChartConfig()
+    {
+        return new
+        {
+            type = "line",
+            data = BuildChartData(),
+            options = new
+            {
+                responsive = Responsive,
+                maintainAspectRatio = false,
+                plugins = new
+                {
+                    legend = new
+                    {
+                        display = ShowLegend
+                    },
+                    tooltip = new
+                    {
+                        enabled = ShowTooltip
+                    }
+                },
+                scales = new
+                {
+                    x = new
+                    {
+                        display = ShowXAxis,
+                        grid = new
+                        {
+                            display = ShowGrid
+                        }
+                    },
+                    y = new
+                    {
+                        display = ShowYAxis,
+                        grid = new
+                        {
+                            display = ShowGrid
+                        }
+                    }
+                },
+                animation = new
+                {
+                    duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
+                    easing = MapEasingFunction(Animation?.Easing ?? AnimationEasing.EaseInOutQuart)
+                }
+            }
+        };
+    }
+    
+    private object BuildChartData()
+    {
+        if (Data == null || !Data.Any())
+        {
+            return new
+            {
+                labels = Array.Empty<string>(),
+                datasets = Array.Empty<object>()
+            };
+        }
+        
+        // Extract labels from the first property or use indices
+        var labels = ExtractLabels();
+        var datasets = BuildDatasets();
+        
+        return new
+        {
+            labels,
+            datasets
+        };
+    }
+    
+    private string[] ExtractLabels()
+    {
+        if (Data == null || !Data.Any()) return Array.Empty<string>();
+        
+        // If DataKey is specified for X axis, use that property
+        if (!string.IsNullOrEmpty(XAxisDataKey))
+        {
+            return Data.Select(item =>
+            {
+                var prop = item?.GetType().GetProperty(XAxisDataKey);
+                return prop?.GetValue(item)?.ToString() ?? "";
+            }).ToArray();
+        }
+        
+        // Otherwise use indices
+        return Data.Select((_, i) => i.ToString()).ToArray();
+    }
+    
+    private object[] BuildDatasets()
+    {
+        if (string.IsNullOrEmpty(YAxisDataKey))
+        {
+            return Array.Empty<object>();
+        }
+        
+        var values = Data.Select(item =>
+        {
+            var prop = item?.GetType().GetProperty(YAxisDataKey);
+            var value = prop?.GetValue(item);
+            
+            if (value == null) return 0.0;
+            
+            return Convert.ToDouble(value);
+        }).ToArray();
+        
+        return new[]
+        {
+            new
+            {
+                label = Label ?? YAxisDataKey,
+                data = values,
+                borderColor = LineColor ?? "hsl(var(--chart-1))",
+                backgroundColor = FillArea ? (LineColor ?? "hsl(var(--chart-1))") : "transparent",
+                borderWidth = LineWidth,
+                tension = Curved ? 0.4 : 0,
+                fill = FillArea,
+                pointRadius = ShowDots ? 3 : 0,
+                pointHoverRadius = ShowDots ? 5 : 0
+            }
+        };
+    }
+    
+    private string MapEasingFunction(AnimationEasing easing)
+    {
+        return easing switch
+        {
+            AnimationEasing.Linear => "linear",
+            AnimationEasing.EaseInQuad => "easeInQuad",
+            AnimationEasing.EaseOutQuad => "easeOutQuad",
+            AnimationEasing.EaseInOutQuad => "easeInOutQuad",
+            AnimationEasing.EaseInCubic => "easeInCubic",
+            AnimationEasing.EaseOutCubic => "easeOutCubic",
+            AnimationEasing.EaseInOutCubic => "easeInOutCubic",
+            AnimationEasing.EaseInQuart => "easeInQuart",
+            AnimationEasing.EaseOutQuart => "easeOutQuart",
+            AnimationEasing.EaseInOutQuart => "easeInOutQuart",
+            _ => "easeInOutQuart"
+        };
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule != null && !string.IsNullOrEmpty(_chartId))
+        {
+            try
+            {
+                await _jsModule.InvokeVoidAsync("destroy", _chartId);
+            }
+            catch
+            {
+                // Ignore disposal errors
+            }
+        }
+        
+        if (_jsModule != null)
+        {
+            try
+            {
+                await _jsModule.DisposeAsync();
+            }
+            catch
+            {
+                // Ignore disposal errors
+            }
+        }
+    }
+}

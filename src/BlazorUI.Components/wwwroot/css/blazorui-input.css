@@ -26,6 +26,12 @@
     --dialog-item-duration: 150ms;
     --dialog-item-easing: cubic-bezier(0.4, 0, 0.2, 1);
     --dialog-overlay-duration: 150ms;
+    /* Chart color palette (5 colors for data series) */
+    --chart-1: 212.7 26.8% 83.9%;
+    --chart-2: 173 58.3% 39.2%;
+    --chart-3: 197 37.3% 24.1%;
+    --chart-4: 43 74.1% 66.1%;
+    --chart-5: 27 87.3% 67.1%;
   }
 
   /* Reduced motion: zero out durations for accessibility */
