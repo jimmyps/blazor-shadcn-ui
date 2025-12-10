@@ -26,7 +26,7 @@
                           MinDate="@MinDate"
                           MaxDate="@(_endDate ?? MaxDate)"
                           IsDateDisabled="@GetStartDateDisabled"
-                          Culture="@Culture"
+                          Culture="@EffectiveCulture"
                           CaptionLayout="@CaptionLayout"
                           Class="@CalendarClass" />
             </div>
@@ -38,7 +38,7 @@
                           MinDate="@(_startDate ?? MinDate)"
                           MaxDate="@MaxDate"
                           IsDateDisabled="@GetEndDateDisabled"
-                          Culture="@Culture"
+                          Culture="@EffectiveCulture"
                           CaptionLayout="@CaptionLayout"
                           Class="@CalendarClass" />
             </div>
@@ -52,6 +52,9 @@
     private DateOnly? _endDate;
     private DateOnly? _lastNotifiedStartDate;
     private DateOnly? _lastNotifiedEndDate;
+
+    private System.Globalization.CultureInfo EffectiveCulture =>
+        Culture ?? System.Globalization.CultureInfo.CurrentCulture;
 
     /// <summary>
     /// The start date of the range.
@@ -244,7 +247,7 @@
 
     private string GetDisplayText()
     {
-        var culture = Culture ?? System.Globalization.CultureInfo.CurrentCulture;
+        var culture = EffectiveCulture;
         var format = DateFormat ?? "d";
 
         if (_startDate == null && _endDate == null)

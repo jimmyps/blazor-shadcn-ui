@@ -21,7 +21,7 @@
                   MinDate="@MinDate"
                   MaxDate="@MaxDate"
                   IsDateDisabled="@IsDateDisabled"
-                  Culture="@Culture"
+                  Culture="@EffectiveCulture"
                   CaptionLayout="@CaptionLayout"
                   Class="@CalendarClass" />
     </PopoverContent>
@@ -31,6 +31,9 @@
     private bool _isOpen;
     private DateOnly? _selectedDate;
     private DateOnly? _lastNotifiedDate;
+
+    private System.Globalization.CultureInfo EffectiveCulture =>
+        Culture ?? System.Globalization.CultureInfo.CurrentCulture;
 
     /// <summary>
     /// The selected date.
