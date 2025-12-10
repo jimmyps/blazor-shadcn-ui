@@ -7,16 +7,35 @@
 
 @* Carousel - Slideshow component with animations and gestures *@
 
-<div @ref="_carouselRef" 
-     class="@GetCarouselClass()" 
-     @attributes="AdditionalAttributes"
-     data-carousel="true"
-     data-carousel-id="@_carouselId">
-    
-    <div class="overflow-hidden" @ref="_viewportRef">
-        <div class="@GetContentClass()" style="@GetContentStyle()" @ref="_containerRef">
-            @ChildContent
+<div class="relative">
+    <div @ref="_carouselRef" 
+         class="@GetCarouselClass()" 
+         @attributes="AdditionalAttributes"
+         data-carousel="true"
+         data-carousel-id="@_carouselId">
+        
+        <div class="overflow-hidden" @ref="_viewportRef">
+            <div class="@GetContentClass()" style="@GetContentStyle()" @ref="_containerRef">
+                <CascadingValue Value="this">
+                    @ChildContent
+                </CascadingValue>
+            </div>
         </div>
+
+        @if (ShowIndicators)
+        {
+            <div class="@GetIndicatorsClass()">
+                @for (int i = 0; i < _totalSlides; i++)
+                {
+                    var index = i;
+                    <button type="button"
+                            @onclick="@(() => ScrollTo(index))"
+                            class="@GetIndicatorButtonClass(i)"
+                            aria-label="@($"Go to slide {i + 1}")">
+                    </button>
+                }
+            </div>
+        }
     </div>
 
     @if (ShowNavigation)
@@ -26,7 +45,7 @@
                 disabled="@(!CanScrollPrevious())"
                 class="@GetPreviousButtonClass()"
                 aria-label="Previous slide">
-            <LucideIcon Name="chevron-left" Class="h-4 w-4" />
+            <LucideIcon Name="@GetPreviousIcon()" Class="h-4 w-4" />
         </button>
 
         <button type="button"
@@ -34,23 +53,8 @@
                 disabled="@(!CanScrollNext())"
                 class="@GetNextButtonClass()"
                 aria-label="Next slide">
-            <LucideIcon Name="chevron-right" Class="h-4 w-4" />
+            <LucideIcon Name="@GetNextIcon()" Class="h-4 w-4" />
         </button>
-    }
-
-    @if (ShowIndicators)
-    {
-        <div class="@GetIndicatorsClass()">
-            @for (int i = 0; i < _totalSlides; i++)
-            {
-                var index = i;
-                <button type="button"
-                        @onclick="@(() => ScrollTo(index))"
-                        class="@GetIndicatorButtonClass(i)"
-                        aria-label="@($"Go to slide {i + 1}")">
-                </button>
-            }
-        </div>
     }
 </div>
 
@@ -224,11 +228,13 @@
 
     private bool CanScrollPrevious()
     {
+        if (_totalSlides == 0) return false;
         return Loop || _currentIndex > 0;
     }
 
     private bool CanScrollNext()
     {
+        if (_totalSlides == 0) return false;
         return Loop || _currentIndex < _totalSlides - 1;
     }
 
@@ -268,27 +274,37 @@
     private string GetPreviousButtonClass()
     {
         return ClassNames.cn(
-            "absolute z-50 flex h-10 w-10 items-center justify-center rounded-full border bg-background shadow-sm transition-all",
+            "absolute z-50 flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background shadow-sm transition-colors",
             "hover:bg-accent hover:text-accent-foreground",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
             "disabled:pointer-events-none disabled:opacity-50",
             Orientation == CarouselOrientation.Horizontal
-                ? "left-4 top-1/2 -translate-y-1/2"
-                : "left-1/2 top-4 -translate-x-1/2"
+                ? "-left-12 top-1/2 -translate-y-1/2"
+                : "left-1/2 -top-12 -translate-x-1/2"
         );
     }
 
     private string GetNextButtonClass()
     {
         return ClassNames.cn(
-            "absolute z-50 flex h-10 w-10 items-center justify-center rounded-full border bg-background shadow-sm transition-all",
+            "absolute z-50 flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background shadow-sm transition-colors",
             "hover:bg-accent hover:text-accent-foreground",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
             "disabled:pointer-events-none disabled:opacity-50",
             Orientation == CarouselOrientation.Horizontal
-                ? "right-4 top-1/2 -translate-y-1/2"
-                : "left-1/2 bottom-4 -translate-x-1/2"
+                ? "-right-12 top-1/2 -translate-y-1/2"
+                : "left-1/2 -bottom-12 -translate-x-1/2"
         );
+    }
+
+    private string GetPreviousIcon()
+    {
+        return Orientation == CarouselOrientation.Horizontal ? "arrow-left" : "arrow-up";
+    }
+
+    private string GetNextIcon()
+    {
+        return Orientation == CarouselOrientation.Horizontal ? "arrow-right" : "arrow-down";
     }
 
     private string GetIndicatorsClass()

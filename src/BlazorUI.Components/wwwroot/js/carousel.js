@@ -278,7 +278,7 @@ export function initCarousel(carouselElement, viewportElement, containerElement,
         containerElement.addEventListener('mouseup', handleMouseUp);
         containerElement.addEventListener('mouseleave', handleMouseLeave);
         containerElement.addEventListener('touchstart', handleTouchStart, { passive: true });
-        containerElement.addEventListener('touchmove', handleTouchMove, { passive: true });
+        containerElement.addEventListener('touchmove', handleTouchMove, { passive: false });
         containerElement.addEventListener('touchend', handleTouchEnd);
         containerElement.style.cursor = 'grab';
     }

@@ -7,6 +7,9 @@
 </div>
 
 @code {
+    [CascadingParameter]
+    private Carousel? ParentCarousel { get; set; }
+
     /// <summary>
     /// The content of the carousel item.
     /// </summary>
@@ -27,7 +30,10 @@
 
     private string GetItemClass()
     {
-        var baseClass = "flex-shrink-0 flex-grow-0 basis-full";
+        var slidesPerView = ParentCarousel?.SlidesPerView ?? 1;
+        var basisPercent = 100.0 / slidesPerView;
+        
+        var baseClass = $"flex-shrink-0 flex-grow-0 basis-[{basisPercent}%]";
         
         if (!string.IsNullOrEmpty(Class))
         {
