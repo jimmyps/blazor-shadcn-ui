@@ -112,6 +112,57 @@
         </div>
     </div>
 
+    <!-- Bar Chart -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Bar Chart</h2>
+            <p class="text-sm text-muted-foreground">
+                A bar chart for comparing values across categories.
+            </p>
+        </div>
+        
+        <ChartPanel>
+            <ChartPanelHeader>
+                <ChartPanelTitle>Revenue by Product</ChartPanelTitle>
+                <ChartPanelDescription>Q1 2024 revenue breakdown</ChartPanelDescription>
+            </ChartPanelHeader>
+            <ChartPanelContent>
+                <BarChart Data="@revenueData" 
+                         XAxisDataKey="Product"
+                         YAxisDataKey="Revenue"
+                         Label="Revenue ($)"
+                         Height="300"
+                         BarColor="hsl(var(--chart-2))" />
+            </ChartPanelContent>
+        </ChartPanel>
+    </div>
+
+    <!-- Horizontal Bar Chart -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Horizontal Bar Chart</h2>
+            <p class="text-sm text-muted-foreground">
+                Horizontal orientation for better label readability.
+            </p>
+        </div>
+        
+        <ChartPanel>
+            <ChartPanelHeader>
+                <ChartPanelTitle>Top Features</ChartPanelTitle>
+                <ChartPanelDescription>Most requested features by users</ChartPanelDescription>
+            </ChartPanelHeader>
+            <ChartPanelContent>
+                <BarChart Data="@featureData" 
+                         XAxisDataKey="Feature"
+                         YAxisDataKey="Requests"
+                         Label="Requests"
+                         Height="300"
+                         Orientation="BarChartOrientation.Horizontal"
+                         BarColor="hsl(var(--chart-4))" />
+            </ChartPanelContent>
+        </ChartPanel>
+    </div>
+
     <!-- Usage -->
     <div class="space-y-4">
         <div class="space-y-2">
@@ -195,6 +246,24 @@
         new() { Day = "Sun", Visitors = 1800 }
     };
     
+    private List<RevenueData> revenueData = new()
+    {
+        new() { Product = "Product A", Revenue = 12000 },
+        new() { Product = "Product B", Revenue = 8500 },
+        new() { Product = "Product C", Revenue = 15000 },
+        new() { Product = "Product D", Revenue = 9200 },
+        new() { Product = "Product E", Revenue = 11000 }
+    };
+    
+    private List<FeatureData> featureData = new()
+    {
+        new() { Feature = "Dark Mode", Requests = 234 },
+        new() { Feature = "Export PDF", Requests = 189 },
+        new() { Feature = "Multi-language", Requests = 156 },
+        new() { Feature = "Mobile App", Requests = 298 },
+        new() { Feature = "API Access", Requests = 178 }
+    };
+    
     public class SalesData
     {
         public string Month { get; set; } = "";
@@ -205,5 +274,17 @@
     {
         public string Day { get; set; } = "";
         public int Visitors { get; set; }
+    }
+    
+    public class RevenueData
+    {
+        public string Product { get; set; } = "";
+        public int Revenue { get; set; }
+    }
+    
+    public class FeatureData
+    {
+        public string Feature { get; set; } = "";
+        public int Requests { get; set; }
     }
 }
