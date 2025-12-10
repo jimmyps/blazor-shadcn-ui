@@ -1,8 +1,11 @@
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Chart;
 
 /// <summary>
 /// Specifies the type of chart to render.
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ChartType
 {
     /// <summary>

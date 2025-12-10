@@ -206,7 +206,17 @@ All chart components share these parameters:
 
 ### Dependencies
 
-Charts use Chart.js v4.4.1, loaded dynamically from CDN. No additional packages need to be installed.
+Charts support both **ECharts v5.4.3** (default) and **Chart.js v4.4.1** engines, loaded dynamically from CDN. By default, charts use ECharts for high-quality SVG rendering, but you can switch to Chart.js if desired. No additional packages need to be installed.
+
+You can select the rendering engine per component:
+
+```razor
+<!-- Use ECharts (default - SVG rendering) -->
+<LineChart Data="@data" Engine="ChartEngine.ECharts" ... />
+
+<!-- Use Chart.js (Canvas rendering) -->
+<LineChart Data="@data" Engine="ChartEngine.ChartJs" ... />
+```
 
 ### Resource Management
 
@@ -215,7 +225,7 @@ All chart components implement `IAsyncDisposable` for proper cleanup:
 ```csharp
 @implements IAsyncDisposable
 
-// Component automatically disposes Chart.js instances
+// Component automatically disposes chart instances and event listeners
 ```
 
 ### Data Binding

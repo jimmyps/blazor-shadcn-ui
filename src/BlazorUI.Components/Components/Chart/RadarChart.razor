@@ -49,7 +49,8 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to initialize chart: {ex.Message}");
+            Console.WriteLine($"Failed to initialize RadarChart: {ex.Message}");
+            // Chart initialization failed - component will render empty canvas
         }
     }
     
@@ -199,9 +200,9 @@
             {
                 await _renderer.DestroyAsync(_chartId);
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignore disposal errors
+                Console.WriteLine($"Error during RadarChart disposal: {ex.Message}");
             }
         }
         
@@ -211,9 +212,9 @@
             {
                 await _renderer.DisposeAsync();
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignore disposal errors
+                Console.WriteLine($"Error disposing RadarChart renderer: {ex.Message}");
             }
         }
     }

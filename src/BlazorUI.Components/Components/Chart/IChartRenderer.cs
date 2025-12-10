@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorUI.Components.Chart;
@@ -43,10 +44,19 @@ public interface IChartRenderer : IAsyncDisposable
 /// </summary>
 public class ChartConfig
 {
+    [JsonPropertyName("type")]
     public ChartType Type { get; set; }
+    
+    [JsonPropertyName("responsive")]
     public bool Responsive { get; set; } = true;
+    
+    [JsonPropertyName("maintainAspectRatio")]
     public bool MaintainAspectRatio { get; set; } = false;
+    
+    [JsonPropertyName("data")]
     public object Data { get; set; } = new { };
+    
+    [JsonPropertyName("options")]
     public object Options { get; set; } = new { };
 }
 

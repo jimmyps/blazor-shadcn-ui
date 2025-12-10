@@ -32,12 +32,14 @@ export async function createChart(element, config) {
         const option = convertConfig(config);
         chart.setOption(option);
         
-        // Make chart responsive
-        window.addEventListener('resize', () => chart.resize());
+        // Make chart responsive - store listener reference for cleanup
+        const resizeListener = () => chart.resize();
+        window.addEventListener('resize', resizeListener);
         
         chartInstances.set(chartId, {
             chart: chart,
-            element: element
+            element: element,
+            resizeListener: resizeListener
         });
         
         return chartId;
@@ -90,14 +92,24 @@ export function applyTheme(chartId, theme) {
         return;
     }
     
-    // Apply theme by reinitializing with theme
+    // Store current option and remove old resize listener
     const currentOption = instance.chart.getOption();
-    instance.chart.dispose();
+    if (instance.resizeListener) {
+        window.removeEventListener('resize', instance.resizeListener);
+    }
     
+    // Dispose old chart and create new one with theme
+    instance.chart.dispose();
     const chart = echarts.init(instance.element, theme, { renderer: 'svg' });
     chart.setOption(currentOption);
     
+    // Add new resize listener
+    const resizeListener = () => chart.resize();
+    window.addEventListener('resize', resizeListener);
+    
+    // Update instance
     instance.chart = chart;
+    instance.resizeListener = resizeListener;
 }
 
 /**
@@ -135,6 +147,11 @@ export function destroy(chartId) {
     }
     
     try {
+        // Remove resize listener to prevent memory leak
+        if (instance.resizeListener) {
+            window.removeEventListener('resize', instance.resizeListener);
+        }
+        
         instance.chart.dispose();
         chartInstances.delete(chartId);
     } catch (error) {
@@ -148,7 +165,10 @@ export function destroy(chartId) {
  * @returns {object} - ECharts option object
  */
 function convertConfig(config) {
-    const { type, data, options = {} } = config;
+    // Support both PascalCase (from C#) and camelCase
+    const type = config.type || config.Type;
+    const data = config.data || config.Data || {};
+    const options = config.options || config.Options || {};
     
     // Base ECharts option
     const echartsOption = {
@@ -157,8 +177,9 @@ function convertConfig(config) {
         animationEasing: mapEasing(options.animation?.easing || 'cubicOut')
     };
     
-    // Convert based on chart type
-    switch (type) {
+    // Convert based on chart type (handle both string and enum number values)
+    const typeStr = typeof type === 'string' ? type.toLowerCase() : type;
+    switch (typeStr) {
         case 'line':
         case 0: // ChartType.Line enum value
             return convertLineChart(data, options, echartsOption);
@@ -167,6 +188,7 @@ function convertConfig(config) {
             return convertBarChart(data, options, echartsOption);
         case 'pie':
         case 'doughnut':
+        case 'donut':
         case 2: // ChartType.Pie enum value
         case 3: // ChartType.Donut enum value
             return convertPieChart(data, options, echartsOption);
@@ -174,6 +196,7 @@ function convertConfig(config) {
         case 4: // ChartType.Radar enum value
             return convertRadarChart(data, options, echartsOption);
         default:
+            console.warn(`Unsupported chart type: ${type}`);
             return echartsOption;
     }
 }

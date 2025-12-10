@@ -10,7 +10,7 @@
         <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">Chart Components</h1>
             <p class="text-xl text-muted-foreground">
-                Beautiful, themeable charts for data visualization. Built with Chart.js and shadcn-inspired styling.
+                Beautiful, themeable charts for data visualization. Built with ECharts and Chart.js, with shadcn-inspired styling.
             </p>
         </div>
     </div>
@@ -379,7 +379,7 @@
 </div>
 
 @code {
-    private List<SalesData> salesData = new()
+    private readonly List<SalesData> salesData = new()
     {
         new() { Month = "Jan", Sales = 4000 },
         new() { Month = "Feb", Sales = 3000 },
@@ -389,7 +389,7 @@
         new() { Month = "Jun", Sales = 5500 }
     };
     
-    private List<TrafficData> trafficData = new()
+    private readonly List<TrafficData> trafficData = new()
     {
         new() { Day = "Mon", Visitors = 1200 },
         new() { Day = "Tue", Visitors = 1900 },
@@ -400,7 +400,7 @@
         new() { Day = "Sun", Visitors = 1800 }
     };
     
-    private List<RevenueData> revenueData = new()
+    private readonly List<RevenueData> revenueData = new()
     {
         new() { Product = "Product A", Revenue = 12000 },
         new() { Product = "Product B", Revenue = 8500 },
@@ -409,7 +409,7 @@
         new() { Product = "Product E", Revenue = 11000 }
     };
     
-    private List<FeatureData> featureData = new()
+    private readonly List<FeatureData> featureData = new()
     {
         new() { Feature = "Dark Mode", Requests = 234 },
         new() { Feature = "Export PDF", Requests = 189 },
@@ -418,7 +418,7 @@
         new() { Feature = "API Access", Requests = 178 }
     };
     
-    private List<MarketShareData> marketShareData = new()
+    private readonly List<MarketShareData> marketShareData = new()
     {
         new() { Browser = "Chrome", Share = 65 },
         new() { Browser = "Safari", Share = 18 },
@@ -427,7 +427,7 @@
         new() { Browser = "Other", Share = 3 }
     };
     
-    private List<CategoryData> categoryData = new()
+    private readonly List<CategoryData> categoryData = new()
     {
         new() { Category = "Electronics", Amount = 18000 },
         new() { Category = "Clothing", Amount = 12000 },
@@ -436,7 +436,7 @@
         new() { Category = "Other", Amount = 3000 }
     };
     
-    private List<PerformanceData> performanceData = new()
+    private readonly List<PerformanceData> performanceData = new()
     {
         new() { Month = "Jan", Sales = 4000, Target = 4500, Profit = 1200 },
         new() { Month = "Feb", Sales = 3000, Target = 4500, Profit = 900 },
@@ -446,7 +446,7 @@
         new() { Month = "Jun", Sales = 5500, Target = 4500, Profit = 1650 }
     };
     
-    private List<SkillsData> skillsData = new()
+    private readonly List<SkillsData> skillsData = new()
     {
         new() { Skill = "JavaScript", Developer1 = 90, Developer2 = 75 },
         new() { Skill = "C#", Developer1 = 85, Developer2 = 95 },
@@ -455,14 +455,14 @@
         new() { Skill = "DevOps", Developer1 = 75, Developer2 = 85 }
     };
     
-    private List<ChartSeriesConfig> lineSeries = new()
+    private readonly List<ChartSeriesConfig> lineSeries = new()
     {
         new() { DataKey = "Sales", Label = "Actual Sales", Curved = true, Color = "hsl(var(--chart-1))" },
         new() { DataKey = "Target", Label = "Target", Curved = true, Dashed = true, Color = "hsl(var(--chart-2))" },
         new() { DataKey = "Profit", Label = "Profit", Curved = true, Color = "hsl(var(--chart-3))" }
     };
     
-    private List<RadarSeriesConfig> radarSeries = new()
+    private readonly List<RadarSeriesConfig> radarSeries = new()
     {
         new() { DataKey = "Developer1", Label = "Developer A", Color = "hsl(var(--chart-1))" },
         new() { DataKey = "Developer2", Label = "Developer B", Color = "hsl(var(--chart-2))" }
