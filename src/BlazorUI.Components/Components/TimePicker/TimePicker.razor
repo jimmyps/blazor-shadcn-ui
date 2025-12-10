@@ -3,22 +3,17 @@
 @using BlazorUI.Components.Button
 @using BlazorUI.Icons.Lucide.Components
 @using BlazorUI.Primitives.Services
+@using BlazorUI.Components.Utilities
 
 @* TimePicker - Time selection with hour/minute selectors *@
 
 <Popover @bind-Open="_isOpen">
-    <PopoverTrigger>
-        <Button Variant="@ButtonVariant" 
-                Size="@ButtonSize"
-                Class="@GetButtonClass()"
-                Disabled="@Disabled"
-                AriaLabel="@(AriaLabel ?? "Select time")">
-            @if (ShowIcon)
-            {
-                <LucideIcon Name="clock" Class="@GetIconClass()" />
-            }
-            <span>@GetDisplayText()</span>
-        </Button>
+    <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
+        @if (ShowIcon)
+        {
+            <LucideIcon Name="clock" Class="@GetIconClass()" />
+        }
+        <span>@GetDisplayText()</span>
     </PopoverTrigger>
     <PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
         <div class="flex items-center gap-2">
@@ -247,10 +242,60 @@
         if (!SelectedTime.HasValue)
             classes.Add("text-muted-foreground");
 
+        // Add button variant classes
+        classes.Add(GetButtonVariantClass());
+        classes.Add(GetButtonSizeClass());
+
         if (!string.IsNullOrEmpty(Class))
             classes.Add(Class);
 
-        return string.Join(" ", classes);
+        return ClassNames.cn(classes.ToArray());
+    }
+
+    private string GetButtonVariantClass()
+    {
+        return ButtonVariant switch
+        {
+            ButtonVariant.Default => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90",
+            ButtonVariant.Destructive => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+            ButtonVariant.Outline => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+            ButtonVariant.Secondary => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+            ButtonVariant.Ghost => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground",
+            ButtonVariant.Link => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline",
+            _ => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground"
+        };
+    }
+
+    private string GetButtonSizeClass()
+    {
+        return ButtonSize switch
+        {
+            ButtonSize.Small => "h-8 px-3 text-xs",
+            ButtonSize.Large => "h-10 px-8",
+            ButtonSize.Icon => "h-9 w-9",
+            _ => "h-9 px-4 py-2"
+        };
+    }
+
+    private Dictionary<string, object> GetTriggerAttributes()
+    {
+        var attrs = new Dictionary<string, object>();
+        
+        if (Disabled)
+        {
+            attrs.Add("disabled", true);
+        }
+        
+        if (!string.IsNullOrEmpty(AriaLabel))
+        {
+            attrs.Add("aria-label", AriaLabel);
+        }
+        else
+        {
+            attrs.Add("aria-label", "Select time");
+        }
+
+        return attrs;
     }
 
     private string GetIconClass()
