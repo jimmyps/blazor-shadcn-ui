@@ -15,6 +15,10 @@
             <LucideIcon Name="calendar" Class="@GetIconClass()" />
         }
         <span>@GetDisplayText()</span>
+        @if (ShowDropdownIcon)
+        {
+            <LucideIcon Name="chevron-down" Class="ml-auto h-4 w-4 opacity-50" />
+        }
     </PopoverTrigger>
     <PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
         <Calendar @bind-SelectedDate="_selectedDate"
@@ -105,6 +109,12 @@
     /// </summary>
     [Parameter]
     public bool ShowIcon { get; set; } = true;
+
+    /// <summary>
+    /// Whether to show the chevron-down icon on the right side of the button.
+    /// </summary>
+    [Parameter]
+    public bool ShowDropdownIcon { get; set; } = false;
 
     /// <summary>
     /// Placeholder text when no date is selected.
@@ -250,11 +260,11 @@
 
     private string GetIconClass()
     {
-        return ShowIcon ? "mr-2 h-4 w-4" : "";
+        return ShowIcon ? "h-4 w-4" : "";
     }
 
     private string GetPopoverContentClass()
     {
-        return "w-auto p-0";
+        return "w-auto p-0 border-0 bg-transparent shadow-none";
     }
 }
