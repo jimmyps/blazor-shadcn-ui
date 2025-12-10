@@ -163,6 +163,61 @@
         </ChartPanel>
     </div>
 
+    <!-- Pie Chart -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Pie Chart</h2>
+            <p class="text-sm text-muted-foreground">
+                Display composition and proportions of categories.
+            </p>
+        </div>
+        
+        <ChartPanel>
+            <ChartPanelHeader>
+                <ChartPanelTitle>Market Share</ChartPanelTitle>
+                <ChartPanelDescription>Browser usage distribution</ChartPanelDescription>
+            </ChartPanelHeader>
+            <ChartPanelContent>
+                <PieChart Data="@marketShareData" 
+                         LabelDataKey="Browser"
+                         ValueDataKey="Share"
+                         Height="350" />
+            </ChartPanelContent>
+        </ChartPanel>
+    </div>
+
+    <!-- Donut Chart -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Donut Chart</h2>
+            <p class="text-sm text-muted-foreground">
+                A pie chart variant with a hole in the center, ideal for displaying totals.
+            </p>
+        </div>
+        
+        <ChartPanel>
+            <ChartPanelHeader>
+                <ChartPanelTitle>Sales by Category</ChartPanelTitle>
+                <ChartPanelDescription>Total: $45,000</ChartPanelDescription>
+            </ChartPanelHeader>
+            <ChartPanelContent>
+                <PieChart Data="@categoryData" 
+                         LabelDataKey="Category"
+                         ValueDataKey="Amount"
+                         Height="350"
+                         IsDonut="true"
+                         DonutInnerRadius="0.65">
+                    <CenterContent>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">$45K</div>
+                            <div class="text-xs text-muted-foreground">Total Sales</div>
+                        </div>
+                    </CenterContent>
+                </PieChart>
+            </ChartPanelContent>
+        </ChartPanel>
+    </div>
+
     <!-- Usage -->
     <div class="space-y-4">
         <div class="space-y-2">
@@ -264,6 +319,24 @@
         new() { Feature = "API Access", Requests = 178 }
     };
     
+    private List<MarketShareData> marketShareData = new()
+    {
+        new() { Browser = "Chrome", Share = 65 },
+        new() { Browser = "Safari", Share = 18 },
+        new() { Browser = "Firefox", Share = 8 },
+        new() { Browser = "Edge", Share = 6 },
+        new() { Browser = "Other", Share = 3 }
+    };
+    
+    private List<CategoryData> categoryData = new()
+    {
+        new() { Category = "Electronics", Amount = 18000 },
+        new() { Category = "Clothing", Amount = 12000 },
+        new() { Category = "Food", Amount = 8000 },
+        new() { Category = "Books", Amount = 4000 },
+        new() { Category = "Other", Amount = 3000 }
+    };
+    
     public class SalesData
     {
         public string Month { get; set; } = "";
@@ -286,5 +359,17 @@
     {
         public string Feature { get; set; } = "";
         public int Requests { get; set; }
+    }
+    
+    public class MarketShareData
+    {
+        public string Browser { get; set; } = "";
+        public int Share { get; set; }
+    }
+    
+    public class CategoryData
+    {
+        public string Category { get; set; } = "";
+        public int Amount { get; set; }
     }
 }

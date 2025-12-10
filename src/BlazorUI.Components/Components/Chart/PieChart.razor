@@ -1,0 +1,248 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits PieChartBase<TData>
+@implements IAsyncDisposable
+
+<div class="@ContainerClass" style="position: relative; height: @(Height)px; width: 100%;">
+    <canvas @ref="_canvasRef"></canvas>
+    @if (IsDonut && CenterContent != null)
+    {
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            @CenterContent
+        </div>
+    }
+</div>
+
+@code {
+    private ElementReference _canvasRef;
+    private IJSObjectReference? _jsModule;
+    private string? _chartId;
+    private bool _isInitialized;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Data != null && Data.Any())
+        {
+            await InitializeChartAsync();
+        }
+    }
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_isInitialized && Data != null && Data.Any())
+        {
+            await UpdateChartDataAsync();
+        }
+    }
+    
+    private async Task InitializeChartAsync()
+    {
+        try
+        {
+            _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/BlazorUI.Components/js/chartjs-renderer.js");
+            
+            var chartConfig = BuildChartConfig();
+            _chartId = await _jsModule.InvokeAsync<string>("createChart", _canvasRef, chartConfig);
+            _isInitialized = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to initialize chart: {ex.Message}");
+        }
+    }
+    
+    private async Task UpdateChartDataAsync()
+    {
+        if (_jsModule != null && !string.IsNullOrEmpty(_chartId))
+        {
+            try
+            {
+                var chartData = BuildChartData();
+                await _jsModule.InvokeVoidAsync("updateData", _chartId, chartData);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to update chart data: {ex.Message}");
+            }
+        }
+    }
+    
+    private object BuildChartConfig()
+    {
+        var chartType = IsDonut ? "doughnut" : "pie";
+        
+        return new
+        {
+            type = chartType,
+            data = BuildChartData(),
+            options = new
+            {
+                responsive = Responsive,
+                maintainAspectRatio = false,
+                plugins = new
+                {
+                    legend = new
+                    {
+                        display = ShowLegend,
+                        position = MapLegendPosition(LegendPosition)
+                    },
+                    tooltip = new
+                    {
+                        enabled = ShowTooltip
+                    }
+                },
+                cutout = IsDonut ? $"{DonutInnerRadius * 100}%" : null,
+                animation = new
+                {
+                    duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
+                    easing = MapEasingFunction(Animation?.Easing ?? AnimationEasing.EaseInOutQuart)
+                }
+            }
+        };
+    }
+    
+    private object BuildChartData()
+    {
+        if (Data == null || !Data.Any())
+        {
+            return new
+            {
+                labels = Array.Empty<string>(),
+                datasets = Array.Empty<object>()
+            };
+        }
+        
+        var labels = ExtractLabels();
+        var values = ExtractValues();
+        var colors = GenerateColors(values.Length);
+        
+        return new
+        {
+            labels,
+            datasets = new[]
+            {
+                new
+                {
+                    data = values,
+                    backgroundColor = colors,
+                    borderColor = colors,
+                    borderWidth = 1
+                }
+            }
+        };
+    }
+    
+    private string[] ExtractLabels()
+    {
+        if (Data == null || !Data.Any()) return Array.Empty<string>();
+        
+        if (!string.IsNullOrEmpty(LabelDataKey))
+        {
+            return Data.Select(item =>
+            {
+                var prop = item?.GetType().GetProperty(LabelDataKey);
+                return prop?.GetValue(item)?.ToString() ?? "";
+            }).ToArray();
+        }
+        
+        return Data.Select((_, i) => $"Item {i + 1}").ToArray();
+    }
+    
+    private double[] ExtractValues()
+    {
+        if (Data == null || !Data.Any()) return Array.Empty<double>();
+        
+        if (string.IsNullOrEmpty(ValueDataKey))
+        {
+            return Array.Empty<double>();
+        }
+        
+        return Data.Select(item =>
+        {
+            var prop = item?.GetType().GetProperty(ValueDataKey);
+            var value = prop?.GetValue(item);
+            
+            if (value == null) return 0.0;
+            
+            return Convert.ToDouble(value);
+        }).ToArray();
+    }
+    
+    private string[] GenerateColors(int count)
+    {
+        var baseColors = new[]
+        {
+            "hsl(var(--chart-1))",
+            "hsl(var(--chart-2))",
+            "hsl(var(--chart-3))",
+            "hsl(var(--chart-4))",
+            "hsl(var(--chart-5))"
+        };
+        
+        var colors = new List<string>();
+        for (int i = 0; i < count; i++)
+        {
+            colors.Add(baseColors[i % baseColors.Length]);
+        }
+        
+        return colors.ToArray();
+    }
+    
+    private string MapLegendPosition(LegendPosition position)
+    {
+        return position switch
+        {
+            LegendPosition.Top => "top",
+            LegendPosition.Right => "right",
+            LegendPosition.Bottom => "bottom",
+            LegendPosition.Left => "left",
+            _ => "top"
+        };
+    }
+    
+    private string MapEasingFunction(AnimationEasing easing)
+    {
+        return easing switch
+        {
+            AnimationEasing.Linear => "linear",
+            AnimationEasing.EaseInQuad => "easeInQuad",
+            AnimationEasing.EaseOutQuad => "easeOutQuad",
+            AnimationEasing.EaseInOutQuad => "easeInOutQuad",
+            AnimationEasing.EaseInCubic => "easeInCubic",
+            AnimationEasing.EaseOutCubic => "easeOutCubic",
+            AnimationEasing.EaseInOutCubic => "easeInOutCubic",
+            AnimationEasing.EaseInQuart => "easeInQuart",
+            AnimationEasing.EaseOutQuart => "easeOutQuart",
+            AnimationEasing.EaseInOutQuart => "easeInOutQuart",
+            _ => "easeInOutQuart"
+        };
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule != null && !string.IsNullOrEmpty(_chartId))
+        {
+            try
+            {
+                await _jsModule.InvokeVoidAsync("destroy", _chartId);
+            }
+            catch
+            {
+                // Ignore disposal errors
+            }
+        }
+        
+        if (_jsModule != null)
+        {
+            try
+            {
+                await _jsModule.DisposeAsync();
+            }
+            catch
+            {
+                // Ignore disposal errors
+            }
+        }
+    }
+}
