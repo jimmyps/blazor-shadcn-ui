@@ -25,7 +25,10 @@ export async function createChart(element, config) {
     const chartId = generateId();
     
     try {
-        const chart = new Chart(element, config);
+        // Resolve CSS variables in the config before creating the chart
+        const resolvedConfig = resolveCssVariables(config);
+        
+        const chart = new Chart(element, resolvedConfig);
         chartInstances.set(chartId, {
             chart: chart,
             element: element
@@ -51,7 +54,8 @@ export function updateData(chartId, newData) {
     }
     
     const chart = instance.chart;
-    chart.data = newData;
+    // Resolve CSS variables in the new data
+    chart.data = resolveCssVariables(newData);
     chart.update();
 }
 
@@ -185,4 +189,43 @@ export function getChartColors() {
         getCssVariable('--chart-4'),
         getCssVariable('--chart-5')
     ];
+}
+
+/**
+ * Recursively resolve CSS variables in configuration object
+ * @param {any} obj - Object to process
+ * @returns {any} - Object with resolved CSS variables
+ */
+function resolveCssVariables(obj) {
+    if (obj === null || obj === undefined) {
+        return obj;
+    }
+    
+    if (typeof obj === 'string') {
+        // Match patterns like "hsl(var(--chart-1))" or "var(--chart-2)"
+        const cssVarMatch = obj.match(/var\(([^)]+)\)/);
+        if (cssVarMatch) {
+            const varName = cssVarMatch[1];
+            const resolvedValue = getCssVariable(varName);
+            // Replace the var(...) with the resolved value
+            return obj.replace(cssVarMatch[0], resolvedValue);
+        }
+        return obj;
+    }
+    
+    if (Array.isArray(obj)) {
+        return obj.map(item => resolveCssVariables(item));
+    }
+    
+    if (typeof obj === 'object') {
+        const resolved = {};
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                resolved[key] = resolveCssVariables(obj[key]);
+            }
+        }
+        return resolved;
+    }
+    
+    return obj;
 }

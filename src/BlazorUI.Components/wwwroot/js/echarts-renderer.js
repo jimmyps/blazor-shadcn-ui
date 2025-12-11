@@ -28,8 +28,11 @@ export async function createChart(element, config) {
         // Initialize ECharts instance with SVG renderer for better quality
         const chart = echarts.init(element, null, { renderer: 'svg' });
         
+        // Resolve CSS variables in the config before converting
+        const resolvedConfig = resolveCssVariables(config);
+        
         // Convert Chart.js-style config to ECharts option format
-        const option = convertConfig(config);
+        const option = convertConfig(resolvedConfig);
         chart.setOption(option);
         
         // Make chart responsive - store listener reference for cleanup
@@ -61,7 +64,9 @@ export function updateData(chartId, newData) {
         return;
     }
     
-    const option = convertConfig({ data: newData });
+    // Resolve CSS variables before converting
+    const resolvedData = resolveCssVariables(newData);
+    const option = convertConfig({ data: resolvedData });
     instance.chart.setOption(option, { replaceMerge: ['series'] });
 }
 
@@ -374,4 +379,64 @@ function mapEasing(easing) {
  */
 function generateId() {
     return `echarts-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+}
+
+/**
+ * Get computed CSS variable value
+ * @param {string} varName - CSS variable name (e.g., '--chart-1')
+ * @returns {string} - Computed color value
+ */
+function getCssVariable(varName) {
+    const styles = getComputedStyle(document.documentElement);
+    const value = styles.getPropertyValue(varName).trim();
+    
+    // Convert HSL to RGB for ECharts
+    if (value.includes('%')) {
+        // Parse HSL values like "212.7 26.8% 83.9%"
+        const parts = value.split(' ').map(p => parseFloat(p));
+        if (parts.length === 3) {
+            return `hsl(${parts[0]}, ${parts[1]}%, ${parts[2]}%)`;
+        }
+    }
+    
+    return value;
+}
+
+/**
+ * Recursively resolve CSS variables in configuration object
+ * @param {any} obj - Object to process
+ * @returns {any} - Object with resolved CSS variables
+ */
+function resolveCssVariables(obj) {
+    if (obj === null || obj === undefined) {
+        return obj;
+    }
+    
+    if (typeof obj === 'string') {
+        // Match patterns like "hsl(var(--chart-1))" or "var(--chart-2)"
+        const cssVarMatch = obj.match(/var\(([^)]+)\)/);
+        if (cssVarMatch) {
+            const varName = cssVarMatch[1];
+            const resolvedValue = getCssVariable(varName);
+            // Replace the var(...) with the resolved value
+            return obj.replace(cssVarMatch[0], resolvedValue);
+        }
+        return obj;
+    }
+    
+    if (Array.isArray(obj)) {
+        return obj.map(item => resolveCssVariables(item));
+    }
+    
+    if (typeof obj === 'object') {
+        const resolved = {};
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                resolved[key] = resolveCssVariables(obj[key]);
+            }
+        }
+        return resolved;
+    }
+    
+    return obj;
 }
