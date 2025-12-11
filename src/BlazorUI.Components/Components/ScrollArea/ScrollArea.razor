@@ -114,10 +114,9 @@
                     _dotNetRef,
                     new { enableShadows = EnableScrollShadows });
             }
-            catch (Exception ex)
+            catch
             {
-                // Log error but don't break the component
-                Console.WriteLine($"ScrollArea: Failed to initialize JS interop: {ex.Message}");
+                // Silently handle initialization errors
             }
         }
     }
@@ -166,9 +165,13 @@
     {
         try
         {
+            if (_module != null && _scrollAreaInstance != null)
+            {
+                await _module.InvokeVoidAsync("dispose", _scrollAreaInstance);
+            }
+
             if (_scrollAreaInstance != null)
             {
-                await _scrollAreaInstance.InvokeVoidAsync("dispose");
                 await _scrollAreaInstance.DisposeAsync();
             }
 

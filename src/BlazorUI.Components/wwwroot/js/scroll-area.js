@@ -47,11 +47,8 @@ export function initialize(scrollAreaElement, dotNetRef, options) {
                 canScrollRight,
                 scrollTop,
                 scrollLeft
-            }).catch(err => {
-                // Silently ignore if component is disposed
-                if (!err.message?.includes('disposed')) {
-                    console.warn('ScrollArea: Error invoking OnScrollPositionChanged', err);
-                }
+            }).catch(() => {
+                // Silently ignore errors (component may be disposed)
             });
         }
     }
