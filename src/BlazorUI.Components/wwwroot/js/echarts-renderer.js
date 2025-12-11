@@ -395,12 +395,13 @@ function getCssVariable(varName) {
         return '';
     }
     
-    // Convert HSL to RGB for ECharts
+    // Convert HSL format from "212.7 26.8% 83.9%" to "212.7, 26.8%, 83.9%"
     if (value.includes('%')) {
         // Parse HSL values like "212.7 26.8% 83.9%"
-        const parts = value.split(' ').map(p => parseFloat(p));
+        const parts = value.split(' ');
         if (parts.length === 3) {
-            return `hsl(${parts[0]}, ${parts[1]}%, ${parts[2]}%)`;
+            // Keep percentage signs, just add commas
+            return `${parts[0]}, ${parts[1]}, ${parts[2]}`;
         }
     }
     
@@ -427,8 +428,21 @@ function resolveCssVariables(obj) {
                 console.warn(`Could not resolve CSS variable in: ${obj}`);
                 return obj; // Return original if can't resolve
             }
-            // Replace the var(...) with the resolved value
-            const result = obj.replace(cssVarMatch[0], resolvedValue);
+            
+            // Check if var() is inside hsl() - if so, just replace var() with values
+            // Otherwise, wrap the resolved value in hsl()
+            let result;
+            if (obj.startsWith('hsl(var(')) {
+                // Already has hsl() wrapper, just replace var(...) with the values
+                result = obj.replace(cssVarMatch[0], resolvedValue);
+            } else if (obj.startsWith('var(')) {
+                // No hsl() wrapper, add it
+                result = `hsl(${resolvedValue})`;
+            } else {
+                // Replace var() with resolved value as-is
+                result = obj.replace(cssVarMatch[0], resolvedValue);
+            }
+            
             console.log(`Resolved ${obj} to ${result}`);
             return result;
         }
