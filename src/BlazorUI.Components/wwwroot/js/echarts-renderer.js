@@ -390,6 +390,11 @@ function getCssVariable(varName) {
     const styles = getComputedStyle(document.documentElement);
     const value = styles.getPropertyValue(varName).trim();
     
+    if (!value) {
+        console.warn(`CSS variable ${varName} not found or is empty`);
+        return '';
+    }
+    
     // Convert HSL to RGB for ECharts
     if (value.includes('%')) {
         // Parse HSL values like "212.7 26.8% 83.9%"
@@ -418,8 +423,14 @@ function resolveCssVariables(obj) {
         if (cssVarMatch) {
             const varName = cssVarMatch[1];
             const resolvedValue = getCssVariable(varName);
+            if (!resolvedValue) {
+                console.warn(`Could not resolve CSS variable in: ${obj}`);
+                return obj; // Return original if can't resolve
+            }
             // Replace the var(...) with the resolved value
-            return obj.replace(cssVarMatch[0], resolvedValue);
+            const result = obj.replace(cssVarMatch[0], resolvedValue);
+            console.log(`Resolved ${obj} to ${result}`);
+            return result;
         }
         return obj;
     }
