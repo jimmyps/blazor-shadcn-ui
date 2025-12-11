@@ -1,5 +1,6 @@
 @page "/components/date-picker"
 @using BlazorUI.Components.DatePicker
+@using BlazorUI.Components.TimePicker
 @using BlazorUI.Components.Calendar
 @using BlazorUI.Components.Field
 
@@ -212,6 +213,57 @@
 
         <section class="space-y-4">
             <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Date and Time Picker</h2>
+                <p class="text-muted-foreground">
+                    Combine date and time selection in a single input scenario.
+                </p>
+            </div>
+
+            <div class="flex flex-col gap-4 max-w-sm">
+                <Field>
+                    <FieldLabel>Appointment Date & Time</FieldLabel>
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <DatePicker @bind-SelectedDate="appointmentDate"
+                                       MinDate="DateOnly.FromDateTime(DateTime.Today)"
+                                       Placeholder="Select date"
+                                       ShowIcon="false"
+                                       ShowDropdownIcon="true" />
+                        </div>
+                        <div class="flex-1">
+                            <TimePicker @bind-SelectedTime="appointmentTime"
+                                       MinuteStep="15"
+                                       Placeholder="Select time"
+                                       ShowIcon="false" />
+                        </div>
+                    </div>
+                    <FieldDescription>Choose your preferred appointment slot.</FieldDescription>
+                </Field>
+                <p class="text-sm text-muted-foreground">
+                    @if (appointmentDate.HasValue && appointmentTime.HasValue)
+                    {
+                        var dateTime = new DateTime(appointmentDate.Value.Year, appointmentDate.Value.Month, appointmentDate.Value.Day, 
+                                                    appointmentTime.Value.Hour, appointmentTime.Value.Minute, 0);
+                        <span class="font-medium">Scheduled: @dateTime.ToString("dddd, MMMM d, yyyy 'at' h:mm tt")</span>
+                    }
+                    else if (appointmentDate.HasValue)
+                    {
+                        <span>Date: @appointmentDate.Value.ToString("D") - Time: Not selected</span>
+                    }
+                    else if (appointmentTime.HasValue)
+                    {
+                        <span>Date: Not selected - Time: @appointmentTime.Value.ToString("hh:mm tt")</span>
+                    }
+                    else
+                    {
+                        <span>No appointment scheduled</span>
+                    }
+                </p>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
                 <h2 class="text-2xl font-semibold">Disabled State</h2>
                 <p class="text-muted-foreground">
                     A disabled date picker.
@@ -244,6 +296,9 @@
     
     private DateOnly? checkIn;
     private DateOnly? checkOut;
+
+    private DateOnly? appointmentDate;
+    private TimeOnly? appointmentTime;
 
     private bool IsWeekend(DateOnly date)
     {
