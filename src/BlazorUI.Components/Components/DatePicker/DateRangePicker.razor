@@ -26,7 +26,7 @@
                 <div class="text-sm font-medium px-3">
                     @(StartDateLabel ?? "From")
                 </div>
-                <Calendar @bind-SelectedDate="_startDate"
+                <Calendar @ref="_firstCalendar" @bind-SelectedDate="_startDate"
                           InitialMonth="@_firstCalendarMonth"
                           MinDate="@MinDate"
                           MaxDate="@(_endDate ?? MaxDate)"
@@ -36,14 +36,15 @@
                           RangeStart="@_startDate"
                           RangeEnd="@_endDate"
                           DisplayedMonthChanged="@OnFirstCalendarMonthChanged"
-                          Class="@GetFirstCalendarClass()" />
+                          Class="@GetFirstCalendarClass()"
+                          RowClass="!mt-0" />
             </div>
             <div class="border-l mx-3"></div>
             <div class="space-y-2 flex-1">
                 <div class="text-sm font-medium px-3">
                     @(EndDateLabel ?? "To")
                 </div>
-                <Calendar @bind-SelectedDate="_endDate"
+                <Calendar @ref="_secondCalendar" @bind-SelectedDate="_endDate"
                           InitialMonth="@_secondCalendarMonth"
                           MinDate="@(_startDate ?? MinDate)"
                           MaxDate="@MaxDate"
@@ -53,7 +54,8 @@
                           RangeStart="@_startDate"
                           RangeEnd="@_endDate"
                           DisplayedMonthChanged="@OnSecondCalendarMonthChanged"
-                          Class="@GetSecondCalendarClass()" />
+                          Class="@GetSecondCalendarClass()"
+                          RowClass="!mt-0" />
             </div>
         </div>
     </PopoverContent>
@@ -67,6 +69,9 @@
     private DateOnly? _lastNotifiedEndDate;
     private DateOnly? _firstCalendarMonth;
     private DateOnly? _secondCalendarMonth;
+
+    private Calendar _firstCalendar;
+    private Calendar _secondCalendar;
 
     private System.Globalization.CultureInfo EffectiveCulture =>
         Culture ?? System.Globalization.CultureInfo.CurrentCulture;
@@ -226,12 +231,12 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        
+
         if (_startDate != StartDate)
         {
             _startDate = StartDate;
         }
-        
+
         if (_endDate != EndDate)
         {
             _endDate = EndDate;
@@ -245,10 +250,10 @@
     {
         // Determine the base month (prefer start date, then end date, then current month)
         var baseMonth = _startDate ?? _endDate ?? DateOnly.FromDateTime(DateTime.Today);
-        
+
         // First calendar shows the month of the base date
         _firstCalendarMonth = new DateOnly(baseMonth.Year, baseMonth.Month, 1);
-        
+
         // Second calendar shows the next month
         var nextMonth = baseMonth.AddMonths(1);
         _secondCalendarMonth = new DateOnly(nextMonth.Year, nextMonth.Month, 1);
@@ -302,7 +307,7 @@
     private string GetButtonClass()
     {
         var classes = new List<string> { "w-[300px] justify-start text-left font-normal" };
-        
+
         if (_startDate == null && _endDate == null)
             classes.Add("text-muted-foreground");
 
@@ -344,12 +349,12 @@
     private Dictionary<string, object> GetTriggerAttributes()
     {
         var attrs = new Dictionary<string, object>();
-        
+
         if (Disabled)
         {
             attrs.Add("disabled", true);
         }
-        
+
         if (!string.IsNullOrEmpty(AriaLabel))
         {
             attrs.Add("aria-label", AriaLabel);
@@ -369,26 +374,26 @@
 
     private string GetPopoverContentClass()
     {
-        return "w-auto p-0 border-0 bg-transparent shadow-none";
+        return "w-auto !p-0 border-0 bg-transparent !shadow-md";
     }
 
     private string GetFirstCalendarClass()
     {
-        var classes = new List<string> { "border-0 bg-transparent shadow-none p-0" };
-        
+        var classes = new List<string> { "border-0 bg-transparent !shadow-none p-0" };
+
         if (!string.IsNullOrEmpty(CalendarClass))
             classes.Add(CalendarClass);
-        
+
         return string.Join(" ", classes);
     }
 
     private string GetSecondCalendarClass()
     {
-        var classes = new List<string> { "border-0 bg-transparent shadow-none p-0" };
-        
+        var classes = new List<string> { "border-0 bg-transparent !shadow-none p-0" };
+
         if (!string.IsNullOrEmpty(CalendarClass))
             classes.Add(CalendarClass);
-        
+
         return string.Join(" ", classes);
     }
 
@@ -417,6 +422,9 @@
         // Keep the second calendar one month ahead
         var nextMonth = newMonth.AddMonths(1);
         _secondCalendarMonth = new DateOnly(nextMonth.Year, nextMonth.Month, 1);
+        _secondCalendar.NavigateMonth(_secondCalendarMonth.Value);
+
+        StateHasChanged();
     }
 
     /// <summary>
@@ -428,5 +436,8 @@
         // Keep the first calendar one month before
         var prevMonth = newMonth.AddMonths(-1);
         _firstCalendarMonth = new DateOnly(prevMonth.Year, prevMonth.Month, 1);
+        _firstCalendar.NavigateMonth(_firstCalendarMonth.Value);
+
+        StateHasChanged();
     }
 }

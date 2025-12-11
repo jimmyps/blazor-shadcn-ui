@@ -70,7 +70,7 @@
                 <tbody @key="_displayedMonth">
                     @foreach (var week in GetWeeks())
                     {
-                        <tr class="flex w-full mt-2">
+                        <tr class="@ClassNames.cn("flex w-full mt-2", RowClass)">
                             @foreach (var day in week)
                             {
                                 <td class="relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md">
@@ -170,6 +170,12 @@
     public string? Class { get; set; }
 
     /// <summary>
+    /// Additional CSS classes to apply to each week row in the day grid.
+    /// </summary>
+    [Parameter]
+    public string? RowClass { get; set; }
+
+    /// <summary>
     /// Additional attributes to apply to the calendar element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
@@ -207,6 +213,17 @@
     /// </summary>
     [Parameter]
     public EventCallback<DateOnly> DisplayedMonthChanged { get; set; }
+
+    public void NavigateMonth(DateOnly month, bool notifyMonthChanged = false)
+    {
+        if (month != _displayedMonth)
+        {
+            _displayedMonth = month;
+
+            if (notifyMonthChanged)
+                _ = NotifyMonthChanged();
+        }
+    }
 
     private DateOnly DisplayedMonth => _displayedMonth;
 
@@ -562,6 +579,17 @@
         return weeks;
     }
 
+    /// <summary>
+    /// Notifies the parent component when the displayed month changes.
+    /// </summary>
+    private async Task NotifyMonthChanged()
+    {
+        if (DisplayedMonthChanged.HasDelegate)
+        {
+            await DisplayedMonthChanged.InvokeAsync(_displayedMonth);
+        }
+    }
+
     private string GetPrevNavButtonClass()
     {
         return "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors " +
@@ -653,16 +681,5 @@
         }
 
         return attributes;
-    }
-
-    /// <summary>
-    /// Notifies the parent component when the displayed month changes.
-    /// </summary>
-    private async Task NotifyMonthChanged()
-    {
-        if (DisplayedMonthChanged.HasDelegate)
-        {
-            await DisplayedMonthChanged.InvokeAsync(_displayedMonth);
-        }
     }
 }
