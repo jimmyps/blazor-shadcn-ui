@@ -170,14 +170,17 @@ export function getCssVariable(varName) {
         return '';
     }
     
-    // Convert HSL format from "212.7 26.8% 83.9%" to "212.7, 26.8%, 83.9%"
+    // Check if this is HSL format (contains %) or OKLCH format (no %)
     if (value.includes('%')) {
-        // Parse HSL values like "212.7 26.8% 83.9%"
+        // HSL format: "212.7 26.8% 83.9%" → "212.7, 26.8%, 83.9%"
         const parts = value.split(' ');
         if (parts.length === 3) {
-            // Keep percentage signs, just add commas
             return `${parts[0]}, ${parts[1]}, ${parts[2]}`;
         }
+    } else {
+        // OKLCH format: "0.646 0.222 41.116" → "0.646 0.222 41.116"
+        // OKLCH uses spaces, not commas
+        return value;
     }
     
     return value;
@@ -198,6 +201,18 @@ export function getChartColors() {
 }
 
 /**
+ * Get OHLC (candlestick) chart colors from CSS variables
+ * @returns {object} - Object with up, down, and neutral colors
+ */
+export function getOHLCColors() {
+    return {
+        up: getCssVariable('--chart-up') || '0.646 0.222 41.116',
+        down: getCssVariable('--chart-down') || '0.628 0.258 29.234',
+        neutral: getCssVariable('--chart-neutral') || '0.5 0 0'
+    };
+}
+
+/**
  * Recursively resolve CSS variables in configuration object
  * @param {any} obj - Object to process
  * @returns {any} - Object with resolved CSS variables
@@ -208,7 +223,7 @@ function resolveCssVariables(obj) {
     }
     
     if (typeof obj === 'string') {
-        // Match patterns like "hsl(var(--chart-1))" or "var(--chart-2)"
+        // Match patterns like "hsl(var(--chart-1))", "oklch(var(--chart-up))" or "var(--chart-2)"
         const cssVarMatch = obj.match(/var\(([^)]+)\)/);
         if (cssVarMatch) {
             const varName = cssVarMatch[1];
@@ -218,15 +233,23 @@ function resolveCssVariables(obj) {
                 return obj; // Return original if can't resolve
             }
             
-            // Check if var() is inside hsl() - if so, just replace var() with values
-            // Otherwise, wrap the resolved value in hsl()
+            // Check if var() is inside hsl() or oklch() - if so, just replace var() with values
+            // Otherwise, wrap the resolved value appropriately
             let result;
             if (obj.startsWith('hsl(var(')) {
                 // Already has hsl() wrapper, just replace var(...) with the values
                 result = obj.replace(cssVarMatch[0], resolvedValue);
+            } else if (obj.startsWith('oklch(var(')) {
+                // Already has oklch() wrapper, just replace var(...) with the values
+                result = obj.replace(cssVarMatch[0], resolvedValue);
             } else if (obj.startsWith('var(')) {
-                // No hsl() wrapper, add it
-                result = `hsl(${resolvedValue})`;
+                // No wrapper, detect format and add appropriate wrapper
+                // HSL has %, OKLCH doesn't
+                if (resolvedValue.includes('%') || resolvedValue.includes(',')) {
+                    result = `hsl(${resolvedValue})`;
+                } else {
+                    result = `oklch(${resolvedValue})`;
+                }
             } else {
                 // Replace var() with resolved value as-is
                 result = obj.replace(cssVarMatch[0], resolvedValue);

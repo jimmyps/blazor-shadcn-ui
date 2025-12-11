@@ -32,6 +32,10 @@
     --chart-3: 197 37.3% 24.1%;
     --chart-4: 43 74.1% 66.1%;
     --chart-5: 27 87.3% 67.1%;
+    /* OHLC (candlestick) chart colors in OKLCH format */
+    --chart-up: 0.646 0.222 41.116; /* Green for upward movement */
+    --chart-down: 0.628 0.258 29.234; /* Red for downward movement */
+    --chart-neutral: 0.5 0 0; /* Gray for no change */
   }
 
   /* Reduced motion: zero out durations for accessibility */
