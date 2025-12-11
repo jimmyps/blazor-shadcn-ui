@@ -1,4 +1,8 @@
 // ScrollArea JavaScript module for scroll shadow detection and scrollbar enhancements
+
+// Threshold for detecting scroll position (in pixels)
+const SCROLL_THRESHOLD = 1;
+
 export function initialize(scrollAreaElement, options) {
     if (!scrollAreaElement) {
         console.error('ScrollArea: Element reference is null');
@@ -25,11 +29,11 @@ export function initialize(scrollAreaElement, options) {
 
         const { scrollTop, scrollLeft, scrollHeight, scrollWidth, clientHeight, clientWidth } = viewport;
 
-        // Calculate shadow visibility
-        const canScrollTop = scrollTop > 1;
-        const canScrollBottom = scrollTop < scrollHeight - clientHeight - 1;
-        const canScrollLeft = scrollLeft > 1;
-        const canScrollRight = scrollLeft < scrollWidth - clientWidth - 1;
+        // Calculate shadow visibility using threshold
+        const canScrollTop = scrollTop > SCROLL_THRESHOLD;
+        const canScrollBottom = scrollTop < scrollHeight - clientHeight - SCROLL_THRESHOLD;
+        const canScrollLeft = scrollLeft > SCROLL_THRESHOLD;
+        const canScrollRight = scrollLeft < scrollWidth - clientWidth - SCROLL_THRESHOLD;
 
         // Update data attributes for CSS-based shadows
         scrollAreaElement.setAttribute('data-scroll-top', canScrollTop ? 'true' : 'false');

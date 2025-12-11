@@ -1,4 +1,5 @@
 @namespace BlazorUI.Components.ScrollArea
+@using Microsoft.JSInterop
 @implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
 
@@ -110,9 +111,13 @@
                     _scrollAreaRef,
                     new { enableShadows = EnableScrollShadows });
             }
-            catch
+            catch (JSException)
             {
-                // Silently handle initialization errors
+                // Silently handle JS interop errors during initialization
+            }
+            catch (InvalidOperationException)
+            {
+                // Silently handle errors if JS runtime is not available
             }
         }
     }
@@ -165,9 +170,13 @@
                 await _module.DisposeAsync();
             }
         }
-        catch
+        catch (JSDisconnectedException)
         {
-            // Silently handle disposal errors
+            // Silently handle - JS runtime already disconnected
+        }
+        catch (JSException)
+        {
+            // Silently handle - component already disposed or JS error
         }
     }
 }
