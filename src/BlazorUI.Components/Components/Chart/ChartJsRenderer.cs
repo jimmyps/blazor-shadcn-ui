@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -10,6 +11,11 @@ public class ChartJsRenderer : IChartRenderer
 {
     private readonly IJSRuntime _jsRuntime;
     private IJSObjectReference? _jsModule;
+    private static readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = false
+    };
     
     public ChartJsRenderer(IJSRuntime jsRuntime)
     {
@@ -21,7 +27,11 @@ public class ChartJsRenderer : IChartRenderer
         _jsModule ??= await _jsRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/BlazorUI.Components/js/chartjs-renderer.js");
         
-        var chartId = await _jsModule.InvokeAsync<string>("createChart", element, config);
+        // Serialize config to JSON with camelCase to ensure proper property names in JS
+        var json = JsonSerializer.Serialize(config, _jsonOptions);
+        var configObj = JsonSerializer.Deserialize<object>(json, _jsonOptions);
+        
+        var chartId = await _jsModule.InvokeAsync<string>("createChart", element, configObj);
         return chartId;
     }
     
@@ -29,7 +39,10 @@ public class ChartJsRenderer : IChartRenderer
     {
         if (_jsModule != null)
         {
-            await _jsModule.InvokeVoidAsync("updateData", chartId, data);
+            // Serialize data to ensure camelCase properties for Chart.js
+            var json = JsonSerializer.Serialize(data, _jsonOptions);
+            var dataObj = JsonSerializer.Deserialize<object>(json, _jsonOptions);
+            await _jsModule.InvokeVoidAsync("updateData", chartId, dataObj);
         }
     }
     
@@ -37,7 +50,10 @@ public class ChartJsRenderer : IChartRenderer
     {
         if (_jsModule != null)
         {
-            await _jsModule.InvokeVoidAsync("updateOptions", chartId, options);
+            // Serialize options to ensure camelCase properties for Chart.js
+            var json = JsonSerializer.Serialize(options, _jsonOptions);
+            var optionsObj = JsonSerializer.Deserialize<object>(json, _jsonOptions);
+            await _jsModule.InvokeVoidAsync("updateOptions", chartId, optionsObj);
         }
     }
     
