@@ -432,6 +432,14 @@ function resolveCssVariables(obj) {
                 return obj; // Return original if can't resolve
             }
             
+            // Check if the resolved value is already a complete color function (e.g., "hsl(...)" or "oklch(...)")
+            // If so, use it directly without wrapping
+            if (resolvedValue.startsWith('hsl(') || resolvedValue.startsWith('oklch(') || 
+                resolvedValue.startsWith('rgb(') || resolvedValue.startsWith('rgba(')) {
+                console.log(`Resolved ${obj} to ${resolvedValue} (already complete)`);
+                return resolvedValue;
+            }
+            
             // Check if var() is inside hsl() or oklch() - if so, just replace var() with values
             // Otherwise, wrap the resolved value appropriately
             let result;
