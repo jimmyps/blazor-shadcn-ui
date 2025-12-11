@@ -117,7 +117,7 @@
             }
             catch (InvalidOperationException)
             {
-                // Silently handle errors if JS runtime is not available
+                // Silently handle errors when JS runtime is not available (e.g., during server-side prerendering)
             }
         }
     }

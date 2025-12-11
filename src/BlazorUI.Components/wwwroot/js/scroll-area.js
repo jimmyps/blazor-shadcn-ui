@@ -58,11 +58,17 @@ export function initialize(scrollAreaElement, options) {
     // Initial shadow update
     updateShadows();
 
-    // Observe content size changes
+    // Observe content size changes (throttled for performance)
+    let resizeRafId = null;
     const resizeObserver = new ResizeObserver(() => {
-        if (!isDisposed) {
+        if (isDisposed) return;
+        
+        if (resizeRafId) return;
+        
+        resizeRafId = requestAnimationFrame(() => {
             updateShadows();
-        }
+            resizeRafId = null;
+        });
     });
     resizeObserver.observe(viewport);
 
@@ -74,6 +80,11 @@ export function initialize(scrollAreaElement, options) {
             if (rafId) {
                 cancelAnimationFrame(rafId);
                 rafId = null;
+            }
+
+            if (resizeRafId) {
+                cancelAnimationFrame(resizeRafId);
+                resizeRafId = null;
             }
 
             viewport.removeEventListener('scroll', handleScroll);
