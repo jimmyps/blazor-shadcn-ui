@@ -1,0 +1,443 @@
+@namespace BlazorUI.Components.DatePicker
+@using BlazorUI.Components.Popover
+@using BlazorUI.Components.Calendar
+@using BlazorUI.Components.Button
+@using BlazorUI.Icons.Lucide.Components
+@using BlazorUI.Primitives.Services
+@using BlazorUI.Components.Utilities
+
+@* DateRangePicker - Date range selection with two dates *@
+
+<Popover @bind-Open="_isOpen">
+    <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
+        @if (ShowIcon)
+        {
+            <LucideIcon Name="calendar" Class="@GetIconClass()" />
+        }
+        <span>@GetDisplayText()</span>
+        @if (ShowDropdownIcon)
+        {
+            <LucideIcon Name="chevron-down" Class="ml-auto h-4 w-4 opacity-50" />
+        }
+    </PopoverTrigger>
+    <PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
+        <div class="flex gap-0 border rounded-md bg-card shadow-sm p-3">
+            <div class="space-y-2 flex-1">
+                <div class="text-sm font-medium px-3">
+                    @(StartDateLabel ?? "From")
+                </div>
+                <Calendar @ref="_firstCalendar" @bind-SelectedDate="_startDate"
+                          InitialMonth="@_firstCalendarMonth"
+                          MinDate="@MinDate"
+                          MaxDate="@(_endDate ?? MaxDate)"
+                          IsDateDisabled="@GetStartDateDisabled"
+                          Culture="@EffectiveCulture"
+                          CaptionLayout="@CaptionLayout"
+                          RangeStart="@_startDate"
+                          RangeEnd="@_endDate"
+                          DisplayedMonthChanged="@OnFirstCalendarMonthChanged"
+                          Class="@GetFirstCalendarClass()"
+                          RowClass="!mt-0" />
+            </div>
+            <div class="border-l mx-3"></div>
+            <div class="space-y-2 flex-1">
+                <div class="text-sm font-medium px-3">
+                    @(EndDateLabel ?? "To")
+                </div>
+                <Calendar @ref="_secondCalendar" @bind-SelectedDate="_endDate"
+                          InitialMonth="@_secondCalendarMonth"
+                          MinDate="@(_startDate ?? MinDate)"
+                          MaxDate="@MaxDate"
+                          IsDateDisabled="@GetEndDateDisabled"
+                          Culture="@EffectiveCulture"
+                          CaptionLayout="@CaptionLayout"
+                          RangeStart="@_startDate"
+                          RangeEnd="@_endDate"
+                          DisplayedMonthChanged="@OnSecondCalendarMonthChanged"
+                          Class="@GetSecondCalendarClass()"
+                          RowClass="!mt-0" />
+            </div>
+        </div>
+    </PopoverContent>
+</Popover>
+
+@code {
+    private bool _isOpen;
+    private DateOnly? _startDate;
+    private DateOnly? _endDate;
+    private DateOnly? _lastNotifiedStartDate;
+    private DateOnly? _lastNotifiedEndDate;
+    private DateOnly? _firstCalendarMonth;
+    private DateOnly? _secondCalendarMonth;
+
+    private Calendar _firstCalendar;
+    private Calendar _secondCalendar;
+
+    private System.Globalization.CultureInfo EffectiveCulture =>
+        Culture ?? System.Globalization.CultureInfo.CurrentCulture;
+
+    /// <summary>
+    /// The start date of the range.
+    /// </summary>
+    [Parameter]
+    public DateOnly? StartDate
+    {
+        get => _startDate;
+        set
+        {
+            if (_startDate != value)
+            {
+                _startDate = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Event callback invoked when the start date changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<DateOnly?> StartDateChanged { get; set; }
+
+    /// <summary>
+    /// The end date of the range.
+    /// </summary>
+    [Parameter]
+    public DateOnly? EndDate
+    {
+        get => _endDate;
+        set
+        {
+            if (_endDate != value)
+            {
+                _endDate = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Event callback invoked when the end date changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<DateOnly?> EndDateChanged { get; set; }
+
+    /// <summary>
+    /// Minimum selectable date.
+    /// </summary>
+    [Parameter]
+    public DateOnly? MinDate { get; set; }
+
+    /// <summary>
+    /// Maximum selectable date.
+    /// </summary>
+    [Parameter]
+    public DateOnly? MaxDate { get; set; }
+
+    /// <summary>
+    /// Function to determine if a specific date should be disabled.
+    /// </summary>
+    [Parameter]
+    public Func<DateOnly, bool>? IsDateDisabled { get; set; }
+
+    /// <summary>
+    /// Culture for date formatting.
+    /// </summary>
+    [Parameter]
+    public System.Globalization.CultureInfo? Culture { get; set; }
+
+    /// <summary>
+    /// Calendar caption layout (label or dropdown).
+    /// </summary>
+    [Parameter]
+    public CalendarCaptionLayout CaptionLayout { get; set; } = CalendarCaptionLayout.Label;
+
+    /// <summary>
+    /// Button variant for the trigger button.
+    /// </summary>
+    [Parameter]
+    public ButtonVariant ButtonVariant { get; set; } = ButtonVariant.Outline;
+
+    /// <summary>
+    /// Button size for the trigger button.
+    /// </summary>
+    [Parameter]
+    public ButtonSize ButtonSize { get; set; } = ButtonSize.Default;
+
+    /// <summary>
+    /// Whether to show the calendar icon in the button.
+    /// </summary>
+    [Parameter]
+    public bool ShowIcon { get; set; } = true;
+
+    /// <summary>
+    /// Whether to show the chevron-down icon on the right side of the button.
+    /// </summary>
+    [Parameter]
+    public bool ShowDropdownIcon { get; set; } = false;
+
+    /// <summary>
+    /// Placeholder text when no date range is selected.
+    /// </summary>
+    [Parameter]
+    public string Placeholder { get; set; } = "Pick a date range";
+
+    /// <summary>
+    /// Date format string for displaying dates.
+    /// </summary>
+    [Parameter]
+    public string? DateFormat { get; set; }
+
+    /// <summary>
+    /// Whether the date range picker is disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Alignment of the popover content.
+    /// </summary>
+    [Parameter]
+    public PopoverAlign Align { get; set; } = PopoverAlign.Start;
+
+    /// <summary>
+    /// Label for the start date calendar.
+    /// </summary>
+    [Parameter]
+    public string? StartDateLabel { get; set; }
+
+    /// <summary>
+    /// Label for the end date calendar.
+    /// </summary>
+    [Parameter]
+    public string? EndDateLabel { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes for the button.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes for the calendars.
+    /// </summary>
+    [Parameter]
+    public string? CalendarClass { get; set; }
+
+    /// <summary>
+    /// ARIA label for the button.
+    /// </summary>
+    [Parameter]
+    public string? AriaLabel { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_startDate != StartDate)
+        {
+            _startDate = StartDate;
+        }
+
+        if (_endDate != EndDate)
+        {
+            _endDate = EndDate;
+        }
+
+        // Initialize calendar months to show contiguous months
+        UpdateCalendarMonths();
+    }
+
+    private void UpdateCalendarMonths()
+    {
+        // Determine the base month (prefer start date, then end date, then current month)
+        var baseMonth = _startDate ?? _endDate ?? DateOnly.FromDateTime(DateTime.Today);
+
+        // First calendar shows the month of the base date
+        _firstCalendarMonth = new DateOnly(baseMonth.Year, baseMonth.Month, 1);
+
+        // Second calendar shows the next month
+        var nextMonth = baseMonth.AddMonths(1);
+        _secondCalendarMonth = new DateOnly(nextMonth.Year, nextMonth.Month, 1);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        var startChanged = _startDate != _lastNotifiedStartDate;
+        var endChanged = _endDate != _lastNotifiedEndDate;
+
+        // Notify when dates change (only once per change)
+        if (startChanged)
+        {
+            _lastNotifiedStartDate = _startDate;
+            await StartDateChanged.InvokeAsync(_startDate);
+        }
+
+        if (endChanged)
+        {
+            _lastNotifiedEndDate = _endDate;
+            await EndDateChanged.InvokeAsync(_endDate);
+        }
+
+        // Close popover when both dates are selected
+        if ((startChanged || endChanged) && _startDate.HasValue && _endDate.HasValue && _isOpen)
+        {
+            _isOpen = false;
+            StateHasChanged();
+        }
+    }
+
+    private string GetDisplayText()
+    {
+        var culture = EffectiveCulture;
+        var format = DateFormat ?? "d";
+
+        if (_startDate == null && _endDate == null)
+            return Placeholder;
+
+        if (_startDate != null && _endDate == null)
+            return _startDate.Value.ToString(format, culture) + " - ...";
+
+        if (_startDate == null && _endDate != null)
+            return "... - " + _endDate.Value.ToString(format, culture);
+
+        return _startDate!.Value.ToString(format, culture) + " - " + _endDate!.Value.ToString(format, culture);
+    }
+
+    private string GetButtonClass()
+    {
+        var classes = new List<string> { "w-[300px] justify-start text-left font-normal" };
+
+        if (_startDate == null && _endDate == null)
+            classes.Add("text-muted-foreground");
+
+        // Add button variant classes
+        classes.Add(GetButtonVariantClass());
+        classes.Add(GetButtonSizeClass());
+
+        if (!string.IsNullOrEmpty(Class))
+            classes.Add(Class);
+
+        return ClassNames.cn(classes.ToArray());
+    }
+
+    private string GetButtonVariantClass()
+    {
+        return ButtonVariant switch
+        {
+            ButtonVariant.Default => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90",
+            ButtonVariant.Destructive => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+            ButtonVariant.Outline => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+            ButtonVariant.Secondary => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+            ButtonVariant.Ghost => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground",
+            ButtonVariant.Link => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline",
+            _ => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground"
+        };
+    }
+
+    private string GetButtonSizeClass()
+    {
+        return ButtonSize switch
+        {
+            ButtonSize.Small => "h-8 px-3 text-xs",
+            ButtonSize.Large => "h-10 px-8",
+            ButtonSize.Icon => "h-9 w-9",
+            _ => "h-9 px-4 py-2"
+        };
+    }
+
+    private Dictionary<string, object> GetTriggerAttributes()
+    {
+        var attrs = new Dictionary<string, object>();
+
+        if (Disabled)
+        {
+            attrs.Add("disabled", true);
+        }
+
+        if (!string.IsNullOrEmpty(AriaLabel))
+        {
+            attrs.Add("aria-label", AriaLabel);
+        }
+        else
+        {
+            attrs.Add("aria-label", "Select date range");
+        }
+
+        return attrs;
+    }
+
+    private string GetIconClass()
+    {
+        return ShowIcon ? "h-4 w-4" : "";
+    }
+
+    private string GetPopoverContentClass()
+    {
+        return "w-auto !p-0 border-0 bg-transparent !shadow-md";
+    }
+
+    private string GetFirstCalendarClass()
+    {
+        var classes = new List<string> { "border-0 bg-transparent !shadow-none p-0" };
+
+        if (!string.IsNullOrEmpty(CalendarClass))
+            classes.Add(CalendarClass);
+
+        return string.Join(" ", classes);
+    }
+
+    private string GetSecondCalendarClass()
+    {
+        var classes = new List<string> { "border-0 bg-transparent !shadow-none p-0" };
+
+        if (!string.IsNullOrEmpty(CalendarClass))
+            classes.Add(CalendarClass);
+
+        return string.Join(" ", classes);
+    }
+
+    private bool GetStartDateDisabled(DateOnly date)
+    {
+        if (IsDateDisabled != null && IsDateDisabled(date))
+            return true;
+
+        return false;
+    }
+
+    private bool GetEndDateDisabled(DateOnly date)
+    {
+        if (IsDateDisabled != null && IsDateDisabled(date))
+            return true;
+
+        return false;
+    }
+
+    /// <summary>
+    /// Handles month changes from the first calendar to keep both calendars synchronized.
+    /// </summary>
+    private void OnFirstCalendarMonthChanged(DateOnly newMonth)
+    {
+        _firstCalendarMonth = newMonth;
+        // Keep the second calendar one month ahead
+        var nextMonth = newMonth.AddMonths(1);
+        _secondCalendarMonth = new DateOnly(nextMonth.Year, nextMonth.Month, 1);
+        _secondCalendar.NavigateMonth(_secondCalendarMonth.Value);
+
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Handles month changes from the second calendar to keep both calendars synchronized.
+    /// </summary>
+    private void OnSecondCalendarMonthChanged(DateOnly newMonth)
+    {
+        _secondCalendarMonth = newMonth;
+        // Keep the first calendar one month before
+        var prevMonth = newMonth.AddMonths(-1);
+        _firstCalendarMonth = new DateOnly(prevMonth.Year, prevMonth.Month, 1);
+        _firstCalendar.NavigateMonth(_firstCalendarMonth.Value);
+
+        StateHasChanged();
+    }
+}
