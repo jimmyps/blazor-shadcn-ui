@@ -21,17 +21,18 @@
         }
     </PopoverTrigger>
     <PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
-        <Calendar @bind-SelectedDate="_selectedDate"
+        <Calendar @ref="_calendar" @bind-SelectedDate="_selectedDate"
                   MinDate="@MinDate"
                   MaxDate="@MaxDate"
                   IsDateDisabled="@IsDateDisabled"
                   Culture="@EffectiveCulture"
                   CaptionLayout="@CaptionLayout"
-                  Class="@CalendarClass" />
+                  Class="@GetCalendarClass()" />
     </PopoverContent>
 </Popover>
 
 @code {
+    private Calendar? _calendar;
     private bool _isOpen;
     private DateOnly? _selectedDate;
     private DateOnly? _lastNotifiedDate;
@@ -161,7 +162,7 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        
+
         if (_selectedDate != SelectedDate)
         {
             _selectedDate = SelectedDate;
@@ -179,6 +180,17 @@
             _lastNotifiedDate = _selectedDate;
             await SelectedDateChanged.InvokeAsync(_selectedDate);
             StateHasChanged();
+        }
+    }
+
+    private async Task OnTriggerClick()
+    {
+        // Allow Popover to toggle open; then focus calendar after render
+        await Task.Yield();
+
+        if (_calendar is not null)
+        {
+            await _calendar.FocusAsync();
         }
     }
 
@@ -265,6 +277,18 @@
 
     private string GetPopoverContentClass()
     {
-        return "w-auto p-0 border-0 bg-transparent shadow-none";
+        return "w-auto !p-0 border-0 shadow-none";
+    }
+
+    private string GetCalendarClass()
+    {
+        var classes = new List<string> { "!shadow-md" };
+
+        if (!string.IsNullOrEmpty(CalendarClass))
+        {
+            classes.Add(CalendarClass);
+        }
+
+        return ClassNames.cn(classes.ToArray());
     }
 }

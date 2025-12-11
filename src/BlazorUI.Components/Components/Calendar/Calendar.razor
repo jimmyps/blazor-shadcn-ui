@@ -112,6 +112,14 @@
     private bool _needsRefocus;
     
     /// <summary>
+    /// Programmatically focuses the calendar container.
+    /// </summary>
+    public async Task FocusAsync()
+    {
+        await _calendarRef.FocusAsync();
+    }
+    
+    /// <summary>
     /// The currently selected date.
     /// </summary>
     [Parameter]
