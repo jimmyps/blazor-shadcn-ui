@@ -13,7 +13,6 @@ export function initialize(scrollAreaElement, options) {
 
     const config = {
         enableShadows: options?.enableShadows ?? true,
-        shadowSize: options?.shadowSize ?? 20,
         ...options
     };
 

@@ -36,8 +36,8 @@
 
     private string GetThumbClass()
     {
-        // Enhanced thumb with subtle gradient and better hover/active states
-        return "relative flex-1 rounded-full bg-border/60 hover:bg-border/80 active:bg-border transition-colors";
+        // Enhanced thumb with hover/active states using standard Tailwind opacity
+        return "relative flex-1 rounded-full bg-border opacity-60 hover:opacity-80 active:opacity-100 transition-opacity";
     }
 
     private Dictionary<string, object> GetAttributes()
