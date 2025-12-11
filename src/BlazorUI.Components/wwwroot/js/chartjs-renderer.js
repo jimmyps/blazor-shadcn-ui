@@ -234,11 +234,13 @@ function resolveCssVariables(obj) {
             }
             
             // Check if the resolved value is already a complete color function (e.g., "hsl(...)" or "oklch(...)")
-            // If so, use it directly without wrapping
+            // If so, recursively resolve any nested var() within it, then use it directly
             if (resolvedValue.startsWith('hsl(') || resolvedValue.startsWith('oklch(') || 
                 resolvedValue.startsWith('rgb(') || resolvedValue.startsWith('rgba(')) {
-                console.log(`Resolved ${obj} to ${resolvedValue} (already complete)`);
-                return resolvedValue;
+                // Recursively resolve in case the resolved value contains nested var()
+                const fullyResolved = resolveCssVariables(resolvedValue);
+                console.log(`Resolved ${obj} to ${fullyResolved} (already complete, recursively resolved)`);
+                return fullyResolved;
             }
             
             // Check if var() is inside hsl() or oklch() - if so, just replace var() with values
@@ -263,8 +265,10 @@ function resolveCssVariables(obj) {
                 result = obj.replace(cssVarMatch[0], resolvedValue);
             }
             
-            console.log(`Resolved ${obj} to ${result}`);
-            return result;
+            // Recursively resolve in case there are more nested var() expressions
+            const fullyResolved = resolveCssVariables(result);
+            console.log(`Resolved ${obj} to ${fullyResolved}`);
+            return fullyResolved;
         }
         return obj;
     }
