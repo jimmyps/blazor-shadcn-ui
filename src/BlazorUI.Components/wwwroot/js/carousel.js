@@ -100,6 +100,9 @@ export function initCarousel(carouselElement, viewportElement, containerElement,
     // Navigate to slide
     function scrollToSlide(index, animate = true) {
         updateSlideCount();
+        if (totalSlides === 0) {
+            return;
+        }
         
         // Handle looping
         if (!loop) {
@@ -140,13 +143,55 @@ export function initCarousel(carouselElement, viewportElement, containerElement,
         }
     }
 
+    // Public API
+    const instance = {
+        previous() {
+            scrollToSlide(currentIndex - 1, true);
+        },
+
+        next() {
+            scrollToSlide(currentIndex + 1, true);
+        },
+
+        scrollTo(index) {
+            scrollToSlide(index, true);
+        },
+
+        getTotalSlides() {
+            updateSlideCount();
+            return totalSlides;
+        },
+
+        getCurrentIndex() {
+            return currentIndex;
+        },
+
+        dispose() {
+            stopAutoPlay();
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+
+            containerElement.removeEventListener('mousedown', handleMouseDown);
+            containerElement.removeEventListener('mousemove', handleMouseMove);
+            containerElement.removeEventListener('mouseup', handleMouseUp);
+            containerElement.removeEventListener('mouseleave', handleMouseLeave);
+            containerElement.removeEventListener('touchstart', handleTouchStart);
+            containerElement.removeEventListener('touchmove', handleTouchMove);
+            containerElement.removeEventListener('touchend', handleTouchEnd);
+            carouselElement.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('resize', handleResize);
+        }
+    };
+
     // Auto-play
     function startAutoPlay() {
         if (!autoPlay) return;
         
         stopAutoPlay();
         autoPlayTimer = setInterval(() => {
-            next();
+            instance.next();
         }, autoPlayInterval);
     }
 
@@ -194,9 +239,9 @@ export function initCarousel(carouselElement, viewportElement, containerElement,
         
         if (Math.abs(movedBy) > threshold) {
             if (movedBy < 0) {
-                next();
+                instance.next();
             } else {
-                previous();
+                instance.previous();
             }
         } else {
             // Snap back to current slide
@@ -255,18 +300,18 @@ export function initCarousel(carouselElement, viewportElement, containerElement,
         if (isHorizontal) {
             if (key === 'ArrowLeft') {
                 e.preventDefault();
-                previous();
+                instance.previous();
             } else if (key === 'ArrowRight') {
                 e.preventDefault();
-                next();
+                instance.next();
             }
         } else {
             if (key === 'ArrowUp') {
                 e.preventDefault();
-                previous();
+                instance.previous();
             } else if (key === 'ArrowDown') {
                 e.preventDefault();
-                next();
+                instance.next();
             }
         }
     };
@@ -299,48 +344,6 @@ export function initCarousel(carouselElement, viewportElement, containerElement,
     if (autoPlay) {
         startAutoPlay();
     }
-
-    // Public API
-    const instance = {
-        previous() {
-            scrollToSlide(currentIndex - 1, true);
-        },
-
-        next() {
-            scrollToSlide(currentIndex + 1, true);
-        },
-
-        scrollTo(index) {
-            scrollToSlide(index, true);
-        },
-
-        getTotalSlides() {
-            updateSlideCount();
-            return totalSlides;
-        },
-
-        getCurrentIndex() {
-            return currentIndex;
-        },
-
-        dispose() {
-            stopAutoPlay();
-            
-            if (animationId) {
-                cancelAnimationFrame(animationId);
-            }
-
-            containerElement.removeEventListener('mousedown', handleMouseDown);
-            containerElement.removeEventListener('mousemove', handleMouseMove);
-            containerElement.removeEventListener('mouseup', handleMouseUp);
-            containerElement.removeEventListener('mouseleave', handleMouseLeave);
-            containerElement.removeEventListener('touchstart', handleTouchStart);
-            containerElement.removeEventListener('touchmove', handleTouchMove);
-            containerElement.removeEventListener('touchend', handleTouchEnd);
-            carouselElement.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('resize', handleResize);
-        }
-    };
 
     const carouselId = carouselElement.getAttribute('data-carousel-id');
     if (carouselId) {

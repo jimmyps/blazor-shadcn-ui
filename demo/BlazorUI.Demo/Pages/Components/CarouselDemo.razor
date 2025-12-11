@@ -24,7 +24,7 @@
             </div>
 
             <div class="flex justify-center">
-                <div class="w-full max-w-xs px-12">
+                <div class="w-full max-w-xs">
                     <Carousel>
                         @foreach (var i in Enumerable.Range(1, 5))
                         {
@@ -52,7 +52,7 @@
             </div>
 
             <div class="flex justify-center">
-                <div class="w-full max-w-xs px-12">
+                <div class="w-full max-w-xs">
                     <Carousel ShowIndicators="true">
                         @foreach (var i in Enumerable.Range(1, 5))
                         {
@@ -80,7 +80,7 @@
             </div>
 
             <div class="flex justify-center">
-                <div class="w-full max-w-xs px-12">
+                <div class="w-full max-w-xs">
                     <Carousel AutoPlay="true" AutoPlayInterval="3000" Loop="true" ShowIndicators="true">
                         @foreach (var i in Enumerable.Range(1, 5))
                         {
@@ -108,7 +108,7 @@
             </div>
 
             <div class="flex justify-center">
-                <div class="w-full max-w-xs px-12">
+                <div class="w-full max-w-xs">
                     <Carousel Loop="true">
                         @foreach (var i in Enumerable.Range(1, 5))
                         {
@@ -136,18 +136,16 @@
             </div>
 
             <div class="flex justify-center">
-                <div class="w-full max-w-2xl px-12">
-                    <Carousel SlidesPerView="3" Gap="16">
+                <div class="w-full max-w-xs">
+                    <Carousel SlidesPerView="3" Gap="2">
                         @foreach (var i in Enumerable.Range(1, 10))
                         {
-                            <CarouselItem>
-                                <div class="p-1">
-                                    <Card>
-                                        <CardContent Class="flex h-[150px] items-center justify-center p-6">
-                                            <span class="text-3xl font-semibold">@i</span>
-                                        </CardContent>
-                                    </Card>
-                                </div>
+                            <CarouselItem Class="p-1 basis-[33%]">
+                                <Card>
+                                    <CardContent Class="flex h-[150px] items-center justify-center p-4">
+                                        <span class="text-3xl font-semibold">@i</span>
+                                    </CardContent>
+                                </Card>
                             </CarouselItem>
                         }
                     </Carousel>
@@ -165,22 +163,20 @@
 
             <div class="flex justify-center">
                 <div class="w-full max-w-xs py-12">
-                    <div class="max-h-[250px]">
-                        <Carousel Orientation="CarouselOrientation.Vertical" ShowIndicators="true">
-                            @foreach (var i in Enumerable.Range(1, 5))
-                            {
-                                <CarouselItem>
-                                    <div class="p-1">
-                                        <Card>
-                                            <CardContent Class="flex h-[150px] items-center justify-center p-6">
-                                                <span class="text-4xl font-semibold">@i</span>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                </CarouselItem>
-                            }
-                        </Carousel>
-                    </div>
+                    <Carousel Orientation="CarouselOrientation.Vertical" ShowIndicators="true" ContentClass="max-h-[160px]">
+                        @foreach (var i in Enumerable.Range(1, 5))
+                        {
+                            <CarouselItem>
+                                <div class="p-1">
+                                    <Card>
+                                        <CardContent Class="flex h-[150px] items-center justify-center p-4">
+                                            <span class="text-4xl font-semibold">@i</span>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </CarouselItem>
+                        }
+                    </Carousel>
                 </div>
             </div>
         </section>
@@ -231,7 +227,7 @@
             </div>
 
             <div class="flex justify-center">
-                <div class="w-full max-w-xs px-12">
+                <div class="w-full max-w-xs">
                     <Carousel ShowNavigation="false" ShowIndicators="true" EnableDrag="true">
                         @foreach (var i in Enumerable.Range(1, 5))
                         {

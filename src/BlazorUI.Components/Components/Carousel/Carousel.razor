@@ -136,6 +136,12 @@
     public string? Class { get; set; }
 
     /// <summary>
+    /// Additional CSS classes for the inner content container that holds the slides.
+    /// </summary>
+    [Parameter]
+    public string? ContentClass { get; set; }
+
+    /// <summary>
     /// Additional HTML attributes.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
@@ -174,6 +180,8 @@
                 // Get initial state
                 _totalSlides = await _carouselInstance.InvokeAsync<int>("getTotalSlides");
                 _currentIndex = await _carouselInstance.InvokeAsync<int>("getCurrentIndex");
+
+                StateHasChanged();
             }
             catch (Exception ex)
             {
@@ -259,7 +267,7 @@
             classes.Add("flex-col");
         }
 
-        return string.Join(" ", classes);
+        return ClassNames.cn(string.Join(" ", classes), ContentClass);
     }
 
     private string GetContentStyle()
@@ -274,7 +282,7 @@
     private string GetPreviousButtonClass()
     {
         return ClassNames.cn(
-            "absolute z-50 flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background shadow-sm transition-colors",
+            "absolute z-50 flex h-8 w-8 items-center justify-center rounded-full border border-input bg-background shadow-sm transition-colors",
             "hover:bg-accent hover:text-accent-foreground",
             "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
             "disabled:pointer-events-none disabled:opacity-50",
@@ -287,7 +295,7 @@
     private string GetNextButtonClass()
     {
         return ClassNames.cn(
-            "absolute z-50 flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background shadow-sm transition-colors",
+            "absolute z-50 flex h-8 w-8 items-center justify-center rounded-full border border-input bg-background shadow-sm transition-colors",
             "hover:bg-accent hover:text-accent-foreground",
             "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
             "disabled:pointer-events-none disabled:opacity-50",

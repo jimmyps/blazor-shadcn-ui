@@ -32,8 +32,12 @@
     {
         var slidesPerView = ParentCarousel?.SlidesPerView ?? 1;
         var basisPercent = 100.0 / slidesPerView;
+
+        var basisClass = slidesPerView == 1
+            ? "basis-full"
+            : $"basis-[{basisPercent}%]";
         
-        var baseClass = $"flex-shrink-0 flex-grow-0 basis-[{basisPercent}%]";
+        var baseClass = $"flex-shrink-0 flex-grow-0 {basisClass}";
         
         if (!string.IsNullOrEmpty(Class))
         {
