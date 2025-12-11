@@ -41,7 +41,6 @@
     private ElementReference _viewportRef;
     private IJSObjectReference? _module;
     private IJSObjectReference? _scrollAreaInstance;
-    private DotNetObjectReference<ScrollArea>? _dotNetRef;
 
     /// <summary>
     /// The content to render within the scrollable area.
@@ -106,12 +105,9 @@
                 _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
                     "import", "./_content/BlazorUI.Components/js/scroll-area.js");
 
-                _dotNetRef = DotNetObjectReference.Create(this);
-
                 _scrollAreaInstance = await _module.InvokeAsync<IJSObjectReference>(
                     "initialize",
                     _scrollAreaRef,
-                    _dotNetRef,
                     new { enableShadows = EnableScrollShadows });
             }
             catch
@@ -119,17 +115,6 @@
                 // Silently handle initialization errors
             }
         }
-    }
-
-    /// <summary>
-    /// Invoked by JavaScript when scroll position changes.
-    /// </summary>
-    [JSInvokable]
-    public Task OnScrollPositionChanged(ScrollPositionInfo info)
-    {
-        // This can be used to trigger state changes if needed
-        // For now, shadows are handled purely via CSS and data attributes
-        return Task.CompletedTask;
     }
 
     private string GetOverflowStyle()
@@ -179,22 +164,10 @@
             {
                 await _module.DisposeAsync();
             }
-
-            _dotNetRef?.Dispose();
         }
         catch
         {
             // Silently handle disposal errors
         }
-    }
-
-    public class ScrollPositionInfo
-    {
-        public bool CanScrollTop { get; set; }
-        public bool CanScrollBottom { get; set; }
-        public bool CanScrollLeft { get; set; }
-        public bool CanScrollRight { get; set; }
-        public double ScrollTop { get; set; }
-        public double ScrollLeft { get; set; }
     }
 }

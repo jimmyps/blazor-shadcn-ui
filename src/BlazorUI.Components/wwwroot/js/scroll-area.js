@@ -1,5 +1,5 @@
 // ScrollArea JavaScript module for scroll shadow detection and scrollbar enhancements
-export function initialize(scrollAreaElement, dotNetRef, options) {
+export function initialize(scrollAreaElement, options) {
     if (!scrollAreaElement) {
         console.error('ScrollArea: Element reference is null');
         return null;
@@ -37,20 +37,6 @@ export function initialize(scrollAreaElement, dotNetRef, options) {
         scrollAreaElement.setAttribute('data-scroll-bottom', canScrollBottom ? 'true' : 'false');
         scrollAreaElement.setAttribute('data-scroll-left', canScrollLeft ? 'true' : 'false');
         scrollAreaElement.setAttribute('data-scroll-right', canScrollRight ? 'true' : 'false');
-
-        // Notify Blazor component if needed
-        if (dotNetRef && typeof dotNetRef.invokeMethodAsync === 'function') {
-            dotNetRef.invokeMethodAsync('OnScrollPositionChanged', {
-                canScrollTop,
-                canScrollBottom,
-                canScrollLeft,
-                canScrollRight,
-                scrollTop,
-                scrollLeft
-            }).catch(() => {
-                // Silently ignore errors (component may be disposed)
-            });
-        }
     }
 
     // Throttled scroll handler using requestAnimationFrame
