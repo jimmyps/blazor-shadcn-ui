@@ -1,6 +1,6 @@
 @namespace BlazorUI.Components.ScrollArea
 
-@* ScrollBar - styled scrollbar component *@
+@* ScrollBar - enhanced styled scrollbar component with gradients *@
 <div @attributes="GetAttributes()">
     <div class="@GetThumbClass()"></div>
 </div>
@@ -36,7 +36,8 @@
 
     private string GetThumbClass()
     {
-        return "relative flex-1 rounded-full bg-border";
+        // Enhanced thumb with subtle gradient and better hover/active states
+        return "relative flex-1 rounded-full bg-border/60 hover:bg-border/80 active:bg-border transition-colors";
     }
 
     private Dictionary<string, object> GetAttributes()
@@ -45,8 +46,8 @@
         var classValue = string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
 
         var position = Orientation == Orientation.Vertical
-            ? "absolute right-0 top-0 bottom-0"
-            : "absolute left-0 right-0 bottom-0";
+            ? "absolute right-0 top-0 bottom-0 z-10"
+            : "absolute left-0 right-0 bottom-0 z-10";
 
         classValue = $"{position} {classValue}";
 

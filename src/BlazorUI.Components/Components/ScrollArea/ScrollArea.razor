@@ -1,12 +1,27 @@
 @namespace BlazorUI.Components.ScrollArea
+@implements IAsyncDisposable
+@inject IJSRuntime JSRuntime
 
-@* ScrollArea - styled scrollable region with custom scrollbars *@
-<div @attributes="GetRootAttributes()">
-    <div class="h-full w-full rounded-[inherit] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style="@GetOverflowStyle()">
+@* ScrollArea - styled scrollable region with custom scrollbars and scroll shadows *@
+<div @ref="_scrollAreaRef" @attributes="GetRootAttributes()">
+    <div @ref="_viewportRef" 
+         class="h-full w-full rounded-[inherit] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" 
+         style="@GetOverflowStyle()"
+         data-scroll-viewport>
         <div style="min-width: 100%; display: table;">
             @ChildContent
         </div>
     </div>
+    
+    @* Scroll shadows *@
+    @if (EnableScrollShadows)
+    {
+        <div class="scroll-shadow scroll-shadow-top" data-scroll-shadow="top"></div>
+        <div class="scroll-shadow scroll-shadow-bottom" data-scroll-shadow="bottom"></div>
+        <div class="scroll-shadow scroll-shadow-left" data-scroll-shadow="left"></div>
+        <div class="scroll-shadow scroll-shadow-right" data-scroll-shadow="right"></div>
+    }
+    
     @if (ShowVerticalScrollbar)
     {
         <ScrollBar Orientation="Orientation.Vertical" />
@@ -22,6 +37,12 @@
 </div>
 
 @code {
+    private ElementReference _scrollAreaRef;
+    private ElementReference _viewportRef;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _scrollAreaInstance;
+    private DotNetObjectReference<ScrollArea>? _dotNetRef;
+
     /// <summary>
     /// The content to render within the scrollable area.
     /// </summary>
@@ -58,6 +79,13 @@
     public bool ShowHorizontalScrollbar { get; set; } = false;
 
     /// <summary>
+    /// Whether to enable scroll shadows that indicate more content is available.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool EnableScrollShadows { get; set; } = true;
+
+    /// <summary>
     /// Additional CSS classes to apply to the root element.
     /// </summary>
     [Parameter]
@@ -68,6 +96,42 @@
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && EnableScrollShadows)
+        {
+            try
+            {
+                _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorUI.Components/js/scroll-area.js");
+
+                _dotNetRef = DotNetObjectReference.Create(this);
+
+                _scrollAreaInstance = await _module.InvokeAsync<IJSObjectReference>(
+                    "initialize",
+                    _scrollAreaRef,
+                    _dotNetRef,
+                    new { enableShadows = EnableScrollShadows });
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't break the component
+                Console.WriteLine($"ScrollArea: Failed to initialize JS interop: {ex.Message}");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Invoked by JavaScript when scroll position changes.
+    /// </summary>
+    [JSInvokable]
+    public Task OnScrollPositionChanged(ScrollPositionInfo info)
+    {
+        // This can be used to trigger state changes if needed
+        // For now, shadows are handled purely via CSS and data attributes
+        return Task.CompletedTask;
+    }
 
     private string GetOverflowStyle()
     {
@@ -96,5 +160,38 @@
         }
 
         return attributes;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_scrollAreaInstance != null)
+            {
+                await _scrollAreaInstance.InvokeVoidAsync("dispose");
+                await _scrollAreaInstance.DisposeAsync();
+            }
+
+            if (_module != null)
+            {
+                await _module.DisposeAsync();
+            }
+
+            _dotNetRef?.Dispose();
+        }
+        catch
+        {
+            // Silently handle disposal errors
+        }
+    }
+
+    public class ScrollPositionInfo
+    {
+        public bool CanScrollTop { get; set; }
+        public bool CanScrollBottom { get; set; }
+        public bool CanScrollLeft { get; set; }
+        public bool CanScrollRight { get; set; }
+        public double ScrollTop { get; set; }
+        public double ScrollLeft { get; set; }
     }
 }
