@@ -56,9 +56,9 @@
             {
                 <div class="flex flex-col gap-2">
                     <label class="text-xs font-medium text-muted-foreground">Period</label>
-                    <select @bind="_isPM" class="@GetSelectClass()" aria-label="Select AM or PM">
-                        <option value="@false">AM</option>
-                        <option value="@true">PM</option>
+                    <select value="@(_isPM ? "PM" : "AM")" @onchange="OnPeriodChanged" class="@GetSelectClass()" aria-label="Select AM or PM">
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
                     </select>
                 </div>
             }
@@ -219,6 +219,11 @@
         var newTime = new TimeOnly(hour, _minute);
         _isOpen = false;
         await SelectedTimeChanged.InvokeAsync(newTime);
+    }
+
+    private void OnPeriodChanged(ChangeEventArgs e)
+    {
+        _isPM = e.Value?.ToString() == "PM";
     }
 
     private string GetDisplayText()
