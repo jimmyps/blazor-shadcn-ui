@@ -44,33 +44,28 @@ public class EChartsRenderer : IChartRenderer
     {
         var chartType = config.Type.ToString().ToLowerInvariant();
         
-        // Extract data from universal format
-        var dataObj = config.Data as dynamic ?? new { };
-        var optionsObj = config.Options as dynamic ?? new { };
-        
-        // Build ECharts configuration based on chart type
+        // Build ECharts configuration based on chart type (using strongly-typed data)
         return chartType switch
         {
-            "line" => ConvertLineChart(dataObj, optionsObj),
-            "bar" => ConvertBarChart(dataObj, optionsObj),
-            "pie" or "donut" => ConvertPieChart(dataObj, optionsObj),
-            "radar" => ConvertRadarChart(dataObj, optionsObj),
-            "scatter" => ConvertScatterChart(dataObj, optionsObj),
+            "line" => ConvertLineChart(config.Data, config.Options),
+            "bar" => ConvertBarChart(config.Data, config.Options),
+            "pie" or "donut" => ConvertPieChart(config.Data, config.Options),
+            "radar" => ConvertRadarChart(config.Data, config.Options),
+            "scatter" => ConvertScatterChart(config.Data, config.Options),
             _ => new { }
         };
     }
     
-    private object ConvertLineChart(dynamic data, dynamic options)
+    private object ConvertLineChart(ChartData data, ChartOptions options)
     {
-        // Extract labels and datasets from universal format
-        var labels = GetProperty<string[]>(data, "labels") ?? Array.Empty<string>();
-        var datasets = GetProperty<object[]>(data, "datasets") ?? Array.Empty<object>();
+        // Use strongly-typed properties instead of dynamic access
+        var labels = data.Labels;
+        var datasets = data.Datasets;
         
         var series = new List<object>();
         for (int i = 0; i < datasets.Length; i++)
         {
-            var dataset = datasets[i];
-            var ds = dataset as Dictionary<string, object> ?? new Dictionary<string, object>();
+            var ds = datasets[i];
             
             // Auto-assign color based on series index (1-based for CSS variables)
             var seriesIndex = i + 1;
@@ -80,38 +75,20 @@ public class EChartsRenderer : IChartRenderer
             var seriesItem = new Dictionary<string, object>
             {
                 ["type"] = "line",
-                ["name"] = ds.ContainsKey("label") ? ds["label"] : $"Series {seriesIndex}",
-                ["data"] = ds.ContainsKey("data") ? ds["data"] : Array.Empty<double>()
+                ["name"] = ds.Label ?? $"Series {seriesIndex}",
+                ["data"] = ds.Data
             };
             
             // Handle tension → smooth (use actual value for smooth curves)
-            if (ds.ContainsKey("tension"))
-            {
-                var tension = Convert.ToDouble(ds["tension"]);
-                seriesItem["smooth"] = tension; // Use actual value (e.g., 0.4)
-            }
-            else
-            {
-                seriesItem["smooth"] = false;
-            }
+            seriesItem["smooth"] = ds.Tension ?? false;
             
             // Handle pointRadius → symbolSize and showSymbol
-            if (ds.ContainsKey("pointRadius"))
-            {
-                var pointRadius = Convert.ToInt32(ds["pointRadius"]);
-                seriesItem["showSymbol"] = pointRadius > 0;
-                seriesItem["symbolSize"] = pointRadius > 0 ? pointRadius : 0;
-            }
-            else
-            {
-                seriesItem["showSymbol"] = true;
-                seriesItem["symbolSize"] = 4;
-            }
+            var pointRadius = ds.PointRadius ?? 4;
+            seriesItem["showSymbol"] = pointRadius > 0;
+            seriesItem["symbolSize"] = pointRadius;
             
             // Handle pointHoverRadius → emphasis with focus:'series'
-            var hoverRadius = ds.ContainsKey("pointHoverRadius") 
-                ? Convert.ToInt32(ds["pointHoverRadius"]) 
-                : (seriesItem.ContainsKey("symbolSize") ? Convert.ToInt32(seriesItem["symbolSize"]) + 1 : 5);
+            var hoverRadius = ds.PointHoverRadius ?? (pointRadius + 1);
             
             seriesItem["emphasis"] = new Dictionary<string, object>
             {
@@ -122,22 +99,14 @@ public class EChartsRenderer : IChartRenderer
             // Line style: borderColor → lineStyle.color, borderWidth → lineStyle.width
             var lineStyle = new Dictionary<string, object>
             {
-                ["color"] = ds.ContainsKey("borderColor") ? ds["borderColor"] : defaultColor,
-                ["width"] = ds.ContainsKey("borderWidth") ? ds["borderWidth"] : 2
+                ["color"] = ds.BorderColor ?? defaultColor,
+                ["width"] = ds.BorderWidth ?? 2
             };
             
             // Handle borderDash → lineStyle.type (solid | dashed | dotted)
-            if (ds.ContainsKey("borderDash"))
+            if (ds.BorderDash != null && ds.BorderDash.Length > 0)
             {
-                var borderDash = ds["borderDash"];
-                if (borderDash is Array arr && arr.Length > 0)
-                {
-                    lineStyle["type"] = "dashed";
-                }
-                else
-                {
-                    lineStyle["type"] = "solid";
-                }
+                lineStyle["type"] = "dashed";
             }
             else
             {
@@ -149,41 +118,40 @@ public class EChartsRenderer : IChartRenderer
             // Item style for point markers (use same color as line)
             seriesItem["itemStyle"] = new Dictionary<string, object>
             {
-                ["color"] = ds.ContainsKey("borderColor") ? ds["borderColor"] : defaultColor
+                ["color"] = ds.BorderColor ?? defaultColor
             };
             
             // Area style: fill: true → add areaStyle
-            if (ds.ContainsKey("fill") && Convert.ToBoolean(ds["fill"]))
+            if (ds.Fill == true)
             {
-                if (ds.ContainsKey("gradient"))
+                if (ds.Gradient != null)
                 {
-                    var gradient = ds["gradient"] as Dictionary<string, object>;
-                    if (gradient != null)
+                    var (x, y, x2, y2) = GetGradientCoordinates(ds.Gradient.Direction);
+                    
+                    seriesItem["areaStyle"] = new Dictionary<string, object>
                     {
-                        var direction = gradient.ContainsKey("direction") ? gradient["direction"]?.ToString() : "Vertical";
-                        var (x, y, x2, y2) = GetGradientCoordinates(direction);
-                        
-                        seriesItem["areaStyle"] = new Dictionary<string, object>
+                        ["color"] = new Dictionary<string, object>
                         {
-                            ["color"] = new Dictionary<string, object>
+                            ["type"] = "linear",
+                            ["x"] = x,
+                            ["y"] = y,
+                            ["x2"] = x2,
+                            ["y2"] = y2,
+                            ["colorStops"] = ds.Gradient.ColorStops.Select(cs => new
                             {
-                                ["type"] = "linear",
-                                ["x"] = x,
-                                ["y"] = y,
-                                ["x2"] = x2,
-                                ["y2"] = y2,
-                                ["colorStops"] = gradient.ContainsKey("colorStops") ? gradient["colorStops"] : Array.Empty<object>(),
-                                ["global"] = false
-                            }
-                        };
-                    }
+                                offset = cs.Offset,
+                                color = cs.Color
+                            }).ToArray(),
+                            ["global"] = false
+                        }
+                    };
                 }
                 else
                 {
                     // Simple area fill with backgroundColor
-                    var areaColor = ds.ContainsKey("backgroundColor") && ds["backgroundColor"]?.ToString() != "transparent" 
-                        ? ds["backgroundColor"] 
-                        : ds.ContainsKey("borderColor") ? ds["borderColor"] : "hsl(var(--chart-1))";
+                    var areaColor = (!string.IsNullOrEmpty(ds.BackgroundColor) && ds.BackgroundColor != "transparent")
+                        ? ds.BackgroundColor 
+                        : (ds.BorderColor ?? defaultColor);
                     
                     seriesItem["areaStyle"] = new Dictionary<string, object>
                     {
@@ -199,11 +167,11 @@ public class EChartsRenderer : IChartRenderer
         // Build ECharts v6 option object (NO top-level 'type', NO responsive/maintainAspectRatio)
         return new
         {
-            animationDuration = GetAnimationDuration(options),
-            animationEasing = GetAnimationEasing(options),
-            tooltip = new { show = GetTooltipEnabled(options), trigger = "axis" },
+            animationDuration = options.Animation?.Duration ?? 750,
+            animationEasing = MapEasingToECharts(options.Animation?.Easing ?? "easeInOutQuart"),
+            tooltip = new { show = options.Plugins.Tooltip.Enabled, trigger = "axis" },
             legend = new { 
-                show = GetLegendDisplay(options), 
+                show = options.Plugins.Legend.Display, 
                 top = "top", 
                 left = "center",
                 orient = "horizontal"
@@ -212,33 +180,32 @@ public class EChartsRenderer : IChartRenderer
             {
                 type = "category",
                 data = labels,
-                show = GetXAxisDisplay(options),
+                show = options.Scales?.X?.Display ?? true,
                 boundaryGap = false, // Lines start at axis edge
-                axisLine = new { show = GetXAxisDisplay(options) },
-                splitLine = new { show = GetGridDisplay(options) }
+                axisLine = new { show = options.Scales?.X?.Display ?? true },
+                splitLine = new { show = options.Scales?.X?.Grid?.Display ?? true }
             },
             yAxis = new
             {
                 type = "value",
-                show = GetYAxisDisplay(options),
-                axisLine = new { show = GetYAxisDisplay(options) },
-                splitLine = new { show = GetGridDisplay(options) }
+                show = options.Scales?.Y?.Display ?? true,
+                axisLine = new { show = options.Scales?.Y?.Display ?? true },
+                splitLine = new { show = options.Scales?.Y?.Grid?.Display ?? true }
             },
             series = series.ToArray()
         };
     }
     
-    private object ConvertBarChart(dynamic data, dynamic options)
+    private object ConvertBarChart(ChartData data, ChartOptions options)
     {
-        // Extract labels and datasets from universal format
-        var labels = GetProperty<string[]>(data, "labels") ?? Array.Empty<string>();
-        var datasets = GetProperty<object[]>(data, "datasets") ?? Array.Empty<object>();
+        // Use strongly-typed properties
+        var labels = data.Labels;
+        var datasets = data.Datasets;
         
         var series = new List<object>();
         for (int i = 0; i < datasets.Length; i++)
         {
-            var dataset = datasets[i];
-            var ds = dataset as Dictionary<string, object> ?? new Dictionary<string, object>();
+            var ds = datasets[i];
             
             // Auto-assign color based on series index
             var seriesIndex = i + 1;
@@ -247,14 +214,14 @@ public class EChartsRenderer : IChartRenderer
             var seriesItem = new Dictionary<string, object>
             {
                 ["type"] = "bar",
-                ["name"] = ds.ContainsKey("label") ? ds["label"] : $"Series {seriesIndex}",
-                ["data"] = ds.ContainsKey("data") ? ds["data"] : Array.Empty<double>()
+                ["name"] = ds.Label ?? $"Series {seriesIndex}",
+                ["data"] = ds.Data
             };
             
             // Item style: backgroundColor → itemStyle.color
-            var itemColor = ds.ContainsKey("backgroundColor") && ds["backgroundColor"]?.ToString() != "transparent"
-                ? ds["backgroundColor"]
-                : ds.ContainsKey("borderColor") ? ds["borderColor"] : defaultColor;
+            var itemColor = (!string.IsNullOrEmpty(ds.BackgroundColor) && ds.BackgroundColor != "transparent")
+                ? ds.BackgroundColor
+                : (ds.BorderColor ?? defaultColor);
             
             seriesItem["itemStyle"] = new Dictionary<string, object>
             {
@@ -267,29 +234,28 @@ public class EChartsRenderer : IChartRenderer
                 ["focus"] = "series"
             };
             
-            // Support gradients for bars (horizontal gradient)
-            if (ds.ContainsKey("gradient"))
+            // Support gradients for bars
+            if (ds.Gradient != null)
             {
-                var gradient = ds["gradient"] as Dictionary<string, object>;
-                if (gradient != null)
+                var (x, y, x2, y2) = GetGradientCoordinates(ds.Gradient.Direction);
+                
+                seriesItem["itemStyle"] = new Dictionary<string, object>
                 {
-                    var direction = gradient.ContainsKey("direction") ? gradient["direction"]?.ToString() : "Horizontal";
-                    var (x, y, x2, y2) = GetGradientCoordinates(direction);
-                    
-                    seriesItem["itemStyle"] = new Dictionary<string, object>
+                    ["color"] = new Dictionary<string, object>
                     {
-                        ["color"] = new Dictionary<string, object>
+                        ["type"] = "linear",
+                        ["x"] = x,
+                        ["y"] = y,
+                        ["x2"] = x2,
+                        ["y2"] = y2,
+                        ["colorStops"] = ds.Gradient.ColorStops.Select(cs => new
                         {
-                            ["type"] = "linear",
-                            ["x"] = x,
-                            ["y"] = y,
-                            ["x2"] = x2,
-                            ["y2"] = y2,
-                            ["colorStops"] = gradient.ContainsKey("colorStops") ? gradient["colorStops"] : Array.Empty<object>(),
-                            ["global"] = false
-                        }
-                    };
-                }
+                            offset = cs.Offset,
+                            color = cs.Color
+                        }).ToArray(),
+                        ["global"] = false
+                    }
+                };
             }
             
             series.Add(seriesItem);
@@ -298,11 +264,11 @@ public class EChartsRenderer : IChartRenderer
         // Build ECharts v6 option object (NO top-level 'type', NO responsive/maintainAspectRatio)
         return new
         {
-            animationDuration = GetAnimationDuration(options),
-            animationEasing = GetAnimationEasing(options),
-            tooltip = new { show = GetTooltipEnabled(options), trigger = "axis" },
+            animationDuration = options.Animation?.Duration ?? 750,
+            animationEasing = MapEasingToECharts(options.Animation?.Easing ?? "easeInOutQuart"),
+            tooltip = new { show = options.Plugins.Tooltip.Enabled, trigger = "axis" },
             legend = new { 
-                show = GetLegendDisplay(options), 
+                show = options.Plugins.Legend.Display, 
                 top = "top", 
                 left = "center",
                 orient = "horizontal"
@@ -311,16 +277,16 @@ public class EChartsRenderer : IChartRenderer
             { 
                 type = "category", 
                 data = labels,
-                show = GetXAxisDisplay(options),
-                axisLine = new { show = GetXAxisDisplay(options) },
-                splitLine = new { show = GetGridDisplay(options) }
+                show = options.Scales?.X?.Display ?? true,
+                axisLine = new { show = options.Scales?.X?.Display ?? true },
+                splitLine = new { show = options.Scales?.X?.Grid?.Display ?? true }
             },
             yAxis = new 
             { 
                 type = "value",
-                show = GetYAxisDisplay(options),
-                axisLine = new { show = GetYAxisDisplay(options) },
-                splitLine = new { show = GetGridDisplay(options) }
+                show = options.Scales?.Y?.Display ?? true,
+                axisLine = new { show = options.Scales?.Y?.Display ?? true },
+                splitLine = new { show = options.Scales?.Y?.Grid?.Display ?? true }
             },
             series = series.ToArray()
         };

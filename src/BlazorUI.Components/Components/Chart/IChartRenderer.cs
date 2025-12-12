@@ -54,10 +54,10 @@ public class ChartConfig
     public bool MaintainAspectRatio { get; set; } = false;
     
     [JsonPropertyName("data")]
-    public object Data { get; set; } = new { };
+    public ChartData Data { get; set; } = new();
     
     [JsonPropertyName("options")]
-    public object Options { get; set; } = new { };
+    public ChartOptions Options { get; set; } = new();
 }
 
 /// <summary>
