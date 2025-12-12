@@ -231,19 +231,48 @@
             return Convert.ToDouble(value);
         }).ToArray();
         
+        var color = LineColor ?? "hsl(var(--chart-1))";
+        
+        // Build area style with optional gradient
+        object? areaStyle = null;
+        if (FillArea)
+        {
+            if (GradientFill)
+            {
+                // ECharts-native gradient for area fill
+                areaStyle = new
+                {
+                    color = new
+                    {
+                        type = "linear",
+                        x = 0,
+                        y = 0,
+                        x2 = 0,
+                        y2 = 1,
+                        colorStops = new[]
+                        {
+                            new { offset = 0.0, color = $"hsla(var(--chart-1), {GradientStartOpacity})" },
+                            new { offset = 1.0, color = $"hsla(var(--chart-1), {GradientEndOpacity})" }
+                        }
+                    }
+                };
+            }
+        }
+        
         return new[]
         {
             new
             {
                 label = Label ?? YAxisDataKey,
                 data = values,
-                borderColor = LineColor ?? "hsl(var(--chart-1))",
-                backgroundColor = FillArea ? (LineColor ?? "hsl(var(--chart-1))") : "transparent",
+                borderColor = color,
+                backgroundColor = FillArea && !GradientFill ? color : "transparent",
                 borderWidth = LineWidth,
                 tension = Curved ? 0.4 : 0,
                 fill = FillArea,
                 pointRadius = ShowDots ? 3 : 0,
-                pointHoverRadius = ShowDots ? 5 : 0
+                pointHoverRadius = ShowDots ? 5 : 0,
+                areaStyle // ECharts will use this for gradient
             }
         };
     }

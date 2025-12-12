@@ -48,7 +48,17 @@
                 <ChartPanelDescription>January - June 2024</ChartPanelDescription>
             </ChartPanelHeader>
             <ChartPanelContent>
-                <EChart Option="@linearGradientOption" Height="300" />
+                <LineChart Data="@lineData" 
+                          XAxisDataKey="Month"
+                          YAxisDataKey="Desktop"
+                          Label="Desktop"
+                          Height="300"
+                          Curved="false"
+                          FillArea="true"
+                          GradientFill="true"
+                          GradientStartOpacity="0.5"
+                          GradientEndOpacity="0.05"
+                          LineColor="hsl(var(--chart-2))" />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex w-full items-start gap-2 text-sm">
@@ -191,26 +201,6 @@
         new() { DataKey = "Desktop", Label = "Desktop", Color = "hsl(var(--chart-1))", Curved = true },
         new() { DataKey = "Mobile", Label = "Mobile", Color = "hsl(var(--chart-2))", Curved = true }
     };
-
-    // Linear Line with Gradient Fill (strongly-typed builder)
-    private EChartsOption linearGradientOption = new EChartsOptionBuilder()
-        .WithTooltip(trigger: "axis")
-        .WithXAxis(axis => axis
-            .SetType("category")
-            .SetBoundaryGap(false)
-            .SetData("January", "February", "March", "April", "May", "June"))
-        .WithYAxis(axis => axis.SetType("value"))
-        .AddLineSeries(series => series
-            .SetName("Desktop")
-            .SetSmooth(false)
-            .SetData(186, 305, 237, 73, 209, 214)
-            .WithLineStyle(color: "hsl(var(--chart-2))", width: 2)
-            .WithGradientFill(EChartsLinearGradient.Vertical(
-                new EChartsColorStop(0.0, "hsla(var(--chart-2), 0.5)"),
-                new EChartsColorStop(1.0, "hsla(var(--chart-2), 0.05)")
-            ))
-            .ShowSymbols(true, size: 4))
-        .Build();
 
     public class LineData
     {

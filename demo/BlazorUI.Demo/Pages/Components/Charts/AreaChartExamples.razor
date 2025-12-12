@@ -15,7 +15,17 @@
                 <ChartPanelDescription>January - June 2024</ChartPanelDescription>
             </ChartPanelHeader>
             <ChartPanelContent>
-                <EChart Option="@gradientAreaOption" Height="300" />
+                <LineChart Data="@desktopData" 
+                          XAxisDataKey="Month"
+                          YAxisDataKey="Desktop"
+                          Label="Desktop"
+                          Height="300"
+                          Curved="true"
+                          FillArea="true"
+                          GradientFill="true"
+                          GradientStartOpacity="0.8"
+                          GradientEndOpacity="0.1"
+                          ShowDots="false" />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex gap-2 font-medium leading-none">
@@ -78,7 +88,11 @@
                 <ChartPanelDescription>Showing total visitors for the last 6 months</ChartPanelDescription>
             </ChartPanelHeader>
             <ChartPanelContent>
-                <EChart Option="@stackedGradientOption" Height="300" />
+                <MultiSeriesLineChart Data="@stackedData"
+                                     XAxisDataKey="Month"
+                                     Series="@stackedSeriesWithGradient"
+                                     Height="300"
+                                     />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex w-full items-start gap-2 text-sm">
@@ -130,68 +144,6 @@
 </div>
 
 @code {
-    // Gradient Area Chart Option (strongly-typed with builder)
-    private EChartsOption gradientAreaOption = new EChartsOptionBuilder()
-        .WithTooltip(configure: tooltip => 
-        {
-            tooltip.Trigger = "axis";
-            tooltip.AxisPointer = new EChartsAxisPointer { Type = "cross" };
-        })
-        .WithXAxis(axis => axis
-            .SetType("category")
-            .SetBoundaryGap(false)
-            .SetData("January", "February", "March", "April", "May", "June"))
-        .WithYAxis(axis => axis.SetType("value"))
-        .AddLineSeries(series => series
-            .SetName("Desktop")
-            .SetData(186, 305, 237, 73, 209, 214)
-            .SetSmooth(true)
-            .WithLineStyle(color: "hsl(var(--chart-1))", width: 2)
-            .WithGradientFill(EChartsLinearGradient.Vertical(
-                new EChartsColorStop(0.0, "hsla(var(--chart-1), 0.8)"),
-                new EChartsColorStop(1.0, "hsla(var(--chart-1), 0.1)")
-            ))
-            .ShowSymbols(false))
-        .Build();
-
-    // Stacked Gradient Option (strongly-typed with builder)
-    private EChartsOption stackedGradientOption = new EChartsOptionBuilder()
-        .WithTooltip(trigger: "axis")
-        .WithLegend(legend =>
-        {
-            legend.Data = new List<string> { "Desktop", "Mobile" };
-            legend.Top = "top";
-            legend.Left = "center";
-        })
-        .WithXAxis(axis => axis
-            .SetType("category")
-            .SetBoundaryGap(false)
-            .SetData("January", "February", "March", "April", "May", "June"))
-        .WithYAxis(axis => axis.SetType("value"))
-        .AddLineSeries(series => series
-            .SetName("Desktop")
-            .SetStack("Total")
-            .SetSmooth(true)
-            .SetData(186, 305, 237, 73, 209, 214)
-            .WithLineStyle(color: "hsl(var(--chart-1))", width: 2)
-            .WithGradientFill(EChartsLinearGradient.Vertical(
-                new EChartsColorStop(0.0, "hsla(var(--chart-1), 0.8)"),
-                new EChartsColorStop(1.0, "hsla(var(--chart-1), 0.1)")
-            ))
-            .ShowSymbols(false))
-        .AddLineSeries(series => series
-            .SetName("Mobile")
-            .SetStack("Total")
-            .SetSmooth(true)
-            .SetData(80, 200, 120, 190, 130, 140)
-            .WithLineStyle(color: "hsl(var(--chart-2))", width: 2)
-            .WithGradientFill(EChartsLinearGradient.Vertical(
-                new EChartsColorStop(0.0, "hsla(var(--chart-2), 0.8)"),
-                new EChartsColorStop(1.0, "hsla(var(--chart-2), 0.1)")
-            ))
-            .ShowSymbols(false))
-        .Build();
-
     private readonly List<DesktopData> desktopData = new()
     {
         new() { Month = "January", Desktop = 186 },
@@ -212,7 +164,7 @@
         new() { Month = "June", Desktop = 214, Mobile = 140 }
     };
 
-    private readonly List<ChartSeriesConfig> stackedSeries = new()
+    private readonly List<ChartSeriesConfig> stackedSeriesWithGradient = new()
     {
         new() { DataKey = "Desktop", Label = "Desktop", Color = "hsl(var(--chart-1))", FillArea = true, Curved = true },
         new() { DataKey = "Mobile", Label = "Mobile", Color = "hsl(var(--chart-2))", FillArea = true, Curved = true }

@@ -67,6 +67,26 @@ public class LineChartBase<TData> : ComponentBase
     public bool FillArea { get; set; } = false;
     
     /// <summary>
+    /// Gets or sets whether to use a gradient fill for the area (requires FillArea=true).
+    /// </summary>
+    [Parameter]
+    public bool GradientFill { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the opacity at the top of the gradient (0.0 to 1.0). Default is 0.8.
+    /// Only applies when GradientFill=true.
+    /// </summary>
+    [Parameter]
+    public double GradientStartOpacity { get; set; } = 0.8;
+    
+    /// <summary>
+    /// Gets or sets the opacity at the bottom of the gradient (0.0 to 1.0). Default is 0.1.
+    /// Only applies when GradientFill=true.
+    /// </summary>
+    [Parameter]
+    public double GradientEndOpacity { get; set; } = 0.1;
+    
+    /// <summary>
     /// Gets or sets whether to show dots at data points.
     /// </summary>
     [Parameter]

@@ -169,33 +169,6 @@
 </div>
 
 @code {
-    // Horizontal Bar with Gradient (strongly-typed builder)
-    private EChartsOption horizontalGradientOption = new EChartsOptionBuilder()
-        .WithTooltip(tooltip =>
-        {
-            tooltip.Trigger = "axis";
-            tooltip.AxisPointer = new EChartsAxisPointer { Type = "shadow" };
-        })
-        .WithGrid(grid =>
-        {
-            grid.Left = "3%";
-            grid.Right = "4%";
-            grid.Bottom = "3%";
-            grid.ContainLabel = true;
-        })
-        .WithXAxis(axis => axis.SetType("value"))
-        .WithYAxis(axis => axis
-            .SetType("category")
-            .SetData("January", "February", "March", "April", "May", "June"))
-        .AddBarSeries(series => series
-            .SetName("Desktop")
-            .SetData(186, 305, 237, 73, 209, 214)
-            .WithGradientFill(EChartsLinearGradient.Horizontal(
-                new EChartsColorStop(0.0, "hsla(var(--chart-2), 0.5)"),
-                new EChartsColorStop(1.0, "hsl(var(--chart-2))")
-            )))
-        .Build();
-
     private readonly List<BarData> barData = new()
     {
         new() { Month = "January", Desktop = 186 },
