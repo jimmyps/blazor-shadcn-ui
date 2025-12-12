@@ -192,44 +192,25 @@
         new() { DataKey = "Mobile", Label = "Mobile", Color = "hsl(var(--chart-2))", Curved = true }
     };
 
-    // Linear Line with Gradient Fill
-    private object linearGradientOption = new
-    {
-        tooltip = new { trigger = "axis" },
-        xAxis = new
-        {
-            type = "category",
-            boundaryGap = false,
-            data = new[] { "January", "February", "March", "April", "May", "June" }
-        },
-        yAxis = new { type = "value" },
-        series = new[]
-        {
-            new
-            {
-                name = "Desktop",
-                type = "line",
-                smooth = false,
-                data = new[] { 186, 305, 237, 73, 209, 214 },
-                lineStyle = new { width = 2, color = "hsl(var(--chart-2))" },
-                areaStyle = new
-                {
-                    color = new
-                    {
-                        type = "linear",
-                        x = 0, y = 0, x2 = 0, y2 = 1,
-                        colorStops = new[]
-                        {
-                            new { offset = 0.0, color = "hsla(var(--chart-2), 0.5)" },
-                            new { offset = 1.0, color = "hsla(var(--chart-2), 0.05)" }
-                        }
-                    }
-                },
-                showSymbol = true,
-                symbolSize = 4
-            }
-        }
-    };
+    // Linear Line with Gradient Fill (strongly-typed builder)
+    private EChartsOption linearGradientOption = new EChartsOptionBuilder()
+        .WithTooltip(trigger: "axis")
+        .WithXAxis(axis => axis
+            .SetType("category")
+            .SetBoundaryGap(false)
+            .SetData("January", "February", "March", "April", "May", "June"))
+        .WithYAxis(axis => axis.SetType("value"))
+        .AddLineSeries(series => series
+            .SetName("Desktop")
+            .SetSmooth(false)
+            .SetData(186, 305, 237, 73, 209, 214)
+            .WithLineStyle(color: "hsl(var(--chart-2))", width: 2)
+            .WithGradientFill(EChartsLinearGradient.Vertical(
+                new EChartsColorStop(0.0, "hsla(var(--chart-2), 0.5)"),
+                new EChartsColorStop(1.0, "hsla(var(--chart-2), 0.05)")
+            ))
+            .ShowSymbols(true, size: 4))
+        .Build();
 
     public class LineData
     {

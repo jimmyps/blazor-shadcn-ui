@@ -10,19 +10,26 @@ namespace BlazorUI.Components.Chart;
 /// This component provides direct access to ECharts' native option object,
 /// allowing you to use any ECharts feature without wrapper limitations.
 /// 
-/// Example:
+/// Example with strongly-typed builder:
 /// <code>
 /// &lt;EChart Option="@chartOption" Height="400" /&gt;
 /// 
 /// @code {
-///     private object chartOption = new {
-///         tooltip = new { trigger = "axis" },
-///         xAxis = new { type = "category", data = new[] { "Mon", "Tue", "Wed" } },
-///         yAxis = new { type = "value" },
-///         series = new[] {
-///             new { type = "line", data = new[] { 120, 200, 150 }, smooth = true }
-///         }
-///     };
+///     private EChartsOption chartOption = new EChartsOptionBuilder()
+///         .WithTooltip(trigger: "axis")
+///         .WithXAxis(axis => axis.SetType("category").SetData("Mon", "Tue", "Wed"))
+///         .WithYAxis(axis => axis.SetType("value"))
+///         .AddLineSeries(series => series
+///             .SetName("Sales")
+///             .SetData(120, 200, 150)
+///             .SetSmooth(true)
+///             .WithGradientFill(
+///                 EChartsLinearGradient.Vertical(
+///                     new EChartsColorStop(0, "hsla(var(--chart-1), 0.8)"),
+///                     new EChartsColorStop(1, "hsla(var(--chart-1), 0.1)")
+///                 )
+///             ))
+///         .Build();
 /// }
 /// </code>
 /// 
@@ -33,8 +40,8 @@ public partial class EChart : ComponentBase, IAsyncDisposable
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
     
     /// <summary>
-    /// Gets or sets the ECharts option object.
-    /// This is the native ECharts configuration - see https://echarts.apache.org/option.html
+    /// Gets or sets the ECharts option object (strongly-typed).
+    /// Use EChartsOptionBuilder for a fluent, type-safe API.
     /// </summary>
     [Parameter, EditorRequired]
     public object Option { get; set; } = default!;

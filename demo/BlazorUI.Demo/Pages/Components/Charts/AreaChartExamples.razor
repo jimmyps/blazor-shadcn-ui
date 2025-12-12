@@ -130,106 +130,67 @@
 </div>
 
 @code {
-    // Gradient Area Chart Option (ECharts native)
-    private object gradientAreaOption = new
-    {
-        tooltip = new { trigger = "axis", axisPointer = new { type = "cross" } },
-        xAxis = new
+    // Gradient Area Chart Option (strongly-typed with builder)
+    private EChartsOption gradientAreaOption = new EChartsOptionBuilder()
+        .WithTooltip(configure: tooltip => 
         {
-            type = "category",
-            boundaryGap = false,
-            data = new[] { "January", "February", "March", "April", "May", "June" }
-        },
-        yAxis = new { type = "value" },
-        series = new[]
-        {
-            new
-            {
-                name = "Desktop",
-                type = "line",
-                smooth = true,
-                data = new[] { 186, 305, 237, 73, 209, 214 },
-                lineStyle = new { width = 2, color = "hsl(var(--chart-1))" },
-                areaStyle = new
-                {
-                    color = new
-                    {
-                        type = "linear",
-                        x = 0, y = 0, x2 = 0, y2 = 1,
-                        colorStops = new[]
-                        {
-                            new { offset = 0.0, color = "hsla(var(--chart-1), 0.8)" },
-                            new { offset = 1.0, color = "hsla(var(--chart-1), 0.1)" }
-                        }
-                    }
-                },
-                showSymbol = false
-            }
-        }
-    };
+            tooltip.Trigger = "axis";
+            tooltip.AxisPointer = new EChartsAxisPointer { Type = "cross" };
+        })
+        .WithXAxis(axis => axis
+            .SetType("category")
+            .SetBoundaryGap(false)
+            .SetData("January", "February", "March", "April", "May", "June"))
+        .WithYAxis(axis => axis.SetType("value"))
+        .AddLineSeries(series => series
+            .SetName("Desktop")
+            .SetData(186, 305, 237, 73, 209, 214)
+            .SetSmooth(true)
+            .WithLineStyle(color: "hsl(var(--chart-1))", width: 2)
+            .WithGradientFill(EChartsLinearGradient.Vertical(
+                new EChartsColorStop(0.0, "hsla(var(--chart-1), 0.8)"),
+                new EChartsColorStop(1.0, "hsla(var(--chart-1), 0.1)")
+            ))
+            .ShowSymbols(false))
+        .Build();
 
-    // Stacked Gradient Option
-    private object stackedGradientOption = new
-    {
-        tooltip = new { trigger = "axis" },
-        legend = new { data = new[] { "Desktop", "Mobile" }, top = "top", left = "center" },
-        xAxis = new
+    // Stacked Gradient Option (strongly-typed with builder)
+    private EChartsOption stackedGradientOption = new EChartsOptionBuilder()
+        .WithTooltip(trigger: "axis")
+        .WithLegend(legend =>
         {
-            type = "category",
-            boundaryGap = false,
-            data = new[] { "January", "February", "March", "April", "May", "June" }
-        },
-        yAxis = new { type = "value" },
-        series = new[]
-        {
-            new
-            {
-                name = "Desktop",
-                type = "line",
-                stack = "Total",
-                smooth = true,
-                data = new[] { 186, 305, 237, 73, 209, 214 },
-                lineStyle = new { width = 2, color = "hsl(var(--chart-1))" },
-                areaStyle = new
-                {
-                    color = new
-                    {
-                        type = "linear",
-                        x = 0, y = 0, x2 = 0, y2 = 1,
-                        colorStops = new[]
-                        {
-                            new { offset = 0.0, color = "hsla(var(--chart-1), 0.8)" },
-                            new { offset = 1.0, color = "hsla(var(--chart-1), 0.1)" }
-                        }
-                    }
-                },
-                showSymbol = false
-            },
-            new
-            {
-                name = "Mobile",
-                type = "line",
-                stack = "Total",
-                smooth = true,
-                data = new[] { 80, 200, 120, 190, 130, 140 },
-                lineStyle = new { width = 2, color = "hsl(var(--chart-2))" },
-                areaStyle = new
-                {
-                    color = new
-                    {
-                        type = "linear",
-                        x = 0, y = 0, x2 = 0, y2 = 1,
-                        colorStops = new[]
-                        {
-                            new { offset = 0.0, color = "hsla(var(--chart-2), 0.8)" },
-                            new { offset = 1.0, color = "hsla(var(--chart-2), 0.1)" }
-                        }
-                    }
-                },
-                showSymbol = false
-            }
-        }
-    };
+            legend.Data = new List<string> { "Desktop", "Mobile" };
+            legend.Top = "top";
+            legend.Left = "center";
+        })
+        .WithXAxis(axis => axis
+            .SetType("category")
+            .SetBoundaryGap(false)
+            .SetData("January", "February", "March", "April", "May", "June"))
+        .WithYAxis(axis => axis.SetType("value"))
+        .AddLineSeries(series => series
+            .SetName("Desktop")
+            .SetStack("Total")
+            .SetSmooth(true)
+            .SetData(186, 305, 237, 73, 209, 214)
+            .WithLineStyle(color: "hsl(var(--chart-1))", width: 2)
+            .WithGradientFill(EChartsLinearGradient.Vertical(
+                new EChartsColorStop(0.0, "hsla(var(--chart-1), 0.8)"),
+                new EChartsColorStop(1.0, "hsla(var(--chart-1), 0.1)")
+            ))
+            .ShowSymbols(false))
+        .AddLineSeries(series => series
+            .SetName("Mobile")
+            .SetStack("Total")
+            .SetSmooth(true)
+            .SetData(80, 200, 120, 190, 130, 140)
+            .WithLineStyle(color: "hsl(var(--chart-2))", width: 2)
+            .WithGradientFill(EChartsLinearGradient.Vertical(
+                new EChartsColorStop(0.0, "hsla(var(--chart-2), 0.8)"),
+                new EChartsColorStop(1.0, "hsla(var(--chart-2), 0.1)")
+            ))
+            .ShowSymbols(false))
+        .Build();
 
     private readonly List<DesktopData> desktopData = new()
     {
