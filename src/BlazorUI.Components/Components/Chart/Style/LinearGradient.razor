@@ -33,11 +33,15 @@
     {
         if (firstRender)
         {
+            // Register gradient with collected color stops after children have initialized
             ParentAreaStyle?.RegisterGradient(new LinearGradientConfig
             {
                 Direction = Direction,
                 ColorStops = _colorStops
             });
+            
+            // Notify parent to re-register with updated gradient
+            ParentAreaStyle?.UpdateGradient();
         }
     }
     

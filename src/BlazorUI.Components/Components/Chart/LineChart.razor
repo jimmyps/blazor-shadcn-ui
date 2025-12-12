@@ -38,11 +38,19 @@
     private IChartRenderer? _renderer;
     private string? _chartId;
     private bool _isInitialized;
+    private bool _shouldRender = false;
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && Data != null && Data.Any())
+        if (firstRender)
         {
+            // Trigger a second render to allow ChartStyle children to initialize
+            _shouldRender = true;
+            StateHasChanged();
+        }
+        else if (_shouldRender && Data != null && Data.Any())
+        {
+            _shouldRender = false;
             await InitializeChartAsync();
         }
     }

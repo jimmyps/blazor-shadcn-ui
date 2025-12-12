@@ -39,20 +39,15 @@
         {
             throw new InvalidOperationException("AreaStyle must be used within a ChartStyle component");
         }
-    }
-    
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
+        
+        // Register immediately in OnInitialized so chart can access config
+        ParentStyle?.RegisterAreaStyle(new AreaStyleConfig
         {
-            ParentStyle?.RegisterAreaStyle(new AreaStyleConfig
-            {
-                Show = Show,
-                Color = Color,
-                Opacity = Opacity,
-                Gradient = Gradient
-            });
-        }
+            Show = Show,
+            Color = Color,
+            Opacity = Opacity,
+            Gradient = Gradient
+        });
     }
     
     /// <summary>
@@ -61,6 +56,20 @@
     internal void RegisterGradient(LinearGradientConfig config)
     {
         Gradient = config;
+    }
+    
+    /// <summary>
+    /// Updates the area style with current gradient after gradient child initializes.
+    /// </summary>
+    internal void UpdateGradient()
+    {
+        ParentStyle?.RegisterAreaStyle(new AreaStyleConfig
+        {
+            Show = Show,
+            Color = Color,
+            Opacity = Opacity,
+            Gradient = Gradient
+        });
     }
 }
 
