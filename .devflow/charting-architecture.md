@@ -24,6 +24,7 @@ This document defines the architecture for shadcn-style charting components in B
 - Advanced features (gradients, shadows) work natively without additional code
 - SVG rendering aligns with modern frontend UI expectations
 - Streamlined codebase with single, well-supported renderer
+- Latest v6.0.0 brings improved performance and new features
 
 ---
 

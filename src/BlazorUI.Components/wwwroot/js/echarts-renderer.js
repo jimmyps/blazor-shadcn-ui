@@ -17,9 +17,9 @@ export async function createChart(element, config) {
         throw new Error('Chart element is required');
     }
     
-    // Dynamically import ECharts from CDN
+    // Dynamically import ECharts from CDN (latest v6)
     if (!window.echarts) {
-        await import('https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js');
+        await import('https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js');
     }
     
     const chartId = generateId();

@@ -209,7 +209,7 @@ All chart components share these parameters:
 
 ### Dependencies
 
-Charts use **ECharts v5.4.3** as the rendering engine, loaded dynamically from CDN. ECharts provides high-quality SVG-based rendering with native support for modern CSS colors including OKLCH, ensuring seamless integration with BlazorUI's theme system. No additional packages need to be installed.
+Charts use **ECharts v6.0.0** (latest) as the rendering engine, loaded dynamically from CDN. ECharts provides high-quality SVG-based rendering with native support for modern CSS colors including OKLCH, ensuring seamless integration with BlazorUI's theme system. No additional packages need to be installed.
 
 ### Resource Management
 
