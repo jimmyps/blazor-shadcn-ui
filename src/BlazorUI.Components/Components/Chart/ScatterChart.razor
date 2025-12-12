@@ -1,0 +1,111 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits ScatterChartBase<TData>
+@implements IAsyncDisposable
+
+<div class="@ContainerClass">
+    <div @ref="_chartElement" style="height: @(Height)px; width: 100%;"></div>
+</div>
+
+@code {
+    private ElementReference _chartElement;
+    private string? _chartId;
+    private IChartRenderer? _renderer;
+    private bool _isDisposed;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_isDisposed)
+        {
+            try
+            {
+                _renderer = ChartRendererFactory.CreateRenderer(Engine, JSRuntime);
+                
+                var scatterData = Data.Select(item => {
+                    var xValue = item?.GetType().GetProperty(XAxisDataKey)?.GetValue(item);
+                    var yValue = item?.GetType().GetProperty(YAxisDataKey)?.GetValue(item);
+                    object? sizeValue = null;
+                    
+                    if (!string.IsNullOrEmpty(SizeDataKey))
+                    {
+                        sizeValue = item?.GetType().GetProperty(SizeDataKey)?.GetValue(item);
+                    }
+                    
+                    return sizeValue != null 
+                        ? new[] { xValue, yValue, sizeValue }
+                        : new[] { xValue, yValue };
+                }).ToArray();
+                
+                var config = new ChartConfig
+                {
+                    Type = !string.IsNullOrEmpty(SizeDataKey) ? ChartType.Bubble : ChartType.Scatter,
+                    Data = new
+                    {
+                        datasets = new[]
+                        {
+                            new
+                            {
+                                label = Label ?? "Data",
+                                data = scatterData,
+                                backgroundColor = Color ?? "hsl(var(--chart-1))",
+                                pointRadius = PointSize
+                            }
+                        }
+                    },
+                    Options = new
+                    {
+                        responsive = true,
+                        maintainAspectRatio = false,
+                        plugins = new
+                        {
+                            legend = new { display = ShowLegend },
+                            tooltip = new { enabled = ShowTooltip }
+                        },
+                        scales = new
+                        {
+                            x = new { display = ShowGrid },
+                            y = new { display = ShowGrid }
+                        }
+                    }
+                };
+                
+                _chartId = await _renderer.InitializeAsync(_chartElement, config);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"ScatterChart initialization error: {ex.Message}");
+            }
+        }
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        if (_isDisposed) return;
+        _isDisposed = true;
+        
+        if (_renderer != null && _chartId != null)
+        {
+            try
+            {
+                await _renderer.DestroyAsync(_chartId);
+            }
+            catch (JSDisconnectedException)
+            {
+                // Circuit disconnected
+            }
+            catch (JSException)
+            {
+                // JavaScript error during disposal
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"ScatterChart disposal error: {ex.Message}");
+            }
+        }
+        
+        if (_renderer != null)
+        {
+            await _renderer.DisposeAsync();
+        }
+    }
+}

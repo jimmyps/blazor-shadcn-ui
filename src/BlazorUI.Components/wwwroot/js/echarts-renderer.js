@@ -216,6 +216,15 @@ function convertConfig(config) {
         case 'radar':
         case 4: // ChartType.Radar enum value
             return convertRadarChart(data, options, echartsOption);
+        case 'scatter':
+        case 5: // ChartType.Scatter enum value
+            return convertScatterChart(data, options, echartsOption);
+        case 'bubble':
+        case 6: // ChartType.Bubble enum value
+            return convertBubbleChart(data, options, echartsOption);
+        case 'area':
+        case 7: // ChartType.Area enum value
+            return convertAreaChart(data, options, echartsOption);
         default:
             console.warn(`Unsupported chart type: ${type}`);
             return echartsOption;
@@ -374,6 +383,124 @@ function convertRadarChart(data, options, baseOption) {
         legend: {
             show: options.plugins?.legend?.display !== false,
             // v6 changed default to bottom, but we prefer top for radar charts
+            top: 'top',
+            left: 'center'
+        }
+    };
+}
+
+/**
+ * Convert scatter chart configuration
+ */
+function convertScatterChart(data, options, baseOption) {
+    return {
+        ...baseOption,
+        xAxis: {
+            type: 'value',
+            name: options.scales?.x?.title || ''
+        },
+        yAxis: {
+            type: 'value',
+            name: options.scales?.y?.title || ''
+        },
+        series: (data.datasets || []).map(dataset => ({
+            type: 'scatter',
+            name: dataset.label,
+            data: dataset.data,
+            symbolSize: dataset.pointRadius || 10,
+            itemStyle: {
+                color: dataset.backgroundColor
+            }
+        })),
+        tooltip: {
+            trigger: 'item',
+            formatter: params => `${params.seriesName}<br/>(${params.value[0]}, ${params.value[1]})`
+        },
+        legend: {
+            show: options.plugins?.legend?.display !== false,
+            top: 'top',
+            left: 'center'
+        }
+    };
+}
+
+/**
+ * Convert bubble chart configuration
+ */
+function convertBubbleChart(data, options, baseOption) {
+    return {
+        ...baseOption,
+        xAxis: {
+            type: 'value',
+            name: options.scales?.x?.title || ''
+        },
+        yAxis: {
+            type: 'value',
+            name: options.scales?.y?.title || ''
+        },
+        series: (data.datasets || []).map(dataset => ({
+            type: 'scatter',
+            name: dataset.label,
+            data: dataset.data,
+            // Bubble size is the third element in data array [x, y, size]
+            symbolSize: value => Array.isArray(value) && value.length > 2 ? value[2] / 2 : 10,
+            itemStyle: {
+                color: dataset.backgroundColor
+            }
+        })),
+        tooltip: {
+            trigger: 'item',
+            formatter: params => {
+                const [x, y, size] = params.value;
+                return `${params.seriesName}<br/>X: ${x}<br/>Y: ${y}<br/>Size: ${size}`;
+            }
+        },
+        legend: {
+            show: options.plugins?.legend?.display !== false,
+            top: 'top',
+            left: 'center'
+        }
+    };
+}
+
+/**
+ * Convert area chart configuration (line chart with filled area)
+ */
+function convertAreaChart(data, options, baseOption) {
+    return {
+        ...baseOption,
+        xAxis: {
+            type: 'category',
+            data: data.labels || [],
+            boundaryGap: false
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: (data.datasets || []).map(dataset => ({
+            type: 'line',
+            name: dataset.label,
+            data: dataset.data,
+            smooth: dataset.tension > 0,
+            showSymbol: dataset.pointRadius > 0,
+            lineStyle: {
+                width: dataset.borderWidth || 2,
+                color: dataset.borderColor
+            },
+            areaStyle: {
+                opacity: 0.3,
+                color: dataset.backgroundColor
+            },
+            itemStyle: {
+                color: dataset.borderColor
+            },
+            stack: dataset.stack || undefined
+        })),
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            show: options.plugins?.legend?.display !== false,
             top: 'top',
             left: 'center'
         }

@@ -1,0 +1,14 @@
+@namespace BlazorUI.Components.Chart
+@inherits ComponentBase
+@implements IAsyncDisposable
+
+<div class="@ContainerClass" style="width: @Width;">
+    <div @ref="_chartElement" style="height: @(Height)px; width: 100%;"></div>
+</div>
+
+@code {
+    private string ContainerClass => Utilities.ClassNames.cn(
+        "echarts-container",
+        Class
+    );
+}
