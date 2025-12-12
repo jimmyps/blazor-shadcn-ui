@@ -15,6 +15,48 @@
 // Store chart instances by ID
 const chartInstances = new Map();
 
+// Promise to track echarts loading state
+let echartsLoadingPromise = null;
+
+/**
+ * Load ECharts library dynamically using script tag
+ * UMD modules need to be loaded this way to properly populate window.echarts
+ * @returns {Promise} - Resolves when the script is loaded
+ */
+function loadEChartsScript() {
+    // If already loading, return existing promise
+    if (echartsLoadingPromise) {
+        return echartsLoadingPromise;
+    }
+    
+    // If already loaded, return resolved promise
+    if (window.echarts) {
+        return Promise.resolve();
+    }
+    
+    echartsLoadingPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = '/_content/BlazorUI.Components/js/echarts.min.js';
+        script.onload = () => {
+            console.log('[ECharts] Script tag loaded, checking window.echarts...');
+            // Give the UMD module a moment to set window.echarts
+            setTimeout(() => {
+                if (window.echarts) {
+                    console.log('[ECharts] window.echarts is available');
+                    resolve();
+                } else {
+                    console.error('[ECharts] window.echarts is NOT available after script load');
+                    reject(new Error('ECharts did not populate window.echarts'));
+                }
+            }, 50);
+        };
+        script.onerror = () => reject(new Error('Failed to load ECharts script'));
+        document.head.appendChild(script);
+    });
+    
+    return echartsLoadingPromise;
+}
+
 /**
  * Create a new ECharts instance
  * @param {HTMLElement} element - Container element to render the chart
@@ -22,29 +64,51 @@ const chartInstances = new Map();
  * @returns {string} - Unique ID for the chart instance
  */
 export async function createChart(element, config) {
+    console.log('[ECharts] createChart called', { element, hasData: !!config?.data });
+    
     if (!element) {
         throw new Error('Chart element is required');
     }
     
-    // Dynamically import ECharts from CDN (latest v6)
+    // Load ECharts from local file (v6.0.0) - bundled with component library
+    // Using script tag approach since the UMD module needs to populate window.echarts
     if (!window.echarts) {
-        await import('https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js');
+        console.log('[ECharts] Loading ECharts library...');
+        try {
+            await loadEChartsScript();
+            console.log('[ECharts] ECharts library loaded successfully');
+        } catch (error) {
+            console.error('Failed to load ECharts library:', error);
+            throw new Error('Failed to load ECharts library. Charts cannot be rendered.');
+        }
+    }
+    
+    // Verify ECharts loaded successfully
+    if (!window.echarts) {
+        console.error('ECharts library is not available after load attempt.');
+        throw new Error('ECharts library not found. Please ensure the library is properly bundled.');
     }
     
     const chartId = generateId();
     
     try {
+        console.log('[ECharts] Initializing chart instance...');
         // Initialize ECharts instance with SVG renderer (default and required)
         // SVG mode provides: high-quality output, native OKLCH color support,
         // better export capabilities, and aligns with modern design systems
         const chart = echarts.init(element, null, { renderer: 'svg' });
+        console.log('[ECharts] Chart instance created successfully');
         
         // Resolve CSS variables in the config before converting
         const resolvedConfig = resolveCssVariables(config);
+        console.log('[ECharts] Config resolved');
         
         // Convert Chart.js-style config to ECharts option format
         const option = convertConfig(resolvedConfig);
+        console.log('[ECharts] Config converted to ECharts format:', option);
+        
         chart.setOption(option);
+        console.log('[ECharts] Chart option set successfully, chartId:', chartId);
         
         // Make chart responsive - store listener reference for cleanup
         const resizeListener = () => chart.resize();
@@ -56,6 +120,7 @@ export async function createChart(element, config) {
             resizeListener: resizeListener
         });
         
+        console.log('[ECharts] Chart initialization complete');
         return chartId;
     } catch (error) {
         console.error('Failed to create ECharts instance:', error);
