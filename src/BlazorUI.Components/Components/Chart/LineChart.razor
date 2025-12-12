@@ -6,7 +6,7 @@
 
 <CascadingValue Value="(IChartStyleContainer)this" IsFixed="true">
     <div class="@ContainerClass" style="position: relative; height: @(Height)px; width: 100%;">
-        <canvas @ref="_canvasRef"></canvas>
+        <canvas @ref="_canvasRef" style="width: 100%; height: 100%;"></canvas>
         
         @if (_initializationError != null)
         {
