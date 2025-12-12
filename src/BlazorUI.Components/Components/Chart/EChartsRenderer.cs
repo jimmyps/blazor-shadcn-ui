@@ -67,23 +67,32 @@ public class EChartsRenderer : IChartRenderer
         var datasets = GetProperty<object[]>(data, "datasets") ?? Array.Empty<object>();
         
         var series = new List<object>();
-        foreach (var dataset in datasets)
+        for (int i = 0; i < datasets.Length; i++)
         {
+            var dataset = datasets[i];
             var ds = dataset as Dictionary<string, object> ?? new Dictionary<string, object>();
+            
+            // Auto-assign color based on series index (1-based for CSS variables)
+            var seriesIndex = i + 1;
+            var defaultColor = $"hsl(var(--chart-{seriesIndex}))";
             
             // Build series item with proper ECharts v6 structure
             var seriesItem = new Dictionary<string, object>
             {
                 ["type"] = "line",
-                ["name"] = ds.ContainsKey("label") ? ds["label"] : "Data",
+                ["name"] = ds.ContainsKey("label") ? ds["label"] : $"Series {seriesIndex}",
                 ["data"] = ds.ContainsKey("data") ? ds["data"] : Array.Empty<double>()
             };
             
-            // Handle tension → smooth (can be boolean or 0-1 value)
+            // Handle tension → smooth (use actual value for smooth curves)
             if (ds.ContainsKey("tension"))
             {
                 var tension = Convert.ToDouble(ds["tension"]);
-                seriesItem["smooth"] = tension > 0 ? tension : false;
+                seriesItem["smooth"] = tension; // Use actual value (e.g., 0.4)
+            }
+            else
+            {
+                seriesItem["smooth"] = false;
             }
             
             // Handle pointRadius → symbolSize and showSymbol
@@ -99,20 +108,21 @@ public class EChartsRenderer : IChartRenderer
                 seriesItem["symbolSize"] = 4;
             }
             
-            // Handle pointHoverRadius → emphasis.symbolSize
-            if (ds.ContainsKey("pointHoverRadius"))
+            // Handle pointHoverRadius → emphasis with focus:'series'
+            var hoverRadius = ds.ContainsKey("pointHoverRadius") 
+                ? Convert.ToInt32(ds["pointHoverRadius"]) 
+                : (seriesItem.ContainsKey("symbolSize") ? Convert.ToInt32(seriesItem["symbolSize"]) + 1 : 5);
+            
+            seriesItem["emphasis"] = new Dictionary<string, object>
             {
-                var hoverRadius = Convert.ToInt32(ds["pointHoverRadius"]);
-                seriesItem["emphasis"] = new Dictionary<string, object>
-                {
-                    ["symbolSize"] = hoverRadius
-                };
-            }
+                ["focus"] = "series", // Highlight series on hover
+                ["symbolSize"] = hoverRadius
+            };
             
             // Line style: borderColor → lineStyle.color, borderWidth → lineStyle.width
             var lineStyle = new Dictionary<string, object>
             {
-                ["color"] = ds.ContainsKey("borderColor") ? ds["borderColor"] : "hsl(var(--chart-1))",
+                ["color"] = ds.ContainsKey("borderColor") ? ds["borderColor"] : defaultColor,
                 ["width"] = ds.ContainsKey("borderWidth") ? ds["borderWidth"] : 2
             };
             
@@ -136,10 +146,10 @@ public class EChartsRenderer : IChartRenderer
             
             seriesItem["lineStyle"] = lineStyle;
             
-            // Item style for point markers
+            // Item style for point markers (use same color as line)
             seriesItem["itemStyle"] = new Dictionary<string, object>
             {
-                ["color"] = ds.ContainsKey("borderColor") ? ds["borderColor"] : "hsl(var(--chart-1))"
+                ["color"] = ds.ContainsKey("borderColor") ? ds["borderColor"] : defaultColor
             };
             
             // Area style: fill: true → add areaStyle
@@ -192,13 +202,18 @@ public class EChartsRenderer : IChartRenderer
             animationDuration = GetAnimationDuration(options),
             animationEasing = GetAnimationEasing(options),
             tooltip = new { show = GetTooltipEnabled(options), trigger = "axis" },
-            legend = new { show = GetLegendDisplay(options), top = "top", left = "center" },
+            legend = new { 
+                show = GetLegendDisplay(options), 
+                top = "top", 
+                left = "center",
+                orient = "horizontal"
+            },
             xAxis = new
             {
                 type = "category",
                 data = labels,
                 show = GetXAxisDisplay(options),
-                boundaryGap = false,
+                boundaryGap = false, // Lines start at axis edge
                 axisLine = new { show = GetXAxisDisplay(options) },
                 splitLine = new { show = GetGridDisplay(options) }
             },
@@ -220,25 +235,36 @@ public class EChartsRenderer : IChartRenderer
         var datasets = GetProperty<object[]>(data, "datasets") ?? Array.Empty<object>();
         
         var series = new List<object>();
-        foreach (var dataset in datasets)
+        for (int i = 0; i < datasets.Length; i++)
         {
+            var dataset = datasets[i];
             var ds = dataset as Dictionary<string, object> ?? new Dictionary<string, object>();
+            
+            // Auto-assign color based on series index
+            var seriesIndex = i + 1;
+            var defaultColor = $"hsl(var(--chart-{seriesIndex}))";
             
             var seriesItem = new Dictionary<string, object>
             {
                 ["type"] = "bar",
-                ["name"] = ds.ContainsKey("label") ? ds["label"] : "Data",
+                ["name"] = ds.ContainsKey("label") ? ds["label"] : $"Series {seriesIndex}",
                 ["data"] = ds.ContainsKey("data") ? ds["data"] : Array.Empty<double>()
             };
             
             // Item style: backgroundColor → itemStyle.color
             var itemColor = ds.ContainsKey("backgroundColor") && ds["backgroundColor"]?.ToString() != "transparent"
                 ? ds["backgroundColor"]
-                : ds.ContainsKey("borderColor") ? ds["borderColor"] : "hsl(var(--chart-1))";
+                : ds.ContainsKey("borderColor") ? ds["borderColor"] : defaultColor;
             
             seriesItem["itemStyle"] = new Dictionary<string, object>
             {
                 ["color"] = itemColor
+            };
+            
+            // Add emphasis for hover
+            seriesItem["emphasis"] = new Dictionary<string, object>
+            {
+                ["focus"] = "series"
             };
             
             // Support gradients for bars (horizontal gradient)
@@ -275,7 +301,12 @@ public class EChartsRenderer : IChartRenderer
             animationDuration = GetAnimationDuration(options),
             animationEasing = GetAnimationEasing(options),
             tooltip = new { show = GetTooltipEnabled(options), trigger = "axis" },
-            legend = new { show = GetLegendDisplay(options), top = "top", left = "center" },
+            legend = new { 
+                show = GetLegendDisplay(options), 
+                top = "top", 
+                left = "center",
+                orient = "horizontal"
+            },
             xAxis = new 
             { 
                 type = "category", 
@@ -309,10 +340,16 @@ public class EChartsRenderer : IChartRenderer
                 (dataset["data"] as IEnumerable<object>)?.ToArray() ?? Array.Empty<object>() : 
                 Array.Empty<object>();
             
-            // Map each label with its value
+            // Map each label with its value and auto-assigned color
             for (int i = 0; i < labels.Length && i < values.Length; i++)
             {
-                pieData.Add(new { name = labels[i], value = values[i] });
+                var itemColor = $"hsl(var(--chart-{i + 1}))";
+                pieData.Add(new 
+                { 
+                    name = labels[i], 
+                    value = values[i],
+                    itemStyle = new { color = itemColor }
+                });
             }
         }
         
@@ -332,6 +369,7 @@ public class EChartsRenderer : IChartRenderer
                     data = pieData.ToArray(),
                     emphasis = new
                     {
+                        focus = "self",
                         itemStyle = new
                         {
                             shadowBlur = 10,
@@ -357,36 +395,43 @@ public class EChartsRenderer : IChartRenderer
         }
         
         var series = new List<object>();
-        foreach (var dataset in datasets)
+        for (int i = 0; i < datasets.Length; i++)
         {
+            var dataset = datasets[i];
             var ds = dataset as Dictionary<string, object> ?? new Dictionary<string, object>();
+            
+            // Auto-assign color based on series index
+            var seriesIndex = i + 1;
+            var defaultColor = $"hsl(var(--chart-{seriesIndex}))";
             
             var radarSeriesItem = new Dictionary<string, object>
             {
                 ["type"] = "radar",
-                ["name"] = ds.ContainsKey("label") ? ds["label"] : "Data",
+                ["name"] = ds.ContainsKey("label") ? ds["label"] : $"Series {seriesIndex}",
                 ["data"] = new[]
                 {
                     new
                     {
                         value = ds.ContainsKey("data") ? ds["data"] : Array.Empty<double>(),
-                        name = ds.ContainsKey("label") ? ds["label"] : "Data"
+                        name = ds.ContainsKey("label") ? ds["label"] : $"Series {seriesIndex}"
                     }
                 }
             };
             
-            // Add line and area styling if available
-            if (ds.ContainsKey("borderColor"))
+            // Add line and area styling with auto-assigned color
+            var color = ds.ContainsKey("borderColor") ? ds["borderColor"] : defaultColor;
+            radarSeriesItem["lineStyle"] = new Dictionary<string, object>
             {
-                radarSeriesItem["lineStyle"] = new Dictionary<string, object>
-                {
-                    ["color"] = ds["borderColor"]
-                };
-                radarSeriesItem["itemStyle"] = new Dictionary<string, object>
-                {
-                    ["color"] = ds["borderColor"]
-                };
-            }
+                ["color"] = color
+            };
+            radarSeriesItem["itemStyle"] = new Dictionary<string, object>
+            {
+                ["color"] = color
+            };
+            radarSeriesItem["emphasis"] = new Dictionary<string, object>
+            {
+                ["focus"] = "series"
+            };
             
             if (ds.ContainsKey("fill") && Convert.ToBoolean(ds["fill"]))
             {
@@ -417,14 +462,19 @@ public class EChartsRenderer : IChartRenderer
         var datasets = GetProperty<object[]>(data, "datasets") ?? Array.Empty<object>();
         
         var series = new List<object>();
-        foreach (var dataset in datasets)
+        for (int i = 0; i < datasets.Length; i++)
         {
+            var dataset = datasets[i];
             var ds = dataset as Dictionary<string, object> ?? new Dictionary<string, object>();
+            
+            // Auto-assign color based on series index
+            var seriesIndex = i + 1;
+            var defaultColor = $"hsl(var(--chart-{seriesIndex}))";
             
             var scatterSeriesItem = new Dictionary<string, object>
             {
                 ["type"] = "scatter",
-                ["name"] = ds.ContainsKey("label") ? ds["label"] : "Data",
+                ["name"] = ds.ContainsKey("label") ? ds["label"] : $"Series {seriesIndex}",
                 ["data"] = ds.ContainsKey("data") ? ds["data"] : Array.Empty<object>()
             };
             
@@ -433,15 +483,21 @@ public class EChartsRenderer : IChartRenderer
             {
                 scatterSeriesItem["symbolSize"] = ds["pointRadius"];
             }
-            
-            // Item style for point color
-            if (ds.ContainsKey("borderColor"))
+            else
             {
-                scatterSeriesItem["itemStyle"] = new Dictionary<string, object>
-                {
-                    ["color"] = ds["borderColor"]
-                };
+                scatterSeriesItem["symbolSize"] = 8;
             }
+            
+            // Item style for point color with auto-assigned color
+            scatterSeriesItem["itemStyle"] = new Dictionary<string, object>
+            {
+                ["color"] = ds.ContainsKey("borderColor") ? ds["borderColor"] : defaultColor
+            };
+            
+            scatterSeriesItem["emphasis"] = new Dictionary<string, object>
+            {
+                ["focus"] = "series"
+            };
             
             series.Add(scatterSeriesItem);
         }
