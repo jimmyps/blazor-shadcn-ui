@@ -12,7 +12,7 @@
         <ChartPanel>
             <ChartPanelHeader>
                 <ChartPanelTitle>Radar Chart</ChartPanelTitle>
-                <ChartPanelDescription">Skills Assessment</ChartPanelDescription>
+                <ChartPanelDescription>Skills Assessment</ChartPanelDescription>
             </ChartPanelHeader>
             <ChartPanelContent>
                 <RadarChart Data="@radarData" 
@@ -22,7 +22,7 @@
                            ShowExportButton="true"
                            ExportFileName="radar-chart" />
             </ChartPanelContent>
-            <ChartPanelFooter Class="flex-col items-start gap-2 text-sm">
+            <ChartPanelFooter>
                 <div class="flex gap-2 font-medium leading-none">
                     Overall performance trending up <span class="ml-1">📈</span>
                 </div>
@@ -42,7 +42,7 @@
         
         <ChartPanel>
             <ChartPanelHeader>
-                <ChartPanelTitle">Team Comparison</ChartPanelTitle>
+                <ChartPanelTitle>Team Comparison</ChartPanelTitle>
                 <ChartPanelDescription>Performance across different metrics</ChartPanelDescription>
             </ChartPanelHeader>
             <ChartPanelContent>
@@ -84,7 +84,7 @@
                            Series="@skillsSeries"
                            Height="400" />
             </ChartPanelContent>
-            <ChartPanelFooter Class="flex-col items-start gap-2 text-sm">
+            <ChartPanelFooter>
                 <div class="flex gap-2 font-medium leading-none">
                     Strong full-stack capabilities
                 </div>

@@ -24,7 +24,7 @@
                           ShowExportButton="true"
                           ExportFileName="line-chart" />
             </ChartPanelContent>
-            <ChartPanelFooter Class="flex-col items-start gap-2 text-sm">
+            <ChartPanelFooter>
                 <div class="flex gap-2 font-medium leading-none">
                     Trending up by 5.2% this month <span class="ml-1">📈</span>
                 </div>
@@ -88,7 +88,7 @@
                                      XAxisDataKey="Month"
                                      Series="@multipleSeries"
                                      Height="300"
-                                     Curved="true" />
+                                     />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex w-full items-start gap-2 text-sm">
@@ -124,10 +124,10 @@
                           Label="Desktop"
                           Height="300"
                           Curved="true"
-                          ShowPoints="true"
+                          ShowDots="true"
                           LineColor="hsl(var(--chart-3))" />
             </ChartPanelContent>
-            <ChartPanelFooter Class="flex-col items-start gap-2 text-sm">
+            <ChartPanelFooter>
                 <div class="flex gap-2 font-medium leading-none">
                     Trending up by 5.2% this month <span class="ml-1">📈</span>
                 </div>
@@ -159,7 +159,7 @@
                           Curved="true"
                           LineColor="hsl(var(--chart-4))" />
             </ChartPanelContent>
-            <ChartPanelFooter Class="flex-col items-start gap-2 text-sm">
+            <ChartPanelFooter>
                 <div class="flex gap-2 font-medium leading-none">
                     Trending up by 5.2% this month <span class="ml-1">📈</span>
                 </div>
@@ -194,8 +194,8 @@
 
     private readonly List<ChartSeriesConfig> multipleSeries = new()
     {
-        new() { DataKey = "Desktop", Label = "Desktop", Color = "hsl(var(--chart-1))" },
-        new() { DataKey = "Mobile", Label = "Mobile", Color = "hsl(var(--chart-2))" }
+        new() { DataKey = "Desktop", Label = "Desktop", Color = "hsl(var(--chart-1))", Curved = true },
+        new() { DataKey = "Mobile", Label = "Mobile", Color = "hsl(var(--chart-2))", Curved = true }
     };
 
     public class LineData

@@ -25,7 +25,7 @@
                           ShowExportButton="true"
                           ExportFileName="area-chart" />
             </ChartPanelContent>
-            <ChartPanelFooter Class="flex-col items-start gap-2 text-sm">
+            <ChartPanelFooter>
                 <div class="flex gap-2 font-medium leading-none">
                     Trending up by 5.2% this month <span class="ml-1">📈</span>
                 </div>
@@ -90,8 +90,7 @@
                                      XAxisDataKey="Month"
                                      Series="@stackedSeries"
                                      Height="300"
-                                     Curved="true"
-                                     Stacked="true" />
+                                     />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex w-full items-start gap-2 text-sm">
@@ -127,8 +126,7 @@
                                      XAxisDataKey="Month"
                                      Series="@iconsSeriesArea"
                                      Height="300"
-                                     Curved="true"
-                                     FillArea="true" />
+                                      />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex w-full items-start gap-2 text-sm">
@@ -166,14 +164,14 @@
 
     private readonly List<ChartSeriesConfig> stackedSeries = new()
     {
-        new() { DataKey = "Desktop", Label = "Desktop", Color = "hsl(var(--chart-1))", FillArea = true },
-        new() { DataKey = "Mobile", Label = "Mobile", Color = "hsl(var(--chart-2))", FillArea = true }
+        new() { DataKey = "Desktop", Label = "Desktop", Color = "hsl(var(--chart-1))", FillArea = true, Curved = true },
+        new() { DataKey = "Mobile", Label = "Mobile", Color = "hsl(var(--chart-2))", FillArea = true, Curved = true }
     };
 
     private readonly List<ChartSeriesConfig> iconsSeriesArea = new()
     {
-        new() { DataKey = "Desktop", Label = "💻 Desktop", Color = "hsl(var(--chart-1))", FillArea = true },
-        new() { DataKey = "Mobile", Label = "📱 Mobile", Color = "hsl(var(--chart-2))", FillArea = true }
+        new() { DataKey = "Desktop", Label = "💻 Desktop", Color = "hsl(var(--chart-1))", FillArea = true, Curved = true },
+        new() { DataKey = "Mobile", Label = "📱 Mobile", Color = "hsl(var(--chart-2))", FillArea = true, Curved = true }
     };
 
     public class DesktopData

@@ -8,26 +8,28 @@
             <h3 class="text-lg font-semibold">Pie Chart</h3>
             <p class="text-sm text-muted-foreground">Showing visitor distribution by browser</p>
         </div>
-        
+
         <ChartPanel>
             <ChartPanelHeader>
                 <ChartPanelTitle>Pie Chart</ChartPanelTitle>
                 <ChartPanelDescription>January - June 2024</ChartPanelDescription>
             </ChartPanelHeader>
             <ChartPanelContent>
-                <PieChart Data="@pieData" 
-                         LabelDataKey="Browser"
-                         ValueDataKey="Visitors"
-                         Height="300"
-                         ShowExportButton="true"
-                         ExportFileName="pie-chart" />
+                <PieChart Data="@pieData"
+                          LabelDataKey="Browser"
+                          ValueDataKey="Visitors"
+                          Height="300"
+                          ShowExportButton="true"
+                          ExportFileName="pie-chart" />
             </ChartPanelContent>
-            <ChartPanelFooter Class="flex-col items-start gap-2 text-sm">
-                <div class="flex gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month <span class="ml-1">📈</span>
-                </div>
-                <div class="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
+            <ChartPanelFooter>
+                <div class="flex-col items-start gap-2 text-sm">
+                    <div class="flex gap-2 font-medium leading-none">
+                        Trending up by 5.2% this month <span class="ml-1">📈</span>
+                    </div>
+                    <div class="leading-none text-muted-foreground">
+                        Showing total visitors for the last 6 months
+                    </div>
                 </div>
             </ChartPanelFooter>
         </ChartPanel>
@@ -39,18 +41,18 @@
             <h3 class="text-lg font-semibold">Donut</h3>
             <p class="text-sm text-muted-foreground">A donut chart with center content</p>
         </div>
-        
+
         <ChartPanel>
             <ChartPanelHeader>
                 <ChartPanelTitle>Donut Chart</ChartPanelTitle>
                 <ChartPanelDescription>January - June 2024</ChartPanelDescription>
             </ChartPanelHeader>
             <ChartPanelContent>
-                <PieChart Data="@pieData" 
-                         LabelDataKey="Browser"
-                         ValueDataKey="Visitors"
-                         Height="300"
-                         IsDonut="true">
+                <PieChart Data="@pieData"
+                          LabelDataKey="Browser"
+                          ValueDataKey="Visitors"
+                          Height="300"
+                          IsDonut="true">
                     <CenterContent>
                         <div class="flex flex-col items-center justify-center">
                             <div class="text-3xl font-bold">@totalVisitors</div>
@@ -80,18 +82,18 @@
             <h3 class="text-lg font-semibold">Label</h3>
             <p class="text-sm text-muted-foreground">A donut chart with custom labels</p>
         </div>
-        
+
         <ChartPanel>
             <ChartPanelHeader>
                 <ChartPanelTitle>Browser Usage</ChartPanelTitle>
                 <ChartPanelDescription>Distribution of visitors by browser type</ChartPanelDescription>
             </ChartPanelHeader>
             <ChartPanelContent>
-                <PieChart Data="@browserData" 
-                         LabelDataKey="Browser"
-                         ValueDataKey="Share"
-                         Height="300"
-                         IsDonut="true">
+                <PieChart Data="@browserData"
+                          LabelDataKey="Browser"
+                          ValueDataKey="Share"
+                          Height="300"
+                          IsDonut="true">
                     <CenterContent>
                         <div class="flex flex-col items-center justify-center">
                             <div class="text-2xl font-bold">Browsers</div>
@@ -100,7 +102,7 @@
                     </CenterContent>
                 </PieChart>
             </ChartPanelContent>
-            <ChartPanelFooter Class="flex-col items-start gap-2 text-sm">
+            <ChartPanelFooter>
                 <div class="flex gap-2 font-medium leading-none">
                     Chrome leads with 47.3% market share
                 </div>
@@ -117,17 +119,17 @@
             <h3 class="text-lg font-semibold">Legend</h3>
             <p class="text-sm text-muted-foreground">A pie chart with interactive legend</p>
         </div>
-        
+
         <ChartPanel>
             <ChartPanelHeader>
                 <ChartPanelTitle>Market Share</ChartPanelTitle>
                 <ChartPanelDescription>Product market share distribution</ChartPanelDescription>
             </ChartPanelHeader>
             <ChartPanelContent>
-                <PieChart Data="@marketData" 
-                         LabelDataKey="Product"
-                         ValueDataKey="Sales"
-                         Height="300" />
+                <PieChart Data="@marketData"
+                          LabelDataKey="Product"
+                          ValueDataKey="Sales"
+                          Height="300" />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex w-full items-start gap-2 text-sm">
@@ -147,18 +149,18 @@
             <h3 class="text-lg font-semibold">Text</h3>
             <p class="text-sm text-muted-foreground">A donut chart with text in the center</p>
         </div>
-        
+
         <ChartPanel>
             <ChartPanelHeader>
                 <ChartPanelTitle>Completion Status</ChartPanelTitle>
-                <ChartPanelDescription">Project completion overview</ChartPanelDescription>
+                <ChartPanelDescription>Project completion overview</ChartPanelDescription>
             </ChartPanelHeader>
             <ChartPanelContent>
-                <PieChart Data="@statusData" 
-                         LabelDataKey="Status"
-                         ValueDataKey="Count"
-                         Height="300"
-                         IsDonut="true">
+                <PieChart Data="@statusData"
+                          LabelDataKey="Status"
+                          ValueDataKey="Count"
+                          Height="300"
+                          IsDonut="true">
                     <CenterContent>
                         <div class="flex flex-col items-center justify-center">
                             <div class="text-4xl font-bold text-green-600">78%</div>
@@ -167,7 +169,7 @@
                     </CenterContent>
                 </PieChart>
             </ChartPanelContent>
-            <ChartPanelFooter Class="flex-col items-start gap-2 text-sm">
+            <ChartPanelFooter>
                 <div class="flex gap-2 font-medium leading-none">
                     On track for Q2 delivery <span class="ml-1">✓</span>
                 </div>
@@ -180,63 +182,63 @@
 </div>
 
 @code {
-    private readonly List<PieData> pieData = new()
-    {
-        new() { Browser = "Chrome", Visitors = 275 },
-        new() { Browser = "Safari", Visitors = 200 },
-        new() { Browser = "Firefox", Visitors = 187 },
-        new() { Browser = "Edge", Visitors = 173 },
-        new() { Browser = "Other", Visitors = 90 }
-    };
+        private readonly List<PieData> pieData = new()
+        {
+                new() { Browser = "Chrome", Visitors = 275 },
+                new() { Browser = "Safari", Visitors = 200 },
+                new() { Browser = "Firefox", Visitors = 187 },
+                new() { Browser = "Edge", Visitors = 173 },
+                new() { Browser = "Other", Visitors = 90 }
+        };
 
-    private readonly List<BrowserData> browserData = new()
-    {
-        new() { Browser = "Chrome", Share = 47.3m },
-        new() { Browser = "Safari", Share = 22.1m },
-        new() { Browser = "Firefox", Share = 16.4m },
-        new() { Browser = "Edge", Share = 9.8m },
-        new() { Browser = "Other", Share = 4.4m }
-    };
+        private readonly List<BrowserData> browserData = new()
+        {
+                new() { Browser = "Chrome", Share = 47.3m },
+                new() { Browser = "Safari", Share = 22.1m },
+                new() { Browser = "Firefox", Share = 16.4m },
+                new() { Browser = "Edge", Share = 9.8m },
+                new() { Browser = "Other", Share = 4.4m }
+        };
 
-    private readonly List<MarketData> marketData = new()
-    {
-        new() { Product = "Product A", Sales = 450 },
-        new() { Product = "Product B", Sales = 380 },
-        new() { Product = "Product C", Sales = 290 },
-        new() { Product = "Product D", Sales = 210 },
-        new() { Product = "Product E", Sales = 140 }
-    };
+        private readonly List<MarketData> marketData = new()
+        {
+                new() { Product = "Product A", Sales = 450 },
+                new() { Product = "Product B", Sales = 380 },
+                new() { Product = "Product C", Sales = 290 },
+                new() { Product = "Product D", Sales = 210 },
+                new() { Product = "Product E", Sales = 140 }
+        };
 
-    private readonly List<StatusData> statusData = new()
-    {
-        new() { Status = "Completed", Count = 78 },
-        new() { Status = "In Progress", Count = 15 },
-        new() { Status = "Pending", Count = 7 }
-    };
+        private readonly List<StatusData> statusData = new()
+        {
+                new() { Status = "Completed", Count = 78 },
+                new() { Status = "In Progress", Count = 15 },
+                new() { Status = "Pending", Count = 7 }
+        };
 
-    private int totalVisitors => pieData.Sum(x => x.Visitors);
+        private int totalVisitors => pieData.Sum(x => x.Visitors);
 
-    public class PieData
-    {
-        public string Browser { get; set; } = string.Empty;
-        public int Visitors { get; set; }
-    }
+        public class PieData
+        {
+                public string Browser { get; set; } = string.Empty;
+                public int Visitors { get; set; }
+        }
 
-    public class BrowserData
-    {
-        public string Browser { get; set; } = string.Empty;
-        public decimal Share { get; set; }
-    }
+        public class BrowserData
+        {
+                public string Browser { get; set; } = string.Empty;
+                public decimal Share { get; set; }
+        }
 
-    public class MarketData
-    {
-        public string Product { get; set; } = string.Empty;
-        public int Sales { get; set; }
-    }
+        public class MarketData
+        {
+                public string Product { get; set; } = string.Empty;
+                public int Sales { get; set; }
+        }
 
-    public class StatusData
-    {
-        public string Status { get; set; } = string.Empty;
-        public int Count { get; set; }
-    }
+        public class StatusData
+        {
+                public string Status { get; set; } = string.Empty;
+                public int Count { get; set; }
+        }
 }
