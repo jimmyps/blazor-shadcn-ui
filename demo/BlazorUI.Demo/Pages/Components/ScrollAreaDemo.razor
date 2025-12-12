@@ -16,9 +16,47 @@
     <div class="space-y-6">
         <section class="space-y-4">
             <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Scroll Shadows</h2>
+                <p class="text-muted-foreground">
+                    Scroll shadows automatically appear to indicate more content is available in that direction.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm font-medium mb-2">Vertical Shadows</p>
+                    <ScrollArea Class="h-60 w-full rounded-md border" EnableScrollShadows="true">
+                        <div class="p-4">
+                            <h4 class="mb-4 text-sm font-medium leading-none">Scroll to see shadows</h4>
+                            @for (int i = 1; i <= 30; i++)
+                            {
+                                <div class="text-sm mb-1">Item @i</div>
+                            }
+                        </div>
+                    </ScrollArea>
+                </div>
+
+                <div>
+                    <p class="text-sm font-medium mb-2">Horizontal Shadows</p>
+                    <ScrollArea Class="w-full whitespace-nowrap rounded-md border" ShowHorizontalScrollbar="true" ShowVerticalScrollbar="false" EnableScrollShadows="true">
+                        <div class="flex w-max space-x-4 p-4">
+                            @for (int i = 1; i <= 15; i++)
+                            {
+                                <div class="w-32 h-20 shrink-0 rounded-md bg-muted flex items-center justify-center text-sm">
+                                    Card @i
+                                </div>
+                            }
+                        </div>
+                    </ScrollArea>
+                </div>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
                 <h2 class="text-2xl font-semibold">Default (Vertical)</h2>
                 <p class="text-muted-foreground">
-                    A scrollable area with custom styled scrollbar.
+                    A scrollable area with custom styled scrollbar and scroll shadows.
                 </p>
             </div>
 
@@ -183,6 +221,8 @@
                 <li>Custom styled scrollbars consistent across browsers</li>
                 <li>Vertical and horizontal scroll support</li>
                 <li>Multiple scroll types: Auto, Always, Scroll, Hover</li>
+                <li><strong>Scroll shadows in both directions</strong> (new)</li>
+                <li><strong>Enhanced scrollbar styling with hover states</strong> (new)</li>
                 <li>Works with any content</li>
                 <li>Tailwind CSS styling integration</li>
             </ul>
