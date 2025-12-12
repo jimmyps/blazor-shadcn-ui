@@ -25,7 +25,9 @@ export async function createChart(element, config) {
     const chartId = generateId();
     
     try {
-        // Initialize ECharts instance with SVG renderer for better quality
+        // Initialize ECharts instance with SVG renderer (default and required)
+        // SVG mode provides: high-quality output, native OKLCH color support,
+        // better export capabilities, and aligns with modern design systems
         const chart = echarts.init(element, null, { renderer: 'svg' });
         
         // Resolve CSS variables in the config before converting
@@ -104,6 +106,7 @@ export function applyTheme(chartId, theme) {
     }
     
     // Dispose old chart and create new one with theme
+    // Always use SVG renderer for consistent high-quality output
     instance.chart.dispose();
     const chart = echarts.init(instance.element, theme, { renderer: 'svg' });
     chart.setOption(currentOption);

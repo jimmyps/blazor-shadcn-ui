@@ -1,22 +1,29 @@
 # Charting Architecture for BlazorUI
 
 **Domain:** Data Visualization
-**Status:** Planning
-**Last Updated:** 2025-12-09
-**Tags:** `charting-engine-planning-2025`
+**Status:** Implemented (ECharts-only)
+**Last Updated:** 2025-12-12
+**Tags:** `charting-engine-echarts-2025`
 
 ---
 
 ## 1. Executive Summary
 
-This document defines the architecture for implementing shadcn-style charting components in BlazorUI, targeting UI/component parity with shadcn/ui's Recharts-based charting solution. The goal is to provide composable, declarative, strongly-typed charting components that seamlessly integrate with BlazorUI's existing design system and theming.
+This document defines the architecture for shadcn-style charting components in BlazorUI, targeting UI/component parity with shadcn/ui's Recharts-based charting solution. The implementation uses ECharts as the sole rendering engine, chosen for its superior visual design, native OKLCH color support, and alignment with modern design systems.
 
 **Key Principles:**
-- Use proven JS charting engines wrapped with styled Blazor components
+- ECharts as the primary and sole rendering engine (SVG-based)
+- Native OKLCH color space support for modern theming
 - Mimic shadcn/Recharts compositional developer experience
-- Pluggable engine architecture for future flexibility
 - Full theme integration with existing CSS variables
 - Accessibility-first approach (WCAG 2.1 AA)
+
+**Why ECharts Only:**
+- Superior visual output with modern animations and polished themes
+- Native support for CSS Level 4 colors (OKLCH), avoiding theming workarounds
+- Advanced features (gradients, shadows) work natively without additional code
+- SVG rendering aligns with modern frontend UI expectations
+- Streamlined codebase with single, well-supported renderer
 
 ---
 
@@ -24,7 +31,7 @@ This document defines the architecture for implementing shadcn-style charting co
 
 ### Two-Layer Architecture Pattern
 
-Following BlazorUI's established architecture (primitives + styled components), charts will be implemented as styled components only (no primitives layer needed):
+Following BlazorUI's established architecture (primitives + styled components), charts are implemented as styled components only (no primitives layer needed):
 
 ```
 ┌──────────────────────────────────────────────────────┐
@@ -39,12 +46,11 @@ Following BlazorUI's established architecture (primitives + styled components), 
                 Uses Renderer
                        │
 ┌──────────────────────────────────────────────────────┐
-│              RENDERING ABSTRACTION                    │
+│              RENDERING LAYER                          │
 │            Services/IChartRenderer                    │
-│  - Chart.js renderer (canvas-based)                  │
 │  - ECharts renderer (SVG-based)                      │
-│  - Pluggable architecture                            │
-│  - Theme synchronization                             │
+│  - Theme synchronization with OKLCH support          │
+│  - Export capabilities (PNG/SVG)                     │
 └──────────────────────────────────────────────────────┘
                        ▲
                   Integrates
@@ -52,7 +58,8 @@ Following BlazorUI's established architecture (primitives + styled components), 
 ┌──────────────────────────────────────────────────────┐
 │               THEMING INTEGRATION                     │
 │          Services/ChartThemeService                   │
-│  - Syncs CSS variables to chart configs              │
+│  - Syncs CSS variables to ECharts configs            │
+│  - Native OKLCH color support                        │
 │  - Dynamic theme switching                           │
 │  - Color palette mapping                             │
 └──────────────────────────────────────────────────────┘

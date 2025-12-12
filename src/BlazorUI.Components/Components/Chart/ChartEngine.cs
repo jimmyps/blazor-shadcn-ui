@@ -4,21 +4,18 @@ namespace BlazorUI.Components.Chart;
 /// Specifies the rendering engine for charts.
 /// </summary>
 /// <remarks>
-/// Chart engines provide different rendering capabilities:
-/// - ChartJs: Canvas-based rendering (default), fast and lightweight
-/// - ECharts: SVG-based rendering, rich features and themeable
+/// BlazorUI uses ECharts as the primary charting engine, providing:
+/// - SVG-based rendering for high-quality output
+/// - Native OKLCH color space support for modern theming
+/// - Rich features and polished default styles
+/// - Superior gradient, shadow, and animation capabilities
 /// </remarks>
 public enum ChartEngine
 {
     /// <summary>
-    /// Chart.js engine - Canvas-based rendering with excellent performance.
-    /// Best for interactive dashboards and large datasets.
-    /// </summary>
-    ChartJs,
-    
-    /// <summary>
-    /// ECharts engine - SVG-based rendering with rich features.
-    /// Best for print-quality charts and complex visualizations.
+    /// ECharts engine - SVG-based rendering with rich features and modern design.
+    /// Provides native OKLCH color support, polished themes, and advanced visualization capabilities.
+    /// This is the primary and recommended engine for all BlazorUI charts.
     /// </summary>
     ECharts
 }

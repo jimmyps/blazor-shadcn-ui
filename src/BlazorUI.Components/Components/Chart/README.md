@@ -1,20 +1,23 @@
 # Chart Components
 
-BlazorUI Chart components provide beautiful, themeable data visualizations built with Chart.js and shadcn-inspired styling.
+BlazorUI Chart components provide beautiful, themeable data visualizations built with ECharts and shadcn-inspired styling.
 
 ## Available Components
 
 ### Architecture
 
-The chart components use a **pluggable renderer architecture** allowing you to choose between different rendering engines:
+The chart components use **ECharts** as the rendering engine, providing:
 
-- **Chart.js (Canvas)** - Fast, lightweight, great for interactive dashboards
-- **ECharts (SVG)** - High-quality vector graphics, perfect for print and export
+- **SVG-based rendering** - High-quality vector graphics, perfect for print and export
+- **Native OKLCH color support** - Seamlessly integrates with BlazorUI's modern theme system
+- **Rich features** - Advanced gradients, shadows, animations, and visual effects out of the box
+- **Modern design** - Polished default styles that align with design-first applications
 
 **Example:**
 ```razor
 <LineChart Data="@data" 
-          Engine="ChartEngine.ChartJs"  @* or ChartEngine.ECharts *@
+          XAxisDataKey="Month"
+          YAxisDataKey="Sales"
           ... />
 ```
 
@@ -206,17 +209,7 @@ All chart components share these parameters:
 
 ### Dependencies
 
-Charts support both **Chart.js v4.4.1** (default) and **ECharts v5.4.3** engines, loaded dynamically from CDN. By default, charts use Chart.js for fast, lightweight canvas rendering, but you can switch to ECharts for high-quality SVG output if desired. No additional packages need to be installed.
-
-You can select the rendering engine per component:
-
-```razor
-<!-- Use Chart.js (default - Canvas rendering) -->
-<LineChart Data="@data" Engine="ChartEngine.ChartJs" ... />
-
-<!-- Use ECharts (SVG rendering) -->
-<LineChart Data="@data" Engine="ChartEngine.ECharts" ... />
-```
+Charts use **ECharts v5.4.3** as the rendering engine, loaded dynamically from CDN. ECharts provides high-quality SVG-based rendering with native support for modern CSS colors including OKLCH, ensuring seamless integration with BlazorUI's theme system. No additional packages need to be installed.
 
 ### Resource Management
 

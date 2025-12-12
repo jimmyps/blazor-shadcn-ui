@@ -82,7 +82,7 @@ public class RadarChartBase<TData> : ComponentBase
     /// Gets or sets the rendering engine to use.
     /// </summary>
     [Parameter]
-    public ChartEngine Engine { get; set; } = ChartEngine.ChartJs;
+    public ChartEngine Engine { get; set; } = ChartEngine.ECharts;
     
     /// <summary>
     /// Gets or sets whether to disable animations.
