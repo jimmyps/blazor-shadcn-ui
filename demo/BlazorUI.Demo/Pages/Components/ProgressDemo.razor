@@ -1,0 +1,211 @@
+@page "/components/progress"
+@using BlazorUI.Components.Progress
+@implements IDisposable
+
+<PageTitle>Progress Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Progress Component</h1>
+            <p class="text-xl text-muted-foreground">
+                Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.
+            </p>
+        </div>
+    </div>
+
+    <!-- Basic Progress -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic</h2>
+            <p class="text-sm text-muted-foreground">
+                A simple progress bar.
+            </p>
+        </div>
+        <Progress Value="60" />
+    </div>
+
+    <!-- Different Values -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Progress Values</h2>
+            <p class="text-sm text-muted-foreground">
+                Progress bars at different completion levels.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span>0%</span>
+                    <span class="text-muted-foreground">Not started</span>
+                </div>
+                <Progress Value="0" />
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span>25%</span>
+                    <span class="text-muted-foreground">Getting started</span>
+                </div>
+                <Progress Value="25" />
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span>50%</span>
+                    <span class="text-muted-foreground">Halfway there</span>
+                </div>
+                <Progress Value="50" />
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span>75%</span>
+                    <span class="text-muted-foreground">Almost done</span>
+                </div>
+                <Progress Value="75" />
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span>100%</span>
+                    <span class="text-muted-foreground">Complete</span>
+                </div>
+                <Progress Value="100" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Example -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Interactive</h2>
+            <p class="text-sm text-muted-foreground">
+                Control the progress value dynamically.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <div class="flex items-center gap-4">
+                <button @onclick="DecreaseProgress" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                    Decrease
+                </button>
+                <button @onclick="IncreaseProgress" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                    Increase
+                </button>
+                <button @onclick="ResetProgress" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                    Reset
+                </button>
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span>@progressValue%</span>
+                </div>
+                <Progress Value="@progressValue" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Usage Examples -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Usage Examples</h2>
+            <p class="text-sm text-muted-foreground">
+                Common use cases for progress indicators.
+            </p>
+        </div>
+        <div class="space-y-6">
+            <!-- File Upload -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">File Upload</h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span>document.pdf</span>
+                        <span class="text-muted-foreground">2.4 MB / 4.0 MB</span>
+                    </div>
+                    <Progress Value="60" />
+                </div>
+            </div>
+
+            <!-- Profile Completion -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Profile Completion</h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span>Complete your profile</span>
+                        <span class="text-muted-foreground">3 of 5 steps</span>
+                    </div>
+                    <Progress Value="60" />
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Loading Content</h3>
+                <div class="space-y-2">
+                    <div class="text-sm text-muted-foreground">Loading...</div>
+                    <Progress Value="@loadingProgress" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accessibility -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Accessibility</h2>
+            <p class="text-sm text-muted-foreground">
+                The Progress component uses ARIA attributes including <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">role="progressbar"</code>,
+                <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">aria-valuemin</code>, 
+                <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">aria-valuemax</code>, and
+                <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">aria-valuenow</code> for screen reader support.
+            </p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private double progressValue = 60;
+    private double loadingProgress = 33;
+    private CancellationTokenSource? _cts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate loading
+        _cts = new CancellationTokenSource();
+        _ = SimulateLoading(_cts.Token);
+    }
+
+    private async Task SimulateLoading(CancellationToken cancellationToken)
+    {
+        try
+        {
+            while (loadingProgress < 100 && !cancellationToken.IsCancellationRequested)
+            {
+                await Task.Delay(100, cancellationToken);
+                loadingProgress += 1;
+                StateHasChanged();
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            // Expected when component is disposed
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+    }
+
+    private void IncreaseProgress()
+    {
+        progressValue = Math.Min(100, progressValue + 10);
+    }
+
+    private void DecreaseProgress()
+    {
+        progressValue = Math.Max(0, progressValue - 10);
+    }
+
+    private void ResetProgress()
+    {
+        progressValue = 0;
+    }
+}

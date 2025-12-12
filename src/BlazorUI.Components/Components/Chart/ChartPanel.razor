@@ -1,0 +1,25 @@
+@namespace BlazorUI.Components.Chart
+@inherits ChartPanelBase
+
+<div class="@CssClass">
+    @if (ChartPanelHeader != null)
+    {
+        <div class="flex flex-col space-y-1.5 p-6">
+            @ChartPanelHeader
+        </div>
+    }
+    
+    @if (ChartPanelContent != null)
+    {
+        <div class="p-6 pt-0">
+            @ChartPanelContent
+        </div>
+    }
+    
+    @if (ChartPanelFooter != null)
+    {
+        <div class="flex items-center p-6 pt-0">
+            @ChartPanelFooter
+        </div>
+    }
+</div>

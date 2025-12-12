@@ -1,0 +1,18 @@
+@namespace BlazorUI.Components.AlertDialog
+@using BlazorUI.Primitives.Dialog
+
+@*
+    AlertDialog cancel button - closes the dialog.
+*@
+
+<DialogClose>
+    @ChildContent
+</DialogClose>
+
+@code {
+    /// <summary>
+    /// The content to render as the cancel button.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

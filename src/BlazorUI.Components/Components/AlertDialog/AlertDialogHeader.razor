@@ -1,0 +1,19 @@
+@namespace BlazorUI.Components.AlertDialog
+@using BlazorUI.Components.Utilities
+
+<div class="@CssClass">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string CssClass => ClassNames.cn(
+        "flex flex-col space-y-2 text-center sm:text-left",
+        Class
+    );
+}

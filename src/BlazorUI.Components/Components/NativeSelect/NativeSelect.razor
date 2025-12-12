@@ -1,0 +1,18 @@
+@namespace BlazorUI.Components.NativeSelect
+
+<div class="@ContainerCssClass">
+    <select
+        id="@Id"
+        name="@Name"
+        disabled="@Disabled"
+        required="@Required"
+        value="@Value"
+        @onchange="@OnChangeAsync"
+        class="@CssClass">
+        @if (!string.IsNullOrEmpty(Placeholder))
+        {
+            <option value="" disabled selected="@(string.IsNullOrEmpty(Value))">@Placeholder</option>
+        }
+        @ChildContent
+    </select>
+</div>

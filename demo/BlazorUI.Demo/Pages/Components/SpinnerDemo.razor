@@ -1,0 +1,108 @@
+@page "/components/spinner"
+@using BlazorUI.Components.Spinner
+
+<PageTitle>Spinner Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Spinner Component</h1>
+            <p class="text-xl text-muted-foreground">
+                A loading indicator that shows a spinning animation.
+            </p>
+        </div>
+    </div>
+
+    <!-- Sizes -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Sizes</h2>
+            <p class="text-sm text-muted-foreground">
+                Available in three sizes: small, medium (default), and large.
+            </p>
+        </div>
+        <div class="flex items-center gap-8">
+            <div class="flex flex-col items-center gap-2">
+                <Spinner Size="SpinnerSize.Small" />
+                <span class="text-sm text-muted-foreground">Small</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <Spinner Size="SpinnerSize.Medium" />
+                <span class="text-sm text-muted-foreground">Medium</span>
+            </div>
+            <div class="flex flex-col items-center gap-2">
+                <Spinner Size="SpinnerSize.Large" />
+                <span class="text-sm text-muted-foreground">Large</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Usage Examples -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Usage Examples</h2>
+            <p class="text-sm text-muted-foreground">
+                Common use cases for loading spinners.
+            </p>
+        </div>
+        <div class="space-y-6">
+            <!-- Button Loading -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Button Loading State</h3>
+                <div class="flex gap-4">
+                    <button disabled class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 gap-2">
+                        <Spinner Size="SpinnerSize.Small" />
+                        Loading...
+                    </button>
+                    <button disabled class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-2">
+                        <Spinner Size="SpinnerSize.Small" />
+                        Please wait
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card Loading -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Card Loading</h3>
+                <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                    <div class="flex flex-col items-center justify-center gap-4 py-8">
+                        <Spinner />
+                        <p class="text-sm text-muted-foreground">Loading content...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Page Loading -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Page Loading Overlay</h3>
+                <div class="relative rounded-lg border bg-card text-card-foreground shadow-sm p-6 min-h-[200px]">
+                    <div class="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-lg">
+                        <div class="flex flex-col items-center gap-4">
+                            <Spinner Size="SpinnerSize.Large" />
+                            <p class="text-sm text-muted-foreground">Loading page...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inline Loading -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-medium">Inline Loading</h3>
+                <div class="flex items-center gap-2">
+                    <Spinner Size="SpinnerSize.Small" />
+                    <span class="text-sm">Fetching latest data...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accessibility -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Accessibility</h2>
+            <p class="text-sm text-muted-foreground">
+                Spinners should be accompanied by descriptive text or ARIA labels to inform users about the loading state.
+            </p>
+        </div>
+    </div>
+</div>

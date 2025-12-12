@@ -85,8 +85,11 @@ That's it! No Tailwind installation, no build configuration needed.
 ## Available Components
 
 - **Accordion**: Collapsible content sections with smooth animations
+- **Alert**: Status messages and callouts with Default/Destructive variants
+- **Alert Dialog**: Modal dialogs for critical confirmations
 - **Avatar**: User profile images with fallback initials and icons
 - **Badge**: Labels for status, categories, and metadata
+- **Breadcrumb**: Hierarchical navigation with customizable separators
 - **Button**: Interactive buttons with multiple variants and sizes
 - **Checkbox**: Binary selection control with indeterminate state
 - **Collapsible**: Expandable content area with trigger control
@@ -94,19 +97,29 @@ That's it! No Tailwind installation, no build configuration needed.
 - **Command**: Command palette for quick actions and navigation
 - **Dialog**: Modal dialogs with backdrop and focus management
 - **Dropdown Menu**: Context menus with items, separators, and shortcuts
+- **Empty**: Empty state displays with icon, title, and actions
 - **Hover Card**: Rich preview cards on hover with delay control
 - **Input**: Text input fields with multiple types and sizes
+- **Kbd**: Keyboard shortcut badges with semantic markup
 - **Label**: Accessible labels for form controls
+- **Native Select**: Styled native HTML select dropdown
+- **Pagination**: Page navigation with Previous/Next/Ellipsis
 - **Popover**: Floating panels for additional content and actions
+- **Progress**: Progress bars with ARIA support and animations
 - **Radio Group**: Mutually exclusive options with keyboard navigation
 - **Select**: Dropdown selection with groups and labels
 - **Separator**: Visual dividers for content sections
 - **Sheet**: Side panels that slide in from viewport edges
 - **Sidebar**: Responsive navigation sidebar with collapsible menus
 - **Skeleton**: Loading placeholders for content and images
+- **Slider**: Range input for numeric value selection
+- **Spinner**: Loading indicators in multiple sizes
 - **Switch**: Toggle control for on/off states
 - **Tabs**: Tabbed interface for organizing related content
+- **Toggle**: Pressable toggle buttons with variants
+- **Toggle Group**: Single/multiple selection toggle groups
 - **Tooltip**: Brief informational popups on hover or focus
+- **Typography**: Semantic text styling with consistent typography
 
 ## Theming
 

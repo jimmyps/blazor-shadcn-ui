@@ -224,7 +224,7 @@ Primitives give you complete control over styling while handling all the complex
 
 ## Components
 
-BlazorUI includes **24 styled components** with full shadcn/ui design compatibility:
+BlazorUI includes **40 styled components** with full shadcn/ui design compatibility:
 
 ### Form Components
 - **Button** - Multiple variants (default, destructive, outline, secondary, ghost, link) with icon support
@@ -232,19 +232,30 @@ BlazorUI includes **24 styled components** with full shadcn/ui design compatibil
 - **Input** - Text input with multiple types and validation support
 - **Input Group** - Enhanced inputs with icons, buttons, and addons
 - **Label** - Accessible form labels
+- **Native Select** - Styled native HTML select dropdown
 - **RadioGroup** - Radio button groups with keyboard navigation
 - **Select** - Dropdown select with search and keyboard navigation
+- **Slider** - Range input for numeric value selection
 - **Switch** - Toggle switch component
 - **Combobox** - Searchable autocomplete dropdown
 
+### Date & Time
+- **Calendar** - Date selection grid with month navigation
+- **Date Picker** - Date selection with calendar in popover (includes Date Range Picker)
+- **Time Picker** - Time selection with 12/24-hour format support
+
 ### Layout & Navigation
 - **Accordion** - Collapsible content sections
+- **Breadcrumb** - Hierarchical navigation with customizable separators
+- **Carousel** - Slideshow component with touch gestures and animations
 - **Collapsible** - Expandable/collapsible panels
+- **Pagination** - Page navigation with Previous/Next/Ellipsis support
 - **Separator** - Visual dividers
 - **Sidebar** - Responsive sidebar with collapsible icon mode, variants (default, floating, inset), and mobile sheet integration
 - **Tabs** - Tabbed interfaces with controlled/uncontrolled modes
 
 ### Overlay Components
+- **Alert Dialog** - Modal for critical confirmations
 - **Dialog** - Modal dialogs
 - **Sheet** - Slide-out panels (top, right, bottom, left)
 - **Popover** - Floating content containers
@@ -254,9 +265,17 @@ BlazorUI includes **24 styled components** with full shadcn/ui design compatibil
 - **Command** - Command palette with keyboard navigation
 
 ### Display Components
+- **Alert** - Status messages and callouts
 - **Avatar** - User avatars with fallback support
 - **Badge** - Status badges and labels
+- **Empty** - Empty state displays
+- **Kbd** - Keyboard shortcut badges
+- **Progress** - Progress bars with animations
 - **Skeleton** - Loading placeholders
+- **Spinner** - Loading indicators
+- **Toggle** - Pressable toggle buttons
+- **Toggle Group** - Single/multiple selection toggle groups
+- **Typography** - Semantic text styling
 
 ### Icons
 

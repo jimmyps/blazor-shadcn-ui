@@ -1,0 +1,48 @@
+@page "/components/chart"
+@using BlazorUI.Components.Chart
+@using BlazorUI.Components.Card
+@using BlazorUI.Components.Tabs
+@using BlazorUI.Demo.Pages.Components.Charts
+
+<PageTitle>Chart Components - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-6xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Charts</h1>
+            <p class="text-xl text-muted-foreground">
+                Beautifully designed. Copy and paste into your apps. Open Source.
+            </p>
+        </div>
+    </div>
+
+    <Tabs DefaultValue="area">
+        <TabsList Class="grid w-full grid-cols-5 lg:w-auto lg:grid-cols-5">
+            <TabsTrigger Value="area">Area</TabsTrigger>
+            <TabsTrigger Value="bar">Bar</TabsTrigger>
+            <TabsTrigger Value="line">Line</TabsTrigger>
+            <TabsTrigger Value="pie">Pie</TabsTrigger>
+            <TabsTrigger Value="radar">Radar</TabsTrigger>
+        </TabsList>
+
+        <TabsContent Value="area" Class="space-y-8 pt-6">
+            <AreaChartExamples />
+        </TabsContent>
+
+        <TabsContent Value="bar" Class="space-y-8 pt-6">
+            <BarChartExamples />
+        </TabsContent>
+
+        <TabsContent Value="line" Class="space-y-8 pt-6">
+            <LineChartExamples />
+        </TabsContent>
+
+        <TabsContent Value="pie" Class="space-y-8 pt-6">
+            <PieChartExamples />
+        </TabsContent>
+
+        <TabsContent Value="radar" Class="space-y-8 pt-6">
+            <RadarChartExamples />
+        </TabsContent>
+    </Tabs>
+</div>
