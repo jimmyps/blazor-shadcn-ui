@@ -26,6 +26,17 @@
     --dialog-item-duration: 150ms;
     --dialog-item-easing: cubic-bezier(0.4, 0, 0.2, 1);
     --dialog-overlay-duration: 150ms;
+    /* Chart color palette (5 colors for data series) */
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    /* OHLC (candlestick) chart colors in OKLCH format */
+    --chart-up: oklch(0.646 0.222 41.116); /* Green for upward movement */
+    --chart-down: oklch(0.628 0.258 29.234); /* Red for downward movement */
+    --chart-neutral: oklch(0.5 0 0); /* Gray for no change */
+
   }
 
   /* Reduced motion: zero out durations for accessibility */
