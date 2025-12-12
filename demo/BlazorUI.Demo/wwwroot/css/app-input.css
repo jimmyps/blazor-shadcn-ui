@@ -7,13 +7,6 @@
 /* Import new OKLCH single-theme file */
 @import '../styles/theme.css';
 
-/* Configure source paths for scanning Razor files */
-@source "../../Pages";
-@source "../../Shared";
-@source "../../../../src/BlazorUI.Components";
-@source "../../../../src/BlazorUI.Primitives";
-@source "../../../../src/BlazorUI.Icons";
-
 /* Component structural variables (not part of replaceable theme) */
 @layer base {
   :root {
