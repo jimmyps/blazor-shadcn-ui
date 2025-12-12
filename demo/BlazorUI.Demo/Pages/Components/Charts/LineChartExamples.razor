@@ -173,6 +173,52 @@
             </ChartPanelFooter>
         </ChartPanel>
     </div>
+    
+    <!-- Line Chart - Declarative ChartStyle (NEW) -->
+    <div class="space-y-4">
+        <div>
+            <h3 class="text-lg font-semibold">Declarative Style ✨ NEW</h3>
+            <p class="text-sm text-muted-foreground">Using pure markup with ChartStyle child components - zero C# code required</p>
+        </div>
+        
+        <ChartPanel>
+            <ChartPanelHeader>
+                <ChartPanelTitle>Declarative Styling Pattern</ChartPanelTitle>
+                <ChartPanelDescription>Fully configured via markup (Pattern 6)</ChartPanelDescription>
+            </ChartPanelHeader>
+            <ChartPanelContent>
+                <LineChart Data="@lineData" 
+                          XAxisDataKey="Month"
+                          YAxisDataKey="Desktop"
+                          Label="Revenue"
+                          Height="350">
+                    <ChartStyle>
+                        <LineStyle Color="hsl(var(--chart-1))" Width="2" Smooth="true" Type="LineType.Solid" />
+                        <AreaStyle Show="true">
+                            <LinearGradient Direction="GradientDirection.Vertical">
+                                <ColorStop Offset="0.0" Color="hsla(var(--chart-1), 0.8)" />
+                                <ColorStop Offset="0.5" Color="hsla(var(--chart-1), 0.4)" />
+                                <ColorStop Offset="1.0" Color="hsla(var(--chart-1), 0.1)" />
+                            </LinearGradient>
+                        </AreaStyle>
+                        <PointStyle Symbol="PointSymbol.Circle" Size="4" Show="true" />
+                    </ChartStyle>
+                </LineChart>
+            </ChartPanelContent>
+            <ChartPanelFooter>
+                <div class="flex w-full items-start gap-2 text-sm">
+                    <div class="grid gap-2">
+                        <div class="flex items-center gap-2 font-medium leading-none">
+                            Blazor-native declarative markup ✨
+                        </div>
+                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
+                            Multi-stop gradient, smooth lines, customizable points - all in markup
+                        </div>
+                    </div>
+                </div>
+            </ChartPanelFooter>
+        </ChartPanel>
+    </div>
 </div>
 
 @code {

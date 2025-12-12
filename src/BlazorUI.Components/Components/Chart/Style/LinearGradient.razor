@@ -1,0 +1,58 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    /// <summary>
+    /// Gets or sets the parent AreaStyle component.
+    /// </summary>
+    [CascadingParameter]
+    public AreaStyle? ParentAreaStyle { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the gradient direction.
+    /// </summary>
+    [Parameter]
+    public GradientDirection Direction { get; set; } = GradientDirection.Vertical;
+    
+    /// <summary>
+    /// Gets or sets the child content containing ColorStop definitions.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    
+    private List<ColorStopConfig> _colorStops = new();
+    
+    protected override void OnInitialized()
+    {
+        if (ParentAreaStyle == null)
+        {
+            throw new InvalidOperationException("LinearGradient must be used within an AreaStyle component");
+        }
+    }
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ParentAreaStyle?.RegisterGradient(new LinearGradientConfig
+            {
+                Direction = Direction,
+                ColorStops = _colorStops
+            });
+        }
+    }
+    
+    /// <summary>
+    /// Registers a color stop.
+    /// </summary>
+    internal void RegisterColorStop(ColorStopConfig config)
+    {
+        _colorStops.Add(config);
+    }
+}
+
+@if (ChildContent != null)
+{
+    <CascadingValue Value="this" IsFixed="true">
+        @ChildContent
+    </CascadingValue>
+}

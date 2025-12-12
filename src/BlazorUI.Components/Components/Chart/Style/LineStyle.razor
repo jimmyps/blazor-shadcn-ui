@@ -1,0 +1,70 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    /// <summary>
+    /// Gets or sets the parent ChartStyle component.
+    /// </summary>
+    [CascadingParameter]
+    public ChartStyle? ParentStyle { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the line color. Supports CSS variables like "hsl(var(--chart-1))".
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the line width in pixels.
+    /// </summary>
+    [Parameter]
+    public int Width { get; set; } = 2;
+    
+    /// <summary>
+    /// Gets or sets the line type.
+    /// </summary>
+    [Parameter]
+    public LineType Type { get; set; } = LineType.Solid;
+    
+    /// <summary>
+    /// Gets or sets whether the line should be smooth (curved).
+    /// </summary>
+    [Parameter]
+    public bool Smooth { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the line cap style.
+    /// </summary>
+    [Parameter]
+    public string? Cap { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the line join style.
+    /// </summary>
+    [Parameter]
+    public string? Join { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the opacity (0.0 to 1.0).
+    /// </summary>
+    [Parameter]
+    public double Opacity { get; set; } = 1.0;
+    
+    protected override void OnInitialized()
+    {
+        if (ParentStyle == null)
+        {
+            throw new InvalidOperationException("LineStyle must be used within a ChartStyle component");
+        }
+        
+        ParentStyle.RegisterLineStyle(new LineStyleConfig
+        {
+            Color = Color,
+            Width = Width,
+            Type = Type,
+            Smooth = Smooth,
+            Cap = Cap,
+            Join = Join,
+            Opacity = Opacity
+        });
+    }
+}

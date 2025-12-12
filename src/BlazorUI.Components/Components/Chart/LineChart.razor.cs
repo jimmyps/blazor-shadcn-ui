@@ -8,9 +8,14 @@ namespace BlazorUI.Components.Chart;
 /// Line chart component for visualizing trends over time or continuous data.
 /// </summary>
 /// <typeparam name="TData">The type of data items in the chart.</typeparam>
-public class LineChartBase<TData> : ComponentBase
+public class LineChartBase<TData> : ComponentBase, IChartStyleContainer
 {
     [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
+    
+    /// <summary>
+    /// Internal ChartStyle reference from child content.
+    /// </summary>
+    protected ChartStyle? _chartStyle;
     
     /// <summary>
     /// Gets or sets the data to display in the chart.
@@ -165,10 +170,24 @@ public class LineChartBase<TData> : ComponentBase
     public string ExportFileName { get; set; } = "chart";
     
     /// <summary>
+    /// Gets or sets the child content containing ChartStyle configuration.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    
+    /// <summary>
     /// Gets the computed CSS classes for the container.
     /// </summary>
     protected string ContainerClass => ClassNames.cn(
         "chart-container",
         Class
     );
+    
+    /// <summary>
+    /// Registers a ChartStyle component.
+    /// </summary>
+    public void RegisterStyle(ChartStyle style)
+    {
+        _chartStyle = style;
+    }
 }

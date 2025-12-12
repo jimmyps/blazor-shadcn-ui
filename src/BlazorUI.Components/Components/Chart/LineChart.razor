@@ -4,24 +4,34 @@
 @implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
 
-<div class="@ContainerClass" style="position: relative; height: @(Height)px; width: 100%;">
-    <canvas @ref="_canvasRef"></canvas>
-    
-    @if (ShowExportButton && _isInitialized)
-    {
-        <div style="position: absolute; top: 8px; right: 8px; z-index: 10;">
-            <button @onclick="ExportAsPng" 
-                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9"
-                    title="Export chart">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" x2="12" y1="15" y2="3"/>
-                </svg>
-            </button>
-        </div>
-    }
-</div>
+<CascadingValue Value="(IChartStyleContainer)this" IsFixed="true">
+    <div class="@ContainerClass" style="position: relative; height: @(Height)px; width: 100%;">
+        <canvas @ref="_canvasRef"></canvas>
+        
+        @if (ShowExportButton && _isInitialized)
+        {
+            <div style="position: absolute; top: 8px; right: 8px; z-index: 10;">
+                <button @onclick="ExportAsPng" 
+                        class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9"
+                        title="Export chart">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" x2="12" y1="15" y2="3"/>
+                    </svg>
+                </button>
+            </div>
+        }
+        
+        @* Render ChartStyle child content (hidden, just for data collection) *@
+        @if (ChildContent != null)
+        {
+            <div style="display: none;">
+                @ChildContent
+            </div>
+        }
+    </div>
+</CascadingValue>
 
 @code {
     private ElementReference _canvasRef;
@@ -231,16 +241,54 @@
             return Convert.ToDouble(value);
         }).ToArray();
         
-        var color = LineColor ?? "hsl(var(--chart-1))";
+        // Determine configuration source: ChartStyle or direct parameters
+        var lineStyle = _chartStyle?.LineStyle;
+        var areaStyle = _chartStyle?.AreaStyle;
+        var pointStyle = _chartStyle?.PointStyle;
+        
+        // Line color from ChartStyle or parameter
+        var color = lineStyle?.Color ?? LineColor ?? "hsl(var(--chart-1))";
+        
+        // Line width from ChartStyle or parameter
+        var lineWidth = lineStyle?.Width ?? LineWidth;
+        
+        // Smooth/curved from ChartStyle or parameter
+        var smooth = lineStyle?.Smooth ?? Curved;
+        
+        // Fill area determination
+        var fillArea = areaStyle?.Show ?? FillArea;
         
         // Build area style with optional gradient
-        object? areaStyle = null;
-        if (FillArea)
+        object? areaStyleObj = null;
+        if (fillArea)
         {
-            if (GradientFill)
+            // Check if we have a gradient from ChartStyle
+            if (areaStyle?.Gradient != null)
             {
-                // ECharts-native gradient for area fill
-                areaStyle = new
+                var gradient = areaStyle.Gradient;
+                var (x, y, x2, y2) = GetGradientCoordinates(gradient.Direction);
+                
+                areaStyleObj = new
+                {
+                    color = new
+                    {
+                        type = "linear",
+                        x = x,
+                        y = y,
+                        x2 = x2,
+                        y2 = y2,
+                        colorStops = gradient.ColorStops.Select(stop => new
+                        {
+                            offset = stop.Offset,
+                            color = stop.Color
+                        }).ToArray()
+                    }
+                };
+            }
+            else if (GradientFill)
+            {
+                // Fallback to parameter-based gradient
+                areaStyleObj = new
                 {
                     color = new
                     {
@@ -259,6 +307,11 @@
             }
         }
         
+        // Point configuration from ChartStyle or parameters
+        var showDots = pointStyle?.Show ?? ShowDots;
+        var pointSize = pointStyle?.Size ?? 3;
+        var pointHoverSize = pointStyle?.HoverSize ?? 5;
+        
         return new[]
         {
             new
@@ -266,14 +319,31 @@
                 label = Label ?? YAxisDataKey,
                 data = values,
                 borderColor = color,
-                backgroundColor = FillArea && !GradientFill ? color : "transparent",
-                borderWidth = LineWidth,
-                tension = Curved ? 0.4 : 0,
-                fill = FillArea,
-                pointRadius = ShowDots ? 3 : 0,
-                pointHoverRadius = ShowDots ? 5 : 0,
-                areaStyle // ECharts will use this for gradient
+                backgroundColor = fillArea && !GradientFill && areaStyle?.Gradient == null ? color : "transparent",
+                borderWidth = lineWidth,
+                tension = smooth ? 0.4 : 0,
+                fill = fillArea,
+                pointRadius = showDots ? pointSize : 0,
+                pointHoverRadius = showDots ? pointHoverSize : 0,
+                areaStyle = areaStyleObj // ECharts will use this for gradient
             }
+        };
+    }
+    
+    /// <summary>
+    /// Gets gradient coordinates based on direction.
+    /// </summary>
+    private (double x, double y, double x2, double y2) GetGradientCoordinates(GradientDirection direction)
+    {
+        return direction switch
+        {
+            GradientDirection.Vertical => (0, 0, 0, 1),
+            GradientDirection.Horizontal => (0, 0, 1, 0),
+            GradientDirection.TopLeftToBottomRight => (0, 0, 1, 1),
+            GradientDirection.TopRightToBottomLeft => (1, 0, 0, 1),
+            GradientDirection.BottomLeftToTopRight => (0, 1, 1, 0),
+            GradientDirection.BottomRightToTopLeft => (1, 1, 0, 0),
+            _ => (0, 0, 0, 1) // Default to vertical
         };
     }
     
