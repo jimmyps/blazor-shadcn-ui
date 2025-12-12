@@ -224,7 +224,7 @@ Primitives give you complete control over styling while handling all the complex
 
 ## Components
 
-BlazorUI includes **37 styled components** with full shadcn/ui design compatibility:
+BlazorUI includes **40 styled components** with full shadcn/ui design compatibility:
 
 ### Form Components
 - **Button** - Multiple variants (default, destructive, outline, secondary, ghost, link) with icon support
@@ -239,9 +239,15 @@ BlazorUI includes **37 styled components** with full shadcn/ui design compatibil
 - **Switch** - Toggle switch component
 - **Combobox** - Searchable autocomplete dropdown
 
+### Date & Time
+- **Calendar** - Date selection grid with month navigation
+- **Date Picker** - Date selection with calendar in popover (includes Date Range Picker)
+- **Time Picker** - Time selection with 12/24-hour format support
+
 ### Layout & Navigation
 - **Accordion** - Collapsible content sections
 - **Breadcrumb** - Hierarchical navigation with customizable separators
+- **Carousel** - Slideshow component with touch gestures and animations
 - **Collapsible** - Expandable/collapsible panels
 - **Pagination** - Page navigation with Previous/Next/Ellipsis support
 - **Separator** - Visual dividers
