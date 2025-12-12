@@ -2,7 +2,7 @@
 @using BlazorUI.Components.Card
 
 <div class="space-y-8">
-    <!-- Area Chart - Default -->
+    <!-- Area Chart - Default with Gradient -->
     <div class="space-y-4">
         <div>
             <h3 class="text-lg font-semibold">Area Chart</h3>
@@ -15,22 +15,14 @@
                 <ChartPanelDescription>January - June 2024</ChartPanelDescription>
             </ChartPanelHeader>
             <ChartPanelContent>
-                <LineChart Data="@desktopData" 
-                          XAxisDataKey="Month"
-                          YAxisDataKey="Desktop"
-                          Label="Desktop"
-                          Height="300"
-                          FillArea="true"
-                          Curved="true"
-                          ShowExportButton="true"
-                          ExportFileName="area-chart" />
+                <EChart Option="@gradientAreaOption" Height="300" />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex gap-2 font-medium leading-none">
                     Trending up by 5.2% this month <span class="ml-1">📈</span>
                 </div>
                 <div class="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
+                    Gradient fill from 80% to 10% opacity
                 </div>
             </ChartPanelFooter>
         </ChartPanel>
@@ -73,7 +65,7 @@
         </ChartPanel>
     </div>
 
-    <!-- Area Chart - Stacked -->
+    <!-- Area Chart - Stacked with Gradients -->
     <div class="space-y-4">
         <div>
             <h3 class="text-lg font-semibold">Stacked</h3>
@@ -86,11 +78,7 @@
                 <ChartPanelDescription>Showing total visitors for the last 6 months</ChartPanelDescription>
             </ChartPanelHeader>
             <ChartPanelContent>
-                <MultiSeriesLineChart Data="@stackedData"
-                                     XAxisDataKey="Month"
-                                     Series="@stackedSeries"
-                                     Height="300"
-                                     />
+                <EChart Option="@stackedGradientOption" Height="300" />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex w-full items-start gap-2 text-sm">
@@ -142,6 +130,107 @@
 </div>
 
 @code {
+    // Gradient Area Chart Option (ECharts native)
+    private object gradientAreaOption = new
+    {
+        tooltip = new { trigger = "axis", axisPointer = new { type = "cross" } },
+        xAxis = new
+        {
+            type = "category",
+            boundaryGap = false,
+            data = new[] { "January", "February", "March", "April", "May", "June" }
+        },
+        yAxis = new { type = "value" },
+        series = new[]
+        {
+            new
+            {
+                name = "Desktop",
+                type = "line",
+                smooth = true,
+                data = new[] { 186, 305, 237, 73, 209, 214 },
+                lineStyle = new { width = 2, color = "hsl(var(--chart-1))" },
+                areaStyle = new
+                {
+                    color = new
+                    {
+                        type = "linear",
+                        x = 0, y = 0, x2 = 0, y2 = 1,
+                        colorStops = new[]
+                        {
+                            new { offset = 0.0, color = "hsla(var(--chart-1), 0.8)" },
+                            new { offset = 1.0, color = "hsla(var(--chart-1), 0.1)" }
+                        }
+                    }
+                },
+                showSymbol = false
+            }
+        }
+    };
+
+    // Stacked Gradient Option
+    private object stackedGradientOption = new
+    {
+        tooltip = new { trigger = "axis" },
+        legend = new { data = new[] { "Desktop", "Mobile" }, top = "top", left = "center" },
+        xAxis = new
+        {
+            type = "category",
+            boundaryGap = false,
+            data = new[] { "January", "February", "March", "April", "May", "June" }
+        },
+        yAxis = new { type = "value" },
+        series = new[]
+        {
+            new
+            {
+                name = "Desktop",
+                type = "line",
+                stack = "Total",
+                smooth = true,
+                data = new[] { 186, 305, 237, 73, 209, 214 },
+                lineStyle = new { width = 2, color = "hsl(var(--chart-1))" },
+                areaStyle = new
+                {
+                    color = new
+                    {
+                        type = "linear",
+                        x = 0, y = 0, x2 = 0, y2 = 1,
+                        colorStops = new[]
+                        {
+                            new { offset = 0.0, color = "hsla(var(--chart-1), 0.8)" },
+                            new { offset = 1.0, color = "hsla(var(--chart-1), 0.1)" }
+                        }
+                    }
+                },
+                showSymbol = false
+            },
+            new
+            {
+                name = "Mobile",
+                type = "line",
+                stack = "Total",
+                smooth = true,
+                data = new[] { 80, 200, 120, 190, 130, 140 },
+                lineStyle = new { width = 2, color = "hsl(var(--chart-2))" },
+                areaStyle = new
+                {
+                    color = new
+                    {
+                        type = "linear",
+                        x = 0, y = 0, x2 = 0, y2 = 1,
+                        colorStops = new[]
+                        {
+                            new { offset = 0.0, color = "hsla(var(--chart-2), 0.8)" },
+                            new { offset = 1.0, color = "hsla(var(--chart-2), 0.1)" }
+                        }
+                    }
+                },
+                showSymbol = false
+            }
+        }
+    };
+
     private readonly List<DesktopData> desktopData = new()
     {
         new() { Month = "January", Desktop = 186 },

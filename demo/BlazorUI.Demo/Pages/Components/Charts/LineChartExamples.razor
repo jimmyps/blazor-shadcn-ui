@@ -35,11 +35,11 @@
         </ChartPanel>
     </div>
 
-    <!-- Line Chart - Linear -->
+    <!-- Line Chart - Linear with Gradient -->
     <div class="space-y-4">
         <div>
             <h3 class="text-lg font-semibold">Linear</h3>
-            <p class="text-sm text-muted-foreground">A line chart with straight lines</p>
+            <p class="text-sm text-muted-foreground">A line chart with straight lines and gradient fill</p>
         </div>
         
         <ChartPanel>
@@ -48,13 +48,7 @@
                 <ChartPanelDescription>January - June 2024</ChartPanelDescription>
             </ChartPanelHeader>
             <ChartPanelContent>
-                <LineChart Data="@lineData" 
-                          XAxisDataKey="Month"
-                          YAxisDataKey="Desktop"
-                          Label="Desktop"
-                          Height="300"
-                          Curved="false"
-                          LineColor="hsl(var(--chart-2))" />
+                <EChart Option="@linearGradientOption" Height="300" />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex w-full items-start gap-2 text-sm">
@@ -63,7 +57,7 @@
                             Trending up by 5.2% this month <span class="ml-1">📈</span>
                         </div>
                         <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            January - June 2024
+                            With subtle gradient area fill
                         </div>
                     </div>
                 </div>
@@ -196,6 +190,45 @@
     {
         new() { DataKey = "Desktop", Label = "Desktop", Color = "hsl(var(--chart-1))", Curved = true },
         new() { DataKey = "Mobile", Label = "Mobile", Color = "hsl(var(--chart-2))", Curved = true }
+    };
+
+    // Linear Line with Gradient Fill
+    private object linearGradientOption = new
+    {
+        tooltip = new { trigger = "axis" },
+        xAxis = new
+        {
+            type = "category",
+            boundaryGap = false,
+            data = new[] { "January", "February", "March", "April", "May", "June" }
+        },
+        yAxis = new { type = "value" },
+        series = new[]
+        {
+            new
+            {
+                name = "Desktop",
+                type = "line",
+                smooth = false,
+                data = new[] { 186, 305, 237, 73, 209, 214 },
+                lineStyle = new { width = 2, color = "hsl(var(--chart-2))" },
+                areaStyle = new
+                {
+                    color = new
+                    {
+                        type = "linear",
+                        x = 0, y = 0, x2 = 0, y2 = 1,
+                        colorStops = new[]
+                        {
+                            new { offset = 0.0, color = "hsla(var(--chart-2), 0.5)" },
+                            new { offset = 1.0, color = "hsla(var(--chart-2), 0.05)" }
+                        }
+                    }
+                },
+                showSymbol = true,
+                symbolSize = 4
+            }
+        }
     };
 
     public class LineData

@@ -169,6 +169,41 @@
 </div>
 
 @code {
+    // Horizontal Bar with Gradient
+    private object horizontalGradientOption = new
+    {
+        tooltip = new { trigger = "axis", axisPointer = new { type = "shadow" } },
+        grid = new { left = "3%", right = "4%", bottom = "3%", containLabel = true },
+        xAxis = new { type = "value" },
+        yAxis = new
+        {
+            type = "category",
+            data = new[] { "January", "February", "March", "April", "May", "June" }
+        },
+        series = new[]
+        {
+            new
+            {
+                name = "Desktop",
+                type = "bar",
+                data = new[] { 186, 305, 237, 73, 209, 214 },
+                itemStyle = new
+                {
+                    color = new
+                    {
+                        type = "linear",
+                        x = 0, y = 0, x2 = 1, y2 = 0,
+                        colorStops = new[]
+                        {
+                            new { offset = 0.0, color = "hsla(var(--chart-2), 0.5)" },
+                            new { offset = 1.0, color = "hsl(var(--chart-2))" }
+                        }
+                    }
+                }
+            }
+        }
+    };
+
     private readonly List<BarData> barData = new()
     {
         new() { Month = "January", Desktop = 186 },
