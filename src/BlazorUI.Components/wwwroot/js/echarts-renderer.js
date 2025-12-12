@@ -60,11 +60,11 @@ function loadEChartsScript() {
 /**
  * Create a new ECharts instance
  * @param {HTMLElement} element - Container element to render the chart
- * @param {object} config - Chart configuration object
+ * @param {object} config - ECharts v6 configuration object (NOT Chart.js format)
  * @returns {string} - Unique ID for the chart instance
  */
 export async function createChart(element, config) {
-    console.log('[ECharts] createChart called', { element, hasData: !!config?.data });
+    console.log('[ECharts] createChart called', { element, hasConfig: !!config });
     
     if (!element) {
         throw new Error('Chart element is required');
@@ -99,15 +99,12 @@ export async function createChart(element, config) {
         const chart = echarts.init(element, null, { renderer: 'svg' });
         console.log('[ECharts] Chart instance created successfully');
         
-        // Resolve CSS variables in the config before converting
+        // Resolve CSS variables in the config
         const resolvedConfig = resolveCssVariables(config);
-        console.log('[ECharts] Config resolved');
+        console.log('[ECharts] Config with resolved CSS variables:', resolvedConfig);
         
-        // Convert Chart.js-style config to ECharts option format
-        const option = convertConfig(resolvedConfig);
-        console.log('[ECharts] Config converted to ECharts format:', option);
-        
-        chart.setOption(option);
+        // Config arrives in proper ECharts v6 format from C# - use directly
+        chart.setOption(resolvedConfig);
         console.log('[ECharts] Chart option set successfully, chartId:', chartId);
         
         // Make chart responsive - store listener reference for cleanup
@@ -131,19 +128,19 @@ export async function createChart(element, config) {
 /**
  * Update chart data
  * @param {string} chartId - Chart instance ID
- * @param {object} newData - New data for the chart
+ * @param {object} newConfig - New ECharts configuration (already in ECharts format)
  */
-export function updateData(chartId, newData) {
+export function updateData(chartId, newConfig) {
     const instance = chartInstances.get(chartId);
     if (!instance) {
         console.warn(`Chart ${chartId} not found`);
         return;
     }
     
-    // Resolve CSS variables before converting
-    const resolvedData = resolveCssVariables(newData);
-    const option = convertConfig({ data: resolvedData });
-    instance.chart.setOption(option, { replaceMerge: ['series'] });
+    // Resolve CSS variables
+    const resolvedConfig = resolveCssVariables(newConfig);
+    // Config arrives in proper ECharts format from C# - use directly
+    instance.chart.setOption(resolvedConfig, { replaceMerge: ['series'] });
 }
 
 /**

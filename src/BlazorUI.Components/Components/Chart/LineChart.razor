@@ -6,7 +6,7 @@
 
 <CascadingValue Value="(IChartStyleContainer)this" IsFixed="true">
     <div class="@ContainerClass" style="position: relative; height: @(Height)px; width: 100%;">
-        <canvas @ref="_canvasRef" style="width: 100%; height: 100%;"></canvas>
+        <div @ref="_chartContainer" style="width: 100%; height: 100%;"></div>
         
         @if (_initializationError != null)
         {
@@ -48,7 +48,7 @@
 </CascadingValue>
 
 @code {
-    private ElementReference _canvasRef;
+    private ElementReference _chartContainer;
     private IChartRenderer? _renderer;
     private string? _chartId;
     private bool _isInitialized;
@@ -84,21 +84,16 @@
         {
             _renderer = ChartRendererFactory.CreateRenderer(Engine, JSRuntime);
             
-            var chartConfig = new ChartConfig
-            {
-                Type = ChartType.Line,
-                Responsive = Responsive,
-                MaintainAspectRatio = false,
-                Data = BuildChartData(),
-                Options = BuildChartOptions()
-            };
+            // Generate ECharts v6 config directly (not Chart.js format)
+            var echartsConfig = BuildEChartsConfig();
             
-            _chartId = await _renderer.InitializeAsync(_canvasRef, chartConfig);
+            _chartId = await _renderer.InitializeAsync(_chartContainer, echartsConfig);
             _isInitialized = true;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"LineChart: Failed to initialize chart: {ex.Message}");
+            _initializationError = ex.Message;
         }
     }
     
@@ -153,8 +148,8 @@
         {
             try
             {
-                var chartData = BuildChartData();
-                await _renderer.UpdateDataAsync(_chartId, chartData);
+                var echartsConfig = BuildEChartsConfig();
+                await _renderer.UpdateDataAsync(_chartId, echartsConfig);
             }
             catch (Exception ex)
             {
@@ -163,70 +158,164 @@
         }
     }
     
-    private object BuildChartOptions()
-    {
-        return new
-        {
-            responsive = Responsive,
-            maintainAspectRatio = false,
-            plugins = new
-            {
-                legend = new
-                {
-                    display = ShowLegend
-                },
-                tooltip = new
-                {
-                    enabled = ShowTooltip
-                }
-            },
-            scales = new
-            {
-                x = new
-                {
-                    display = ShowXAxis,
-                    grid = new
-                    {
-                        display = ShowGrid
-                    }
-                },
-                y = new
-                {
-                    display = ShowYAxis,
-                    grid = new
-                    {
-                        display = ShowGrid
-                    }
-                }
-            },
-            animation = new
-            {
-                duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
-                easing = ChartUtilities.MapEasingFunction(Animation?.Easing ?? AnimationEasing.EaseInOutQuart)
-            }
-        };
-    }
-    
-    private object BuildChartData()
+    /// <summary>
+    /// Builds ECharts v6 configuration object directly (not Chart.js format).
+    /// </summary>
+    private object BuildEChartsConfig()
     {
         if (Data == null || !Data.Any())
         {
             return new
             {
-                labels = Array.Empty<string>(),
-                datasets = Array.Empty<object>()
+                xAxis = new { type = "category", data = Array.Empty<string>() },
+                yAxis = new { type = "value" },
+                series = Array.Empty<object>()
             };
         }
         
-        // Extract labels from the first property or use indices
         var labels = ExtractLabels();
-        var datasets = BuildDatasets();
+        var values = ExtractValues();
         
         return new
         {
-            labels,
-            datasets
+            animationDuration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
+            animationEasing = MapEasingToECharts(Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
+            tooltip = new
+            {
+                show = ShowTooltip,
+                trigger = "axis"
+            },
+            legend = new
+            {
+                show = ShowLegend,
+                top = "top",
+                left = "center"
+            },
+            xAxis = new
+            {
+                type = "category",
+                data = labels,
+                show = ShowXAxis,
+                boundaryGap = false,
+                axisLine = new { show = ShowXAxis },
+                splitLine = new { show = ShowGrid }
+            },
+            yAxis = new
+            {
+                type = "value",
+                show = ShowYAxis,
+                axisLine = new { show = ShowYAxis },
+                splitLine = new { show = ShowGrid }
+            },
+            series = new[]
+            {
+                BuildEChartsSeries(values)
+            }
         };
+    }
+    
+    /// <summary>
+    /// Builds a single ECharts series object.
+    /// </summary>
+    private object BuildEChartsSeries(double[] values)
+    {
+        // Determine configuration source: ChartStyle or direct parameters
+        var lineStyle = _chartStyle?.LineStyle;
+        var areaStyle = _chartStyle?.AreaStyle;
+        var pointStyle = _chartStyle?.PointStyle;
+        
+        // Line color from ChartStyle or parameter
+        var color = lineStyle?.Color ?? LineColor ?? "hsl(var(--chart-1))";
+        
+        // Line width from ChartStyle or parameter
+        var lineWidth = lineStyle?.Width ?? LineWidth;
+        
+        // Smooth/curved from ChartStyle or parameter
+        var smooth = lineStyle?.Smooth ?? Curved;
+        
+        // Fill area determination
+        var fillArea = areaStyle?.Show ?? FillArea;
+        
+        // Point configuration
+        var showDots = pointStyle?.Show ?? ShowDots;
+        var pointSize = pointStyle?.Size ?? 4;
+        
+        var series = new Dictionary<string, object>
+        {
+            ["name"] = Label ?? YAxisDataKey,
+            ["type"] = "line",
+            ["data"] = values,
+            ["smooth"] = smooth ? 0.4 : 0,
+            ["showSymbol"] = showDots,
+            ["symbolSize"] = showDots ? pointSize : 0
+        };
+        
+        // Line style
+        var lineTypeValue = lineStyle?.Type == LineType.Dashed ? "dashed" : 
+                           lineStyle?.Type == LineType.Dotted ? "dotted" : "solid";
+        series["lineStyle"] = new
+        {
+            color = color,
+            width = lineWidth,
+            type = lineTypeValue
+        };
+        
+        // Item style (for point markers)
+        series["itemStyle"] = new { color = color };
+        
+        // Area style with gradient support
+        if (fillArea)
+        {
+            if (areaStyle?.Gradient != null)
+            {
+                // Use ChartStyle gradient
+                var gradient = areaStyle.Gradient;
+                var (x, y, x2, y2) = GetGradientCoordinates(gradient.Direction);
+                
+                series["areaStyle"] = new
+                {
+                    color = new
+                    {
+                        type = "linear",
+                        x, y, x2, y2,
+                        colorStops = gradient.ColorStops.Select(stop => new
+                        {
+                            offset = stop.Offset,
+                            color = stop.Color
+                        }).ToArray(),
+                        @global = false
+                    }
+                };
+            }
+            else if (GradientFill)
+            {
+                // Fallback to parameter-based gradient
+                series["areaStyle"] = new
+                {
+                    color = new
+                    {
+                        type = "linear",
+                        x = 0,
+                        y = 0,
+                        x2 = 0,
+                        y2 = 1,
+                        colorStops = new[]
+                        {
+                            new { offset = 0.0, color = $"hsla(var(--chart-1), {GradientStartOpacity})" },
+                            new { offset = 1.0, color = $"hsla(var(--chart-1), {GradientEndOpacity})" }
+                        },
+                        @global = false
+                    }
+                };
+            }
+            else
+            {
+                // Simple solid fill
+                series["areaStyle"] = new { opacity = 0.3 };
+            }
+        }
+        
+        return series;
     }
     
     private string[] ExtractLabels()
@@ -247,14 +336,14 @@
         return Data.Select((_, i) => i.ToString()).ToArray();
     }
     
-    private object[] BuildDatasets()
+    private double[] ExtractValues()
     {
         if (string.IsNullOrEmpty(YAxisDataKey))
         {
-            return Array.Empty<object>();
+            return Array.Empty<double>();
         }
         
-        var values = Data.Select(item =>
+        return Data.Select(item =>
         {
             var prop = item?.GetType().GetProperty(YAxisDataKey);
             var value = prop?.GetValue(item);
@@ -263,93 +352,23 @@
             
             return Convert.ToDouble(value);
         }).ToArray();
-        
-        // Determine configuration source: ChartStyle or direct parameters
-        var lineStyle = _chartStyle?.LineStyle;
-        var areaStyle = _chartStyle?.AreaStyle;
-        var pointStyle = _chartStyle?.PointStyle;
-        
-        // Line color from ChartStyle or parameter
-        var color = lineStyle?.Color ?? LineColor ?? "hsl(var(--chart-1))";
-        
-        // Line width from ChartStyle or parameter
-        var lineWidth = lineStyle?.Width ?? LineWidth;
-        
-        // Smooth/curved from ChartStyle or parameter
-        var smooth = lineStyle?.Smooth ?? Curved;
-        
-        // Fill area determination
-        var fillArea = areaStyle?.Show ?? FillArea;
-        
-        // Build area style with optional gradient
-        object? areaStyleObj = null;
-        if (fillArea)
+    }
+    
+    private string MapEasingToECharts(AnimationEasing easing)
+    {
+        return easing switch
         {
-            // Check if we have a gradient from ChartStyle
-            if (areaStyle?.Gradient != null)
-            {
-                var gradient = areaStyle.Gradient;
-                var (x, y, x2, y2) = GetGradientCoordinates(gradient.Direction);
-                
-                areaStyleObj = new
-                {
-                    color = new
-                    {
-                        type = "linear",
-                        x = x,
-                        y = y,
-                        x2 = x2,
-                        y2 = y2,
-                        colorStops = gradient.ColorStops.Select(stop => new
-                        {
-                            offset = stop.Offset,
-                            color = stop.Color
-                        }).ToArray()
-                    }
-                };
-            }
-            else if (GradientFill)
-            {
-                // Fallback to parameter-based gradient
-                areaStyleObj = new
-                {
-                    color = new
-                    {
-                        type = "linear",
-                        x = 0,
-                        y = 0,
-                        x2 = 0,
-                        y2 = 1,
-                        colorStops = new[]
-                        {
-                            new { offset = 0.0, color = $"hsla(var(--chart-1), {GradientStartOpacity})" },
-                            new { offset = 1.0, color = $"hsla(var(--chart-1), {GradientEndOpacity})" }
-                        }
-                    }
-                };
-            }
-        }
-        
-        // Point configuration from ChartStyle or parameters
-        var showDots = pointStyle?.Show ?? ShowDots;
-        var pointSize = pointStyle?.Size ?? 3;
-        var pointHoverSize = pointStyle?.HoverSize ?? 5;
-        
-        return new[]
-        {
-            new
-            {
-                label = Label ?? YAxisDataKey,
-                data = values,
-                borderColor = color,
-                backgroundColor = fillArea && !GradientFill && areaStyle?.Gradient == null ? color : "transparent",
-                borderWidth = lineWidth,
-                tension = smooth ? 0.4 : 0,
-                fill = fillArea,
-                pointRadius = showDots ? pointSize : 0,
-                pointHoverRadius = showDots ? pointHoverSize : 0,
-                areaStyle = areaStyleObj // ECharts will use this for gradient
-            }
+            AnimationEasing.Linear => "linear",
+            AnimationEasing.EaseInQuad => "quadraticIn",
+            AnimationEasing.EaseOutQuad => "quadraticOut",
+            AnimationEasing.EaseInOutQuad => "quadraticInOut",
+            AnimationEasing.EaseInCubic => "cubicIn",
+            AnimationEasing.EaseOutCubic => "cubicOut",
+            AnimationEasing.EaseInOutCubic => "cubicInOut",
+            AnimationEasing.EaseInQuart => "quarticIn",
+            AnimationEasing.EaseOutQuart => "quarticOut",
+            AnimationEasing.EaseInOutQuart => "quarticInOut",
+            _ => "quarticInOut"
         };
     }
     

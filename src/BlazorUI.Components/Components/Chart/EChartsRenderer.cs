@@ -21,13 +21,13 @@ public class EChartsRenderer : IChartRenderer
         _jsRuntime = jsRuntime;
     }
     
-    public async Task<string> InitializeAsync(ElementReference element, ChartConfig config)
+    public async Task<string> InitializeAsync(ElementReference element, object echartsConfig)
     {
         _jsModule ??= await _jsRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/BlazorUI.Components/js/echarts-renderer.js");
         
-        // Serialize config with camelCase to ensure JavaScript property names match ECharts expectations
-        var json = JsonSerializer.Serialize(config, JsonOptions);
+        // Config is already in ECharts v6 format from C# - serialize with camelCase
+        var json = JsonSerializer.Serialize(echartsConfig, JsonOptions);
         var normalizedConfig = JsonSerializer.Deserialize<object>(json, JsonOptions);
         
         var chartId = await _jsModule.InvokeAsync<string>("createChart", element, normalizedConfig);
