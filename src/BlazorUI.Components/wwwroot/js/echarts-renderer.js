@@ -1,6 +1,15 @@
 /**
  * ECharts Renderer Module for BlazorUI Charts
  * Provides integration between Blazor components and ECharts library
+ * 
+ * ECharts v6 Compatibility Notes:
+ * - Default theme and visual styles have changed in v6
+ * - Legend position default changed from top to bottom in v6
+ * - Rich text labels now inherit plain label styles by default
+ * - Grid anti-overflow and anti-overlap mechanisms are enabled by default
+ * - SVG rendering mode is explicitly configured for best quality
+ * 
+ * We embrace v6's improved defaults while maintaining compatibility
  */
 
 // Store chart instances by ID
@@ -178,11 +187,15 @@ function convertConfig(config) {
     const data = config.data || config.Data || {};
     const options = config.options || config.Options || {};
     
-    // Base ECharts option
+    // Base ECharts option with v6-compatible settings
     const echartsOption = {
         animation: options.animation !== false,
         animationDuration: options.animation?.duration || 750,
-        animationEasing: mapEasing(options.animation?.easing || 'cubicOut')
+        animationEasing: mapEasing(options.animation?.easing || 'cubicOut'),
+        // v6: Opt-in to maintain v5 behavior if needed for compatibility
+        // By default, we use v6 behavior for better defaults
+        // richInheritPlainLabel: true (default in v6, rich text inherits plain label styles)
+        // legacyViewCoordSysCenterBase: false (use v6 corrected percent base calculations)
     };
     
     // Convert based on chart type (handle both string and enum number values)
@@ -243,7 +256,10 @@ function convertLineChart(data, options, baseOption) {
             trigger: 'axis'
         },
         legend: {
-            show: options.plugins?.legend?.display !== false
+            show: options.plugins?.legend?.display !== false,
+            // v6 changed default to bottom, but we prefer top for consistency with shadcn
+            top: 'top',
+            left: 'center'
         }
     };
 }
@@ -278,7 +294,10 @@ function convertBarChart(data, options, baseOption) {
             trigger: 'axis'
         },
         legend: {
-            show: options.plugins?.legend?.display !== false
+            show: options.plugins?.legend?.display !== false,
+            // v6 changed default to bottom, but we prefer top for consistency with shadcn
+            top: 'top',
+            left: 'center'
         }
     };
 }
@@ -315,8 +334,10 @@ function convertPieChart(data, options, baseOption) {
         },
         legend: {
             show: options.plugins?.legend?.display !== false,
+            // v6 default changed, for pie charts we keep vertical orientation on right
             orient: 'vertical',
-            left: 'right'
+            left: 'right',
+            top: 'middle'
         }
     };
 }
@@ -351,7 +372,10 @@ function convertRadarChart(data, options, baseOption) {
             trigger: 'item'
         },
         legend: {
-            show: options.plugins?.legend?.display !== false
+            show: options.plugins?.legend?.display !== false,
+            // v6 changed default to bottom, but we prefer top for radar charts
+            top: 'top',
+            left: 'center'
         }
     };
 }
