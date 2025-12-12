@@ -11,9 +11,7 @@ public interface IChartRenderer : IAsyncDisposable
     /// <summary>
     /// Initializes the chart renderer with the target element.
     /// </summary>
-    /// <param name="element">The HTML element reference to render into</param>
-    /// <param name="config">Chart configuration object (format depends on renderer - ECharts v6 format for EChartsRenderer)</param>
-    Task<string> InitializeAsync(ElementReference element, object config);
+    Task<string> InitializeAsync(ElementReference element, ChartConfig config);
     
     /// <summary>
     /// Updates the chart with new data.
