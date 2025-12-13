@@ -99,12 +99,10 @@ export async function createChart(element, config) {
         const chart = echarts.init(element, null, { renderer: 'svg' });
         console.log('[ECharts] Chart instance created successfully');
         
-        // Resolve CSS variables in the config
-        const resolvedConfig = resolveCssVariables(config);
-        console.log('[ECharts] Config with resolved CSS variables:', resolvedConfig);
-        
         // Config arrives in proper ECharts v6 format from C# - use directly
-        chart.setOption(resolvedConfig);
+        // ECharts v6 natively supports CSS variables like var(--chart-1)
+        // No resolution needed - enables real-time theme changes
+        chart.setOption(config);
         console.log('[ECharts] Chart option set successfully, chartId:', chartId);
         
         // Make chart responsive - store listener reference for cleanup
@@ -137,10 +135,9 @@ export function updateData(chartId, newConfig) {
         return;
     }
     
-    // Resolve CSS variables
-    const resolvedConfig = resolveCssVariables(newConfig);
     // Config arrives in proper ECharts format from C# - use directly
-    instance.chart.setOption(resolvedConfig, { replaceMerge: ['series'] });
+    // ECharts v6 natively supports CSS variables - no resolution needed
+    instance.chart.setOption(newConfig, { replaceMerge: ['series'] });
 }
 
 /**
@@ -595,112 +592,4 @@ function mapEasing(easing) {
  */
 function generateId() {
     return `echarts-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
-}
-
-/**
- * Get computed CSS variable value
- * @param {string} varName - CSS variable name (e.g., '--chart-1')
- * @returns {string} - Computed color value
- */
-function getCssVariable(varName) {
-    const styles = getComputedStyle(document.documentElement);
-    const value = styles.getPropertyValue(varName).trim();
-    
-    if (!value) {
-        console.warn(`CSS variable ${varName} not found or is empty`);
-        return '';
-    }
-    
-    // Check if this is HSL format (contains %) or OKLCH format (no %)
-    if (value.includes('%')) {
-        // HSL format: "212.7 26.8% 83.9%" → "212.7, 26.8%, 83.9%"
-        const parts = value.split(' ');
-        if (parts.length === 3) {
-            return `${parts[0]}, ${parts[1]}, ${parts[2]}`;
-        }
-    } else {
-        // OKLCH format: "0.646 0.222 41.116" → "0.646 0.222 41.116"
-        // OKLCH uses spaces, not commas
-        return value;
-    }
-    
-    return value;
-}
-
-/**
- * Recursively resolve CSS variables in configuration object
- * @param {any} obj - Object to process
- * @returns {any} - Object with resolved CSS variables
- */
-function resolveCssVariables(obj) {
-    if (obj === null || obj === undefined) {
-        return obj;
-    }
-    
-    if (typeof obj === 'string') {
-        // Match patterns like "hsl(var(--chart-1))", "oklch(var(--chart-up))" or "var(--chart-2)"
-        const cssVarMatch = obj.match(/var\(([^)]+)\)/);
-        if (cssVarMatch) {
-            const varName = cssVarMatch[1];
-            const resolvedValue = getCssVariable(varName);
-            if (!resolvedValue) {
-                console.warn(`Could not resolve CSS variable in: ${obj}`);
-                return obj; // Return original if can't resolve
-            }
-            
-            // Check if the resolved value is already a complete color function (e.g., "hsl(...)" or "oklch(...)")
-            // If so, recursively resolve any nested var() within it, then use it directly
-            if (resolvedValue.startsWith('hsl(') || resolvedValue.startsWith('oklch(') || 
-                resolvedValue.startsWith('rgb(') || resolvedValue.startsWith('rgba(')) {
-                // Recursively resolve in case the resolved value contains nested var()
-                const fullyResolved = resolveCssVariables(resolvedValue);
-                console.log(`Resolved ${obj} to ${fullyResolved} (already complete, recursively resolved)`);
-                return fullyResolved;
-            }
-            
-            // Check if var() is inside hsl() or oklch() - if so, just replace var() with values
-            // Otherwise, wrap the resolved value appropriately
-            let result;
-            if (obj.startsWith('hsl(var(')) {
-                // Already has hsl() wrapper, just replace var(...) with the values
-                result = obj.replace(cssVarMatch[0], resolvedValue);
-            } else if (obj.startsWith('oklch(var(')) {
-                // Already has oklch() wrapper, just replace var(...) with the values
-                result = obj.replace(cssVarMatch[0], resolvedValue);
-            } else if (obj.startsWith('var(')) {
-                // No wrapper, detect format and add appropriate wrapper
-                // HSL has %, OKLCH doesn't
-                if (resolvedValue.includes('%') || resolvedValue.includes(',')) {
-                    result = `hsl(${resolvedValue})`;
-                } else {
-                    result = `oklch(${resolvedValue})`;
-                }
-            } else {
-                // Replace var() with resolved value as-is
-                result = obj.replace(cssVarMatch[0], resolvedValue);
-            }
-            
-            // Recursively resolve in case there are more nested var() expressions
-            const fullyResolved = resolveCssVariables(result);
-            console.log(`Resolved ${obj} to ${fullyResolved}`);
-            return fullyResolved;
-        }
-        return obj;
-    }
-    
-    if (Array.isArray(obj)) {
-        return obj.map(item => resolveCssVariables(item));
-    }
-    
-    if (typeof obj === 'object') {
-        const resolved = {};
-        for (const key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                resolved[key] = resolveCssVariables(obj[key]);
-            }
-        }
-        return resolved;
-    }
-    
-    return obj;
 }
