@@ -60,6 +60,12 @@ public sealed class ChartDataset
     /// </summary>
     [JsonPropertyName("gradient")]
     public GradientConfig? Gradient { get; init; }
+    
+    /// <summary>
+    /// Array of background colors (for pie charts with multiple slices).
+    /// </summary>
+    [JsonPropertyName("backgroundColors")]
+    public string[]? BackgroundColors { get; init; }
 }
 
 /// <summary>

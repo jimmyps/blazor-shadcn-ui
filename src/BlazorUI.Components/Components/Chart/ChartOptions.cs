@@ -24,6 +24,9 @@ public sealed class ChartOptions
     
     [JsonPropertyName("animation")]
     public ChartAnimationConfig? Animation { get; init; }
+    
+    [JsonPropertyName("cutout")]
+    public string? Cutout { get; init; }
 }
 
 /// <summary>
@@ -45,6 +48,9 @@ public sealed class LegendConfig
 {
     [JsonPropertyName("display")]
     public bool Display { get; init; } = true;
+    
+    [JsonPropertyName("position")]
+    public string? Position { get; init; }
 }
 
 /// <summary>

@@ -135,41 +135,38 @@
         }
     }
     
-    private object BuildChartOptions()
+    private ChartOptions BuildChartOptions()
     {
-        return new
+        return new ChartOptions
         {
-            responsive = Responsive,
-            maintainAspectRatio = false,
-            plugins = new
+            Responsive = Responsive,
+            MaintainAspectRatio = false,
+            Plugins = new ChartPlugins
             {
-                legend = new
-                {
-                    display = ShowLegend,
-                    position = MapLegendPosition(LegendPosition)
+                Legend = new LegendConfig 
+                { 
+                    Display = ShowLegend,
+                    Position = MapLegendPosition(LegendPosition)
                 },
-                tooltip = new
-                {
-                    enabled = ShowTooltip
-                }
+                Tooltip = new TooltipConfig { Enabled = ShowTooltip }
             },
-            cutout = IsDonut ? $"{DonutInnerRadius * 100}%" : (string?)null,
-            animation = new
+            Cutout = IsDonut ? $"{DonutInnerRadius * 100}%" : null,
+            Animation = new ChartAnimationConfig
             {
-                duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
-                easing = ChartUtilities.MapEasingFunction(Animation?.Easing ?? AnimationEasing.EaseInOutQuart)
+                Duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
+                Easing = Animation?.Easing ?? AnimationEasing.EaseInOutQuart
             }
         };
     }
     
-    private object BuildChartData()
+    private ChartData BuildChartData()
     {
         if (Data == null || !Data.Any())
         {
-            return new
+            return new ChartData
             {
-                labels = Array.Empty<string>(),
-                datasets = Array.Empty<object>()
+                Labels = Array.Empty<string>(),
+                Datasets = Array.Empty<ChartDataset>()
             };
         }
         
@@ -177,17 +174,18 @@
         var values = ExtractValues();
         var colors = GenerateColors(values.Length);
         
-        return new
+        return new ChartData
         {
-            labels,
-            datasets = new[]
+            Labels = labels,
+            Datasets = new[]
             {
-                new
+                new ChartDataset
                 {
-                    data = values,
-                    backgroundColor = colors,
-                    borderColor = colors,
-                    borderWidth = 1
+                    Data = values,
+                    BackgroundColor = string.Join(",", colors), // Multiple colors as comma-separated
+                    BorderColor = string.Join(",", colors),
+                    BorderWidth = 1,
+                    BackgroundColors = colors // Keep array for ECharts converter
                 }
             }
         };
