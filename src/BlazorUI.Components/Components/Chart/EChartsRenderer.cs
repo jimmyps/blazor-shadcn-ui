@@ -261,12 +261,16 @@ public class EChartsRenderer : IChartRenderer
             series.Add(seriesItem);
         }
         
-        // Build ECharts v6 option object (NO top-level 'type', NO responsive/maintainAspectRatio)
+        // Build ECharts v6 option object per Section 2.2 (Bar Charts) specification
         return new
         {
             animationDuration = options.Animation?.Duration ?? 750,
             animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
-            tooltip = new { show = options.Plugins.Tooltip.Enabled, trigger = "axis" },
+            tooltip = new { 
+                show = options.Plugins.Tooltip.Enabled, 
+                trigger = "axis",  // Axis trigger for bar charts
+                axisPointer = new { type = "shadow" }  // Shadow pointer per spec
+            },
             legend = new { 
                 show = options.Plugins.Legend.Display, 
                 top = "top", 
@@ -278,8 +282,9 @@ public class EChartsRenderer : IChartRenderer
                 type = "category", 
                 data = labels,
                 show = options.Scales?.X?.Display ?? true,
+                boundaryGap = true,  // CRITICAL: Bars centered between ticks (Section 2.2)
                 axisLine = new { show = options.Scales?.X?.Display ?? true },
-                splitLine = new { show = options.Scales?.X?.Grid?.Display ?? true }
+                splitLine = new { show = false }  // No vertical grid lines per spec
             },
             yAxis = new 
             { 
