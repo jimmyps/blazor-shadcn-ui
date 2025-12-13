@@ -84,6 +84,52 @@ public sealed class ChartDataset
     /// </summary>
     [JsonPropertyName("scatterData")]
     public object[][]? ScatterData { get; init; }
+    
+    // === Pie Chart Specific Properties ===
+    
+    /// <summary>
+    /// Name property for pie chart data items (used with Value for {name, value} format).
+    /// </summary>
+    [JsonPropertyName("name")]
+    public string? Name { get; init; }
+    
+    /// <summary>
+    /// Value property for pie chart data items (used with Name for {name, value} format).
+    /// </summary>
+    [JsonPropertyName("value")]
+    public double? Value { get; init; }
+    
+    /// <summary>
+    /// Radius of pie chart (can be percentage string like "70%" or array ["40%", "70%"] for donut).
+    /// </summary>
+    [JsonPropertyName("radius")]
+    public object? Radius { get; init; }
+    
+    /// <summary>
+    /// Center position of pie chart [x, y] as percentages (default: ["50%", "50%"]).
+    /// </summary>
+    [JsonPropertyName("center")]
+    public string[]? Center { get; init; }
+    
+    /// <summary>
+    /// Whether to avoid label overlap in pie charts.
+    /// </summary>
+    [JsonPropertyName("avoidLabelOverlap")]
+    public bool? AvoidLabelOverlap { get; init; }
+    
+    // === Dataset + Encode Pattern ===
+    
+    /// <summary>
+    /// Column/field name for encoding X-axis values in dataset pattern.
+    /// </summary>
+    [JsonPropertyName("encodeX")]
+    public string? EncodeX { get; init; }
+    
+    /// <summary>
+    /// Column/field name for encoding Y-axis values in dataset pattern.
+    /// </summary>
+    [JsonPropertyName("encodeY")]
+    public string? EncodeY { get; init; }
 }
 
 /// <summary>

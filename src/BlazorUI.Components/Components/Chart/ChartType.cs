@@ -47,7 +47,17 @@ public enum ChartType
     /// <summary>
     /// Area chart, a filled line chart.
     /// </summary>
-    Area
+    Area,
+    
+    /// <summary>
+    /// Gauge chart for displaying values on an angular scale (speedometer/dial).
+    /// </summary>
+    Gauge,
+    
+    /// <summary>
+    /// Heatmap chart for visualizing data through color-coded grids.
+    /// </summary>
+    Heatmap
 }
 
 /// <summary>
@@ -75,6 +85,8 @@ public class ChartTypeJsonConverter : JsonConverter<ChartType>
             "scatter" => ChartType.Scatter,
             "bubble" => ChartType.Bubble,
             "area" => ChartType.Area,
+            "gauge" => ChartType.Gauge,
+            "heatmap" => ChartType.Heatmap,
             _ => ChartType.Line
         };
     }
@@ -92,6 +104,8 @@ public class ChartTypeJsonConverter : JsonConverter<ChartType>
             ChartType.Scatter => "scatter",
             ChartType.Bubble => "bubble",
             ChartType.Area => "line", // Area is a line chart with fill
+            ChartType.Gauge => "gauge",
+            ChartType.Heatmap => "heatmap",
             _ => "line"
         };
         

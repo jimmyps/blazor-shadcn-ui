@@ -27,6 +27,30 @@ public sealed class ChartOptions
     
     [JsonPropertyName("cutout")]
     public string? Cutout { get; init; }
+    
+    /// <summary>
+    /// VisualMap configuration for heat maps and other visual encoding.
+    /// </summary>
+    [JsonPropertyName("visualMap")]
+    public VisualMapConfig? VisualMap { get; init; }
+    
+    /// <summary>
+    /// Gauge-specific configuration.
+    /// </summary>
+    [JsonPropertyName("gauge")]
+    public GaugeConfig? Gauge { get; init; }
+    
+    /// <summary>
+    /// Radar coordinate system configuration.
+    /// </summary>
+    [JsonPropertyName("radar")]
+    public RadarCoordinateConfig? Radar { get; init; }
+    
+    /// <summary>
+    /// Dataset source for tabular data (alternative to labels + datasets pattern).
+    /// </summary>
+    [JsonPropertyName("dataset")]
+    public DatasetConfig? Dataset { get; init; }
 }
 
 /// <summary>
@@ -135,4 +159,151 @@ public sealed class ChartAnimationConfig
     
     [JsonPropertyName("easing")]
     public AnimationEasing Easing { get; init; } = AnimationEasing.EaseInOutQuart;
+}
+
+/// <summary>
+/// VisualMap configuration for heatmaps and continuous visual encoding.
+/// </summary>
+public sealed class VisualMapConfig
+{
+    [JsonPropertyName("min")]
+    public double Min { get; init; }
+    
+    [JsonPropertyName("max")]
+    public double Max { get; init; }
+    
+    [JsonPropertyName("calculable")]
+    public bool Calculable { get; init; } = true;
+    
+    [JsonPropertyName("orient")]
+    public string Orient { get; init; } = "vertical";
+    
+    [JsonPropertyName("left")]
+    public string? Left { get; init; }
+    
+    [JsonPropertyName("bottom")]
+    public string? Bottom { get; init; }
+    
+    [JsonPropertyName("inRange")]
+    public VisualMapInRange? InRange { get; init; }
+}
+
+/// <summary>
+/// Visual encoding range for VisualMap.
+/// </summary>
+public sealed class VisualMapInRange
+{
+    [JsonPropertyName("color")]
+    public string[]? Color { get; init; }
+}
+
+/// <summary>
+/// Gauge chart specific configuration.
+/// </summary>
+public sealed class GaugeConfig
+{
+    [JsonPropertyName("min")]
+    public double Min { get; init; } = 0;
+    
+    [JsonPropertyName("max")]
+    public double Max { get; init; } = 100;
+    
+    [JsonPropertyName("splitNumber")]
+    public int SplitNumber { get; init; } = 10;
+    
+    [JsonPropertyName("axisLine")]
+    public GaugeAxisLine? AxisLine { get; init; }
+    
+    [JsonPropertyName("detail")]
+    public GaugeDetail? Detail { get; init; }
+}
+
+/// <summary>
+/// Gauge axis line configuration.
+/// </summary>
+public sealed class GaugeAxisLine
+{
+    [JsonPropertyName("lineStyle")]
+    public GaugeLineStyle? LineStyle { get; init; }
+}
+
+/// <summary>
+/// Gauge line style configuration.
+/// </summary>
+public sealed class GaugeLineStyle
+{
+    [JsonPropertyName("width")]
+    public int Width { get; init; } = 30;
+    
+    [JsonPropertyName("color")]
+    public object? Color { get; init; } // Can be string or color stops array
+}
+
+/// <summary>
+/// Gauge detail (value display) configuration.
+/// </summary>
+public sealed class GaugeDetail
+{
+    [JsonPropertyName("formatter")]
+    public string? Formatter { get; init; }
+    
+    [JsonPropertyName("fontSize")]
+    public int FontSize { get; init; } = 20;
+}
+
+/// <summary>
+/// Radar coordinate system configuration (for radar charts).
+/// </summary>
+public sealed class RadarCoordinateConfig
+{
+    [JsonPropertyName("indicator")]
+    public RadarIndicator[]? Indicator { get; init; }
+    
+    [JsonPropertyName("shape")]
+    public string Shape { get; init; } = "polygon"; // "polygon" or "circle"
+}
+
+/// <summary>
+/// Radar chart indicator (axis) configuration.
+/// </summary>
+public sealed class RadarIndicator
+{
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+    
+    [JsonPropertyName("max")]
+    public double Max { get; init; }
+    
+    [JsonPropertyName("min")]
+    public double? Min { get; init; }
+}
+
+/// <summary>
+/// Dataset configuration for tabular data pattern.
+/// </summary>
+public sealed class DatasetConfig
+{
+    [JsonPropertyName("source")]
+    public object? Source { get; init; } // Can be array of arrays or array of objects
+    
+    [JsonPropertyName("dimensions")]
+    public string[]? Dimensions { get; init; }
+}
+
+/// <summary>
+/// Encode configuration for mapping dataset columns to visual channels.
+/// </summary>
+public sealed class EncodeConfig
+{
+    [JsonPropertyName("x")]
+    public string? X { get; init; }
+    
+    [JsonPropertyName("y")]
+    public string? Y { get; init; }
+    
+    [JsonPropertyName("tooltip")]
+    public string[]? Tooltip { get; init; }
+    
+    [JsonPropertyName("seriesName")]
+    public string? SeriesName { get; init; }
 }
