@@ -14,9 +14,8 @@ public static class ChartRendererFactory
     {
         return engine switch
         {
-            ChartEngine.ChartJs => new ChartJsRenderer(jsRuntime),
             ChartEngine.ECharts => new EChartsRenderer(jsRuntime),
-            _ => new ChartJsRenderer(jsRuntime) // Default to Chart.js
+            _ => new EChartsRenderer(jsRuntime) // Default to ECharts
         };
     }
 }

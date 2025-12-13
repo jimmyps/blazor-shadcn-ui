@@ -35,11 +35,11 @@
         </ChartPanel>
     </div>
 
-    <!-- Line Chart - Linear -->
+    <!-- Line Chart - Linear with Gradient -->
     <div class="space-y-4">
         <div>
             <h3 class="text-lg font-semibold">Linear</h3>
-            <p class="text-sm text-muted-foreground">A line chart with straight lines</p>
+            <p class="text-sm text-muted-foreground">A line chart with straight lines and gradient fill</p>
         </div>
         
         <ChartPanel>
@@ -54,7 +54,11 @@
                           Label="Desktop"
                           Height="300"
                           Curved="false"
-                          LineColor="hsl(var(--chart-2))" />
+                          FillArea="true"
+                          GradientFill="true"
+                          GradientStartOpacity="0.5"
+                          GradientEndOpacity="0.05"
+                          LineColor="var(--chart-2)" />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex w-full items-start gap-2 text-sm">
@@ -63,7 +67,7 @@
                             Trending up by 5.2% this month <span class="ml-1">📈</span>
                         </div>
                         <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            January - June 2024
+                            With subtle gradient area fill
                         </div>
                     </div>
                 </div>
@@ -125,7 +129,7 @@
                           Height="300"
                           Curved="true"
                           ShowDots="true"
-                          LineColor="hsl(var(--chart-3))" />
+                          LineColor="var(--chart-3)" />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex gap-2 font-medium leading-none">
@@ -157,7 +161,7 @@
                           Label="Total Visitors"
                           Height="300"
                           Curved="true"
-                          LineColor="hsl(var(--chart-4))" />
+                          LineColor="var(--chart-4)" />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex gap-2 font-medium leading-none">
@@ -165,6 +169,52 @@
                 </div>
                 <div class="leading-none text-muted-foreground">
                     Showing total visitors for the last 6 months
+                </div>
+            </ChartPanelFooter>
+        </ChartPanel>
+    </div>
+    
+    <!-- Line Chart - Declarative ChartStyle (NEW) -->
+    <div class="space-y-4">
+        <div>
+            <h3 class="text-lg font-semibold">Declarative Style ✨ NEW</h3>
+            <p class="text-sm text-muted-foreground">Using pure markup with ChartStyle child components - zero C# code required</p>
+        </div>
+        
+        <ChartPanel>
+            <ChartPanelHeader>
+                <ChartPanelTitle>Declarative Styling Pattern</ChartPanelTitle>
+                <ChartPanelDescription>Fully configured via markup (Pattern 6)</ChartPanelDescription>
+            </ChartPanelHeader>
+            <ChartPanelContent>
+                <LineChart Data="@lineData" 
+                          XAxisDataKey="Month"
+                          YAxisDataKey="Desktop"
+                          Label="Revenue"
+                          Height="350">
+                    <ChartStyle>
+                        <LineStyle Color="var(--chart-1)" Width="2" Smooth="true" Type="LineType.Solid" />
+                        <AreaStyle Show="true">
+                            <LinearGradient Direction="GradientDirection.Vertical">
+                                <ColorStop Offset="0.0" Color="var(--chart-1)" />
+                                <ColorStop Offset="0.5" Color="var(--chart-1)" />
+                                <ColorStop Offset="1.0" Color="var(--chart-1)" />
+                            </LinearGradient>
+                        </AreaStyle>
+                        <PointStyle Symbol="PointSymbol.Circle" Size="4" Show="true" />
+                    </ChartStyle>
+                </LineChart>
+            </ChartPanelContent>
+            <ChartPanelFooter>
+                <div class="flex w-full items-start gap-2 text-sm">
+                    <div class="grid gap-2">
+                        <div class="flex items-center gap-2 font-medium leading-none">
+                            Blazor-native declarative markup ✨
+                        </div>
+                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
+                            Multi-stop gradient, smooth lines, customizable points - all in markup
+                        </div>
+                    </div>
                 </div>
             </ChartPanelFooter>
         </ChartPanel>
@@ -194,8 +244,8 @@
 
     private readonly List<ChartSeriesConfig> multipleSeries = new()
     {
-        new() { DataKey = "Desktop", Label = "Desktop", Color = "hsl(var(--chart-1))", Curved = true },
-        new() { DataKey = "Mobile", Label = "Mobile", Color = "hsl(var(--chart-2))", Curved = true }
+        new() { DataKey = "Desktop", Label = "Desktop", Color = "var(--chart-1)", Curved = true },
+        new() { DataKey = "Mobile", Label = "Mobile", Color = "var(--chart-2)", Curved = true }
     };
 
     public class LineData

@@ -26,12 +26,692 @@ public class EChartsRenderer : IChartRenderer
         _jsModule ??= await _jsRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/BlazorUI.Components/js/echarts-renderer.js");
         
-        // Serialize config with camelCase to ensure JavaScript property names match ECharts expectations
-        var json = JsonSerializer.Serialize(config, JsonOptions);
+        // Convert universal ChartConfig to ECharts v6 format
+        var echartsConfig = ConvertToEChartsFormat(config);
+        
+        // Serialize with camelCase for JavaScript
+        var json = JsonSerializer.Serialize(echartsConfig, JsonOptions);
         var normalizedConfig = JsonSerializer.Deserialize<object>(json, JsonOptions);
         
         var chartId = await _jsModule.InvokeAsync<string>("createChart", element, normalizedConfig);
         return chartId;
+    }
+    
+    /// <summary>
+    /// Converts universal ChartConfig to ECharts v6 option format.
+    /// </summary>
+    private object ConvertToEChartsFormat(ChartConfig config)
+    {
+        var chartType = config.Type.ToString().ToLowerInvariant();
+        
+        // Build ECharts configuration based on chart type (using strongly-typed data)
+        return chartType switch
+        {
+            "line" => ConvertLineChart(config.Data, config.Options),
+            "bar" => ConvertBarChart(config.Data, config.Options),
+            "pie" or "donut" => ConvertPieChart(config.Data, config.Options),
+            "radar" => ConvertRadarChart(config.Data, config.Options),
+            "scatter" => ConvertScatterChart(config.Data, config.Options),
+            _ => new { }
+        };
+    }
+    
+    private object ConvertLineChart(ChartData data, ChartOptions options)
+    {
+        // Use strongly-typed properties instead of dynamic access
+        var labels = data.Labels;
+        var datasets = data.Datasets;
+        
+        var series = new List<object>();
+        for (int i = 0; i < datasets.Length; i++)
+        {
+            var ds = datasets[i];
+            
+            // Auto-assign color based on series index (1-based for CSS variables)
+            var seriesIndex = i + 1;
+            var defaultColor = $"var(--chart-{seriesIndex})";
+            
+            // Build series item with proper ECharts v6 structure
+            var seriesItem = new Dictionary<string, object>
+            {
+                ["type"] = "line",
+                ["name"] = ds.Label ?? $"Series {seriesIndex}",
+                ["data"] = ds.Data
+            };
+            
+            // Handle tension → smooth (use actual value for smooth curves)
+            seriesItem["smooth"] = ds.Tension ?? 0;
+            
+            // Handle pointRadius → symbolSize and showSymbol
+            var pointRadius = ds.PointRadius ?? 4;
+            seriesItem["showSymbol"] = pointRadius > 0;
+            seriesItem["symbolSize"] = pointRadius;
+            
+            // Handle pointHoverRadius → emphasis with focus:'series'
+            var hoverRadius = ds.PointHoverRadius ?? (pointRadius + 1);
+            
+            seriesItem["emphasis"] = new Dictionary<string, object>
+            {
+                ["focus"] = "series", // Highlight series on hover
+                ["symbolSize"] = hoverRadius
+            };
+            
+            // Line style: borderColor → lineStyle.color, borderWidth → lineStyle.width
+            var lineStyle = new Dictionary<string, object>
+            {
+                ["color"] = ds.BorderColor ?? defaultColor,
+                ["width"] = ds.BorderWidth ?? 2
+            };
+            
+            // Handle borderDash → lineStyle.type (solid | dashed | dotted)
+            if (ds.BorderDash != null && ds.BorderDash.Length > 0)
+            {
+                lineStyle["type"] = "dashed";
+            }
+            else
+            {
+                lineStyle["type"] = "solid";
+            }
+            
+            seriesItem["lineStyle"] = lineStyle;
+            
+            // Item style for point markers (use same color as line)
+            seriesItem["itemStyle"] = new Dictionary<string, object>
+            {
+                ["color"] = ds.BorderColor ?? defaultColor
+            };
+            
+            // Area style: fill: true → add areaStyle
+            if (ds.Fill == true)
+            {
+                if (ds.Gradient != null)
+                {
+                    var (x, y, x2, y2) = GetGradientCoordinates(ds.Gradient.Direction);
+                    
+                    seriesItem["areaStyle"] = new Dictionary<string, object>
+                    {
+                        ["color"] = new Dictionary<string, object>
+                        {
+                            ["type"] = "linear",
+                            ["x"] = x,
+                            ["y"] = y,
+                            ["x2"] = x2,
+                            ["y2"] = y2,
+                            ["colorStops"] = ds.Gradient.ColorStops.Select(cs => new
+                            {
+                                offset = cs.Offset,
+                                color = cs.Color
+                            }).ToArray(),
+                            ["global"] = false
+                        }
+                    };
+                }
+                else
+                {
+                    // Simple area fill with backgroundColor
+                    var areaColor = (!string.IsNullOrEmpty(ds.BackgroundColor) && ds.BackgroundColor != "transparent")
+                        ? ds.BackgroundColor 
+                        : (ds.BorderColor ?? defaultColor);
+                    
+                    seriesItem["areaStyle"] = new Dictionary<string, object>
+                    {
+                        ["color"] = areaColor,
+                        ["opacity"] = 0.3
+                    };
+                }
+            }
+            
+            series.Add(seriesItem);
+        }
+        
+        // Build ECharts v6 option object (NO top-level 'type', NO responsive/maintainAspectRatio)
+        return new
+        {
+            animationDuration = options.Animation?.Duration ?? 750,
+            animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
+            tooltip = new { show = options.Plugins.Tooltip.Enabled, trigger = "axis" },
+            legend = new { 
+                show = options.Plugins.Legend.Display, 
+                top = "top", 
+                left = "center",
+                orient = "horizontal"
+            },
+            xAxis = new
+            {
+                type = "category",
+                data = labels,
+                show = options.Scales?.X?.Display ?? true,
+                boundaryGap = false, // Lines start at axis edge
+                axisLine = new { show = options.Scales?.X?.Display ?? true },
+                splitLine = new { show = options.Scales?.X?.Grid?.Display ?? true }
+            },
+            yAxis = new
+            {
+                type = "value",
+                show = options.Scales?.Y?.Display ?? true,
+                axisLine = new { show = options.Scales?.Y?.Display ?? true },
+                splitLine = new { show = options.Scales?.Y?.Grid?.Display ?? true }
+            },
+            series = series.ToArray()
+        };
+    }
+    
+    private object ConvertBarChart(ChartData data, ChartOptions options)
+    {
+        // Use strongly-typed properties
+        var labels = data.Labels;
+        var datasets = data.Datasets;
+        
+        var series = new List<object>();
+        for (int i = 0; i < datasets.Length; i++)
+        {
+            var ds = datasets[i];
+            
+            // Auto-assign color based on series index
+            var seriesIndex = i + 1;
+            var defaultColor = $"var(--chart-{seriesIndex})";
+            
+            var seriesItem = new Dictionary<string, object>
+            {
+                ["type"] = "bar",
+                ["name"] = ds.Label ?? $"Series {seriesIndex}",
+                ["data"] = ds.Data
+            };
+            
+            // Item style: backgroundColor → itemStyle.color
+            var itemColor = (!string.IsNullOrEmpty(ds.BackgroundColor) && ds.BackgroundColor != "transparent")
+                ? ds.BackgroundColor
+                : (ds.BorderColor ?? defaultColor);
+            
+            seriesItem["itemStyle"] = new Dictionary<string, object>
+            {
+                ["color"] = itemColor
+            };
+            
+            // Add emphasis for hover
+            seriesItem["emphasis"] = new Dictionary<string, object>
+            {
+                ["focus"] = "series"
+            };
+            
+            // Support gradients for bars
+            if (ds.Gradient != null)
+            {
+                var (x, y, x2, y2) = GetGradientCoordinates(ds.Gradient.Direction);
+                
+                seriesItem["itemStyle"] = new Dictionary<string, object>
+                {
+                    ["color"] = new Dictionary<string, object>
+                    {
+                        ["type"] = "linear",
+                        ["x"] = x,
+                        ["y"] = y,
+                        ["x2"] = x2,
+                        ["y2"] = y2,
+                        ["colorStops"] = ds.Gradient.ColorStops.Select(cs => new
+                        {
+                            offset = cs.Offset,
+                            color = cs.Color
+                        }).ToArray(),
+                        ["global"] = false
+                    }
+                };
+            }
+            
+            series.Add(seriesItem);
+        }
+        
+        // Build ECharts v6 option object per Section 2.2 (Bar Charts) specification
+        return new
+        {
+            animationDuration = options.Animation?.Duration ?? 750,
+            animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
+            tooltip = new { 
+                show = options.Plugins.Tooltip.Enabled, 
+                trigger = "axis",  // Axis trigger for bar charts
+                axisPointer = new { type = "shadow" }  // Shadow pointer per spec
+            },
+            legend = new { 
+                show = options.Plugins.Legend.Display, 
+                top = "top", 
+                left = "center",
+                orient = "horizontal"
+            },
+            xAxis = new 
+            { 
+                type = "category", 
+                data = labels,
+                show = options.Scales?.X?.Display ?? true,
+                boundaryGap = true,  // CRITICAL: Bars centered between ticks (Section 2.2)
+                axisLine = new { show = options.Scales?.X?.Display ?? true },
+                splitLine = new { show = false }  // No vertical grid lines per spec
+            },
+            yAxis = new 
+            { 
+                type = "value",
+                show = options.Scales?.Y?.Display ?? true,
+                axisLine = new { show = options.Scales?.Y?.Display ?? true },
+                splitLine = new { show = options.Scales?.Y?.Grid?.Display ?? true }
+            },
+            series = series.ToArray()
+        };
+    }
+    
+    private object ConvertPieChart(ChartData data, ChartOptions options)
+    {
+        // Use strongly-typed properties (Section 2.4: Pie Charts)
+        var labels = data.Labels;
+        var datasets = data.Datasets;
+        
+        var pieData = new List<object>();
+        if (datasets.Length > 0)
+        {
+            var ds = datasets[0];
+            var values = ds.Data;
+            
+            // Map each label with its value and auto-assigned color
+            // Pie data format: [{ name, value, itemStyle }, ...]
+            for (int i = 0; i < labels.Length && i < values.Length; i++)
+            {
+                var itemColor = $"var(--chart-{i + 1})";  // CSS variable, no hsl() wrapper needed
+                pieData.Add(new 
+                { 
+                    name = labels[i], 
+                    value = values[i],
+                    itemStyle = new { color = itemColor }
+                });
+            }
+        }
+        
+        // Build ECharts v6 option per Section 2.4 specification
+        // CRITICAL: NO xAxis / NO yAxis for pie charts
+        return new
+        {
+            animationDuration = options.Animation?.Duration ?? 750,
+            animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
+            tooltip = new { 
+                show = options.Plugins.Tooltip.Enabled, 
+                trigger = "item"  // Item trigger for pie charts (not axis)
+            },
+            legend = new { 
+                show = options.Plugins.Legend.Display, 
+                orient = "vertical",  // Vertical legend placement
+                left = "right",       // Right side
+                top = "middle"
+            },
+            series = new[]
+            {
+                new
+                {
+                    type = "pie",
+                    radius = (object)(options.Cutout != null ? 
+                        new[] { options.Cutout, "70%" } :  // Donut with inner radius
+                        "70%"),  // Regular pie
+                    data = pieData.ToArray(),
+                    emphasis = new
+                    {
+                        focus = "self",  // Highlight individual slice (Section 2.4)
+                        itemStyle = new
+                        {
+                            shadowBlur = 10,
+                            shadowOffsetX = 0,
+                            shadowColor = "rgba(0, 0, 0, 0.5)"
+                        }
+                    }
+                }
+            }
+        };
+    }
+    
+    private object ConvertRadarChart(ChartData data, ChartOptions options)
+    {
+        // Use strongly-typed properties (Section 2.5: Radar Charts)
+        var labels = data.Labels;
+        var datasets = data.Datasets;
+        
+        // Build radar indicators from labels
+        var indicators = new List<object>();
+        foreach (var label in labels)
+        {
+            indicators.Add(new { name = label, max = 100 });
+        }
+        
+        var series = new List<object>();
+        for (int i = 0; i < datasets.Length; i++)
+        {
+            var ds = datasets[i];
+            
+            // Auto-assign color based on series index
+            var seriesIndex = i + 1;
+            var defaultColor = $"var(--chart-{seriesIndex})";  // CSS variable
+            
+            var radarSeriesItem = new Dictionary<string, object>
+            {
+                ["type"] = "radar",
+                ["name"] = ds.Label ?? $"Series {seriesIndex}",
+                ["data"] = new[]
+                {
+                    new
+                    {
+                        value = ds.Data,
+                        name = ds.Label ?? $"Series {seriesIndex}"
+                    }
+                }
+            };
+            
+            // Add line and area styling with auto-assigned color
+            var color = ds.BorderColor ?? defaultColor;
+            radarSeriesItem["lineStyle"] = new Dictionary<string, object>
+            {
+                ["color"] = color
+            };
+            radarSeriesItem["itemStyle"] = new Dictionary<string, object>
+            {
+                ["color"] = color
+            };
+            radarSeriesItem["emphasis"] = new Dictionary<string, object>
+            {
+                ["focus"] = "series"  // Series highlighting per Section 2.5
+            };
+            
+            // Add area fill if specified (semi-transparent per spec)
+            if (ds.Fill == true)
+            {
+                radarSeriesItem["areaStyle"] = new Dictionary<string, object>
+                {
+                    ["opacity"] = 0.3  // Section 2.5: opacity for radar areas
+                };
+            }
+            
+            series.Add(radarSeriesItem);
+        }
+        
+        // Build ECharts v6 option per Section 2.5 specification
+        // CRITICAL: NO xAxis / NO yAxis for radar charts
+        return new
+        {
+            animationDuration = options.Animation?.Duration ?? 750,
+            animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
+            tooltip = new { 
+                show = options.Plugins.Tooltip.Enabled, 
+                trigger = "item"  // Item trigger for radar (not axis)
+            },
+            legend = new { 
+                show = options.Plugins.Legend.Display, 
+                top = "top", 
+                left = "center" 
+            },
+            radar = new { indicator = indicators.ToArray() },  // Radar coordinate system
+            series = series.ToArray()
+        };
+    }
+    
+    private object ConvertScatterChart(ChartData data, ChartOptions options)
+    {
+        // Use strongly-typed properties (Section 2.3: Scatter Charts)
+        var datasets = data.Datasets;
+        
+        var series = new List<object>();
+        for (int i = 0; i < datasets.Length; i++)
+        {
+            var ds = datasets[i];
+            
+            // Auto-assign color based on series index
+            var seriesIndex = i + 1;
+            var defaultColor = $"var(--chart-{seriesIndex})";  // CSS variable
+            
+            // Scatter data format: [[x, y], ...] or use ScatterData if available
+            var scatterData = ds.ScatterData ?? new object[][] { };
+            
+            var scatterSeriesItem = new Dictionary<string, object>
+            {
+                ["type"] = "scatter",
+                ["name"] = ds.Label ?? $"Series {seriesIndex}",
+                ["data"] = scatterData
+            };
+            
+            // Symbol size for scatter points
+            var symbolSize = ds.PointRadius ?? 8;
+            scatterSeriesItem["symbolSize"] = symbolSize;
+            
+            // Item style for point color with auto-assigned color
+            var color = ds.BorderColor ?? defaultColor;
+            scatterSeriesItem["itemStyle"] = new Dictionary<string, object>
+            {
+                ["color"] = color
+            };
+            
+            scatterSeriesItem["emphasis"] = new Dictionary<string, object>
+            {
+                ["focus"] = "series"
+            };
+            
+            series.Add(scatterSeriesItem);
+        }
+        
+        // Build ECharts v6 option per Section 2.3 specification
+        // CRITICAL: xAxis/yAxis type = "value" (numeric, not category)
+        // NO boundaryGap property (not applicable to value axes)
+        return new
+        {
+            animationDuration = options.Animation?.Duration ?? 750,
+            animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
+            tooltip = new { 
+                show = options.Plugins.Tooltip.Enabled, 
+                trigger = "item"  // Item trigger for scatter (not axis)
+            },
+            legend = new { 
+                show = options.Plugins.Legend.Display, 
+                top = "top", 
+                left = "center" 
+            },
+            xAxis = new 
+            { 
+                type = "value",  // Numeric axis (Section 2.3)
+                show = options.Scales?.X?.Display ?? true,
+                splitLine = new { show = options.Scales?.X?.Grid?.Display ?? true }
+            },
+            yAxis = new 
+            { 
+                type = "value",  // Numeric axis (Section 2.3)
+                show = options.Scales?.Y?.Display ?? true,
+                splitLine = new { show = options.Scales?.Y?.Grid?.Display ?? true }
+            },
+            series = series.ToArray()
+        };
+    }
+    
+    // Helper methods to extract options
+    private int GetAnimationDuration(dynamic options)
+    {
+        try
+        {
+            var animation = GetProperty<object>(options, "animation");
+            if (animation != null)
+            {
+                return GetProperty<int>(animation, "duration", 750);
+            }
+        }
+        catch { }
+        return 750;
+    }
+    
+    private string GetAnimationEasing(dynamic options)
+    {
+        try
+        {
+            var animation = GetProperty<object>(options, "animation");
+            if (animation != null)
+            {
+                var easing = GetProperty<object>(animation, "easing");
+                if (easing != null)
+                {
+                    return MapEasingToECharts(easing.ToString());
+                }
+            }
+        }
+        catch { }
+        return "quarticInOut";
+    }
+    
+    private string MapEasingToECharts(AnimationEasing easing)
+    {
+        return easing switch
+        {
+            AnimationEasing.Linear => "linear",
+            AnimationEasing.EaseInQuad => "quadraticIn",
+            AnimationEasing.EaseOutQuad => "quadraticOut",
+            AnimationEasing.EaseInOutQuad => "quadraticInOut",
+            AnimationEasing.EaseInCubic => "cubicIn",
+            AnimationEasing.EaseOutCubic => "cubicOut",
+            AnimationEasing.EaseInOutCubic => "cubicInOut",
+            AnimationEasing.EaseInQuart => "quarticIn",
+            AnimationEasing.EaseOutQuart => "quarticOut",
+            AnimationEasing.EaseInOutQuart => "quarticInOut",
+            _ => "quarticInOut"
+        };
+    }
+    
+    private bool GetTooltipEnabled(dynamic options)
+    {
+        try
+        {
+            var plugins = GetProperty<object>(options, "plugins");
+            if (plugins != null)
+            {
+                var tooltip = GetProperty<object>(plugins, "tooltip");
+                if (tooltip != null)
+                {
+                    return GetProperty<bool>(tooltip, "enabled", true);
+                }
+            }
+        }
+        catch { }
+        return true;
+    }
+    
+    private bool GetLegendDisplay(dynamic options)
+    {
+        try
+        {
+            var plugins = GetProperty<object>(options, "plugins");
+            if (plugins != null)
+            {
+                var legend = GetProperty<object>(plugins, "legend");
+                if (legend != null)
+                {
+                    return GetProperty<bool>(legend, "display", true);
+                }
+            }
+        }
+        catch { }
+        return true;
+    }
+    
+    private bool GetXAxisDisplay(dynamic options)
+    {
+        try
+        {
+            var scales = GetProperty<object>(options, "scales");
+            if (scales != null)
+            {
+                var xAxis = GetProperty<object>(scales, "x");
+                if (xAxis != null)
+                {
+                    return GetProperty<bool>(xAxis, "display", true);
+                }
+            }
+        }
+        catch { }
+        return true;
+    }
+    
+    private bool GetYAxisDisplay(dynamic options)
+    {
+        try
+        {
+            var scales = GetProperty<object>(options, "scales");
+            if (scales != null)
+            {
+                var yAxis = GetProperty<object>(scales, "y");
+                if (yAxis != null)
+                {
+                    return GetProperty<bool>(yAxis, "display", true);
+                }
+            }
+        }
+        catch { }
+        return true;
+    }
+    
+    private bool GetGridDisplay(dynamic options)
+    {
+        try
+        {
+            var scales = GetProperty<object>(options, "scales");
+            if (scales != null)
+            {
+                var xAxis = GetProperty<object>(scales, "x");
+                if (xAxis != null)
+                {
+                    var grid = GetProperty<object>(xAxis, "grid");
+                    if (grid != null)
+                    {
+                        return GetProperty<bool>(grid, "display", true);
+                    }
+                }
+            }
+        }
+        catch { }
+        return true;
+    }
+    
+    private (double x, double y, double x2, double y2) GetGradientCoordinates(string direction)
+    {
+        return direction switch
+        {
+            "Vertical" => (0, 0, 0, 1),
+            "Horizontal" => (0, 0, 1, 0),
+            "TopLeftToBottomRight" => (0, 0, 1, 1),
+            "TopRightToBottomLeft" => (1, 0, 0, 1),
+            "BottomLeftToTopRight" => (0, 1, 1, 0),
+            "BottomRightToTopLeft" => (1, 1, 0, 0),
+            _ => (0, 0, 0, 1)
+        };
+    }
+    
+    private T? GetProperty<T>(object obj, string propertyName, T? defaultValue = default)
+    {
+        if (obj == null) return defaultValue;
+        
+        try
+        {
+            if (obj is IDictionary<string, object> dict)
+            {
+                if (dict.TryGetValue(propertyName, out var value))
+                {
+                    if (value is T typedValue)
+                        return typedValue;
+                    if (value != null)
+                        return (T)Convert.ChangeType(value, typeof(T));
+                }
+            }
+            else
+            {
+                var prop = obj.GetType().GetProperty(propertyName);
+                if (prop != null)
+                {
+                    var value = prop.GetValue(obj);
+                    if (value is T typedValue)
+                        return typedValue;
+                    if (value != null)
+                        return (T)Convert.ChangeType(value, typeof(T));
+                }
+            }
+        }
+        catch { }
+        
+        return defaultValue;
     }
     
     public async Task UpdateDataAsync(string chartId, object data)

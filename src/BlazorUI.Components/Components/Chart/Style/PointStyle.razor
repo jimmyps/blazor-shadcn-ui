@@ -1,0 +1,81 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    /// <summary>
+    /// Gets or sets the parent ChartStyle component.
+    /// </summary>
+    [CascadingParameter]
+    public ChartStyle? ParentStyle { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to show data point markers.
+    /// </summary>
+    [Parameter]
+    public bool Show { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the point symbol/shape.
+    /// </summary>
+    [Parameter]
+    public PointSymbol Symbol { get; set; } = PointSymbol.Circle;
+    
+    /// <summary>
+    /// Gets or sets the size of the point marker in pixels.
+    /// </summary>
+    [Parameter]
+    public int Size { get; set; } = 4;
+    
+    /// <summary>
+    /// Gets or sets the color of the point marker.
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the border width for the point marker.
+    /// </summary>
+    [Parameter]
+    public int BorderWidth { get; set; } = 0;
+    
+    /// <summary>
+    /// Gets or sets the border color for the point marker.
+    /// </summary>
+    [Parameter]
+    public string? BorderColor { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the hover size for the point marker.
+    /// </summary>
+    [Parameter]
+    public int HoverSize { get; set; } = 6;
+    
+    /// <summary>
+    /// Gets or sets the child content containing ItemStyle configuration.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        if (ParentStyle == null)
+        {
+            throw new InvalidOperationException("PointStyle must be used within a ChartStyle component");
+        }
+        
+        ParentStyle.RegisterPointStyle(new PointStyleConfig
+        {
+            Show = Show,
+            Symbol = Symbol,
+            Size = Size,
+            Color = Color,
+            BorderWidth = BorderWidth,
+            BorderColor = BorderColor,
+            HoverSize = HoverSize
+        });
+    }
+}
+
+@if (ChildContent != null)
+{
+    @ChildContent
+}

@@ -139,7 +139,7 @@
 
     private readonly List<RadarSeriesConfig> radarSeries = new()
     {
-        new() { DataKey = "Current", Label = "Current Quarter", Color = "hsl(var(--chart-1))" }
+        new() { DataKey = "Current", Label = "Current Quarter", Color = "var(--chart-1)" }
     };
 
     private readonly List<ComparisonData> comparisonData = new()
@@ -153,8 +153,8 @@
 
     private readonly List<RadarSeriesConfig> comparisonSeries = new()
     {
-        new() { DataKey = "TeamA", Label = "Team A", Color = "hsl(var(--chart-1))" },
-        new() { DataKey = "TeamB", Label = "Team B", Color = "hsl(var(--chart-2))" }
+        new() { DataKey = "TeamA", Label = "Team A", Color = "var(--chart-1)" },
+        new() { DataKey = "TeamB", Label = "Team B", Color = "var(--chart-2)" }
     };
 
     private readonly List<SkillsData> skillsData = new()
@@ -169,7 +169,7 @@
 
     private readonly List<RadarSeriesConfig> skillsSeries = new()
     {
-        new() { DataKey = "Score", Label = "Proficiency", Color = "hsl(var(--chart-3))" }
+        new() { DataKey = "Score", Label = "Proficiency", Color = "var(--chart-3)" }
     };
 
     private readonly List<FeaturesData> featuresData = new()
@@ -184,7 +184,7 @@
 
     private readonly List<RadarSeriesConfig> featuresSeries = new()
     {
-        new() { DataKey = "Progress", Label = "Completion %", Color = "hsl(var(--chart-4))" }
+        new() { DataKey = "Progress", Label = "Completion %", Color = "var(--chart-4)" }
     };
 
     public class RadarData

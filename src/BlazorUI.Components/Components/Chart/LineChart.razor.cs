@@ -8,9 +8,14 @@ namespace BlazorUI.Components.Chart;
 /// Line chart component for visualizing trends over time or continuous data.
 /// </summary>
 /// <typeparam name="TData">The type of data items in the chart.</typeparam>
-public class LineChartBase<TData> : ComponentBase
+public class LineChartBase<TData> : ComponentBase, IChartStyleContainer
 {
     [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
+    
+    /// <summary>
+    /// Internal ChartStyle reference from child content.
+    /// </summary>
+    protected ChartStyle? _chartStyle;
     
     /// <summary>
     /// Gets or sets the data to display in the chart.
@@ -67,6 +72,26 @@ public class LineChartBase<TData> : ComponentBase
     public bool FillArea { get; set; } = false;
     
     /// <summary>
+    /// Gets or sets whether to use a gradient fill for the area (requires FillArea=true).
+    /// </summary>
+    [Parameter]
+    public bool GradientFill { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the opacity at the top of the gradient (0.0 to 1.0). Default is 0.8.
+    /// Only applies when GradientFill=true.
+    /// </summary>
+    [Parameter]
+    public double GradientStartOpacity { get; set; } = 0.8;
+    
+    /// <summary>
+    /// Gets or sets the opacity at the bottom of the gradient (0.0 to 1.0). Default is 0.1.
+    /// Only applies when GradientFill=true.
+    /// </summary>
+    [Parameter]
+    public double GradientEndOpacity { get; set; } = 0.1;
+    
+    /// <summary>
     /// Gets or sets whether to show dots at data points.
     /// </summary>
     [Parameter]
@@ -118,7 +143,7 @@ public class LineChartBase<TData> : ComponentBase
     /// Gets or sets the rendering engine to use.
     /// </summary>
     [Parameter]
-    public ChartEngine Engine { get; set; } = ChartEngine.ChartJs;
+    public ChartEngine Engine { get; set; } = ChartEngine.ECharts;
     
     /// <summary>
     /// Gets or sets whether to disable animations.
@@ -145,10 +170,24 @@ public class LineChartBase<TData> : ComponentBase
     public string ExportFileName { get; set; } = "chart";
     
     /// <summary>
+    /// Gets or sets the child content containing ChartStyle configuration.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    
+    /// <summary>
     /// Gets the computed CSS classes for the container.
     /// </summary>
     protected string ContainerClass => ClassNames.cn(
         "chart-container",
         Class
     );
+    
+    /// <summary>
+    /// Registers a ChartStyle component.
+    /// </summary>
+    public void RegisterStyle(ChartStyle style)
+    {
+        _chartStyle = style;
+    }
 }
