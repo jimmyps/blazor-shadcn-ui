@@ -10,12 +10,12 @@
         
         @if (_initializationError != null)
         {
-            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-center; background: hsl(var(--muted)); border-radius: var(--radius); padding: 2rem;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-center; background: var(--muted); border-radius: var(--radius); padding: 2rem;">
                 <div style="text-align: center; max-width: 400px;">
-                    <div style="color: hsl(var(--destructive)); margin-bottom: 0.5rem; font-weight: 600;">
+                    <div style="color: var(--destructive); margin-bottom: 0.5rem; font-weight: 600;">
                         Failed to initialize chart
                     </div>
-                    <div style="color: hsl(var(--muted-foreground)); font-size: 0.875rem;">
+                    <div style="color: var(--muted-foreground); font-size: 0.875rem;">
                         @_initializationError
                     </div>
                 </div>
@@ -237,7 +237,7 @@
         var areaStyle = _chartStyle?.AreaStyle;
         var pointStyle = _chartStyle?.PointStyle;
         
-        var color = lineStyle?.Color ?? LineColor ?? "hsl(var(--chart-1))";
+        var color = lineStyle?.Color ?? LineColor ?? "var(--chart-1)";
         var lineWidth = lineStyle?.Width ?? LineWidth;
         var smooth = lineStyle?.Smooth ?? Curved;
         var fillArea = areaStyle?.Show ?? FillArea;
@@ -271,8 +271,8 @@
                     Direction = "Vertical",
                     ColorStops = new[]
                     {
-                        new GradientColorStop { Offset = 0.0, Color = $"hsla(var(--chart-1), {GradientStartOpacity})" },
-                        new GradientColorStop { Offset = 1.0, Color = $"hsla(var(--chart-1), {GradientEndOpacity})" }
+                        new GradientColorStop { Offset = 0.0, Color = "var(--chart-1)" },
+                        new GradientColorStop { Offset = 1.0, Color = "var(--chart-1)" }
                     }
                 };
             }

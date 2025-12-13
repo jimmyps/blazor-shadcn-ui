@@ -58,7 +58,7 @@
                           Height="300"
                           FillArea="true"
                           Curved="false"
-                          LineColor="hsl(var(--chart-2))" />
+                          LineColor="var(--chart-2)" />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex w-full items-start gap-2 text-sm">
@@ -166,14 +166,14 @@
 
     private readonly List<ChartSeriesConfig> stackedSeriesWithGradient = new()
     {
-        new() { DataKey = "Desktop", Label = "Desktop", Color = "hsl(var(--chart-1))", FillArea = true, Curved = true },
-        new() { DataKey = "Mobile", Label = "Mobile", Color = "hsl(var(--chart-2))", FillArea = true, Curved = true }
+        new() { DataKey = "Desktop", Label = "Desktop", Color = "var(--chart-1)", FillArea = true, Curved = true },
+        new() { DataKey = "Mobile", Label = "Mobile", Color = "var(--chart-2)", FillArea = true, Curved = true }
     };
 
     private readonly List<ChartSeriesConfig> iconsSeriesArea = new()
     {
-        new() { DataKey = "Desktop", Label = "💻 Desktop", Color = "hsl(var(--chart-1))", FillArea = true, Curved = true },
-        new() { DataKey = "Mobile", Label = "📱 Mobile", Color = "hsl(var(--chart-2))", FillArea = true, Curved = true }
+        new() { DataKey = "Desktop", Label = "💻 Desktop", Color = "var(--chart-1)", FillArea = true, Curved = true },
+        new() { DataKey = "Mobile", Label = "📱 Mobile", Color = "var(--chart-2)", FillArea = true, Curved = true }
     };
 
     public class DesktopData

@@ -69,7 +69,7 @@ public class EChartsRenderer : IChartRenderer
             
             // Auto-assign color based on series index (1-based for CSS variables)
             var seriesIndex = i + 1;
-            var defaultColor = $"hsl(var(--chart-{seriesIndex}))";
+            var defaultColor = $"var(--chart-{seriesIndex})";
             
             // Build series item with proper ECharts v6 structure
             var seriesItem = new Dictionary<string, object>
@@ -209,7 +209,7 @@ public class EChartsRenderer : IChartRenderer
             
             // Auto-assign color based on series index
             var seriesIndex = i + 1;
-            var defaultColor = $"hsl(var(--chart-{seriesIndex}))";
+            var defaultColor = $"var(--chart-{seriesIndex})";
             
             var seriesItem = new Dictionary<string, object>
             {

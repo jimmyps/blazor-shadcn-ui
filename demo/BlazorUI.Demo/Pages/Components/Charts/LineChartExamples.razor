@@ -58,7 +58,7 @@
                           GradientFill="true"
                           GradientStartOpacity="0.5"
                           GradientEndOpacity="0.05"
-                          LineColor="hsl(var(--chart-2))" />
+                          LineColor="var(--chart-2)" />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex w-full items-start gap-2 text-sm">
@@ -129,7 +129,7 @@
                           Height="300"
                           Curved="true"
                           ShowDots="true"
-                          LineColor="hsl(var(--chart-3))" />
+                          LineColor="var(--chart-3)" />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex gap-2 font-medium leading-none">
@@ -161,7 +161,7 @@
                           Label="Total Visitors"
                           Height="300"
                           Curved="true"
-                          LineColor="hsl(var(--chart-4))" />
+                          LineColor="var(--chart-4)" />
             </ChartPanelContent>
             <ChartPanelFooter>
                 <div class="flex gap-2 font-medium leading-none">
@@ -193,12 +193,12 @@
                           Label="Revenue"
                           Height="350">
                     <ChartStyle>
-                        <LineStyle Color="hsl(var(--chart-1))" Width="2" Smooth="true" Type="LineType.Solid" />
+                        <LineStyle Color="var(--chart-1)" Width="2" Smooth="true" Type="LineType.Solid" />
                         <AreaStyle Show="true">
                             <LinearGradient Direction="GradientDirection.Vertical">
-                                <ColorStop Offset="0.0" Color="hsla(var(--chart-1), 0.8)" />
-                                <ColorStop Offset="0.5" Color="hsla(var(--chart-1), 0.4)" />
-                                <ColorStop Offset="1.0" Color="hsla(var(--chart-1), 0.1)" />
+                                <ColorStop Offset="0.0" Color="var(--chart-1)" />
+                                <ColorStop Offset="0.5" Color="var(--chart-1)" />
+                                <ColorStop Offset="1.0" Color="var(--chart-1)" />
                             </LinearGradient>
                         </AreaStyle>
                         <PointStyle Symbol="PointSymbol.Circle" Size="4" Show="true" />
@@ -244,8 +244,8 @@
 
     private readonly List<ChartSeriesConfig> multipleSeries = new()
     {
-        new() { DataKey = "Desktop", Label = "Desktop", Color = "hsl(var(--chart-1))", Curved = true },
-        new() { DataKey = "Mobile", Label = "Mobile", Color = "hsl(var(--chart-2))", Curved = true }
+        new() { DataKey = "Desktop", Label = "Desktop", Color = "var(--chart-1)", Curved = true },
+        new() { DataKey = "Mobile", Label = "Mobile", Color = "var(--chart-2)", Curved = true }
     };
 
     public class LineData

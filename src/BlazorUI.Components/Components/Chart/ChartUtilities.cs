@@ -10,11 +10,11 @@ internal static class ChartUtilities
     /// </summary>
     private static readonly string[] ChartColors = new[]
     {
-        "hsl(var(--chart-1))",
-        "hsl(var(--chart-2))",
-        "hsl(var(--chart-3))",
-        "hsl(var(--chart-4))",
-        "hsl(var(--chart-5))"
+        "var(--chart-1)",
+        "var(--chart-2)",
+        "var(--chart-3)",
+        "var(--chart-4)",
+        "var(--chart-5)"
     };
     
     /// <summary>
@@ -66,16 +66,12 @@ internal static class ChartUtilities
     /// </summary>
     public static string GetColorWithAlpha(string color, double alpha)
     {
-        // Handle CSS variable format: hsl(var(--chart-X))
-        if (color.StartsWith("hsl(var(--chart-") && color.EndsWith("))"))
+        // Handle CSS variable format: var(--chart-X)
+        // CSS variables already contain final color values from styles
+        // For alpha channel, we rely on ECharts to apply opacity
+        if (color.StartsWith("var(--chart-") && color.EndsWith(")"))
         {
-            var startIndex = "hsl(var(--chart-".Length;
-            var endIndex = color.IndexOf(')', startIndex);
-            if (endIndex > startIndex)
-            {
-                var chartNum = color.Substring(startIndex, endIndex - startIndex);
-                return $"hsla(var(--chart-{chartNum}), {alpha})";
-            }
+            return color;
         }
         
         // Fallback: return original color
