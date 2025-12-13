@@ -168,7 +168,7 @@ public class EChartsRenderer : IChartRenderer
         return new
         {
             animationDuration = options.Animation?.Duration ?? 750,
-            animationEasing = MapEasingToECharts(options.Animation?.Easing ?? "easeInOutQuart"),
+            animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
             tooltip = new { show = options.Plugins.Tooltip.Enabled, trigger = "axis" },
             legend = new { 
                 show = options.Plugins.Legend.Display, 
@@ -265,7 +265,7 @@ public class EChartsRenderer : IChartRenderer
         return new
         {
             animationDuration = options.Animation?.Duration ?? 750,
-            animationEasing = MapEasingToECharts(options.Animation?.Easing ?? "easeInOutQuart"),
+            animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
             tooltip = new { show = options.Plugins.Tooltip.Enabled, trigger = "axis" },
             legend = new { 
                 show = options.Plugins.Legend.Display, 
@@ -524,20 +524,20 @@ public class EChartsRenderer : IChartRenderer
         return "quarticInOut";
     }
     
-    private string MapEasingToECharts(string easing)
+    private string MapEasingToECharts(AnimationEasing easing)
     {
         return easing switch
         {
-            "Linear" => "linear",
-            "EaseInQuad" => "quadraticIn",
-            "EaseOutQuad" => "quadraticOut",
-            "EaseInOutQuad" => "quadraticInOut",
-            "EaseInCubic" => "cubicIn",
-            "EaseOutCubic" => "cubicOut",
-            "EaseInOutCubic" => "cubicInOut",
-            "EaseInQuart" => "quarticIn",
-            "EaseOutQuart" => "quarticOut",
-            "EaseInOutQuart" => "quarticInOut",
+            AnimationEasing.Linear => "linear",
+            AnimationEasing.EaseInQuad => "quadraticIn",
+            AnimationEasing.EaseOutQuad => "quadraticOut",
+            AnimationEasing.EaseInOutQuad => "quadraticInOut",
+            AnimationEasing.EaseInCubic => "cubicIn",
+            AnimationEasing.EaseOutCubic => "cubicOut",
+            AnimationEasing.EaseInOutCubic => "cubicInOut",
+            AnimationEasing.EaseInQuart => "quarticIn",
+            AnimationEasing.EaseOutQuart => "quarticOut",
+            AnimationEasing.EaseInOutQuart => "quarticInOut",
             _ => "quarticInOut"
         };
     }

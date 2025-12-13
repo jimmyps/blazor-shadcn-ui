@@ -128,68 +128,56 @@
         }
     }
     
-    private object BuildChartOptions()
+    private ChartOptions BuildChartOptions()
     {
-        return new
+        return new ChartOptions
         {
-            responsive = Responsive,
-            maintainAspectRatio = false,
-            plugins = new
+            Responsive = Responsive,
+            MaintainAspectRatio = false,
+            Plugins = new ChartPlugins
             {
-                legend = new
+                Legend = new LegendConfig { Display = ShowLegend },
+                Tooltip = new TooltipConfig { Enabled = ShowTooltip }
+            },
+            Scales = new ChartScales
+            {
+                X = new AxisConfig
                 {
-                    display = ShowLegend
+                    Display = ShowXAxis,
+                    Grid = new GridConfig { Display = ShowGrid }
                 },
-                tooltip = new
+                Y = new AxisConfig
                 {
-                    enabled = ShowTooltip
+                    Display = ShowYAxis,
+                    Grid = new GridConfig { Display = ShowGrid }
                 }
             },
-            scales = new
+            Animation = new ChartAnimationConfig
             {
-                x = new
-                {
-                    display = ShowXAxis,
-                    grid = new
-                    {
-                        display = ShowGrid
-                    }
-                },
-                y = new
-                {
-                    display = ShowYAxis,
-                    grid = new
-                    {
-                        display = ShowGrid
-                    }
-                }
-            },
-            animation = new
-            {
-                duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
-                easing = ChartUtilities.MapEasingFunction(Animation?.Easing ?? AnimationEasing.EaseInOutQuart)
+                Duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
+                Easing = Animation?.Easing ?? AnimationEasing.EaseInOutQuart
             }
         };
     }
     
-    private object BuildChartData()
+    private ChartData BuildChartData()
     {
         if (Data == null || !Data.Any())
         {
-            return new
+            return new ChartData
             {
-                labels = Array.Empty<string>(),
-                datasets = Array.Empty<object>()
+                Labels = Array.Empty<string>(),
+                Datasets = Array.Empty<ChartDataset>()
             };
         }
         
         var labels = ExtractLabels();
         var datasets = BuildDatasets();
         
-        return new
+        return new ChartData
         {
-            labels,
-            datasets
+            Labels = labels,
+            Datasets = datasets
         };
     }
     
@@ -209,14 +197,14 @@
         return Data.Select((_, i) => i.ToString()).ToArray();
     }
     
-    private object[] BuildDatasets()
+    private ChartDataset[] BuildDatasets()
     {
         if (Series == null || !Series.Any())
         {
-            return Array.Empty<object>();
+            return Array.Empty<ChartDataset>();
         }
         
-        var datasets = new List<object>();
+        var datasets = new List<ChartDataset>();
         var colorIndex = 0;
         
         foreach (var series in Series)
@@ -233,18 +221,18 @@
             
             var color = series.Color ?? ChartUtilities.GetChartColor(colorIndex);
             
-            datasets.Add(new
+            datasets.Add(new ChartDataset
             {
-                label = series.Label ?? series.DataKey,
-                data = values,
-                borderColor = color,
-                backgroundColor = series.FillArea ? color : "transparent",
-                borderWidth = series.LineWidth,
-                tension = series.Curved ? 0.4 : 0,
-                fill = series.FillArea,
-                pointRadius = series.ShowDots ? 3 : 0,
-                pointHoverRadius = series.ShowDots ? 5 : 0,
-                borderDash = series.Dashed ? new[] { 5, 5 } : Array.Empty<int>()
+                Label = series.Label ?? series.DataKey,
+                Data = values,
+                BorderColor = color,
+                BackgroundColor = series.FillArea ? color : "transparent",
+                BorderWidth = series.LineWidth,
+                Tension = series.Curved ? 0.4 : 0,
+                Fill = series.FillArea,
+                PointRadius = series.ShowDots ? 3 : 0,
+                PointHoverRadius = series.ShowDots ? 5 : 0,
+                BorderDash = series.Dashed ? new[] { 5, 5 } : null
             });
             
             colorIndex++;

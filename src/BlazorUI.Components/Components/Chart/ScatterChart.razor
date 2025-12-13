@@ -39,34 +39,8 @@
                 var config = new ChartConfig
                 {
                     Type = !string.IsNullOrEmpty(SizeDataKey) ? ChartType.Bubble : ChartType.Scatter,
-                    Data = new
-                    {
-                        datasets = new[]
-                        {
-                            new
-                            {
-                                label = Label ?? "Data",
-                                data = scatterData,
-                                backgroundColor = Color ?? "hsl(var(--chart-1))",
-                                pointRadius = PointSize
-                            }
-                        }
-                    },
-                    Options = new
-                    {
-                        responsive = true,
-                        maintainAspectRatio = false,
-                        plugins = new
-                        {
-                            legend = new { display = ShowLegend },
-                            tooltip = new { enabled = ShowTooltip }
-                        },
-                        scales = new
-                        {
-                            x = new { display = ShowGrid },
-                            y = new { display = ShowGrid }
-                        }
-                    }
+                    Data = BuildChartData(scatterData),
+                    Options = BuildChartOptions()
                 };
                 
                 _chartId = await _renderer.InitializeAsync(_chartElement, config);
@@ -107,5 +81,43 @@
         {
             await _renderer.DisposeAsync();
         }
+    }
+    
+    private ChartData BuildChartData(object[][] scatterData)
+    {
+        return new ChartData
+        {
+            Labels = Array.Empty<string>(), // Scatter doesn't use labels
+            Datasets = new[]
+            {
+                new ChartDataset
+                {
+                    Label = Label ?? "Data",
+                    Data = Array.Empty<double>(), // Empty - will use ScatterData instead
+                    ScatterData = scatterData, // Use 2D data
+                    BackgroundColor = Color ?? "hsl(var(--chart-1))",
+                    PointRadius = PointSize
+                }
+            }
+        };
+    }
+    
+    private ChartOptions BuildChartOptions()
+    {
+        return new ChartOptions
+        {
+            Responsive = true,
+            MaintainAspectRatio = false,
+            Plugins = new ChartPlugins
+            {
+                Legend = new LegendConfig { Display = ShowLegend },
+                Tooltip = new TooltipConfig { Enabled = ShowTooltip }
+            },
+            Scales = new ChartScales
+            {
+                X = new AxisConfig { Display = ShowGrid },
+                Y = new AxisConfig { Display = ShowGrid }
+            }
+        };
     }
 }

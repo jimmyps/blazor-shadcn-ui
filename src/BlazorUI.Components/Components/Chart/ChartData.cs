@@ -66,6 +66,24 @@ public sealed class ChartDataset
     /// </summary>
     [JsonPropertyName("backgroundColors")]
     public string[]? BackgroundColors { get; init; }
+    
+    [JsonPropertyName("pointBackgroundColor")]
+    public string? PointBackgroundColor { get; init; }
+    
+    [JsonPropertyName("pointBorderColor")]
+    public string? PointBorderColor { get; init; }
+    
+    [JsonPropertyName("pointHoverBackgroundColor")]
+    public string? PointHoverBackgroundColor { get; init; }
+    
+    [JsonPropertyName("pointHoverBorderColor")]
+    public string? PointHoverBorderColor { get; init; }
+    
+    /// <summary>
+    /// 2D scatter data for scatter and bubble charts (array of [x, y] or [x, y, size] arrays).
+    /// </summary>
+    [JsonPropertyName("scatterData")]
+    public object[][]? ScatterData { get; init; }
 }
 
 /// <summary>

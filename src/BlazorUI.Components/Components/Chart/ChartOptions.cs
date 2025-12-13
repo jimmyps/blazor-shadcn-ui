@@ -68,10 +68,13 @@ public sealed class TooltipConfig
 public sealed class ChartScales
 {
     [JsonPropertyName("x")]
-    public AxisConfig X { get; init; } = new();
+    public AxisConfig? X { get; init; }
     
     [JsonPropertyName("y")]
-    public AxisConfig Y { get; init; } = new();
+    public AxisConfig? Y { get; init; }
+    
+    [JsonPropertyName("r")]
+    public RadarAxisConfig? R { get; init; }
 }
 
 /// <summary>
@@ -93,6 +96,30 @@ public sealed class AxisConfig
 /// Grid configuration for axes.
 /// </summary>
 public sealed class GridConfig
+{
+    [JsonPropertyName("display")]
+    public bool Display { get; init; } = true;
+}
+
+/// <summary>
+/// Radar axis configuration (for radar charts).
+/// </summary>
+public sealed class RadarAxisConfig
+{
+    [JsonPropertyName("beginAtZero")]
+    public bool BeginAtZero { get; init; } = true;
+    
+    [JsonPropertyName("grid")]
+    public GridConfig Grid { get; init; } = new();
+    
+    [JsonPropertyName("pointLabels")]
+    public PointLabelsConfig PointLabels { get; init; } = new();
+}
+
+/// <summary>
+/// Point labels configuration (for radar charts).
+/// </summary>
+public sealed class PointLabelsConfig
 {
     [JsonPropertyName("display")]
     public bool Display { get; init; } = true;
