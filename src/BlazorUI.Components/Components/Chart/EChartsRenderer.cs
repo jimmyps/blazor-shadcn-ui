@@ -297,24 +297,23 @@ public class EChartsRenderer : IChartRenderer
         };
     }
     
-    private object ConvertPieChart(dynamic data, dynamic options)
+    private object ConvertPieChart(ChartData data, ChartOptions options)
     {
-        // Extract labels and datasets from universal format
-        var labels = GetProperty<string[]>(data, "labels") ?? Array.Empty<string>();
-        var datasets = GetProperty<object[]>(data, "datasets") ?? Array.Empty<object>();
+        // Use strongly-typed properties (Section 2.4: Pie Charts)
+        var labels = data.Labels;
+        var datasets = data.Datasets;
         
         var pieData = new List<object>();
         if (datasets.Length > 0)
         {
-            var dataset = datasets[0] as Dictionary<string, object>;
-            var values = dataset?.ContainsKey("data") == true ? 
-                (dataset["data"] as IEnumerable<object>)?.ToArray() ?? Array.Empty<object>() : 
-                Array.Empty<object>();
+            var ds = datasets[0];
+            var values = ds.Data;
             
             // Map each label with its value and auto-assigned color
+            // Pie data format: [{ name, value, itemStyle }, ...]
             for (int i = 0; i < labels.Length && i < values.Length; i++)
             {
-                var itemColor = $"hsl(var(--chart-{i + 1}))";
+                var itemColor = $"var(--chart-{i + 1})";  // CSS variable, no hsl() wrapper needed
                 pieData.Add(new 
                 { 
                     name = labels[i], 
@@ -324,23 +323,34 @@ public class EChartsRenderer : IChartRenderer
             }
         }
         
-        // Build ECharts v6 option object (NO top-level 'type')
+        // Build ECharts v6 option per Section 2.4 specification
+        // CRITICAL: NO xAxis / NO yAxis for pie charts
         return new
         {
-            animationDuration = GetAnimationDuration(options),
-            animationEasing = GetAnimationEasing(options),
-            tooltip = new { show = GetTooltipEnabled(options), trigger = "item" },
-            legend = new { show = GetLegendDisplay(options), orient = "vertical", left = "right", top = "middle" },
+            animationDuration = options.Animation?.Duration ?? 750,
+            animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
+            tooltip = new { 
+                show = options.Plugins.Tooltip.Enabled, 
+                trigger = "item"  // Item trigger for pie charts (not axis)
+            },
+            legend = new { 
+                show = options.Plugins.Legend.Display, 
+                orient = "vertical",  // Vertical legend placement
+                left = "right",       // Right side
+                top = "middle"
+            },
             series = new[]
             {
                 new
                 {
                     type = "pie",
-                    radius = "70%",
+                    radius = (object)(options.Cutout != null ? 
+                        new[] { options.Cutout, "70%" } :  // Donut with inner radius
+                        "70%"),  // Regular pie
                     data = pieData.ToArray(),
                     emphasis = new
                     {
-                        focus = "self",
+                        focus = "self",  // Highlight individual slice (Section 2.4)
                         itemStyle = new
                         {
                             shadowBlur = 10,
@@ -353,12 +363,13 @@ public class EChartsRenderer : IChartRenderer
         };
     }
     
-    private object ConvertRadarChart(dynamic data, dynamic options)
+    private object ConvertRadarChart(ChartData data, ChartOptions options)
     {
-        // Extract labels for radar indicators
-        var labels = GetProperty<string[]>(data, "labels") ?? Array.Empty<string>();
-        var datasets = GetProperty<object[]>(data, "datasets") ?? Array.Empty<object>();
+        // Use strongly-typed properties (Section 2.5: Radar Charts)
+        var labels = data.Labels;
+        var datasets = data.Datasets;
         
+        // Build radar indicators from labels
         var indicators = new List<object>();
         foreach (var label in labels)
         {
@@ -368,29 +379,28 @@ public class EChartsRenderer : IChartRenderer
         var series = new List<object>();
         for (int i = 0; i < datasets.Length; i++)
         {
-            var dataset = datasets[i];
-            var ds = dataset as Dictionary<string, object> ?? new Dictionary<string, object>();
+            var ds = datasets[i];
             
             // Auto-assign color based on series index
             var seriesIndex = i + 1;
-            var defaultColor = $"hsl(var(--chart-{seriesIndex}))";
+            var defaultColor = $"var(--chart-{seriesIndex})";  // CSS variable
             
             var radarSeriesItem = new Dictionary<string, object>
             {
                 ["type"] = "radar",
-                ["name"] = ds.ContainsKey("label") ? ds["label"] : $"Series {seriesIndex}",
+                ["name"] = ds.Label ?? $"Series {seriesIndex}",
                 ["data"] = new[]
                 {
                     new
                     {
-                        value = ds.ContainsKey("data") ? ds["data"] : Array.Empty<double>(),
-                        name = ds.ContainsKey("label") ? ds["label"] : $"Series {seriesIndex}"
+                        value = ds.Data,
+                        name = ds.Label ?? $"Series {seriesIndex}"
                     }
                 }
             };
             
             // Add line and area styling with auto-assigned color
-            var color = ds.ContainsKey("borderColor") ? ds["borderColor"] : defaultColor;
+            var color = ds.BorderColor ?? defaultColor;
             radarSeriesItem["lineStyle"] = new Dictionary<string, object>
             {
                 ["color"] = color
@@ -401,68 +411,74 @@ public class EChartsRenderer : IChartRenderer
             };
             radarSeriesItem["emphasis"] = new Dictionary<string, object>
             {
-                ["focus"] = "series"
+                ["focus"] = "series"  // Series highlighting per Section 2.5
             };
             
-            if (ds.ContainsKey("fill") && Convert.ToBoolean(ds["fill"]))
+            // Add area fill if specified (semi-transparent per spec)
+            if (ds.Fill == true)
             {
                 radarSeriesItem["areaStyle"] = new Dictionary<string, object>
                 {
-                    ["opacity"] = 0.3
+                    ["opacity"] = 0.3  // Section 2.5: opacity for radar areas
                 };
             }
             
             series.Add(radarSeriesItem);
         }
         
-        // Build ECharts v6 option object (NO top-level 'type')
+        // Build ECharts v6 option per Section 2.5 specification
+        // CRITICAL: NO xAxis / NO yAxis for radar charts
         return new
         {
-            animationDuration = GetAnimationDuration(options),
-            animationEasing = GetAnimationEasing(options),
-            tooltip = new { show = GetTooltipEnabled(options), trigger = "item" },
-            legend = new { show = GetLegendDisplay(options), top = "top", left = "center" },
-            radar = new { indicator = indicators.ToArray() },
+            animationDuration = options.Animation?.Duration ?? 750,
+            animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
+            tooltip = new { 
+                show = options.Plugins.Tooltip.Enabled, 
+                trigger = "item"  // Item trigger for radar (not axis)
+            },
+            legend = new { 
+                show = options.Plugins.Legend.Display, 
+                top = "top", 
+                left = "center" 
+            },
+            radar = new { indicator = indicators.ToArray() },  // Radar coordinate system
             series = series.ToArray()
         };
     }
     
-    private object ConvertScatterChart(dynamic data, dynamic options)
+    private object ConvertScatterChart(ChartData data, ChartOptions options)
     {
-        // Extract datasets from universal format
-        var datasets = GetProperty<object[]>(data, "datasets") ?? Array.Empty<object>();
+        // Use strongly-typed properties (Section 2.3: Scatter Charts)
+        var datasets = data.Datasets;
         
         var series = new List<object>();
         for (int i = 0; i < datasets.Length; i++)
         {
-            var dataset = datasets[i];
-            var ds = dataset as Dictionary<string, object> ?? new Dictionary<string, object>();
+            var ds = datasets[i];
             
             // Auto-assign color based on series index
             var seriesIndex = i + 1;
-            var defaultColor = $"hsl(var(--chart-{seriesIndex}))";
+            var defaultColor = $"var(--chart-{seriesIndex})";  // CSS variable
+            
+            // Scatter data format: [[x, y], ...] or use ScatterData if available
+            var scatterData = ds.ScatterData ?? new object[][] { };
             
             var scatterSeriesItem = new Dictionary<string, object>
             {
                 ["type"] = "scatter",
-                ["name"] = ds.ContainsKey("label") ? ds["label"] : $"Series {seriesIndex}",
-                ["data"] = ds.ContainsKey("data") ? ds["data"] : Array.Empty<object>()
+                ["name"] = ds.Label ?? $"Series {seriesIndex}",
+                ["data"] = scatterData
             };
             
             // Symbol size for scatter points
-            if (ds.ContainsKey("pointRadius"))
-            {
-                scatterSeriesItem["symbolSize"] = ds["pointRadius"];
-            }
-            else
-            {
-                scatterSeriesItem["symbolSize"] = 8;
-            }
+            var symbolSize = ds.PointRadius ?? 8;
+            scatterSeriesItem["symbolSize"] = symbolSize;
             
             // Item style for point color with auto-assigned color
+            var color = ds.BorderColor ?? defaultColor;
             scatterSeriesItem["itemStyle"] = new Dictionary<string, object>
             {
-                ["color"] = ds.ContainsKey("borderColor") ? ds["borderColor"] : defaultColor
+                ["color"] = color
             };
             
             scatterSeriesItem["emphasis"] = new Dictionary<string, object>
@@ -473,24 +489,33 @@ public class EChartsRenderer : IChartRenderer
             series.Add(scatterSeriesItem);
         }
         
-        // Build ECharts v6 option object (NO top-level 'type')
+        // Build ECharts v6 option per Section 2.3 specification
+        // CRITICAL: xAxis/yAxis type = "value" (numeric, not category)
+        // NO boundaryGap property (not applicable to value axes)
         return new
         {
-            animationDuration = GetAnimationDuration(options),
-            animationEasing = GetAnimationEasing(options),
-            tooltip = new { show = GetTooltipEnabled(options), trigger = "item" },
-            legend = new { show = GetLegendDisplay(options), top = "top", left = "center" },
+            animationDuration = options.Animation?.Duration ?? 750,
+            animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
+            tooltip = new { 
+                show = options.Plugins.Tooltip.Enabled, 
+                trigger = "item"  // Item trigger for scatter (not axis)
+            },
+            legend = new { 
+                show = options.Plugins.Legend.Display, 
+                top = "top", 
+                left = "center" 
+            },
             xAxis = new 
             { 
-                type = "value",
-                show = GetXAxisDisplay(options),
-                splitLine = new { show = GetGridDisplay(options) }
+                type = "value",  // Numeric axis (Section 2.3)
+                show = options.Scales?.X?.Display ?? true,
+                splitLine = new { show = options.Scales?.X?.Grid?.Display ?? true }
             },
             yAxis = new 
             { 
-                type = "value",
-                show = GetYAxisDisplay(options),
-                splitLine = new { show = GetGridDisplay(options) }
+                type = "value",  // Numeric axis (Section 2.3)
+                show = options.Scales?.Y?.Display ?? true,
+                splitLine = new { show = options.Scales?.Y?.Grid?.Display ?? true }
             },
             series = series.ToArray()
         };
