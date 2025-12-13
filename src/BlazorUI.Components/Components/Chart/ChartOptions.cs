@@ -13,6 +13,9 @@ public sealed class ChartOptions
     [JsonPropertyName("maintainAspectRatio")]
     public bool MaintainAspectRatio { get; init; } = false;
     
+    [JsonPropertyName("indexAxis")]
+    public string? IndexAxis { get; init; }
+    
     [JsonPropertyName("plugins")]
     public ChartPlugins Plugins { get; init; } = new();
     
@@ -73,6 +76,9 @@ public sealed class AxisConfig
     [JsonPropertyName("display")]
     public bool Display { get; init; } = true;
     
+    [JsonPropertyName("stacked")]
+    public bool Stacked { get; init; } = false;
+    
     [JsonPropertyName("grid")]
     public GridConfig Grid { get; init; } = new();
 }
@@ -95,5 +101,5 @@ public sealed class ChartAnimationConfig
     public int Duration { get; init; } = 750;
     
     [JsonPropertyName("easing")]
-    public string Easing { get; init; } = "easeInOutQuart";
+    public AnimationEasing Easing { get; init; } = AnimationEasing.EaseInOutQuart;
 }

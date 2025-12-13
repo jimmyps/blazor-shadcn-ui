@@ -168,58 +168,58 @@
     /// <summary>
     /// Builds chart data in universal format.
     /// </summary>
-    private object BuildChartData()
+    private ChartData BuildChartData()
     {
         if (Data == null || !Data.Any())
         {
-            return new
+            return new ChartData
             {
-                labels = Array.Empty<string>(),
-                datasets = Array.Empty<object>()
+                Labels = Array.Empty<string>(),
+                Datasets = Array.Empty<ChartDataset>()
             };
         }
         
         var labels = ExtractLabels();
         var datasets = BuildDatasets();
         
-        return new
+        return new ChartData
         {
-            labels,
-            datasets
+            Labels = labels,
+            Datasets = datasets
         };
     }
     
     /// <summary>
     /// Builds chart options in universal format.
     /// </summary>
-    private object BuildChartOptions()
+    private ChartOptions BuildChartOptions()
     {
-        return new
+        return new ChartOptions
         {
-            responsive = Responsive,
-            maintainAspectRatio = false,
-            plugins = new
+            Responsive = Responsive,
+            MaintainAspectRatio = false,
+            Plugins = new ChartPlugins
             {
-                legend = new { display = ShowLegend },
-                tooltip = new { enabled = ShowTooltip }
+                Legend = new LegendConfig { Display = ShowLegend },
+                Tooltip = new TooltipConfig { Enabled = ShowTooltip }
             },
-            scales = new
+            Scales = new ChartScales
             {
-                x = new
+                X = new AxisConfig
                 {
-                    display = ShowXAxis,
-                    grid = new { display = ShowGrid }
+                    Display = ShowXAxis,
+                    Grid = new GridConfig { Display = ShowGrid }
                 },
-                y = new
+                Y = new AxisConfig
                 {
-                    display = ShowYAxis,
-                    grid = new { display = ShowGrid }
+                    Display = ShowYAxis,
+                    Grid = new GridConfig { Display = ShowGrid }
                 }
             },
-            animation = new
+            Animation = new ChartAnimationConfig
             {
-                duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
-                easing = Animation?.Easing ?? AnimationEasing.EaseInOutQuart
+                Duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
+                Easing = Animation?.Easing ?? AnimationEasing.EaseInOutQuart
             }
         };
     }
@@ -228,7 +228,7 @@
     /// Builds datasets array in universal format.
     /// EChartsRenderer will convert to ECharts series format.
     /// </summary>
-    private object[] BuildDatasets()
+    private ChartDataset[] BuildDatasets()
     {
         var values = ExtractValues();
         
@@ -244,67 +244,55 @@
         var showDots = pointStyle?.Show ?? ShowDots;
         var pointSize = pointStyle?.Size ?? 4;
         
-        var dataset = new Dictionary<string, object>
-        {
-            ["label"] = Label ?? YAxisDataKey,
-            ["data"] = values,
-            ["borderColor"] = color,
-            ["borderWidth"] = lineWidth,
-            ["tension"] = smooth ? 0.4 : 0,
-            ["fill"] = fillArea,
-            ["pointRadius"] = showDots ? pointSize : 0,
-            ["pointHoverRadius"] = showDots ? (pointSize + 1) : 0
-        };
+        GradientConfig? gradientConfig = null;
         
-        // Add line style type
-        if (lineStyle?.Type == LineType.Dashed)
-        {
-            dataset["borderDash"] = new[] { 5, 5 };
-        }
-        else if (lineStyle?.Type == LineType.Dotted)
-        {
-            dataset["borderDash"] = new[] { 2, 2 };
-        }
-        
-        // Add area style with gradient if specified
+        // Build gradient config if needed
         if (fillArea)
         {
             if (areaStyle?.Gradient != null)
             {
-                // ChartStyle gradient - EChartsRenderer will convert this
+                // ChartStyle gradient - convert to GradientConfig
                 var gradient = areaStyle.Gradient;
-                dataset["gradient"] = new
+                gradientConfig = new GradientConfig
                 {
-                    direction = gradient.Direction.ToString(),
-                    colorStops = gradient.ColorStops.Select(stop => new
+                    Direction = gradient.Direction.ToString(),
+                    ColorStops = gradient.ColorStops.Select(stop => new GradientColorStop
                     {
-                        offset = stop.Offset,
-                        color = stop.Color
+                        Offset = stop.Offset,
+                        Color = stop.Color
                     }).ToArray()
                 };
             }
             else if (GradientFill)
             {
                 // Parameter-based gradient
-                dataset["gradient"] = new
+                gradientConfig = new GradientConfig
                 {
-                    direction = "Vertical",
-                    colorStops = new[]
+                    Direction = "Vertical",
+                    ColorStops = new[]
                     {
-                        new { offset = 0.0, color = $"hsla(var(--chart-1), {GradientStartOpacity})" },
-                        new { offset = 1.0, color = $"hsla(var(--chart-1), {GradientEndOpacity})" }
+                        new GradientColorStop { Offset = 0.0, Color = $"hsla(var(--chart-1), {GradientStartOpacity})" },
+                        new GradientColorStop { Offset = 1.0, Color = $"hsla(var(--chart-1), {GradientEndOpacity})" }
                     }
                 };
             }
-            else
-            {
-                dataset["backgroundColor"] = color;
-            }
         }
-        else
+        
+        var dataset = new ChartDataset
         {
-            dataset["backgroundColor"] = "transparent";
-        }
+            Label = Label ?? YAxisDataKey,
+            Data = values,
+            BorderColor = color,
+            BackgroundColor = fillArea && gradientConfig == null ? color : "transparent",
+            BorderWidth = lineWidth,
+            Tension = smooth ? 0.4 : 0,
+            Fill = fillArea,
+            PointRadius = showDots ? pointSize : 0,
+            PointHoverRadius = showDots ? (pointSize + 1) : 0,
+            BorderDash = lineStyle?.Type == LineType.Dashed ? new[] { 5, 5 } : 
+                         lineStyle?.Type == LineType.Dotted ? new[] { 2, 2 } : null,
+            Gradient = gradientConfig
+        };
         
         return new[] { dataset };
     }

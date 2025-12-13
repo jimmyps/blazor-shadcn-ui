@@ -49,6 +49,12 @@ public sealed class ChartDataset
     [JsonPropertyName("borderDash")]
     public int[]? BorderDash { get; init; }
     
+    [JsonPropertyName("borderRadius")]
+    public int? BorderRadius { get; init; }
+    
+    [JsonPropertyName("barThickness")]
+    public int? BarThickness { get; init; }
+    
     /// <summary>
     /// Optional gradient configuration for area fill.
     /// </summary>

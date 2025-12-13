@@ -128,73 +128,61 @@
         }
     }
     
-    private object BuildChartOptions()
+    private ChartOptions BuildChartOptions()
     {
         var indexAxis = Orientation == BarChartOrientation.Horizontal ? "y" : "x";
         
-        return new
+        return new ChartOptions
         {
-            indexAxis = indexAxis,
-            responsive = Responsive,
-            maintainAspectRatio = false,
-            plugins = new
+            IndexAxis = indexAxis,
+            Responsive = Responsive,
+            MaintainAspectRatio = false,
+            Plugins = new ChartPlugins
             {
-                legend = new
+                Legend = new LegendConfig { Display = ShowLegend },
+                Tooltip = new TooltipConfig { Enabled = ShowTooltip }
+            },
+            Scales = new ChartScales
+            {
+                X = new AxisConfig
                 {
-                    display = ShowLegend
+                    Display = ShowXAxis,
+                    Stacked = Mode == BarChartMode.Stacked,
+                    Grid = new GridConfig { Display = ShowGrid }
                 },
-                tooltip = new
+                Y = new AxisConfig
                 {
-                    enabled = ShowTooltip
+                    Display = ShowYAxis,
+                    Stacked = Mode == BarChartMode.Stacked,
+                    Grid = new GridConfig { Display = ShowGrid }
                 }
             },
-            scales = new
+            Animation = new ChartAnimationConfig
             {
-                x = new
-                {
-                    display = ShowXAxis,
-                    stacked = Mode == BarChartMode.Stacked,
-                    grid = new
-                    {
-                        display = ShowGrid
-                    }
-                },
-                y = new
-                {
-                    display = ShowYAxis,
-                    stacked = Mode == BarChartMode.Stacked,
-                    grid = new
-                    {
-                        display = ShowGrid
-                    }
-                }
-            },
-            animation = new
-            {
-                duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
-                easing = ChartUtilities.MapEasingFunction(Animation?.Easing ?? AnimationEasing.EaseInOutQuart)
+                Duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
+                Easing = Animation?.Easing ?? AnimationEasing.EaseInOutQuart
             }
         };
     }
     
-    private object BuildChartData()
+    private ChartData BuildChartData()
     {
         if (Data == null || !Data.Any())
         {
-            return new
+            return new ChartData
             {
-                labels = Array.Empty<string>(),
-                datasets = Array.Empty<object>()
+                Labels = Array.Empty<string>(),
+                Datasets = Array.Empty<ChartDataset>()
             };
         }
         
         var labels = ExtractLabels();
         var datasets = BuildDatasets();
         
-        return new
+        return new ChartData
         {
-            labels,
-            datasets
+            Labels = labels,
+            Datasets = datasets
         };
     }
     
@@ -214,11 +202,11 @@
         return Data.Select((_, i) => i.ToString()).ToArray();
     }
     
-    private object[] BuildDatasets()
+    private ChartDataset[] BuildDatasets()
     {
         if (string.IsNullOrEmpty(YAxisDataKey))
         {
-            return Array.Empty<object>();
+            return Array.Empty<ChartDataset>();
         }
         
         var values = Data.Select(item =>
@@ -233,15 +221,15 @@
         
         return new[]
         {
-            new
+            new ChartDataset
             {
-                label = Label ?? YAxisDataKey,
-                data = values,
-                backgroundColor = BarColor ?? "hsl(var(--chart-1))",
-                borderColor = BarColor ?? "hsl(var(--chart-1))",
-                borderWidth = 1,
-                borderRadius = BorderRadius,
-                barThickness = BarThickness > 0 ? (int?)BarThickness : null
+                Label = Label ?? YAxisDataKey,
+                Data = values,
+                BackgroundColor = BarColor ?? "hsl(var(--chart-1))",
+                BorderColor = BarColor ?? "hsl(var(--chart-1))",
+                BorderWidth = 1,
+                BorderRadius = BorderRadius,
+                BarThickness = BarThickness > 0 ? (int?)BarThickness : null
             }
         };
     }

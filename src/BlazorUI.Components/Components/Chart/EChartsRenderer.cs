@@ -80,7 +80,7 @@ public class EChartsRenderer : IChartRenderer
             };
             
             // Handle tension → smooth (use actual value for smooth curves)
-            seriesItem["smooth"] = ds.Tension ?? false;
+            seriesItem["smooth"] = ds.Tension ?? 0;
             
             // Handle pointRadius → symbolSize and showSymbol
             var pointRadius = ds.PointRadius ?? 4;
