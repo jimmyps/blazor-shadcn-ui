@@ -11,6 +11,11 @@ public class EChartsRenderer : IChartRenderer
 {
     private readonly IJSRuntime _jsRuntime;
     private IJSObjectReference? _jsModule;
+    
+    // Static module reference and lock for single-flight loading across all instances
+    private static IJSObjectReference? _sharedJsModule;
+    private static readonly SemaphoreSlim _moduleLock = new(1, 1);
+    
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
@@ -21,10 +26,49 @@ public class EChartsRenderer : IChartRenderer
         _jsRuntime = jsRuntime;
     }
     
+    /// <summary>
+    /// Ensures the echarts-renderer.js module is loaded only once across all chart instances.
+    /// </summary>
+    private async Task<IJSObjectReference> EnsureModuleLoadedAsync()
+    {
+        // If instance already has module, return it
+        if (_jsModule != null)
+            return _jsModule;
+        
+        // Check if shared module is already loaded
+        if (_sharedJsModule != null)
+        {
+            _jsModule = _sharedJsModule;
+            return _jsModule;
+        }
+        
+        // Single-flight loading: only one instance loads the module
+        await _moduleLock.WaitAsync();
+        try
+        {
+            // Double-check after acquiring lock
+            if (_sharedJsModule != null)
+            {
+                _jsModule = _sharedJsModule;
+                return _jsModule;
+            }
+            
+            // Load the module once
+            _sharedJsModule = await _jsRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/BlazorUI.Components/js/echarts-renderer.js");
+            
+            _jsModule = _sharedJsModule;
+            return _jsModule;
+        }
+        finally
+        {
+            _moduleLock.Release();
+        }
+    }
+    
     public async Task<string> InitializeAsync(ElementReference element, ChartConfig config)
     {
-        _jsModule ??= await _jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/BlazorUI.Components/js/echarts-renderer.js");
+        var module = await EnsureModuleLoadedAsync();
         
         // Convert universal ChartConfig to ECharts v6 format
         var echartsConfig = ConvertToEChartsFormat(config);
@@ -33,7 +77,7 @@ public class EChartsRenderer : IChartRenderer
         var json = JsonSerializer.Serialize(echartsConfig, JsonOptions);
         var normalizedConfig = JsonSerializer.Deserialize<object>(json, JsonOptions);
         
-        var chartId = await _jsModule.InvokeAsync<string>("createChart", element, normalizedConfig);
+        var chartId = await module.InvokeAsync<string>("createChart", element, normalizedConfig);
         return chartId;
     }
     
@@ -716,46 +760,40 @@ public class EChartsRenderer : IChartRenderer
     
     public async Task UpdateDataAsync(string chartId, object data)
     {
-        if (_jsModule != null)
-        {
-            // Serialize with camelCase to match ECharts expectations
-            var json = JsonSerializer.Serialize(data, JsonOptions);
-            var normalizedData = JsonSerializer.Deserialize<object>(json, JsonOptions);
-            
-            await _jsModule.InvokeVoidAsync("updateData", chartId, normalizedData);
-        }
+        var module = await EnsureModuleLoadedAsync();
+        
+        // Serialize with camelCase to match ECharts expectations
+        var json = JsonSerializer.Serialize(data, JsonOptions);
+        var normalizedData = JsonSerializer.Deserialize<object>(json, JsonOptions);
+        
+        await module.InvokeVoidAsync("updateData", chartId, normalizedData);
     }
     
     public async Task UpdateOptionsAsync(string chartId, object options)
     {
-        if (_jsModule != null)
-        {
-            // Serialize with camelCase to match ECharts expectations
-            var json = JsonSerializer.Serialize(options, JsonOptions);
-            var normalizedOptions = JsonSerializer.Deserialize<object>(json, JsonOptions);
-            
-            await _jsModule.InvokeVoidAsync("updateOptions", chartId, normalizedOptions);
-        }
+        var module = await EnsureModuleLoadedAsync();
+        
+        // Serialize with camelCase to match ECharts expectations
+        var json = JsonSerializer.Serialize(options, JsonOptions);
+        var normalizedOptions = JsonSerializer.Deserialize<object>(json, JsonOptions);
+        
+        await module.InvokeVoidAsync("updateOptions", chartId, normalizedOptions);
     }
     
     public async Task ApplyThemeAsync(string chartId, ChartTheme theme)
     {
-        if (_jsModule != null)
-        {
-            var echartsTheme = MapToEChartsTheme(theme);
-            await _jsModule.InvokeVoidAsync("applyTheme", chartId, echartsTheme);
-        }
+        var module = await EnsureModuleLoadedAsync();
+        
+        var echartsTheme = MapToEChartsTheme(theme);
+        await module.InvokeVoidAsync("applyTheme", chartId, echartsTheme);
     }
     
     public async Task<string> ExportAsImageAsync(string chartId, ImageFormat format)
     {
-        if (_jsModule != null)
-        {
-            var type = format == ImageFormat.Svg ? "svg" : "png";
-            return await _jsModule.InvokeAsync<string>("exportImage", chartId, type);
-        }
+        var module = await EnsureModuleLoadedAsync();
         
-        return string.Empty;
+        var type = format == ImageFormat.Svg ? "svg" : "png";
+        return await module.InvokeAsync<string>("exportImage", chartId, type);
     }
     
     private object MapToEChartsTheme(ChartTheme theme)
@@ -793,17 +831,20 @@ public class EChartsRenderer : IChartRenderer
     
     public async Task DestroyAsync(string chartId)
     {
-        if (_jsModule != null)
-        {
-            await _jsModule.InvokeVoidAsync("destroy", chartId);
-        }
+        var module = await EnsureModuleLoadedAsync();
+        await module.InvokeVoidAsync("destroy", chartId);
+    }
+    
+    public async Task RefreshAsync(string chartId)
+    {
+        var module = await EnsureModuleLoadedAsync();
+        await module.InvokeVoidAsync("refresh", chartId);
     }
     
     public async ValueTask DisposeAsync()
     {
-        if (_jsModule != null)
-        {
-            await _jsModule.DisposeAsync();
-        }
+        // Don't dispose the shared module - it's shared across all instances
+        // Only set instance reference to null
+        _jsModule = null;
     }
 }

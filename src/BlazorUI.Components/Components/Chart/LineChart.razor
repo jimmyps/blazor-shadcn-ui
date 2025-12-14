@@ -3,6 +3,7 @@
 @inherits LineChartBase<TData>
 @implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
+@inject IChartRefreshRegistry? ChartRefreshRegistry
 
 <CascadingValue Value="(IChartStyleContainer)this" IsFixed="true">
     <div class="@ContainerClass" style="position: relative; height: @(Height)px; width: 100%;">
@@ -55,6 +56,24 @@
     private bool _shouldRender = false;
     private string? _initializationError;
     
+    /// <summary>
+    /// Refreshes the chart by re-resolving CSS variables and re-applying options.
+    /// </summary>
+    public async Task RefreshAsync()
+    {
+        if (_renderer != null && !string.IsNullOrEmpty(_chartId))
+        {
+            try
+            {
+                await _renderer.RefreshAsync(_chartId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"LineChart: Failed to refresh chart: {ex.Message}");
+            }
+        }
+    }
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -96,6 +115,12 @@
             
             _chartId = await _renderer.InitializeAsync(_chartContainer, chartConfig);
             _isInitialized = true;
+            
+            // Register with refresh registry for global refresh support
+            if (ChartRefreshRegistry != null && !string.IsNullOrEmpty(_chartId))
+            {
+                ChartRefreshRegistry.Register(_chartId, _renderer);
+            }
         }
         catch (Exception ex)
         {
@@ -333,6 +358,12 @@
     
     public async ValueTask DisposeAsync()
     {
+        // Unregister from refresh registry
+        if (ChartRefreshRegistry != null && !string.IsNullOrEmpty(_chartId))
+        {
+            ChartRefreshRegistry.Unregister(_chartId);
+        }
+        
         if (_renderer != null && !string.IsNullOrEmpty(_chartId))
         {
             try

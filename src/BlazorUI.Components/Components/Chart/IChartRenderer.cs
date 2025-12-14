@@ -37,6 +37,11 @@ public interface IChartRenderer : IAsyncDisposable
     /// Destroys the chart instance and cleans up resources.
     /// </summary>
     Task DestroyAsync(string chartId);
+    
+    /// <summary>
+    /// Refreshes the chart by re-resolving CSS variables and re-applying options.
+    /// </summary>
+    Task RefreshAsync(string chartId);
 }
 
 /// <summary>
