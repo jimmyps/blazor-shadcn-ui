@@ -2,6 +2,7 @@
 @typeparam TData
 @inherits ScatterChartBase<TData>
 @implements IAsyncDisposable
+@inject IChartRefreshRegistry? ChartRefreshRegistry
 
 <div class="@ContainerClass">
     <div @ref="_chartElement" style="height: @(Height)px; width: 100%;"></div>
@@ -12,6 +13,24 @@
     private string? _chartId;
     private IChartRenderer? _renderer;
     private bool _isDisposed;
+    
+    /// <summary>
+    /// Refreshes the chart by re-resolving CSS variables and re-applying options.
+    /// </summary>
+    public async Task RefreshAsync()
+    {
+        if (_renderer != null && !string.IsNullOrEmpty(_chartId))
+        {
+            try
+            {
+                await _renderer.RefreshAsync(_chartId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ScatterChart: Failed to refresh chart: {ex.Message}");
+            }
+        }
+    }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -44,6 +63,12 @@
                 };
                 
                 _chartId = await _renderer.InitializeAsync(_chartElement, config);
+                
+                // Register with refresh registry for global refresh support
+                if (ChartRefreshRegistry != null && !string.IsNullOrEmpty(_chartId))
+                {
+                    ChartRefreshRegistry.Register(_chartId, _renderer);
+                }
             }
             catch (Exception ex)
             {
@@ -56,6 +81,12 @@
     {
         if (_isDisposed) return;
         _isDisposed = true;
+        
+        // Unregister from refresh registry
+        if (ChartRefreshRegistry != null && !string.IsNullOrEmpty(_chartId))
+        {
+            ChartRefreshRegistry.Unregister(_chartId);
+        }
         
         if (_renderer != null && _chartId != null)
         {
