@@ -212,9 +212,18 @@ public class EChartsRenderer : IChartRenderer
         // Build ECharts v6 option object with dashboard defaults (spec 6.1)
         // Use model instances with baked defaults (user can override via options)
         var grid = options.Grid ?? new ChartGrid();
-        var legend = options.Legend ?? new ChartLegendExtended { Show = options.Plugins.Legend.Display };
-        var tooltip = options.Tooltip ?? new ChartTooltipExtended 
+        
+        // Use options.Legend if provided, otherwise create from Plugins.Legend with defaults
+        var legend = options.Legend ?? new LegendConfig 
         { 
+            Display = options.Plugins.Legend.Display
+            // Other properties use their defaults from LegendConfig
+        };
+        
+        // Use options.Tooltip if provided, otherwise create from Plugins.Tooltip with defaults
+        var tooltip = options.Tooltip ?? new TooltipConfig 
+        { 
+            Enabled = options.Plugins.Tooltip.Enabled,
             Show = options.Plugins.Tooltip.Enabled,
             Trigger = TooltipTrigger.Axis,
             AxisPointer = new AxisPointerConfig { Type = AxisPointerType.None }
@@ -248,7 +257,7 @@ public class EChartsRenderer : IChartRenderer
             // Legend - Use model instance with defaults
             legend = new
             {
-                show = legend.Show,
+                show = legend.Display,
                 top = legend.Top,
                 left = legend.Left,
                 orient = legend.Orient.ToString().ToLowerInvariant(),
@@ -347,9 +356,18 @@ public class EChartsRenderer : IChartRenderer
         // Build ECharts v6 option object with dashboard defaults (spec 6.1, 6.3)
         // Use model instances with baked defaults (user can override via options)
         var grid = options.Grid ?? new ChartGrid();
-        var legend = options.Legend ?? new ChartLegendExtended { Show = options.Plugins.Legend.Display };
-        var tooltip = options.Tooltip ?? new ChartTooltipExtended 
+        
+        // Use options.Legend if provided, otherwise create from Plugins.Legend with defaults
+        var legend = options.Legend ?? new LegendConfig 
         { 
+            Display = options.Plugins.Legend.Display
+            // Other properties use their defaults from LegendConfig
+        };
+        
+        // Use options.Tooltip if provided, otherwise create from Plugins.Tooltip with defaults
+        var tooltip = options.Tooltip ?? new TooltipConfig 
+        { 
+            Enabled = options.Plugins.Tooltip.Enabled,
             Show = options.Plugins.Tooltip.Enabled,
             Trigger = TooltipTrigger.Axis,
             AxisPointer = new AxisPointerConfig { Type = AxisPointerType.None }
@@ -383,7 +401,7 @@ public class EChartsRenderer : IChartRenderer
             // Legend - Use model instance with defaults
             legend = new
             {
-                show = legend.Show,
+                show = legend.Display,
                 top = legend.Top,
                 left = legend.Left,
                 orient = legend.Orient.ToString().ToLowerInvariant(),
@@ -438,9 +456,18 @@ public class EChartsRenderer : IChartRenderer
         // Build ECharts v6 option with dashboard defaults (spec 6.1, 6.4)
         // CRITICAL: NO xAxis / NO yAxis for pie charts
         // Use model instances with baked defaults (user can override via options)
-        var legend = options.Legend ?? new ChartLegendExtended { Show = options.Plugins.Legend.Display };
-        var tooltip = options.Tooltip ?? new ChartTooltipExtended 
+        
+        // Use options.Legend if provided, otherwise create from Plugins.Legend with defaults
+        var legend = options.Legend ?? new LegendConfig 
         { 
+            Display = options.Plugins.Legend.Display
+            // Other properties use their defaults from LegendConfig
+        };
+        
+        // Use options.Tooltip if provided, otherwise create from Plugins.Tooltip with defaults
+        var tooltip = options.Tooltip ?? new TooltipConfig 
+        { 
+            Enabled = options.Plugins.Tooltip.Enabled,
             Show = options.Plugins.Tooltip.Enabled,
             Trigger = TooltipTrigger.Item
         };
@@ -462,7 +489,7 @@ public class EChartsRenderer : IChartRenderer
             // Legend - Use model instance with defaults
             legend = new
             {
-                show = legend.Show,
+                show = legend.Display,
                 top = legend.Top,
                 left = legend.Left,
                 orient = legend.Orient.ToString().ToLowerInvariant(),
@@ -555,9 +582,18 @@ public class EChartsRenderer : IChartRenderer
         // Build ECharts v6 option with dashboard defaults (spec 6.1)
         // CRITICAL: NO xAxis / NO yAxis for radar charts
         // Use model instances with baked defaults (user can override via options)
-        var legend = options.Legend ?? new ChartLegendExtended { Show = options.Plugins.Legend.Display };
-        var tooltip = options.Tooltip ?? new ChartTooltipExtended 
+        
+        // Use options.Legend if provided, otherwise create from Plugins.Legend with defaults
+        var legend = options.Legend ?? new LegendConfig 
         { 
+            Display = options.Plugins.Legend.Display
+            // Other properties use their defaults from LegendConfig
+        };
+        
+        // Use options.Tooltip if provided, otherwise create from Plugins.Tooltip with defaults
+        var tooltip = options.Tooltip ?? new TooltipConfig 
+        { 
+            Enabled = options.Plugins.Tooltip.Enabled,
             Show = options.Plugins.Tooltip.Enabled,
             Trigger = TooltipTrigger.Item
         };
@@ -579,7 +615,7 @@ public class EChartsRenderer : IChartRenderer
             // Legend - Use model instance with defaults
             legend = new
             {
-                show = legend.Show,
+                show = legend.Display,
                 top = legend.Top,
                 left = legend.Left,
                 orient = legend.Orient.ToString().ToLowerInvariant(),
@@ -640,9 +676,18 @@ public class EChartsRenderer : IChartRenderer
         // NO boundaryGap property (not applicable to value axes)
         // Use model instances with baked defaults (user can override via options)
         var grid = options.Grid ?? new ChartGrid();
-        var legend = options.Legend ?? new ChartLegendExtended { Show = options.Plugins.Legend.Display };
-        var tooltip = options.Tooltip ?? new ChartTooltipExtended 
+        
+        // Use options.Legend if provided, otherwise create from Plugins.Legend with defaults
+        var legend = options.Legend ?? new LegendConfig 
         { 
+            Display = options.Plugins.Legend.Display
+            // Other properties use their defaults from LegendConfig
+        };
+        
+        // Use options.Tooltip if provided, otherwise create from Plugins.Tooltip with defaults
+        var tooltip = options.Tooltip ?? new TooltipConfig 
+        { 
+            Enabled = options.Plugins.Tooltip.Enabled,
             Show = options.Plugins.Tooltip.Enabled,
             Trigger = TooltipTrigger.Item
         };
@@ -674,7 +719,7 @@ public class EChartsRenderer : IChartRenderer
             // Legend - Use model instance with defaults
             legend = new
             {
-                show = legend.Show,
+                show = legend.Display,
                 top = legend.Top,
                 left = legend.Left,
                 orient = legend.Orient.ToString().ToLowerInvariant(),

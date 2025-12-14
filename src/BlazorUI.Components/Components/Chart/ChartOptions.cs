@@ -62,16 +62,18 @@ public sealed class ChartOptions
     /// <summary>
     /// Legend configuration with dashboard defaults.
     /// If not specified, dashboard defaults will be applied.
+    /// Note: Also accessible via Plugins.Legend for compatibility.
     /// </summary>
     [JsonPropertyName("legend")]
-    public ChartLegendExtended? Legend { get; init; }
+    public LegendConfig? Legend { get; init; }
     
     /// <summary>
     /// Tooltip configuration with dashboard defaults.
     /// If not specified, dashboard defaults will be applied.
+    /// Note: Also accessible via Plugins.Tooltip for compatibility.
     /// </summary>
     [JsonPropertyName("tooltip")]
-    public ChartTooltipExtended? Tooltip { get; init; }
+    public TooltipConfig? Tooltip { get; init; }
 }
 
 /// <summary>
@@ -87,7 +89,7 @@ public sealed class ChartPlugins
 }
 
 /// <summary>
-/// Legend configuration.
+/// Legend configuration with dashboard defaults.
 /// </summary>
 public sealed class LegendConfig
 {
@@ -96,15 +98,73 @@ public sealed class LegendConfig
     
     [JsonPropertyName("position")]
     public string? Position { get; init; }
+    
+    /// <summary>
+    /// Distance from top of the container.
+    /// Default: 4 (dashboard-optimized)
+    /// </summary>
+    [JsonPropertyName("top")]
+    public int? Top { get; init; } = 4;
+    
+    /// <summary>
+    /// Horizontal alignment.
+    /// Default: "center" (dashboard-optimized)
+    /// </summary>
+    [JsonPropertyName("left")]
+    public string? Left { get; init; } = "center";
+    
+    /// <summary>
+    /// Legend icon shape.
+    /// Default: Circle (dashboard-optimized)
+    /// </summary>
+    [JsonPropertyName("icon")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public LegendIcon Icon { get; init; } = LegendIcon.Circle;
+    
+    /// <summary>
+    /// Legend orientation.
+    /// Default: Horizontal (dashboard-optimized)
+    /// </summary>
+    [JsonPropertyName("orient")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public Orient Orient { get; init; } = Orient.Horizontal;
 }
 
 /// <summary>
-/// Tooltip configuration.
+/// Tooltip configuration with dashboard defaults.
 /// </summary>
 public sealed class TooltipConfig
 {
     [JsonPropertyName("enabled")]
     public bool Enabled { get; init; } = true;
+    
+    /// <summary>
+    /// Whether to show the tooltip.
+    /// </summary>
+    [JsonPropertyName("show")]
+    public bool Show { get; init; } = true;
+    
+    /// <summary>
+    /// Tooltip trigger type.
+    /// Default: Axis for axis-based charts
+    /// </summary>
+    [JsonPropertyName("trigger")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public TooltipTrigger? Trigger { get; init; }
+    
+    /// <summary>
+    /// Axis pointer configuration.
+    /// </summary>
+    [JsonPropertyName("axisPointer")]
+    public AxisPointerConfig? AxisPointer { get; init; }
+    
+    /// <summary>
+    /// Custom formatter function (raw JavaScript).
+    /// Example: "function (params) { return params.value; }"
+    /// </summary>
+    [JsonPropertyName("formatter")]
+    [JsonConverter(typeof(JsRawJsonConverter))]
+    public JsRaw? Formatter { get; init; }
 }
 
 /// <summary>
@@ -327,4 +387,59 @@ public sealed class EncodeConfig
     
     [JsonPropertyName("seriesName")]
     public string? SeriesName { get; init; }
+}
+
+/// <summary>
+/// Axis pointer configuration for tooltips.
+/// </summary>
+public sealed class AxisPointerConfig
+{
+    /// <summary>
+    /// Axis pointer type.
+    /// Default: None (dashboard-optimized)
+    /// </summary>
+    [JsonPropertyName("type")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public AxisPointerType Type { get; init; } = AxisPointerType.None;
+}
+
+/// <summary>
+/// Grid configuration with dashboard defaults.
+/// </summary>
+public sealed class ChartGrid
+{
+    /// <summary>
+    /// Distance between grid component and the left side of the container.
+    /// Default: 16 (dashboard-optimized)
+    /// </summary>
+    [JsonPropertyName("left")]
+    public int? Left { get; init; } = 16;
+    
+    /// <summary>
+    /// Distance between grid component and the right side of the container.
+    /// Default: 16 (dashboard-optimized)
+    /// </summary>
+    [JsonPropertyName("right")]
+    public int? Right { get; init; } = 16;
+    
+    /// <summary>
+    /// Distance between grid component and the top of the container.
+    /// Default: 32 (dashboard-optimized)
+    /// </summary>
+    [JsonPropertyName("top")]
+    public int? Top { get; init; } = 32;
+    
+    /// <summary>
+    /// Distance between grid component and the bottom of the container.
+    /// Default: 24 (dashboard-optimized)
+    /// </summary>
+    [JsonPropertyName("bottom")]
+    public int? Bottom { get; init; } = 24;
+    
+    /// <summary>
+    /// Whether the grid region contains axis tick labels.
+    /// Default: true (dashboard-optimized)
+    /// </summary>
+    [JsonPropertyName("containLabel")]
+    public bool ContainLabel { get; init; } = true;
 }
