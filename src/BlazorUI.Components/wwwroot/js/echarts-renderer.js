@@ -9,10 +9,14 @@
  * - Grid anti-overflow and anti-overlap mechanisms are enabled by default
  * - SVG rendering mode is explicitly configured for best quality
  * 
- * We embrace v6's improved defaults while maintaining compatibility
+ * Responsibilities:
+ * - Single-flight ECharts script loading
+ * - Store last config per chart instance
+ * - Recursive CSS variable resolution before setOption
+ * - Refresh capability to re-resolve CSS variables
  */
 
-// Store chart instances by ID
+// Store chart instances by ID with their last config
 const chartInstances = new Map();
 
 // Promise to track echarts loading state
@@ -58,6 +62,38 @@ function loadEChartsScript() {
 }
 
 /**
+ * Recursively resolve CSS variables in config object
+ * @param {any} obj - Object to process
+ * @returns {any} - Processed object with resolved CSS variables
+ */
+function resolveCssVariables(obj) {
+    if (typeof obj === 'string') {
+        // Match var(--variable-name) pattern
+        const varMatch = obj.match(/var\(([^)]+)\)/);
+        if (varMatch) {
+            const varName = varMatch[1].trim();
+            const computedValue = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+            return computedValue || obj; // Return original if not found
+        }
+        return obj;
+    }
+    
+    if (Array.isArray(obj)) {
+        return obj.map(item => resolveCssVariables(item));
+    }
+    
+    if (obj !== null && typeof obj === 'object') {
+        const resolved = {};
+        for (const [key, value] of Object.entries(obj)) {
+            resolved[key] = resolveCssVariables(value);
+        }
+        return resolved;
+    }
+    
+    return obj;
+}
+
+/**
  * Create a new ECharts instance
  * @param {HTMLElement} element - Container element to render the chart
  * @param {object} config - ECharts v6 configuration object (NOT Chart.js format)
@@ -99,10 +135,12 @@ export async function createChart(element, config) {
         const chart = echarts.init(element, null, { renderer: 'svg' });
         console.log('[ECharts] Chart instance created successfully');
         
-        // Config arrives in proper ECharts v6 format from C# - use directly
-        // ECharts v6 natively supports CSS variables like var(--chart-1)
-        // No resolution needed - enables real-time theme changes
-        chart.setOption(config);
+        // Store original config for refresh capability
+        const originalConfig = config;
+        
+        // Resolve CSS variables recursively before applying
+        const resolvedConfig = resolveCssVariables(config);
+        chart.setOption(resolvedConfig);
         console.log('[ECharts] Chart option set successfully, chartId:', chartId);
         
         // Make chart responsive - store listener reference for cleanup
@@ -112,7 +150,8 @@ export async function createChart(element, config) {
         chartInstances.set(chartId, {
             chart: chart,
             element: element,
-            resizeListener: resizeListener
+            resizeListener: resizeListener,
+            lastConfig: originalConfig  // Store original config with CSS variables
         });
         
         console.log('[ECharts] Chart initialization complete');
@@ -135,9 +174,10 @@ export function updateData(chartId, newConfig) {
         return;
     }
     
-    // Config arrives in proper ECharts format from C# - use directly
-    // ECharts v6 natively supports CSS variables - no resolution needed
-    instance.chart.setOption(newConfig, { replaceMerge: ['series'] });
+    // Store original config and resolve CSS variables
+    instance.lastConfig = newConfig;
+    const resolvedConfig = resolveCssVariables(newConfig);
+    instance.chart.setOption(resolvedConfig, { replaceMerge: ['series'] });
 }
 
 /**
@@ -152,7 +192,33 @@ export function updateOptions(chartId, newOptions) {
         return;
     }
     
-    instance.chart.setOption(newOptions, { notMerge: false });
+    // Store original config and resolve CSS variables
+    instance.lastConfig = { ...instance.lastConfig, ...newOptions };
+    const resolvedOptions = resolveCssVariables(newOptions);
+    instance.chart.setOption(resolvedOptions, { notMerge: false });
+}
+
+/**
+ * Refresh chart by re-resolving CSS variables and re-applying options
+ * @param {string} chartId - Chart instance ID
+ */
+export function refresh(chartId) {
+    const instance = chartInstances.get(chartId);
+    if (!instance) {
+        console.warn(`Chart ${chartId} not found`);
+        return;
+    }
+    
+    if (!instance.lastConfig) {
+        console.warn(`No config stored for chart ${chartId}`);
+        return;
+    }
+    
+    // Re-resolve CSS variables from stored config
+    const resolvedConfig = resolveCssVariables(instance.lastConfig);
+    
+    // Re-apply with notMerge: true to fully replace and lazyUpdate: false for immediate rendering
+    instance.chart.setOption(resolvedConfig, { notMerge: true, lazyUpdate: false });
 }
 
 /**
@@ -233,357 +299,6 @@ export function destroy(chartId) {
     } catch (error) {
         console.error('Failed to destroy chart:', error);
     }
-}
-
-/**
- * Convert Chart.js-style config to ECharts option format
- * @param {object} config - Chart.js style configuration
- * @returns {object} - ECharts option object
- */
-function convertConfig(config) {
-    // Support both PascalCase (from C#) and camelCase
-    const type = config.type || config.Type;
-    const data = config.data || config.Data || {};
-    const options = config.options || config.Options || {};
-    
-    // Base ECharts option with v6-compatible settings
-    const echartsOption = {
-        animation: options.animation !== false,
-        animationDuration: options.animation?.duration || 750,
-        animationEasing: mapEasing(options.animation?.easing || 'cubicOut'),
-        // v6: Opt-in to maintain v5 behavior if needed for compatibility
-        // By default, we use v6 behavior for better defaults
-        // richInheritPlainLabel: true (default in v6, rich text inherits plain label styles)
-        // legacyViewCoordSysCenterBase: false (use v6 corrected percent base calculations)
-    };
-    
-    // Convert based on chart type (handle both string and enum number values)
-    const typeStr = typeof type === 'string' ? type.toLowerCase() : type;
-    switch (typeStr) {
-        case 'line':
-        case 0: // ChartType.Line enum value
-            return convertLineChart(data, options, echartsOption);
-        case 'bar':
-        case 1: // ChartType.Bar enum value
-            return convertBarChart(data, options, echartsOption);
-        case 'pie':
-        case 'doughnut':
-        case 'donut':
-        case 2: // ChartType.Pie enum value
-        case 3: // ChartType.Donut enum value
-            return convertPieChart(data, options, echartsOption);
-        case 'radar':
-        case 4: // ChartType.Radar enum value
-            return convertRadarChart(data, options, echartsOption);
-        case 'scatter':
-        case 5: // ChartType.Scatter enum value
-            return convertScatterChart(data, options, echartsOption);
-        case 'bubble':
-        case 6: // ChartType.Bubble enum value
-            return convertBubbleChart(data, options, echartsOption);
-        case 'area':
-        case 7: // ChartType.Area enum value
-            return convertAreaChart(data, options, echartsOption);
-        default:
-            console.warn(`Unsupported chart type: ${type}`);
-            return echartsOption;
-    }
-}
-
-/**
- * Convert line chart configuration
- */
-function convertLineChart(data, options, baseOption) {
-    return {
-        ...baseOption,
-        xAxis: {
-            type: 'category',
-            data: data.labels || [],
-            boundaryGap: false
-        },
-        yAxis: {
-            type: 'value'
-        },
-        series: (data.datasets || []).map(dataset => ({
-            type: 'line',
-            name: dataset.label,
-            data: dataset.data,
-            smooth: dataset.tension > 0,
-            showSymbol: dataset.pointRadius > 0,
-            lineStyle: {
-                width: dataset.borderWidth || 2,
-                color: dataset.borderColor,
-                type: dataset.borderDash ? 'dashed' : 'solid'
-            },
-            areaStyle: dataset.fill ? { opacity: 0.3 } : undefined,
-            itemStyle: {
-                color: dataset.borderColor
-            }
-        })),
-        tooltip: {
-            trigger: 'axis'
-        },
-        legend: {
-            show: options.plugins?.legend?.display !== false,
-            // v6 changed default to bottom, but we prefer top for consistency with shadcn
-            top: 'top',
-            left: 'center'
-        }
-    };
-}
-
-/**
- * Convert bar chart configuration
- */
-function convertBarChart(data, options, baseOption) {
-    const isHorizontal = options.indexAxis === 'y';
-    
-    return {
-        ...baseOption,
-        xAxis: {
-            type: isHorizontal ? 'value' : 'category',
-            data: isHorizontal ? undefined : (data.labels || [])
-        },
-        yAxis: {
-            type: isHorizontal ? 'category' : 'value',
-            data: isHorizontal ? (data.labels || []) : undefined
-        },
-        series: (data.datasets || []).map(dataset => ({
-            type: 'bar',
-            name: dataset.label,
-            data: dataset.data,
-            itemStyle: {
-                color: dataset.backgroundColor,
-                borderRadius: dataset.borderRadius || 0
-            },
-            barMaxWidth: dataset.barThickness || undefined
-        })),
-        tooltip: {
-            trigger: 'axis'
-        },
-        legend: {
-            show: options.plugins?.legend?.display !== false,
-            // v6 changed default to bottom, but we prefer top for consistency with shadcn
-            top: 'top',
-            left: 'center'
-        }
-    };
-}
-
-/**
- * Convert pie/donut chart configuration
- */
-function convertPieChart(data, options, baseOption) {
-    const isDonut = options.cutout != null;
-    
-    return {
-        ...baseOption,
-        series: [{
-            type: 'pie',
-            radius: isDonut ? ['50%', '70%'] : '70%',
-            data: (data.labels || []).map((label, index) => ({
-                name: label,
-                value: data.datasets[0]?.data[index] || 0
-            })),
-            label: {
-                show: true
-            },
-            emphasis: {
-                itemStyle: {
-                    shadowBlur: 10,
-                    shadowOffsetX: 0,
-                    shadowColor: 'rgba(0, 0, 0, 0.5)'
-                }
-            }
-        }],
-        tooltip: {
-            trigger: 'item',
-            formatter: '{b}: {c} ({d}%)'
-        },
-        legend: {
-            show: options.plugins?.legend?.display !== false,
-            // v6 default changed, for pie charts we keep vertical orientation on right
-            orient: 'vertical',
-            left: 'right',
-            top: 'middle'
-        }
-    };
-}
-
-/**
- * Convert radar chart configuration
- */
-function convertRadarChart(data, options, baseOption) {
-    return {
-        ...baseOption,
-        radar: {
-            indicator: (data.labels || []).map(label => ({ name: label, max: 100 }))
-        },
-        series: [{
-            type: 'radar',
-            data: (data.datasets || []).map(dataset => ({
-                name: dataset.label,
-                value: dataset.data,
-                lineStyle: {
-                    color: dataset.borderColor,
-                    width: dataset.borderWidth || 2
-                },
-                areaStyle: {
-                    opacity: 0.2
-                },
-                itemStyle: {
-                    color: dataset.pointBackgroundColor
-                }
-            }))
-        }],
-        tooltip: {
-            trigger: 'item'
-        },
-        legend: {
-            show: options.plugins?.legend?.display !== false,
-            // v6 changed default to bottom, but we prefer top for radar charts
-            top: 'top',
-            left: 'center'
-        }
-    };
-}
-
-/**
- * Convert scatter chart configuration
- */
-function convertScatterChart(data, options, baseOption) {
-    return {
-        ...baseOption,
-        xAxis: {
-            type: 'value',
-            name: options.scales?.x?.title || ''
-        },
-        yAxis: {
-            type: 'value',
-            name: options.scales?.y?.title || ''
-        },
-        series: (data.datasets || []).map(dataset => ({
-            type: 'scatter',
-            name: dataset.label,
-            data: dataset.data,
-            symbolSize: dataset.pointRadius || 10,
-            itemStyle: {
-                color: dataset.backgroundColor
-            }
-        })),
-        tooltip: {
-            trigger: 'item',
-            formatter: params => `${params.seriesName}<br/>(${params.value[0]}, ${params.value[1]})`
-        },
-        legend: {
-            show: options.plugins?.legend?.display !== false,
-            top: 'top',
-            left: 'center'
-        }
-    };
-}
-
-/**
- * Convert bubble chart configuration
- */
-function convertBubbleChart(data, options, baseOption) {
-    return {
-        ...baseOption,
-        xAxis: {
-            type: 'value',
-            name: options.scales?.x?.title || ''
-        },
-        yAxis: {
-            type: 'value',
-            name: options.scales?.y?.title || ''
-        },
-        series: (data.datasets || []).map(dataset => ({
-            type: 'scatter',
-            name: dataset.label,
-            data: dataset.data,
-            // Bubble size is the third element in data array [x, y, size]
-            symbolSize: value => Array.isArray(value) && value.length > 2 ? value[2] / 2 : 10,
-            itemStyle: {
-                color: dataset.backgroundColor
-            }
-        })),
-        tooltip: {
-            trigger: 'item',
-            formatter: params => {
-                const [x, y, size] = params.value;
-                return `${params.seriesName}<br/>X: ${x}<br/>Y: ${y}<br/>Size: ${size}`;
-            }
-        },
-        legend: {
-            show: options.plugins?.legend?.display !== false,
-            top: 'top',
-            left: 'center'
-        }
-    };
-}
-
-/**
- * Convert area chart configuration (line chart with filled area)
- */
-function convertAreaChart(data, options, baseOption) {
-    return {
-        ...baseOption,
-        xAxis: {
-            type: 'category',
-            data: data.labels || [],
-            boundaryGap: false
-        },
-        yAxis: {
-            type: 'value'
-        },
-        series: (data.datasets || []).map(dataset => ({
-            type: 'line',
-            name: dataset.label,
-            data: dataset.data,
-            smooth: dataset.tension > 0,
-            showSymbol: dataset.pointRadius > 0,
-            lineStyle: {
-                width: dataset.borderWidth || 2,
-                color: dataset.borderColor
-            },
-            areaStyle: {
-                opacity: 0.3,
-                color: dataset.backgroundColor
-            },
-            itemStyle: {
-                color: dataset.borderColor
-            },
-            stack: dataset.stack || undefined
-        })),
-        tooltip: {
-            trigger: 'axis'
-        },
-        legend: {
-            show: options.plugins?.legend?.display !== false,
-            top: 'top',
-            left: 'center'
-        }
-    };
-}
-
-/**
- * Map Chart.js easing to ECharts easing
- */
-function mapEasing(easing) {
-    const easingMap = {
-        'linear': 'linear',
-        'easeInQuad': 'quadraticIn',
-        'easeOutQuad': 'quadraticOut',
-        'easeInOutQuad': 'quadraticInOut',
-        'easeInCubic': 'cubicIn',
-        'easeOutCubic': 'cubicOut',
-        'easeInOutCubic': 'cubicInOut',
-        'easeInQuart': 'quarticIn',
-        'easeOutQuart': 'quarticOut',
-        'easeInOutQuart': 'quarticInOut'
-    };
-    
-    return easingMap[easing] || 'cubicOut';
 }
 
 /**
