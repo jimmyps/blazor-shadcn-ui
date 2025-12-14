@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 namespace BlazorUI.Components.Chart;
 
 /// <summary>
-/// Enhanced grid configuration for ECharts with dashboard defaults.
+/// Grid configuration with dashboard defaults.
 /// </summary>
-public sealed class EChartsGrid
+public sealed class ChartGrid
 {
     /// <summary>
     /// Distance between grid component and the left side of the container.
@@ -44,9 +44,9 @@ public sealed class EChartsGrid
 }
 
 /// <summary>
-/// Enhanced legend configuration with dashboard defaults.
+/// Legend configuration with dashboard defaults.
 /// </summary>
-public sealed class EChartsLegend
+public sealed class ChartLegendExtended
 {
     /// <summary>
     /// Whether to show the legend.
@@ -86,9 +86,9 @@ public sealed class EChartsLegend
 }
 
 /// <summary>
-/// Enhanced tooltip configuration with dashboard defaults.
+/// Tooltip configuration with dashboard defaults.
 /// </summary>
-public sealed class EChartsTooltip
+public sealed class ChartTooltipExtended
 {
     /// <summary>
     /// Whether to show the tooltip.
@@ -134,9 +134,9 @@ public sealed class AxisPointerConfig
 }
 
 /// <summary>
-/// Enhanced axis configuration with dashboard defaults.
+/// Axis configuration with dashboard defaults.
 /// </summary>
-public sealed class EChartsAxis
+public sealed class ChartAxisExtended
 {
     /// <summary>
     /// Axis type.

@@ -51,6 +51,27 @@ public sealed class ChartOptions
     /// </summary>
     [JsonPropertyName("dataset")]
     public DatasetConfig? Dataset { get; init; }
+    
+    /// <summary>
+    /// Grid configuration with dashboard defaults.
+    /// If not specified, dashboard defaults will be applied.
+    /// </summary>
+    [JsonPropertyName("grid")]
+    public ChartGrid? Grid { get; init; }
+    
+    /// <summary>
+    /// Legend configuration with dashboard defaults.
+    /// If not specified, dashboard defaults will be applied.
+    /// </summary>
+    [JsonPropertyName("legend")]
+    public ChartLegendExtended? Legend { get; init; }
+    
+    /// <summary>
+    /// Tooltip configuration with dashboard defaults.
+    /// If not specified, dashboard defaults will be applied.
+    /// </summary>
+    [JsonPropertyName("tooltip")]
+    public ChartTooltipExtended? Tooltip { get; init; }
 }
 
 /// <summary>

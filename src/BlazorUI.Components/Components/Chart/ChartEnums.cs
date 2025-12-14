@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace BlazorUI.Components.Chart;
 
 /// <summary>
-/// Tooltip trigger type for ECharts.
+/// Tooltip trigger type.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum TooltipTrigger
@@ -95,7 +95,7 @@ public enum Orient
 }
 
 /// <summary>
-/// Axis type for ECharts axes.
+/// Axis type.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum AxisType

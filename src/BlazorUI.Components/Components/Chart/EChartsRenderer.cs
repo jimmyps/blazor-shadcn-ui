@@ -210,38 +210,49 @@ public class EChartsRenderer : IChartRenderer
         }
         
         // Build ECharts v6 option object with dashboard defaults (spec 6.1)
+        // Use model instances with baked defaults (user can override via options)
+        var grid = options.Grid ?? new ChartGrid();
+        var legend = options.Legend ?? new ChartLegendExtended { Show = options.Plugins.Legend.Display };
+        var tooltip = options.Tooltip ?? new ChartTooltipExtended 
+        { 
+            Show = options.Plugins.Tooltip.Enabled,
+            Trigger = TooltipTrigger.Axis,
+            AxisPointer = new AxisPointerConfig { Type = AxisPointerType.None }
+        };
+        
         return new
         {
             // Animation
             animationDuration = options.Animation?.Duration ?? 750,
             animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
             
-            // Grid - Dashboard defaults (spec 6.1)
+            // Grid - Use model instance with defaults
             grid = new
             {
-                left = 16,
-                right = 16,
-                top = 32,
-                bottom = 24,
-                containLabel = true
+                left = grid.Left,
+                right = grid.Right,
+                top = grid.Top,
+                bottom = grid.Bottom,
+                containLabel = grid.ContainLabel
             },
             
-            // Tooltip - Dashboard defaults (spec 6.1): trigger axis, axisPointer none
+            // Tooltip - Use model instance with defaults
             tooltip = new
             {
-                show = options.Plugins.Tooltip.Enabled,
-                trigger = "axis",
-                axisPointer = new { type = "none" } // Dashboard default per spec
+                show = tooltip.Show,
+                trigger = tooltip.Trigger?.ToString().ToLowerInvariant() ?? "axis",
+                axisPointer = new { type = tooltip.AxisPointer?.Type.ToString().ToLowerInvariant() ?? "none" },
+                formatter = tooltip.Formatter
             },
             
-            // Legend - Dashboard defaults (spec 6.1): top 4, center, horizontal, circle icon
+            // Legend - Use model instance with defaults
             legend = new
             {
-                show = options.Plugins.Legend.Display,
-                top = 4,
-                left = "center",
-                orient = "horizontal",
-                icon = "circle"
+                show = legend.Show,
+                top = legend.Top,
+                left = legend.Left,
+                orient = legend.Orient.ToString().ToLowerInvariant(),
+                icon = legend.Icon.ToString().ToLowerInvariant()
             },
             
             // X Axis
@@ -334,37 +345,49 @@ public class EChartsRenderer : IChartRenderer
         }
         
         // Build ECharts v6 option object with dashboard defaults (spec 6.1, 6.3)
+        // Use model instances with baked defaults (user can override via options)
+        var grid = options.Grid ?? new ChartGrid();
+        var legend = options.Legend ?? new ChartLegendExtended { Show = options.Plugins.Legend.Display };
+        var tooltip = options.Tooltip ?? new ChartTooltipExtended 
+        { 
+            Show = options.Plugins.Tooltip.Enabled,
+            Trigger = TooltipTrigger.Axis,
+            AxisPointer = new AxisPointerConfig { Type = AxisPointerType.None }
+        };
+        
         return new
         {
             // Animation
             animationDuration = options.Animation?.Duration ?? 750,
             animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
             
-            // Grid - Dashboard defaults (spec 6.1)
+            // Grid - Use model instance with defaults
             grid = new
             {
-                left = 16,
-                right = 16,
-                top = 32,
-                bottom = 24,
-                containLabel = true
+                left = grid.Left,
+                right = grid.Right,
+                top = grid.Top,
+                bottom = grid.Bottom,
+                containLabel = grid.ContainLabel
             },
             
-            // Tooltip - Dashboard defaults (spec 6.1, 6.3): trigger axis, axisPointer none
+            // Tooltip - Use model instance with defaults
             tooltip = new
             {
-                show = options.Plugins.Tooltip.Enabled,
-                trigger = "axis",
-                axisPointer = new { type = "none" } // Dashboard default per spec (not shadow)
+                show = tooltip.Show,
+                trigger = tooltip.Trigger?.ToString().ToLowerInvariant() ?? "axis",
+                axisPointer = new { type = tooltip.AxisPointer?.Type.ToString().ToLowerInvariant() ?? "none" },
+                formatter = tooltip.Formatter
             },
-            // Legend - Dashboard defaults (spec 6.1): top 4, center, horizontal, circle icon
+            
+            // Legend - Use model instance with defaults
             legend = new
             {
-                show = options.Plugins.Legend.Display,
-                top = 4,
-                left = "center",
-                orient = "horizontal",
-                icon = "circle"
+                show = legend.Show,
+                top = legend.Top,
+                left = legend.Left,
+                orient = legend.Orient.ToString().ToLowerInvariant(),
+                icon = legend.Icon.ToString().ToLowerInvariant()
             },
             xAxis = new 
             { 
@@ -414,27 +437,36 @@ public class EChartsRenderer : IChartRenderer
         
         // Build ECharts v6 option with dashboard defaults (spec 6.1, 6.4)
         // CRITICAL: NO xAxis / NO yAxis for pie charts
+        // Use model instances with baked defaults (user can override via options)
+        var legend = options.Legend ?? new ChartLegendExtended { Show = options.Plugins.Legend.Display };
+        var tooltip = options.Tooltip ?? new ChartTooltipExtended 
+        { 
+            Show = options.Plugins.Tooltip.Enabled,
+            Trigger = TooltipTrigger.Item
+        };
+        
         return new
         {
             // Animation
             animationDuration = options.Animation?.Duration ?? 750,
             animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
             
-            // Tooltip - Item trigger for pie/donut
+            // Tooltip - Use model instance with defaults
             tooltip = new
             {
-                show = options.Plugins.Tooltip.Enabled,
-                trigger = "item"
+                show = tooltip.Show,
+                trigger = tooltip.Trigger?.ToString().ToLowerInvariant() ?? "item",
+                formatter = tooltip.Formatter
             },
             
-            // Legend - Use same global defaults (spec 6.1): top 4, center, horizontal, circle
+            // Legend - Use model instance with defaults
             legend = new
             {
-                show = options.Plugins.Legend.Display,
-                top = 4,
-                left = "center",
-                orient = "horizontal",
-                icon = "circle"
+                show = legend.Show,
+                top = legend.Top,
+                left = legend.Left,
+                orient = legend.Orient.ToString().ToLowerInvariant(),
+                icon = legend.Icon.ToString().ToLowerInvariant()
             },
             
             series = new[]
@@ -522,27 +554,36 @@ public class EChartsRenderer : IChartRenderer
         
         // Build ECharts v6 option with dashboard defaults (spec 6.1)
         // CRITICAL: NO xAxis / NO yAxis for radar charts
+        // Use model instances with baked defaults (user can override via options)
+        var legend = options.Legend ?? new ChartLegendExtended { Show = options.Plugins.Legend.Display };
+        var tooltip = options.Tooltip ?? new ChartTooltipExtended 
+        { 
+            Show = options.Plugins.Tooltip.Enabled,
+            Trigger = TooltipTrigger.Item
+        };
+        
         return new
         {
             // Animation
             animationDuration = options.Animation?.Duration ?? 750,
             animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
             
-            // Tooltip - Item trigger for radar
+            // Tooltip - Use model instance with defaults
             tooltip = new
             {
-                show = options.Plugins.Tooltip.Enabled,
-                trigger = "item"
+                show = tooltip.Show,
+                trigger = tooltip.Trigger?.ToString().ToLowerInvariant() ?? "item",
+                formatter = tooltip.Formatter
             },
             
-            // Legend - Dashboard defaults (spec 6.1): top 4, center, horizontal, circle
+            // Legend - Use model instance with defaults
             legend = new
             {
-                show = options.Plugins.Legend.Display,
-                top = 4,
-                left = "center",
-                orient = "horizontal",
-                icon = "circle"
+                show = legend.Show,
+                top = legend.Top,
+                left = legend.Left,
+                orient = legend.Orient.ToString().ToLowerInvariant(),
+                icon = legend.Icon.ToString().ToLowerInvariant()
             },
             
             radar = new { indicator = indicators.ToArray() },  // Radar coordinate system
@@ -597,37 +638,47 @@ public class EChartsRenderer : IChartRenderer
         // Build ECharts v6 option with dashboard defaults (spec 6.1)
         // CRITICAL: xAxis/yAxis type = "value" (numeric, not category)
         // NO boundaryGap property (not applicable to value axes)
+        // Use model instances with baked defaults (user can override via options)
+        var grid = options.Grid ?? new ChartGrid();
+        var legend = options.Legend ?? new ChartLegendExtended { Show = options.Plugins.Legend.Display };
+        var tooltip = options.Tooltip ?? new ChartTooltipExtended 
+        { 
+            Show = options.Plugins.Tooltip.Enabled,
+            Trigger = TooltipTrigger.Item
+        };
+        
         return new
         {
             // Animation
             animationDuration = options.Animation?.Duration ?? 750,
             animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
             
-            // Grid - Dashboard defaults (spec 6.1)
+            // Grid - Use model instance with defaults
             grid = new
             {
-                left = 16,
-                right = 16,
-                top = 32,
-                bottom = 24,
-                containLabel = true
+                left = grid.Left,
+                right = grid.Right,
+                top = grid.Top,
+                bottom = grid.Bottom,
+                containLabel = grid.ContainLabel
             },
             
-            // Tooltip - Item trigger for scatter
+            // Tooltip - Use model instance with defaults
             tooltip = new
             {
-                show = options.Plugins.Tooltip.Enabled,
-                trigger = "item"
+                show = tooltip.Show,
+                trigger = tooltip.Trigger?.ToString().ToLowerInvariant() ?? "item",
+                formatter = tooltip.Formatter
             },
             
-            // Legend - Dashboard defaults (spec 6.1): top 4, center, horizontal, circle
+            // Legend - Use model instance with defaults
             legend = new
             {
-                show = options.Plugins.Legend.Display,
-                top = 4,
-                left = "center",
-                orient = "horizontal",
-                icon = "circle"
+                show = legend.Show,
+                top = legend.Top,
+                left = legend.Left,
+                orient = legend.Orient.ToString().ToLowerInvariant(),
+                icon = legend.Icon.ToString().ToLowerInvariant()
             },
             xAxis = new 
             { 
