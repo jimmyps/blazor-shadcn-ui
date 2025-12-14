@@ -43,9 +43,19 @@ public class ChartRefreshRegistry : IChartRefreshRegistry
     
     public async Task RefreshAllAsync()
     {
-        var tasks = _registeredCharts.Select(kvp => 
-            kvp.Value.RefreshAsync(kvp.Key)
-        );
+        // Create tasks with error handling to ensure all charts are processed
+        var tasks = _registeredCharts.Select(async kvp =>
+        {
+            try
+            {
+                await kvp.Value.RefreshAsync(kvp.Key);
+            }
+            catch (Exception ex)
+            {
+                // Log but don't throw - allow other charts to refresh
+                Console.WriteLine($"Failed to refresh chart {kvp.Key}: {ex.Message}");
+            }
+        });
         
         await Task.WhenAll(tasks);
     }

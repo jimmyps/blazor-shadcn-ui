@@ -68,8 +68,9 @@ function loadEChartsScript() {
  */
 function resolveCssVariables(obj) {
     if (typeof obj === 'string') {
-        // Match var(--variable-name) pattern
-        const varMatch = obj.match(/var\(([^)]+)\)/);
+        // Match var(--variable-name) or var(--variable-name, fallback) pattern
+        // Extract only the variable name (before any comma for fallback)
+        const varMatch = obj.match(/var\(([^,)]+)/);
         if (varMatch) {
             const varName = varMatch[1].trim();
             const computedValue = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
@@ -193,7 +194,8 @@ export function updateOptions(chartId, newOptions) {
     }
     
     // Store original config and resolve CSS variables
-    instance.lastConfig = { ...instance.lastConfig, ...newOptions };
+    // Safely merge with existing config
+    instance.lastConfig = { ...(instance.lastConfig || {}), ...newOptions };
     const resolvedOptions = resolveCssVariables(newOptions);
     instance.chart.setOption(resolvedOptions, { notMerge: false });
 }
