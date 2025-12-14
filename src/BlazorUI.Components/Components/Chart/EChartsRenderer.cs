@@ -111,7 +111,7 @@ public class EChartsRenderer : IChartRenderer
         {
             var ds = datasets[i];
             
-            // Auto-assign color based on series index (1-based for CSS variables)
+            // Auto-assign color based on series index (1-based for CSS variables per spec)
             var seriesIndex = i + 1;
             var defaultColor = $"var(--chart-{seriesIndex})";
             
@@ -123,28 +123,23 @@ public class EChartsRenderer : IChartRenderer
                 ["data"] = ds.Data
             };
             
-            // Handle tension → smooth (use actual value for smooth curves)
-            seriesItem["smooth"] = ds.Tension ?? 0;
+            // Dashboard defaults for line charts (spec 6.2):
+            // - smooth: true (unless explicitly set via tension)
+            // - showSymbol: false (unless explicitly set via pointRadius > 0)
+            // - lineStyle.width: 2
             
-            // Handle pointRadius → symbolSize and showSymbol
-            var pointRadius = ds.PointRadius ?? 4;
-            seriesItem["showSymbol"] = pointRadius > 0;
-            seriesItem["symbolSize"] = pointRadius;
+            var smooth = ds.Tension.HasValue ? (ds.Tension.Value > 0) : true; // Default true per spec
+            seriesItem["smooth"] = smooth;
             
-            // Handle pointHoverRadius → emphasis with focus:'series'
-            var hoverRadius = ds.PointHoverRadius ?? (pointRadius + 1);
+            var showSymbol = ds.PointRadius.HasValue ? (ds.PointRadius.Value > 0) : false; // Default false per spec
+            seriesItem["showSymbol"] = showSymbol;
+            seriesItem["symbolSize"] = ds.PointRadius ?? 4;
             
-            seriesItem["emphasis"] = new Dictionary<string, object>
-            {
-                ["focus"] = "series", // Highlight series on hover
-                ["symbolSize"] = hoverRadius
-            };
-            
-            // Line style: borderColor → lineStyle.color, borderWidth → lineStyle.width
+            // Line style with dashboard default width of 2
             var lineStyle = new Dictionary<string, object>
             {
                 ["color"] = ds.BorderColor ?? defaultColor,
-                ["width"] = ds.BorderWidth ?? 2
+                ["width"] = ds.BorderWidth ?? 2 // Dashboard default per spec
             };
             
             // Handle borderDash → lineStyle.type (solid | dashed | dotted)
@@ -163,6 +158,12 @@ public class EChartsRenderer : IChartRenderer
             seriesItem["itemStyle"] = new Dictionary<string, object>
             {
                 ["color"] = ds.BorderColor ?? defaultColor
+            };
+            
+            // Emphasis OFF by default (spec 6.1 - emphasis disabled)
+            seriesItem["emphasis"] = new Dictionary<string, object>
+            {
+                ["disabled"] = true
             };
             
             // Area style: fill: true → add areaStyle
@@ -208,18 +209,42 @@ public class EChartsRenderer : IChartRenderer
             series.Add(seriesItem);
         }
         
-        // Build ECharts v6 option object (NO top-level 'type', NO responsive/maintainAspectRatio)
+        // Build ECharts v6 option object with dashboard defaults (spec 6.1)
         return new
         {
+            // Animation
             animationDuration = options.Animation?.Duration ?? 750,
             animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
-            tooltip = new { show = options.Plugins.Tooltip.Enabled, trigger = "axis" },
-            legend = new { 
-                show = options.Plugins.Legend.Display, 
-                top = "top", 
-                left = "center",
-                orient = "horizontal"
+            
+            // Grid - Dashboard defaults (spec 6.1)
+            grid = new
+            {
+                left = 16,
+                right = 16,
+                top = 32,
+                bottom = 24,
+                containLabel = true
             },
+            
+            // Tooltip - Dashboard defaults (spec 6.1): trigger axis, axisPointer none
+            tooltip = new
+            {
+                show = options.Plugins.Tooltip.Enabled,
+                trigger = "axis",
+                axisPointer = new { type = "none" } // Dashboard default per spec
+            },
+            
+            // Legend - Dashboard defaults (spec 6.1): top 4, center, horizontal, circle icon
+            legend = new
+            {
+                show = options.Plugins.Legend.Display,
+                top = 4,
+                left = "center",
+                orient = "horizontal",
+                icon = "circle"
+            },
+            
+            // X Axis
             xAxis = new
             {
                 type = "category",
@@ -229,6 +254,8 @@ public class EChartsRenderer : IChartRenderer
                 axisLine = new { show = options.Scales?.X?.Display ?? true },
                 splitLine = new { show = options.Scales?.X?.Grid?.Display ?? true }
             },
+            
+            // Y Axis
             yAxis = new
             {
                 type = "value",
@@ -236,6 +263,7 @@ public class EChartsRenderer : IChartRenderer
                 axisLine = new { show = options.Scales?.Y?.Display ?? true },
                 splitLine = new { show = options.Scales?.Y?.Grid?.Display ?? true }
             },
+            
             series = series.ToArray()
         };
     }
@@ -272,10 +300,10 @@ public class EChartsRenderer : IChartRenderer
                 ["color"] = itemColor
             };
             
-            // Add emphasis for hover
+            // Emphasis OFF by default (spec 6.1 - emphasis disabled)
             seriesItem["emphasis"] = new Dictionary<string, object>
             {
-                ["focus"] = "series"
+                ["disabled"] = true
             };
             
             // Support gradients for bars
@@ -305,21 +333,38 @@ public class EChartsRenderer : IChartRenderer
             series.Add(seriesItem);
         }
         
-        // Build ECharts v6 option object per Section 2.2 (Bar Charts) specification
+        // Build ECharts v6 option object with dashboard defaults (spec 6.1, 6.3)
         return new
         {
+            // Animation
             animationDuration = options.Animation?.Duration ?? 750,
             animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
-            tooltip = new { 
-                show = options.Plugins.Tooltip.Enabled, 
-                trigger = "axis",  // Axis trigger for bar charts
-                axisPointer = new { type = "shadow" }  // Shadow pointer per spec
+            
+            // Grid - Dashboard defaults (spec 6.1)
+            grid = new
+            {
+                left = 16,
+                right = 16,
+                top = 32,
+                bottom = 24,
+                containLabel = true
             },
-            legend = new { 
-                show = options.Plugins.Legend.Display, 
-                top = "top", 
+            
+            // Tooltip - Dashboard defaults (spec 6.1, 6.3): trigger axis, axisPointer none
+            tooltip = new
+            {
+                show = options.Plugins.Tooltip.Enabled,
+                trigger = "axis",
+                axisPointer = new { type = "none" } // Dashboard default per spec (not shadow)
+            },
+            // Legend - Dashboard defaults (spec 6.1): top 4, center, horizontal, circle icon
+            legend = new
+            {
+                show = options.Plugins.Legend.Display,
+                top = 4,
                 left = "center",
-                orient = "horizontal"
+                orient = "horizontal",
+                icon = "circle"
             },
             xAxis = new 
             { 
@@ -367,22 +412,31 @@ public class EChartsRenderer : IChartRenderer
             }
         }
         
-        // Build ECharts v6 option per Section 2.4 specification
+        // Build ECharts v6 option with dashboard defaults (spec 6.1, 6.4)
         // CRITICAL: NO xAxis / NO yAxis for pie charts
         return new
         {
+            // Animation
             animationDuration = options.Animation?.Duration ?? 750,
             animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
-            tooltip = new { 
-                show = options.Plugins.Tooltip.Enabled, 
-                trigger = "item"  // Item trigger for pie charts (not axis)
+            
+            // Tooltip - Item trigger for pie/donut
+            tooltip = new
+            {
+                show = options.Plugins.Tooltip.Enabled,
+                trigger = "item"
             },
-            legend = new { 
-                show = options.Plugins.Legend.Display, 
-                orient = "vertical",  // Vertical legend placement
-                left = "right",       // Right side
-                top = "middle"
+            
+            // Legend - Use same global defaults (spec 6.1): top 4, center, horizontal, circle
+            legend = new
+            {
+                show = options.Plugins.Legend.Display,
+                top = 4,
+                left = "center",
+                orient = "horizontal",
+                icon = "circle"
             },
+            
             series = new[]
             {
                 new
@@ -392,15 +446,10 @@ public class EChartsRenderer : IChartRenderer
                         new[] { options.Cutout, "70%" } :  // Donut with inner radius
                         "70%"),  // Regular pie
                     data = pieData.ToArray(),
+                    // Emphasis disabled by default (spec 6.4)
                     emphasis = new
                     {
-                        focus = "self",  // Highlight individual slice (Section 2.4)
-                        itemStyle = new
-                        {
-                            shadowBlur = 10,
-                            shadowOffsetX = 0,
-                            shadowColor = "rgba(0, 0, 0, 0.5)"
-                        }
+                        disabled = true
                     }
                 }
             }
@@ -453,9 +502,10 @@ public class EChartsRenderer : IChartRenderer
             {
                 ["color"] = color
             };
+            // Emphasis OFF by default (spec 6.1)
             radarSeriesItem["emphasis"] = new Dictionary<string, object>
             {
-                ["focus"] = "series"  // Series highlighting per Section 2.5
+                ["disabled"] = true
             };
             
             // Add area fill if specified (semi-transparent per spec)
@@ -470,21 +520,31 @@ public class EChartsRenderer : IChartRenderer
             series.Add(radarSeriesItem);
         }
         
-        // Build ECharts v6 option per Section 2.5 specification
+        // Build ECharts v6 option with dashboard defaults (spec 6.1)
         // CRITICAL: NO xAxis / NO yAxis for radar charts
         return new
         {
+            // Animation
             animationDuration = options.Animation?.Duration ?? 750,
             animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
-            tooltip = new { 
-                show = options.Plugins.Tooltip.Enabled, 
-                trigger = "item"  // Item trigger for radar (not axis)
+            
+            // Tooltip - Item trigger for radar
+            tooltip = new
+            {
+                show = options.Plugins.Tooltip.Enabled,
+                trigger = "item"
             },
-            legend = new { 
-                show = options.Plugins.Legend.Display, 
-                top = "top", 
-                left = "center" 
+            
+            // Legend - Dashboard defaults (spec 6.1): top 4, center, horizontal, circle
+            legend = new
+            {
+                show = options.Plugins.Legend.Display,
+                top = 4,
+                left = "center",
+                orient = "horizontal",
+                icon = "circle"
             },
+            
             radar = new { indicator = indicators.ToArray() },  // Radar coordinate system
             series = series.ToArray()
         };
@@ -525,29 +585,49 @@ public class EChartsRenderer : IChartRenderer
                 ["color"] = color
             };
             
+            // Emphasis OFF by default (spec 6.1)
             scatterSeriesItem["emphasis"] = new Dictionary<string, object>
             {
-                ["focus"] = "series"
+                ["disabled"] = true
             };
             
             series.Add(scatterSeriesItem);
         }
         
-        // Build ECharts v6 option per Section 2.3 specification
+        // Build ECharts v6 option with dashboard defaults (spec 6.1)
         // CRITICAL: xAxis/yAxis type = "value" (numeric, not category)
         // NO boundaryGap property (not applicable to value axes)
         return new
         {
+            // Animation
             animationDuration = options.Animation?.Duration ?? 750,
             animationEasing = MapEasingToECharts(options.Animation?.Easing ?? AnimationEasing.EaseInOutQuart),
-            tooltip = new { 
-                show = options.Plugins.Tooltip.Enabled, 
-                trigger = "item"  // Item trigger for scatter (not axis)
+            
+            // Grid - Dashboard defaults (spec 6.1)
+            grid = new
+            {
+                left = 16,
+                right = 16,
+                top = 32,
+                bottom = 24,
+                containLabel = true
             },
-            legend = new { 
-                show = options.Plugins.Legend.Display, 
-                top = "top", 
-                left = "center" 
+            
+            // Tooltip - Item trigger for scatter
+            tooltip = new
+            {
+                show = options.Plugins.Tooltip.Enabled,
+                trigger = "item"
+            },
+            
+            // Legend - Dashboard defaults (spec 6.1): top 4, center, horizontal, circle
+            legend = new
+            {
+                show = options.Plugins.Legend.Display,
+                top = 4,
+                left = "center",
+                orient = "horizontal",
+                icon = "circle"
             },
             xAxis = new 
             { 
