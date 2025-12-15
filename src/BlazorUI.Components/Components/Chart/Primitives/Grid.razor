@@ -1,0 +1,27 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    /// <summary>
+    /// Gets or sets whether to show grid lines.
+    /// </summary>
+    [Parameter]
+    public bool Show { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets whether to show horizontal grid lines.
+    /// </summary>
+    [Parameter]
+    public bool Horizontal { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets whether to show vertical grid lines.
+    /// </summary>
+    [Parameter]
+    public bool Vertical { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the stroke color for grid lines.
+    /// </summary>
+    [Parameter]
+    public string? Stroke { get; set; }
+}

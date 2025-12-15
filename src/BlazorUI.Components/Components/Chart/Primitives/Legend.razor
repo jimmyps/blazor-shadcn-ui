@@ -1,0 +1,33 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    /// <summary>
+    /// Gets or sets whether to show the legend.
+    /// </summary>
+    [Parameter]
+    public bool Show { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the legend layout orientation.
+    /// </summary>
+    [Parameter]
+    public LegendLayout Layout { get; set; } = LegendLayout.Horizontal;
+    
+    /// <summary>
+    /// Gets or sets the horizontal alignment of the legend.
+    /// </summary>
+    [Parameter]
+    public LegendAlign Align { get; set; } = LegendAlign.Center;
+    
+    /// <summary>
+    /// Gets or sets the vertical alignment of the legend.
+    /// </summary>
+    [Parameter]
+    public LegendVerticalAlign VerticalAlign { get; set; } = LegendVerticalAlign.Top;
+    
+    /// <summary>
+    /// Gets or sets the top margin in pixels (applies only when VerticalAlign is Top).
+    /// </summary>
+    [Parameter]
+    public int MarginTop { get; set; } = 4;
+}

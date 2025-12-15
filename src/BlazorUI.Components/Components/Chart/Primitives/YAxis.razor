@@ -1,0 +1,33 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    /// <summary>
+    /// Gets or sets whether to show the Y axis.
+    /// </summary>
+    [Parameter]
+    public bool Show { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the data key for Y axis values.
+    /// </summary>
+    [Parameter]
+    public string? DataKey { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the scale type for the axis.
+    /// </summary>
+    [Parameter]
+    public AxisScale Scale { get; set; } = AxisScale.Auto;
+    
+    /// <summary>
+    /// Gets or sets whether to show the axis line.
+    /// </summary>
+    [Parameter]
+    public bool AxisLine { get; set} = true;
+    
+    /// <summary>
+    /// Gets or sets whether to show tick lines.
+    /// </summary>
+    [Parameter]
+    public bool TickLine { get; set; } = true;
+}

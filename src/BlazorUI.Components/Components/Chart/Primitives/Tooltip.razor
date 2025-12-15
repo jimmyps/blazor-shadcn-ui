@@ -1,0 +1,22 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    /// <summary>
+    /// Gets or sets whether to show the tooltip.
+    /// </summary>
+    [Parameter]
+    public bool Show { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the tooltip trigger mode.
+    /// Default depends on chart type (see spec section 4.4).
+    /// </summary>
+    [Parameter]
+    public TooltipMode? Mode { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the cursor/axis pointer type.
+    /// </summary>
+    [Parameter]
+    public TooltipCursor Cursor { get; set; } = TooltipCursor.None;
+}

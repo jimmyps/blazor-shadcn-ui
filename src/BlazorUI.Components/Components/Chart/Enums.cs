@@ -9,14 +9,9 @@ namespace BlazorUI.Components.Chart;
 public enum AxisScale
 {
     /// <summary>
-    /// Linear scale (default for numeric axes).
+    /// Automatic scale detection.
     /// </summary>
-    Linear,
-    
-    /// <summary>
-    /// Logarithmic scale.
-    /// </summary>
-    Logarithmic,
+    Auto,
     
     /// <summary>
     /// Category scale for discrete values.
@@ -24,9 +19,19 @@ public enum AxisScale
     Category,
     
     /// <summary>
+    /// Value scale for numeric data.
+    /// </summary>
+    Value,
+    
+    /// <summary>
     /// Time scale for temporal data.
     /// </summary>
-    Time
+    Time,
+    
+    /// <summary>
+    /// Logarithmic scale.
+    /// </summary>
+    Log
 }
 
 /// <summary>
@@ -36,19 +41,14 @@ public enum AxisScale
 public enum TooltipMode
 {
     /// <summary>
-    /// Tooltip triggered by individual data points.
-    /// </summary>
-    Item,
-    
-    /// <summary>
     /// Tooltip triggered by axis (shows all series at that position).
     /// </summary>
     Axis,
     
     /// <summary>
-    /// Tooltip not displayed.
+    /// Tooltip triggered by individual data points.
     /// </summary>
-    None
+    Item
 }
 
 /// <summary>
@@ -151,11 +151,6 @@ public enum Focus
     None,
     
     /// <summary>
-    /// Focus on the current series, dim others.
-    /// </summary>
-    Series,
-    
-    /// <summary>
     /// Focus on self only.
     /// </summary>
     Self
@@ -192,25 +187,5 @@ public enum GradientDirection
     /// <summary>
     /// Left to right gradient.
     /// </summary>
-    Horizontal,
-    
-    /// <summary>
-    /// Top-left to bottom-right diagonal.
-    /// </summary>
-    TopLeftToBottomRight,
-    
-    /// <summary>
-    /// Top-right to bottom-left diagonal.
-    /// </summary>
-    TopRightToBottomLeft,
-    
-    /// <summary>
-    /// Bottom-left to top-right diagonal.
-    /// </summary>
-    BottomLeftToTopRight,
-    
-    /// <summary>
-    /// Bottom-right to top-left diagonal.
-    /// </summary>
-    BottomRightToTopLeft
+    Horizontal
 }
