@@ -23,14 +23,20 @@ public class EChartsRenderer : IChartRenderer
     
     public async Task<string> InitializeAsync(ElementReference element, ChartConfig config)
     {
+        Console.WriteLine("[EChartsRenderer] InitializeAsync called");
+        
         _jsModule ??= await _jsRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/BlazorUI.Components/js/echarts-renderer.js");
+        Console.WriteLine("[EChartsRenderer] JS module loaded");
         
         // Serialize config with camelCase to ensure JavaScript property names match ECharts expectations
         var json = JsonSerializer.Serialize(config, JsonOptions);
+        Console.WriteLine($"[EChartsRenderer] Serialized config (first 500 chars): {json.Substring(0, Math.Min(500, json.Length))}");
+        
         var normalizedConfig = JsonSerializer.Deserialize<object>(json, JsonOptions);
         
         var chartId = await _jsModule.InvokeAsync<string>("createChart", element, normalizedConfig);
+        Console.WriteLine($"[EChartsRenderer] Chart created with ID: {chartId}");
         return chartId;
     }
     
@@ -48,13 +54,22 @@ public class EChartsRenderer : IChartRenderer
     
     public async Task UpdateOptionsAsync(string chartId, object options)
     {
+        Console.WriteLine($"[EChartsRenderer] UpdateOptionsAsync called for chart: {chartId}");
+        
         if (_jsModule != null)
         {
             // Serialize with camelCase to match ECharts expectations
             var json = JsonSerializer.Serialize(options, JsonOptions);
+            Console.WriteLine($"[EChartsRenderer] Serialized options (first 500 chars): {json.Substring(0, Math.Min(500, json.Length))}");
+            
             var normalizedOptions = JsonSerializer.Deserialize<object>(json, JsonOptions);
             
             await _jsModule.InvokeVoidAsync("updateOptions", chartId, normalizedOptions);
+            Console.WriteLine($"[EChartsRenderer] Options updated successfully");
+        }
+        else
+        {
+            Console.WriteLine("[EChartsRenderer] JS module not loaded, cannot update options");
         }
     }
     

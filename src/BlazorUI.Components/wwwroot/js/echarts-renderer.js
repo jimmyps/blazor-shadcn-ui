@@ -14,26 +14,44 @@ const chartInstances = new Map();
  */
 export async function createChart(element, config) {
     if (!element) {
+        console.error('[ECharts] Chart element is required');
         throw new Error('Chart element is required');
     }
     
+    console.log('[ECharts] createChart called with config:', config);
+    
     // Dynamically import ECharts from CDN
     if (!window.echarts) {
+        console.log('[ECharts] Loading ECharts library from CDN...');
         await import('https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js');
+        console.log('[ECharts] ECharts library loaded successfully');
     }
     
     const chartId = generateId();
+    console.log('[ECharts] Generated chart ID:', chartId);
     
     try {
         // Initialize ECharts instance with SVG renderer for better quality
         const chart = echarts.init(element, null, { renderer: 'svg' });
+        console.log('[ECharts] ECharts instance initialized');
         
-        // Resolve CSS variables in the config before converting
-        const resolvedConfig = resolveCssVariables(config);
+        // Check if config.Data is already an ECharts option object
+        let option;
+        if (config.data && typeof config.data === 'object') {
+            // config.data contains the EChartsOption object directly
+            console.log('[ECharts] Using direct ECharts option from config.data');
+            const resolvedOptions = resolveCssVariables(config.data);
+            option = convertFunctionStrings(resolvedOptions);
+        } else {
+            // Fallback to old Chart.js-style conversion for backward compatibility
+            console.log('[ECharts] Converting Chart.js-style config to ECharts format');
+            const resolvedConfig = resolveCssVariables(config);
+            option = convertConfig(resolvedConfig);
+        }
         
-        // Convert Chart.js-style config to ECharts option format
-        const option = convertConfig(resolvedConfig);
+        console.log('[ECharts] Final option object:', option);
         chart.setOption(option);
+        console.log('[ECharts] Chart option set successfully');
         
         // Make chart responsive - store listener reference for cleanup
         const resizeListener = () => chart.resize();
@@ -45,9 +63,11 @@ export async function createChart(element, config) {
             resizeListener: resizeListener
         });
         
+        console.log('[ECharts] Chart instance stored in map');
         return chartId;
     } catch (error) {
-        console.error('Failed to create ECharts instance:', error);
+        console.error('[ECharts] Failed to create ECharts instance:', error);
+        console.error('[ECharts] Error stack:', error.stack);
         throw error;
     }
 }
@@ -121,16 +141,23 @@ function convertFunctionStrings(options) {
  * @param {object} newOptions - New options for the chart
  */
 export function updateOptions(chartId, newOptions) {
+    console.log('[ECharts] updateOptions called for chart:', chartId);
+    console.log('[ECharts] New options:', newOptions);
+    
     const instance = chartInstances.get(chartId);
     if (!instance) {
-        console.warn(`Chart ${chartId} not found`);
+        console.warn(`[ECharts] Chart ${chartId} not found in instances map`);
+        console.warn(`[ECharts] Available chart IDs:`, Array.from(chartInstances.keys()));
         return;
     }
     
-    // Convert function strings to actual functions before passing to ECharts
-    const processedOptions = convertFunctionStrings(newOptions);
+    // Resolve CSS variables and convert function strings
+    const resolvedOptions = resolveCssVariables(newOptions);
+    const processedOptions = convertFunctionStrings(resolvedOptions);
     
+    console.log('[ECharts] Processed options:', processedOptions);
     instance.chart.setOption(processedOptions, { notMerge: false });
+    console.log('[ECharts] Chart options updated successfully');
 }
 
 /**
