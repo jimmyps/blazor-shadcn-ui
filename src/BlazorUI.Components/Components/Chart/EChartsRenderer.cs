@@ -85,8 +85,8 @@ public class EChartsRenderer : IChartRenderer
     /// Converts universal ChartConfig to ECharts v6 option format.
     /// </summary>
     private object ConvertToEChartsFormat(ChartConfig config)
-        {
-            var chartType = config.Type.ToString().ToLowerInvariant();
+    {
+        var chartType = config.Type.ToString().ToLowerInvariant();
         
         // Build ECharts configuration based on chart type (using strongly-typed data)
         return chartType switch
@@ -104,8 +104,8 @@ public class EChartsRenderer : IChartRenderer
     {
         var position = legend.Position?.ToLowerInvariant();
         
-        object? top = legend.Top;
-        object? left = legend.Left;
+        object? top = null;
+        object? left = null;
         var orient = legend.Orient;
         
         switch (position)
@@ -118,13 +118,15 @@ public class EChartsRenderer : IChartRenderer
             case "left":
             case "right":
                 left = position;
+                // 'middle' is the documented ECharts value for vertical centering
                 top ??= "middle";
-                if (orient == Orient.Horizontal)
-                {
-                    orient = Orient.Vertical;
-                }
+                // Side legends should stack vertically; keep existing vertical orientation if already set
+                orient = orient == Orient.Horizontal ? Orient.Vertical : orient;
                 break;
         }
+        
+        top ??= legend.Top;
+        left ??= legend.Left;
         
         return new
         {
@@ -776,7 +778,10 @@ public class EChartsRenderer : IChartRenderer
                 }
             }
         }
-        catch { }
+        catch
+        {
+            // Fall back to default easing when parsing fails
+        }
         return "quarticInOut";
     }
     
