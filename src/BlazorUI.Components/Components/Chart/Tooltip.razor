@@ -1,0 +1,21 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits ComponentBase
+
+@code {
+    [CascadingParameter] internal ChartContext<TData>? Context { get; set; }
+    
+    [Parameter] public bool Show { get; set; } = true;
+    [Parameter] public TooltipMode Mode { get; set; } = TooltipMode.Axis;
+    [Parameter] public TooltipCursor Cursor { get; set; } = TooltipCursor.None;
+    
+    protected override void OnInitialized()
+    {
+        Context?.SetTooltip(new TooltipOptions
+        {
+            Show = Show,
+            Mode = Mode,
+            Cursor = Cursor
+        });
+    }
+}

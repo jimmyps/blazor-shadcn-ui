@@ -1,0 +1,45 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits ComponentBase
+@implements IFillReceiver
+
+<CascadingValue Value="(IFillReceiver)this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] internal ChartContext<TData>? Context { get; set; }
+    
+    [Parameter] public string DataKey { get; set; } = string.Empty;
+    [Parameter] public string? Name { get; set; }
+    [Parameter] public string? Color { get; set; }
+    [Parameter] public bool Emphasis { get; set; }
+    [Parameter] public Focus Focus { get; set; } = Focus.None;
+    [Parameter] public bool ShowDots { get; set; } = false;
+    [Parameter] public int LineWidth { get; set; } = 2;
+    [Parameter] public string? StackId { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    
+    private FillOptions? _fill;
+    
+    protected override void OnInitialized()
+    {
+        Context?.AddArea(new AreaSeriesOptions
+        {
+            DataKey = DataKey,
+            Name = Name,
+            Color = Color,
+            Emphasis = Emphasis,
+            Focus = Focus,
+            ShowDots = ShowDots,
+            LineWidth = LineWidth,
+            StackId = StackId,
+            Fill = _fill
+        });
+    }
+    
+    public void SetFill(FillOptions options)
+    {
+        _fill = options;
+    }
+}

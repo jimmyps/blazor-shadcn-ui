@@ -1,0 +1,25 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits ComponentBase
+
+@code {
+    [CascadingParameter] internal ChartContext<TData>? Context { get; set; }
+    
+    [Parameter] public string DataKey { get; set; } = string.Empty;
+    [Parameter] public string NameKey { get; set; } = string.Empty;
+    [Parameter] public string? InnerRadius { get; set; }
+    [Parameter] public string? Name { get; set; }
+    [Parameter] public string? Color { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        Context?.AddPie(new PieSeriesOptions
+        {
+            DataKey = DataKey,
+            NameKey = NameKey,
+            InnerRadius = InnerRadius,
+            Name = Name,
+            Color = Color
+        });
+    }
+}

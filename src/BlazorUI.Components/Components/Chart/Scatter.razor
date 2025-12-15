@@ -1,0 +1,23 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits ComponentBase
+
+@code {
+    [CascadingParameter] internal ChartContext<TData>? Context { get; set; }
+    
+    [Parameter] public string? Name { get; set; }
+    [Parameter] public string? Color { get; set; }
+    [Parameter] public bool Emphasis { get; set; }
+    [Parameter] public Focus Focus { get; set; } = Focus.None;
+    
+    protected override void OnInitialized()
+    {
+        Context?.AddScatter(new ScatterSeriesOptions
+        {
+            Name = Name,
+            Color = Color,
+            Emphasis = Emphasis,
+            Focus = Focus
+        });
+    }
+}

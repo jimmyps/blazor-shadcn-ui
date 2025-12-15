@@ -1,0 +1,30 @@
+@namespace BlazorUI.Components.Chart
+@inherits ComponentBase
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] internal Fill? Fill { get; set; }
+    
+    [Parameter] public GradientDirection Direction { get; set; } = GradientDirection.Vertical;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    
+    internal List<GradientStopOptions> Stops { get; } = new();
+    
+    internal void AddStop(GradientStopOptions stop) => Stops.Add(stop);
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && Fill != null)
+        {
+            Fill.LinearGradient = new LinearGradientOptions
+            {
+                Direction = Direction,
+                Stops = Stops
+            };
+            StateHasChanged();
+        }
+    }
+}

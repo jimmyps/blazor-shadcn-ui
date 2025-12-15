@@ -1,0 +1,20 @@
+@namespace BlazorUI.Components.Chart
+@inherits ComponentBase
+
+@code {
+    [CascadingParameter] internal LinearGradient? Gradient { get; set; }
+    
+    [Parameter] public double Offset { get; set; }
+    [Parameter] public string Color { get; set; } = string.Empty;
+    [Parameter] public double? Opacity { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        Gradient?.AddStop(new GradientStopOptions
+        {
+            Offset = Offset,
+            Color = Color,
+            Opacity = Opacity
+        });
+    }
+}

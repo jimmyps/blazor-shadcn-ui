@@ -1,0 +1,29 @@
+@namespace BlazorUI.Components.Chart
+@inherits ComponentBase
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] internal IFillReceiver? Receiver { get; set; }
+    
+    [Parameter] public string? Color { get; set; }
+    [Parameter] public double? Opacity { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    
+    internal LinearGradientOptions? LinearGradient { get; set; }
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Receiver?.SetFill(new FillOptions
+            {
+                Color = Color,
+                Opacity = Opacity,
+                LinearGradient = LinearGradient
+            });
+        }
+    }
+}

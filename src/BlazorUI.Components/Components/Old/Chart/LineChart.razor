@@ -1,0 +1,391 @@
+@namespace BlazorUI.Components.Old.Chart
+@typeparam TData
+@inherits LineChartBase<TData>
+@implements IAsyncDisposable
+@inject IJSRuntime JSRuntime
+@inject IChartRefreshRegistry? ChartRefreshRegistry
+
+<CascadingValue Value="(IChartStyleContainer)this" IsFixed="true">
+    <div class="@ContainerClass" style="position: relative; height: @(Height)px; width: 100%;">
+        <div @ref="_chartContainer" style="width: 100%; height: 100%;"></div>
+        
+        @if (_initializationError != null)
+        {
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-center; background: var(--muted); border-radius: var(--radius); padding: 2rem;">
+                <div style="text-align: center; max-width: 400px;">
+                    <div style="color: var(--destructive); margin-bottom: 0.5rem; font-weight: 600;">
+                        Failed to initialize chart
+                    </div>
+                    <div style="color: var(--muted-foreground); font-size: 0.875rem;">
+                        @_initializationError
+                    </div>
+                </div>
+            </div>
+        }
+        
+        @if (ShowExportButton && _isInitialized)
+        {
+            <div style="position: absolute; top: 8px; right: 8px; z-index: 10;">
+                <button @onclick="ExportAsPng" 
+                        class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9"
+                        title="Export chart">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" x2="12" y1="15" y2="3"/>
+                    </svg>
+                </button>
+            </div>
+        }
+        
+        @* Render ChartStyle child content (hidden, just for data collection) *@
+        @if (ChildContent != null)
+        {
+            <div style="display: none;">
+                @ChildContent
+            </div>
+        }
+    </div>
+</CascadingValue>
+
+@code {
+    private ElementReference _chartContainer;
+    private IChartRenderer? _renderer;
+    private string? _chartId;
+    private bool _isInitialized;
+    private bool _shouldRender = false;
+    private string? _initializationError;
+    
+    /// <summary>
+    /// Refreshes the chart by re-resolving CSS variables and re-applying options.
+    /// </summary>
+    public async Task RefreshAsync()
+    {
+        if (_renderer != null && !string.IsNullOrEmpty(_chartId))
+        {
+            try
+            {
+                await _renderer.RefreshAsync(_chartId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"LineChart: Failed to refresh chart: {ex.Message}");
+            }
+        }
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Trigger a second render to allow ChartStyle children to initialize
+            _shouldRender = true;
+            StateHasChanged();
+        }
+        else if (_shouldRender && Data != null && Data.Any())
+        {
+            _shouldRender = false;
+            await InitializeChartAsync();
+        }
+    }
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_isInitialized && Data != null && Data.Any())
+        {
+            await UpdateChartDataAsync();
+        }
+    }
+    
+    private async Task InitializeChartAsync()
+    {
+        try
+        {
+            _renderer = ChartRendererFactory.CreateRenderer(Engine, JSRuntime);
+            
+            // Build universal ChartConfig - renderer will convert to its native format
+            var chartConfig = new ChartConfig
+            {
+                Type = ChartType.Line,
+                Responsive = Responsive,
+                MaintainAspectRatio = false,
+                Data = BuildChartData(),
+                Options = BuildChartOptions()
+            };
+            
+            _chartId = await _renderer.InitializeAsync(_chartContainer, chartConfig);
+            _isInitialized = true;
+            
+            // Register with refresh registry for global refresh support
+            if (ChartRefreshRegistry != null && !string.IsNullOrEmpty(_chartId))
+            {
+                ChartRefreshRegistry.Register(_chartId, _renderer);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"LineChart: Failed to initialize chart: {ex.Message}");
+            _initializationError = ex.Message;
+        }
+    }
+    
+    private async Task ExportAsPng()
+    {
+        if (_renderer == null || string.IsNullOrEmpty(_chartId))
+        {
+            Console.WriteLine("LineChart: Cannot export - chart not initialized");
+            return;
+        }
+        
+        try
+        {
+            var format = Engine == ChartEngine.ECharts ? ImageFormat.Svg : ImageFormat.Png;
+            var dataUrl = await _renderer.ExportAsImageAsync(_chartId, format);
+            
+            if (string.IsNullOrEmpty(dataUrl))
+            {
+                Console.WriteLine("LineChart: Export returned empty data URL");
+                return;
+            }
+            
+            // Trigger download via JS helper
+            var extension = format == ImageFormat.Svg ? "svg" : "png";
+            var filename = $"{ExportFileName}.{extension}";
+            await DownloadFile(dataUrl, filename);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"LineChart: Export failed - {ex.Message}");
+        }
+    }
+    
+    private async Task DownloadFile(string dataUrl, string filename)
+    {
+        var script = @"
+            (function(url, name) {
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            })(arguments[0], arguments[1]);
+        ";
+        await JSRuntime.InvokeVoidAsync("eval", script, dataUrl, filename);
+    }
+    
+    private async Task UpdateChartDataAsync()
+    {
+        if (_renderer != null && !string.IsNullOrEmpty(_chartId))
+        {
+            try
+            {
+                var chartData = BuildChartData();
+                await _renderer.UpdateDataAsync(_chartId, chartData);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to update chart data: {ex.Message}");
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Builds chart data in universal format.
+    /// </summary>
+    private ChartData BuildChartData()
+    {
+        if (Data == null || !Data.Any())
+        {
+            return new ChartData
+            {
+                Labels = Array.Empty<string>(),
+                Datasets = Array.Empty<ChartDataset>()
+            };
+        }
+        
+        var labels = ExtractLabels();
+        var datasets = BuildDatasets();
+        
+        return new ChartData
+        {
+            Labels = labels,
+            Datasets = datasets
+        };
+    }
+    
+    /// <summary>
+    /// Builds chart options in universal format.
+    /// </summary>
+    private ChartOptions BuildChartOptions()
+    {
+        return new ChartOptions
+        {
+            Responsive = Responsive,
+            MaintainAspectRatio = false,
+            Plugins = new ChartPlugins
+            {
+                Legend = new LegendConfig { Display = ShowLegend },
+                Tooltip = new TooltipConfig { Enabled = ShowTooltip }
+            },
+            Scales = new ChartScales
+            {
+                X = new AxisConfig
+                {
+                    Display = ShowXAxis,
+                    Grid = new GridConfig { Display = ShowGrid }
+                },
+                Y = new AxisConfig
+                {
+                    Display = ShowYAxis,
+                    Grid = new GridConfig { Display = ShowGrid }
+                }
+            },
+            Animation = new ChartAnimationConfig
+            {
+                Duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
+                Easing = Animation?.Easing ?? AnimationEasing.EaseInOutQuart
+            }
+        };
+    }
+    
+    /// <summary>
+    /// Builds datasets array in universal format.
+    /// EChartsRenderer will convert to ECharts series format.
+    /// </summary>
+    private ChartDataset[] BuildDatasets()
+    {
+        var values = ExtractValues();
+        
+        // Determine configuration source: ChartStyle or direct parameters
+        var lineStyle = _chartStyle?.LineStyle;
+        var areaStyle = _chartStyle?.AreaStyle;
+        var pointStyle = _chartStyle?.PointStyle;
+        
+        var color = lineStyle?.Color ?? LineColor ?? "var(--chart-1)";
+        var lineWidth = lineStyle?.Width ?? LineWidth;
+        var smooth = lineStyle?.Smooth ?? Curved;
+        var fillArea = areaStyle?.Show ?? FillArea;
+        var showDots = pointStyle?.Show ?? ShowDots;
+        var pointSize = pointStyle?.Size ?? 4;
+        
+        GradientConfig? gradientConfig = null;
+        
+        // Build gradient config if needed
+        if (fillArea)
+        {
+            if (areaStyle?.Gradient != null)
+            {
+                // ChartStyle gradient - convert to GradientConfig
+                var gradient = areaStyle.Gradient;
+                gradientConfig = new GradientConfig
+                {
+                    Direction = gradient.Direction.ToString(),
+                    ColorStops = gradient.ColorStops.Select(stop => new GradientColorStop
+                    {
+                        Offset = stop.Offset,
+                        Color = stop.Color
+                    }).ToArray()
+                };
+            }
+            else if (GradientFill)
+            {
+                // Parameter-based gradient
+                gradientConfig = new GradientConfig
+                {
+                    Direction = "Vertical",
+                    ColorStops = new[]
+                    {
+                        new GradientColorStop { Offset = 0.0, Color = "var(--chart-1)" },
+                        new GradientColorStop { Offset = 1.0, Color = "var(--chart-1)" }
+                    }
+                };
+            }
+        }
+        
+        var dataset = new ChartDataset
+        {
+            Label = Label ?? YAxisDataKey,
+            Data = values,
+            BorderColor = color,
+            BackgroundColor = fillArea && gradientConfig == null ? color : "transparent",
+            BorderWidth = lineWidth,
+            Tension = smooth ? 0.4 : 0,
+            Fill = fillArea,
+            PointRadius = showDots ? pointSize : 0,
+            PointHoverRadius = showDots ? (pointSize + 1) : 0,
+            BorderDash = lineStyle?.Type == LineType.Dashed ? new[] { 5, 5 } : 
+                         lineStyle?.Type == LineType.Dotted ? new[] { 2, 2 } : null,
+            Gradient = gradientConfig
+        };
+        
+        return new[] { dataset };
+    }
+    
+    private string[] ExtractLabels()
+    {
+        if (Data == null || !Data.Any()) return Array.Empty<string>();
+        
+        if (!string.IsNullOrEmpty(XAxisDataKey))
+        {
+            return Data.Select(item =>
+            {
+                var prop = item?.GetType().GetProperty(XAxisDataKey);
+                return prop?.GetValue(item)?.ToString() ?? "";
+            }).ToArray();
+        }
+        
+        return Data.Select((_, i) => i.ToString()).ToArray();
+    }
+    
+    private double[] ExtractValues()
+    {
+        if (string.IsNullOrEmpty(YAxisDataKey))
+        {
+            return Array.Empty<double>();
+        }
+        
+        return Data.Select(item =>
+        {
+            var prop = item?.GetType().GetProperty(YAxisDataKey);
+            var value = prop?.GetValue(item);
+            
+            if (value == null) return 0.0;
+            
+            return Convert.ToDouble(value);
+        }).ToArray();
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        // Unregister from refresh registry
+        if (ChartRefreshRegistry != null && !string.IsNullOrEmpty(_chartId))
+        {
+            ChartRefreshRegistry.Unregister(_chartId);
+        }
+        
+        if (_renderer != null && !string.IsNullOrEmpty(_chartId))
+        {
+            try
+            {
+                await _renderer.DestroyAsync(_chartId);
+            }
+            catch
+            {
+                // Ignore disposal errors
+            }
+        }
+        
+        if (_renderer != null)
+        {
+            try
+            {
+                await _renderer.DisposeAsync();
+            }
+            catch
+            {
+                // Ignore disposal errors
+            }
+        }
+    }
+}

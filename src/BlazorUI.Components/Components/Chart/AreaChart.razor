@@ -12,12 +12,11 @@
     [Parameter, EditorRequired] public IEnumerable<TData> Data { get; set; } = Enumerable.Empty<TData>();
     [Parameter] public Padding Padding { get; set; } = new(32, 16, 24, 16);
     [Parameter] public bool ContainLabel { get; set; } = true;
-    [Parameter] public BarLayout Layout { get; set; } = BarLayout.Vertical;
     [Parameter] public string? Id { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
     
-    private ChartContext<TData> _context = new("bar");
+    private ChartContext<TData> _context = new("area");
     
     protected override void OnInitialized()
     {

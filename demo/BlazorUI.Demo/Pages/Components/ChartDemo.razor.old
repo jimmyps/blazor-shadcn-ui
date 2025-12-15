@@ -1,5 +1,5 @@
 @page "/components/chart"
-@using BlazorUI.Components.Chart
+@using BlazorUI.Components.Old.Chart
 @using BlazorUI.Components.Card
 @using BlazorUI.Components.Button
 
@@ -320,7 +320,7 @@
             </p>
         </div>
         <div class="rounded-lg border bg-card p-4">
-            <pre class="text-xs bg-muted p-3 rounded overflow-x-auto"><code>@@using BlazorUI.Components.Chart
+            <pre class="text-xs bg-muted p-3 rounded overflow-x-auto"><code>@@using BlazorUI.Components.Old.Chart
 
 &lt;ChartPanel&gt;
     &lt;ChartPanelHeader&gt;

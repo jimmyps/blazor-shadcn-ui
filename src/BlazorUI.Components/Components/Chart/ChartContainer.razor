@@ -1,0 +1,15 @@
+@namespace BlazorUI.Components.Chart
+@inherits ComponentBase
+
+<div class="@ContainerClass" style="@(Responsive ? $"height:{Height}px;" : $"height:{Height}px;")">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public int Height { get; set; }
+    [Parameter] public bool Responsive { get; set; } = true;
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    
+    private string ContainerClass => string.IsNullOrWhiteSpace(Class) ? "chart-container" : $"chart-container {Class}";
+}

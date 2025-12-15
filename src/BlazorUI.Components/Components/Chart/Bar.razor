@@ -1,0 +1,29 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits ComponentBase
+
+@code {
+    [CascadingParameter] internal ChartContext<TData>? Context { get; set; }
+    
+    [Parameter] public string DataKey { get; set; } = string.Empty;
+    [Parameter] public string? Name { get; set; }
+    [Parameter] public string? Color { get; set; }
+    [Parameter] public bool Emphasis { get; set; }
+    [Parameter] public Focus Focus { get; set; } = Focus.None;
+    [Parameter] public string? StackId { get; set; }
+    [Parameter] public int? Radius { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        Context?.AddBar(new BarSeriesOptions
+        {
+            DataKey = DataKey,
+            Name = Name,
+            Color = Color,
+            Emphasis = Emphasis,
+            Focus = Focus,
+            StackId = StackId,
+            Radius = Radius
+        });
+    }
+}

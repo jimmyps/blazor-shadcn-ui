@@ -1,154 +1,29 @@
 @namespace BlazorUI.Components.Chart
 @typeparam TData
-@inherits ScatterChartBase<TData>
-@implements IAsyncDisposable
-@inject IChartRefreshRegistry? ChartRefreshRegistry
+@inherits ComponentBase
 
-<div class="@ContainerClass">
-    <div @ref="_chartElement" style="height: @(Height)px; width: 100%;"></div>
-</div>
+<CascadingValue Value="_context" IsFixed="true">
+    <div class="@ContainerClass">
+        @ChildContent
+    </div>
+</CascadingValue>
 
 @code {
-    private ElementReference _chartElement;
-    private string? _chartId;
-    private IChartRenderer? _renderer;
-    private bool _isDisposed;
+    [Parameter, EditorRequired] public IEnumerable<TData> Data { get; set; } = Enumerable.Empty<TData>();
+    [Parameter] public Padding Padding { get; set; } = new(32, 16, 24, 16);
+    [Parameter] public bool ContainLabel { get; set; } = true;
+    [Parameter] public string? Id { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
     
-    /// <summary>
-    /// Refreshes the chart by re-resolving CSS variables and re-applying options.
-    /// </summary>
-    public async Task RefreshAsync()
+    private ChartContext<TData> _context = new("scatter");
+    
+    protected override void OnInitialized()
     {
-        if (_renderer != null && !string.IsNullOrEmpty(_chartId))
-        {
-            try
-            {
-                await _renderer.RefreshAsync(_chartId);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"ScatterChart: Failed to refresh chart: {ex.Message}");
-            }
-        }
+        _context.EnsureImplicitPrimitives(TooltipMode.Axis);
     }
     
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && !_isDisposed)
-        {
-            try
-            {
-                _renderer = ChartRendererFactory.CreateRenderer(Engine, JSRuntime);
-                
-                var scatterData = Data.Select(item => {
-                    var xValue = item?.GetType().GetProperty(XAxisDataKey)?.GetValue(item);
-                    var yValue = item?.GetType().GetProperty(YAxisDataKey)?.GetValue(item);
-                    object? sizeValue = null;
-                    
-                    if (!string.IsNullOrEmpty(SizeDataKey))
-                    {
-                        sizeValue = item?.GetType().GetProperty(SizeDataKey)?.GetValue(item);
-                    }
-                    
-                    return sizeValue != null 
-                        ? new[] { xValue, yValue, sizeValue }
-                        : new[] { xValue, yValue };
-                }).ToArray();
-                
-                var config = new ChartConfig
-                {
-                    Type = !string.IsNullOrEmpty(SizeDataKey) ? ChartType.Bubble : ChartType.Scatter,
-                    Data = BuildChartData(scatterData),
-                    Options = BuildChartOptions()
-                };
-                
-                _chartId = await _renderer.InitializeAsync(_chartElement, config);
-                
-                // Register with refresh registry for global refresh support
-                if (ChartRefreshRegistry != null && !string.IsNullOrEmpty(_chartId))
-                {
-                    ChartRefreshRegistry.Register(_chartId, _renderer);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"ScatterChart initialization error: {ex.Message}");
-            }
-        }
-    }
+    public Task RefreshAsync() => Task.CompletedTask;
     
-    public async ValueTask DisposeAsync()
-    {
-        if (_isDisposed) return;
-        _isDisposed = true;
-        
-        // Unregister from refresh registry
-        if (ChartRefreshRegistry != null && !string.IsNullOrEmpty(_chartId))
-        {
-            ChartRefreshRegistry.Unregister(_chartId);
-        }
-        
-        if (_renderer != null && _chartId != null)
-        {
-            try
-            {
-                await _renderer.DestroyAsync(_chartId);
-            }
-            catch (JSDisconnectedException)
-            {
-                // Circuit disconnected
-            }
-            catch (JSException)
-            {
-                // JavaScript error during disposal
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"ScatterChart disposal error: {ex.Message}");
-            }
-        }
-        
-        if (_renderer != null)
-        {
-            await _renderer.DisposeAsync();
-        }
-    }
-    
-    private ChartData BuildChartData(object[][] scatterData)
-    {
-        return new ChartData
-        {
-            Labels = Array.Empty<string>(), // Scatter doesn't use labels
-            Datasets = new[]
-            {
-                new ChartDataset
-                {
-                    Label = Label ?? "Data",
-                    Data = Array.Empty<double>(), // Empty - will use ScatterData instead
-                    ScatterData = scatterData, // Use 2D data
-                    BackgroundColor = Color ?? "var(--chart-1)",
-                    PointRadius = PointSize
-                }
-            }
-        };
-    }
-    
-    private ChartOptions BuildChartOptions()
-    {
-        return new ChartOptions
-        {
-            Responsive = true,
-            MaintainAspectRatio = false,
-            Plugins = new ChartPlugins
-            {
-                Legend = new LegendConfig { Display = ShowLegend },
-                Tooltip = new TooltipConfig { Enabled = ShowTooltip }
-            },
-            Scales = new ChartScales
-            {
-                X = new AxisConfig { Display = ShowGrid },
-                Y = new AxisConfig { Display = ShowGrid }
-            }
-        };
-    }
+    private string ContainerClass => string.IsNullOrWhiteSpace(Class) ? "chart-root" : $"chart-root {Class}";
 }

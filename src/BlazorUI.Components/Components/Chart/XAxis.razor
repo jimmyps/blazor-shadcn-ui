@@ -1,0 +1,25 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits ComponentBase
+
+@code {
+    [CascadingParameter] internal ChartContext<TData>? Context { get; set; }
+    
+    [Parameter] public bool Show { get; set; } = true;
+    [Parameter] public string? DataKey { get; set; }
+    [Parameter] public AxisScale Scale { get; set; } = AxisScale.Auto;
+    [Parameter] public bool AxisLine { get; set; } = true;
+    [Parameter] public bool TickLine { get; set; } = true;
+    
+    protected override void OnInitialized()
+    {
+        Context?.SetXAxis(new AxisOptions
+        {
+            Show = Show,
+            DataKey = DataKey,
+            Scale = Scale,
+            AxisLine = AxisLine,
+            TickLine = TickLine
+        });
+    }
+}
