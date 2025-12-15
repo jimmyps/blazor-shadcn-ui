@@ -210,8 +210,7 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     /// </summary>
     protected EChartsAxis BuildAxis(XAxis? xAxis, YAxis? yAxis, bool isXAxis)
     {
-        var axis = isXAxis ? (xAxis ?? new XAxis()) : (yAxis ?? new YAxis());
-        var axisObj = isXAxis ? (object?)xAxis : yAxis;
+        object? axisObj = isXAxis ? (object?)xAxis : yAxis;
         
         var show = axisObj switch
         {

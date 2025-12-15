@@ -7,7 +7,7 @@ namespace BlazorUI.Components.Chart.Internal;
 /// Root ECharts option object - represents the complete configuration for an ECharts instance.
 /// This is a 1:1 representation of the ECharts option JSON structure (MVP subset).
 /// </summary>
-internal sealed class EChartsOption
+public sealed class EChartsOption
 {
     [JsonPropertyName("grid")]
     public EChartsGrid? Grid { get; set; }
@@ -49,7 +49,7 @@ internal sealed class EChartsOption
     public Dictionary<string, JsonElement>? ExtensionData { get; set; }
 }
 
-internal sealed class EChartsGrid
+public sealed class EChartsGrid
 {
     /// <summary>
     /// ECharts grid paddings accept numbers.
@@ -70,7 +70,7 @@ internal sealed class EChartsGrid
     public bool? ContainLabel { get; set; }
 }
 
-internal sealed class EChartsAxis
+public sealed class EChartsAxis
 {
     /// <summary>
     /// Axis type: "category" | "value" | "time" | "log"
@@ -97,7 +97,7 @@ internal sealed class EChartsAxis
     public EChartsSplitLine? SplitLine { get; set; }
 }
 
-internal sealed class EChartsAxisLine
+public sealed class EChartsAxisLine
 {
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
@@ -106,7 +106,7 @@ internal sealed class EChartsAxisLine
     public EChartsLineStyle? LineStyle { get; set; }
 }
 
-internal sealed class EChartsAxisTick
+public sealed class EChartsAxisTick
 {
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
@@ -115,7 +115,7 @@ internal sealed class EChartsAxisTick
     public EChartsLineStyle? LineStyle { get; set; }
 }
 
-internal sealed class EChartsAxisLabel
+public sealed class EChartsAxisLabel
 {
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
@@ -130,7 +130,7 @@ internal sealed class EChartsAxisLabel
     public string? Formatter { get; set; }
 }
 
-internal sealed class EChartsSplitLine
+public sealed class EChartsSplitLine
 {
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
@@ -139,7 +139,7 @@ internal sealed class EChartsSplitLine
     public EChartsLineStyle? LineStyle { get; set; }
 }
 
-internal sealed class EChartsLineStyle
+public sealed class EChartsLineStyle
 {
     [JsonPropertyName("width")]
     public int? Width { get; set; }
@@ -154,7 +154,7 @@ internal sealed class EChartsLineStyle
     public string? Color { get; set; }
 }
 
-internal sealed class EChartsSeries
+public sealed class EChartsSeries
 {
     /// <summary>
     /// Series type: "line" | "bar" | "pie" | "scatter" | "radar"
@@ -214,7 +214,7 @@ internal sealed class EChartsSeries
     public Dictionary<string, JsonElement>? ExtensionData { get; set; }
 }
 
-internal sealed class EChartsEmphasis
+public sealed class EChartsEmphasis
 {
     [JsonPropertyName("disabled")]
     public bool? Disabled { get; set; }
@@ -226,7 +226,7 @@ internal sealed class EChartsEmphasis
     public string? Focus { get; set; }
 }
 
-internal sealed class EChartsItemStyle
+public sealed class EChartsItemStyle
 {
     [JsonPropertyName("color")]
     public string? Color { get; set; }
@@ -238,7 +238,7 @@ internal sealed class EChartsItemStyle
     public object? BorderRadius { get; set; }
 }
 
-internal sealed class EChartsAreaStyle
+public sealed class EChartsAreaStyle
 {
     [JsonPropertyName("opacity")]
     public double? Opacity { get; set; }
@@ -250,7 +250,7 @@ internal sealed class EChartsAreaStyle
     public object? Color { get; set; }
 }
 
-internal sealed class EChartsTooltip
+public sealed class EChartsTooltip
 {
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
@@ -271,7 +271,7 @@ internal sealed class EChartsTooltip
     public string? Formatter { get; set; }
 }
 
-internal sealed class EChartsAxisPointer
+public sealed class EChartsAxisPointer
 {
     /// <summary>
     /// Pointer type: "line" | "shadow" | "cross" | "none"
@@ -280,7 +280,7 @@ internal sealed class EChartsAxisPointer
     public string? Type { get; set; }
 }
 
-internal sealed class EChartsLegend
+public sealed class EChartsLegend
 {
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
@@ -309,13 +309,13 @@ internal sealed class EChartsLegend
     public string? Icon { get; set; }
 }
 
-internal sealed class EChartsRadar
+public sealed class EChartsRadar
 {
     [JsonPropertyName("indicator")]
     public List<EChartsRadarIndicator>? Indicator { get; set; }
 }
 
-internal sealed class EChartsRadarIndicator
+public sealed class EChartsRadarIndicator
 {
     [JsonPropertyName("name")]
     public string? Name { get; set; }
@@ -324,7 +324,7 @@ internal sealed class EChartsRadarIndicator
     public double? Max { get; set; }
 }
 
-internal sealed class EChartsLinearGradient
+public sealed class EChartsLinearGradient
 {
     [JsonPropertyName("type")]
     public string Type { get; set; } = "linear";
@@ -345,7 +345,7 @@ internal sealed class EChartsLinearGradient
     public List<EChartsColorStop> ColorStops { get; set; } = new();
 }
 
-internal sealed class EChartsColorStop
+public sealed class EChartsColorStop
 {
     /// <summary>
     /// Position in the gradient (0..1).
