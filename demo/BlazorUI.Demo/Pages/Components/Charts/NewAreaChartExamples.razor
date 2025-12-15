@@ -227,6 +227,45 @@
                 </ChartContainer>
             </CardContent>
         </Card>
+
+        @* Step Interpolation (MVP+ Feature) *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Step Area</CardTitle>
+                <CardDescription>Step interpolation</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <AreaChart Data="@simpleData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Area DataKey="sales" Name="Sales" Interpolation="InterpolationType.Step" Color="var(--chart-1)" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Stacked Expand - 100% Stacking (MVP+ Feature) *@
+        <Card>
+            <CardHeader>
+                <CardTitle>100% Stacked</CardTitle>
+                <CardDescription>Percentage stacking</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <AreaChart Data="@multiData" StackOffset="StackOffset.Expand">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Formatter="function(params) { return params.seriesName + ': ' + params.value.toFixed(1) + '%'; }" />
+                        <Legend />
+                        <Area DataKey="product1" Name="Product A" StackId="total" Color="var(--chart-1)" />
+                        <Area DataKey="product2" Name="Product B" StackId="total" Color="var(--chart-2)" />
+                        <Area DataKey="product3" Name="Product C" StackId="total" Color="var(--chart-3)" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 </div>
 

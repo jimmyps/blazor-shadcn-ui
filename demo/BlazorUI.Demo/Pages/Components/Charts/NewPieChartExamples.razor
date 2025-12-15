@@ -1,0 +1,265 @@
+@page "/components/charts/pie-new"
+@using BlazorUI.Components.Chart
+
+<PageHeader Title="Pie Charts" Description="Comprehensive pie chart examples following shadcn/ui design patterns" />
+
+<div class="space-y-8">
+    @* Hero - Interactive Pie Chart with Month Selector *@
+    <Card>
+        <CardHeader Class="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+            <div class="grid flex-1 gap-1">
+                <CardTitle>Pie Chart - Interactive</CardTitle>
+                <CardDescription>Browser usage statistics</CardDescription>
+            </div>
+            <Select @bind-Value="@selectedMonth" Class="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
+                <SelectTrigger>
+                    <SelectValue Placeholder="Select month" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem Value="@("jan")">January</SelectItem>
+                    <SelectItem Value="@("feb")">February</SelectItem>
+                    <SelectItem Value="@("mar")">March</SelectItem>
+                </SelectContent>
+            </Select>
+        </CardHeader>
+        <CardContent Class="px-2 pt-4 sm:px-6 sm:pt-6">
+            <ChartContainer Height="250" Class="w-full">
+                <PieChart Data="@FilteredBrowserData">
+                    <Tooltip />
+                    <Legend />
+                    <Pie DataKey="value" NameKey="name" Color="var(--chart-1)" />
+                </PieChart>
+            </ChartContainer>
+        </CardContent>
+    </Card>
+
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        @* Simple Pie Chart *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Simple Pie</CardTitle>
+                <CardDescription>Basic pie chart</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Pie DataKey="value" NameKey="name" />
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Donut Chart *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Donut Chart</CardTitle>
+                <CardDescription>Pie with inner radius</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Legend />
+                        <Pie DataKey="value" NameKey="name" InnerRadius="60%" />
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Donut with Text *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Donut with Text</CardTitle>
+                <CardDescription>Center text label</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Pie DataKey="value" NameKey="name" InnerRadius="60%" />
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Donut Active (Emphasis) *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Active/Hover</CardTitle>
+                <CardDescription>Hover emphasis effect</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Pie DataKey="value" NameKey="name" InnerRadius="60%" />
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Pie with Labels (MVP+ Feature) *@
+        <Card>
+            <CardHeader>
+                <CardTitle>With Labels</CardTitle>
+                <CardDescription>Data labels on slices</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Pie DataKey="value" NameKey="name" ShowLabel="true" LabelPosition="LabelPosition.Outside">
+                            <LabelList Position="LabelPosition.Outside" Formatter="{b}: {c}%" FontSize="10" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Pie with Custom Labels (MVP+ Feature) *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Custom Labels</CardTitle>
+                <CardDescription>Custom formatted labels</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Pie DataKey="value" NameKey="name" ShowLabel="true">
+                            <LabelList Position="LabelPosition.Outside" Formatter="function(params) { return params.name + '\n' + params.value + '%'; }" FontSize="9" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Pie with Label Lines (MVP+ Feature) *@
+        <Card>
+            <CardHeader>
+                <CardTitle>With Label Lines</CardTitle>
+                <CardDescription>Lines connecting labels</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Pie DataKey="value" NameKey="name" ShowLabel="true" ShowLabelLine="true">
+                            <LabelList Position="LabelPosition.Outside" Formatter="{b}" FontSize="10" />
+                            <LabelLine Show="true" Length="15" Length2="10" Smooth="false" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Pie Label List (MVP+ Feature) *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Label List</CardTitle>
+                <CardDescription>Comprehensive label list</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Legend />
+                        <Pie DataKey="value" NameKey="name" ShowLabel="true">
+                            <LabelList Position="LabelPosition.Inside" Formatter="{c}%" FontSize="11" Color="#fff" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Pie with Legend *@
+        <Card>
+            <CardHeader>
+                <CardTitle>With Legend</CardTitle>
+                <CardDescription>Legend positioning</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Legend VerticalAlign="LegendVerticalAlign.Bottom" Align="LegendAlign.Center" />
+                        <Pie DataKey="value" NameKey="name" />
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Pie without Separator *@
+        <Card>
+            <CardHeader>
+                <CardTitle>No Separator</CardTitle>
+                <CardDescription>No gaps between slices</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Pie DataKey="value" NameKey="name" />
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Stacked Pie (Multiple) *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Stacked Pies</CardTitle>
+                <CardDescription>Multiple concentric rings</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Pie DataKey="value" NameKey="name" InnerRadius="70%" OuterRadius="90%" />
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    </div>
+</div>
+
+@code {
+    private string selectedMonth = "jan";
+
+    private List<BrowserData> browserData = new()
+    {
+        new() { name = "Chrome", value = 45 },
+        new() { name = "Firefox", value = 25 },
+        new() { name = "Safari", value = 15 },
+        new() { name = "Edge", value = 10 },
+        new() { name = "Other", value = 5 }
+    };
+
+    private List<BrowserData> FilteredBrowserData => selectedMonth switch
+    {
+        "feb" => new()
+        {
+            new() { name = "Chrome", value = 48 },
+            new() { name = "Firefox", value = 23 },
+            new() { name = "Safari", value = 16 },
+            new() { name = "Edge", value = 9 },
+            new() { name = "Other", value = 4 }
+        },
+        "mar" => new()
+        {
+            new() { name = "Chrome", value = 47 },
+            new() { name = "Firefox", value = 24 },
+            new() { name = "Safari", value = 17 },
+            new() { name = "Edge", value = 8 },
+            new() { name = "Other", value = 4 }
+        },
+        _ => browserData
+    };
+
+    public class BrowserData
+    {
+        public string name { get; set; } = "";
+        public int value { get; set; }
+    }
+}

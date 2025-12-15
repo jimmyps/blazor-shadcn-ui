@@ -1,0 +1,311 @@
+@page "/components/charts/bar-new"
+@using BlazorUI.Components.Chart
+
+<PageHeader Title="Bar Charts" Description="Comprehensive bar chart examples following shadcn/ui design patterns" />
+
+<div class="space-y-8">
+    @* Hero - Interactive Bar Chart with Date Filter *@
+    <Card>
+        <CardHeader Class="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+            <div class="grid flex-1 gap-1">
+                <CardTitle>Bar Chart - Interactive</CardTitle>
+                <CardDescription>Showing sales data for the last 3 months</CardDescription>
+            </div>
+            <Select @bind-Value="@timeRange" Class="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
+                <SelectTrigger>
+                    <SelectValue Placeholder="Last 3 months" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem Value="90d">Last 3 months</SelectItem>
+                    <SelectItem Value="30d">Last 30 days</SelectItem>
+                    <SelectItem Value="7d">Last 7 days</SelectItem>
+                </SelectContent>
+            </Select>
+        </CardHeader>
+        <CardContent Class="px-2 pt-4 sm:px-6 sm:pt-6">
+            <ChartContainer Height="250" Class="w-full">
+                <BarChart Data="@FilteredData">
+                    <XAxis DataKey="date" />
+                    <YAxis />
+                    <Tooltip Mode="TooltipMode.Axis" />
+                    <Legend />
+                    <Bar DataKey="desktop" Name="Desktop" Radius="4" Color="var(--chart-1)" />
+                    <Bar DataKey="mobile" Name="Mobile" Radius="4" Color="var(--chart-2)" />
+                </BarChart>
+            </ChartContainer>
+        </CardContent>
+    </Card>
+
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        @* Default Bar Chart *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Bar Chart</CardTitle>
+                <CardDescription>Default bar chart</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <BarChart Data="@simpleData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-1)" />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Horizontal Bar Chart *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Horizontal Bars</CardTitle>
+                <CardDescription>Horizontal orientation</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <BarChart Data="@simpleData" Layout="BarLayout.Horizontal">
+                        <XAxis DataKey="sales" />
+                        <YAxis DataKey="month" />
+                        <Tooltip />
+                        <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-2)" />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Multiple Bars *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Multiple Bars</CardTitle>
+                <CardDescription>Side-by-side bars</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <BarChart Data="@multiData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar DataKey="product1" Name="Product A" Radius="4" Color="var(--chart-1)" />
+                        <Bar DataKey="product2" Name="Product B" Radius="4" Color="var(--chart-2)" />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Stacked Bar Chart *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Stacked Bars</CardTitle>
+                <CardDescription>Stacked bar chart</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <BarChart Data="@multiData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar DataKey="product1" Name="Product A" StackId="total" Radius="4" Color="var(--chart-1)" />
+                        <Bar DataKey="product2" Name="Product B" StackId="total" Radius="4" Color="var(--chart-2)" />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Bar with Labels (MVP+ Feature) *@
+        <Card>
+            <CardHeader>
+                <CardTitle>With Labels</CardTitle>
+                <CardDescription>Data labels on bars</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <BarChart Data="@simpleData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar DataKey="sales" Name="Sales" Radius="4" ShowLabel="true" LabelPosition="LabelPosition.Top" Color="var(--chart-3)">
+                            <LabelList Position="LabelPosition.Top" Formatter="{c}" FontSize="11" Color="#666" />
+                        </Bar>
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Bar with Custom Labels (MVP+ Feature) *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Custom Labels</CardTitle>
+                <CardDescription>Custom label formatting</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <BarChart Data="@simpleData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar DataKey="sales" Name="Sales" Radius="4" ShowLabel="true" Color="var(--chart-4)">
+                            <LabelList Position="LabelPosition.Inside" Formatter="function(params) { return '$' + params.value; }" FontSize="10" Color="#fff" />
+                        </Bar>
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* 100% Stacked Bars (MVP+ Feature) *@
+        <Card>
+            <CardHeader>
+                <CardTitle>100% Stacked</CardTitle>
+                <CardDescription>Percentage stacking</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <BarChart Data="@multiData" StackOffset="StackOffset.Expand">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Formatter="function(params) { return params.seriesName + ': ' + params.value.toFixed(1) + '%'; }" />
+                        <Legend />
+                        <Bar DataKey="product1" Name="Product A" StackId="total" Radius="4" Color="var(--chart-1)" />
+                        <Bar DataKey="product2" Name="Product B" StackId="total" Radius="4" Color="var(--chart-2)" />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Active Bar (Emphasis) *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Active/Hover</CardTitle>
+                <CardDescription>Hover emphasis effect</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <BarChart Data="@simpleData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-5)" />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Mixed (Bar + Line) *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Mixed Chart</CardTitle>
+                <CardDescription>Bar and line combined</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ComposedChart Data="@multiData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar DataKey="product1" Name="Product A" Radius="4" Color="var(--chart-1)" />
+                        <Line DataKey="product2" Name="Product B" Color="var(--chart-2)" />
+                    </ComposedChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Negative Values *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Negative Values</CardTitle>
+                <CardDescription>Bars with positive and negative</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <BarChart Data="@negativeData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar DataKey="value" Name="Profit/Loss" Radius="4" Color="var(--chart-3)" />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    </div>
+</div>
+
+@code {
+    private string timeRange = "90d";
+
+    // 90-day comprehensive dataset
+    private List<ChartDataPoint> chartData = new()
+    {
+        new() { date = "2024-04-01", desktop = 222, mobile = 150 },
+        new() { date = "2024-04-02", desktop = 305, mobile = 200 },
+        new() { date = "2024-04-03", desktop = 237, mobile = 120 },
+        new() { date = "2024-04-04", desktop = 273, mobile = 190 },
+        new() { date = "2024-04-05", desktop = 209, mobile = 130 },
+        new() { date = "2024-04-06", desktop = 214, mobile = 140 },
+        // Add more data as needed...
+    };
+
+    private List<ChartDataPoint> FilteredData => timeRange switch
+    {
+        "7d" => chartData.TakeLast(7).ToList(),
+        "30d" => chartData.TakeLast(30).ToList(),
+        _ => chartData
+    };
+
+    private List<SimpleChartData> simpleData = new()
+    {
+        new() { month = "Jan", sales = 186 },
+        new() { month = "Feb", sales = 305 },
+        new() { month = "Mar", sales = 237 },
+        new() { month = "Apr", sales = 273 },
+        new() { month = "May", sales = 209 },
+        new() { month = "Jun", sales = 214 }
+    };
+
+    private List<MultiChartData> multiData = new()
+    {
+        new() { month = "Jan", product1 = 186, product2 = 80 },
+        new() { month = "Feb", product1 = 305, product2 = 200 },
+        new() { month = "Mar", product1 = 237, product2 = 120 },
+        new() { month = "Apr", product1 = 273, product2 = 190 },
+        new() { month = "May", product1 = 209, product2 = 130 },
+        new() { month = "Jun", product1 = 214, product2 = 140 }
+    };
+
+    private List<NegativeData> negativeData = new()
+    {
+        new() { month = "Jan", value = 150 },
+        new() { month = "Feb", value = -80 },
+        new() { month = "Mar", value = 200 },
+        new() { month = "Apr", value = -120 },
+        new() { month = "May", value = 90 },
+        new() { month = "Jun", value = 180 }
+    };
+
+    public class ChartDataPoint
+    {
+        public string date { get; set; } = "";
+        public int desktop { get; set; }
+        public int mobile { get; set; }
+    }
+
+    public class SimpleChartData
+    {
+        public string month { get; set; } = "";
+        public int sales { get; set; }
+    }
+
+    public class MultiChartData
+    {
+        public string month { get; set; } = "";
+        public int product1 { get; set; }
+        public int product2 { get; set; }
+    }
+
+    public class NegativeData
+    {
+        public string month { get; set; } = "";
+        public int value { get; set; }
+    }
+}
