@@ -1,0 +1,163 @@
+@namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Chart.Internal
+@typeparam TData
+@inherits ChartBase<TData>
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-radialbar-container" style="width: 100%; height: 100%; position: relative;">
+        <div @ref="_canvasRef" style="width: 100%; height: 100%;"></div>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private List<RadialBar> _radialBars = new();
+    private PolarGrid? _polarGrid;
+    private CenterLabel? _centerLabel;
+    
+    protected override EChartsOption BuildEChartsOption()
+    {
+        var option = new EChartsOption
+        {
+            Tooltip = BuildTooltip(),
+            Legend = BuildLegend(),
+            PolarCoordinateSystem = BuildPolarCoordinateSystem(),
+            AngleAxis = BuildAngleAxis(),
+            RadiusAxis = BuildRadiusAxis(),
+            Series = BuildSeries()
+        };
+        
+        return option;
+    }
+    
+    private EChartsPolar BuildPolarCoordinateSystem()
+    {
+        return new EChartsPolar
+        {
+            Center = new[] { "50%", "50%" },
+            Radius = "75%"
+        };
+    }
+    
+    private EChartsAxis BuildAngleAxis()
+    {
+        var xAxis = _xAxis ?? new XAxis();
+        var axis = new EChartsAxis
+        {
+            Type = "category"
+        };
+        
+        if (!string.IsNullOrEmpty(xAxis.DataKey))
+        {
+            axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
+        }
+        
+        return axis;
+    }
+    
+    private EChartsAxis BuildRadiusAxis()
+    {
+        return new EChartsAxis
+        {
+            Type = "value"
+        };
+    }
+    
+    private List<EChartsSeries> BuildSeries()
+    {
+        var seriesList = new List<EChartsSeries>();
+        
+        if (_radialBars.Any())
+        {
+            for (int i = 0; i < _radialBars.Count; i++)
+            {
+                var radialBar = _radialBars[i];
+                var data = DataExtractor.GetNumericValues(Data, radialBar.DataKey);
+                
+                var series = new EChartsSeries
+                {
+                    Type = "bar",
+                    Name = radialBar.Name ?? radialBar.DataKey,
+                    Data = data.Cast<object>().ToList(),
+                    CoordinateSystem = "polar",
+                    Stack = radialBar.StackId,
+                    ItemStyle = new EChartsItemStyle
+                    {
+                        Color = GetSeriesColor(i, radialBar.Color),
+                        BorderRadius = radialBar.CornerRadius
+                    }
+                };
+                
+                // Map label parameters
+                if (radialBar.ShowLabel || radialBar.LabelList != null)
+                {
+                    var labelList = radialBar.LabelList;
+                    series.Label = new EChartsLabel
+                    {
+                        Show = labelList?.Show ?? radialBar.ShowLabel,
+                        Position = MapLabelPosition(labelList?.Position ?? radialBar.LabelPosition ?? LabelPosition.Center),
+                        Formatter = labelList?.Formatter ?? radialBar.LabelFormatter,
+                        Color = labelList?.Color,
+                        FontSize = labelList?.FontSize,
+                        Offset = labelList?.Offset
+                    };
+                }
+                
+                seriesList.Add(series);
+            }
+        }
+        
+        return seriesList;
+    }
+    
+    private string MapLabelPosition(LabelPosition position)
+    {
+        return position switch
+        {
+            LabelPosition.Top => "top",
+            LabelPosition.Bottom => "bottom",
+            LabelPosition.Left => "left",
+            LabelPosition.Right => "right",
+            LabelPosition.Inside => "inside",
+            LabelPosition.InsideTop => "insideTop",
+            LabelPosition.InsideBottom => "insideBottom",
+            LabelPosition.InsideLeft => "insideLeft",
+            LabelPosition.InsideRight => "insideRight",
+            LabelPosition.Center => "center",
+            LabelPosition.Outside => "outside",
+            _ => "center"
+        };
+    }
+    
+    protected override ChartType GetChartType()
+    {
+        return ChartType.Pie; // Use Pie type for radial bars
+    }
+    
+    protected override TooltipMode GetDefaultTooltipMode()
+    {
+        return TooltipMode.Item;
+    }
+    
+    internal void RegisterRadialBar(RadialBar radialBar)
+    {
+        _radialBars.Add(radialBar);
+        StateHasChanged();
+    }
+    
+    internal void RegisterPolarGrid(PolarGrid polarGrid)
+    {
+        _polarGrid = polarGrid;
+        StateHasChanged();
+    }
+    
+    internal void RegisterCenterLabel(CenterLabel centerLabel)
+    {
+        _centerLabel = centerLabel;
+        StateHasChanged();
+    }
+    
+    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+    internal void RegisterXAxis(XAxis xAxis) { _xAxis = xAxis; StateHasChanged(); }
+}

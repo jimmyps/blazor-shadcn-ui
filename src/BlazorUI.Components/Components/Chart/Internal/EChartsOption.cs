@@ -33,6 +33,24 @@ public sealed class EChartsOption
     [JsonPropertyName("radar")]
     public EChartsRadar? Radar { get; set; }
 
+    /// <summary>
+    /// Polar coordinate system configuration for radial charts.
+    /// </summary>
+    [JsonPropertyName("polar")]
+    public EChartsPolar? PolarCoordinateSystem { get; set; }
+
+    /// <summary>
+    /// Angle axis for polar coordinate system.
+    /// </summary>
+    [JsonPropertyName("angleAxis")]
+    public EChartsAxis? AngleAxis { get; set; }
+
+    /// <summary>
+    /// Radius axis for polar coordinate system.
+    /// </summary>
+    [JsonPropertyName("radiusAxis")]
+    public EChartsAxis? RadiusAxis { get; set; }
+
     [JsonPropertyName("series")]
     public List<EChartsSeries>? Series { get; set; }
 
@@ -168,6 +186,12 @@ public sealed class EChartsSeries
 
     [JsonPropertyName("name")]
     public string? Name { get; set; }
+
+    /// <summary>
+    /// Coordinate system: "cartesian2d" (default) | "polar" | "geo" | "radar"
+    /// </summary>
+    [JsonPropertyName("coordinateSystem")]
+    public string? CoordinateSystem { get; set; }
 
     /// <summary>
     /// Polymorphic by chart type.
@@ -424,4 +448,22 @@ public sealed class EChartsColorStop
 
     [JsonPropertyName("color")]
     public string Color { get; set; } = "";
+}
+
+/// <summary>
+/// Polar coordinate system configuration for radial charts.
+/// </summary>
+public sealed class EChartsPolar
+{
+    /// <summary>
+    /// Center position as [x, y] where x and y can be percentages or absolute values.
+    /// </summary>
+    [JsonPropertyName("center")]
+    public object[]? Center { get; set; }
+
+    /// <summary>
+    /// Radius of the polar coordinate system (percentage or absolute value).
+    /// </summary>
+    [JsonPropertyName("radius")]
+    public object? Radius { get; set; }
 }

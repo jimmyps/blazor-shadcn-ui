@@ -1,0 +1,96 @@
+@namespace BlazorUI.Components.Chart
+
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the data key for the series.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string DataKey { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Gets or sets the series name (for legend).
+    /// </summary>
+    [Parameter]
+    public string? Name { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the series color.
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the inner radius (e.g., "60%" or "60").
+    /// </summary>
+    [Parameter]
+    public string? InnerRadius { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the outer radius (e.g., "80%" or "80").
+    /// </summary>
+    [Parameter]
+    public string? OuterRadius { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the corner radius for rounded bars.
+    /// </summary>
+    [Parameter]
+    public int? CornerRadius { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the stack group ID for stacked radial bars.
+    /// </summary>
+    [Parameter]
+    public string? StackId { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to show labels.
+    /// </summary>
+    [Parameter]
+    public bool ShowLabel { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the label position.
+    /// </summary>
+    [Parameter]
+    public LabelPosition? LabelPosition { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the label formatter.
+    /// </summary>
+    [Parameter]
+    public string? LabelFormatter { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the child content (LabelList).
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    
+    /// <summary>
+    /// Gets the registered LabelList component.
+    /// </summary>
+    public LabelList? LabelList { get; private set; }
+    
+    /// <summary>
+    /// Registers a LabelList component.
+    /// </summary>
+    public void RegisterLabelList(LabelList labelList)
+    {
+        LabelList = labelList;
+    }
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterRadialBar(this); } catch { }
+        }
+    }
+}
