@@ -189,3 +189,136 @@ public enum GradientDirection
     /// </summary>
     Horizontal
 }
+
+/// <summary>
+/// Label position for data labels on series.
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum LabelPosition
+{
+    /// <summary>
+    /// Position label at top.
+    /// </summary>
+    Top,
+    
+    /// <summary>
+    /// Position label at bottom.
+    /// </summary>
+    Bottom,
+    
+    /// <summary>
+    /// Position label at left.
+    /// </summary>
+    Left,
+    
+    /// <summary>
+    /// Position label at right.
+    /// </summary>
+    Right,
+    
+    /// <summary>
+    /// Position label inside the data element.
+    /// </summary>
+    Inside,
+    
+    /// <summary>
+    /// Position label inside at top.
+    /// </summary>
+    InsideTop,
+    
+    /// <summary>
+    /// Position label inside at bottom.
+    /// </summary>
+    InsideBottom,
+    
+    /// <summary>
+    /// Position label inside at left.
+    /// </summary>
+    InsideLeft,
+    
+    /// <summary>
+    /// Position label inside at right.
+    /// </summary>
+    InsideRight,
+    
+    /// <summary>
+    /// Position label at center.
+    /// </summary>
+    Center,
+    
+    /// <summary>
+    /// Position label outside the data element.
+    /// </summary>
+    Outside
+}
+
+/// <summary>
+/// Interpolation type for line and area series.
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum InterpolationType
+{
+    /// <summary>
+    /// Natural/smooth curve interpolation (default).
+    /// </summary>
+    Natural,
+    
+    /// <summary>
+    /// Linear interpolation (straight lines).
+    /// </summary>
+    Linear,
+    
+    /// <summary>
+    /// Step interpolation (middle).
+    /// </summary>
+    Step,
+    
+    /// <summary>
+    /// Step interpolation before the point.
+    /// </summary>
+    StepBefore,
+    
+    /// <summary>
+    /// Step interpolation after the point.
+    /// </summary>
+    StepAfter,
+    
+    /// <summary>
+    /// Monotone curve interpolation.
+    /// </summary>
+    Monotone
+}
+
+/// <summary>
+/// Stack offset type for normalized stacking.
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum StackOffset
+{
+    /// <summary>
+    /// No normalization (default stacking).
+    /// </summary>
+    None,
+    
+    /// <summary>
+    /// Expand/normalize to 100% per X bucket.
+    /// </summary>
+    Expand
+}
+
+/// <summary>
+/// Polar grid type for radial charts.
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum PolarGridType
+{
+    /// <summary>
+    /// Circular grid lines.
+    /// </summary>
+    Circle,
+    
+    /// <summary>
+    /// Polygon grid lines.
+    /// </summary>
+    Polygon
+}

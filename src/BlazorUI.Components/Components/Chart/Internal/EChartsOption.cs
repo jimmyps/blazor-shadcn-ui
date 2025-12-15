@@ -214,6 +214,25 @@ public sealed class EChartsSeries
     [JsonPropertyName("emphasis")]
     public EChartsEmphasis? Emphasis { get; set; }
 
+    /// <summary>
+    /// Label configuration for data points.
+    /// </summary>
+    [JsonPropertyName("label")]
+    public EChartsLabel? Label { get; set; }
+
+    /// <summary>
+    /// Label line configuration (for pie charts).
+    /// </summary>
+    [JsonPropertyName("labelLine")]
+    public EChartsLabelLine? LabelLine { get; set; }
+
+    /// <summary>
+    /// Step interpolation: true | "start" | "middle" | "end" | false
+    /// For line/area charts.
+    /// </summary>
+    [JsonPropertyName("step")]
+    public object? Step { get; set; }
+
     [JsonExtensionData]
     public Dictionary<string, JsonElement>? ExtensionData { get; set; }
 }
@@ -252,6 +271,48 @@ public sealed class EChartsAreaStyle
     /// </summary>
     [JsonPropertyName("color")]
     public object? Color { get; set; }
+}
+
+public sealed class EChartsLabel
+{
+    [JsonPropertyName("show")]
+    public bool? Show { get; set; }
+
+    /// <summary>
+    /// Label position: "top" | "bottom" | "left" | "right" | "inside" | "insideTop" | "insideBottom" | "insideLeft" | "insideRight" | "center" | "outside"
+    /// </summary>
+    [JsonPropertyName("position")]
+    public string? Position { get; set; }
+
+    /// <summary>
+    /// Label formatter (template string or JS function string).
+    /// </summary>
+    [JsonPropertyName("formatter")]
+    public string? Formatter { get; set; }
+
+    [JsonPropertyName("color")]
+    public string? Color { get; set; }
+
+    [JsonPropertyName("fontSize")]
+    public double? FontSize { get; set; }
+
+    [JsonPropertyName("offset")]
+    public double? Offset { get; set; }
+}
+
+public sealed class EChartsLabelLine
+{
+    [JsonPropertyName("show")]
+    public bool? Show { get; set; }
+
+    [JsonPropertyName("length")]
+    public double? Length { get; set; }
+
+    [JsonPropertyName("length2")]
+    public double? Length2 { get; set; }
+
+    [JsonPropertyName("smooth")]
+    public bool? Smooth { get; set; }
 }
 
 public sealed class EChartsTooltip

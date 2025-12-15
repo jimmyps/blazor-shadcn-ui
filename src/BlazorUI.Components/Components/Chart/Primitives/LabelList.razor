@@ -1,0 +1,45 @@
+@namespace BlazorUI.Components.Chart
+
+@*
+LabelList Component
+Enables per-point labels on a series (Recharts-style API).
+Child of series components (Line, Area, Bar, Pie, Scatter, Radar).
+*@
+
+@code {
+    /// <summary>
+    /// Label position.
+    /// </summary>
+    [Parameter]
+    public LabelPosition Position { get; set; } = LabelPosition.Top;
+    
+    /// <summary>
+    /// Label formatter (template string or JS function string).
+    /// </summary>
+    [Parameter]
+    public string? Formatter { get; set; }
+    
+    /// <summary>
+    /// Label text color.
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Label font size.
+    /// </summary>
+    [Parameter]
+    public double? FontSize { get; set; }
+    
+    /// <summary>
+    /// Label offset from data point.
+    /// </summary>
+    [Parameter]
+    public double? Offset { get; set; }
+    
+    /// <summary>
+    /// Whether to show labels.
+    /// </summary>
+    [Parameter]
+    public bool Show { get; set; } = true;
+}
