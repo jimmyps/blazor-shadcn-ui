@@ -1,7 +1,9 @@
 using BlazorUI.Components.Utilities;
+using BlazorUI.Components.Chart;
 using Microsoft.AspNetCore.Components;
+using BlazorUI.Components.Chart;
 
-namespace BlazorUI.Components.Chart;
+namespace BlazorUI.Components.Old.Chart;
 
 /// <summary>
 /// Container component for charts with header, content, and footer sections.

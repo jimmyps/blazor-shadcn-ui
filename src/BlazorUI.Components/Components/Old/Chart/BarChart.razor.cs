@@ -1,14 +1,17 @@
 using BlazorUI.Components.Utilities;
+using BlazorUI.Components.Chart;
 using Microsoft.AspNetCore.Components;
+using BlazorUI.Components.Chart;
 using Microsoft.JSInterop;
+using BlazorUI.Components.Chart;
 
-namespace BlazorUI.Components.Chart;
+namespace BlazorUI.Components.Old.Chart;
 
 /// <summary>
-/// Radar chart component for visualizing multivariate data across multiple axes.
+/// Bar chart component for comparing discrete categories.
 /// </summary>
 /// <typeparam name="TData">The type of data items in the chart.</typeparam>
-public class RadarChartBase<TData> : ComponentBase
+public class BarChartBase<TData> : ComponentBase
 {
     [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
     
@@ -25,22 +28,52 @@ public class RadarChartBase<TData> : ComponentBase
     public int Height { get; set; } = 350;
     
     /// <summary>
-    /// Gets or sets the property name to use for axis labels.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public string LabelDataKey { get; set; } = string.Empty;
-    
-    /// <summary>
-    /// Gets or sets the series configurations.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public IEnumerable<RadarSeriesConfig> Series { get; set; } = Enumerable.Empty<RadarSeriesConfig>();
-    
-    /// <summary>
-    /// Gets or sets the fill opacity for radar areas (0.0 to 1.0).
+    /// Gets or sets the orientation of the bars.
     /// </summary>
     [Parameter]
-    public double FillOpacity { get; set; } = 0.2;
+    public BarChartOrientation Orientation { get; set; } = BarChartOrientation.Vertical;
+    
+    /// <summary>
+    /// Gets or sets how multiple bar series are displayed.
+    /// </summary>
+    [Parameter]
+    public BarChartMode Mode { get; set; } = BarChartMode.Grouped;
+    
+    /// <summary>
+    /// Gets or sets the property name to use for X-axis values.
+    /// </summary>
+    [Parameter]
+    public string XAxisDataKey { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Gets or sets the property name to use for Y-axis values.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string YAxisDataKey { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Gets or sets the label for the data series.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the color of the bars.
+    /// </summary>
+    [Parameter]
+    public string? BarColor { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the border radius of the bars.
+    /// </summary>
+    [Parameter]
+    public int BorderRadius { get; set; } = 4;
+    
+    /// <summary>
+    /// Gets or sets the thickness of the bars in pixels (0 = automatic).
+    /// </summary>
+    [Parameter]
+    public int BarThickness { get; set; } = 0;
     
     /// <summary>
     /// Gets or sets whether the chart should be responsive.
@@ -61,10 +94,16 @@ public class RadarChartBase<TData> : ComponentBase
     public bool ShowTooltip { get; set; } = true;
     
     /// <summary>
-    /// Gets or sets whether to show axis labels.
+    /// Gets or sets whether to show the X axis.
     /// </summary>
     [Parameter]
-    public bool ShowLabels { get; set; } = true;
+    public bool ShowXAxis { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets whether to show the Y axis.
+    /// </summary>
+    [Parameter]
+    public bool ShowYAxis { get; set; } = true;
     
     /// <summary>
     /// Gets or sets whether to show grid lines.
@@ -115,30 +154,4 @@ public class RadarChartBase<TData> : ComponentBase
         "chart-container",
         Class
     );
-}
-
-/// <summary>
-/// Configuration for a radar chart data series.
-/// </summary>
-public class RadarSeriesConfig
-{
-    /// <summary>
-    /// Gets or sets the property name to use for data values.
-    /// </summary>
-    public string DataKey { get; set; } = string.Empty;
-    
-    /// <summary>
-    /// Gets or sets the label for the series.
-    /// </summary>
-    public string? Label { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the color of the line and points.
-    /// </summary>
-    public string? Color { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the width of the line.
-    /// </summary>
-    public int LineWidth { get; set; } = 2;
 }

@@ -1,10 +1,10 @@
-@namespace BlazorUI.Components.Chart
+@namespace BlazorUI.Components.Old.Chart
 
-<h3 class="@CssClass">@ChildContent</h3>
+<p class="@CssClass">@ChildContent</p>
 
 @code {
     /// <summary>
-    /// Gets or sets the content of the chart panel title.
+    /// Gets or sets the content of the chart panel description.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -16,7 +16,7 @@
     public string? Class { get; set; }
     
     private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
-        "text-2xl font-semibold leading-none tracking-tight",
+        "text-sm text-muted-foreground",
         Class
     );
 }

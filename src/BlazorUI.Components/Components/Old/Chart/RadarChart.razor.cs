@@ -1,14 +1,17 @@
 using BlazorUI.Components.Utilities;
+using BlazorUI.Components.Chart;
 using Microsoft.AspNetCore.Components;
+using BlazorUI.Components.Chart;
 using Microsoft.JSInterop;
+using BlazorUI.Components.Chart;
 
-namespace BlazorUI.Components.Chart;
+namespace BlazorUI.Components.Old.Chart;
 
 /// <summary>
-/// Line chart component for visualizing trends over time or continuous data.
+/// Radar chart component for visualizing multivariate data across multiple axes.
 /// </summary>
 /// <typeparam name="TData">The type of data items in the chart.</typeparam>
-public class LineChartBase<TData> : ComponentBase
+public class RadarChartBase<TData> : ComponentBase
 {
     [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
     
@@ -25,52 +28,22 @@ public class LineChartBase<TData> : ComponentBase
     public int Height { get; set; } = 350;
     
     /// <summary>
-    /// Gets or sets the property name to use for X-axis values.
-    /// </summary>
-    [Parameter]
-    public string XAxisDataKey { get; set; } = string.Empty;
-    
-    /// <summary>
-    /// Gets or sets the property name to use for Y-axis values.
+    /// Gets or sets the property name to use for axis labels.
     /// </summary>
     [Parameter, EditorRequired]
-    public string YAxisDataKey { get; set; } = string.Empty;
+    public string LabelDataKey { get; set; } = string.Empty;
     
     /// <summary>
-    /// Gets or sets the label for the data series.
+    /// Gets or sets the series configurations.
     /// </summary>
-    [Parameter]
-    public string? Label { get; set; }
+    [Parameter, EditorRequired]
+    public IEnumerable<RadarSeriesConfig> Series { get; set; } = Enumerable.Empty<RadarSeriesConfig>();
     
     /// <summary>
-    /// Gets or sets the color of the line.
+    /// Gets or sets the fill opacity for radar areas (0.0 to 1.0).
     /// </summary>
     [Parameter]
-    public string? LineColor { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the width of the line.
-    /// </summary>
-    [Parameter]
-    public int LineWidth { get; set; } = 2;
-    
-    /// <summary>
-    /// Gets or sets whether the line should be curved.
-    /// </summary>
-    [Parameter]
-    public bool Curved { get; set; } = false;
-    
-    /// <summary>
-    /// Gets or sets whether to fill the area under the line.
-    /// </summary>
-    [Parameter]
-    public bool FillArea { get; set; } = false;
-    
-    /// <summary>
-    /// Gets or sets whether to show dots at data points.
-    /// </summary>
-    [Parameter]
-    public bool ShowDots { get; set; } = true;
+    public double FillOpacity { get; set; } = 0.2;
     
     /// <summary>
     /// Gets or sets whether the chart should be responsive.
@@ -91,16 +64,10 @@ public class LineChartBase<TData> : ComponentBase
     public bool ShowTooltip { get; set; } = true;
     
     /// <summary>
-    /// Gets or sets whether to show the X axis.
+    /// Gets or sets whether to show axis labels.
     /// </summary>
     [Parameter]
-    public bool ShowXAxis { get; set; } = true;
-    
-    /// <summary>
-    /// Gets or sets whether to show the Y axis.
-    /// </summary>
-    [Parameter]
-    public bool ShowYAxis { get; set; } = true;
+    public bool ShowLabels { get; set; } = true;
     
     /// <summary>
     /// Gets or sets whether to show grid lines.
@@ -151,4 +118,30 @@ public class LineChartBase<TData> : ComponentBase
         "chart-container",
         Class
     );
+}
+
+/// <summary>
+/// Configuration for a radar chart data series.
+/// </summary>
+public class RadarSeriesConfig
+{
+    /// <summary>
+    /// Gets or sets the property name to use for data values.
+    /// </summary>
+    public string DataKey { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Gets or sets the label for the series.
+    /// </summary>
+    public string? Label { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the color of the line and points.
+    /// </summary>
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the width of the line.
+    /// </summary>
+    public int LineWidth { get; set; } = 2;
 }

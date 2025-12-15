@@ -1,16 +1,10 @@
-@namespace BlazorUI.Components.Chart
+@namespace BlazorUI.Components.Old.Chart
 @typeparam TData
-@inherits PieChartBase<TData>
+@inherits MultiSeriesLineChartBase<TData>
 @implements IAsyncDisposable
 
 <div class="@ContainerClass" style="position: relative; height: @(Height)px; width: 100%;">
     <canvas @ref="_canvasRef"></canvas>
-    @if (IsDonut && CenterContent != null)
-    {
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-            @CenterContent
-        </div>
-    }
     
     @if (ShowExportButton && _isInitialized)
     {
@@ -56,10 +50,9 @@
         {
             _renderer = ChartRendererFactory.CreateRenderer(Engine, JSRuntime);
             
-            var chartType = IsDonut ? ChartType.Donut : ChartType.Pie;
             var chartConfig = new ChartConfig
             {
-                Type = chartType,
+                Type = ChartType.Line,
                 Responsive = Responsive,
                 MaintainAspectRatio = false,
                 Data = BuildChartData(),
@@ -71,7 +64,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"PieChart: Failed to initialize chart: {ex.Message}");
+            Console.WriteLine($"MultiSeriesLineChart: Failed to initialize chart: {ex.Message}");
         }
     }
     
@@ -79,7 +72,7 @@
     {
         if (_renderer == null || string.IsNullOrEmpty(_chartId))
         {
-            Console.WriteLine("PieChart: Cannot export - chart not initialized");
+            Console.WriteLine("MultiSeriesLineChart: Cannot export - chart not initialized");
             return;
         }
         
@@ -90,7 +83,7 @@
             
             if (string.IsNullOrEmpty(dataUrl))
             {
-                Console.WriteLine("PieChart: Export returned empty data URL");
+                Console.WriteLine("MultiSeriesLineChart: Export returned empty data URL");
                 return;
             }
             
@@ -100,7 +93,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"PieChart: Export failed - {ex.Message}");
+            Console.WriteLine($"MultiSeriesLineChart: Export failed - {ex.Message}");
         }
     }
     
@@ -145,15 +138,32 @@
             {
                 legend = new
                 {
-                    display = ShowLegend,
-                    position = MapLegendPosition(LegendPosition)
+                    display = ShowLegend
                 },
                 tooltip = new
                 {
                     enabled = ShowTooltip
                 }
             },
-            cutout = IsDonut ? $"{DonutInnerRadius * 100}%" : (string?)null,
+            scales = new
+            {
+                x = new
+                {
+                    display = ShowXAxis,
+                    grid = new
+                    {
+                        display = ShowGrid
+                    }
+                },
+                y = new
+                {
+                    display = ShowYAxis,
+                    grid = new
+                    {
+                        display = ShowGrid
+                    }
+                }
+            },
             animation = new
             {
                 duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
@@ -174,22 +184,12 @@
         }
         
         var labels = ExtractLabels();
-        var values = ExtractValues();
-        var colors = GenerateColors(values.Length);
+        var datasets = BuildDatasets();
         
         return new
         {
             labels,
-            datasets = new[]
-            {
-                new
-                {
-                    data = values,
-                    backgroundColor = colors,
-                    borderColor = colors,
-                    borderWidth = 1
-                }
-            }
+            datasets
         };
     }
     
@@ -197,68 +197,60 @@
     {
         if (Data == null || !Data.Any()) return Array.Empty<string>();
         
-        if (!string.IsNullOrEmpty(LabelDataKey))
+        if (!string.IsNullOrEmpty(XAxisDataKey))
         {
             return Data.Select(item =>
             {
-                var prop = item?.GetType().GetProperty(LabelDataKey);
+                var prop = item?.GetType().GetProperty(XAxisDataKey);
                 return prop?.GetValue(item)?.ToString() ?? "";
             }).ToArray();
         }
         
-        return Data.Select((_, i) => $"Item {i + 1}").ToArray();
+        return Data.Select((_, i) => i.ToString()).ToArray();
     }
     
-    private double[] ExtractValues()
+    private object[] BuildDatasets()
     {
-        if (Data == null || !Data.Any()) return Array.Empty<double>();
-        
-        if (string.IsNullOrEmpty(ValueDataKey))
+        if (Series == null || !Series.Any())
         {
-            return Array.Empty<double>();
+            return Array.Empty<object>();
         }
         
-        return Data.Select(item =>
-        {
-            var prop = item?.GetType().GetProperty(ValueDataKey);
-            var value = prop?.GetValue(item);
-            
-            if (value == null) return 0.0;
-            
-            return Convert.ToDouble(value);
-        }).ToArray();
-    }
-    
-    private string[] GenerateColors(int count)
-    {
-        var baseColors = new[]
-        {
-            "hsl(var(--chart-1))",
-            "hsl(var(--chart-2))",
-            "hsl(var(--chart-3))",
-            "hsl(var(--chart-4))",
-            "hsl(var(--chart-5))"
-        };
+        var datasets = new List<object>();
+        var colorIndex = 0;
         
-        var colors = new List<string>();
-        for (int i = 0; i < count; i++)
+        foreach (var series in Series)
         {
-            colors.Add(baseColors[i % baseColors.Length]);
+            var values = Data.Select(item =>
+            {
+                var prop = item?.GetType().GetProperty(series.DataKey);
+                var value = prop?.GetValue(item);
+                
+                if (value == null) return 0.0;
+                
+                return Convert.ToDouble(value);
+            }).ToArray();
+            
+            var color = series.Color ?? ChartUtilities.GetChartColor(colorIndex);
+            
+            datasets.Add(new
+            {
+                label = series.Label ?? series.DataKey,
+                data = values,
+                borderColor = color,
+                backgroundColor = series.FillArea ? color : "transparent",
+                borderWidth = series.LineWidth,
+                tension = series.Curved ? 0.4 : 0,
+                fill = series.FillArea,
+                pointRadius = series.ShowDots ? 3 : 0,
+                pointHoverRadius = series.ShowDots ? 5 : 0,
+                borderDash = series.Dashed ? new[] { 5, 5 } : Array.Empty<int>()
+            });
+            
+            colorIndex++;
         }
         
-        return colors.ToArray();
-    }
-    
-    private string MapLegendPosition(LegendPosition position)
-    {
-        return position switch
-        {
-            LegendPosition.Top => "top",
-            LegendPosition.Right => "right",
-            LegendPosition.Bottom => "bottom",
-            LegendPosition.Left => "left",
-            _ => "top"
-        };
+        return datasets.ToArray();
     }
     
     

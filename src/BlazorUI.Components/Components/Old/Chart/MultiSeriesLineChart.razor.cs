@@ -1,8 +1,11 @@
 using BlazorUI.Components.Utilities;
+using BlazorUI.Components.Chart;
 using Microsoft.AspNetCore.Components;
+using BlazorUI.Components.Chart;
 using Microsoft.JSInterop;
+using BlazorUI.Components.Chart;
 
-namespace BlazorUI.Components.Chart;
+namespace BlazorUI.Components.Old.Chart;
 
 /// <summary>
 /// Multi-series line chart component for visualizing multiple data series.

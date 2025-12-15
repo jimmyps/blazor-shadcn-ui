@@ -1,8 +1,7 @@
-@namespace BlazorUI.Components.Chart
+@namespace BlazorUI.Components.Old.Chart
 @typeparam TData
-@inherits LineChartBase<TData>
+@inherits BarChartBase<TData>
 @implements IAsyncDisposable
-@inject IJSRuntime JSRuntime
 
 <div class="@ContainerClass" style="position: relative; height: @(Height)px; width: 100%;">
     <canvas @ref="_canvasRef"></canvas>
@@ -10,7 +9,7 @@
     @if (ShowExportButton && _isInitialized)
     {
         <div style="position: absolute; top: 8px; right: 8px; z-index: 10;">
-            <button @onclick="ExportAsPng" 
+            <button @onclick="ExportChart" 
                     class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9"
                     title="Export chart">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -53,7 +52,7 @@
             
             var chartConfig = new ChartConfig
             {
-                Type = ChartType.Line,
+                Type = ChartType.Bar,
                 Responsive = Responsive,
                 MaintainAspectRatio = false,
                 Data = BuildChartData(),
@@ -65,15 +64,15 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"LineChart: Failed to initialize chart: {ex.Message}");
+            Console.WriteLine($"BarChart: Failed to initialize chart: {ex.Message}");
         }
     }
     
-    private async Task ExportAsPng()
+    private async Task ExportChart()
     {
         if (_renderer == null || string.IsNullOrEmpty(_chartId))
         {
-            Console.WriteLine("LineChart: Cannot export - chart not initialized");
+            Console.WriteLine("BarChart: Cannot export - chart not initialized");
             return;
         }
         
@@ -84,18 +83,17 @@
             
             if (string.IsNullOrEmpty(dataUrl))
             {
-                Console.WriteLine("LineChart: Export returned empty data URL");
+                Console.WriteLine("BarChart: Export returned empty data URL");
                 return;
             }
             
-            // Trigger download via JS helper
             var extension = format == ImageFormat.Svg ? "svg" : "png";
             var filename = $"{ExportFileName}.{extension}";
             await DownloadFile(dataUrl, filename);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"LineChart: Export failed - {ex.Message}");
+            Console.WriteLine($"BarChart: Export failed - {ex.Message}");
         }
     }
     
@@ -132,8 +130,11 @@
     
     private object BuildChartOptions()
     {
+        var indexAxis = Orientation == BarChartOrientation.Horizontal ? "y" : "x";
+        
         return new
         {
+            indexAxis = indexAxis,
             responsive = Responsive,
             maintainAspectRatio = false,
             plugins = new
@@ -152,6 +153,7 @@
                 x = new
                 {
                     display = ShowXAxis,
+                    stacked = Mode == BarChartMode.Stacked,
                     grid = new
                     {
                         display = ShowGrid
@@ -160,6 +162,7 @@
                 y = new
                 {
                     display = ShowYAxis,
+                    stacked = Mode == BarChartMode.Stacked,
                     grid = new
                     {
                         display = ShowGrid
@@ -185,7 +188,6 @@
             };
         }
         
-        // Extract labels from the first property or use indices
         var labels = ExtractLabels();
         var datasets = BuildDatasets();
         
@@ -200,7 +202,6 @@
     {
         if (Data == null || !Data.Any()) return Array.Empty<string>();
         
-        // If DataKey is specified for X axis, use that property
         if (!string.IsNullOrEmpty(XAxisDataKey))
         {
             return Data.Select(item =>
@@ -210,7 +211,6 @@
             }).ToArray();
         }
         
-        // Otherwise use indices
         return Data.Select((_, i) => i.ToString()).ToArray();
     }
     
@@ -237,16 +237,15 @@
             {
                 label = Label ?? YAxisDataKey,
                 data = values,
-                borderColor = LineColor ?? "hsl(var(--chart-1))",
-                backgroundColor = FillArea ? (LineColor ?? "hsl(var(--chart-1))") : "transparent",
-                borderWidth = LineWidth,
-                tension = Curved ? 0.4 : 0,
-                fill = FillArea,
-                pointRadius = ShowDots ? 3 : 0,
-                pointHoverRadius = ShowDots ? 5 : 0
+                backgroundColor = BarColor ?? "hsl(var(--chart-1))",
+                borderColor = BarColor ?? "hsl(var(--chart-1))",
+                borderWidth = 1,
+                borderRadius = BorderRadius,
+                barThickness = BarThickness > 0 ? (int?)BarThickness : null
             }
         };
     }
+    
     
     public async ValueTask DisposeAsync()
     {

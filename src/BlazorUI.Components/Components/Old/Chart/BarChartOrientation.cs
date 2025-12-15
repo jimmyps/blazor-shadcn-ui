@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Chart;
+namespace BlazorUI.Components.Old.Chart;
 
 /// <summary>
 /// Specifies the orientation of bars in a bar chart.
