@@ -71,6 +71,51 @@ export function updateData(chartId, newData) {
 }
 
 /**
+ * Convert function strings to actual functions in ECharts options
+ * @param {object} options - ECharts options object
+ * @returns {object} - Options with function strings converted to functions
+ */
+function convertFunctionStrings(options) {
+    if (!options || typeof options !== 'object') {
+        return options;
+    }
+    
+    // Handle arrays
+    if (Array.isArray(options)) {
+        return options.map(item => convertFunctionStrings(item));
+    }
+    
+    const result = {};
+    for (const [key, value] of Object.entries(options)) {
+        // Check if this is a formatter field with a function string
+        if (key === 'formatter' && typeof value === 'string' && value.trim().startsWith('function')) {
+            try {
+                // Create function from string using Function constructor (safer than eval)
+                // Extract function body and parameters
+                const funcMatch = value.match(/function\s*\((.*?)\)\s*\{([\s\S]*)\}/);
+                if (funcMatch) {
+                    const params = funcMatch[1].trim();
+                    const body = funcMatch[2].trim();
+                    result[key] = new Function(params, body);
+                } else {
+                    // Keep as string if parsing fails
+                    result[key] = value;
+                }
+            } catch (error) {
+                console.warn(`Failed to parse formatter function: ${error.message}`);
+                result[key] = value; // Keep as string template if function parsing fails
+            }
+        } else if (typeof value === 'object' && value !== null) {
+            result[key] = convertFunctionStrings(value);
+        } else {
+            result[key] = value;
+        }
+    }
+    
+    return result;
+}
+
+/**
  * Update chart options
  * @param {string} chartId - Chart instance ID
  * @param {object} newOptions - New options for the chart
@@ -82,7 +127,10 @@ export function updateOptions(chartId, newOptions) {
         return;
     }
     
-    instance.chart.setOption(newOptions, { notMerge: false });
+    // Convert function strings to actual functions before passing to ECharts
+    const processedOptions = convertFunctionStrings(newOptions);
+    
+    instance.chart.setOption(processedOptions, { notMerge: false });
 }
 
 /**

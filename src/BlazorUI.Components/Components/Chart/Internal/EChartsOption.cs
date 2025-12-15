@@ -124,7 +124,11 @@ public sealed class EChartsAxisLabel
     public string? Color { get; set; }
 
     /// <summary>
-    /// MVP: string-only formatter (templates), no function formatters.
+    /// Formatter string - can be either an ECharts template string or a JavaScript function expressed as a string.
+    /// Examples:
+    /// - Template: "{value}"
+    /// - Function: "function(value) { return value + '%'; }"
+    /// The JS layer interprets function strings and converts them to actual functions.
     /// </summary>
     [JsonPropertyName("formatter")]
     public string? Formatter { get; set; }
@@ -265,7 +269,11 @@ public sealed class EChartsTooltip
     public EChartsAxisPointer? AxisPointer { get; set; }
 
     /// <summary>
-    /// MVP: string-only formatter (templates), no function formatters.
+    /// Formatter string - can be either an ECharts template string or a JavaScript function expressed as a string.
+    /// Examples:
+    /// - Template: "{b}: {c}"
+    /// - Function: "function(params) { return params.name + ': ' + params.value; }"
+    /// The JS layer interprets function strings and converts them to actual functions.
     /// </summary>
     [JsonPropertyName("formatter")]
     public string? Formatter { get; set; }

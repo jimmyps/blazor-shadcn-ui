@@ -201,7 +201,8 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
                     TooltipCursor.Shadow => "shadow",
                     _ => "none"
                 }
-            } : null
+            } : null,
+            Formatter = tooltip.Formatter
         };
     }
     

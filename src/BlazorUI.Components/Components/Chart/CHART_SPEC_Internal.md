@@ -20,12 +20,16 @@ When defining the internal DTO types:
 - Avoid enums/converters for these internal DTO fields. Use strings as ECharts does.
 - For polymorphic ECharts values that vary by chart type (e.g., `series.data`, `series.radius`, `itemStyle.borderRadius`, `areaStyle.color`), use `object` only where necessary.
 
-### Formatter policy (MVP)
-Formatter fields in the internal DTO are **string-only** in MVP:
+### Formatter policy
+Formatter fields in the internal DTO are **string-only**:
 - `tooltip.formatter`: `string?`
 - `axisLabel.formatter`: `string?`
 
-No function formatters / raw JS emission are used in the new declarative API path for MVP.
+Formatter strings are forwarded 1:1 to ECharts. Strings may be either:
+1. **ECharts template strings**: e.g., `"{b}: {c}"`, `"{value}%"`
+2. **JavaScript formatter functions expressed as strings**: e.g., `"function(params) { return params.value + '%'; }"`
+
+The JS layer is responsible for interpreting function-strings and converting them to actual JavaScript functions before passing to ECharts.
 
 ### Legend position policy (MVP)
 Legend placement fields are **string-only** in MVP:

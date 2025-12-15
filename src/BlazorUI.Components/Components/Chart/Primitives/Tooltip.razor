@@ -22,6 +22,15 @@
     [Parameter]
     public TooltipCursor Cursor { get; set; } = TooltipCursor.None;
     
+    /// <summary>
+    /// Gets or sets the formatter string. Can be either an ECharts template string or a JavaScript function as a string.
+    /// Examples:
+    /// - Template: "{b}: {c}" 
+    /// - Function: "function(params) { return params.name + ': ' + params.value; }"
+    /// </summary>
+    [Parameter]
+    public string? Formatter { get; set; }
+    
     protected override void OnInitialized()
     {
         if (Parent != null)
