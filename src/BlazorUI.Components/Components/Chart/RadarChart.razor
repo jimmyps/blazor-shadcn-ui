@@ -1,0 +1,140 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits ChartBase<TData>
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-radar-container" style="width: 100%; height: 100%; position: relative;">
+        <canvas @ref="_canvasRef" style="width: 100%; height: 100%;"></canvas>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private List<Radar> _radars = new();
+    
+    protected override EChartsOption BuildEChartsOption()
+    {
+        var option = new EChartsOption
+        {
+            Legend = BuildLegend(),
+            Tooltip = BuildTooltip(),
+            Radar = BuildRadarCoordinate(),
+            Series = BuildSeries()
+        };
+        
+        return option;
+    }
+    
+    private EChartsRadar BuildRadarCoordinate()
+    {
+        // Build radar indicators from data
+        // For MVP, we'll use the first radar's data key structure
+        var indicators = new List<EChartsRadarIndicator>();
+        
+        if (_radars.Any() && Data.Any())
+        {
+            var firstRadar = _radars.First();
+            var firstItem = Data.First();
+            
+            // Extract numeric properties as indicators
+            var properties = typeof(TData).GetProperties()
+                .Where(p => p.PropertyType == typeof(int) || 
+                           p.PropertyType == typeof(double) || 
+                           p.PropertyType == typeof(decimal) ||
+                           p.PropertyType == typeof(float))
+                .ToList();
+            
+            foreach (var prop in properties)
+            {
+                var maxValue = Data.Select(d => Convert.ToDouble(prop.GetValue(d) ?? 0)).Max();
+                indicators.Add(new EChartsRadarIndicator
+                {
+                    Name = prop.Name,
+                    Max = maxValue * 1.2 // Add 20% headroom
+                });
+            }
+        }
+        
+        return new EChartsRadar
+        {
+            Indicator = indicators
+        };
+    }
+    
+    private List<EChartsSeries> BuildSeries()
+    {
+        var seriesList = new List<EChartsSeries>();
+        
+        if (_radars.Any())
+        {
+            for (int i = 0; i < _radars.Count; i++)
+            {
+                var radar = _radars[i];
+                
+                // Build radar data
+                var radarData = new List<object>();
+                foreach (var item in Data)
+                {
+                    var values = new List<double>();
+                    var properties = typeof(TData).GetProperties()
+                        .Where(p => p.PropertyType == typeof(int) || 
+                                   p.PropertyType == typeof(double) || 
+                                   p.PropertyType == typeof(decimal) ||
+                                   p.PropertyType == typeof(float))
+                        .ToList();
+                    
+                    foreach (var prop in properties)
+                    {
+                        values.Add(Convert.ToDouble(prop.GetValue(item) ?? 0));
+                    }
+                    
+                    radarData.Add(new { value = values, name = radar.Name ?? radar.DataKey });
+                }
+                
+                var series = new EChartsSeries
+                {
+                    Type = "radar",
+                    Name = radar.Name ?? radar.DataKey,
+                    Data = radarData,
+                    ItemStyle = new EChartsItemStyle
+                    {
+                        Color = GetSeriesColor(i, radar.Color)
+                    },
+                    AreaStyle = radar.Fill ? new EChartsAreaStyle
+                    {
+                        Color = GetSeriesColor(i, radar.Color),
+                        Opacity = 0.3
+                    } : null,
+                    Emphasis = new EChartsEmphasis
+                    {
+                        Disabled = !radar.Emphasis,
+                        Focus = radar.Focus == Focus.Self ? "self" : null
+                    }
+                };
+                
+                seriesList.Add(series);
+            }
+        }
+        
+        return seriesList;
+    }
+    
+    protected override ChartType GetChartType()
+    {
+        return ChartType.Radar;
+    }
+    
+    protected override TooltipMode GetDefaultTooltipMode()
+    {
+        return TooltipMode.Item;
+    }
+    
+    internal void RegisterRadar(Radar radar)
+    {
+        _radars.Add(radar);
+        StateHasChanged();
+    }
+    
+    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+}

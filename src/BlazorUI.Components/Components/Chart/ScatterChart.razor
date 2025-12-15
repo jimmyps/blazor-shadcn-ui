@@ -1,0 +1,115 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits ChartBase<TData>
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-scatter-container" style="width: 100%; height: 100%; position: relative;">
+        <canvas @ref="_canvasRef" style="width: 100%; height: 100%;"></canvas>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private List<Scatter> _scatters = new();
+    
+    protected override EChartsOption BuildEChartsOption()
+    {
+        var option = new EChartsOption
+        {
+            Grid = BuildGrid(),
+            Legend = BuildLegend(),
+            Tooltip = BuildTooltip(),
+            XAxis = BuildXAxis(),
+            YAxis = BuildYAxis(),
+            Series = BuildSeries()
+        };
+        
+        return option;
+    }
+    
+    private EChartsAxis BuildXAxis()
+    {
+        var xAxis = _xAxis ?? new XAxis();
+        var axis = BuildAxis(xAxis, null, true);
+        axis.Type = "value"; // Scatter always uses value axes
+        return axis;
+    }
+    
+    private EChartsAxis BuildYAxis()
+    {
+        var yAxis = _yAxis ?? new YAxis();
+        var axis = BuildAxis(null, yAxis, false);
+        axis.Type = "value"; // Scatter always uses value axes
+        return axis;
+    }
+    
+    private List<EChartsSeries> BuildSeries()
+    {
+        var seriesList = new List<EChartsSeries>();
+        
+        if (_scatters.Any())
+        {
+            for (int i = 0; i < _scatters.Count; i++)
+            {
+                var scatter = _scatters[i];
+                
+                // Build scatter data from X and Y axis keys
+                var scatterData = new List<object>();
+                var xKey = _xAxis?.DataKey;
+                var yKey = _yAxis?.DataKey;
+                
+                if (!string.IsNullOrEmpty(xKey) && !string.IsNullOrEmpty(yKey))
+                {
+                    foreach (var item in Data)
+                    {
+                        var x = Convert.ToDouble(DataExtractor.GetValue(item, xKey) ?? 0);
+                        var y = Convert.ToDouble(DataExtractor.GetValue(item, yKey) ?? 0);
+                        scatterData.Add(new[] { x, y });
+                    }
+                }
+                
+                var series = new EChartsSeries
+                {
+                    Type = "scatter",
+                    Name = scatter.Name,
+                    Data = scatterData,
+                    ItemStyle = new EChartsItemStyle
+                    {
+                        Color = GetSeriesColor(i, scatter.Color)
+                    },
+                    Emphasis = new EChartsEmphasis
+                    {
+                        Disabled = !scatter.Emphasis,
+                        Focus = scatter.Focus == Focus.Self ? "self" : null
+                    }
+                };
+                
+                seriesList.Add(series);
+            }
+        }
+        
+        return seriesList;
+    }
+    
+    protected override ChartType GetChartType()
+    {
+        return ChartType.Scatter;
+    }
+    
+    protected override TooltipMode GetDefaultTooltipMode()
+    {
+        return TooltipMode.Axis;
+    }
+    
+    internal void RegisterScatter(Scatter scatter)
+    {
+        _scatters.Add(scatter);
+        StateHasChanged();
+    }
+    
+    internal void RegisterGrid(Grid grid) { _grid = grid; StateHasChanged(); }
+    internal void RegisterXAxis(XAxis xAxis) { _xAxis = xAxis; StateHasChanged(); }
+    internal void RegisterYAxis(YAxis yAxis) { _yAxis = yAxis; StateHasChanged(); }
+    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+}

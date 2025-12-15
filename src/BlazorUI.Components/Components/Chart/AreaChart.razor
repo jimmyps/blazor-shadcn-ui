@@ -1,0 +1,117 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits ChartBase<TData>
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-area-container" style="width: 100%; height: 100%; position: relative;">
+        <canvas @ref="_canvasRef" style="width: 100%; height: 100%;"></canvas>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private List<Area> _areas = new();
+    
+    protected override EChartsOption BuildEChartsOption()
+    {
+        var option = new EChartsOption
+        {
+            Grid = BuildGrid(),
+            Legend = BuildLegend(),
+            Tooltip = BuildTooltip(),
+            XAxis = BuildXAxis(),
+            YAxis = BuildYAxis(),
+            Series = BuildSeries()
+        };
+        
+        return option;
+    }
+    
+    private EChartsAxis BuildXAxis()
+    {
+        var xAxis = _xAxis ?? new XAxis();
+        var axis = BuildAxis(xAxis, null, true);
+        
+        if (!string.IsNullOrEmpty(xAxis.DataKey))
+        {
+            axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
+        }
+        
+        return axis;
+    }
+    
+    private EChartsAxis BuildYAxis()
+    {
+        var yAxis = _yAxis ?? new YAxis();
+        return BuildAxis(null, yAxis, false);
+    }
+    
+    private List<EChartsSeries> BuildSeries()
+    {
+        var seriesList = new List<EChartsSeries>();
+        
+        if (_areas.Any())
+        {
+            for (int i = 0; i < _areas.Count; i++)
+            {
+                var area = _areas[i];
+                var data = DataExtractor.GetNumericValues(Data, area.DataKey);
+                
+                var series = new EChartsSeries
+                {
+                    Type = "line",
+                    Name = area.Name ?? area.DataKey,
+                    Data = data.Cast<object>().ToList(),
+                    Smooth = true,
+                    ShowSymbol = area.ShowDots,
+                    LineStyle = new EChartsLineStyle
+                    {
+                        Width = area.LineWidth,
+                        Color = GetSeriesColor(i, area.Color)
+                    },
+                    AreaStyle = new EChartsAreaStyle
+                    {
+                        Color = GetSeriesColor(i, area.Color),
+                        Opacity = 0.3
+                    },
+                    ItemStyle = new EChartsItemStyle
+                    {
+                        Color = GetSeriesColor(i, area.Color)
+                    },
+                    Stack = area.StackId,
+                    Emphasis = new EChartsEmphasis
+                    {
+                        Disabled = !area.Emphasis,
+                        Focus = area.Focus == Focus.Self ? "self" : null
+                    }
+                };
+                
+                seriesList.Add(series);
+            }
+        }
+        
+        return seriesList;
+    }
+    
+    protected override ChartType GetChartType()
+    {
+        return ChartType.Line; // Area is rendered as line with areaStyle
+    }
+    
+    protected override TooltipMode GetDefaultTooltipMode()
+    {
+        return TooltipMode.Axis;
+    }
+    
+    internal void RegisterArea(Area area)
+    {
+        _areas.Add(area);
+        StateHasChanged();
+    }
+    
+    internal void RegisterGrid(Grid grid) { _grid = grid; StateHasChanged(); }
+    internal void RegisterXAxis(XAxis xAxis) { _xAxis = xAxis; StateHasChanged(); }
+    internal void RegisterYAxis(YAxis yAxis) { _yAxis = yAxis; StateHasChanged(); }
+    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+}

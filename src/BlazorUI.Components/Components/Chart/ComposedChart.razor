@@ -1,0 +1,190 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits ChartBase<TData>
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-composed-container" style="width: 100%; height: 100%; position: relative;">
+        <canvas @ref="_canvasRef" style="width: 100%; height: 100%;"></canvas>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private List<Line> _lines = new();
+    private List<Area> _areas = new();
+    private List<Bar> _bars = new();
+    private List<Scatter> _scatters = new();
+    
+    protected override EChartsOption BuildEChartsOption()
+    {
+        var option = new EChartsOption
+        {
+            Grid = BuildGrid(),
+            Legend = BuildLegend(),
+            Tooltip = BuildTooltip(),
+            XAxis = BuildXAxis(),
+            YAxis = BuildYAxis(),
+            Series = BuildSeries()
+        };
+        
+        return option;
+    }
+    
+    private EChartsAxis BuildXAxis()
+    {
+        var xAxis = _xAxis ?? new XAxis();
+        var axis = BuildAxis(xAxis, null, true);
+        
+        if (!string.IsNullOrEmpty(xAxis.DataKey))
+        {
+            axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
+        }
+        
+        return axis;
+    }
+    
+    private EChartsAxis BuildYAxis()
+    {
+        var yAxis = _yAxis ?? new YAxis();
+        return BuildAxis(null, yAxis, false);
+    }
+    
+    private List<EChartsSeries> BuildSeries()
+    {
+        var seriesList = new List<EChartsSeries>();
+        int colorIndex = 0;
+        
+        // Add line series
+        foreach (var line in _lines)
+        {
+            var data = DataExtractor.GetNumericValues(Data, line.DataKey);
+            var series = new EChartsSeries
+            {
+                Type = "line",
+                Name = line.Name ?? line.DataKey,
+                Data = data.Cast<object>().ToList(),
+                Smooth = !line.Dashed,
+                ShowSymbol = line.ShowDots,
+                LineStyle = new EChartsLineStyle
+                {
+                    Width = line.LineWidth,
+                    Type = line.Dashed ? "dashed" : "solid",
+                    Color = GetSeriesColor(colorIndex, line.Color)
+                },
+                ItemStyle = new EChartsItemStyle { Color = GetSeriesColor(colorIndex, line.Color) },
+                Emphasis = new EChartsEmphasis
+                {
+                    Disabled = !line.Emphasis,
+                    Focus = line.Focus == Focus.Self ? "self" : null
+                }
+            };
+            seriesList.Add(series);
+            colorIndex++;
+        }
+        
+        // Add area series
+        foreach (var area in _areas)
+        {
+            var data = DataExtractor.GetNumericValues(Data, area.DataKey);
+            var series = new EChartsSeries
+            {
+                Type = "line",
+                Name = area.Name ?? area.DataKey,
+                Data = data.Cast<object>().ToList(),
+                Smooth = true,
+                ShowSymbol = area.ShowDots,
+                LineStyle = new EChartsLineStyle { Width = area.LineWidth, Color = GetSeriesColor(colorIndex, area.Color) },
+                AreaStyle = new EChartsAreaStyle { Color = GetSeriesColor(colorIndex, area.Color), Opacity = 0.3 },
+                ItemStyle = new EChartsItemStyle { Color = GetSeriesColor(colorIndex, area.Color) },
+                Stack = area.StackId,
+                Emphasis = new EChartsEmphasis
+                {
+                    Disabled = !area.Emphasis,
+                    Focus = area.Focus == Focus.Self ? "self" : null
+                }
+            };
+            seriesList.Add(series);
+            colorIndex++;
+        }
+        
+        // Add bar series
+        foreach (var bar in _bars)
+        {
+            var data = DataExtractor.GetNumericValues(Data, bar.DataKey);
+            var series = new EChartsSeries
+            {
+                Type = "bar",
+                Name = bar.Name ?? bar.DataKey,
+                Data = data.Cast<object>().ToList(),
+                Stack = bar.StackId,
+                ItemStyle = new EChartsItemStyle
+                {
+                    Color = GetSeriesColor(colorIndex, bar.Color),
+                    BorderRadius = bar.Radius.HasValue ? bar.Radius.Value : null
+                },
+                Emphasis = new EChartsEmphasis
+                {
+                    Disabled = !bar.Emphasis,
+                    Focus = bar.Focus == Focus.Self ? "self" : null
+                }
+            };
+            seriesList.Add(series);
+            colorIndex++;
+        }
+        
+        // Add scatter series
+        foreach (var scatter in _scatters)
+        {
+            var scatterData = new List<object>();
+            var xKey = _xAxis?.DataKey;
+            var yKey = _yAxis?.DataKey;
+            
+            if (!string.IsNullOrEmpty(xKey) && !string.IsNullOrEmpty(yKey))
+            {
+                foreach (var item in Data)
+                {
+                    var x = Convert.ToDouble(DataExtractor.GetValue(item, xKey) ?? 0);
+                    var y = Convert.ToDouble(DataExtractor.GetValue(item, yKey) ?? 0);
+                    scatterData.Add(new[] { x, y });
+                }
+            }
+            
+            var series = new EChartsSeries
+            {
+                Type = "scatter",
+                Name = scatter.Name,
+                Data = scatterData,
+                ItemStyle = new EChartsItemStyle { Color = GetSeriesColor(colorIndex, scatter.Color) },
+                Emphasis = new EChartsEmphasis
+                {
+                    Disabled = !scatter.Emphasis,
+                    Focus = scatter.Focus == Focus.Self ? "self" : null
+                }
+            };
+            seriesList.Add(series);
+            colorIndex++;
+        }
+        
+        return seriesList;
+    }
+    
+    protected override ChartType GetChartType()
+    {
+        return ChartType.Line; // Composed uses line as base type
+    }
+    
+    protected override TooltipMode GetDefaultTooltipMode()
+    {
+        return TooltipMode.Axis;
+    }
+    
+    internal void RegisterLine(Line line) { _lines.Add(line); StateHasChanged(); }
+    internal void RegisterArea(Area area) { _areas.Add(area); StateHasChanged(); }
+    internal void RegisterBar(Bar bar) { _bars.Add(bar); StateHasChanged(); }
+    internal void RegisterScatter(Scatter scatter) { _scatters.Add(scatter); StateHasChanged(); }
+    internal void RegisterGrid(Grid grid) { _grid = grid; StateHasChanged(); }
+    internal void RegisterXAxis(XAxis xAxis) { _xAxis = xAxis; StateHasChanged(); }
+    internal void RegisterYAxis(YAxis yAxis) { _yAxis = yAxis; StateHasChanged(); }
+    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+}

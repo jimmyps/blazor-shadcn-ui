@@ -1,0 +1,83 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits ChartBase<TData>
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-pie-container" style="width: 100%; height: 100%; position: relative;">
+        <canvas @ref="_canvasRef" style="width: 100%; height: 100%;"></canvas>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private List<Pie> _pies = new();
+    
+    protected override EChartsOption BuildEChartsOption()
+    {
+        var option = new EChartsOption
+        {
+            Legend = BuildLegend(),
+            Tooltip = BuildTooltip(),
+            Series = BuildSeries()
+        };
+        
+        return option;
+    }
+    
+    private List<EChartsSeries> BuildSeries()
+    {
+        var seriesList = new List<EChartsSeries>();
+        
+        if (_pies.Any())
+        {
+            foreach (var pie in _pies)
+            {
+                // Extract data for pie chart
+                var pieData = new List<object>();
+                foreach (var item in Data)
+                {
+                    var name = DataExtractor.GetValue(item, pie.NameKey)?.ToString() ?? "";
+                    var value = Convert.ToDouble(DataExtractor.GetValue(item, pie.DataKey) ?? 0);
+                    pieData.Add(new { name, value });
+                }
+                
+                var series = new EChartsSeries
+                {
+                    Type = "pie",
+                    Name = pie.Name,
+                    Data = pieData,
+                    Radius = !string.IsNullOrEmpty(pie.InnerRadius) 
+                        ? new object[] { pie.InnerRadius, "70%" } 
+                        : "70%",
+                    Emphasis = new EChartsEmphasis
+                    {
+                        Disabled = true // Pie charts have emphasis disabled by default per spec
+                    }
+                };
+                
+                seriesList.Add(series);
+            }
+        }
+        
+        return seriesList;
+    }
+    
+    protected override ChartType GetChartType()
+    {
+        return ChartType.Pie;
+    }
+    
+    protected override TooltipMode GetDefaultTooltipMode()
+    {
+        return TooltipMode.Item;
+    }
+    
+    internal void RegisterPie(Pie pie)
+    {
+        _pies.Add(pie);
+        StateHasChanged();
+    }
+    
+    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+}

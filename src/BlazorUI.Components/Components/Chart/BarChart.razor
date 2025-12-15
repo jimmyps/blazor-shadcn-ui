@@ -1,0 +1,132 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits ChartBase<TData>
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-bar-container" style="width: 100%; height: 100%; position: relative;">
+        <canvas @ref="_canvasRef" style="width: 100%; height: 100%;"></canvas>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private List<Bar> _bars = new();
+    
+    /// <summary>
+    /// Gets or sets the bar chart layout (vertical or horizontal).
+    /// </summary>
+    [Parameter]
+    public BarLayout Layout { get; set; } = BarLayout.Vertical;
+    
+    protected override EChartsOption BuildEChartsOption()
+    {
+        var option = new EChartsOption
+        {
+            Grid = BuildGrid(),
+            Legend = BuildLegend(),
+            Tooltip = BuildTooltip(),
+            XAxis = BuildXAxis(),
+            YAxis = BuildYAxis(),
+            Series = BuildSeries()
+        };
+        
+        return option;
+    }
+    
+    private EChartsAxis BuildXAxis()
+    {
+        var xAxis = _xAxis ?? new XAxis();
+        var axis = BuildAxis(xAxis, null, true);
+        
+        // For vertical bars, X is category; for horizontal, X is value
+        if (Layout == BarLayout.Vertical)
+        {
+            if (!string.IsNullOrEmpty(xAxis.DataKey))
+            {
+                axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
+            }
+        }
+        else
+        {
+            axis.Type = "value";
+        }
+        
+        return axis;
+    }
+    
+    private EChartsAxis BuildYAxis()
+    {
+        var yAxis = _yAxis ?? new YAxis();
+        var axis = BuildAxis(null, yAxis, false);
+        
+        // For horizontal bars, Y is category
+        if (Layout == BarLayout.Horizontal)
+        {
+            axis.Type = "category";
+            if (_xAxis != null && !string.IsNullOrEmpty(_xAxis.DataKey))
+            {
+                axis.Data = DataExtractor.GetStringValues(Data, _xAxis.DataKey);
+            }
+        }
+        
+        return axis;
+    }
+    
+    private List<EChartsSeries> BuildSeries()
+    {
+        var seriesList = new List<EChartsSeries>();
+        
+        if (_bars.Any())
+        {
+            for (int i = 0; i < _bars.Count; i++)
+            {
+                var bar = _bars[i];
+                var data = DataExtractor.GetNumericValues(Data, bar.DataKey);
+                
+                var series = new EChartsSeries
+                {
+                    Type = "bar",
+                    Name = bar.Name ?? bar.DataKey,
+                    Data = data.Cast<object>().ToList(),
+                    Stack = bar.StackId,
+                    ItemStyle = new EChartsItemStyle
+                    {
+                        Color = GetSeriesColor(i, bar.Color),
+                        BorderRadius = bar.Radius.HasValue ? bar.Radius.Value : null
+                    },
+                    Emphasis = new EChartsEmphasis
+                    {
+                        Disabled = !bar.Emphasis,
+                        Focus = bar.Focus == Focus.Self ? "self" : null
+                    }
+                };
+                
+                seriesList.Add(series);
+            }
+        }
+        
+        return seriesList;
+    }
+    
+    protected override ChartType GetChartType()
+    {
+        return ChartType.Bar;
+    }
+    
+    protected override TooltipMode GetDefaultTooltipMode()
+    {
+        return TooltipMode.Axis;
+    }
+    
+    internal void RegisterBar(Bar bar)
+    {
+        _bars.Add(bar);
+        StateHasChanged();
+    }
+    
+    internal void RegisterGrid(Grid grid) { _grid = grid; StateHasChanged(); }
+    internal void RegisterXAxis(XAxis xAxis) { _xAxis = xAxis; StateHasChanged(); }
+    internal void RegisterYAxis(YAxis yAxis) { _yAxis = yAxis; StateHasChanged(); }
+    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+}

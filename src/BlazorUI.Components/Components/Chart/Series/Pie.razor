@@ -1,6 +1,8 @@
 @namespace BlazorUI.Components.Chart
 
 @code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
     /// <summary>
     /// Gets or sets the data key for values.
     /// </summary>
@@ -30,4 +32,12 @@
     /// </summary>
     [Parameter]
     public string? Color { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterPie(this); } catch { }
+        }
+    }
 }
