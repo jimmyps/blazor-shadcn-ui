@@ -85,8 +85,8 @@ public class EChartsRenderer : IChartRenderer
     /// Converts universal ChartConfig to ECharts v6 option format.
     /// </summary>
     private object ConvertToEChartsFormat(ChartConfig config)
-    {
-        var chartType = config.Type.ToString().ToLowerInvariant();
+        {
+            var chartType = config.Type.ToString().ToLowerInvariant();
         
         // Build ECharts configuration based on chart type (using strongly-typed data)
         return chartType switch
@@ -97,6 +97,42 @@ public class EChartsRenderer : IChartRenderer
             "radar" => ConvertRadarChart(config.Data, config.Options),
             "scatter" => ConvertScatterChart(config.Data, config.Options),
             _ => new { }
+        };
+    }
+    
+    private object MapLegendConfig(LegendConfig legend)
+    {
+        var position = legend.Position?.ToLowerInvariant();
+        
+        object? top = legend.Top;
+        object? left = legend.Left;
+        var orient = legend.Orient;
+        
+        switch (position)
+        {
+            case "top":
+            case "bottom":
+                top = position;
+                left ??= "center";
+                break;
+            case "left":
+            case "right":
+                left = position;
+                top ??= "middle";
+                if (orient == Orient.Horizontal)
+                {
+                    orient = Orient.Vertical;
+                }
+                break;
+        }
+        
+        return new
+        {
+            show = legend.Display,
+            top,
+            left,
+            orient = orient.ToString().ToLowerInvariant(),
+            icon = legend.Icon.ToString().ToLowerInvariant()
         };
     }
     
@@ -214,11 +250,12 @@ public class EChartsRenderer : IChartRenderer
         var grid = options.Grid ?? new ChartGrid();
         
         // Use options.Legend if provided, otherwise create from Plugins.Legend with defaults
-        var legend = options.Legend ?? new LegendConfig 
+        var legendConfig = options.Legend ?? new LegendConfig 
         { 
             Display = options.Plugins.Legend.Display
             // Other properties use their defaults from LegendConfig
         };
+        var legendOption = MapLegendConfig(legendConfig);
         
         // Use options.Tooltip if provided, otherwise create from Plugins.Tooltip with defaults
         var tooltip = options.Tooltip ?? new TooltipConfig 
@@ -255,14 +292,7 @@ public class EChartsRenderer : IChartRenderer
             },
             
             // Legend - Use model instance with defaults
-            legend = new
-            {
-                show = legend.Display,
-                top = legend.Top,
-                left = legend.Left,
-                orient = legend.Orient.ToString().ToLowerInvariant(),
-                icon = legend.Icon.ToString().ToLowerInvariant()
-            },
+            legend = legendOption,
             
             // X Axis
             xAxis = new
@@ -358,11 +388,12 @@ public class EChartsRenderer : IChartRenderer
         var grid = options.Grid ?? new ChartGrid();
         
         // Use options.Legend if provided, otherwise create from Plugins.Legend with defaults
-        var legend = options.Legend ?? new LegendConfig 
+        var legendConfig = options.Legend ?? new LegendConfig 
         { 
             Display = options.Plugins.Legend.Display
             // Other properties use their defaults from LegendConfig
         };
+        var legendOption = MapLegendConfig(legendConfig);
         
         // Use options.Tooltip if provided, otherwise create from Plugins.Tooltip with defaults
         var tooltip = options.Tooltip ?? new TooltipConfig 
@@ -399,14 +430,7 @@ public class EChartsRenderer : IChartRenderer
             },
             
             // Legend - Use model instance with defaults
-            legend = new
-            {
-                show = legend.Display,
-                top = legend.Top,
-                left = legend.Left,
-                orient = legend.Orient.ToString().ToLowerInvariant(),
-                icon = legend.Icon.ToString().ToLowerInvariant()
-            },
+            legend = legendOption,
             xAxis = new 
             { 
                 type = "category", 
@@ -458,11 +482,12 @@ public class EChartsRenderer : IChartRenderer
         // Use model instances with baked defaults (user can override via options)
         
         // Use options.Legend if provided, otherwise create from Plugins.Legend with defaults
-        var legend = options.Legend ?? new LegendConfig 
+        var legendConfig = options.Legend ?? new LegendConfig 
         { 
             Display = options.Plugins.Legend.Display
             // Other properties use their defaults from LegendConfig
         };
+        var legendOption = MapLegendConfig(legendConfig);
         
         // Use options.Tooltip if provided, otherwise create from Plugins.Tooltip with defaults
         var tooltip = options.Tooltip ?? new TooltipConfig 
@@ -487,14 +512,7 @@ public class EChartsRenderer : IChartRenderer
             },
             
             // Legend - Use model instance with defaults
-            legend = new
-            {
-                show = legend.Display,
-                top = legend.Top,
-                left = legend.Left,
-                orient = legend.Orient.ToString().ToLowerInvariant(),
-                icon = legend.Icon.ToString().ToLowerInvariant()
-            },
+            legend = legendOption,
             
             series = new[]
             {
@@ -584,11 +602,12 @@ public class EChartsRenderer : IChartRenderer
         // Use model instances with baked defaults (user can override via options)
         
         // Use options.Legend if provided, otherwise create from Plugins.Legend with defaults
-        var legend = options.Legend ?? new LegendConfig 
+        var legendConfig = options.Legend ?? new LegendConfig 
         { 
             Display = options.Plugins.Legend.Display
             // Other properties use their defaults from LegendConfig
         };
+        var legendOption = MapLegendConfig(legendConfig);
         
         // Use options.Tooltip if provided, otherwise create from Plugins.Tooltip with defaults
         var tooltip = options.Tooltip ?? new TooltipConfig 
@@ -613,14 +632,7 @@ public class EChartsRenderer : IChartRenderer
             },
             
             // Legend - Use model instance with defaults
-            legend = new
-            {
-                show = legend.Display,
-                top = legend.Top,
-                left = legend.Left,
-                orient = legend.Orient.ToString().ToLowerInvariant(),
-                icon = legend.Icon.ToString().ToLowerInvariant()
-            },
+            legend = legendOption,
             
             radar = new { indicator = indicators.ToArray() },  // Radar coordinate system
             series = series.ToArray()
@@ -678,11 +690,12 @@ public class EChartsRenderer : IChartRenderer
         var grid = options.Grid ?? new ChartGrid();
         
         // Use options.Legend if provided, otherwise create from Plugins.Legend with defaults
-        var legend = options.Legend ?? new LegendConfig 
+        var legendConfig = options.Legend ?? new LegendConfig 
         { 
             Display = options.Plugins.Legend.Display
             // Other properties use their defaults from LegendConfig
         };
+        var legendOption = MapLegendConfig(legendConfig);
         
         // Use options.Tooltip if provided, otherwise create from Plugins.Tooltip with defaults
         var tooltip = options.Tooltip ?? new TooltipConfig 
@@ -717,14 +730,7 @@ public class EChartsRenderer : IChartRenderer
             },
             
             // Legend - Use model instance with defaults
-            legend = new
-            {
-                show = legend.Display,
-                top = legend.Top,
-                left = legend.Left,
-                orient = legend.Orient.ToString().ToLowerInvariant(),
-                icon = legend.Icon.ToString().ToLowerInvariant()
-            },
+            legend = legendOption,
             xAxis = new 
             { 
                 type = "value",  // Numeric axis (Section 2.3)
@@ -774,6 +780,15 @@ public class EChartsRenderer : IChartRenderer
         return "quarticInOut";
     }
     
+    private string MapEasingToECharts(string easing)
+    {
+        if (Enum.TryParse<AnimationEasing>(easing, true, out var parsed))
+        {
+            return MapEasingToECharts(parsed);
+        }
+        return "quarticInOut";
+    }
+    
     private string MapEasingToECharts(AnimationEasing easing)
     {
         return easing switch
@@ -788,6 +803,21 @@ public class EChartsRenderer : IChartRenderer
             AnimationEasing.EaseInQuart => "quarticIn",
             AnimationEasing.EaseOutQuart => "quarticOut",
             AnimationEasing.EaseInOutQuart => "quarticInOut",
+            AnimationEasing.EaseInQuint => "quinticIn",
+            AnimationEasing.EaseOutQuint => "quinticOut",
+            AnimationEasing.EaseInOutQuint => "quinticInOut",
+            AnimationEasing.EaseInExpo => "exponentialIn",
+            AnimationEasing.EaseOutExpo => "exponentialOut",
+            AnimationEasing.EaseInOutExpo => "exponentialInOut",
+            AnimationEasing.EaseInBack => "backIn",
+            AnimationEasing.EaseOutBack => "backOut",
+            AnimationEasing.EaseInOutBack => "backInOut",
+            AnimationEasing.EaseInElastic => "elasticIn",
+            AnimationEasing.EaseOutElastic => "elasticOut",
+            AnimationEasing.EaseInOutElastic => "elasticInOut",
+            AnimationEasing.EaseInBounce => "bounceIn",
+            AnimationEasing.EaseOutBounce => "bounceOut",
+            AnimationEasing.EaseInOutBounce => "bounceInOut",
             _ => "quarticInOut"
         };
     }
