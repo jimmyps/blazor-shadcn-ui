@@ -1,6 +1,8 @@
 @namespace BlazorUI.Components.Chart
 
 @code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
     /// <summary>
     /// Gets or sets whether to show the tooltip.
     /// </summary>
@@ -19,4 +21,12 @@
     /// </summary>
     [Parameter]
     public TooltipCursor Cursor { get; set; } = TooltipCursor.None;
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterTooltip(this); } catch { }
+        }
+    }
 }

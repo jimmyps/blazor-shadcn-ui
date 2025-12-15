@@ -1,6 +1,8 @@
 @namespace BlazorUI.Components.Chart
 
 @code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
     /// <summary>
     /// Gets or sets the data key for the series.
     /// </summary>
@@ -48,4 +50,20 @@
     /// </summary>
     [Parameter]
     public bool Dashed { get; set; } = false;
+    
+    protected override void OnInitialized()
+    {
+        // Register with parent chart
+        if (Parent != null)
+        {
+            try
+            {
+                Parent.RegisterLine(this);
+            }
+            catch
+            {
+                // Parent doesn't support Line series
+            }
+        }
+    }
 }

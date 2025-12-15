@@ -1,0 +1,164 @@
+@namespace BlazorUI.Components.Chart
+@typeparam TData
+@inherits ChartBase<TData>
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-line-container" style="width: 100%; height: 100%; position: relative;">
+        <canvas @ref="_canvasRef" style="width: 100%; height: 100%;"></canvas>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private List<Line> _lines = new();
+    
+    protected override void OnInitialized()
+    {
+        // Capture child components (primitives will be set via cascading parameters or direct capture)
+    }
+    
+    protected override EChartsOption BuildEChartsOption()
+    {
+        var option = new EChartsOption
+        {
+            Grid = BuildGrid(),
+            Legend = BuildLegend(),
+            Tooltip = BuildTooltip(),
+            XAxis = BuildXAxis(),
+            YAxis = BuildYAxis(),
+            Series = BuildSeries()
+        };
+        
+        return option;
+    }
+    
+    private EChartsAxis BuildXAxis()
+    {
+        var xAxis = _xAxis ?? new XAxis();
+        var axis = BuildAxis(xAxis, null, true);
+        
+        // For line charts, X axis is typically category with labels from data
+        if (!string.IsNullOrEmpty(xAxis.DataKey))
+        {
+            axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
+        }
+        
+        return axis;
+    }
+    
+    private EChartsAxis BuildYAxis()
+    {
+        var yAxis = _yAxis ?? new YAxis();
+        return BuildAxis(null, yAxis, false);
+    }
+    
+    private List<EChartsSeries> BuildSeries()
+    {
+        var seriesList = new List<EChartsSeries>();
+        
+        // Collect Line components from ChildContent
+        // For MVP, we'll support rendering even without explicit Line children
+        // by using a default series if Lines are not provided
+        
+        if (_lines.Any())
+        {
+            for (int i = 0; i < _lines.Count; i++)
+            {
+                var line = _lines[i];
+                var data = DataExtractor.GetNumericValues(Data, line.DataKey);
+                
+                var series = new EChartsSeries
+                {
+                    Type = "line",
+                    Name = line.Name ?? line.DataKey,
+                    Data = data.Cast<object>().ToList(),
+                    Smooth = !line.Dashed, // Default smooth for non-dashed
+                    ShowSymbol = line.ShowDots,
+                    LineStyle = new EChartsLineStyle
+                    {
+                        Width = line.LineWidth,
+                        Type = line.Dashed ? "dashed" : "solid",
+                        Color = GetSeriesColor(i, line.Color)
+                    },
+                    ItemStyle = new EChartsItemStyle
+                    {
+                        Color = GetSeriesColor(i, line.Color)
+                    },
+                    Emphasis = new EChartsEmphasis
+                    {
+                        Disabled = !line.Emphasis,
+                        Focus = line.Focus == Focus.Self ? "self" : null
+                    }
+                };
+                
+                seriesList.Add(series);
+            }
+        }
+        
+        return seriesList;
+    }
+    
+    protected override ChartType GetChartType()
+    {
+        return ChartType.Line;
+    }
+    
+    protected override TooltipMode GetDefaultTooltipMode()
+    {
+        return TooltipMode.Axis;
+    }
+    
+    /// <summary>
+    /// Internal method to register a Line series component.
+    /// </summary>
+    internal void RegisterLine(Line line)
+    {
+        _lines.Add(line);
+        StateHasChanged();
+    }
+    
+    /// <summary>
+    /// Internal method to register a Grid component.
+    /// </summary>
+    internal void RegisterGrid(Grid grid)
+    {
+        _grid = grid;
+        StateHasChanged();
+    }
+    
+    /// <summary>
+    /// Internal method to register an XAxis component.
+    /// </summary>
+    internal void RegisterXAxis(XAxis xAxis)
+    {
+        _xAxis = xAxis;
+        StateHasChanged();
+    }
+    
+    /// <summary>
+    /// Internal method to register a YAxis component.
+    /// </summary>
+    internal void RegisterYAxis(YAxis yAxis)
+    {
+        _yAxis = yAxis;
+        StateHasChanged();
+    }
+    
+    /// <summary>
+    /// Internal method to register a Tooltip component.
+    /// </summary>
+    internal void RegisterTooltip(Tooltip tooltip)
+    {
+        _tooltip = tooltip;
+        StateHasChanged();
+    }
+    
+    /// <summary>
+    /// Internal method to register a Legend component.
+    /// </summary>
+    internal void RegisterLegend(Legend legend)
+    {
+        _legend = legend;
+        StateHasChanged();
+    }
+}

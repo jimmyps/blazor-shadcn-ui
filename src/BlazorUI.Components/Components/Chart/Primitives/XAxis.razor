@@ -1,6 +1,8 @@
 @namespace BlazorUI.Components.Chart
 
 @code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
     /// <summary>
     /// Gets or sets whether to show the X axis.
     /// </summary>
@@ -30,4 +32,12 @@
     /// </summary>
     [Parameter]
     public bool TickLine { get; set; } = true;
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterXAxis(this); } catch { }
+        }
+    }
 }

@@ -1,6 +1,8 @@
 @namespace BlazorUI.Components.Chart
 
 @code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
     /// <summary>
     /// Gets or sets whether to show the legend.
     /// </summary>
@@ -30,4 +32,12 @@
     /// </summary>
     [Parameter]
     public int MarginTop { get; set; } = 4;
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterLegend(this); } catch { }
+        }
+    }
 }
