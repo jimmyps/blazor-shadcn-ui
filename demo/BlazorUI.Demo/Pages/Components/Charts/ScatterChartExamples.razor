@@ -1,0 +1,72 @@
+@using BlazorUI.Components.Chart
+@using BlazorUI.Components.Card
+
+<div class="space-y-8">
+    <!-- Scatter Chart - Simple -->
+    <div class="space-y-4">
+        <div>
+            <h3 class="text-lg font-semibold">Scatter Chart</h3>
+            <p class="text-sm text-muted-foreground">A simple scatter plot</p>
+        </div>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Height vs Weight</CardTitle>
+                <CardDescription>Sample data distribution</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <ScatterChart Data="@scatterData">
+                        <XAxis DataKey="height" />
+                        <YAxis DataKey="weight" />
+                        <Tooltip Mode="TooltipMode.Item" />
+                        <Legend />
+                        <Scatter Name="Data Points" />
+                    </ScatterChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Scatter Chart - Multiple Series -->
+    <div class="space-y-4">
+        <div>
+            <h3 class="text-lg font-semibold">Multiple Series</h3>
+            <p class="text-sm text-muted-foreground">Scatter plot with multiple datasets</p>
+        </div>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Performance Metrics</CardTitle>
+                <CardDescription>Comparing two groups</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <ScatterChart Data="@scatterData">
+                        <XAxis DataKey="height" />
+                        <YAxis DataKey="weight" />
+                        <Tooltip Mode="TooltipMode.Item" />
+                        <Legend />
+                        <Scatter Name="Group A" />
+                        <Scatter Name="Group B" />
+                    </ScatterChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    </div>
+</div>
+
+@code {
+    private record ScatterData(double height, double weight);
+
+    private List<ScatterData> scatterData = new()
+    {
+        new(160, 60),
+        new(165, 65),
+        new(170, 70),
+        new(175, 75),
+        new(180, 80),
+        new(185, 85),
+        new(190, 90)
+    };
+}

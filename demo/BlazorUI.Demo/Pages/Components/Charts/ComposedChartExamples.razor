@@ -1,0 +1,73 @@
+@using BlazorUI.Components.Chart
+@using BlazorUI.Components.Card
+
+<div class="space-y-8">
+    <!-- Composed Chart - Line + Bar -->
+    <div class="space-y-4">
+        <div>
+            <h3 class="text-lg font-semibold">Composed Chart</h3>
+            <p class="text-sm text-muted-foreground">Line and bar series combined</p>
+        </div>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Revenue & Orders</CardTitle>
+                <CardDescription>Monthly performance</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <ComposedChart Data="@composedData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" />
+                        <Legend />
+                        <Bar DataKey="orders" Name="Orders" />
+                        <Line DataKey="revenue" Name="Revenue" />
+                    </ComposedChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Composed Chart - Line + Area + Bar -->
+    <div class="space-y-4">
+        <div>
+            <h3 class="text-lg font-semibold">Multiple Types</h3>
+            <p class="text-sm text-muted-foreground">Line, area, and bar combined</p>
+        </div>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Multi-Metric Dashboard</CardTitle>
+                <CardDescription>Comprehensive view</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <ComposedChart Data="@composedData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" />
+                        <Legend />
+                        <Area DataKey="revenue" Name="Revenue" />
+                        <Bar DataKey="orders" Name="Orders" />
+                        <Line DataKey="customers" Name="Customers" ShowDots="true" />
+                    </ComposedChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    </div>
+</div>
+
+@code {
+    private record ComposedData(string month, int orders, int revenue, int customers);
+
+    private List<ComposedData> composedData = new()
+    {
+        new("Jan", 120, 4500, 320),
+        new("Feb", 150, 5200, 390),
+        new("Mar", 180, 6100, 450),
+        new("Apr", 140, 4800, 380),
+        new("May", 200, 6800, 520),
+        new("Jun", 220, 7200, 580)
+    };
+}

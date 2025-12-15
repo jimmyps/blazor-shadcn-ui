@@ -1,0 +1,108 @@
+@using BlazorUI.Components.Chart
+@using BlazorUI.Components.Card
+
+<div class="space-y-8">
+    <!-- Line Chart - Simple -->
+    <div class="space-y-4">
+        <div>
+            <h3 class="text-lg font-semibold">Line Chart</h3>
+            <p class="text-sm text-muted-foreground">A simple line chart with one series</p>
+        </div>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Total Sales</CardTitle>
+                <CardDescription>January - June 2024</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <LineChart Data="@simpleData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" />
+                        <Legend />
+                        <Line DataKey="sales" Name="Sales" />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Line Chart - Multiple Series -->
+    <div class="space-y-4">
+        <div>
+            <h3 class="text-lg font-semibold">Multiple Lines</h3>
+            <p class="text-sm text-muted-foreground">Line chart with multiple series</p>
+        </div>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Desktop vs Mobile</CardTitle>
+                <CardDescription>Showing visitor trends</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <LineChart Data="@multiData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" />
+                        <Legend />
+                        <Line DataKey="desktop" Name="Desktop" />
+                        <Line DataKey="mobile" Name="Mobile" />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Line Chart - Dashed & Dots -->
+    <div class="space-y-4">
+        <div>
+            <h3 class="text-lg font-semibold">Line Styles</h3>
+            <p class="text-sm text-muted-foreground">Line chart with different styles</p>
+        </div>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Revenue Comparison</CardTitle>
+                <CardDescription>Actual vs Projected</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <LineChart Data="@multiData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" />
+                        <Legend />
+                        <Line DataKey="desktop" Name="Actual" ShowDots="true" />
+                        <Line DataKey="mobile" Name="Projected" Dashed="true" ShowDots="true" />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    </div>
+</div>
+
+@code {
+    private record ChartData(string month, int sales, int desktop, int mobile);
+
+    private List<ChartData> simpleData = new()
+    {
+        new("Jan", 186),
+        new("Feb", 305),
+        new("Mar", 237),
+        new("Apr", 73),
+        new("May", 209),
+        new("Jun", 214)
+    };
+
+    private List<ChartData> multiData = new()
+    {
+        new("Jan", 186, 186, 80),
+        new("Feb", 305, 305, 200),
+        new("Mar", 237, 237, 120),
+        new("Apr", 73, 73, 190),
+        new("May", 209, 209, 130),
+        new("Jun", 214, 214, 140)
+    };
+}

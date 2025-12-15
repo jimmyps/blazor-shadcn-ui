@@ -16,14 +16,20 @@
         </div>
     </div>
 
-    <Tabs DefaultValue="area">
-        <TabsList Class="grid w-full grid-cols-5 lg:w-auto lg:grid-cols-5">
+    <Tabs DefaultValue="line">
+        <TabsList Class="grid w-full grid-cols-7 lg:w-auto lg:grid-cols-7">
+            <TabsTrigger Value="line">Line</TabsTrigger>
             <TabsTrigger Value="area">Area</TabsTrigger>
             <TabsTrigger Value="bar">Bar</TabsTrigger>
-            <TabsTrigger Value="line">Line</TabsTrigger>
             <TabsTrigger Value="pie">Pie</TabsTrigger>
+            <TabsTrigger Value="scatter">Scatter</TabsTrigger>
             <TabsTrigger Value="radar">Radar</TabsTrigger>
+            <TabsTrigger Value="composed">Composed</TabsTrigger>
         </TabsList>
+
+        <TabsContent Value="line" Class="space-y-8 pt-6">
+            <LineChartExamples />
+        </TabsContent>
 
         <TabsContent Value="area" Class="space-y-8 pt-6">
             <AreaChartExamples />
@@ -33,16 +39,20 @@
             <BarChartExamples />
         </TabsContent>
 
-        <TabsContent Value="line" Class="space-y-8 pt-6">
-            <LineChartExamples />
-        </TabsContent>
-
         <TabsContent Value="pie" Class="space-y-8 pt-6">
             <PieChartExamples />
         </TabsContent>
 
+        <TabsContent Value="scatter" Class="space-y-8 pt-6">
+            <ScatterChartExamples />
+        </TabsContent>
+
         <TabsContent Value="radar" Class="space-y-8 pt-6">
             <RadarChartExamples />
+        </TabsContent>
+
+        <TabsContent Value="composed" Class="space-y-8 pt-6">
+            <ComposedChartExamples />
         </TabsContent>
     </Tabs>
 </div>
