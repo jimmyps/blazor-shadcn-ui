@@ -1,0 +1,390 @@
+@page "/components/charts/area-new"
+@using BlazorUI.Components.Chart
+@using BlazorUI.Components.Chart.Primitives
+@using BlazorUI.Components.Chart.Series
+
+<PageHeader Title="Area Charts" Description="Comprehensive area chart examples following shadcn/ui design patterns" />
+
+<div class="space-y-8">
+    @* Hero - Interactive Area Chart with Date Filter *@
+    <Card>
+        <CardHeader Class="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+            <div class="grid flex-1 gap-1">
+                <CardTitle>Area Chart - Interactive</CardTitle>
+                <CardDescription>Showing total visitors for the last 3 months</CardDescription>
+            </div>
+            <Select @bind-Value="@timeRange" Class="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
+                <SelectTrigger>
+                    <SelectValue Placeholder="Last 3 months" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem Value="90d">Last 3 months</SelectItem>
+                    <SelectItem Value="30d">Last 30 days</SelectItem>
+                    <SelectItem Value="7d">Last 7 days</SelectItem>
+                </SelectContent>
+            </Select>
+        </CardHeader>
+        <CardContent Class="px-2 pt-4 sm:px-6 sm:pt-6">
+            <ChartContainer Height="250" Class="w-full">
+                <AreaChart Data="@FilteredData">
+                    <XAxis DataKey="date" />
+                    <YAxis />
+                    <Tooltip Mode="TooltipMode.Axis" />
+                    <Legend />
+                    <Area DataKey="desktop" Name="Desktop" StackId="a">
+                        <Fill>
+                            <LinearGradient Direction="GradientDirection.Vertical">
+                                <Stop Offset="0.05" Color="var(--chart-1)" Opacity="0.8" />
+                                <Stop Offset="0.95" Color="var(--chart-1)" Opacity="0.1" />
+                            </LinearGradient>
+                        </Fill>
+                    </Area>
+                    <Area DataKey="mobile" Name="Mobile" StackId="a">
+                        <Fill>
+                            <LinearGradient Direction="GradientDirection.Vertical">
+                                <Stop Offset="0.05" Color="var(--chart-2)" Opacity="0.8" />
+                                <Stop Offset="0.95" Color="var(--chart-2)" Opacity="0.1" />
+                            </LinearGradient>
+                        </Fill>
+                    </Area>
+                </AreaChart>
+            </ChartContainer>
+        </CardContent>
+    </Card>
+
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        @* Default Area Chart *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Area Chart</CardTitle>
+                <CardDescription>Default area chart</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <AreaChart Data="@simpleData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Area DataKey="sales" Name="Sales" Color="var(--chart-1)" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Stacked Area Chart *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Stacked Area</CardTitle>
+                <CardDescription>Multiple stacked areas</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <AreaChart Data="@multiData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Area DataKey="product1" Name="Product A" StackId="total" Color="var(--chart-1)" />
+                        <Area DataKey="product2" Name="Product B" StackId="total" Color="var(--chart-2)" />
+                        <Area DataKey="product3" Name="Product C" StackId="total" Color="var(--chart-3)" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Area with Gradient *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Gradient Fill</CardTitle>
+                <CardDescription>Area with linear gradient</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <AreaChart Data="@simpleData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Area DataKey="sales" Name="Sales">
+                            <Fill>
+                                <LinearGradient Direction="GradientDirection.Vertical">
+                                    <Stop Offset="0" Color="var(--chart-1)" Opacity="0.8" />
+                                    <Stop Offset="1" Color="var(--chart-1)" Opacity="0.1" />
+                                </LinearGradient>
+                            </Fill>
+                        </Area>
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Area with Axes *@
+        <Card>
+            <CardHeader>
+                <CardTitle>With Custom Axes</CardTitle>
+                <CardDescription>Customized axis display</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <AreaChart Data="@simpleData">
+                        <XAxis DataKey="month" Show="true" AxisLine="true" TickLine="true" />
+                        <YAxis Show="true" AxisLine="true" TickLine="true" />
+                        <Tooltip />
+                        <Area DataKey="sales" Name="Sales" Color="var(--chart-2)" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Area with Legend *@
+        <Card>
+            <CardHeader>
+                <CardTitle>With Legend</CardTitle>
+                <CardDescription>Custom legend positioning</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <AreaChart Data="@multiData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend Align="LegendAlign.Center" VerticalAlign="LegendVerticalAlign.Top" />
+                        <Area DataKey="product1" Name="Product A" Color="var(--chart-1)" />
+                        <Area DataKey="product2" Name="Product B" Color="var(--chart-2)" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Multiple Independent Areas *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Multiple Areas</CardTitle>
+                <CardDescription>Non-stacked multiple areas</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <AreaChart Data="@multiData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Area DataKey="product1" Name="Product A" Color="var(--chart-1)" />
+                        <Area DataKey="product2" Name="Product B" Color="var(--chart-2)" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Area with Dots *@
+        <Card>
+            <CardHeader>
+                <CardTitle>With Data Points</CardTitle>
+                <CardDescription>Area with visible dots</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <AreaChart Data="@simpleData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Area DataKey="sales" Name="Sales" ShowDots="true" Color="var(--chart-3)" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Area with Grid *@
+        <Card>
+            <CardHeader>
+                <CardTitle>With Grid</CardTitle>
+                <CardDescription>Custom grid display</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <AreaChart Data="@simpleData">
+                        <Grid Horizontal="true" Vertical="false" Stroke="var(--border)" />
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Area DataKey="sales" Name="Sales" Color="var(--chart-4)" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Linear Interpolation *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Linear</CardTitle>
+                <CardDescription>Linear interpolation</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <AreaChart Data="@simpleData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Area DataKey="sales" Name="Sales" Color="var(--chart-5)" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    </div>
+</div>
+
+@code {
+    private string timeRange = "90d";
+
+    // 90-day comprehensive dataset (same as interactive example)
+    private List<ChartDataPoint> chartData = new()
+    {
+        new() { date = "2024-04-01", desktop = 222, mobile = 150 },
+        new() { date = "2024-04-02", desktop = 97, mobile = 180 },
+        new() { date = "2024-04-03", desktop = 167, mobile = 120 },
+        new() { date = "2024-04-04", desktop = 242, mobile = 260 },
+        new() { date = "2024-04-05", desktop = 373, mobile = 290 },
+        new() { date = "2024-04-06", desktop = 301, mobile = 340 },
+        new() { date = "2024-04-07", desktop = 245, mobile = 180 },
+        new() { date = "2024-04-08", desktop = 409, mobile = 320 },
+        new() { date = "2024-04-09", desktop = 59, mobile = 110 },
+        new() { date = "2024-04-10", desktop = 261, mobile = 190 },
+        new() { date = "2024-04-11", desktop = 327, mobile = 350 },
+        new() { date = "2024-04-12", desktop = 292, mobile = 210 },
+        new() { date = "2024-04-13", desktop = 342, mobile = 380 },
+        new() { date = "2024-04-14", desktop = 137, mobile = 220 },
+        new() { date = "2024-04-15", desktop = 120, mobile = 170 },
+        new() { date = "2024-04-16", desktop = 138, mobile = 190 },
+        new() { date = "2024-04-17", desktop = 446, mobile = 360 },
+        new() { date = "2024-04-18", desktop = 364, mobile = 410 },
+        new() { date = "2024-04-19", desktop = 243, mobile = 180 },
+        new() { date = "2024-04-20", desktop = 89, mobile = 150 },
+        new() { date = "2024-04-21", desktop = 137, mobile = 200 },
+        new() { date = "2024-04-22", desktop = 224, mobile = 170 },
+        new() { date = "2024-04-23", desktop = 138, mobile = 230 },
+        new() { date = "2024-04-24", desktop = 387, mobile = 290 },
+        new() { date = "2024-04-25", desktop = 215, mobile = 250 },
+        new() { date = "2024-04-26", desktop = 75, mobile = 130 },
+        new() { date = "2024-04-27", desktop = 383, mobile = 420 },
+        new() { date = "2024-04-28", desktop = 122, mobile = 180 },
+        new() { date = "2024-04-29", desktop = 315, mobile = 240 },
+        new() { date = "2024-04-30", desktop = 454, mobile = 380 },
+        new() { date = "2024-05-01", desktop = 165, mobile = 220 },
+        new() { date = "2024-05-02", desktop = 293, mobile = 310 },
+        new() { date = "2024-05-03", desktop = 247, mobile = 190 },
+        new() { date = "2024-05-04", desktop = 385, mobile = 420 },
+        new() { date = "2024-05-05", desktop = 481, mobile = 390 },
+        new() { date = "2024-05-06", desktop = 498, mobile = 520 },
+        new() { date = "2024-05-07", desktop = 388, mobile = 300 },
+        new() { date = "2024-05-08", desktop = 149, mobile = 210 },
+        new() { date = "2024-05-09", desktop = 227, mobile = 180 },
+        new() { date = "2024-05-10", desktop = 293, mobile = 330 },
+        new() { date = "2024-05-11", desktop = 335, mobile = 270 },
+        new() { date = "2024-05-12", desktop = 197, mobile = 240 },
+        new() { date = "2024-05-13", desktop = 197, mobile = 160 },
+        new() { date = "2024-05-14", desktop = 448, mobile = 490 },
+        new() { date = "2024-05-15", desktop = 473, mobile = 380 },
+        new() { date = "2024-05-16", desktop = 338, mobile = 400 },
+        new() { date = "2024-05-17", desktop = 499, mobile = 420 },
+        new() { date = "2024-05-18", desktop = 315, mobile = 350 },
+        new() { date = "2024-05-19", desktop = 235, mobile = 180 },
+        new() { date = "2024-05-20", desktop = 177, mobile = 230 },
+        new() { date = "2024-05-21", desktop = 82, mobile = 140 },
+        new() { date = "2024-05-22", desktop = 81, mobile = 120 },
+        new() { date = "2024-05-23", desktop = 252, mobile = 290 },
+        new() { date = "2024-05-24", desktop = 294, mobile = 220 },
+        new() { date = "2024-05-25", desktop = 201, mobile = 250 },
+        new() { date = "2024-05-26", desktop = 213, mobile = 170 },
+        new() { date = "2024-05-27", desktop = 420, mobile = 460 },
+        new() { date = "2024-05-28", desktop = 233, mobile = 190 },
+        new() { date = "2024-05-29", desktop = 78, mobile = 130 },
+        new() { date = "2024-05-30", desktop = 340, mobile = 280 },
+        new() { date = "2024-05-31", desktop = 178, mobile = 230 },
+        new() { date = "2024-06-01", desktop = 178, mobile = 200 },
+        new() { date = "2024-06-02", desktop = 470, mobile = 410 },
+        new() { date = "2024-06-03", desktop = 103, mobile = 160 },
+        new() { date = "2024-06-04", desktop = 439, mobile = 380 },
+        new() { date = "2024-06-05", desktop = 88, mobile = 140 },
+        new() { date = "2024-06-06", desktop = 294, mobile = 250 },
+        new() { date = "2024-06-07", desktop = 323, mobile = 370 },
+        new() { date = "2024-06-08", desktop = 385, mobile = 320 },
+        new() { date = "2024-06-09", desktop = 438, mobile = 480 },
+        new() { date = "2024-06-10", desktop = 155, mobile = 200 },
+        new() { date = "2024-06-11", desktop = 92, mobile = 150 },
+        new() { date = "2024-06-12", desktop = 492, mobile = 420 },
+        new() { date = "2024-06-13", desktop = 81, mobile = 130 },
+        new() { date = "2024-06-14", desktop = 426, mobile = 380 },
+        new() { date = "2024-06-15", desktop = 307, mobile = 350 },
+        new() { date = "2024-06-16", desktop = 371, mobile = 310 },
+        new() { date = "2024-06-17", desktop = 475, mobile = 520 },
+        new() { date = "2024-06-18", desktop = 107, mobile = 170 },
+        new() { date = "2024-06-19", desktop = 341, mobile = 290 },
+        new() { date = "2024-06-20", desktop = 408, mobile = 450 },
+        new() { date = "2024-06-21", desktop = 169, mobile = 210 },
+        new() { date = "2024-06-22", desktop = 317, mobile = 270 },
+        new() { date = "2024-06-23", desktop = 480, mobile = 530 },
+        new() { date = "2024-06-24", desktop = 132, mobile = 180 },
+        new() { date = "2024-06-25", desktop = 141, mobile = 190 },
+        new() { date = "2024-06-26", desktop = 434, mobile = 380 },
+        new() { date = "2024-06-27", desktop = 448, mobile = 490 },
+        new() { date = "2024-06-28", desktop = 149, mobile = 200 },
+        new() { date = "2024-06-29", desktop = 103, mobile = 160 },
+        new() { date = "2024-06-30", desktop = 446, mobile = 400 }
+    };
+
+    private IEnumerable<ChartDataPoint> FilteredData
+    {
+        get
+        {
+            var referenceDate = new DateTime(2024, 6, 30);
+            var daysToSubtract = timeRange switch
+            {
+                "7d" => 7,
+                "30d" => 30,
+                _ => 90
+            };
+            var startDate = referenceDate.AddDays(-daysToSubtract);
+            return chartData.Where(item => DateTime.Parse(item.date) >= startDate);
+        }
+    }
+
+    private List<SimpleData> simpleData = new()
+    {
+        new() { month = "Jan", sales = 120 },
+        new() { month = "Feb", sales = 180 },
+        new() { month = "Mar", sales = 150 },
+        new() { month = "Apr", sales = 220 },
+        new() { month = "May", sales = 280 },
+        new() { month = "Jun", sales = 310 }
+    };
+
+    private List<MultiSeriesData> multiData = new()
+    {
+        new() { month = "Jan", product1 = 100, product2 = 80, product3 = 60 },
+        new() { month = "Feb", product1 = 120, product2 = 95, product3 = 75 },
+        new() { month = "Mar", product1 = 140, product2 = 110, product3 = 85 },
+        new() { month = "Apr", product1 = 160, product2 = 125, product3 = 95 },
+        new() { month = "May", product1 = 180, product2 = 140, product3 = 105 },
+        new() { month = "Jun", product1 = 200, product2 = 155, product3 = 115 }
+    };
+
+    public class ChartDataPoint
+    {
+        public string date { get; set; } = "";
+        public int desktop { get; set; }
+        public int mobile { get; set; }
+    }
+
+    public class SimpleData
+    {
+        public string month { get; set; } = "";
+        public int sales { get; set; }
+    }
+
+    public class MultiSeriesData
+    {
+        public string month { get; set; } = "";
+        public int product1 { get; set; }
+        public int product2 { get; set; }
+        public int product3 { get; set; }
+    }
+}
