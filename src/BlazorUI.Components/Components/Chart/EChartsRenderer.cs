@@ -92,7 +92,7 @@ public class EChartsRenderer : IChartRenderer
             
             seriesItem["emphasis"] = new Dictionary<string, object>
             {
-                ["focus"] = "series", // Highlight series on hover
+                ["focus"] = "none", // Highlight series on hover
                 ["symbolSize"] = hoverRadius
             };
             

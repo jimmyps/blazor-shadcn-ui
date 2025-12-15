@@ -64,7 +64,7 @@ function loadEChartsScript() {
  * @returns {string} - Unique ID for the chart instance
  */
 export async function createChart(element, config) {
-    console.log('[ECharts] createChart called', { element, hasConfig: !!config });
+    console.log('[ECharts] createChart called', { element, hasConfig: !!config, config });
     
     if (!element) {
         throw new Error('Chart element is required');
