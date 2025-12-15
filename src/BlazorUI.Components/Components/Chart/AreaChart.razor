@@ -63,7 +63,7 @@
                     Type = "line",
                     Name = area.Name ?? area.DataKey,
                     Data = data.Cast<object>().ToList(),
-                    Smooth = true,
+                    Smooth = area.Interpolation == InterpolationType.Natural || area.Interpolation == InterpolationType.Monotone,
                     ShowSymbol = area.ShowDots,
                     LineStyle = new EChartsLineStyle
                     {
@@ -87,11 +87,59 @@
                     }
                 };
                 
+                // Map interpolation type to ECharts step property
+                if (area.Interpolation == InterpolationType.Step)
+                {
+                    series.Step = "middle";
+                }
+                else if (area.Interpolation == InterpolationType.StepBefore)
+                {
+                    series.Step = "start";
+                }
+                else if (area.Interpolation == InterpolationType.StepAfter)
+                {
+                    series.Step = "end";
+                }
+                
+                // Map label parameters to ECharts series.label
+                if (area.ShowLabel || area.LabelList != null)
+                {
+                    var labelList = area.LabelList;
+                    series.Label = new EChartsLabel
+                    {
+                        Show = labelList?.Show ?? area.ShowLabel,
+                        Position = MapLabelPosition(labelList?.Position ?? area.LabelPosition ?? Chart.LabelPosition.Top),
+                        Formatter = labelList?.Formatter ?? area.LabelFormatter,
+                        Color = labelList?.Color,
+                        FontSize = labelList?.FontSize,
+                        Offset = labelList?.Offset
+                    };
+                }
+                
                 seriesList.Add(series);
             }
         }
         
         return seriesList;
+    }
+    
+    private string MapLabelPosition(LabelPosition position)
+    {
+        return position switch
+        {
+            LabelPosition.Top => "top",
+            LabelPosition.Bottom => "bottom",
+            LabelPosition.Left => "left",
+            LabelPosition.Right => "right",
+            LabelPosition.Inside => "inside",
+            LabelPosition.InsideTop => "insideTop",
+            LabelPosition.InsideBottom => "insideBottom",
+            LabelPosition.InsideLeft => "insideLeft",
+            LabelPosition.InsideRight => "insideRight",
+            LabelPosition.Center => "center",
+            LabelPosition.Outside => "outside",
+            _ => "top"
+        };
     }
     
     protected override ChartType GetChartType()
