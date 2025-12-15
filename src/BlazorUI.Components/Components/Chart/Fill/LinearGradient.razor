@@ -1,0 +1,15 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    /// <summary>
+    /// Gets or sets the gradient direction.
+    /// </summary>
+    [Parameter]
+    public GradientDirection Direction { get; set; } = GradientDirection.Vertical;
+    
+    /// <summary>
+    /// Gets or sets the child content (for Stop components).
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

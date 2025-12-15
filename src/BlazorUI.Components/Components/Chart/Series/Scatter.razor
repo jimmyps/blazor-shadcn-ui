@@ -1,0 +1,28 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    /// <summary>
+    /// Gets or sets the series name (for legend).
+    /// Scatter uses XAxis.DataKey and YAxis.DataKey for X/Y coordinates.
+    /// </summary>
+    [Parameter]
+    public string? Name { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the marker color.
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether emphasis is enabled.
+    /// </summary>
+    [Parameter]
+    public bool Emphasis { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the focus behavior.
+    /// </summary>
+    [Parameter]
+    public Focus Focus { get; set; } = Focus.None;
+}

@@ -1,0 +1,33 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    /// <summary>
+    /// Gets or sets the data key for values.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string DataKey { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Gets or sets the key for slice names.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string NameKey { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Gets or sets the inner radius for donut charts (e.g., "60" or "60%").
+    /// </summary>
+    [Parameter]
+    public string? InnerRadius { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the series name.
+    /// </summary>
+    [Parameter]
+    public string? Name { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the default color (for auto palette override).
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+}

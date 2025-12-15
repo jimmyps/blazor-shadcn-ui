@@ -1,0 +1,21 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    /// <summary>
+    /// Gets or sets the fill color.
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the fill opacity.
+    /// </summary>
+    [Parameter]
+    public double? Opacity { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the child content (for LinearGradient).
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

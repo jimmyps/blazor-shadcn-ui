@@ -1,0 +1,45 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    /// <summary>
+    /// Gets or sets the data key for the series.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string DataKey { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Gets or sets the series name (for legend).
+    /// </summary>
+    [Parameter]
+    public string? Name { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the bar color.
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether emphasis is enabled.
+    /// </summary>
+    [Parameter]
+    public bool Emphasis { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the focus behavior.
+    /// </summary>
+    [Parameter]
+    public Focus Focus { get; set; } = Focus.None;
+    
+    /// <summary>
+    /// Gets or sets the stack group ID for stacked bars.
+    /// </summary>
+    [Parameter]
+    public string? StackId { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the border radius for bar corners.
+    /// </summary>
+    [Parameter]
+    public int? Radius { get; set; }
+}
