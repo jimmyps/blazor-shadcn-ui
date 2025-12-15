@@ -13,7 +13,8 @@ public class EChartsRenderer : IChartRenderer
     private IJSObjectReference? _jsModule;
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
     };
     
     public EChartsRenderer(IJSRuntime jsRuntime)

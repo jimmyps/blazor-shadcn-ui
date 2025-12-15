@@ -457,6 +457,52 @@ function generateId() {
 }
 
 /**
+ * Convert OKLCH color to hex format
+ * @param {number} l - Lightness (0-1)
+ * @param {number} c - Chroma (0-0.4)
+ * @param {number} h - Hue (0-360)
+ * @returns {string} - Hex color string
+ */
+function oklchToHex(l, c, h) {
+    // Convert OKLCH to linear RGB
+    // First convert to OKLab
+    const a = c * Math.cos(h * Math.PI / 180);
+    const b = c * Math.sin(h * Math.PI / 180);
+    
+    // OKLab to linear RGB (simplified conversion)
+    const l_ = l + 0.3963377774 * a + 0.2158037573 * b;
+    const m_ = l - 0.1055613458 * a - 0.0638541728 * b;
+    const s_ = l - 0.0894841775 * a - 1.2914855480 * b;
+    
+    const l3 = l_ * l_ * l_;
+    const m3 = m_ * m_ * m_;
+    const s3 = s_ * s_ * s_;
+    
+    let r = +4.0767416621 * l3 - 3.3077115913 * m3 + 0.2309699292 * s3;
+    let g = -1.2684380046 * l3 + 2.6097574011 * m3 - 0.3413193965 * s3;
+    let bl = -0.0041960863 * l3 - 0.7034186147 * m3 + 1.7076147010 * s3;
+    
+    // Apply gamma correction
+    const gammaCorrect = (val) => {
+        val = Math.max(0, Math.min(1, val));
+        return val <= 0.0031308 ? 12.92 * val : 1.055 * Math.pow(val, 1/2.4) - 0.055;
+    };
+    
+    r = gammaCorrect(r);
+    g = gammaCorrect(g);
+    bl = gammaCorrect(bl);
+    
+    // Convert to 0-255 range and create hex
+    const toHex = (val) => {
+        const int = Math.round(val * 255);
+        const clamped = Math.max(0, Math.min(255, int));
+        return clamped.toString(16).padStart(2, '0');
+    };
+    
+    return `#${toHex(r)}${toHex(g)}${toHex(bl)}`;
+}
+
+/**
  * Get computed CSS variable value
  * @param {string} varName - CSS variable name (e.g., '--chart-1')
  * @returns {string} - Computed color value
@@ -478,8 +524,19 @@ function getCssVariable(varName) {
             return `${parts[0]}, ${parts[1]}, ${parts[2]}`;
         }
     } else {
-        // OKLCH format: "0.646 0.222 41.116" → "0.646 0.222 41.116"
-        // OKLCH uses spaces, not commas
+        // OKLCH format: "0.646 0.222 41.116" → convert to hex
+        const parts = value.split(' ');
+        if (parts.length === 3) {
+            const l = parseFloat(parts[0]);
+            const c = parseFloat(parts[1]);
+            const h = parseFloat(parts[2]);
+            if (!isNaN(l) && !isNaN(c) && !isNaN(h)) {
+                const hex = oklchToHex(l, c, h);
+                console.log(`Converted OKLCH(${l}, ${c}, ${h}) to ${hex}`);
+                return hex;
+            }
+        }
+        // Return as-is if not parseable as OKLCH
         return value;
     }
     
@@ -524,15 +581,24 @@ function resolveCssVariables(obj) {
                 // Already has hsl() wrapper, just replace var(...) with the values
                 result = obj.replace(cssVarMatch[0], resolvedValue);
             } else if (obj.startsWith('oklch(var(')) {
-                // Already has oklch() wrapper, just replace var(...) with the values
-                result = obj.replace(cssVarMatch[0], resolvedValue);
+                // OKLCH wrapper detected - resolved value should now be hex, use it directly
+                // Remove the oklch() wrapper and use the hex value
+                if (resolvedValue.startsWith('#')) {
+                    result = resolvedValue;
+                } else {
+                    result = obj.replace(cssVarMatch[0], resolvedValue);
+                }
             } else if (obj.startsWith('var(')) {
-                // No wrapper, detect format and add appropriate wrapper
-                // HSL has %, OKLCH doesn't
-                if (resolvedValue.includes('%') || resolvedValue.includes(',')) {
+                // No wrapper, detect format and add appropriate wrapper or use as-is
+                // If it's hex (starts with #), use directly
+                if (resolvedValue.startsWith('#')) {
+                    result = resolvedValue;
+                } else if (resolvedValue.includes('%') || resolvedValue.includes(',')) {
+                    // HSL format
                     result = `hsl(${resolvedValue})`;
                 } else {
-                    result = `oklch(${resolvedValue})`;
+                    // Unknown format, use as-is
+                    result = resolvedValue;
                 }
             } else {
                 // Replace var() with resolved value as-is
