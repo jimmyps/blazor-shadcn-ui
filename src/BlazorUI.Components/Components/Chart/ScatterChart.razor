@@ -85,6 +85,21 @@
                     }
                 };
                 
+                // Map label parameters to ECharts series.label
+                if (scatter.ShowLabel || scatter.LabelList != null)
+                {
+                    var labelList = scatter.LabelList;
+                    series.Label = new EChartsLabel
+                    {
+                        Show = labelList?.Show ?? scatter.ShowLabel,
+                        Position = MapLabelPosition(labelList?.Position ?? scatter.LabelPosition ?? LabelPosition.Top),
+                        Formatter = labelList?.Formatter ?? scatter.LabelFormatter,
+                        Color = labelList?.Color,
+                        FontSize = labelList?.FontSize,
+                        Offset = labelList?.Offset
+                    };
+                }
+                
                 seriesList.Add(series);
             }
         }
@@ -100,6 +115,25 @@
     protected override TooltipMode GetDefaultTooltipMode()
     {
         return TooltipMode.Axis;
+    }
+    
+    private string MapLabelPosition(LabelPosition position)
+    {
+        return position switch
+        {
+            LabelPosition.Top => "top",
+            LabelPosition.Bottom => "bottom",
+            LabelPosition.Left => "left",
+            LabelPosition.Right => "right",
+            LabelPosition.Inside => "inside",
+            LabelPosition.InsideTop => "insideTop",
+            LabelPosition.InsideBottom => "insideBottom",
+            LabelPosition.InsideLeft => "insideLeft",
+            LabelPosition.InsideRight => "insideRight",
+            LabelPosition.Center => "center",
+            LabelPosition.Outside => "outside",
+            _ => "top"
+        };
     }
     
     internal void RegisterScatter(Scatter scatter)

@@ -56,6 +56,34 @@
                     }
                 };
                 
+                // Map label parameters to ECharts series.label
+                if (pie.ShowLabel || pie.LabelList != null)
+                {
+                    var labelList = pie.LabelList;
+                    series.Label = new EChartsLabel
+                    {
+                        Show = labelList?.Show ?? pie.ShowLabel,
+                        Position = MapLabelPosition(labelList?.Position ?? pie.LabelPosition ?? LabelPosition.Outside),
+                        Formatter = labelList?.Formatter ?? pie.LabelFormatter,
+                        Color = labelList?.Color,
+                        FontSize = labelList?.FontSize,
+                        Offset = labelList?.Offset
+                    };
+                }
+                
+                // Map labelLine parameters
+                if (pie.ShowLabelLine || pie.LabelLine != null)
+                {
+                    var labelLine = pie.LabelLine;
+                    series.LabelLine = new EChartsLabelLine
+                    {
+                        Show = labelLine?.Show ?? pie.ShowLabelLine,
+                        Length = labelLine?.Length,
+                        Length2 = labelLine?.Length2,
+                        Smooth = labelLine?.Smooth
+                    };
+                }
+                
                 seriesList.Add(series);
             }
         }
@@ -71,6 +99,25 @@
     protected override TooltipMode GetDefaultTooltipMode()
     {
         return TooltipMode.Item;
+    }
+    
+    private string MapLabelPosition(LabelPosition position)
+    {
+        return position switch
+        {
+            LabelPosition.Top => "top",
+            LabelPosition.Bottom => "bottom",
+            LabelPosition.Left => "left",
+            LabelPosition.Right => "right",
+            LabelPosition.Inside => "inside",
+            LabelPosition.InsideTop => "insideTop",
+            LabelPosition.InsideBottom => "insideBottom",
+            LabelPosition.InsideLeft => "insideLeft",
+            LabelPosition.InsideRight => "insideRight",
+            LabelPosition.Center => "center",
+            LabelPosition.Outside => "outside",
+            _ => "outside"
+        };
     }
     
     internal void RegisterPie(Pie pie)

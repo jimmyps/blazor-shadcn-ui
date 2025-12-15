@@ -113,11 +113,45 @@
                     }
                 };
                 
+                // Map label parameters to ECharts series.label
+                if (radar.ShowLabel || radar.LabelList != null)
+                {
+                    var labelList = radar.LabelList;
+                    series.Label = new EChartsLabel
+                    {
+                        Show = labelList?.Show ?? radar.ShowLabel,
+                        Position = MapLabelPosition(labelList?.Position ?? radar.LabelPosition ?? LabelPosition.Top),
+                        Formatter = labelList?.Formatter ?? radar.LabelFormatter,
+                        Color = labelList?.Color,
+                        FontSize = labelList?.FontSize,
+                        Offset = labelList?.Offset
+                    };
+                }
+                
                 seriesList.Add(series);
             }
         }
         
         return seriesList;
+    }
+    
+    private string MapLabelPosition(LabelPosition position)
+    {
+        return position switch
+        {
+            LabelPosition.Top => "top",
+            LabelPosition.Bottom => "bottom",
+            LabelPosition.Left => "left",
+            LabelPosition.Right => "right",
+            LabelPosition.Inside => "inside",
+            LabelPosition.InsideTop => "insideTop",
+            LabelPosition.InsideBottom => "insideBottom",
+            LabelPosition.InsideLeft => "insideLeft",
+            LabelPosition.InsideRight => "insideRight",
+            LabelPosition.Center => "center",
+            LabelPosition.Outside => "outside",
+            _ => "top"
+        };
     }
     
     protected override ChartType GetChartType()
