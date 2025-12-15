@@ -7,6 +7,8 @@ Child of series components (Line, Area, Bar, Pie, Scatter, Radar).
 *@
 
 @code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
     /// <summary>
     /// Label position.
     /// </summary>
@@ -42,4 +44,20 @@ Child of series components (Line, Area, Bar, Pie, Scatter, Radar).
     /// </summary>
     [Parameter]
     public bool Show { get; set; } = true;
+    
+    protected override void OnInitialized()
+    {
+        // Register with parent series
+        if (Parent != null)
+        {
+            try
+            {
+                Parent.RegisterLabelList(this);
+            }
+            catch
+            {
+                // Parent doesn't support LabelList
+            }
+        }
+    }
 }
