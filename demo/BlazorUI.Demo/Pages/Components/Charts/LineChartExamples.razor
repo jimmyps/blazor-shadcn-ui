@@ -2,212 +2,107 @@
 @using BlazorUI.Components.Card
 
 <div class="space-y-8">
-    <!-- Line Chart - Default -->
+    <!-- Line Chart - Simple -->
     <div class="space-y-4">
         <div>
             <h3 class="text-lg font-semibold">Line Chart</h3>
-            <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+            <p class="text-sm text-muted-foreground">A simple line chart with one series</p>
         </div>
         
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Line Chart</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <LineChart Data="@lineData" 
-                          XAxisDataKey="Month"
-                          YAxisDataKey="Desktop"
-                          Label="Desktop"
-                          Height="300"
-                          Curved="true"
-                          ShowExportButton="true"
-                          ExportFileName="line-chart" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month <span class="ml-1">📈</span>
-                </div>
-                <div class="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
+        <Card>
+            <CardHeader>
+                <CardTitle>Total Sales</CardTitle>
+                <CardDescription>January - June 2024</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <LineChart Data="@simpleData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" />
+                        <Legend />
+                        <Line DataKey="sales" Name="Sales" />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 
-    <!-- Line Chart - Linear -->
+    <!-- Line Chart - Multiple Series -->
     <div class="space-y-4">
         <div>
-            <h3 class="text-lg font-semibold">Linear</h3>
-            <p class="text-sm text-muted-foreground">A line chart with straight lines</p>
+            <h3 class="text-lg font-semibold">Multiple Lines</h3>
+            <p class="text-sm text-muted-foreground">Line chart with multiple series</p>
         </div>
         
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Line Chart - Linear</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <LineChart Data="@lineData" 
-                          XAxisDataKey="Month"
-                          YAxisDataKey="Desktop"
-                          Label="Desktop"
-                          Height="300"
-                          Curved="false"
-                          LineColor="hsl(var(--chart-2))" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex w-full items-start gap-2 text-sm">
-                    <div class="grid gap-2">
-                        <div class="flex items-center gap-2 font-medium leading-none">
-                            Trending up by 5.2% this month <span class="ml-1">📈</span>
-                        </div>
-                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            January - June 2024
-                        </div>
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
+        <Card>
+            <CardHeader>
+                <CardTitle>Desktop vs Mobile</CardTitle>
+                <CardDescription>Showing visitor trends</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <LineChart Data="@multiData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" />
+                        <Legend />
+                        <Line DataKey="desktop" Name="Desktop" />
+                        <Line DataKey="mobile" Name="Mobile" />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 
-    <!-- Line Chart - Multiple -->
+    <!-- Line Chart - Dashed & Dots -->
     <div class="space-y-4">
         <div>
-            <h3 class="text-lg font-semibold">Multiple</h3>
-            <p class="text-sm text-muted-foreground">A line chart with multiple lines</p>
+            <h3 class="text-lg font-semibold">Line Styles</h3>
+            <p class="text-sm text-muted-foreground">Line chart with different styles</p>
         </div>
         
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Line Chart - Multiple</ChartPanelTitle>
-                <ChartPanelDescription>Showing total visitors for the last 6 months</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <MultiSeriesLineChart Data="@multipleData"
-                                     XAxisDataKey="Month"
-                                     Series="@multipleSeries"
-                                     Height="300"
-                                     />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex w-full items-start gap-2 text-sm">
-                    <div class="grid gap-2">
-                        <div class="flex items-center gap-2 font-medium leading-none">
-                            Trending up by 5.2% this month <span class="ml-1">📈</span>
-                        </div>
-                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            January - June 2024
-                        </div>
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
-    </div>
-
-    <!-- Line Chart - Dots -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Dots</h3>
-            <p class="text-sm text-muted-foreground">A line chart with customized dots</p>
-        </div>
-        
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Line Chart - Dots</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <LineChart Data="@lineData" 
-                          XAxisDataKey="Month"
-                          YAxisDataKey="Desktop"
-                          Label="Desktop"
-                          Height="300"
-                          Curved="true"
-                          ShowDots="true"
-                          LineColor="hsl(var(--chart-3))" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month <span class="ml-1">📈</span>
-                </div>
-                <div class="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
-    </div>
-
-    <!-- Line Chart - Label -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Label</h3>
-            <p class="text-sm text-muted-foreground">A line chart with custom labels</p>
-        </div>
-        
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Line Chart - Custom Label</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <LineChart Data="@lineData" 
-                          XAxisDataKey="Month"
-                          YAxisDataKey="Desktop"
-                          Label="Total Visitors"
-                          Height="300"
-                          Curved="true"
-                          LineColor="hsl(var(--chart-4))" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month <span class="ml-1">📈</span>
-                </div>
-                <div class="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
+        <Card>
+            <CardHeader>
+                <CardTitle>Revenue Comparison</CardTitle>
+                <CardDescription>Actual vs Projected</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <LineChart Data="@multiData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" />
+                        <Legend />
+                        <Line DataKey="desktop" Name="Actual" ShowDots="true" />
+                        <Line DataKey="mobile" Name="Projected" Dashed="true" ShowDots="true" />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 </div>
 
 @code {
-    private readonly List<LineData> lineData = new()
+    private record ChartData(string month, int sales, int desktop, int mobile);
+
+    private List<ChartData> simpleData = new()
     {
-        new() { Month = "January", Desktop = 186 },
-        new() { Month = "February", Desktop = 305 },
-        new() { Month = "March", Desktop = 237 },
-        new() { Month = "April", Desktop = 73 },
-        new() { Month = "May", Desktop = 209 },
-        new() { Month = "June", Desktop = 214 }
+        new("Jan", 186),
+        new("Feb", 305),
+        new("Mar", 237),
+        new("Apr", 73),
+        new("May", 209),
+        new("Jun", 214)
     };
 
-    private readonly List<MultipleLineData> multipleData = new()
+    private List<ChartData> multiData = new()
     {
-        new() { Month = "January", Desktop = 186, Mobile = 80 },
-        new() { Month = "February", Desktop = 305, Mobile = 200 },
-        new() { Month = "March", Desktop = 237, Mobile = 120 },
-        new() { Month = "April", Desktop = 73, Mobile = 190 },
-        new() { Month = "May", Desktop = 209, Mobile = 130 },
-        new() { Month = "June", Desktop = 214, Mobile = 140 }
+        new("Jan", 186, 186, 80),
+        new("Feb", 305, 305, 200),
+        new("Mar", 237, 237, 120),
+        new("Apr", 73, 73, 190),
+        new("May", 209, 209, 130),
+        new("Jun", 214, 214, 140)
     };
-
-    private readonly List<ChartSeriesConfig> multipleSeries = new()
-    {
-        new() { DataKey = "Desktop", Label = "Desktop", Color = "hsl(var(--chart-1))", Curved = true },
-        new() { DataKey = "Mobile", Label = "Mobile", Color = "hsl(var(--chart-2))", Curved = true }
-    };
-
-    public class LineData
-    {
-        public string Month { get; set; } = string.Empty;
-        public int Desktop { get; set; }
-    }
-
-    public class MultipleLineData
-    {
-        public string Month { get; set; } = string.Empty;
-        public int Desktop { get; set; }
-        public int Mobile { get; set; }
-    }
 }

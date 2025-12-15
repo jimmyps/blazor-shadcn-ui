@@ -2,188 +2,134 @@
 @using BlazorUI.Components.Card
 
 <div class="space-y-8">
-    <!-- Area Chart - Default -->
+    <!-- Area Chart - Simple -->
     <div class="space-y-4">
         <div>
             <h3 class="text-lg font-semibold">Area Chart</h3>
-            <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+            <p class="text-sm text-muted-foreground">A simple area chart</p>
         </div>
         
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Area Chart</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <LineChart Data="@desktopData" 
-                          XAxisDataKey="Month"
-                          YAxisDataKey="Desktop"
-                          Label="Desktop"
-                          Height="300"
-                          FillArea="true"
-                          Curved="true"
-                          ShowExportButton="true"
-                          ExportFileName="area-chart" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month <span class="ml-1">📈</span>
-                </div>
-                <div class="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
-    </div>
-
-    <!-- Area Chart - Linear -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Linear</h3>
-            <p class="text-sm text-muted-foreground">An area chart with straight lines</p>
-        </div>
-        
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Area Chart - Linear</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <LineChart Data="@desktopData" 
-                          XAxisDataKey="Month"
-                          YAxisDataKey="Desktop"
-                          Label="Desktop"
-                          Height="300"
-                          FillArea="true"
-                          Curved="false"
-                          LineColor="hsl(var(--chart-2))" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex w-full items-start gap-2 text-sm">
-                    <div class="grid gap-2">
-                        <div class="flex items-center gap-2 font-medium leading-none">
-                            Trending up by 5.2% this month <span class="ml-1">📈</span>
-                        </div>
-                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            January - June 2024
-                        </div>
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
+        <Card>
+            <CardHeader>
+                <CardTitle>Total Sales</CardTitle>
+                <CardDescription>January - June 2024</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <AreaChart Data="@simpleData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" />
+                        <Legend />
+                        <Area DataKey="sales" Name="Sales" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 
     <!-- Area Chart - Stacked -->
     <div class="space-y-4">
         <div>
-            <h3 class="text-lg font-semibold">Stacked</h3>
-            <p class="text-sm text-muted-foreground">An area chart with multiple series stacked</p>
+            <h3 class="text-lg font-semibold">Stacked Area</h3>
+            <p class="text-sm text-muted-foreground">Area chart with stacked series</p>
         </div>
         
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Area Chart - Stacked</ChartPanelTitle>
-                <ChartPanelDescription>Showing total visitors for the last 6 months</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <MultiSeriesLineChart Data="@stackedData"
-                                     XAxisDataKey="Month"
-                                     Series="@stackedSeries"
-                                     Height="300"
-                                     />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex w-full items-start gap-2 text-sm">
-                    <div class="grid gap-2">
-                        <div class="flex items-center gap-2 font-medium leading-none">
-                            Trending up by 12.5% this month <span class="ml-1">📈</span>
-                        </div>
-                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            January - June 2024
-                        </div>
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
+        <Card>
+            <CardHeader>
+                <CardTitle>Desktop vs Mobile Traffic</CardTitle>
+                <CardDescription>Cumulative visitor statistics</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <AreaChart Data="@stackedData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" />
+                        <Legend />
+                        <Area DataKey="desktop" Name="Desktop" StackId="total" />
+                        <Area DataKey="mobile" Name="Mobile" StackId="total" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 
-    <!-- Area Chart - Icons -->
+    <!-- Area Chart - Multiple Series -->
     <div class="space-y-4">
         <div>
-            <h3 class="text-lg font-semibold">Icons</h3>
-            <p class="text-sm text-muted-foreground">An area chart with icons in the legend</p>
+            <h3 class="text-lg font-semibold">Multiple Areas</h3>
+            <p class="text-sm text-muted-foreground">Area chart with independent series</p>
         </div>
         
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Area Chart - Interactive</ChartPanelTitle>
-                <ChartPanelDescription>
-                    Showing total visitors for the last 6 months
-                </ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <MultiSeriesLineChart Data="@stackedData"
-                                     XAxisDataKey="Month"
-                                     Series="@iconsSeriesArea"
-                                     Height="300"
-                                      />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex w-full items-start gap-2 text-sm">
-                    <div class="grid gap-2">
-                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            January - June 2024
-                        </div>
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
+        <Card>
+            <CardHeader>
+                <CardTitle>Multi-Platform Analytics</CardTitle>
+                <CardDescription>Independent trend lines</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <AreaChart Data="@stackedData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" />
+                        <Legend />
+                        <Area DataKey="desktop" Name="Desktop" />
+                        <Area DataKey="mobile" Name="Mobile" />
+                        <Area DataKey="tablet" Name="Tablet" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Area Chart - With Dots -->
+    <div class="space-y-4">
+        <div>
+            <h3 class="text-lg font-semibold">Area with Data Points</h3>
+            <p class="text-sm text-muted-foreground">Showing individual data points</p>
+        </div>
+        
+        <Card>
+            <CardHeader>
+                <CardTitle>Revenue Trend</CardTitle>
+                <CardDescription>Monthly revenue with markers</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <AreaChart Data="@simpleData">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" />
+                        <Legend />
+                        <Area DataKey="sales" Name="Sales" ShowDots="true" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 </div>
 
 @code {
-    private readonly List<DesktopData> desktopData = new()
+    private record ChartData(string month, int sales, int desktop, int mobile, int tablet);
+
+    private List<ChartData> simpleData = new()
     {
-        new() { Month = "January", Desktop = 186 },
-        new() { Month = "February", Desktop = 305 },
-        new() { Month = "March", Desktop = 237 },
-        new() { Month = "April", Desktop = 73 },
-        new() { Month = "May", Desktop = 209 },
-        new() { Month = "June", Desktop = 214 }
+        new("Jan", 186, 0, 0, 0),
+        new("Feb", 305, 0, 0, 0),
+        new("Mar", 237, 0, 0, 0),
+        new("Apr", 173, 0, 0, 0),
+        new("May", 209, 0, 0, 0),
+        new("Jun", 214, 0, 0, 0)
     };
 
-    private readonly List<StackedData> stackedData = new()
+    private List<ChartData> stackedData = new()
     {
-        new() { Month = "January", Desktop = 186, Mobile = 80 },
-        new() { Month = "February", Desktop = 305, Mobile = 200 },
-        new() { Month = "March", Desktop = 237, Mobile = 120 },
-        new() { Month = "April", Desktop = 73, Mobile = 190 },
-        new() { Month = "May", Desktop = 209, Mobile = 130 },
-        new() { Month = "June", Desktop = 214, Mobile = 140 }
+        new("Jan", 0, 186, 80, 45),
+        new("Feb", 0, 305, 200, 120),
+        new("Mar", 0, 237, 120, 90),
+        new("Apr", 0, 173, 190, 110),
+        new("May", 0, 209, 130, 95),
+        new("Jun", 0, 214, 140, 100)
     };
-
-    private readonly List<ChartSeriesConfig> stackedSeries = new()
-    {
-        new() { DataKey = "Desktop", Label = "Desktop", Color = "hsl(var(--chart-1))", FillArea = true, Curved = true },
-        new() { DataKey = "Mobile", Label = "Mobile", Color = "hsl(var(--chart-2))", FillArea = true, Curved = true }
-    };
-
-    private readonly List<ChartSeriesConfig> iconsSeriesArea = new()
-    {
-        new() { DataKey = "Desktop", Label = "💻 Desktop", Color = "hsl(var(--chart-1))", FillArea = true, Curved = true },
-        new() { DataKey = "Mobile", Label = "📱 Mobile", Color = "hsl(var(--chart-2))", FillArea = true, Curved = true }
-    };
-
-    public class DesktopData
-    {
-        public string Month { get; set; } = string.Empty;
-        public int Desktop { get; set; }
-    }
-
-    public class StackedData
-    {
-        public string Month { get; set; } = string.Empty;
-        public int Desktop { get; set; }
-        public int Mobile { get; set; }
-    }
 }

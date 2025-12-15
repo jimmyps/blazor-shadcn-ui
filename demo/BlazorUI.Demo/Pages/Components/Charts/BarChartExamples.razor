@@ -2,218 +2,159 @@
 @using BlazorUI.Components.Card
 
 <div class="space-y-8">
-    <!-- Bar Chart - Default -->
+    <!-- Bar Chart - Vertical -->
     <div class="space-y-4">
         <div>
             <h3 class="text-lg font-semibold">Bar Chart</h3>
-            <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+            <p class="text-sm text-muted-foreground">A simple vertical bar chart</p>
         </div>
         
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Bar Chart</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <BarChart Data="@barData" 
-                         XAxisDataKey="Month"
-                         YAxisDataKey="Desktop"
-                         Label="Desktop"
-                         Height="300"
-                         ShowExportButton="true"
-                         ExportFileName="bar-chart" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month <span class="ml-1">📈</span>
-                </div>
-                <div class="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
+        <Card>
+            <CardHeader>
+                <CardTitle>Monthly Sales</CardTitle>
+                <CardDescription>January - June 2024</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <BarChart Data="@simpleData" Layout="BarLayout.Vertical">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" />
+                        <Legend />
+                        <Bar DataKey="sales" Name="Sales" />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 
     <!-- Bar Chart - Horizontal -->
     <div class="space-y-4">
         <div>
-            <h3 class="text-lg font-semibold">Horizontal</h3>
-            <p class="text-sm text-muted-foreground">A horizontal bar chart</p>
+            <h3 class="text-lg font-semibold">Horizontal Bar</h3>
+            <p class="text-sm text-muted-foreground">Horizontal bar chart layout</p>
         </div>
         
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Bar Chart - Horizontal</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <BarChart Data="@barData" 
-                         XAxisDataKey="Month"
-                         YAxisDataKey="Desktop"
-                         Label="Desktop"
-                         Height="300"
-                         BarColor="hsl(var(--chart-2))" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex w-full items-start gap-2 text-sm">
-                    <div class="grid gap-2">
-                        <div class="flex items-center gap-2 font-medium leading-none">
-                            Trending up by 5.2% this month <span class="ml-1">📈</span>
-                        </div>
-                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            January - June 2024
-                        </div>
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
+        <Card>
+            <CardHeader>
+                <CardTitle>Category Performance</CardTitle>
+                <CardDescription>Comparison by category</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <BarChart Data="@simpleData" Layout="BarLayout.Horizontal">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" />
+                        <Legend />
+                        <Bar DataKey="sales" Name="Sales" />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 
-    <!-- Bar Chart - Multiple -->
+    <!-- Bar Chart - Multiple Series -->
     <div class="space-y-4">
         <div>
-            <h3 class="text-lg font-semibold">Multiple</h3>
-            <p class="text-sm text-muted-foreground">A bar chart with multiple bars</p>
+            <h3 class="text-lg font-semibold">Multiple Bars</h3>
+            <p class="text-sm text-muted-foreground">Bar chart with multiple series</p>
         </div>
         
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Bar Chart - Multiple</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <BarChart Data="@multipleData" 
-                         XAxisDataKey="Month"
-                         YAxisDataKey="Desktop"
-                         Label="Desktop"
-                         Height="300"
-                         BarColor="hsl(var(--chart-1))" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex w-full items-start gap-2 text-sm">
-                    <div class="grid gap-2">
-                        <div class="flex items-center gap-2 font-medium leading-none">
-                            Trending up by 5.2% this month <span class="ml-1">📈</span>
-                        </div>
-                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            January - June 2024
-                        </div>
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
+        <Card>
+            <CardHeader>
+                <CardTitle>Desktop vs Mobile</CardTitle>
+                <CardDescription>Side-by-side comparison</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <BarChart Data="@multiData" Layout="BarLayout.Vertical">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" />
+                        <Legend />
+                        <Bar DataKey="desktop" Name="Desktop" />
+                        <Bar DataKey="mobile" Name="Mobile" />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 
-    <!-- Bar Chart - Label -->
+    <!-- Bar Chart - Stacked -->
     <div class="space-y-4">
         <div>
-            <h3 class="text-lg font-semibold">Label</h3>
-            <p class="text-sm text-muted-foreground">A bar chart with custom labels</p>
+            <h3 class="text-lg font-semibold">Stacked Bar</h3>
+            <p class="text-sm text-muted-foreground">Stacked bar chart</p>
         </div>
         
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Bar Chart - Custom Label</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <BarChart Data="@barData" 
-                         XAxisDataKey="Month"
-                         YAxisDataKey="Desktop"
-                         Label="Total Visitors"
-                         Height="300"
-                         BarColor="hsl(var(--chart-3))" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month <span class="ml-1">📈</span>
-                </div>
-                <div class="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
+        <Card>
+            <CardHeader>
+                <CardTitle>Total Traffic Sources</CardTitle>
+                <CardDescription>Cumulative statistics</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <BarChart Data="@multiData" Layout="BarLayout.Vertical">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" />
+                        <Legend />
+                        <Bar DataKey="desktop" Name="Desktop" StackId="total" />
+                        <Bar DataKey="mobile" Name="Mobile" StackId="total" />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 
-    <!-- Bar Chart - Mixed/Stacked -->
+    <!-- Bar Chart - With Radius -->
     <div class="space-y-4">
         <div>
-            <h3 class="text-lg font-semibold">Mixed</h3>
-            <p class="text-sm text-muted-foreground">A bar chart showing different categories</p>
+            <h3 class="text-lg font-semibold">Rounded Corners</h3>
+            <p class="text-sm text-muted-foreground">Bar chart with border radius</p>
         </div>
         
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Bar Chart - Mixed</ChartPanelTitle>
-                <ChartPanelDescription>Showing different metrics</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <BarChart Data="@mixedData" 
-                         XAxisDataKey="Category"
-                         YAxisDataKey="Value"
-                         Label="Sales"
-                         Height="300"
-                         BarColor="hsl(var(--chart-4))" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex w-full items-start gap-2 text-sm">
-                    <div class="grid gap-2">
-                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            Showing sales by category
-                        </div>
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
+        <Card>
+            <CardHeader>
+                <CardTitle>Modern Bar Chart</CardTitle>
+                <CardDescription>With rounded corners</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="300">
+                    <BarChart Data="@simpleData" Layout="BarLayout.Vertical">
+                        <XAxis DataKey="month" />
+                        <YAxis />
+                        <Tooltip Mode="TooltipMode.Axis" />
+                        <Legend />
+                        <Bar DataKey="sales" Name="Sales" Radius="8" />
+                    </BarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 </div>
 
 @code {
-    private readonly List<BarData> barData = new()
+    private record ChartData(string month, int sales, int desktop, int mobile);
+
+    private List<ChartData> simpleData = new()
     {
-        new() { Month = "January", Desktop = 186 },
-        new() { Month = "February", Desktop = 305 },
-        new() { Month = "March", Desktop = 237 },
-        new() { Month = "April", Desktop = 73 },
-        new() { Month = "May", Desktop = 209 },
-        new() { Month = "June", Desktop = 214 }
+        new("Jan", 186, 0, 0),
+        new("Feb", 305, 0, 0),
+        new("Mar", 237, 0, 0),
+        new("Apr", 173, 0, 0),
+        new("May", 209, 0, 0),
+        new("Jun", 214, 0, 0)
     };
 
-    private readonly List<MultipleBarData> multipleData = new()
+    private List<ChartData> multiData = new()
     {
-        new() { Month = "January", Desktop = 186, Mobile = 80 },
-        new() { Month = "February", Desktop = 305, Mobile = 200 },
-        new() { Month = "March", Desktop = 237, Mobile = 120 },
-        new() { Month = "April", Desktop = 73, Mobile = 190 },
-        new() { Month = "May", Desktop = 209, Mobile = 130 },
-        new() { Month = "June", Desktop = 214, Mobile = 140 }
+        new("Jan", 0, 186, 80),
+        new("Feb", 0, 305, 200),
+        new("Mar", 0, 237, 120),
+        new("Apr", 0, 173, 190),
+        new("May", 0, 209, 130),
+        new("Jun", 0, 214, 140)
     };
-
-    private readonly List<MixedData> mixedData = new()
-    {
-        new() { Category = "Product A", Value = 275 },
-        new() { Category = "Product B", Value = 200 },
-        new() { Category = "Product C", Value = 187 },
-        new() { Category = "Product D", Value = 173 },
-        new() { Category = "Product E", Value = 90 }
-    };
-
-    public class BarData
-    {
-        public string Month { get; set; } = string.Empty;
-        public int Desktop { get; set; }
-    }
-
-    public class MultipleBarData
-    {
-        public string Month { get; set; } = string.Empty;
-        public int Desktop { get; set; }
-        public int Mobile { get; set; }
-    }
-
-    public class MixedData
-    {
-        public string Category { get; set; } = string.Empty;
-        public int Value { get; set; }
-    }
 }
