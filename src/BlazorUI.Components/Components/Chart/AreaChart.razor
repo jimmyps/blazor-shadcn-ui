@@ -13,6 +13,12 @@
 @code {
     private List<Area> _areas = new();
     
+    /// <summary>
+    /// Gets or sets the stack offset mode for percentage stacking.
+    /// </summary>
+    [Parameter]
+    public StackOffset StackOffset { get; set; } = StackOffset.None;
+    
     protected override EChartsOption BuildEChartsOption()
     {
         var option = new EChartsOption
@@ -118,9 +124,69 @@
                 
                 seriesList.Add(series);
             }
+            
+            // Apply percentage stacking transform if StackOffset.Expand
+            if (StackOffset == StackOffset.Expand && seriesList.Any())
+            {
+                ApplyPercentageStackingTransform(seriesList);
+            }
         }
         
         return seriesList;
+    }
+    
+    private void ApplyPercentageStackingTransform(List<EChartsSeries> seriesList)
+    {
+        // Group series by stack ID
+        var stackGroups = seriesList
+            .Where(s => !string.IsNullOrEmpty(s.Stack))
+            .GroupBy(s => s.Stack)
+            .ToList();
+        
+        if (!stackGroups.Any()) return;
+        
+        // For each stack group, normalize values to percentages
+        foreach (var group in stackGroups)
+        {
+            var series = group.ToList();
+            if (!series.Any()) continue;
+            
+            // Get the maximum data length
+            int dataLength = series.Max(s => (s.Data as List<object>)?.Count ?? 0);
+            
+            // Calculate totals for each data point
+            var totals = new double[dataLength];
+            for (int i = 0; i < dataLength; i++)
+            {
+                double total = 0;
+                foreach (var s in series)
+                {
+                    var dataList = s.Data as List<object>;
+                    if (dataList != null && i < dataList.Count)
+                    {
+                        var value = Convert.ToDouble(dataList[i]);
+                        total += value;
+                    }
+                }
+                totals[i] = total > 0 ? total : 1; // Avoid division by zero
+            }
+            
+            // Convert each value to percentage
+            foreach (var s in series)
+            {
+                var dataList = s.Data as List<object>;
+                if (dataList == null) continue;
+                
+                var normalizedData = new List<object>();
+                for (int i = 0; i < dataList.Count; i++)
+                {
+                    var value = Convert.ToDouble(dataList[i]);
+                    var percentage = totals[i] > 0 ? (value / totals[i]) * 100 : 0;
+                    normalizedData.Add(percentage);
+                }
+                s.Data = normalizedData;
+            }
+        }
     }
     
     private string MapLabelPosition(LabelPosition position)
