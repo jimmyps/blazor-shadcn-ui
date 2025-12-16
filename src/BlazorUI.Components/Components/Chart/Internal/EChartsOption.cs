@@ -214,8 +214,11 @@ public sealed class EChartsLineStyle
     [JsonPropertyName("type")]
     public string? Type { get; set; }
 
+    /// <summary>
+    /// String color or gradient object.
+    /// </summary>
     [JsonPropertyName("color")]
-    public string? Color { get; set; }
+    public object? Color { get; set; }
 }
 
 public sealed class EChartsSeries
@@ -317,8 +320,11 @@ public sealed class EChartsEmphasis
 
 public sealed class EChartsItemStyle
 {
+    /// <summary>
+    /// String color or gradient object.
+    /// </summary>
     [JsonPropertyName("color")]
-    public string? Color { get; set; }
+    public object? Color { get; set; }
 
     /// <summary>
     /// Bar radius: number or [tl,tr,br,bl]

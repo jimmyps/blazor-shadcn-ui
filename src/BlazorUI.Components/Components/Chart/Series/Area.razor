@@ -91,11 +91,24 @@
     public LabelList? LabelList { get; private set; }
     
     /// <summary>
+    /// Gets the registered Fill component.
+    /// </summary>
+    public Fill? Fill { get; private set; }
+    
+    /// <summary>
     /// Registers a LabelList component.
     /// </summary>
     public void RegisterLabelList(LabelList labelList)
     {
         LabelList = labelList;
+    }
+    
+    /// <summary>
+    /// Registers a Fill component.
+    /// </summary>
+    public void RegisterFill(Fill fill)
+    {
+        Fill = fill;
     }
     
     protected override void OnInitialized()

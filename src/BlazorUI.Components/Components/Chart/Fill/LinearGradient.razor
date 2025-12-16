@@ -1,6 +1,12 @@
 @namespace BlazorUI.Components.Chart
 
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
 @code {
+    [CascadingParameter] private Fill? Parent { get; set; }
+    
     /// <summary>
     /// Gets or sets the gradient direction.
     /// </summary>
@@ -12,4 +18,22 @@
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+    
+    /// <summary>
+    /// Gets the list of Stop components.
+    /// </summary>
+    public List<Stop> Stops { get; } = new();
+    
+    /// <summary>
+    /// Registers a Stop child component.
+    /// </summary>
+    public void RegisterStop(Stop stop)
+    {
+        Stops.Add(stop);
+    }
+    
+    protected override void OnInitialized()
+    {
+        Parent?.RegisterLinearGradient(this);
+    }
 }

@@ -1,6 +1,8 @@
 @namespace BlazorUI.Components.Chart
 
 @code {
+    [CascadingParameter] private LinearGradient? Parent { get; set; }
+    
     /// <summary>
     /// Gets or sets the offset position in the gradient (0..1).
     /// </summary>
@@ -18,4 +20,9 @@
     /// </summary>
     [Parameter]
     public double? Opacity { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        Parent?.RegisterStop(this);
+    }
 }

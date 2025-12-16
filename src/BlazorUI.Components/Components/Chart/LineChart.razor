@@ -68,6 +68,10 @@
                 var line = _lines[i];
                 var data = DataExtractor.GetNumericValues(Data, line.DataKey);
                 
+                // Check if Fill component is present for gradient support
+                var fillGradient = BuildGradient(line.Fill);
+                var seriesColor = fillGradient ?? GetSeriesColor(i, line.Color);
+                
                 var series = new EChartsSeries
                 {
                     Type = "line",
@@ -79,11 +83,11 @@
                     {
                         Width = line.LineWidth,
                         Type = line.Dashed ? "dashed" : "solid",
-                        Color = GetSeriesColor(i, line.Color)
+                        Color = seriesColor
                     },
                     ItemStyle = new EChartsItemStyle
                     {
-                        Color = GetSeriesColor(i, line.Color)
+                        Color = seriesColor
                     },
                     Emphasis = new EChartsEmphasis
                     {

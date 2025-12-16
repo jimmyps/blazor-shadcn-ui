@@ -59,6 +59,9 @@
         foreach (var line in _lines)
         {
             var data = DataExtractor.GetNumericValues(Data, line.DataKey);
+            var fillGradient = BuildGradient(line.Fill);
+            var seriesColor = fillGradient ?? GetSeriesColor(colorIndex, line.Color);
+            
             var series = new EChartsSeries
             {
                 Type = "line",
@@ -70,9 +73,9 @@
                 {
                     Width = line.LineWidth,
                     Type = line.Dashed ? "dashed" : "solid",
-                    Color = GetSeriesColor(colorIndex, line.Color)
+                    Color = seriesColor
                 },
-                ItemStyle = new EChartsItemStyle { Color = GetSeriesColor(colorIndex, line.Color) },
+                ItemStyle = new EChartsItemStyle { Color = seriesColor },
                 Emphasis = new EChartsEmphasis
                 {
                     Disabled = !line.Emphasis,
@@ -87,6 +90,8 @@
         foreach (var area in _areas)
         {
             var data = DataExtractor.GetNumericValues(Data, area.DataKey);
+            var areaFillGradient = BuildGradient(area.Fill);
+            
             var series = new EChartsSeries
             {
                 Type = "line",
@@ -95,7 +100,11 @@
                 Smooth = true,
                 ShowSymbol = area.ShowDots,
                 LineStyle = new EChartsLineStyle { Width = area.LineWidth, Color = GetSeriesColor(colorIndex, area.Color) },
-                AreaStyle = new EChartsAreaStyle { Color = GetSeriesColor(colorIndex, area.Color), Opacity = 0.3 },
+                AreaStyle = new EChartsAreaStyle 
+                { 
+                    Color = areaFillGradient ?? GetSeriesColor(colorIndex, area.Color), 
+                    Opacity = area.Fill != null ? (area.Fill.Opacity ?? 0.3) : 0.3
+                },
                 ItemStyle = new EChartsItemStyle { Color = GetSeriesColor(colorIndex, area.Color) },
                 Stack = area.StackId,
                 Emphasis = new EChartsEmphasis

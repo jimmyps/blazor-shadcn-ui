@@ -326,6 +326,63 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     }
     
     /// <summary>
+    /// Builds gradient configuration from Fill component.
+    /// </summary>
+    protected object? BuildGradient(Fill? fill)
+    {
+        if (fill == null)
+        {
+            return null;
+        }
+        
+        // If there's a LinearGradient child with stops
+        if (fill.LinearGradient != null && fill.LinearGradient.Stops.Count > 0)
+        {
+            var gradient = fill.LinearGradient;
+            var stops = new List<object>();
+            
+            foreach (var stop in gradient.Stops)
+            {
+                var color = stop.Color;
+                if (stop.Opacity.HasValue)
+                {
+                    // Convert to rgba if opacity specified
+                    color = $"rgba({color}, {stop.Opacity.Value})";
+                }
+                
+                stops.Add(new
+                {
+                    offset = stop.Offset,
+                    color = color
+                });
+            }
+            
+            // Return ECharts linear gradient object
+            return new
+            {
+                type = "linear",
+                x = gradient.Direction == GradientDirection.Horizontal ? 0 : 0,
+                y = gradient.Direction == GradientDirection.Horizontal ? 0 : 0,
+                x2 = gradient.Direction == GradientDirection.Horizontal ? 1 : 0,
+                y2 = gradient.Direction == GradientDirection.Horizontal ? 0 : 1,
+                colorStops = stops
+            };
+        }
+        
+        // Solid fill with optional opacity
+        if (!string.IsNullOrEmpty(fill.Color))
+        {
+            if (fill.Opacity.HasValue)
+            {
+                return $"rgba({fill.Color}, {fill.Opacity.Value})";
+            }
+            return fill.Color;
+        }
+        
+        return null;
+    }
+    
+    /// <summary>
     /// Builds split line (grid line) configuration.
     /// </summary>
     protected EChartsSplitLine BuildSplitLine(bool isXAxis)

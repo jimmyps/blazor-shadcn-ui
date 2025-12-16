@@ -1,6 +1,12 @@
 @namespace BlazorUI.Components.Chart
 
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
 @code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
     /// <summary>
     /// Gets or sets the fill color.
     /// </summary>
@@ -18,4 +24,33 @@
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the LinearGradient child component.
+    /// </summary>
+    public LinearGradient? LinearGradient { get; private set; }
+    
+    /// <summary>
+    /// Registers a LinearGradient child component.
+    /// </summary>
+    public void RegisterLinearGradient(LinearGradient gradient)
+    {
+        LinearGradient = gradient;
+    }
+    
+    protected override void OnInitialized()
+    {
+        // Register with parent series
+        if (Parent != null)
+        {
+            try
+            {
+                Parent.RegisterFill(this);
+            }
+            catch
+            {
+                // Parent doesn't support Fill
+            }
+        }
+    }
 }
