@@ -399,12 +399,21 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
             _ => null
         };
         
+        // Get interval
+        var interval = axisObj switch
+        {
+            XAxis x => x.Interval,
+            YAxis y => y.Interval,
+            _ => null
+        };
+        
         var result = new EChartsAxis
         {
             Type = type,
             Position = position,
             Min = min,
             Max = max,
+            Interval = interval,
             AxisLine = axisLineObj,
             AxisTick = tickLineObj,
             SplitLine = BuildSplitLine(isXAxis),

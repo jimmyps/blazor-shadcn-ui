@@ -120,6 +120,12 @@ public sealed class EChartsAxis
     [JsonPropertyName("max")]
     public double? Max { get; set; }
 
+    /// <summary>
+    /// Interval of axis tick. Maps to axis.interval in ECharts.
+    /// </summary>
+    [JsonPropertyName("interval")]
+    public double? Interval { get; set; }
+
     [JsonPropertyName("axisLine")]
     public EChartsAxisLine? AxisLine { get; set; }
 
