@@ -140,6 +140,54 @@ public enum LegendVerticalAlign
 }
 
 /// <summary>
+/// Legend icon type for series symbols in the legend.
+/// Maps to ECharts legend.icon property.
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum LegendIcon
+{
+    /// <summary>
+    /// Circle icon.
+    /// </summary>
+    Circle,
+    
+    /// <summary>
+    /// Rectangle icon.
+    /// </summary>
+    Rect,
+    
+    /// <summary>
+    /// Rounded rectangle icon.
+    /// </summary>
+    RoundRect,
+    
+    /// <summary>
+    /// Triangle icon.
+    /// </summary>
+    Triangle,
+    
+    /// <summary>
+    /// Diamond icon.
+    /// </summary>
+    Diamond,
+    
+    /// <summary>
+    /// Pin icon (droplet shape).
+    /// </summary>
+    Pin,
+    
+    /// <summary>
+    /// Arrow icon.
+    /// </summary>
+    Arrow,
+    
+    /// <summary>
+    /// No icon (empty space).
+    /// </summary>
+    None
+}
+
+/// <summary>
 /// Series emphasis/focus behavior.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]

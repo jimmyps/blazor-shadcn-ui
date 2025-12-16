@@ -33,6 +33,13 @@
     [Parameter]
     public int MarginTop { get; set; } = 4;
     
+    /// <summary>
+    /// Gets or sets the icon type for legend items.
+    /// Maps to ECharts legend.icon property.
+    /// </summary>
+    [Parameter]
+    public LegendIcon Icon { get; set; } = LegendIcon.Circle;
+    
     protected override void OnInitialized()
     {
         if (Parent != null)

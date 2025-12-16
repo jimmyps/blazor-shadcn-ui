@@ -193,6 +193,18 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
                 LegendVerticalAlign.Top => legend.MarginTop.ToString(),
                 LegendVerticalAlign.Middle => "middle",
                 _ => "bottom"
+            },
+            Icon = legend.Icon switch
+            {
+                LegendIcon.Circle => "circle",
+                LegendIcon.Rect => "rect",
+                LegendIcon.RoundRect => "roundRect",
+                LegendIcon.Triangle => "triangle",
+                LegendIcon.Diamond => "diamond",
+                LegendIcon.Pin => "pin",
+                LegendIcon.Arrow => "arrow",
+                LegendIcon.None => "none",
+                _ => "circle"
             }
         };
     }
@@ -258,6 +270,36 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
             _ => true
         };
         
+        // Get axis line styling parameters
+        var axisLineColor = axisObj switch
+        {
+            XAxis x => x.Color,
+            YAxis y => y.Color,
+            _ => null
+        };
+        
+        var axisLineWidth = axisObj switch
+        {
+            XAxis x => x.Width,
+            YAxis y => y.Width,
+            _ => null
+        };
+        
+        // Get tick line styling parameters
+        var tickLineColor = axisObj switch
+        {
+            XAxis x => x.TickColor,
+            YAxis y => y.TickColor,
+            _ => null
+        };
+        
+        var tickLineWidth = axisObj switch
+        {
+            XAxis x => x.TickWidth,
+            YAxis y => y.TickWidth,
+            _ => null
+        };
+        
         var type = scale switch
         {
             AxisScale.Category => "category",
@@ -281,11 +323,53 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
             _ => null
         };
         
+        // Build axis line with styling
+        EChartsAxisLine? axisLineObj = null;
+        if (show && axisLine)
+        {
+            axisLineObj = new EChartsAxisLine
+            {
+                Show = true,
+                LineStyle = (axisLineColor != null || axisLineWidth != null)
+                    ? new EChartsLineStyle
+                    {
+                        Color = axisLineColor,
+                        Width = axisLineWidth
+                    }
+                    : null
+            };
+        }
+        else if (show)
+        {
+            axisLineObj = new EChartsAxisLine { Show = false };
+        }
+        
+        // Build tick line with styling
+        EChartsAxisTick? tickLineObj = null;
+        if (show && tickLine)
+        {
+            tickLineObj = new EChartsAxisTick
+            {
+                Show = true,
+                LineStyle = (tickLineColor != null || tickLineWidth != null)
+                    ? new EChartsLineStyle
+                    {
+                        Color = tickLineColor,
+                        Width = tickLineWidth
+                    }
+                    : null
+            };
+        }
+        else if (show)
+        {
+            tickLineObj = new EChartsAxisTick { Show = false };
+        }
+        
         var result = new EChartsAxis
         {
             Type = type,
-            AxisLine = new EChartsAxisLine { Show = show && axisLine },
-            AxisTick = new EChartsAxisTick { Show = show && tickLine },
+            AxisLine = axisLineObj,
+            AxisTick = tickLineObj,
             SplitLine = BuildSplitLine(isXAxis),
             AxisLabel = BuildAxisLabel(axisLabel)
         };

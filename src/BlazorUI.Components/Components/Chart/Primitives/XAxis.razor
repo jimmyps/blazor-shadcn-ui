@@ -36,6 +36,34 @@
     /// </summary>
     [Parameter]
     public bool TickLine { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the color of the axis line.
+    /// Maps to axisLine.lineStyle.color.
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the width of the axis line in pixels.
+    /// Maps to axisLine.lineStyle.width.
+    /// </summary>
+    [Parameter]
+    public int? Width { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the color of the tick lines.
+    /// Maps to axisTick.lineStyle.color.
+    /// </summary>
+    [Parameter]
+    public string? TickColor { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the width of the tick lines in pixels.
+    /// Maps to axisTick.lineStyle.width.
+    /// </summary>
+    [Parameter]
+    public int? TickWidth { get; set; }
 
     /// <summary>
     /// Gets or sets the child content for nested components (e.g., AxisLabel).
