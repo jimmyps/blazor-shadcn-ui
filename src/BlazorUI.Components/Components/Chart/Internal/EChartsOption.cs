@@ -150,6 +150,48 @@ public sealed class EChartsAxisLabel
     /// </summary>
     [JsonPropertyName("formatter")]
     public string? Formatter { get; set; }
+
+    [JsonPropertyName("rotate")]
+    public int? Rotate { get; set; }
+
+    [JsonPropertyName("interval")]
+    public int? Interval { get; set; }
+
+    [JsonPropertyName("inside")]
+    public bool? Inside { get; set; }
+
+    [JsonPropertyName("margin")]
+    public int? Margin { get; set; }
+
+    [JsonPropertyName("hideOverlap")]
+    public bool? HideOverlap { get; set; }
+
+    [JsonPropertyName("fontSize")]
+    public int? FontSize { get; set; }
+
+    [JsonPropertyName("fontFamily")]
+    public string? FontFamily { get; set; }
+
+    [JsonPropertyName("fontWeight")]
+    public string? FontWeight { get; set; }
+
+    [JsonPropertyName("lineHeight")]
+    public int? LineHeight { get; set; }
+
+    [JsonPropertyName("align")]
+    public string? Align { get; set; }
+
+    [JsonPropertyName("verticalAlign")]
+    public string? VerticalAlign { get; set; }
+
+    [JsonPropertyName("overflow")]
+    public string? Overflow { get; set; }
+
+    [JsonPropertyName("width")]
+    public int? Width { get; set; }
+
+    [JsonPropertyName("ellipsis")]
+    public string? Ellipsis { get; set; }
 }
 
 public sealed class EChartsSplitLine

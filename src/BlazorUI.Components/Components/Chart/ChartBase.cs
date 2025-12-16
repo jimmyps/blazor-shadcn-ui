@@ -273,15 +273,56 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
             type = isXAxis ? "category" : "value";
         }
         
+        // Get AxisLabel component if nested in XAxis or YAxis
+        AxisLabel? axisLabel = axisObj switch
+        {
+            XAxis x => x.AxisLabelComponent,
+            YAxis y => y.AxisLabelComponent,
+            _ => null
+        };
+        
         var result = new EChartsAxis
         {
             Type = type,
             AxisLine = new EChartsAxisLine { Show = show && axisLine },
             AxisTick = new EChartsAxisTick { Show = show && tickLine },
-            SplitLine = BuildSplitLine(isXAxis)
+            SplitLine = BuildSplitLine(isXAxis),
+            AxisLabel = BuildAxisLabel(axisLabel)
         };
         
         return result;
+    }
+    
+    /// <summary>
+    /// Builds ECharts axis label configuration from AxisLabel component.
+    /// </summary>
+    protected EChartsAxisLabel? BuildAxisLabel(AxisLabel? axisLabel)
+    {
+        if (axisLabel == null)
+        {
+            return null;
+        }
+        
+        return new EChartsAxisLabel
+        {
+            Show = axisLabel.Show,
+            Rotate = axisLabel.Rotate,
+            Formatter = axisLabel.Formatter,
+            Interval = axisLabel.Interval,
+            Inside = axisLabel.Inside,
+            Margin = axisLabel.Margin,
+            HideOverlap = axisLabel.HideOverlap,
+            Color = axisLabel.Color,
+            FontSize = axisLabel.FontSize,
+            FontFamily = axisLabel.FontFamily,
+            FontWeight = axisLabel.FontWeight,
+            LineHeight = axisLabel.LineHeight,
+            Align = axisLabel.Align,
+            VerticalAlign = axisLabel.VerticalAlign,
+            Overflow = axisLabel.Overflow,
+            Width = axisLabel.Width,
+            Ellipsis = axisLabel.Ellipsis
+        };
     }
     
     /// <summary>

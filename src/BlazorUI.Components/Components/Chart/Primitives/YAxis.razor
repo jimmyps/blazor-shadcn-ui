@@ -1,5 +1,9 @@
 @namespace BlazorUI.Components.Chart
 
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
 @code {
     [CascadingParameter] private dynamic? Parent { get; set; }
     
@@ -32,6 +36,25 @@
     /// </summary>
     [Parameter]
     public bool TickLine { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the child content for nested components (e.g., AxisLabel).
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Gets the registered AxisLabel component, if any.
+    /// </summary>
+    public AxisLabel? AxisLabelComponent { get; private set; }
+
+    /// <summary>
+    /// Registers an AxisLabel child component.
+    /// </summary>
+    public void RegisterAxisLabel(AxisLabel axisLabel)
+    {
+        AxisLabelComponent = axisLabel;
+    }
     
     protected override void OnInitialized()
     {
