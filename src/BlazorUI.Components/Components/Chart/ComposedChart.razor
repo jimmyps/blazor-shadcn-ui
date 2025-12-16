@@ -25,7 +25,11 @@
             Tooltip = BuildTooltip(),
             XAxis = BuildXAxis(),
             YAxis = BuildYAxis(),
-            Series = BuildSeries()
+            Series = BuildSeries(),
+            Animation = EnableAnimation,
+            AnimationDuration = EnableAnimation ? AnimationDuration : 0,
+            AnimationEasing = MapAnimationEasing(AnimationEasing),
+            AnimationDelay = AnimationDelay
         };
         
         return option;
