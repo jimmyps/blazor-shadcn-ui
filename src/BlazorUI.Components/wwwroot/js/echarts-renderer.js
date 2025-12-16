@@ -6,6 +6,9 @@
 // Store chart instances by ID
 const chartInstances = new Map();
 
+// Global promise to track ECharts library loading (single-flight pattern)
+let echartsLoadingPromise = null;
+
 /**
  * Create a new ECharts instance
  * @param {HTMLElement} element - Container element to render the chart
@@ -20,11 +23,20 @@ export async function createChart(element, config) {
     
     console.log('[ECharts] createChart called with config:', config);
     
-    // Dynamically import ECharts from CDN
+    // Single-flight ECharts loading: only first call downloads, others await same promise
     if (!window.echarts) {
-        console.log('[ECharts] Loading ECharts library from CDN...');
-        await import('https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js');
+        if (!echartsLoadingPromise) {
+            console.log('[ECharts] Loading ECharts library from CDN (v6.0.0)...');
+            echartsLoadingPromise = import('https://cdn.jsdelivr.net/npm/echarts@6.0.0/dist/echarts.min.js');
+        } else {
+            console.log('[ECharts] ECharts library already loading, awaiting...');
+        }
+        
+        await echartsLoadingPromise;
+        echartsLoadingPromise = null; // Clear promise after successful load
         console.log('[ECharts] ECharts library loaded successfully');
+    } else {
+        console.log('[ECharts] ECharts library already loaded');
     }
     
     const chartId = generateId();
@@ -516,17 +528,15 @@ function getCssVariable(varName) {
         return '';
     }
     
-    // Check if this is HSL format (contains %) or OKLCH format (no %)
-    if (value.includes('%')) {
-        // HSL format: "212.7 26.8% 83.9%" → "212.7, 26.8%, 83.9%"
-        const parts = value.split(' ');
-        if (parts.length === 3) {
+    // Check if value has 3 numeric parts - could be HSL or OKLCH
+    const parts = value.split(' ');
+    if (parts.length === 3) {
+        // Check if any part contains % (HSL format)
+        if (value.includes('%')) {
+            // HSL format: "212.7 26.8% 83.9%" → "212.7, 26.8%, 83.9%"
             return `${parts[0]}, ${parts[1]}, ${parts[2]}`;
-        }
-    } else {
-        // OKLCH format: "0.646 0.222 41.116" → convert to hex
-        const parts = value.split(' ');
-        if (parts.length === 3) {
+        } else {
+            // OKLCH format: "0.646 0.222 41.116" → convert to hex
             const l = parseFloat(parts[0]);
             const c = parseFloat(parts[1]);
             const h = parseFloat(parts[2]);
@@ -536,10 +546,9 @@ function getCssVariable(varName) {
                 return hex;
             }
         }
-        // Return as-is if not parseable as OKLCH
-        return value;
     }
     
+    // Return as-is if not HSL or OKLCH 3-part format
     return value;
 }
 
@@ -574,27 +583,32 @@ function resolveCssVariables(obj) {
                 return fullyResolved;
             }
             
-            // Check if var() is inside hsl() or oklch() - if so, just replace var() with values
-            // Otherwise, wrap the resolved value appropriately
+            // Check wrapper function in original string to determine format
             let result;
-            if (obj.startsWith('hsl(var(')) {
-                // Already has hsl() wrapper, just replace var(...) with the values
+            if (obj.startsWith('hsl(')) {
+                // HSL wrapper detected: hsl(var(--chart-1))
+                // Replace var(...) with resolved values inside hsl()
                 result = obj.replace(cssVarMatch[0], resolvedValue);
-            } else if (obj.startsWith('oklch(var(')) {
-                // OKLCH wrapper detected - resolved value should now be hex, use it directly
-                // Remove the oklch() wrapper and use the hex value
+            } else if (obj.startsWith('oklch(')) {
+                // OKLCH wrapper detected: oklch(var(--chart-1))
+                // Resolved value should be hex, use it directly (strip wrapper)
                 if (resolvedValue.startsWith('#')) {
                     result = resolvedValue;
                 } else {
+                    // Fallback: replace var() if not hex
                     result = obj.replace(cssVarMatch[0], resolvedValue);
                 }
+            } else if (obj.startsWith('rgb(')) {
+                // RGB wrapper detected: rgb(var(--chart-1))
+                result = obj.replace(cssVarMatch[0], resolvedValue);
             } else if (obj.startsWith('var(')) {
-                // No wrapper, detect format and add appropriate wrapper or use as-is
-                // If it's hex (starts with #), use directly
+                // No wrapper: var(--chart-1)
+                // Use resolved value directly (already formatted by getCssVariable)
                 if (resolvedValue.startsWith('#')) {
+                    // Hex value, use as-is
                     result = resolvedValue;
-                } else if (resolvedValue.includes('%') || resolvedValue.includes(',')) {
-                    // HSL format
+                } else if (resolvedValue.includes(',')) {
+                    // HSL format with commas, wrap it
                     result = `hsl(${resolvedValue})`;
                 } else {
                     // Unknown format, use as-is
