@@ -370,3 +370,89 @@ public enum PolarGridType
     /// </summary>
     Polygon
 }
+
+/// <summary>
+/// Y axis position (left or right side of chart).
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum YAxisPosition
+{
+    /// <summary>
+    /// Position axis on the left side (default).
+    /// </summary>
+    Left,
+    
+    /// <summary>
+    /// Position axis on the right side.
+    /// </summary>
+    Right
+}
+
+/// <summary>
+/// Line style/stroke type for grid lines, borders, etc.
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum LineStyleType
+{
+    /// <summary>
+    /// Solid line (default).
+    /// </summary>
+    Solid,
+    
+    /// <summary>
+    /// Dashed line.
+    /// </summary>
+    Dashed,
+    
+    /// <summary>
+    /// Dotted line.
+    /// </summary>
+    Dotted
+}
+
+/// <summary>
+/// Symbol/marker shape for line and scatter series.
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum SymbolShape
+{
+    /// <summary>
+    /// Circle marker (default).
+    /// </summary>
+    Circle,
+    
+    /// <summary>
+    /// Rectangle/square marker.
+    /// </summary>
+    Rect,
+    
+    /// <summary>
+    /// Rounded rectangle marker.
+    /// </summary>
+    RoundRect,
+    
+    /// <summary>
+    /// Triangle marker.
+    /// </summary>
+    Triangle,
+    
+    /// <summary>
+    /// Diamond marker.
+    /// </summary>
+    Diamond,
+    
+    /// <summary>
+    /// Pin/droplet marker.
+    /// </summary>
+    Pin,
+    
+    /// <summary>
+    /// Arrow marker.
+    /// </summary>
+    Arrow,
+    
+    /// <summary>
+    /// No marker/symbol.
+    /// </summary>
+    None
+}

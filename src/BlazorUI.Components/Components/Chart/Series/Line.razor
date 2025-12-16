@@ -44,10 +44,31 @@
     public bool ShowDots { get; set; } = false;
     
     /// <summary>
+    /// Gets or sets the size of dots/symbols at data points in pixels.
+    /// Maps to series.symbolSize.
+    /// </summary>
+    [Parameter]
+    public int DotSize { get; set; } = 4;
+    
+    /// <summary>
+    /// Gets or sets the shape of dots/symbols at data points.
+    /// Maps to series.symbol.
+    /// </summary>
+    [Parameter]
+    public SymbolShape DotShape { get; set; } = SymbolShape.Circle;
+    
+    /// <summary>
     /// Gets or sets the line width in pixels.
     /// </summary>
     [Parameter]
     public int LineWidth { get; set; } = 2;
+    
+    /// <summary>
+    /// Gets or sets the opacity for the line (0.0 to 1.0).
+    /// Maps to series.lineStyle.opacity or itemStyle.opacity.
+    /// </summary>
+    [Parameter]
+    public double? Opacity { get; set; }
     
     /// <summary>
     /// Gets or sets whether the line should be dashed.

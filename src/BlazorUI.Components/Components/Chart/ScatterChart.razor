@@ -74,6 +74,18 @@
                     Type = "scatter",
                     Name = scatter.Name,
                     Data = scatterData,
+                    Symbol = scatter.Symbol switch
+                    {
+                        SymbolShape.Rect => "rect",
+                        SymbolShape.RoundRect => "roundRect",
+                        SymbolShape.Triangle => "triangle",
+                        SymbolShape.Diamond => "diamond",
+                        SymbolShape.Pin => "pin",
+                        SymbolShape.Arrow => "arrow",
+                        SymbolShape.None => "none",
+                        _ => "circle"
+                    },
+                    SymbolSize = scatter.SymbolSize,
                     ItemStyle = new EChartsItemStyle
                     {
                         Color = GetSeriesColor(i, scatter.Color)

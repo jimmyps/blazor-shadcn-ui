@@ -26,6 +26,27 @@
     public AxisScale Scale { get; set; } = AxisScale.Auto;
     
     /// <summary>
+    /// Gets or sets the position of the Y axis (left or right).
+    /// Maps to yAxis.position.
+    /// </summary>
+    [Parameter]
+    public YAxisPosition Position { get; set; } = YAxisPosition.Left;
+    
+    /// <summary>
+    /// Gets or sets the minimum value for the axis.
+    /// Maps to yAxis.min.
+    /// </summary>
+    [Parameter]
+    public double? Min { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the maximum value for the axis.
+    /// Maps to yAxis.max.
+    /// </summary>
+    [Parameter]
+    public double? Max { get; set; }
+    
+    /// <summary>
     /// Gets or sets whether to show the axis line.
     /// </summary>
     [Parameter]

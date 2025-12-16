@@ -80,7 +80,8 @@
                     {
                         // Use gradient if Fill component is present, otherwise use series color
                         Color = BuildGradient(area.Fill) ?? GetSeriesColor(i, area.Color),
-                        Opacity = area.Fill != null ? (area.Fill.Opacity ?? 0.3) : 0.3
+                        // Priority: Fill.Opacity > Area.Opacity > default (0.3)
+                        Opacity = area.Fill?.Opacity ?? area.Opacity ?? 0.3
                     },
                     ItemStyle = new EChartsItemStyle
                     {

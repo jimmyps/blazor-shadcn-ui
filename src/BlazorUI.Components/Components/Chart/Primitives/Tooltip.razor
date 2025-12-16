@@ -31,6 +31,34 @@
     [Parameter]
     public string? Formatter { get; set; }
     
+    /// <summary>
+    /// Gets or sets the background color for the tooltip.
+    /// Maps to tooltip.backgroundColor.
+    /// </summary>
+    [Parameter]
+    public string? BackgroundColor { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the border color for the tooltip.
+    /// Maps to tooltip.borderColor.
+    /// </summary>
+    [Parameter]
+    public string? BorderColor { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the border width for the tooltip in pixels.
+    /// Maps to tooltip.borderWidth.
+    /// </summary>
+    [Parameter]
+    public int? BorderWidth { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the text color for the tooltip.
+    /// Maps to tooltip.textStyle.color.
+    /// </summary>
+    [Parameter]
+    public string? TextColor { get; set; }
+    
     protected override void OnInitialized()
     {
         if (Parent != null)

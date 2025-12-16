@@ -102,6 +102,24 @@ public sealed class EChartsAxis
     [JsonPropertyName("data")]
     public List<string>? Data { get; set; }
 
+    /// <summary>
+    /// Axis position: "left" | "right" | "top" | "bottom"
+    /// </summary>
+    [JsonPropertyName("position")]
+    public string? Position { get; set; }
+
+    /// <summary>
+    /// Minimum value for the axis.
+    /// </summary>
+    [JsonPropertyName("min")]
+    public double? Min { get; set; }
+
+    /// <summary>
+    /// Maximum value for the axis.
+    /// </summary>
+    [JsonPropertyName("max")]
+    public double? Max { get; set; }
+
     [JsonPropertyName("axisLine")]
     public EChartsAxisLine? AxisLine { get; set; }
 
@@ -219,6 +237,12 @@ public sealed class EChartsLineStyle
     /// </summary>
     [JsonPropertyName("color")]
     public object? Color { get; set; }
+
+    /// <summary>
+    /// Opacity (0.0 to 1.0).
+    /// </summary>
+    [JsonPropertyName("opacity")]
+    public double? Opacity { get; set; }
 }
 
 public sealed class EChartsSeries
@@ -264,6 +288,18 @@ public sealed class EChartsSeries
     /// </summary>
     [JsonPropertyName("showSymbol")]
     public bool? ShowSymbol { get; set; }
+
+    /// <summary>
+    /// Symbol/marker shape: "circle" | "rect" | "roundRect" | "triangle" | "diamond" | "pin" | "arrow" | "none"
+    /// </summary>
+    [JsonPropertyName("symbol")]
+    public string? Symbol { get; set; }
+
+    /// <summary>
+    /// Symbol/marker size in pixels.
+    /// </summary>
+    [JsonPropertyName("symbolSize")]
+    public int? SymbolSize { get; set; }
 
     /// <summary>
     /// Stack group name (bar/area).
@@ -331,6 +367,12 @@ public sealed class EChartsItemStyle
     /// </summary>
     [JsonPropertyName("borderRadius")]
     public object? BorderRadius { get; set; }
+
+    /// <summary>
+    /// Opacity (0.0 to 1.0).
+    /// </summary>
+    [JsonPropertyName("opacity")]
+    public double? Opacity { get; set; }
 }
 
 public sealed class EChartsAreaStyle
@@ -410,6 +452,39 @@ public sealed class EChartsTooltip
     /// </summary>
     [JsonPropertyName("formatter")]
     public string? Formatter { get; set; }
+
+    /// <summary>
+    /// Background color for the tooltip.
+    /// </summary>
+    [JsonPropertyName("backgroundColor")]
+    public string? BackgroundColor { get; set; }
+
+    /// <summary>
+    /// Border color for the tooltip.
+    /// </summary>
+    [JsonPropertyName("borderColor")]
+    public string? BorderColor { get; set; }
+
+    /// <summary>
+    /// Border width for the tooltip in pixels.
+    /// </summary>
+    [JsonPropertyName("borderWidth")]
+    public int? BorderWidth { get; set; }
+
+    /// <summary>
+    /// Text style configuration for tooltip text.
+    /// </summary>
+    [JsonPropertyName("textStyle")]
+    public EChartsTextStyle? TextStyle { get; set; }
+}
+
+public sealed class EChartsTextStyle
+{
+    /// <summary>
+    /// Text color.
+    /// </summary>
+    [JsonPropertyName("color")]
+    public string? Color { get; set; }
 }
 
 public sealed class EChartsAxisPointer

@@ -99,7 +99,8 @@
                     ItemStyle = new EChartsItemStyle
                     {
                         Color = GetSeriesColor(i, bar.Color),
-                        BorderRadius = bar.Radius.HasValue ? bar.Radius.Value : null
+                        BorderRadius = bar.Radius.HasValue ? bar.Radius.Value : null,
+                        Opacity = bar.Opacity
                     },
                     Emphasis = new EChartsEmphasis
                     {

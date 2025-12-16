@@ -50,6 +50,13 @@
     public int? Radius { get; set; }
     
     /// <summary>
+    /// Gets or sets the opacity for the bars (0.0 to 1.0).
+    /// Maps to series.itemStyle.opacity.
+    /// </summary>
+    [Parameter]
+    public double? Opacity { get; set; }
+    
+    /// <summary>
     /// Gets or sets whether to show labels on data points.
     /// </summary>
     [Parameter]

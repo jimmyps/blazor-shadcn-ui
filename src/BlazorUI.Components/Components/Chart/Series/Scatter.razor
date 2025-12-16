@@ -21,6 +21,20 @@
     public string? Color { get; set; }
     
     /// <summary>
+    /// Gets or sets the size of scatter symbols in pixels.
+    /// Maps to series.symbolSize.
+    /// </summary>
+    [Parameter]
+    public int SymbolSize { get; set; } = 10;
+    
+    /// <summary>
+    /// Gets or sets the shape of scatter symbols.
+    /// Maps to series.symbol.
+    /// </summary>
+    [Parameter]
+    public SymbolShape Symbol { get; set; } = SymbolShape.Circle;
+    
+    /// <summary>
     /// Gets or sets whether emphasis is enabled.
     /// </summary>
     [Parameter]

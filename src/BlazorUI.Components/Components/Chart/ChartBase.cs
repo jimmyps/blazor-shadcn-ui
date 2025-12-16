@@ -217,6 +217,16 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
         var tooltip = _tooltip ?? new Tooltip { Mode = GetDefaultTooltipMode() };
         var mode = tooltip.Mode ?? GetDefaultTooltipMode();
         
+        // Build text style if TextColor is specified
+        EChartsTextStyle? textStyle = null;
+        if (tooltip.TextColor != null)
+        {
+            textStyle = new EChartsTextStyle
+            {
+                Color = tooltip.TextColor
+            };
+        }
+        
         return new EChartsTooltip
         {
             Show = tooltip.Show,
@@ -231,7 +241,11 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
                     _ => "none"
                 }
             } : null,
-            Formatter = tooltip.Formatter
+            Formatter = tooltip.Formatter,
+            BackgroundColor = tooltip.BackgroundColor,
+            BorderColor = tooltip.BorderColor,
+            BorderWidth = tooltip.BorderWidth,
+            TextStyle = textStyle
         };
     }
     
@@ -365,9 +379,32 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
             tickLineObj = new EChartsAxisTick { Show = false };
         }
         
+        // Get position (for Y axis)
+        var position = !isXAxis && yAxis != null 
+            ? yAxis.Position == YAxisPosition.Right ? "right" : "left"
+            : null;
+        
+        // Get min/max
+        var min = axisObj switch
+        {
+            XAxis x => x.Min,
+            YAxis y => y.Min,
+            _ => null
+        };
+        
+        var max = axisObj switch
+        {
+            XAxis x => x.Max,
+            YAxis y => y.Max,
+            _ => null
+        };
+        
         var result = new EChartsAxis
         {
             Type = type,
+            Position = position,
+            Min = min,
+            Max = max,
             AxisLine = axisLineObj,
             AxisTick = tickLineObj,
             SplitLine = BuildSplitLine(isXAxis),
@@ -474,10 +511,28 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
         var grid = _grid ?? new Grid();
         var show = grid.Show && (isXAxis ? grid.Vertical : grid.Horizontal);
         
+        // Build line style if any styling property is set
+        EChartsLineStyle? lineStyle = null;
+        if (grid.Stroke != null || grid.StrokeWidth != null || grid.StrokeType != LineStyleType.Solid || grid.Opacity != null)
+        {
+            lineStyle = new EChartsLineStyle
+            {
+                Color = grid.Stroke,
+                Width = grid.StrokeWidth,
+                Type = grid.StrokeType switch
+                {
+                    LineStyleType.Dashed => "dashed",
+                    LineStyleType.Dotted => "dotted",
+                    _ => "solid"
+                },
+                Opacity = grid.Opacity
+            };
+        }
+        
         return new EChartsSplitLine
         {
             Show = show,
-            LineStyle = grid.Stroke != null ? new EChartsLineStyle { Color = grid.Stroke } : null
+            LineStyle = lineStyle
         };
     }
     

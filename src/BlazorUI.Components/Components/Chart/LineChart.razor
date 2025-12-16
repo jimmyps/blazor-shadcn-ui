@@ -79,15 +79,29 @@
                     Data = data.Cast<object>().ToList(),
                     Smooth = line.Interpolation == InterpolationType.Natural || line.Interpolation == InterpolationType.Monotone,
                     ShowSymbol = line.ShowDots,
+                    Symbol = line.DotShape switch
+                    {
+                        SymbolShape.Rect => "rect",
+                        SymbolShape.RoundRect => "roundRect",
+                        SymbolShape.Triangle => "triangle",
+                        SymbolShape.Diamond => "diamond",
+                        SymbolShape.Pin => "pin",
+                        SymbolShape.Arrow => "arrow",
+                        SymbolShape.None => "none",
+                        _ => "circle"
+                    },
+                    SymbolSize = line.ShowDots ? line.DotSize : 0,
                     LineStyle = new EChartsLineStyle
                     {
                         Width = line.LineWidth,
                         Type = line.Dashed ? "dashed" : "solid",
-                        Color = seriesColor
+                        Color = seriesColor,
+                        Opacity = line.Opacity
                     },
                     ItemStyle = new EChartsItemStyle
                     {
-                        Color = seriesColor
+                        Color = seriesColor,
+                        Opacity = line.Opacity
                     },
                     Emphasis = new EChartsEmphasis
                     {

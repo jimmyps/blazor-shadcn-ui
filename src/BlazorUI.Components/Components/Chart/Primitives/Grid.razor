@@ -27,6 +27,27 @@
     [Parameter]
     public string? Stroke { get; set; }
     
+    /// <summary>
+    /// Gets or sets the stroke width for grid lines in pixels.
+    /// Maps to grid line lineStyle.width.
+    /// </summary>
+    [Parameter]
+    public int? StrokeWidth { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the stroke/line type for grid lines.
+    /// Maps to grid line lineStyle.type.
+    /// </summary>
+    [Parameter]
+    public LineStyleType StrokeType { get; set; } = LineStyleType.Solid;
+    
+    /// <summary>
+    /// Gets or sets the opacity for grid lines (0.0 to 1.0).
+    /// Maps to grid line lineStyle.opacity.
+    /// </summary>
+    [Parameter]
+    public double? Opacity { get; set; }
+    
     protected override void OnInitialized()
     {
         if (Parent != null)
