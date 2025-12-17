@@ -419,6 +419,11 @@ public enum SymbolShape
     /// <summary>
     /// Circle marker (default).
     /// </summary>
+    EmptyCircle,
+
+    /// <summary>
+    /// Circle marker.
+    /// </summary>
     Circle,
     
     /// <summary>

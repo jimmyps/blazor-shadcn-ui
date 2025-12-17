@@ -476,41 +476,53 @@ function generateId() {
  * @returns {string} - Hex color string
  */
 function oklchToHex(l, c, h) {
-    // Convert OKLCH to linear RGB
-    // First convert to OKLab
-    const a = c * Math.cos(h * Math.PI / 180);
-    const b = c * Math.sin(h * Math.PI / 180);
-    
-    // OKLab to linear RGB (simplified conversion)
+    // Accept both CSS-style (0–100) and normalized (0–1) lightness.
+    // If L looks like a percentage value, normalize it.
+    if (l > 1) {
+        l = l / 100;
+    }
+
+    // Convert hue from degrees to radians
+    const hRad = (h * Math.PI) / 180;
+    const a = c * Math.cos(hRad);
+    const b = c * Math.sin(hRad);
+
+    // Convert OKLab to LMS (non-linear)
     const l_ = l + 0.3963377774 * a + 0.2158037573 * b;
     const m_ = l - 0.1055613458 * a - 0.0638541728 * b;
     const s_ = l - 0.0894841775 * a - 1.2914855480 * b;
-    
+
+    // Cubic to get linear LMS
     const l3 = l_ * l_ * l_;
     const m3 = m_ * m_ * m_;
     const s3 = s_ * s_ * s_;
-    
+
+    // LMS (linear) to linear sRGB
     let r = +4.0767416621 * l3 - 3.3077115913 * m3 + 0.2309699292 * s3;
     let g = -1.2684380046 * l3 + 2.6097574011 * m3 - 0.3413193965 * s3;
     let bl = -0.0041960863 * l3 - 0.7034186147 * m3 + 1.7076147010 * s3;
-    
-    // Apply gamma correction
-    const gammaCorrect = (val) => {
-        val = Math.max(0, Math.min(1, val));
-        return val <= 0.0031308 ? 12.92 * val : 1.055 * Math.pow(val, 1/2.4) - 0.055;
-    };
-    
+
+    // Clamp to [0,1] before gamma correction
+    const clamp01 = (v) => Math.min(1, Math.max(0, v));
+    r = clamp01(r);
+    g = clamp01(g);
+    bl = clamp01(bl);
+
+    // sRGB gamma correction
+    const gammaCorrect = (val) =>
+        val <= 0.0031308
+            ? 12.92 * val
+            : 1.055 * Math.pow(val, 1 / 2.4) - 0.055;
+
     r = gammaCorrect(r);
     g = gammaCorrect(g);
     bl = gammaCorrect(bl);
-    
-    // Convert to 0-255 range and create hex
+
     const toHex = (val) => {
-        const int = Math.round(val * 255);
-        const clamped = Math.max(0, Math.min(255, int));
-        return clamped.toString(16).padStart(2, '0');
+        const int = Math.round(clamp01(val) * 255);
+        return int.toString(16).padStart(2, '0');
     };
-    
+
     return `#${toHex(r)}${toHex(g)}${toHex(bl)}`;
 }
 
@@ -529,18 +541,27 @@ function getCssVariable(varName) {
     }
     
     // Check if value has 3 numeric parts - could be HSL or OKLCH
-    const parts = value.split(' ');
+    const parts = value
+        .replace(/(oklch|hsl)\(/, '') // remove optional function prefix
+        .replace(')', '')            // remove trailing parenthesis
+        .trim()
+        .split(/\s+/);               // split on any whitespace
+
     if (parts.length === 3) {
-        // Check if any part contains % (HSL format)
-        if (value.includes('%')) {
-            // HSL format: "212.7 26.8% 83.9%" → "212.7, 26.8%, 83.9%"
+        // HSL format: "212.7 26.8% 83.9%" (often used as hsl(var(--...)))
+        // We treat anything with % as HSL-like and return "h, s%, l%"
+        if (value.startsWith('hsl(')) {
             return `${parts[0]}, ${parts[1]}, ${parts[2]}`;
-        } else {
-            // OKLCH format: "0.646 0.222 41.116" → convert to hex
+        }
+
+        // OKLCH format: "0.646 0.222 41.116" or "oklch(0.646 0.222 41.116)"
+        // Detect explicitly by function name or by lack of % when oklch is present
+        if (value.startsWith('oklch(') || value.includes('oklch')) {
             const l = parseFloat(parts[0]);
             const c = parseFloat(parts[1]);
             const h = parseFloat(parts[2]);
-            if (!isNaN(l) && !isNaN(c) && !isNaN(h)) {
+
+            if (!Number.isNaN(l) && !Number.isNaN(c) && !Number.isNaN(h)) {
                 const hex = oklchToHex(l, c, h);
                 console.log(`Converted OKLCH(${l}, ${c}, ${h}) to ${hex}`);
                 return hex;

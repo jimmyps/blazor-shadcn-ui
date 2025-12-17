@@ -127,8 +127,16 @@
         {
             _state.ControlledValue = Value;
             _context.State.Value = Value;
-            // Update DisplayText to match the new value
-            _context.State.DisplayText = Value?.ToString();
+
+            if (Value is not null)
+            {
+                // Let the context find the right item and set DisplayText
+                _context.SyncDisplayTextFromItems(Value);
+            }
+            else
+            {
+                _context.State.DisplayText = string.Empty;
+            }
         }
 
         // Handle controlled open state

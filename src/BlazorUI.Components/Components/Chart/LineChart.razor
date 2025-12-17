@@ -92,9 +92,9 @@
                         SymbolShape.Pin => "pin",
                         SymbolShape.Arrow => "arrow",
                         SymbolShape.None => "none",
-                        _ => "circle"
+                        _ => "emptyCircle"
                     },
-                    SymbolSize = line.ShowDots ? line.DotSize : 0,
+                    SymbolSize = line.DotSize,
                     LineStyle = new EChartsLineStyle
                     {
                         Width = line.LineWidth,

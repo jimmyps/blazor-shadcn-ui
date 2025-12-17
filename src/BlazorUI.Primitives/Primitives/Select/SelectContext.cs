@@ -203,6 +203,25 @@ public class SelectContext<TValue> : PrimitiveContextWithEvents<SelectState<TVal
     private List<SelectItemMetadata<TValue>> Items { get; } = new List<SelectItemMetadata<TValue>>();
 
     /// <summary>
+    /// Syncs the display text for the currently selected value from the registered items.
+    /// </summary>
+    /// <param name="value">The value to sync display text for.</param>
+    public void SyncDisplayTextFromItems(TValue? value)
+    {
+        if (value is null)
+        {
+            State.DisplayText = null;
+            return;
+        }
+
+        var item = Items.FirstOrDefault(i => EqualityComparer<TValue?>.Default.Equals(i.Value, value));
+        if (item is not null)
+        {
+            State.DisplayText = item.DisplayText ?? value.ToString();
+        }
+    }
+
+    /// <summary>
     /// Registers an item with the select context for keyboard navigation.
     /// </summary>
     /// <param name="value">The value of the item.</param>

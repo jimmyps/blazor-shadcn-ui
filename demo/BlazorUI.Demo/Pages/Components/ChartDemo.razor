@@ -16,11 +16,11 @@
         </div>
     </div>
 
-    <Tabs DefaultValue="line">
+    <Tabs DefaultValue="area">
         <TabsList Class="grid w-full grid-cols-7 lg:w-auto lg:grid-cols-7">
-            <TabsTrigger Value="line">Line</TabsTrigger>
             <TabsTrigger Value="area">Area</TabsTrigger>
             <TabsTrigger Value="bar">Bar</TabsTrigger>
+            <TabsTrigger Value="line">Line</TabsTrigger>
             <TabsTrigger Value="pie">Pie</TabsTrigger>
             <TabsTrigger Value="scatter">Scatter</TabsTrigger>
             <TabsTrigger Value="radar">Radar</TabsTrigger>
@@ -28,19 +28,19 @@
         </TabsList>
 
         <TabsContent Value="line" Class="space-y-8 pt-6">
-            <LineChartExamples />
+            <NewLineChartExamples />
         </TabsContent>
 
         <TabsContent Value="area" Class="space-y-8 pt-6">
-            <AreaChartExamples />
+            <NewAreaChartExamples />
         </TabsContent>
 
         <TabsContent Value="bar" Class="space-y-8 pt-6">
-            <BarChartExamples />
+            <NewBarChartExamples />
         </TabsContent>
 
         <TabsContent Value="pie" Class="space-y-8 pt-6">
-            <PieChartExamples />
+            <NewPieChartExamples />
         </TabsContent>
 
         <TabsContent Value="scatter" Class="space-y-8 pt-6">

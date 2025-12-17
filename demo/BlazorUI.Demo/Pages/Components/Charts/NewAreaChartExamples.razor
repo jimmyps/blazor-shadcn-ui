@@ -1,4 +1,5 @@
 @page "/components/charts/area-new"
+@using BlazorUI.Components.Card
 @using BlazorUI.Components.Chart
 
 <PageHeader Title="Area Charts" Description="Comprehensive area chart examples following shadcn/ui design patterns" />
@@ -29,7 +30,7 @@
                     <YAxis />
                     <Tooltip Mode="TooltipMode.Axis" />
                     <Legend />
-                    <Area DataKey="desktop" Name="Desktop" StackId="a">
+                    <Area DataKey="desktop" Name="Desktop" StackId="Total">
                         <Fill>
                             <LinearGradient Direction="GradientDirection.Vertical">
                                 <Stop Offset="0.05" Color="var(--chart-1)" Opacity="0.8" />
@@ -37,7 +38,7 @@
                             </LinearGradient>
                         </Fill>
                     </Area>
-                    <Area DataKey="mobile" Name="Mobile" StackId="a">
+                    <Area DataKey="mobile" Name="Mobile" StackId="Total">
                         <Fill>
                             <LinearGradient Direction="GradientDirection.Vertical">
                                 <Stop Offset="0.05" Color="var(--chart-2)" Opacity="0.8" />
