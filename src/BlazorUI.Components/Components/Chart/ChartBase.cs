@@ -59,19 +59,31 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     /// Gets or sets the animation duration in milliseconds.
     /// </summary>
     [Parameter]
-    public int AnimationDuration { get; set; } = 1500;
+    public int AnimationDuration { get; set; } = 1000;
 
     /// <summary>
     /// Gets or sets the animation easing function.
     /// </summary>
     [Parameter]
-    public AnimationEasing AnimationEasing { get; set; } = AnimationEasing.EaseOutCubic;
+    public AnimationEasing AnimationEasing { get; set; } = AnimationEasing.CubicOut;
 
     /// <summary>
     /// Gets or sets the animation delay in milliseconds.
     /// </summary>
     [Parameter]
     public int AnimationDelay { get; set; } = 0;
+
+    /// <summary>
+    /// Gets or sets the animation duration for data updates.
+    /// </summary>
+    [Parameter]
+    public int AnimationDurationUpdate { get; set; } = 300;
+
+    /// <summary>
+    /// Gets or sets the animation easing for data updates.
+    /// </summary>
+    [Parameter]
+    public AnimationEasing AnimationEasingUpdate { get; set; } = AnimationEasing.CubicInOut;
     
     protected ElementReference _canvasRef;
     protected IChartRenderer? _renderer;
@@ -585,19 +597,37 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
         return easing switch
         {
             AnimationEasing.Linear => "linear",
-            AnimationEasing.EaseInQuad => "cubicIn",
-            AnimationEasing.EaseOutQuad => "cubicOut",
-            AnimationEasing.EaseInOutQuad => "cubicInOut",
-            AnimationEasing.EaseInCubic => "cubicIn",
-            AnimationEasing.EaseOutCubic => "cubicOut",
-            AnimationEasing.EaseInOutCubic => "cubicInOut",
-            AnimationEasing.EaseInQuart => "quarticIn",
-            AnimationEasing.EaseOutQuart => "quarticOut",
-            AnimationEasing.EaseInOutQuart => "quarticInOut",
-            AnimationEasing.EaseInQuint => "quinticIn",
-            AnimationEasing.EaseOutQuint => "quinticOut",
-            AnimationEasing.EaseInOutQuint => "quinticInOut",
-            _ => "cubicInOut"
+            AnimationEasing.QuadIn => "quadraticIn",
+            AnimationEasing.QuadOut => "quadraticOut",
+            AnimationEasing.QuadInOut => "quadraticInOut",
+            AnimationEasing.CubicIn => "cubicIn",
+            AnimationEasing.CubicOut => "cubicOut",
+            AnimationEasing.CubicInOut => "cubicInOut",
+            AnimationEasing.QuartIn => "quarticIn",
+            AnimationEasing.QuartOut => "quarticOut",
+            AnimationEasing.QuartInOut => "quarticInOut",
+            AnimationEasing.QuintIn => "quinticIn",
+            AnimationEasing.QuintOut => "quinticOut",
+            AnimationEasing.QuintInOut => "quinticInOut",
+            AnimationEasing.SineIn => "sinusoidalIn",
+            AnimationEasing.SineOut => "sinusoidalOut",
+            AnimationEasing.SineInOut => "sinusoidalInOut",
+            AnimationEasing.ExpoIn => "exponentialIn",
+            AnimationEasing.ExpoOut => "exponentialOut",
+            AnimationEasing.ExpoInOut => "exponentialInOut",
+            AnimationEasing.CircIn => "circularIn",
+            AnimationEasing.CircOut => "circularOut",
+            AnimationEasing.CircInOut => "circularInOut",
+            AnimationEasing.ElasticIn => "elasticIn",
+            AnimationEasing.ElasticOut => "elasticOut",
+            AnimationEasing.ElasticInOut => "elasticInOut",
+            AnimationEasing.BackIn => "backIn",
+            AnimationEasing.BackOut => "backOut",
+            AnimationEasing.BackInOut => "backInOut",
+            AnimationEasing.BounceIn => "bounceIn",
+            AnimationEasing.BounceOut => "bounceOut",
+            AnimationEasing.BounceInOut => "bounceInOut",
+            _ => "cubicOut"
         };
     }
     

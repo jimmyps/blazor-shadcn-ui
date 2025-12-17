@@ -1,4 +1,6 @@
 @namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Chart.Series
+@inherits SeriesBase
 
 <CascadingValue Value="this" IsFixed="true">
     @ChildContent
@@ -8,14 +10,8 @@
     [CascadingParameter] private dynamic? Parent { get; set; }
     
     /// <summary>
-    /// Gets or sets the series name (for legend).
-    /// Scatter uses XAxis.DataKey and YAxis.DataKey for X/Y coordinates.
-    /// </summary>
-    [Parameter]
-    public string? Name { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the marker color.
+    /// Gets or sets the marker color (legacy, use Fill instead).
+    /// Note: Scatter uses XAxis.DataKey and YAxis.DataKey for X/Y coordinates.
     /// </summary>
     [Parameter]
     public string? Color { get; set; }
@@ -45,43 +41,6 @@
     /// </summary>
     [Parameter]
     public Focus Focus { get; set; } = Focus.None;
-    
-    /// <summary>
-    /// Gets or sets whether to show labels.
-    /// </summary>
-    [Parameter]
-    public bool ShowLabel { get; set; } = false;
-    
-    /// <summary>
-    /// Gets or sets the label position.
-    /// </summary>
-    [Parameter]
-    public LabelPosition? LabelPosition { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the label formatter.
-    /// </summary>
-    [Parameter]
-    public string? LabelFormatter { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the child content (LabelList).
-    /// </summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-    
-    /// <summary>
-    /// Gets the registered LabelList component.
-    /// </summary>
-    public LabelList? LabelList { get; private set; }
-    
-    /// <summary>
-    /// Registers a LabelList component.
-    /// </summary>
-    public void RegisterLabelList(LabelList labelList)
-    {
-        LabelList = labelList;
-    }
     
     protected override void OnInitialized()
     {

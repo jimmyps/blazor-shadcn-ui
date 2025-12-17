@@ -38,7 +38,9 @@
             Animation = EnableAnimation,
             AnimationDuration = EnableAnimation ? AnimationDuration : 0,
             AnimationEasing = MapAnimationEasing(AnimationEasing),
-            AnimationDelay = AnimationDelay
+            AnimationDelay = AnimationDelay,
+            AnimationDurationUpdate = AnimationDurationUpdate,
+            AnimationEasingUpdate = MapAnimationEasing(AnimationEasingUpdate)
         };
         
         return option;
@@ -127,6 +129,14 @@
                         Offset = labelList?.Offset
                     };
                 }
+                
+                // Map animation properties (series-level overrides chart-level defaults)
+                series.Animation = bar.EnableAnimation ?? EnableAnimation;
+                series.AnimationDuration = bar.AnimationDuration ?? AnimationDuration;
+                series.AnimationEasing = MapAnimationEasing(bar.AnimationEasing ?? AnimationEasing);
+                series.AnimationDelay = bar.AnimationDelay ?? AnimationDelay;
+                series.AnimationDurationUpdate = bar.AnimationDurationUpdate ?? AnimationDurationUpdate;
+                series.AnimationEasingUpdate = MapAnimationEasing(bar.AnimationEasingUpdate ?? AnimationEasingUpdate);
                 
                 seriesList.Add(series);
             }
