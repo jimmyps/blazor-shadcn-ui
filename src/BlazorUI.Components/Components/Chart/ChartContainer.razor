@@ -11,13 +11,7 @@
     /// </summary>
     [Parameter, EditorRequired]
     public int Height { get; set; }
-    
-    /// <summary>
-    /// Gets or sets whether the chart should be responsive.
-    /// </summary>
-    [Parameter]
-    public bool Responsive { get; set; } = true;
-    
+        
     /// <summary>
     /// Gets or sets additional CSS classes.
     /// </summary>
@@ -31,10 +25,9 @@
     public RenderFragment? ChildContent { get; set; }
     
     private string ContainerClass => ClassNames.cn(
-        "chart-container",
-        Responsive ? "w-full" : null,
+        "chart-container w-full",
         Class
     );
     
-    private string ContainerStyle => $"height: {Height}px;{(Responsive ? "" : $" width: {Height}px;")}";
+    private string ContainerStyle => $"height: {Height}px; width:99%";
 }

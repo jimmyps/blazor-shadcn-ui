@@ -55,25 +55,50 @@ export async function createChart(element, config) {
             const resolvedOptions = resolveCssVariables(config.data);
             option = convertFunctionStrings(resolvedOptions);
         } else {
-            // Fallback to old Chart.js-style conversion for backward compatibility
-            console.log('[ECharts] Converting Chart.js-style config to ECharts format');
-            const resolvedConfig = resolveCssVariables(config);
-            option = convertConfig(resolvedConfig);
+          console.log('[ECharts] Provided ECharts option is not valid');
+          return;
         }
         
         console.log('[ECharts] Final option object:', option);
         chart.setOption(option);
         console.log('[ECharts] Chart option set successfully');
         
-        // Make chart responsive - store listener reference for cleanup
+        // Make chart responsive - listen to window resize
         const resizeListener = () => chart.resize();
         window.addEventListener('resize', resizeListener);
         
+        // Store instance without ResizeObserver initially
         chartInstances.set(chartId, {
             chart: chart,
             element: element,
-            resizeListener: resizeListener
+            resizeListener: resizeListener,
+            resizeObserver: null
         });
+        
+        // Delay ResizeObserver setup until after animation completes
+        // This prevents the observer from disrupting the initial animation
+        const animationEnabled = option.animation !== false;
+        const animationDuration = option.animationDuration || 1000; // Default 1000ms if not specified
+        const delay = animationEnabled ? animationDuration + 100 : 100; // Add 100ms buffer
+        
+        setTimeout(() => {
+            const instance = chartInstances.get(chartId);
+            if (!instance) return; // Chart was destroyed before timeout
+            
+            // Now set up ResizeObserver to watch for container size changes
+            const resizeObserver = new ResizeObserver((entries) => {
+                for (let entry of entries) {
+                    if (entry.target === element) {
+                        chart.resize();
+                    }
+                }
+            });
+            resizeObserver.observe(element);
+            
+            // Update instance with ResizeObserver
+            instance.resizeObserver = resizeObserver;
+            console.log('[ECharts] ResizeObserver activated after animation');
+        }, delay);
         
         console.log('[ECharts] Chart instance stored in map');
         return chartId;
@@ -184,10 +209,13 @@ export function applyTheme(chartId, theme) {
         return;
     }
     
-    // Store current option and remove old resize listener
+    // Store current option and remove old listeners/observers
     const currentOption = instance.chart.getOption();
     if (instance.resizeListener) {
         window.removeEventListener('resize', instance.resizeListener);
+    }
+    if (instance.resizeObserver) {
+        instance.resizeObserver.disconnect();
     }
     
     // Dispose old chart and create new one with theme
@@ -199,9 +227,33 @@ export function applyTheme(chartId, theme) {
     const resizeListener = () => chart.resize();
     window.addEventListener('resize', resizeListener);
     
-    // Update instance
+    // Update instance (ResizeObserver will be added after animation)
     instance.chart = chart;
     instance.resizeListener = resizeListener;
+    instance.resizeObserver = null;
+    
+    // Delay ResizeObserver setup until after animation completes
+    const animationEnabled = currentOption.animation !== false;
+    const animationDuration = currentOption.animationDuration?.[0] || 1000;
+    const delay = animationEnabled ? animationDuration + 100 : 100;
+    
+    setTimeout(() => {
+        const currentInstance = chartInstances.get(chartId);
+        if (!currentInstance) return; // Chart was destroyed
+        
+        // Set up ResizeObserver for container size changes
+        const resizeObserver = new ResizeObserver((entries) => {
+            for (let entry of entries) {
+                if (entry.target === instance.element) {
+                    chart.resize();
+                }
+            }
+        });
+        resizeObserver.observe(instance.element);
+        
+        // Update instance with ResizeObserver
+        currentInstance.resizeObserver = resizeObserver;
+    }, delay);
 }
 
 /**
@@ -239,9 +291,14 @@ export function destroy(chartId) {
     }
     
     try {
-        // Remove resize listener to prevent memory leak
+        // Remove window resize listener to prevent memory leak
         if (instance.resizeListener) {
             window.removeEventListener('resize', instance.resizeListener);
+        }
+        
+        // Disconnect ResizeObserver to prevent memory leak
+        if (instance.resizeObserver) {
+            instance.resizeObserver.disconnect();
         }
         
         instance.chart.dispose();
@@ -249,215 +306,6 @@ export function destroy(chartId) {
     } catch (error) {
         console.error('Failed to destroy chart:', error);
     }
-}
-
-/**
- * Convert Chart.js-style config to ECharts option format
- * @param {object} config - Chart.js style configuration
- * @returns {object} - ECharts option object
- */
-function convertConfig(config) {
-    // Support both PascalCase (from C#) and camelCase
-    const type = config.type || config.Type;
-    const data = config.data || config.Data || {};
-    const options = config.options || config.Options || {};
-    
-    // Base ECharts option
-    const echartsOption = {
-        animation: options.animation !== false,
-        animationDuration: options.animation?.duration || 750,
-        animationEasing: mapEasing(options.animation?.easing || 'cubicOut')
-    };
-    
-    // Convert based on chart type (handle both string and enum number values)
-    const typeStr = typeof type === 'string' ? type.toLowerCase() : type;
-    switch (typeStr) {
-        case 'line':
-        case 0: // ChartType.Line enum value
-            return convertLineChart(data, options, echartsOption);
-        case 'bar':
-        case 1: // ChartType.Bar enum value
-            return convertBarChart(data, options, echartsOption);
-        case 'pie':
-        case 'doughnut':
-        case 'donut':
-        case 2: // ChartType.Pie enum value
-        case 3: // ChartType.Donut enum value
-            return convertPieChart(data, options, echartsOption);
-        case 'radar':
-        case 4: // ChartType.Radar enum value
-            return convertRadarChart(data, options, echartsOption);
-        default:
-            console.warn(`Unsupported chart type: ${type}`);
-            return echartsOption;
-    }
-}
-
-/**
- * Convert line chart configuration
- */
-function convertLineChart(data, options, baseOption) {
-    return {
-        ...baseOption,
-        xAxis: {
-            type: 'category',
-            data: data.labels || [],
-            boundaryGap: false
-        },
-        yAxis: {
-            type: 'value'
-        },
-        series: (data.datasets || []).map(dataset => ({
-            type: 'line',
-            name: dataset.label,
-            data: dataset.data,
-            smooth: dataset.tension > 0,
-            showSymbol: dataset.pointRadius > 0,
-            lineStyle: {
-                width: dataset.borderWidth || 2,
-                color: dataset.borderColor,
-                type: dataset.borderDash ? 'dashed' : 'solid'
-            },
-            areaStyle: dataset.fill ? { opacity: 0.3 } : undefined,
-            itemStyle: {
-                color: dataset.borderColor
-            }
-        })),
-        tooltip: {
-            trigger: 'axis'
-        },
-        legend: {
-            show: options.plugins?.legend?.display !== false
-        }
-    };
-}
-
-/**
- * Convert bar chart configuration
- */
-function convertBarChart(data, options, baseOption) {
-    const isHorizontal = options.indexAxis === 'y';
-    
-    return {
-        ...baseOption,
-        xAxis: {
-            type: isHorizontal ? 'value' : 'category',
-            data: isHorizontal ? undefined : (data.labels || [])
-        },
-        yAxis: {
-            type: isHorizontal ? 'category' : 'value',
-            data: isHorizontal ? (data.labels || []) : undefined
-        },
-        series: (data.datasets || []).map(dataset => ({
-            type: 'bar',
-            name: dataset.label,
-            data: dataset.data,
-            itemStyle: {
-                color: dataset.backgroundColor,
-                borderRadius: dataset.borderRadius || 0
-            },
-            barMaxWidth: dataset.barThickness || undefined
-        })),
-        tooltip: {
-            trigger: 'axis'
-        },
-        legend: {
-            show: options.plugins?.legend?.display !== false
-        }
-    };
-}
-
-/**
- * Convert pie/donut chart configuration
- */
-function convertPieChart(data, options, baseOption) {
-    const isDonut = options.cutout != null;
-    
-    return {
-        ...baseOption,
-        series: [{
-            type: 'pie',
-            radius: isDonut ? ['50%', '70%'] : '70%',
-            data: (data.labels || []).map((label, index) => ({
-                name: label,
-                value: data.datasets[0]?.data[index] || 0
-            })),
-            label: {
-                show: true
-            },
-            emphasis: {
-                itemStyle: {
-                    shadowBlur: 10,
-                    shadowOffsetX: 0,
-                    shadowColor: 'rgba(0, 0, 0, 0.5)'
-                }
-            }
-        }],
-        tooltip: {
-            trigger: 'item',
-            formatter: '{b}: {c} ({d}%)'
-        },
-        legend: {
-            show: options.plugins?.legend?.display !== false,
-            orient: 'vertical',
-            left: 'right'
-        }
-    };
-}
-
-/**
- * Convert radar chart configuration
- */
-function convertRadarChart(data, options, baseOption) {
-    return {
-        ...baseOption,
-        radar: {
-            indicator: (data.labels || []).map(label => ({ name: label, max: 100 }))
-        },
-        series: [{
-            type: 'radar',
-            data: (data.datasets || []).map(dataset => ({
-                name: dataset.label,
-                value: dataset.data,
-                lineStyle: {
-                    color: dataset.borderColor,
-                    width: dataset.borderWidth || 2
-                },
-                areaStyle: {
-                    opacity: 0.2
-                },
-                itemStyle: {
-                    color: dataset.pointBackgroundColor
-                }
-            }))
-        }],
-        tooltip: {
-            trigger: 'item'
-        },
-        legend: {
-            show: options.plugins?.legend?.display !== false
-        }
-    };
-}
-
-/**
- * Map Chart.js easing to ECharts easing
- */
-function mapEasing(easing) {
-    const easingMap = {
-        'linear': 'linear',
-        'easeInQuad': 'quadraticIn',
-        'easeOutQuad': 'quadraticOut',
-        'easeInOutQuad': 'quadraticInOut',
-        'easeInCubic': 'cubicIn',
-        'easeOutCubic': 'cubicOut',
-        'easeInOutCubic': 'cubicInOut',
-        'easeInQuart': 'quarticIn',
-        'easeOutQuart': 'quarticOut',
-        'easeInOutQuart': 'quarticInOut'
-    };
-    
-    return easingMap[easing] || 'cubicOut';
 }
 
 /**
@@ -584,6 +432,33 @@ function resolveCssVariables(obj) {
     }
     
     if (typeof obj === 'string') {
+        // Check for CSS variable with opacity suffix: "var(--chart-1)|0.8"
+        const cssVarWithOpacityMatch = obj.match(/^(var\([^)]+\))\|([\d.]+)$/);
+        if (cssVarWithOpacityMatch) {
+            const cssVar = cssVarWithOpacityMatch[1];
+            const opacity = parseFloat(cssVarWithOpacityMatch[2]);
+            
+            // Resolve the CSS variable first
+            const resolvedColor = resolveCssVariables(cssVar);
+            
+            // Apply opacity to resolved color
+            return applyOpacityToColor(resolvedColor, opacity);
+        }
+        
+        // Check for hex8 format with alpha channel (#RRGGBBAA)
+        // Convert to rgba() for better ECharts compatibility
+        const hex8Match = obj.match(/^#([0-9A-Fa-f]{8})$/);
+        if (hex8Match) {
+            const hex = hex8Match[1];
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            const a = parseInt(hex.substring(6, 8), 16) / 255; // Convert alpha to 0-1 range
+            const rgba = `rgba(${r}, ${g}, ${b}, ${a.toFixed(3)})`;
+            console.log(`Converted hex8 ${obj} to ${rgba}`);
+            return rgba;
+        }
+        
         // Match patterns like "hsl(var(--chart-1))", "oklch(var(--chart-up))" or "var(--chart-2)"
         const cssVarMatch = obj.match(/var\(([^)]+)\)/);
         if (cssVarMatch) {
@@ -663,4 +538,72 @@ function resolveCssVariables(obj) {
     }
     
     return obj;
+}
+
+/**
+ * Apply opacity to a color string
+ * @param {string} color - Color in any format (hex, rgb, hsl, oklch, etc.)
+ * @param {number} opacity - Opacity value between 0 and 1
+ * @returns {string} - Color with applied opacity
+ */
+function applyOpacityToColor(color, opacity) {
+    // Clamp opacity
+    opacity = Math.max(0, Math.min(1, opacity));
+    
+    // Handle OKLCH colors - convert to hex first, then apply opacity
+    const oklchMatch = color.match(/^oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)$/);
+    if (oklchMatch) {
+        const l = parseFloat(oklchMatch[1]);
+        const c = parseFloat(oklchMatch[2]);
+        const h = parseFloat(oklchMatch[3]);
+        
+        if (!Number.isNaN(l) && !Number.isNaN(c) && !Number.isNaN(h)) {
+            const hex = oklchToHex(l, c, h);
+            console.log(`Converted OKLCH(${l}, ${c}, ${h}) to ${hex} before applying opacity`);
+            // Recursively call with hex color
+            return applyOpacityToColor(hex, opacity);
+        }
+    }
+    
+    // Handle hex colors (#RGB or #RRGGBB)
+    const hexMatch = color.match(/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/);
+    if (hexMatch) {
+        let hex = hexMatch[1];
+        
+        // Convert 3-digit to 6-digit
+        if (hex.length === 3) {
+            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+        }
+        
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        
+        const result = `rgba(${r}, ${g}, ${b}, ${opacity.toFixed(3)})`;
+        console.log(`Applied opacity ${opacity} to ${color} -> ${result}`);
+        return result;
+    }
+    
+    // Handle rgb/rgba colors
+    const rgbMatch = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)$/);
+    if (rgbMatch) {
+        const result = `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, ${opacity.toFixed(3)})`;
+        console.log(`Applied opacity ${opacity} to ${color} -> ${result}`);
+        return result;
+    }
+    
+    // Handle hsl/hsla colors
+    const hslMatch = color.match(/^hsla?\(([^)]+)\)$/);
+    if (hslMatch) {
+        const parts = hslMatch[1].split(',').map(s => s.trim());
+        if (parts.length >= 3) {
+            const result = `hsla(${parts[0]}, ${parts[1]}, ${parts[2]}, ${opacity})`;
+            console.log(`Applied opacity ${opacity} to ${color} -> ${result}`);
+            return result;
+        }
+    }
+    
+    // Unknown format - log warning and return as-is
+    console.warn(`Unable to apply opacity to color: ${color}`);
+    return color;
 }

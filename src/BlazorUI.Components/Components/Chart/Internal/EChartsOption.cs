@@ -152,6 +152,15 @@ public sealed class EChartsAxis
     /// </summary>
     [JsonPropertyName("interval")]
     public double? Interval { get; set; }
+    
+    /// <summary>
+    /// Whether there is a gap on both sides of the axis.
+    /// For category axes, true leaves space on both sides (useful for bar charts).
+    /// For line/area charts, false is typically used to have data points at the edges.
+    /// Maps to axis.boundaryGap in ECharts.
+    /// </summary>
+    [JsonPropertyName("boundaryGap")]
+    public bool? BoundaryGap { get; set; }
 
     [JsonPropertyName("axisLine")]
     public EChartsAxisLine? AxisLine { get; set; }
@@ -662,6 +671,9 @@ public sealed class EChartsColorStop
     [JsonPropertyName("offset")]
     public double Offset { get; set; }
 
+    /// <summary>
+    /// Gets or sets the color value associated with the object.
+    /// </summary>
     [JsonPropertyName("color")]
     public string Color { get; set; } = "";
 }

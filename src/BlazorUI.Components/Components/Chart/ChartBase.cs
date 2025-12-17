@@ -240,7 +240,7 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
                 LegendIcon.Pin => "pin",
                 LegendIcon.Arrow => "arrow",
                 LegendIcon.None => "none",
-                _ => "circle"
+                _ => ""
             }
         };
     }
@@ -350,6 +350,16 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
             _ => null
         };
         
+        // Get boundaryGap (only for XAxis)
+        var boundaryGap = isXAxis && xAxis != null ? (bool?)xAxis.BoundaryGap : null;
+        if (!boundaryGap.HasValue)
+        {
+            // Default boundaryGap based on chart type:
+            // Bar charts need space on both sides (true)
+            // Line/Area charts should have data points at edges (false)
+            boundaryGap = GetChartType() == ChartType.Bar;
+        }
+        
         var type = scale switch
         {
             AxisScale.Category => "category",
@@ -450,6 +460,7 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
             Min = min,
             Max = max,
             Interval = interval,
+            BoundaryGap = boundaryGap,
             AxisLine = axisLineObj,
             AxisTick = tickLineObj,
             SplitLine = BuildSplitLine(isXAxis),
@@ -512,14 +523,15 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
                 var color = stop.Color;
                 if (stop.Opacity.HasValue)
                 {
-                    // Convert to rgba if opacity specified
-                    color = $"rgba({color}, {stop.Opacity.Value})";
+                    // Convert color with opacity to hex8 format (RRGGBBAA) that ECharts supports
+                    // JavaScript will handle CSS variable resolution and opacity application at runtime
+                    color = ConvertColorWithOpacityToHex8(stop.Color, stop.Opacity.Value);
                 }
                 
-                stops.Add(new
+                stops.Add(new EChartsColorStop()
                 {
-                    offset = stop.Offset,
-                    color = color
+                    Offset = stop.Offset,
+                    Color = color
                 });
             }
             
@@ -540,12 +552,64 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
         {
             if (fill.Opacity.HasValue)
             {
-                return $"rgba({fill.Color}, {fill.Opacity.Value})";
+                return ConvertColorWithOpacityToHex8(fill.Color, fill.Opacity.Value);
             }
             return fill.Color;
         }
         
         return null;
+    }
+    
+    /// <summary>
+    /// Converts a color (hex or CSS variable) with opacity to hex8 format (RRGGBBAA).
+    /// ECharts supports hex8 format for colors with alpha channel.
+    /// Note: CSS variables (var(--name)) with opacity are encoded as "var(--name)|opacity" 
+    /// and resolved at runtime by JavaScript.
+    /// </summary>
+    /// <param name="color">Color in hex format (#RGB or #RRGGBB) or CSS variable (var(--name))</param>
+    /// <param name="opacity">Opacity value between 0 and 1</param>
+    /// <returns>Color in hex8 format (#RRGGBBAA) or CSS variable with opacity marker</returns>
+    private static string ConvertColorWithOpacityToHex8(string color, double opacity)
+    {
+        // Clamp opacity to valid range [0, 1]
+        opacity = Math.Max(0, Math.Min(1, opacity));
+        
+        // Convert opacity to hex (00-FF)
+        var alphaHex = ((int)(opacity * 255)).ToString("X2");
+        
+        // Handle CSS variables - append opacity as suffix for runtime resolution
+        // JavaScript will parse "var(--chart-1)|0.8" and apply opacity after resolving the variable
+        if (color.StartsWith("var("))
+        {
+            return $"{color}|{opacity:F3}";
+        }
+        
+        // Normalize hex color
+        if (color.StartsWith("#"))
+        {
+            var hex = color.Substring(1);
+            
+            // Convert 3-digit hex to 6-digit
+            if (hex.Length == 3)
+            {
+                hex = $"{hex[0]}{hex[0]}{hex[1]}{hex[1]}{hex[2]}{hex[2]}";
+            }
+            
+            // Already has alpha channel - replace it
+            if (hex.Length == 8)
+            {
+                return $"#{hex.Substring(0, 6)}{alphaHex}";
+            }
+            
+            // Add alpha channel
+            if (hex.Length == 6)
+            {
+                return $"#{hex}{alphaHex}";
+            }
+        }
+        
+        // If format is unrecognized, return as-is
+        return color;
     }
     
     /// <summary>

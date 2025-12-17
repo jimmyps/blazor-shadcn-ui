@@ -85,6 +85,15 @@
     /// </summary>
     [Parameter]
     public int? TickWidth { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether there is a gap on both sides of the axis.
+    /// Default is null (auto). For bar charts, this leaves space on both sides.
+    /// For line charts, this is typically set to false to have data points at the edges.
+    /// Maps to xAxis.boundaryGap.
+    /// </summary>
+    [Parameter]
+    public bool? BoundaryGap { get; set; }
 
     /// <summary>
     /// Gets or sets the child content for nested components (e.g., AxisLabel).

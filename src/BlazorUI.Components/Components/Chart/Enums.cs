@@ -146,6 +146,8 @@ public enum LegendVerticalAlign
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum LegendIcon
 {
+    Default,
+
     /// <summary>
     /// Circle icon.
     /// </summary>
