@@ -39,6 +39,24 @@
     [Parameter]
     public string? StackId { get; set; }
     
+    /// <summary>
+    /// Gets or sets whether to show a background track.
+    /// </summary>
+    [Parameter]
+    public bool ShowBackground { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the background track color.
+    /// </summary>
+    [Parameter]
+    public string? BackgroundColor { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the background track opacity (0.0 to 1.0).
+    /// </summary>
+    [Parameter]
+    public double? BackgroundOpacity { get; set; } = 0.1;
+    
     protected override void OnInitialized()
     {
         if (Parent != null)

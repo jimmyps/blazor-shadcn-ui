@@ -152,6 +152,30 @@ public sealed class EChartsAxis
     /// </summary>
     [JsonPropertyName("interval")]
     public double? Interval { get; set; }
+    
+    /// <summary>
+    /// Start angle in degrees (for angle axis).
+    /// </summary>
+    [JsonPropertyName("startAngle")]
+    public int? StartAngle { get; set; }
+    
+    /// <summary>
+    /// End angle in degrees (for angle axis).
+    /// </summary>
+    [JsonPropertyName("endAngle")]
+    public int? EndAngle { get; set; }
+    
+    /// <summary>
+    /// Clockwise direction (for angle axis).
+    /// </summary>
+    [JsonPropertyName("clockwise")]
+    public bool? Clockwise { get; set; }
+    
+    /// <summary>
+    /// Split number (for radius axis).
+    /// </summary>
+    [JsonPropertyName("splitNumber")]
+    public int? SplitNumber { get; set; }
 
     [JsonPropertyName("axisLine")]
     public EChartsAxisLine? AxisLine { get; set; }
@@ -333,6 +357,42 @@ public sealed class EChartsSeries
     /// </summary>
     [JsonPropertyName("symbolSize")]
     public int? SymbolSize { get; set; }
+    
+    /// <summary>
+    /// JavaScript function string for dynamic symbol sizing.
+    /// </summary>
+    [JsonPropertyName("symbolSizeFunction")]
+    public string? SymbolSizeFunction { get; set; }
+    
+    /// <summary>
+    /// Symbol rotation in degrees.
+    /// </summary>
+    [JsonPropertyName("symbolRotate")]
+    public int? SymbolRotate { get; set; }
+    
+    /// <summary>
+    /// Enable large dataset mode.
+    /// </summary>
+    [JsonPropertyName("large")]
+    public bool? Large { get; set; }
+    
+    /// <summary>
+    /// Threshold for automatic large mode.
+    /// </summary>
+    [JsonPropertyName("largeThreshold")]
+    public int? LargeThreshold { get; set; }
+    
+    /// <summary>
+    /// Progressive rendering chunk size.
+    /// </summary>
+    [JsonPropertyName("progressive")]
+    public int? Progressive { get; set; }
+    
+    /// <summary>
+    /// Clip overflow points.
+    /// </summary>
+    [JsonPropertyName("clip")]
+    public bool? Clip { get; set; }
 
     /// <summary>
     /// Stack group name (bar/area).
@@ -345,6 +405,54 @@ public sealed class EChartsSeries
     /// </summary>
     [JsonPropertyName("radius")]
     public object? Radius { get; set; }
+    
+    /// <summary>
+    /// Start angle in degrees.
+    /// </summary>
+    [JsonPropertyName("startAngle")]
+    public int? StartAngle { get; set; }
+    
+    /// <summary>
+    /// End angle in degrees.
+    /// </summary>
+    [JsonPropertyName("endAngle")]
+    public int? EndAngle { get; set; }
+    
+    /// <summary>
+    /// Rose chart type: "radius", "area", or null.
+    /// </summary>
+    [JsonPropertyName("roseType")]
+    public string? RoseType { get; set; }
+    
+    /// <summary>
+    /// Padding angle between slices in degrees.
+    /// </summary>
+    [JsonPropertyName("padAngle")]
+    public int? PadAngle { get; set; }
+    
+    /// <summary>
+    /// Minimum angle for slice visibility.
+    /// </summary>
+    [JsonPropertyName("minAngle")]
+    public int? MinAngle { get; set; }
+    
+    /// <summary>
+    /// Center position [x, y].
+    /// </summary>
+    [JsonPropertyName("center")]
+    public string[]? Center { get; set; }
+    
+    /// <summary>
+    /// Selection mode: "single", "multiple", false.
+    /// </summary>
+    [JsonPropertyName("selectedMode")]
+    public string? SelectedMode { get; set; }
+    
+    /// <summary>
+    /// Selected slice offset distance.
+    /// </summary>
+    [JsonPropertyName("selectedOffset")]
+    public int? SelectedOffset { get; set; }
 
     /// <summary>
     /// Emphasis (hover state) configuration.
@@ -406,6 +514,18 @@ public sealed class EChartsSeries
     /// </summary>
     [JsonPropertyName("animationEasingUpdate")]
     public string? AnimationEasingUpdate { get; set; }
+    
+    /// <summary>
+    /// Show background (for radial bars).
+    /// </summary>
+    [JsonPropertyName("showBackground")]
+    public bool? ShowBackground { get; set; }
+    
+    /// <summary>
+    /// Background style.
+    /// </summary>
+    [JsonPropertyName("backgroundStyle")]
+    public EChartsBackgroundStyle? BackgroundStyle { get; set; }
 
     [JsonExtensionData]
     public Dictionary<string, JsonElement>? ExtensionData { get; set; }
@@ -466,6 +586,18 @@ public sealed class EChartsItemStyle
     /// </summary>
     [JsonPropertyName("opacity")]
     public double? Opacity { get; set; }
+    
+    /// <summary>
+    /// Border color.
+    /// </summary>
+    [JsonPropertyName("borderColor")]
+    public string? BorderColor { get; set; }
+    
+    /// <summary>
+    /// Border width.
+    /// </summary>
+    [JsonPropertyName("borderWidth")]
+    public int? BorderWidth { get; set; }
 }
 
 public sealed class EChartsAreaStyle
@@ -620,14 +752,56 @@ public sealed class EChartsLegend
 
 public sealed class EChartsRadar
 {
+    /// <summary>
+    /// Radar shape: "polygon" or "circle".
+    /// </summary>
+    [JsonPropertyName("shape")]
+    public string? Shape { get; set; }
+    
+    /// <summary>
+    /// Number of split levels.
+    /// </summary>
+    [JsonPropertyName("splitNumber")]
+    public int? SplitNumber { get; set; }
+    
+    /// <summary>
+    /// Radius.
+    /// </summary>
+    [JsonPropertyName("radius")]
+    public string? Radius { get; set; }
+    
+    /// <summary>
+    /// Center position [x, y].
+    /// </summary>
+    [JsonPropertyName("center")]
+    public string[]? Center { get; set; }
+    
     [JsonPropertyName("indicator")]
     public List<EChartsRadarIndicator>? Indicator { get; set; }
+    
+    /// <summary>
+    /// Axis line configuration.
+    /// </summary>
+    [JsonPropertyName("axisLine")]
+    public EChartsAxisLine? AxisLine { get; set; }
+    
+    /// <summary>
+    /// Split line configuration.
+    /// </summary>
+    [JsonPropertyName("splitLine")]
+    public EChartsSplitLine? SplitLine { get; set; }
 }
 
 public sealed class EChartsRadarIndicator
 {
     [JsonPropertyName("name")]
     public string? Name { get; set; }
+    
+    /// <summary>
+    /// Minimum value.
+    /// </summary>
+    [JsonPropertyName("min")]
+    public double? Min { get; set; }
 
     [JsonPropertyName("max")]
     public double? Max { get; set; }
@@ -682,4 +856,22 @@ public sealed class EChartsPolar
     /// </summary>
     [JsonPropertyName("radius")]
     public object? Radius { get; set; }
+}
+
+/// <summary>
+/// Background style for radial bars.
+/// </summary>
+public sealed class EChartsBackgroundStyle
+{
+    /// <summary>
+    /// Background color.
+    /// </summary>
+    [JsonPropertyName("color")]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Background opacity.
+    /// </summary>
+    [JsonPropertyName("opacity")]
+    public double? Opacity { get; set; }
 }

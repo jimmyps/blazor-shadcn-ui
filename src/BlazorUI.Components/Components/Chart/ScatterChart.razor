@@ -92,16 +92,26 @@
                         SymbolShape.None => "none",
                         _ => "circle"
                     },
-                    SymbolSize = scatter.SymbolSize,
+                    SymbolSize = !string.IsNullOrEmpty(scatter.SymbolSizeFunction) 
+                        ? null 
+                        : scatter.SymbolSize,
+                    SymbolSizeFunction = scatter.SymbolSizeFunction,
+                    SymbolRotate = scatter.SymbolRotate,
                     ItemStyle = new EChartsItemStyle
                     {
-                        Color = GetSeriesColor(i, scatter.Color)
+                        Color = GetSeriesColor(i, scatter.Color),
+                        BorderColor = scatter.BorderColor,
+                        BorderWidth = scatter.BorderWidth
                     },
                     Emphasis = new EChartsEmphasis
                     {
                         Disabled = !scatter.Emphasis,
                         Focus = scatter.Focus == Focus.Self ? "self" : null
-                    }
+                    },
+                    Large = scatter.Large,
+                    LargeThreshold = scatter.LargeThreshold,
+                    Progressive = scatter.Progressive,
+                    Clip = scatter.Clip
                 };
                 
                 // Map label parameters to ECharts series.label

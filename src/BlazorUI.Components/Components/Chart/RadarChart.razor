@@ -12,6 +12,7 @@
 
 @code {
     private List<Radar> _radars = new();
+    private RadarGrid? _radarGrid;
     
     protected override EChartsOption BuildEChartsOption()
     {
@@ -34,12 +35,29 @@
     
     private EChartsRadar BuildRadarCoordinate()
     {
-        // Build radar indicators from data
+        var radarGrid = _radarGrid ?? new RadarGrid(); // Implicit default
+        
+        // Build radar indicators from data or XAxis
         var indicators = new List<EChartsRadarIndicator>();
         
-        if (_radars.Any() && Data.Any())
+        if (_xAxis != null && !string.IsNullOrEmpty(_xAxis.DataKey))
         {
-            // Get all numeric property names from the data type
+            // Use XAxis DataKey to get indicator names
+            var labels = DataExtractor.GetStringValues(Data, _xAxis.DataKey);
+            
+            foreach (var label in labels)
+            {
+                indicators.Add(new EChartsRadarIndicator
+                {
+                    Name = label,
+                    Min = _xAxis.IndicatorMin,
+                    Max = _xAxis.IndicatorMax
+                });
+            }
+        }
+        else if (_radars.Any() && Data.Any())
+        {
+            // Fallback to property-based indicators
             var properties = typeof(TData).GetProperties()
                 .Where(p => p.PropertyType == typeof(int) || 
                            p.PropertyType == typeof(double) || 
@@ -70,7 +88,29 @@
         
         return new EChartsRadar
         {
-            Indicator = indicators.Any() ? indicators : null
+            Shape = radarGrid.Shape == RadarShape.Circle ? "circle" : "polygon",
+            SplitNumber = radarGrid.SplitNumber,
+            Radius = radarGrid.Radius,
+            Center = radarGrid.Center ?? new[] { "50%", "50%" },
+            Indicator = indicators.Any() ? indicators : null,
+            AxisLine = new EChartsAxisLine
+            {
+                Show = radarGrid.ShowAxisLine,
+                LineStyle = new EChartsLineStyle
+                {
+                    Color = radarGrid.AxisLineColor,
+                    Width = radarGrid.AxisLineWidth
+                }
+            },
+            SplitLine = new EChartsSplitLine
+            {
+                Show = radarGrid.ShowSplitLine,
+                LineStyle = new EChartsLineStyle
+                {
+                    Color = radarGrid.SplitLineColor,
+                    Width = radarGrid.SplitLineWidth
+                }
+            }
         };
     }
     
@@ -126,11 +166,12 @@
                     AreaStyle = radar.FillArea ? new EChartsAreaStyle
                     {
                         Color = GetSeriesColor(i, radar.Color),
-                        Opacity = 0.3
+                        Opacity = radar.AreaOpacity ?? 0.3
                     } : null,
                     LineStyle = new EChartsLineStyle
                     {
-                        Color = GetSeriesColor(i, radar.Color)
+                        Color = GetSeriesColor(i, radar.Color),
+                        Width = radar.LineWidth
                     },
                     Emphasis = new EChartsEmphasis
                     {
@@ -201,6 +242,12 @@
     internal void RegisterRadar(Radar radar)
     {
         _radars.Add(radar);
+        StateHasChanged();
+    }
+    
+    internal void RegisterRadarGrid(RadarGrid radarGrid)
+    {
+        _radarGrid = radarGrid;
         StateHasChanged();
     }
     
