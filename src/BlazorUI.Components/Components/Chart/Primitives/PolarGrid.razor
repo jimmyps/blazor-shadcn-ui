@@ -27,6 +27,24 @@
     [Parameter]
     public int? StrokeWidth { get; set; }
     
+    /// <summary>
+    /// Gets or sets the number of split levels (concentric rings).
+    /// </summary>
+    [Parameter]
+    public int SplitNumber { get; set; } = 5;
+    
+    /// <summary>
+    /// Gets or sets whether to show the angle axis line.
+    /// </summary>
+    [Parameter]
+    public bool ShowAxisLine { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets whether to show split lines.
+    /// </summary>
+    [Parameter]
+    public bool ShowSplitLine { get; set; } = true;
+    
     protected override void OnInitialized()
     {
         if (Parent != null)

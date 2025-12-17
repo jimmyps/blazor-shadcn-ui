@@ -461,3 +461,20 @@ public enum SymbolShape
     /// </summary>
     None
 }
+
+/// <summary>
+/// Radar grid shape types.
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum RadarShape
+{
+    /// <summary>
+    /// Polygon shape (angular).
+    /// </summary>
+    Polygon,
+    
+    /// <summary>
+    /// Circle shape (smooth).
+    /// </summary>
+    Circle
+}

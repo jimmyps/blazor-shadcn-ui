@@ -144,6 +144,22 @@ function convertFunctionStrings(options) {
         }
     }
     
+    // Handle symbolSizeFunction in series
+    if (options.series && Array.isArray(options.series)) {
+        result.series = options.series.map(series => {
+            const convertedSeries = convertFunctionStrings(series);
+            if (convertedSeries.symbolSizeFunction && typeof convertedSeries.symbolSizeFunction === 'string') {
+                try {
+                    convertedSeries.symbolSize = eval(`(${convertedSeries.symbolSizeFunction})`);
+                    delete convertedSeries.symbolSizeFunction;
+                } catch (e) {
+                    console.error('[ECharts] Failed to parse symbolSize function:', e);
+                }
+            }
+            return convertedSeries;
+        });
+    }
+    
     return result;
 }
 
