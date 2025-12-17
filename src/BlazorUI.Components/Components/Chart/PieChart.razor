@@ -90,6 +90,14 @@
                     };
                 }
                 
+                // Map animation properties (series-level overrides chart-level defaults)
+                series.Animation = pie.EnableAnimation ?? EnableAnimation;
+                series.AnimationDuration = pie.AnimationDuration ?? AnimationDuration;
+                series.AnimationEasing = MapAnimationEasing(pie.AnimationEasing ?? AnimationEasing);
+                series.AnimationDelay = pie.AnimationDelay ?? AnimationDelay;
+                series.AnimationDurationUpdate = pie.AnimationDurationUpdate ?? AnimationDurationUpdate;
+                series.AnimationEasingUpdate = MapAnimationEasing(pie.AnimationEasingUpdate ?? AnimationEasingUpdate);
+                
                 seriesList.Add(series);
             }
         }

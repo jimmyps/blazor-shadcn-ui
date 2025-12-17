@@ -130,6 +130,14 @@
                     };
                 }
                 
+                // Map animation properties (series-level overrides chart-level defaults)
+                series.Animation = bar.EnableAnimation ?? EnableAnimation;
+                series.AnimationDuration = bar.AnimationDuration ?? AnimationDuration;
+                series.AnimationEasing = MapAnimationEasing(bar.AnimationEasing ?? AnimationEasing);
+                series.AnimationDelay = bar.AnimationDelay ?? AnimationDelay;
+                series.AnimationDurationUpdate = bar.AnimationDurationUpdate ?? AnimationDurationUpdate;
+                series.AnimationEasingUpdate = MapAnimationEasing(bar.AnimationEasingUpdate ?? AnimationEasingUpdate);
+                
                 seriesList.Add(series);
             }
             

@@ -134,6 +134,14 @@
                     };
                 }
                 
+                // Map animation properties (series-level overrides chart-level defaults)
+                series.Animation = radar.EnableAnimation ?? EnableAnimation;
+                series.AnimationDuration = radar.AnimationDuration ?? AnimationDuration;
+                series.AnimationEasing = MapAnimationEasing(radar.AnimationEasing ?? AnimationEasing);
+                series.AnimationDelay = radar.AnimationDelay ?? AnimationDelay;
+                series.AnimationDurationUpdate = radar.AnimationDurationUpdate ?? AnimationDurationUpdate;
+                series.AnimationEasingUpdate = MapAnimationEasing(radar.AnimationEasingUpdate ?? AnimationEasingUpdate);
+                
                 seriesList.Add(series);
             }
         }
