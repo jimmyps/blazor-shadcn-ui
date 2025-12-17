@@ -40,26 +40,26 @@
             foreach (var pie in _pies)
             {
                 // Extract data for pie chart
-                var pieData = new List<object>();
+                var pieData = new List<Dictionary<string, object>>();
                 foreach (var item in Data)
                 {
                     var name = DataExtractor.GetValue(item, pie.NameKey)?.ToString() ?? "";
                     var value = Convert.ToDouble(DataExtractor.GetValue(item, pie.DataKey) ?? 0);
-                    pieData.Add(new { name, value });
+                    pieData.Add(new Dictionary<string, object>
+                    {
+                        ["name"] = name,
+                        ["value"] = value
+                    });
                 }
                 
                 var series = new EChartsSeries
                 {
                     Type = "pie",
                     Name = pie.Name,
-                    Data = pieData,
+                    Data = pieData.Cast<object>().ToList(),
                     Radius = !string.IsNullOrEmpty(pie.InnerRadius) 
                         ? new object[] { pie.InnerRadius, "70%" } 
-                        : "70%",
-                    Emphasis = new EChartsEmphasis
-                    {
-                        Disabled = true // Pie charts have emphasis disabled by default per spec
-                    }
+                        : "70%"
                 };
                 
                 // Map label parameters to ECharts series.label

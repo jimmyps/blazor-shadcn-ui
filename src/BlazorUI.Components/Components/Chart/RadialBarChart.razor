@@ -47,15 +47,15 @@
     
     private EChartsAxis BuildAngleAxis()
     {
-        var xAxis = _xAxis ?? new XAxis();
         var axis = new EChartsAxis
         {
             Type = "category"
         };
         
-        if (!string.IsNullOrEmpty(xAxis.DataKey))
+        // Extract category data from XAxis if available
+        if (_xAxis != null && !string.IsNullOrEmpty(_xAxis.DataKey))
         {
-            axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
+            axis.Data = DataExtractor.GetStringValues(Data, _xAxis.DataKey);
         }
         
         return axis;
@@ -63,10 +63,19 @@
     
     private EChartsAxis BuildRadiusAxis()
     {
-        return new EChartsAxis
+        var axis = new EChartsAxis
         {
             Type = "value"
         };
+        
+        // Apply min/max from YAxis if available
+        if (_yAxis != null)
+        {
+            axis.Min = _yAxis.Min;
+            axis.Max = _yAxis.Max;
+        }
+        
+        return axis;
     }
     
     private List<EChartsSeries> BuildSeries()
@@ -145,7 +154,7 @@
     
     protected override ChartType GetChartType()
     {
-        return ChartType.Pie; // Use Pie type for radial bars
+        return ChartType.Bar; // RadialBar uses Bar type with polar coordinate
     }
     
     protected override TooltipMode GetDefaultTooltipMode()

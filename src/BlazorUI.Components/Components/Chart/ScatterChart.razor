@@ -60,17 +60,18 @@
             {
                 var scatter = _scatters[i];
                 
-                // Build scatter data from X and Y axis keys
+                // Build scatter data from DataKey (contains both X and Y values)
                 var scatterData = new List<object>();
-                var xKey = _xAxis?.DataKey;
-                var yKey = _yAxis?.DataKey;
                 
-                if (!string.IsNullOrEmpty(xKey) && !string.IsNullOrEmpty(yKey))
+                // Use axis data keys if available
+                if (_xAxis != null && _yAxis != null && 
+                    !string.IsNullOrEmpty(_xAxis.DataKey) && 
+                    !string.IsNullOrEmpty(_yAxis.DataKey))
                 {
                     foreach (var item in Data)
                     {
-                        var x = Convert.ToDouble(DataExtractor.GetValue(item, xKey) ?? 0);
-                        var y = Convert.ToDouble(DataExtractor.GetValue(item, yKey) ?? 0);
+                        var x = Convert.ToDouble(DataExtractor.GetValue(item, _xAxis.DataKey) ?? 0);
+                        var y = Convert.ToDouble(DataExtractor.GetValue(item, _yAxis.DataKey) ?? 0);
                         scatterData.Add(new[] { x, y });
                     }
                 }

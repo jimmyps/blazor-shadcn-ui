@@ -35,36 +35,42 @@
     private EChartsRadar BuildRadarCoordinate()
     {
         // Build radar indicators from data
-        // For MVP, we'll use the first radar's data key structure
         var indicators = new List<EChartsRadarIndicator>();
         
         if (_radars.Any() && Data.Any())
         {
-            var firstRadar = _radars.First();
-            var firstItem = Data.First();
-            
-            // Extract numeric properties as indicators
+            // Get all numeric property names from the data type
             var properties = typeof(TData).GetProperties()
                 .Where(p => p.PropertyType == typeof(int) || 
                            p.PropertyType == typeof(double) || 
                            p.PropertyType == typeof(decimal) ||
-                           p.PropertyType == typeof(float))
+                           p.PropertyType == typeof(float) ||
+                           p.PropertyType == typeof(int?) ||
+                           p.PropertyType == typeof(double?) ||
+                           p.PropertyType == typeof(decimal?) ||
+                           p.PropertyType == typeof(float?))
                 .ToList();
             
             foreach (var prop in properties)
             {
-                var maxValue = Data.Select(d => Convert.ToDouble(prop.GetValue(d) ?? 0)).Max();
+                // Calculate max value across all data items for this property
+                var values = Data.Select(d => {
+                    var val = prop.GetValue(d);
+                    return val != null ? Convert.ToDouble(val) : 0.0;
+                }).ToList();
+                
+                var maxValue = values.Any() ? values.Max() : 100;
                 indicators.Add(new EChartsRadarIndicator
                 {
                     Name = prop.Name,
-                    Max = maxValue * 1.2 // Add 20% headroom
+                    Max = Math.Max(maxValue * 1.2, 1) // Add 20% headroom, minimum 1
                 });
             }
         }
         
         return new EChartsRadar
         {
-            Indicator = indicators
+            Indicator = indicators.Any() ? indicators : null
         };
     }
     
@@ -74,35 +80,45 @@
         
         if (_radars.Any())
         {
+            // Get numeric properties once
+            var properties = typeof(TData).GetProperties()
+                .Where(p => p.PropertyType == typeof(int) || 
+                           p.PropertyType == typeof(double) || 
+                           p.PropertyType == typeof(decimal) ||
+                           p.PropertyType == typeof(float) ||
+                           p.PropertyType == typeof(int?) ||
+                           p.PropertyType == typeof(double?) ||
+                           p.PropertyType == typeof(decimal?) ||
+                           p.PropertyType == typeof(float?))
+                .ToList();
+            
             for (int i = 0; i < _radars.Count; i++)
             {
                 var radar = _radars[i];
                 
-                // Build radar data
-                var radarData = new List<object>();
+                // Build radar data - one entry per data item
+                var radarData = new List<Dictionary<string, object>>();
                 foreach (var item in Data)
                 {
                     var values = new List<double>();
-                    var properties = typeof(TData).GetProperties()
-                        .Where(p => p.PropertyType == typeof(int) || 
-                                   p.PropertyType == typeof(double) || 
-                                   p.PropertyType == typeof(decimal) ||
-                                   p.PropertyType == typeof(float))
-                        .ToList();
-                    
                     foreach (var prop in properties)
                     {
-                        values.Add(Convert.ToDouble(prop.GetValue(item) ?? 0));
+                        var val = prop.GetValue(item);
+                        values.Add(val != null ? Convert.ToDouble(val) : 0.0);
                     }
                     
-                    radarData.Add(new { value = values, name = radar.Name ?? radar.DataKey });
+                    radarData.Add(new Dictionary<string, object>
+                    {
+                        ["value"] = values,
+                        ["name"] = radar.Name ?? radar.DataKey
+                    });
                 }
                 
                 var series = new EChartsSeries
                 {
                     Type = "radar",
                     Name = radar.Name ?? radar.DataKey,
-                    Data = radarData,
+                    Data = radarData.Cast<object>().ToList(),
                     ItemStyle = new EChartsItemStyle
                     {
                         Color = GetSeriesColor(i, radar.Color)
@@ -112,6 +128,10 @@
                         Color = GetSeriesColor(i, radar.Color),
                         Opacity = 0.3
                     } : null,
+                    LineStyle = new EChartsLineStyle
+                    {
+                        Color = GetSeriesColor(i, radar.Color)
+                    },
                     Emphasis = new EChartsEmphasis
                     {
                         Disabled = !radar.Emphasis,
