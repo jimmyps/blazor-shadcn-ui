@@ -90,6 +90,26 @@
                     };
                 }
                 
+                // Map emphasis (hover) parameters for pie charts
+                if (pie.EmphasisScale.HasValue || pie.EmphasisScaleSize.HasValue || 
+                    pie.EmphasisShowLabel.HasValue || pie.EmphasisFocus != null || 
+                    pie.EmphasisLabelFormatter != null)
+                {
+                    series.Emphasis = new EChartsEmphasis
+                    {
+                        Scale = pie.EmphasisScale,
+                        ScaleSize = pie.EmphasisScaleSize,
+                        Focus = pie.EmphasisFocus,
+                        Label = (pie.EmphasisShowLabel.HasValue || pie.EmphasisLabelFormatter != null)
+                            ? new EChartsLabel
+                            {
+                                Show = pie.EmphasisShowLabel,
+                                Formatter = pie.EmphasisLabelFormatter
+                            }
+                            : null
+                    };
+                }
+                
                 // Map animation properties (series-level overrides chart-level defaults)
                 series.Animation = pie.EnableAnimation ?? EnableAnimation;
                 series.AnimationDuration = pie.AnimationDuration ?? AnimationDuration;

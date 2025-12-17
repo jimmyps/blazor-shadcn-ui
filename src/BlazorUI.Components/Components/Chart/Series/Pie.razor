@@ -34,6 +34,36 @@
     public bool ShowLabelLine { get; set; } = false;
     
     /// <summary>
+    /// Gets or sets whether to enable emphasis (hover) scaling.
+    /// </summary>
+    [Parameter]
+    public bool? EmphasisScale { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the emphasis scale size in pixels (default 5-10).
+    /// </summary>
+    [Parameter]
+    public int? EmphasisScaleSize { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the emphasis focus mode ("self", "series", "none").
+    /// </summary>
+    [Parameter]
+    public string? EmphasisFocus { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to show labels on hover (emphasis).
+    /// </summary>
+    [Parameter]
+    public bool? EmphasisShowLabel { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the label formatter for emphasis state.
+    /// </summary>
+    [Parameter]
+    public string? EmphasisLabelFormatter { get; set; }
+    
+    /// <summary>
     /// Gets the registered LabelLine component.
     /// </summary>
     public LabelLine? LabelLine { get; private set; }

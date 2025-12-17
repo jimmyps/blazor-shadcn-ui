@@ -417,10 +417,34 @@ public sealed class EChartsEmphasis
     public bool? Disabled { get; set; }
 
     /// <summary>
-    /// Focus mode: "self" etc.
+    /// Focus mode: "self", "series", "none", etc.
     /// </summary>
     [JsonPropertyName("focus")]
     public string? Focus { get; set; }
+
+    /// <summary>
+    /// Whether to scale the item on hover (pie charts).
+    /// </summary>
+    [JsonPropertyName("scale")]
+    public bool? Scale { get; set; }
+
+    /// <summary>
+    /// Scale size in pixels when hovering (pie charts). Default is typically 5-10.
+    /// </summary>
+    [JsonPropertyName("scaleSize")]
+    public int? ScaleSize { get; set; }
+
+    /// <summary>
+    /// Label configuration when item is emphasized (hovered).
+    /// </summary>
+    [JsonPropertyName("label")]
+    public EChartsLabel? Label { get; set; }
+
+    /// <summary>
+    /// Item style when emphasized (colors, borders, shadows).
+    /// </summary>
+    [JsonPropertyName("itemStyle")]
+    public EChartsItemStyle? ItemStyle { get; set; }
 }
 
 public sealed class EChartsItemStyle
