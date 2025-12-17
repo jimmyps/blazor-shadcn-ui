@@ -59,13 +59,13 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     /// Gets or sets the animation duration in milliseconds.
     /// </summary>
     [Parameter]
-    public int AnimationDuration { get; set; } = 1000;
+    public int AnimationDuration { get; set; } = 1500;
 
     /// <summary>
     /// Gets or sets the animation easing function.
     /// </summary>
     [Parameter]
-    public AnimationEasing AnimationEasing { get; set; } = AnimationEasing.CubicOut;
+    public AnimationEasing AnimationEasing { get; set; } = AnimationEasing.CubicInOut;
 
     /// <summary>
     /// Gets or sets the animation delay in milliseconds.
@@ -77,7 +77,7 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     /// Gets or sets the animation duration for data updates.
     /// </summary>
     [Parameter]
-    public int AnimationDurationUpdate { get; set; } = 300;
+    public int AnimationDurationUpdate { get; set; } = 700;
 
     /// <summary>
     /// Gets or sets the animation easing for data updates.
