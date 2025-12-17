@@ -49,6 +49,30 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     [Parameter]
     public bool ContainLabel { get; set; } = true;
     
+    /// <summary>
+    /// Gets or sets whether animations are enabled.
+    /// </summary>
+    [Parameter]
+    public bool EnableAnimation { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the animation duration in milliseconds.
+    /// </summary>
+    [Parameter]
+    public int AnimationDuration { get; set; } = 1500;
+
+    /// <summary>
+    /// Gets or sets the animation easing function.
+    /// </summary>
+    [Parameter]
+    public AnimationEasing AnimationEasing { get; set; } = AnimationEasing.EaseOutCubic;
+
+    /// <summary>
+    /// Gets or sets the animation delay in milliseconds.
+    /// </summary>
+    [Parameter]
+    public int AnimationDelay { get; set; } = 0;
+    
     protected ElementReference _canvasRef;
     protected IChartRenderer? _renderer;
     protected string? _chartId;
@@ -551,6 +575,30 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     protected string GetSeriesColor(int index, string? customColor)
     {
         return customColor ?? $"var(--chart-{(index % 5) + 1})";
+    }
+    
+    /// <summary>
+    /// Maps AnimationEasing enum to ECharts easing string.
+    /// </summary>
+    protected string MapAnimationEasing(AnimationEasing easing)
+    {
+        return easing switch
+        {
+            AnimationEasing.Linear => "linear",
+            AnimationEasing.EaseInQuad => "cubicIn",
+            AnimationEasing.EaseOutQuad => "cubicOut",
+            AnimationEasing.EaseInOutQuad => "cubicInOut",
+            AnimationEasing.EaseInCubic => "cubicIn",
+            AnimationEasing.EaseOutCubic => "cubicOut",
+            AnimationEasing.EaseInOutCubic => "cubicInOut",
+            AnimationEasing.EaseInQuart => "quarticIn",
+            AnimationEasing.EaseOutQuart => "quarticOut",
+            AnimationEasing.EaseInOutQuart => "quarticInOut",
+            AnimationEasing.EaseInQuint => "quinticIn",
+            AnimationEasing.EaseOutQuint => "quinticOut",
+            AnimationEasing.EaseInOutQuint => "quinticInOut",
+            _ => "cubicInOut"
+        };
     }
     
     public async ValueTask DisposeAsync()

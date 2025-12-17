@@ -63,6 +63,9 @@ public sealed class EChartsOption
     [JsonPropertyName("animationEasing")]
     public string? AnimationEasing { get; set; }
 
+    [JsonPropertyName("animationDelay")]
+    public int? AnimationDelay { get; set; }
+
     [JsonExtensionData]
     public Dictionary<string, JsonElement>? ExtensionData { get; set; }
 }
