@@ -54,17 +54,41 @@ public sealed class EChartsOption
     [JsonPropertyName("series")]
     public List<EChartsSeries>? Series { get; set; }
 
+    /// <summary>
+    /// Gets or sets whether to enable animations globally.
+    /// </summary>
     [JsonPropertyName("animation")]
     public bool? Animation { get; set; }
 
+    /// <summary>
+    /// Gets or sets the global animation duration in milliseconds.
+    /// </summary>
     [JsonPropertyName("animationDuration")]
     public int? AnimationDuration { get; set; }
 
+    /// <summary>
+    /// Gets or sets the global animation easing function.
+    /// </summary>
     [JsonPropertyName("animationEasing")]
     public string? AnimationEasing { get; set; }
 
+    /// <summary>
+    /// Gets or sets the global animation delay in milliseconds.
+    /// </summary>
     [JsonPropertyName("animationDelay")]
     public int? AnimationDelay { get; set; }
+
+    /// <summary>
+    /// Gets or sets the animation duration for data updates.
+    /// </summary>
+    [JsonPropertyName("animationDurationUpdate")]
+    public int? AnimationDurationUpdate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the animation easing for data updates.
+    /// </summary>
+    [JsonPropertyName("animationEasingUpdate")]
+    public string? AnimationEasingUpdate { get; set; }
 
     [JsonExtensionData]
     public Dictionary<string, JsonElement>? ExtensionData { get; set; }
@@ -346,6 +370,42 @@ public sealed class EChartsSeries
     /// </summary>
     [JsonPropertyName("step")]
     public object? Step { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether to enable animation for this series (overrides global).
+    /// </summary>
+    [JsonPropertyName("animation")]
+    public bool? Animation { get; set; }
+
+    /// <summary>
+    /// Gets or sets the animation duration for this series (overrides global).
+    /// </summary>
+    [JsonPropertyName("animationDuration")]
+    public int? AnimationDuration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the animation easing for this series (overrides global).
+    /// </summary>
+    [JsonPropertyName("animationEasing")]
+    public string? AnimationEasing { get; set; }
+
+    /// <summary>
+    /// Gets or sets the animation delay for this series (overrides global).
+    /// </summary>
+    [JsonPropertyName("animationDelay")]
+    public int? AnimationDelay { get; set; }
+
+    /// <summary>
+    /// Gets or sets the animation duration for updates (overrides global).
+    /// </summary>
+    [JsonPropertyName("animationDurationUpdate")]
+    public int? AnimationDurationUpdate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the animation easing for updates (overrides global).
+    /// </summary>
+    [JsonPropertyName("animationEasingUpdate")]
+    public string? AnimationEasingUpdate { get; set; }
 
     [JsonExtensionData]
     public Dictionary<string, JsonElement>? ExtensionData { get; set; }

@@ -24,7 +24,9 @@
             Animation = EnableAnimation,
             AnimationDuration = EnableAnimation ? AnimationDuration : 0,
             AnimationEasing = MapAnimationEasing(AnimationEasing),
-            AnimationDelay = AnimationDelay
+            AnimationDelay = AnimationDelay,
+            AnimationDurationUpdate = AnimationDurationUpdate,
+            AnimationEasingUpdate = MapAnimationEasing(AnimationEasingUpdate)
         };
         
         return option;
@@ -105,7 +107,7 @@
                     {
                         Color = GetSeriesColor(i, radar.Color)
                     },
-                    AreaStyle = radar.Fill ? new EChartsAreaStyle
+                    AreaStyle = radar.FillArea ? new EChartsAreaStyle
                     {
                         Color = GetSeriesColor(i, radar.Color),
                         Opacity = 0.3
@@ -131,6 +133,14 @@
                         Offset = labelList?.Offset
                     };
                 }
+                
+                // Map animation properties (series-level overrides chart-level defaults)
+                series.Animation = radar.EnableAnimation ?? EnableAnimation;
+                series.AnimationDuration = radar.AnimationDuration ?? AnimationDuration;
+                series.AnimationEasing = MapAnimationEasing(radar.AnimationEasing ?? AnimationEasing);
+                series.AnimationDelay = radar.AnimationDelay ?? AnimationDelay;
+                series.AnimationDurationUpdate = radar.AnimationDurationUpdate ?? AnimationDurationUpdate;
+                series.AnimationEasingUpdate = MapAnimationEasing(radar.AnimationEasingUpdate ?? AnimationEasingUpdate);
                 
                 seriesList.Add(series);
             }
