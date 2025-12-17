@@ -5,8 +5,7 @@ namespace BlazorUI.Components.Chart.Series;
 /// <summary>
 /// Base class for all chart series components providing common properties and animation support.
 /// </summary>
-/// <typeparam name="TData">The type of data items in the chart.</typeparam>
-public abstract class SeriesBase<TData> : ComponentBase
+public abstract class SeriesBase : ComponentBase
 {
     // ===== CORE IDENTIFICATION =====
     
@@ -113,7 +112,7 @@ public abstract class SeriesBase<TData> : ComponentBase
     /// <summary>
     /// Gets the registered LabelList component for this series.
     /// </summary>
-    protected LabelList? LabelList { get; private set; }
+    public LabelList? LabelList { get; private set; }
     
     /// <summary>
     /// Registers a LabelList component with this series.

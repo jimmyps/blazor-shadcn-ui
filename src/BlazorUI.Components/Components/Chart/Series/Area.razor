@@ -1,4 +1,6 @@
 @namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Chart.Series
+@inherits SeriesBase
 
 <CascadingValue Value="this" IsFixed="true">
     @ChildContent
@@ -8,19 +10,7 @@
     [CascadingParameter] private dynamic? Parent { get; set; }
     
     /// <summary>
-    /// Gets or sets the data key for the series.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public string DataKey { get; set; } = string.Empty;
-    
-    /// <summary>
-    /// Gets or sets the series name (for legend).
-    /// </summary>
-    [Parameter]
-    public string? Name { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the area color.
+    /// Gets or sets the area color (legacy, use Fill instead).
     /// </summary>
     [Parameter]
     public string? Color { get; set; }
@@ -69,46 +59,9 @@
     public InterpolationType Interpolation { get; set; } = InterpolationType.Natural;
     
     /// <summary>
-    /// Gets or sets whether to show labels on data points.
-    /// </summary>
-    [Parameter]
-    public bool ShowLabel { get; set; } = false;
-    
-    /// <summary>
-    /// Gets or sets the label position (used when ShowLabel is true and no LabelList child is provided).
-    /// </summary>
-    [Parameter]
-    public LabelPosition? LabelPosition { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the label formatter (template string or JS function string).
-    /// </summary>
-    [Parameter]
-    public string? LabelFormatter { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the child content (for Fill configuration and LabelList).
-    /// </summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-    
-    /// <summary>
-    /// Gets the registered LabelList component.
-    /// </summary>
-    public LabelList? LabelList { get; private set; }
-    
-    /// <summary>
     /// Gets the registered Fill component.
     /// </summary>
     public Fill? Fill { get; private set; }
-    
-    /// <summary>
-    /// Registers a LabelList component.
-    /// </summary>
-    public void RegisterLabelList(LabelList labelList)
-    {
-        LabelList = labelList;
-    }
     
     /// <summary>
     /// Registers a Fill component.

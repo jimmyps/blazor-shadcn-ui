@@ -1,4 +1,6 @@
 @namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Chart.Series
+@inherits SeriesBase
 
 <CascadingValue Value="this" IsFixed="true">
     @ChildContent
@@ -6,12 +8,6 @@
 
 @code {
     [CascadingParameter] private dynamic? Parent { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the data key for values.
-    /// </summary>
-    [Parameter, EditorRequired]
-    public string DataKey { get; set; } = string.Empty;
     
     /// <summary>
     /// Gets or sets the key for slice names.
@@ -26,34 +22,10 @@
     public string? InnerRadius { get; set; }
     
     /// <summary>
-    /// Gets or sets the series name.
-    /// </summary>
-    [Parameter]
-    public string? Name { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the default color (for auto palette override).
+    /// Gets or sets the default color (for auto palette override, legacy).
     /// </summary>
     [Parameter]
     public string? Color { get; set; }
-    
-    /// <summary>
-    /// Gets or sets whether to show labels.
-    /// </summary>
-    [Parameter]
-    public bool ShowLabel { get; set; } = false;
-    
-    /// <summary>
-    /// Gets or sets the label position.
-    /// </summary>
-    [Parameter]
-    public LabelPosition? LabelPosition { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the label formatter.
-    /// </summary>
-    [Parameter]
-    public string? LabelFormatter { get; set; }
     
     /// <summary>
     /// Gets or sets whether to show label lines.
@@ -62,28 +34,9 @@
     public bool ShowLabelLine { get; set; } = false;
     
     /// <summary>
-    /// Gets or sets the child content (LabelList and LabelLine).
-    /// </summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-    
-    /// <summary>
-    /// Gets the registered LabelList component.
-    /// </summary>
-    public LabelList? LabelList { get; private set; }
-    
-    /// <summary>
     /// Gets the registered LabelLine component.
     /// </summary>
     public LabelLine? LabelLine { get; private set; }
-    
-    /// <summary>
-    /// Registers a LabelList component.
-    /// </summary>
-    public void RegisterLabelList(LabelList labelList)
-    {
-        LabelList = labelList;
-    }
     
     /// <summary>
     /// Registers a LabelLine component.
