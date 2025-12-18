@@ -136,16 +136,18 @@
             {
                 var radar = _radars[i];
                 
-                // Build radar data - extract values using DataKey
+                // Build radar data - extract values using DataKey to create one series
                 List<double> values;
                 if (!string.IsNullOrEmpty(radar.DataKey))
                 {
-                    // Use DataKey to extract values from each data item
+                    // Extract one value per data item using DataKey (e.g., "score" from each skill record)
+                    // This creates a list like [85, 70, 90, 75, 80] for radar chart axes
                     values = DataExtractor.GetNumericValues(Data, radar.DataKey);
                 }
                 else
                 {
-                    // Fallback: use all numeric properties from first data item
+                    // Fallback: use all numeric properties from first data item only
+                    // Note: This is a legacy fallback and may not represent the full dataset
                     values = new List<double>();
                     var firstItem = Data.FirstOrDefault();
                     if (firstItem != null)
