@@ -3,11 +3,90 @@
  * Provides integration between Blazor components and ECharts library
  */
 
+/**
+ * ThemeWatcher class that monitors theme changes and triggers callbacks
+ */
+class ThemeWatcher {
+    constructor(callback) {
+        this.callback = callback;
+        this.currentTheme = this.detectTheme();
+        
+        // Watch for class/data-theme changes on <html>
+        this.observer = new MutationObserver(() => {
+            const newTheme = this.detectTheme();
+            if (newTheme !== this.currentTheme) {
+                console.log('[ThemeWatcher] Theme changed:', this.currentTheme, '->', newTheme);
+                this.currentTheme = newTheme;
+                this.callback(newTheme);
+            }
+        });
+        
+        this.observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class', 'data-theme']
+        });
+        
+        // Watch system preference changes
+        this.darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        this.systemThemeHandler = () => {
+            const newTheme = this.detectTheme();
+            if (newTheme !== this.currentTheme) {
+                this.currentTheme = newTheme;
+                this.callback(newTheme);
+            }
+        };
+        this.darkModeQuery.addEventListener('change', this.systemThemeHandler);
+    }
+    
+    detectTheme() {
+        if (document.documentElement.classList.contains('dark')) return 'dark';
+        const dataTheme = document.documentElement.getAttribute('data-theme');
+        if (dataTheme) return dataTheme;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    
+    destroy() {
+        this.observer.disconnect();
+        this.darkModeQuery.removeEventListener('change', this.systemThemeHandler);
+    }
+}
+
 // Store chart instances by ID
 const chartInstances = new Map();
 
+// Global theme watcher instance
+let globalThemeWatcher = null;
+
 // Global promise to track ECharts library loading (single-flight pattern)
 let echartsLoadingPromise = null;
+
+/**
+ * Ensure theme watcher is initialized and running
+ */
+function ensureThemeWatcher() {
+    if (!globalThemeWatcher) {
+        globalThemeWatcher = new ThemeWatcher((newTheme) => {
+            console.log('[ECharts] Refreshing all charts for theme:', newTheme);
+            chartInstances.forEach((info, id) => {
+                try {
+                    if (info.chart && !info.chart.isDisposed() && info.cachedOption) {
+                        // Re-resolve CSS variables with new theme values
+                        const resolvedOptions = resolveCssVariables(info.cachedOption);
+                        const processedOptions = convertFunctionStrings(resolvedOptions);
+                        
+                        // Apply the refreshed options to the chart
+                        info.chart.setOption(processedOptions, { notMerge: false });
+                        info.chart.resize();
+                        
+                        console.log('[ECharts] Chart', id, 'refreshed for theme:', newTheme);
+                    }
+                } catch (err) {
+                    console.error('[ECharts] Refresh error for chart', id, ':', err);
+                }
+            });
+        });
+    }
+}
 
 /**
  * Create a new ECharts instance
@@ -22,6 +101,9 @@ export async function createChart(element, config) {
     }
     
     console.log('[ECharts] createChart called with config:', config);
+    
+    // Ensure theme watcher is running
+    ensureThemeWatcher();
     
     // Single-flight ECharts loading: only first call downloads, others await same promise
     if (!window.echarts) {
@@ -49,9 +131,14 @@ export async function createChart(element, config) {
         
         // Check if config.Data is already an ECharts option object
         let option;
+        let cachedOption = null;
         if (config.data && typeof config.data === 'object') {
             // config.data contains the EChartsOption object directly
             console.log('[ECharts] Using direct ECharts option from config.data');
+            
+            // Cache the original option with unresolved CSS variables for theme refresh
+            cachedOption = config.data;
+            
             const resolvedOptions = resolveCssVariables(config.data);
             option = convertFunctionStrings(resolvedOptions);
         } else {
@@ -67,12 +154,13 @@ export async function createChart(element, config) {
         const resizeListener = () => chart.resize();
         window.addEventListener('resize', resizeListener);
         
-        // Store instance without ResizeObserver initially
+        // Store instance with cached option for theme refresh
         chartInstances.set(chartId, {
             chart: chart,
             element: element,
             resizeListener: resizeListener,
-            resizeObserver: null
+            resizeObserver: null,
+            cachedOption: cachedOption
         });
         
         // Delay ResizeObserver setup until after animation completes
@@ -204,6 +292,9 @@ export function updateOptions(chartId, newOptions) {
         return;
     }
     
+    // Update cached option for theme refresh
+    instance.cachedOption = newOptions;
+    
     // Resolve CSS variables and convert function strings
     const resolvedOptions = resolveCssVariables(newOptions);
     const processedOptions = convertFunctionStrings(resolvedOptions);
@@ -319,6 +410,13 @@ export function destroy(chartId) {
         
         instance.chart.dispose();
         chartInstances.delete(chartId);
+        
+        // Cleanup theme watcher if no charts remain
+        if (chartInstances.size === 0 && globalThemeWatcher) {
+            globalThemeWatcher.destroy();
+            globalThemeWatcher = null;
+            console.log('[ECharts] Theme watcher destroyed - no charts remain');
+        }
     } catch (error) {
         console.error('Failed to destroy chart:', error);
     }
