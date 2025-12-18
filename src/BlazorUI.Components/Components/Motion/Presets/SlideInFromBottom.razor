@@ -1,0 +1,38 @@
+@inherits MotionPresetBase
+@namespace BlazorUI.Components.Motion
+
+@*
+    SlideInFromBottom Preset - Slide element in from bottom
+*@
+
+@code {
+    /// <summary>
+    /// Distance to slide from (pixels or percentage). Default: "100%"
+    /// </summary>
+    [Parameter]
+    public string From { get; set; } = "100%";
+
+    /// <summary>
+    /// Duration in seconds. Default: 0.3
+    /// </summary>
+    [Parameter]
+    public double Duration { get; set; } = 0.3;
+
+    public override List<MotionKeyframe> GetKeyframes()
+    {
+        return new List<MotionKeyframe>
+        {
+            new MotionKeyframe { Y = From, Opacity = 0 },
+            new MotionKeyframe { Y = "0", Opacity = 1 }
+        };
+    }
+
+    public override MotionOptions? GetOptions()
+    {
+        return new MotionOptions
+        {
+            Duration = Duration,
+            Easing = MotionEasing.EaseOut
+        };
+    }
+}
