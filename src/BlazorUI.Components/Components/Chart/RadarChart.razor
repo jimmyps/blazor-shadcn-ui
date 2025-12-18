@@ -50,8 +50,8 @@
                 indicators.Add(new EChartsRadarIndicator
                 {
                     Name = label,
-                    Min = _xAxis.IndicatorMin,
-                    Max = _xAxis.IndicatorMax
+                    Min = _xAxis.Min,
+                    Max = _xAxis.Max
                 });
             }
         }
@@ -266,7 +266,15 @@
         _radarGrid = radarGrid;
         StateHasChanged();
     }
+
+    internal void RegisterXAxis(XAxis xAxis)
+    {
+        _xAxis = xAxis;
+        StateHasChanged();
+    }
+
     
     internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
     internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+
 }

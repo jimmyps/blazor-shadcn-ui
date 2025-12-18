@@ -16,7 +16,7 @@
                 <ChartContainer Height="200">
                     <RadarChart Data="@skillData">
                         <XAxis DataKey="skill" />
-                        <Tooltip />
+                        <Tooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-1)" />
                     </RadarChart>
@@ -36,6 +36,7 @@
                         <XAxis DataKey="skill" />
                         <Tooltip />
                         <Legend />
+                        <RadarGrid Radius="50%" Center="@(new string[] { "50%", "65%" })" />
                         <Radar DataKey="developer1" Name="Dev A" FillArea="true" AreaOpacity="0.2" Color="var(--chart-1)" />
                         <Radar DataKey="developer2" Name="Dev B" FillArea="true" AreaOpacity="0.2" Color="var(--chart-2)" />
                     </RadarChart>
@@ -53,7 +54,7 @@
                 <ChartContainer Height="200">
                     <RadarChart Data="@skillData">
                         <XAxis DataKey="skill" />
-                        <Tooltip />
+                        <Tooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.6" Color="var(--chart-3)" />
                     </RadarChart>
@@ -72,7 +73,7 @@
                     <RadarChart Data="@skillData">
                         <RadarGrid Shape="RadarShape.Circle" SplitNumber="4" />
                         <XAxis DataKey="skill" />
-                        <Tooltip />
+                        <Tooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-4)" />
                     </RadarChart>
@@ -92,6 +93,7 @@
                         <XAxis DataKey="metric" />
                         <Tooltip />
                         <Legend />
+                        <RadarGrid Radius="60%" Center="@(new string[] { "50%", "65%" })" />
                         <Radar DataKey="sales" Name="Sales" FillArea="true" AreaOpacity="0.25" Color="var(--chart-1)" />
                         <Radar DataKey="marketing" Name="Marketing" FillArea="true" AreaOpacity="0.25" Color="var(--chart-2)" />
                     </RadarChart>
@@ -102,18 +104,19 @@
         @* With Legend *@
         <Card>
             <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">With Legend</CardTitle>
-                <CardDescription>Multiple series with legend</CardDescription>
+                <CardTitle Class="text-xl">With Legend and Emphasis</CardTitle>
+                <CardDescription>Multiple series with custom legend and emphasis</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer Height="200">
                     <RadarChart Data="@productComparison">
                         <XAxis DataKey="feature" />
                         <Tooltip />
-                        <Legend VerticalAlign="LegendVerticalAlign.Bottom" />
-                        <Radar DataKey="productA" Name="Product A" FillArea="true" AreaOpacity="0.2" Color="var(--chart-3)" />
-                        <Radar DataKey="productB" Name="Product B" FillArea="true" AreaOpacity="0.2" Color="var(--chart-4)" />
-                        <Radar DataKey="productC" Name="Product C" FillArea="true" AreaOpacity="0.2" Color="var(--chart-5)" />
+                        <Legend VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Diamond" />
+                        <RadarGrid Radius="50%" />
+                        <Radar DataKey="productA" Name="Product A" Emphasis="true" FillArea="true" AreaOpacity="0.2" Color="var(--chart-3)" />
+                        <Radar DataKey="productB" Name="Product B" Emphasis="true" FillArea="true" AreaOpacity="0.2" Color="var(--chart-4)" />
+                        <Radar DataKey="productC" Name="Product C" Emphasis="true" FillArea="true" AreaOpacity="0.2" Color="var(--chart-5)" />
                     </RadarChart>
                 </ChartContainer>
             </CardContent>
@@ -130,7 +133,7 @@
                     <RadarChart Data="@skillData">
                         <RadarGrid Shape="RadarShape.Polygon" SplitNumber="5" />
                         <XAxis DataKey="skill" />
-                        <Tooltip />
+                        <Tooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-5)" />
                     </RadarChart>
@@ -148,7 +151,7 @@
                 <ChartContainer Height="200">
                     <RadarChart Data="@skillData">
                         <XAxis DataKey="skill" />
-                        <Tooltip />
+                        <Tooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="false" Color="var(--chart-2)" />
                     </RadarChart>
@@ -173,10 +176,10 @@
     private List<TeamSkillData> teamSkillData = new()
     {
         new() { skill = "Coding", developer1 = 85, developer2 = 75 },
-        new() { skill = "Design", developer1 = 70, developer2 = 85 },
-        new() { skill = "Testing", developer1 = 90, developer2 = 80 },
-        new() { skill = "DevOps", developer1 = 75, developer2 = 70 },
-        new() { skill = "Communication", developer1 = 80, developer2 = 90 }
+        new() { skill = "Design", developer1 = 70, developer2 = 95 },
+        new() { skill = "Testing", developer1 = 90, developer2 = 60 },
+        new() { skill = "DevOps", developer1 = 75, developer2 = 50 },
+        new() { skill = "Communication", developer1 = 70, developer2 = 90 }
     };
 
     // Performance metrics
@@ -192,11 +195,11 @@
     // Product comparison
     private List<ProductComparison> productComparison = new()
     {
-        new() { feature = "Speed", productA = 85, productB = 78, productC = 90 },
+        new() { feature = "Speed", productA = 75, productB = 68, productC = 90 },
         new() { feature = "Usability", productA = 90, productB = 85, productC = 75 },
-        new() { feature = "Security", productA = 80, productB = 92, productC = 88 },
-        new() { feature = "Cost", productA = 75, productB = 80, productC = 85 },
-        new() { feature = "Support", productA = 88, productB = 75, productC = 82 }
+        new() { feature = "Security", productA = 80, productB = 92, productC = 68 },
+        new() { feature = "Cost", productA = 95, productB = 60, productC = 85 },
+        new() { feature = "Support", productA = 88, productB = 45, productC = 62 }
     };
 
     // Data classes
