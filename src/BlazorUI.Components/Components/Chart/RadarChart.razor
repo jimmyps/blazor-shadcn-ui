@@ -50,8 +50,8 @@
                 indicators.Add(new EChartsRadarIndicator
                 {
                     Name = label,
-                    Min = _xAxis.IndicatorMin,
-                    Max = _xAxis.IndicatorMax
+                    Min = _xAxis.Min,
+                    Max = _xAxis.Max
                 });
             }
         }
@@ -136,23 +136,39 @@
             {
                 var radar = _radars[i];
                 
-                // Build radar data - one entry per data item
-                var radarData = new List<Dictionary<string, object>>();
-                foreach (var item in Data)
+                // Build radar data - extract values using DataKey to create one series
+                List<double> values;
+                if (!string.IsNullOrEmpty(radar.DataKey))
                 {
-                    var values = new List<double>();
-                    foreach (var prop in properties)
+                    // Extract one value per data item using DataKey (e.g., "score" from each skill record)
+                    // This creates a list like [85, 70, 90, 75, 80] for radar chart axes
+                    values = DataExtractor.GetNumericValues(Data, radar.DataKey);
+                }
+                else
+                {
+                    // Fallback: use all numeric properties from first data item only
+                    // Note: This is a legacy fallback and may not represent the full dataset
+                    values = new List<double>();
+                    var firstItem = Data.FirstOrDefault();
+                    if (firstItem != null)
                     {
-                        var val = prop.GetValue(item);
-                        values.Add(val != null ? Convert.ToDouble(val) : 0.0);
+                        foreach (var prop in properties)
+                        {
+                            var val = prop.GetValue(firstItem);
+                            values.Add(val != null ? Convert.ToDouble(val) : 0.0);
+                        }
                     }
-                    
-                    radarData.Add(new Dictionary<string, object>
+                }
+                
+                // Create single radar data entry with all values
+                var radarData = new List<Dictionary<string, object>>
+                {
+                    new Dictionary<string, object>
                     {
                         ["value"] = values,
                         ["name"] = radar.Name ?? radar.DataKey
-                    });
-                }
+                    }
+                };
                 
                 var series = new EChartsSeries
                 {
@@ -250,7 +266,15 @@
         _radarGrid = radarGrid;
         StateHasChanged();
     }
+
+    internal void RegisterXAxis(XAxis xAxis)
+    {
+        _xAxis = xAxis;
+        StateHasChanged();
+    }
+
     
     internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
     internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+
 }
