@@ -8,33 +8,33 @@
 
 @code {
     [CascadingParameter] private dynamic? Parent { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the key for slice names.
     /// </summary>
     [Parameter, EditorRequired]
     public string NameKey { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Gets or sets the inner radius for donut charts (e.g., "60" or "60%").
     /// </summary>
     [Parameter]
     public string? InnerRadius { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the outer radius (e.g., "75%", "80%", "200").
     /// Controls the overall size of the pie chart.
     /// </summary>
     [Parameter]
     public string OuterRadius { get; set; } = "75%";
-    
+
     /// <summary>
     /// Gets or sets the start angle in degrees (0-360).
     /// 90 = top, 0 = right, 180 = bottom, 270 = left.
     /// </summary>
     [Parameter]
     public int StartAngle { get; set; } = 90;
-    
+
     /// <summary>
     /// Gets or sets the end angle in degrees.
     /// For full circle: StartAngle + 360.
@@ -42,7 +42,7 @@
     /// </summary>
     [Parameter]
     public int EndAngle { get; set; } = 450;
-    
+
     /// <summary>
     /// Gets or sets the rose chart type.
     /// "radius" - radius represents value (Nightingale rose chart).
@@ -51,19 +51,19 @@
     /// </summary>
     [Parameter]
     public string? RoseType { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the padding angle between slices in degrees.
     /// </summary>
     [Parameter]
     public int PadAngle { get; set; } = 0;
-    
+
     /// <summary>
     /// Gets or sets the center position as [x, y] (e.g., ["50%", "50%"]).
     /// </summary>
     [Parameter]
     public string[]? Center { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the selection mode.
     /// "single" - single slice selection.
@@ -72,67 +72,67 @@
     /// </summary>
     [Parameter]
     public string? SelectedMode { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the offset distance when slice is selected (pixels).
     /// </summary>
     [Parameter]
     public int SelectedOffset { get; set; } = 10;
-    
+
     /// <summary>
     /// Gets or sets the minimum angle for a slice to be visible (degrees).
     /// Small value slices below this threshold will be hidden.
     /// </summary>
     [Parameter]
     public int MinAngle { get; set; } = 0;
-    
+
     /// <summary>
     /// Gets or sets the default color (for auto palette override, legacy).
     /// </summary>
     [Parameter]
     public string? Color { get; set; }
-    
+
     /// <summary>
     /// Gets or sets whether to show label lines.
     /// </summary>
     [Parameter]
-    public bool ShowLabelLine { get; set; } = false;
-    
+    public bool ShowLabelLine { get; set; } = true;
+
     /// <summary>
     /// Gets or sets whether to enable emphasis (hover) scaling.
     /// </summary>
     [Parameter]
     public bool? EmphasisScale { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the emphasis scale size in pixels (default 5-10).
     /// </summary>
     [Parameter]
     public int? EmphasisScaleSize { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the emphasis focus mode ("self", "series", "none").
     /// </summary>
     [Parameter]
     public string? EmphasisFocus { get; set; }
-    
+
     /// <summary>
     /// Gets or sets whether to show labels on hover (emphasis).
     /// </summary>
     [Parameter]
     public bool? EmphasisShowLabel { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the label formatter for emphasis state.
     /// </summary>
     [Parameter]
     public string? EmphasisLabelFormatter { get; set; }
-    
+
     /// <summary>
     /// Gets the registered LabelLine component.
     /// </summary>
     public LabelLine? LabelLine { get; private set; }
-    
+
     /// <summary>
     /// Registers a LabelLine component.
     /// </summary>

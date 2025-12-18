@@ -12,7 +12,7 @@
 
 @code {
     private List<Pie> _pies = new();
-    
+
     protected override EChartsOption BuildEChartsOption()
     {
         var option = new EChartsOption
@@ -27,14 +27,14 @@
             AnimationDurationUpdate = AnimationDurationUpdate,
             AnimationEasingUpdate = MapAnimationEasing(AnimationEasingUpdate)
         };
-        
+
         return option;
     }
-    
+
     private List<EChartsSeries> BuildSeries()
     {
         var seriesList = new List<EChartsSeries>();
-        
+
         if (_pies.Any())
         {
             foreach (var pie in _pies)
@@ -51,7 +51,7 @@
                         ["value"] = value
                     });
                 }
-                
+
                 var series = new EChartsSeries
                 {
                     Type = "pie",
@@ -69,7 +69,7 @@
                     SelectedMode = pie.SelectedMode,
                     SelectedOffset = pie.SelectedOffset
                 };
-                
+
                 // Map label parameters to ECharts series.label
                 if (pie.ShowLabel || pie.LabelList != null)
                 {
@@ -84,12 +84,12 @@
                         Offset = labelList?.Offset
                     };
                 }
-                
+
                 // Map labelLine parameters
                 if (pie.ShowLabelLine || pie.LabelLine != null)
                 {
                     var labelLine = pie.LabelLine;
-                    
+
                     series.LabelLine = new EChartsLabelLine
                     {
                         Show = labelLine?.Show ?? pie.ShowLabelLine,
@@ -148,7 +148,7 @@
     {
         return position switch
         {
-            LabelPosition.Top => "top",
+            LabelPosition.Top => "outside", // Use "outside" for top position in pie charts
             LabelPosition.Bottom => "bottom",
             LabelPosition.Left => "left",
             LabelPosition.Right => "right",

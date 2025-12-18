@@ -65,36 +65,24 @@ let echartsLoadingPromise = null;
  */
 function ensureThemeWatcher() {
     if (!globalThemeWatcher) {
-        // Debounce timer for theme changes
-        let debounceTimer = null;
-        
         globalThemeWatcher = new ThemeWatcher((newTheme) => {
-            // Debounce theme changes to avoid excessive refreshes
-            if (debounceTimer) {
-                clearTimeout(debounceTimer);
-            }
-            
-            debounceTimer = setTimeout(() => {
-                console.log('[ECharts] Refreshing all charts for theme:', newTheme);
-                chartInstances.forEach((info, id) => {
-                    try {
-                        if (info.chart && !info.chart.isDisposed() && info.cachedOption) {
-                            // Re-resolve CSS variables with new theme values
-                            const resolvedOptions = resolveCssVariables(info.cachedOption);
-                            const processedOptions = convertFunctionStrings(resolvedOptions);
-                            
-                            // Apply the refreshed options to the chart
-                            info.chart.setOption(processedOptions, { notMerge: false });
-                            info.chart.resize();
-                            
-                            console.log('[ECharts] Chart', id, 'refreshed for theme:', newTheme);
-                        }
-                    } catch (err) {
-                        console.error('[ECharts] Refresh error for chart', id, ':', err);
+            console.log('[ECharts] Refreshing all charts for theme:', newTheme);
+            chartInstances.forEach((info, id) => {
+                try {
+                    if (info.chart && !info.chart.isDisposed() && info.cachedOption) {
+                        // Re-resolve CSS variables with new theme values
+                        const resolvedOptions = resolveCssVariables(info.cachedOption);
+                        const processedOptions = convertFunctionStrings(resolvedOptions);
+                        
+                        // Apply the refreshed options to the chart
+                        info.chart.setOption(processedOptions, { notMerge: false });
+                        
+                        console.log('[ECharts] Chart', id, 'refreshed for theme:', newTheme);
                     }
-                });
-                debounceTimer = null;
-            }, 50); // 50ms debounce delay
+                } catch (err) {
+                    console.error('[ECharts] Refresh error for chart', id, ':', err);
+                }
+            });
         });
     }
 }
