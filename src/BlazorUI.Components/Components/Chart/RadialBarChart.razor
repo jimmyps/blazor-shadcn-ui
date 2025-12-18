@@ -15,6 +15,39 @@
     private PolarGrid? _polarGrid;
     private CenterLabel? _centerLabel;
     
+    /// <summary>
+    /// Gets or sets the start angle in degrees (0-360).
+    /// 90 = top, 0 = right, 180 = bottom, 270 = left.
+    /// </summary>
+    [Parameter]
+    public int StartAngle { get; set; } = 90;
+    
+    /// <summary>
+    /// Gets or sets the end angle in degrees.
+    /// For full circle: 450 (90 + 360).
+    /// For semi-circle gauge: 270 (90 + 180).
+    /// </summary>
+    [Parameter]
+    public int EndAngle { get; set; } = 450;
+    
+    /// <summary>
+    /// Gets or sets whether angle axis runs clockwise.
+    /// </summary>
+    [Parameter]
+    public bool Clockwise { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the minimum value for the radius axis.
+    /// </summary>
+    [Parameter]
+    public double? RadiusMin { get; set; } = 0;
+    
+    /// <summary>
+    /// Gets or sets the maximum value for the radius axis.
+    /// </summary>
+    [Parameter]
+    public double? RadiusMax { get; set; }
+    
     protected override EChartsOption BuildEChartsOption()
     {
         var option = new EChartsOption
@@ -49,7 +82,10 @@
     {
         var axis = new EChartsAxis
         {
-            Type = "category"
+            Type = "category",
+            StartAngle = StartAngle,
+            EndAngle = EndAngle,
+            Clockwise = Clockwise
         };
         
         // Extract category data from XAxis if available
@@ -63,17 +99,43 @@
     
     private EChartsAxis BuildRadiusAxis()
     {
+        var polarGrid = _polarGrid ?? new PolarGrid();
+        
         var axis = new EChartsAxis
         {
-            Type = "value"
+            Type = "value",
+            Min = RadiusMin,
+            Max = RadiusMax,
+            SplitNumber = polarGrid.SplitNumber
         };
         
-        // Apply min/max from YAxis if available
+        // Apply min/max from YAxis if available (takes precedence)
         if (_yAxis != null)
         {
-            axis.Min = _yAxis.Min;
-            axis.Max = _yAxis.Max;
+            axis.Min = _yAxis.Min ?? RadiusMin;
+            axis.Max = _yAxis.Max ?? RadiusMax;
         }
+        
+        // Apply axis line and split line settings
+        axis.AxisLine = new EChartsAxisLine
+        {
+            Show = polarGrid.ShowAxisLine,
+            LineStyle = new EChartsLineStyle
+            {
+                Color = polarGrid.Stroke,
+                Width = polarGrid.StrokeWidth
+            }
+        };
+        
+        axis.SplitLine = new EChartsSplitLine
+        {
+            Show = polarGrid.ShowSplitLine,
+            LineStyle = new EChartsLineStyle
+            {
+                Color = polarGrid.Stroke,
+                Width = polarGrid.StrokeWidth
+            }
+        };
         
         return axis;
     }
@@ -100,7 +162,13 @@
                     {
                         Color = GetSeriesColor(i, radialBar.Color),
                         BorderRadius = radialBar.CornerRadius
-                    }
+                    },
+                    ShowBackground = radialBar.ShowBackground,
+                    BackgroundStyle = radialBar.ShowBackground ? new EChartsBackgroundStyle
+                    {
+                        Color = radialBar.BackgroundColor ?? "rgba(180, 180, 180, 0.1)",
+                        Opacity = radialBar.BackgroundOpacity
+                    } : null
                 };
                 
                 // Map label parameters

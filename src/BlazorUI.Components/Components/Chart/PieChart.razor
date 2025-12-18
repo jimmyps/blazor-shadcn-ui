@@ -58,8 +58,16 @@
                     Name = pie.Name,
                     Data = pieData.Cast<object>().ToList(),
                     Radius = !string.IsNullOrEmpty(pie.InnerRadius) 
-                        ? new object[] { pie.InnerRadius, "70%" } 
-                        : "70%"
+                        ? new object[] { pie.InnerRadius, pie.OuterRadius } 
+                        : pie.OuterRadius,
+                    StartAngle = pie.StartAngle,
+                    EndAngle = pie.EndAngle,
+                    RoseType = pie.RoseType,
+                    PadAngle = pie.PadAngle,
+                    MinAngle = pie.MinAngle,
+                    Center = pie.Center ?? new[] { "50%", "50%" },
+                    SelectedMode = pie.SelectedMode,
+                    SelectedOffset = pie.SelectedOffset
                 };
                 
                 // Map label parameters to ECharts series.label
@@ -81,6 +89,7 @@
                 if (pie.ShowLabelLine || pie.LabelLine != null)
                 {
                     var labelLine = pie.LabelLine;
+                    
                     series.LabelLine = new EChartsLabelLine
                     {
                         Show = labelLine?.Show ?? pie.ShowLabelLine,

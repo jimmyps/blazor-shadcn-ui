@@ -96,6 +96,20 @@
     public bool? BoundaryGap { get; set; }
 
     /// <summary>
+    /// Gets or sets the minimum value for this radar indicator.
+    /// Only applies to RadarChart.
+    /// </summary>
+    [Parameter]
+    public double? IndicatorMin { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the maximum value for this radar indicator.
+    /// Only applies to RadarChart.
+    /// </summary>
+    [Parameter]
+    public double? IndicatorMax { get; set; }
+
+    /// <summary>
     /// Gets or sets the child content for nested components (e.g., AxisLabel).
     /// </summary>
     [Parameter]

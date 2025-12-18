@@ -1,34 +1,38 @@
-@page "/components/charts/area-new"
 @using BlazorUI.Components.Card
 @using BlazorUI.Components.Chart
 
-<PageHeader Title="Area Charts" Description="Comprehensive area chart examples following shadcn/ui design patterns" />
+<PageTitle>Chart Components - Area Chart</PageTitle>
 
 <div class="space-y-8">
     @* Hero - Interactive Area Chart with Date Filter *@
     <Card>
-        <CardHeader Class="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+        <CardHeader Class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
             <div class="grid flex-1 gap-1">
-                <CardTitle>Area Chart - Interactive</CardTitle>
-                <CardDescription>Showing total visitors for the last 3 months</CardDescription>
+                <CardTitle Class="text-xl">Area Chart - Interactive</CardTitle>
+                <CardDescription>Showing total visitors for the @(timeRange == "7d" ? "last 7 days" : timeRange == "30d" ? "last 30 days" : "last 3 months")</CardDescription>
             </div>
-            <Select @bind-Value="@timeRange" Class="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
+            <Select @bind-Value="@timeRange" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
                 <SelectTrigger>
                     <SelectValue Placeholder="Last 3 months" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem Value="90d">Last 3 months</SelectItem>
-                    <SelectItem Value="30d">Last 30 days</SelectItem>
-                    <SelectItem Value="7d">Last 7 days</SelectItem>
+                    <SelectItem Value="@("90d")" Text="Last 3 months">Last 3 months</SelectItem>
+                    <SelectItem Value="@("30d")" Text="Last 30 days">Last 30 days</SelectItem>
+                    <SelectItem Value="@("7d")" Text="Last 7 days">Last 7 days</SelectItem>
                 </SelectContent>
             </Select>
         </CardHeader>
-        <CardContent Class="px-2 pt-4 sm:px-6 sm:pt-6">
+        <CardContent Class="p-6 pt-2 sm:px-6 sm:pt-6">
             <ChartContainer Height="250" Class="w-full">
-                <AreaChart Data="@FilteredData">
-                    <XAxis DataKey="date" />
-                    <YAxis />
-                    <Tooltip Mode="TooltipMode.Axis" />
+                <AreaChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
+                    <Grid Vertical="false" />
+                    <XAxis DataKey="date" TickLine="false" Color="var(--border)">
+                        <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
+                    </XAxis>
+                    <YAxis Show="false" TickLine="false">
+                        <AxisLabel Show="false" />
+                    </YAxis>
+                    <Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Line" Formatter="@tooltipFormatter" />
                     <Legend />
                     <Area DataKey="desktop" Name="Desktop" StackId="Total">
                         <Fill>
@@ -54,16 +58,22 @@
     <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
         @* Default Area Chart *@
         <Card>
-            <CardHeader>
-                <CardTitle>Area Chart</CardTitle>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Area Chart</CardTitle>
                 <CardDescription>Default area chart</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer Height="200">
-                    <AreaChart Data="@simpleData">
-                        <XAxis DataKey="month" />
-                        <YAxis />
+                    <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Show="false" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
                         <Tooltip />
+                        <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" Color="var(--chart-1)" />
                     </AreaChart>
                 </ChartContainer>
@@ -72,15 +82,20 @@
 
         @* Stacked Area Chart *@
         <Card>
-            <CardHeader>
-                <CardTitle>Stacked Area</CardTitle>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Stacked Area</CardTitle>
                 <CardDescription>Multiple stacked areas</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer Height="200">
-                    <AreaChart Data="@multiData">
-                        <XAxis DataKey="month" />
-                        <YAxis />
+                    <AreaChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Show="false" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
                         <Tooltip />
                         <Legend />
                         <Area DataKey="product1" Name="Product A" StackId="total" Color="var(--chart-1)" />
@@ -93,16 +108,22 @@
 
         @* Area with Gradient *@
         <Card>
-            <CardHeader>
-                <CardTitle>Gradient Fill</CardTitle>
-                <CardDescription>Area with linear gradient</CardDescription>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Gradient Fill</CardTitle>
+                <CardDescription>Area with linear gradient and shadow cursor highlight</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer Height="200">
-                    <AreaChart Data="@simpleData">
-                        <XAxis DataKey="month" />
-                        <YAxis />
-                        <Tooltip />
+                    <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Show="false" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip Cursor="TooltipCursor.Shadow" />
+                        <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales">
                             <Fill>
                                 <LinearGradient Direction="GradientDirection.Vertical">
@@ -118,17 +139,23 @@
 
         @* Area with Axes *@
         <Card>
-            <CardHeader>
-                <CardTitle>With Custom Axes</CardTitle>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">With Custom Axes</CardTitle>
                 <CardDescription>Customized axis display</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer Height="200">
-                    <AreaChart Data="@simpleData">
-                        <XAxis DataKey="month" Show="true" AxisLine="true" TickLine="true" />
-                        <YAxis Show="true" AxisLine="true" TickLine="true" />
+                    <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Show="false" />
+                        <XAxis DataKey="month" Show="true" AxisLine="true" TickLine="true" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Show="true" Position="YAxisPosition.Right" AxisLine="true" TickLine="true" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
                         <Tooltip />
-                        <Area DataKey="sales" Name="Sales" Color="var(--chart-2)" />
+                        <Legend Show="false" />
+                        <Area DataKey="sales" Name="Sales" Color="var(--chart-2)" Opacity="0.8" />
                     </AreaChart>
                 </ChartContainer>
             </CardContent>
@@ -136,17 +163,22 @@
 
         @* Area with Legend *@
         <Card>
-            <CardHeader>
-                <CardTitle>With Legend</CardTitle>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">With Legend</CardTitle>
                 <CardDescription>Custom legend positioning</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer Height="200">
-                    <AreaChart Data="@multiData">
-                        <XAxis DataKey="month" />
-                        <YAxis />
+                    <AreaChart Data="@multiData" Padding="@(new Padding(6, 0, 32, 0))">
+                        <Grid Show="false" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
                         <Tooltip />
-                        <Legend Align="LegendAlign.Center" VerticalAlign="LegendVerticalAlign.Top" />
+                        <Legend Align="LegendAlign.Right" VerticalAlign="LegendVerticalAlign.Bottom" />
                         <Area DataKey="product1" Name="Product A" Color="var(--chart-1)" />
                         <Area DataKey="product2" Name="Product B" Color="var(--chart-2)" />
                     </AreaChart>
@@ -156,15 +188,20 @@
 
         @* Multiple Independent Areas *@
         <Card>
-            <CardHeader>
-                <CardTitle>Multiple Areas</CardTitle>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Multiple Areas</CardTitle>
                 <CardDescription>Non-stacked multiple areas</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer Height="200">
-                    <AreaChart Data="@multiData">
-                        <XAxis DataKey="month" />
-                        <YAxis />
+                    <AreaChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Show="false" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
                         <Tooltip />
                         <Legend />
                         <Area DataKey="product1" Name="Product A" Color="var(--chart-1)" />
@@ -176,16 +213,22 @@
 
         @* Area with Dots *@
         <Card>
-            <CardHeader>
-                <CardTitle>With Data Points</CardTitle>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">With Data Points</CardTitle>
                 <CardDescription>Area with visible dots</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer Height="200">
-                    <AreaChart Data="@simpleData">
-                        <XAxis DataKey="month" />
-                        <YAxis />
+                    <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Show="false" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
                         <Tooltip />
+                        <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" ShowDots="true" Color="var(--chart-3)" />
                     </AreaChart>
                 </ChartContainer>
@@ -194,17 +237,22 @@
 
         @* Area with Grid *@
         <Card>
-            <CardHeader>
-                <CardTitle>With Grid</CardTitle>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">With Grid</CardTitle>
                 <CardDescription>Custom grid display</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer Height="200">
-                    <AreaChart Data="@simpleData">
+                    <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Horizontal="true" Vertical="false" Stroke="var(--border)" />
-                        <XAxis DataKey="month" />
-                        <YAxis />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
                         <Tooltip />
+                        <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" Color="var(--chart-4)" />
                     </AreaChart>
                 </ChartContainer>
@@ -213,17 +261,23 @@
 
         @* Linear Interpolation *@
         <Card>
-            <CardHeader>
-                <CardTitle>Linear</CardTitle>
-                <CardDescription>Linear interpolation</CardDescription>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Linear</CardTitle>
+                <CardDescription>Linear interpolation with custom line width</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer Height="200">
-                    <AreaChart Data="@simpleData">
-                        <XAxis DataKey="month" />
-                        <YAxis />
+                    <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Show="false" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
                         <Tooltip />
-                        <Area DataKey="sales" Name="Sales" Color="var(--chart-5)" />
+                        <Legend Show="false" />
+                        <Area DataKey="sales" Name="Sales" LineWidth="3" Color="var(--chart-5)" />
                     </AreaChart>
                 </ChartContainer>
             </CardContent>
@@ -231,16 +285,22 @@
 
         @* Step Interpolation (MVP+ Feature) *@
         <Card>
-            <CardHeader>
-                <CardTitle>Step Area</CardTitle>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Step Area</CardTitle>
                 <CardDescription>Step interpolation</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer Height="200">
-                    <AreaChart Data="@simpleData">
-                        <XAxis DataKey="month" />
-                        <YAxis />
+                    <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Show="false" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
                         <Tooltip />
+                        <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" Interpolation="InterpolationType.Step" Color="var(--chart-1)" />
                     </AreaChart>
                 </ChartContainer>
@@ -249,15 +309,20 @@
 
         @* Stacked Expand - 100% Stacking (MVP+ Feature) *@
         <Card>
-            <CardHeader>
-                <CardTitle>100% Stacked</CardTitle>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">100% Stacked</CardTitle>
                 <CardDescription>Percentage stacking</CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer Height="200">
-                    <AreaChart Data="@multiData" StackOffset="StackOffset.Expand">
-                        <XAxis DataKey="month" />
-                        <YAxis />
+                    <AreaChart Data="@multiData" StackOffset="StackOffset.Expand" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Show="false" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
                         <Tooltip Formatter="function(params) { return params.seriesName + ': ' + params.value.toFixed(1) + '%'; }" />
                         <Legend />
                         <Area DataKey="product1" Name="Product A" StackId="total" Color="var(--chart-1)" />
@@ -272,6 +337,40 @@
 
 @code {
     private string timeRange = "90d";
+
+    private string GetTimeRangeDescription()
+    {
+        return timeRange switch
+        {
+            "7d" => "Showing total visitors for the last 7 days",
+            "30d" => "Showing total visitors for the last 30 days",
+            "90d" => "Showing total visitors for the last 3 months",
+            _ => "Showing total visitors for the last 3 months"
+        };
+    }
+
+    private const string dateFormatter = @"
+function (value) {
+    const date = new Date(value);
+    return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric'})
+}";
+
+    private const string tooltipFormatter = @"
+function (params) {
+debugger;
+  const label = new Date(params[0].axisValue).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric'
+  })
+
+  const rows = params.map(p => {
+      return `${p.marker} ${p.seriesName}: <b>${p.value}</b>`
+    }).join('<br/>')
+
+  return `<div>${label}</div>${rows}`
+}";
 
     // 90-day comprehensive dataset (same as interactive example)
     private List<ChartDataPoint> chartData = new()
@@ -397,12 +496,12 @@
 
     private List<MultiSeriesData> multiData = new()
     {
-        new() { month = "Jan", product1 = 100, product2 = 80, product3 = 60 },
-        new() { month = "Feb", product1 = 120, product2 = 95, product3 = 75 },
-        new() { month = "Mar", product1 = 140, product2 = 110, product3 = 85 },
-        new() { month = "Apr", product1 = 160, product2 = 125, product3 = 95 },
-        new() { month = "May", product1 = 180, product2 = 140, product3 = 105 },
-        new() { month = "Jun", product1 = 200, product2 = 155, product3 = 115 }
+        new() { month = "Jan", product1 = 140, product2 = 90,  product3 = 60 },
+        new() { month = "Feb", product1 = 190, product2 = 120, product3 = 80 },
+        new() { month = "Mar", product1 = 165, product2 = 100, product3 = 70 },
+        new() { month = "Apr", product1 = 145, product2 = 115, product3 = 85 },
+        new() { month = "May", product1 = 165, product2 = 105, product3 = 75 },
+        new() { month = "Jun", product1 = 170, product2 = 110, product3 = 80 }
     };
 
     public class ChartDataPoint

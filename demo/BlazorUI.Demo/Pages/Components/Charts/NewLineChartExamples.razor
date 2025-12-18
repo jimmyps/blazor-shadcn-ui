@@ -1,13 +1,15 @@
 @using BlazorUI.Components.Card
 @using BlazorUI.Components.Chart
 
+<PageTitle>Chart Components - Line Chart</PageTitle>
+
 <div class="space-y-8">
     @* Hero - Interactive Line Chart with Date Filter *@
     <Card>
         <CardHeader Class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
             <div class="grid flex-1 gap-1">
                 <CardTitle Class="text-xl">Line Chart - Interactive</CardTitle>
-                <CardDescription>Showing trends for the last 3 months</CardDescription>
+                <CardDescription>Showing trends for the @(timeRange == "7d" ? "last 7 days" : timeRange == "30d" ? "last 30 days" : "last 3 months")</CardDescription>
             </div>
             <Select @bind-Value="@timeRange" TValue="string" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
                 <SelectTrigger>
@@ -281,6 +283,8 @@
 </div>
 
 @code {
+    private string timeRange = "90d";
+
     private const string dateFormatter = @"
 function (value) {
     const date = new Date(value);
@@ -303,8 +307,6 @@ debugger;
 
   return `<div>${label}</div>${rows}`  
 }";
-
-    private string timeRange = "90d";
 
     // 90-day comprehensive dataset
     private List<ChartDataPoint> chartData = new()
