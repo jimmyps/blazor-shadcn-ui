@@ -25,7 +25,7 @@
         <CardContent Class="p-6 pt-2 sm:px-6 sm:pt-6">
             <ChartContainer Height="250" Class="w-full">
                 <AreaChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
-                    <Grid Vertical="false" />
+                    <Grid Vertical="false" Stroke="var(--border)" />
                     <XAxis DataKey="date" TickLine="false" Color="var(--border)">
                         <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
                     </XAxis>
