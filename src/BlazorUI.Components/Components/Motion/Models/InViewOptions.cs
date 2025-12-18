@@ -25,10 +25,4 @@ public class InViewOptions
     /// Default: true
     /// </summary>
     public bool Once { get; set; } = true;
-
-    /// <summary>
-    /// Amount to offset the viewport intersection (in pixels or percentage).
-    /// Positive values trigger earlier, negative values trigger later.
-    /// </summary>
-    public string? Offset { get; set; }
 }

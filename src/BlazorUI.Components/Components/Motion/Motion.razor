@@ -21,7 +21,16 @@
 *@
 
 <div @ref="_elementRef" class="@Class" style="@Style">
-    @ChildContent
+    @if (StaggerChildren.HasValue && StaggerChildren.Value > 0)
+    {
+        <CascadingValue Value="@(new MotionContext { StaggerDelay = StaggerChildren.Value })" Name="MotionContext">
+            @ChildContent
+        </CascadingValue>
+    }
+    else
+    {
+        @ChildContent
+    }
 </div>
 
 @code {
@@ -107,6 +116,15 @@
 
     // Internal state for preset collection
     internal List<IMotionPreset> CollectedPresets { get; } = new();
+    
+    protected override void OnInitialized()
+    {
+        // If we're a child in a stagger context, get our index
+        if (Context != null)
+        {
+            Context.ChildIndex = Context.GetNextChildIndex();
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -203,6 +221,10 @@
             if (CollectedPresets.Any())
             {
                 keyframes = new List<MotionKeyframe>();
+                
+                // Note: When multiple presets are combined, their keyframes are concatenated.
+                // For best results, use presets that animate different properties (e.g., FadeIn + ScaleIn).
+                // If presets animate the same property, the last preset's keyframes will take precedence.
                 foreach (var preset in CollectedPresets)
                 {
                     keyframes.AddRange(preset.GetKeyframes());
@@ -254,12 +276,17 @@
     {
         try
         {
-            return await JSRuntime.InvokeAsync<bool>(
-                "eval",
-                "window.matchMedia('(prefers-reduced-motion: reduce)').matches");
+            if (_jsModule != null)
+            {
+                return await _jsModule.InvokeAsync<bool>("checkReducedMotion");
+            }
+            
+            // Fallback if module not loaded
+            return false;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"Motion: Failed to check reduced motion preference - {ex.Message}");
             return false;
         }
     }
@@ -269,17 +296,18 @@
         if (current == null) return preset;
         if (preset == null) return current;
 
+        // User-specified options (current) take precedence over preset defaults
         return new MotionOptions
         {
-            Duration = preset.Duration ?? current.Duration,
-            Delay = preset.Delay ?? current.Delay,
-            Easing = preset.Easing ?? current.Easing,
-            CustomEasing = preset.CustomEasing ?? current.CustomEasing,
-            Repeat = preset.Repeat ?? current.Repeat,
-            RepeatReverse = preset.RepeatReverse ?? current.RepeatReverse,
-            RepeatDelay = preset.RepeatDelay ?? current.RepeatDelay,
-            Fill = preset.Fill ?? current.Fill,
-            Direction = preset.Direction ?? current.Direction
+            Duration = current.Duration ?? preset.Duration,
+            Delay = current.Delay ?? preset.Delay,
+            Easing = current.Easing ?? preset.Easing,
+            CustomEasing = current.CustomEasing ?? preset.CustomEasing,
+            Repeat = current.Repeat ?? preset.Repeat,
+            RepeatReverse = current.RepeatReverse ?? preset.RepeatReverse,
+            RepeatDelay = current.RepeatDelay ?? preset.RepeatDelay,
+            Fill = current.Fill ?? preset.Fill,
+            Direction = current.Direction ?? preset.Direction
         };
     }
 
@@ -293,7 +321,10 @@
                 {
                     await _jsModule.InvokeVoidAsync("stopAnimation", _animationId);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Motion: Failed to stop animation during disposal - {ex.Message}");
+                }
             }
 
             if (_observerId != -1)
@@ -302,14 +333,20 @@
                 {
                     await _jsModule.InvokeVoidAsync("cleanupInViewObserver", _observerId);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Motion: Failed to cleanup observer during disposal - {ex.Message}");
+                }
             }
 
             try
             {
                 await _jsModule.DisposeAsync();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Motion: Failed to dispose JS module - {ex.Message}");
+            }
         }
 
         _dotNetRef?.Dispose();

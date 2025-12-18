@@ -12,7 +12,14 @@ let animationIdCounter = 0;
 
 // Registry for IntersectionObserver instances
 const observerRegistry = new Map();
-let observerId = 0;
+let observerIdCounter = 0;
+
+/**
+ * Helper to check if a value is not null or undefined
+ */
+function isDefined(value) {
+    return value !== null && value !== undefined;
+}
 
 /**
  * Convert MotionKeyframe C# object to Motion.dev keyframe format
@@ -20,48 +27,21 @@ let observerId = 0;
 function convertKeyframe(keyframe) {
     const converted = {};
     
-    if (keyframe.opacity !== null && keyframe.opacity !== undefined) {
-        converted.opacity = keyframe.opacity;
-    }
-    if (keyframe.scale !== null && keyframe.scale !== undefined) {
-        converted.scale = keyframe.scale;
-    }
-    if (keyframe.rotate !== null && keyframe.rotate !== undefined) {
-        converted.rotate = keyframe.rotate;
-    }
-    if (keyframe.x !== null && keyframe.x !== undefined) {
-        converted.x = keyframe.x;
-    }
-    if (keyframe.y !== null && keyframe.y !== undefined) {
-        converted.y = keyframe.y;
-    }
-    if (keyframe.scaleX !== null && keyframe.scaleX !== undefined) {
-        converted.scaleX = keyframe.scaleX;
-    }
-    if (keyframe.scaleY !== null && keyframe.scaleY !== undefined) {
-        converted.scaleY = keyframe.scaleY;
-    }
-    if (keyframe.rotateX !== null && keyframe.rotateX !== undefined) {
-        converted.rotateX = keyframe.rotateX;
-    }
-    if (keyframe.rotateY !== null && keyframe.rotateY !== undefined) {
-        converted.rotateY = keyframe.rotateY;
-    }
-    if (keyframe.z !== null && keyframe.z !== undefined) {
-        converted.z = keyframe.z;
-    }
-    if (keyframe.skewX !== null && keyframe.skewX !== undefined) {
-        converted.skewX = keyframe.skewX;
-    }
-    if (keyframe.skewY !== null && keyframe.skewY !== undefined) {
-        converted.skewY = keyframe.skewY;
-    }
-    if (keyframe.filter) converted.filter = keyframe.filter;
-    if (keyframe.backgroundColor) converted.backgroundColor = keyframe.backgroundColor;
-    if (keyframe.color) converted.color = keyframe.color;
-    if (keyframe.borderRadius) converted.borderRadius = keyframe.borderRadius;
-    if (keyframe.width) converted.width = keyframe.width;
-    if (keyframe.height) converted.height = keyframe.height;
+    // Numeric properties
+    const numericProps = ['opacity', 'scale', 'rotate', 'scaleX', 'scaleY', 'rotateX', 'rotateY', 'skewX', 'skewY'];
+    numericProps.forEach(prop => {
+        if (isDefined(keyframe[prop])) {
+            converted[prop] = keyframe[prop];
+        }
+    });
+    
+    // String properties (can be empty string, so check for defined)
+    const stringProps = ['x', 'y', 'z', 'filter', 'backgroundColor', 'color', 'borderRadius', 'width', 'height'];
+    stringProps.forEach(prop => {
+        if (isDefined(keyframe[prop])) {
+            converted[prop] = keyframe[prop];
+        }
+    });
     
     return converted;
 }
@@ -151,13 +131,13 @@ export function motionAnimate(element, keyframes, options, springOptions) {
     }
 
     try {
-        // Check if Motion library is available
-        if (typeof Motion === 'undefined' && typeof window.Motion === 'undefined') {
+        // Check if Motion library is available (use window.Motion to avoid ReferenceError)
+        if (typeof window.Motion === 'undefined') {
             console.error('Motion.dev library not loaded. Include it via CDN in your HTML.');
             return -1;
         }
 
-        const MotionLib = Motion || window.Motion;
+        const MotionLib = window.Motion;
         
         // Convert keyframes
         let convertedKeyframes;
@@ -225,7 +205,7 @@ export function setupInViewObserver(element, inViewOptions, dotNetHelper) {
 
         observer.observe(element);
 
-        const id = observerId++;
+        const id = observerIdCounter++;
         observerRegistry.set(id, { observer, element });
         
         return id;
@@ -297,5 +277,13 @@ export function cleanupAll() {
  * @returns {boolean} True if Motion is available
  */
 export function isMotionAvailable() {
-    return typeof Motion !== 'undefined' || typeof window.Motion !== 'undefined';
+    return typeof window.Motion !== 'undefined';
+}
+
+/**
+ * Check if user prefers reduced motion
+ * @returns {boolean} True if user prefers reduced motion
+ */
+export function checkReducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }

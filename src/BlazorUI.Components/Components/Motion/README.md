@@ -21,6 +21,8 @@ Add the Motion.dev script to your `App.razor` or `_Host.cshtml`:
 <script src="https://cdn.jsdelivr.net/npm/motion@10.16.2/dist/motion.js"></script>
 ```
 
+> **Note:** Version 10.16.2 is shown as an example. Check [motion.dev](https://motion.dev) or [npm](https://www.npmjs.com/package/motion) for the latest compatible version.
+
 Or install via npm:
 
 ```bash
@@ -99,10 +101,18 @@ Trigger animation programmatically:
     <div>Click button to shake</div>
 </Motion>
 
-<Button OnClick="@(() => _motion.PlayAsync())">Shake It!</Button>
+<Button OnClick="@HandleShake">Shake It!</Button>
 
 @code {
-    private Motion _motion = default!;
+    private Motion? _motion;
+
+    private async Task HandleShake()
+    {
+        if (_motion != null)
+        {
+            await _motion.PlayAsync();
+        }
+    }
 }
 ```
 
