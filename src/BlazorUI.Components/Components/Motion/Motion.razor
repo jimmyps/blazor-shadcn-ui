@@ -23,7 +23,7 @@
 <div @ref="_elementRef" class="@Class" style="@Style">
     @if (StaggerChildren.HasValue && StaggerChildren.Value > 0)
     {
-        <CascadingValue Value="@(new MotionContext { StaggerDelay = StaggerChildren.Value })" Name="MotionContext">
+        <CascadingValue Value="@_staggerContext" Name="MotionContext">
             @ChildContent
         </CascadingValue>
     }
@@ -40,6 +40,7 @@
     private int _animationId = -1;
     private int _observerId = -1;
     private bool _hasAnimated = false;
+    private MotionContext? _staggerContext;
 
     /// <summary>
     /// The content to render and animate.
@@ -119,10 +120,17 @@
     
     protected override void OnInitialized()
     {
+        // Initialize stagger context if this component provides staggering
+        if (StaggerChildren.HasValue && StaggerChildren.Value > 0)
+        {
+            _staggerContext = new MotionContext { StaggerDelay = StaggerChildren.Value };
+        }
+        
         // If we're a child in a stagger context, get our index
         if (Context != null)
         {
-            Context.ChildIndex = Context.GetNextChildIndex();
+            // GetNextChildIndex internally increments and returns the next index
+            _ = Context.GetNextChildIndex();
         }
     }
 

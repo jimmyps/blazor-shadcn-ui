@@ -35,8 +35,16 @@ function convertKeyframe(keyframe) {
         }
     });
     
-    // String properties (can be empty string, so check for defined)
-    const stringProps = ['x', 'y', 'z', 'filter', 'backgroundColor', 'color', 'borderRadius', 'width', 'height'];
+    // Transform properties that accept both string and numeric values
+    const transformProps = ['x', 'y', 'z'];
+    transformProps.forEach(prop => {
+        if (isDefined(keyframe[prop])) {
+            converted[prop] = keyframe[prop];
+        }
+    });
+    
+    // String properties
+    const stringProps = ['filter', 'backgroundColor', 'color', 'borderRadius', 'width', 'height'];
     stringProps.forEach(prop => {
         if (isDefined(keyframe[prop])) {
             converted[prop] = keyframe[prop];
