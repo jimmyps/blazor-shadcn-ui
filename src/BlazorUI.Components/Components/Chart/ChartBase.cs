@@ -214,6 +214,16 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     {
         var legend = _legend ?? new Legend();
         
+        // Build text style if TextColor is specified
+        EChartsTextStyle? textStyle = null;
+        if (!string.IsNullOrEmpty(legend.TextColor))
+        {
+            textStyle = new EChartsTextStyle
+            {
+                Color = legend.TextColor
+            };
+        }
+        
         return new EChartsLegend
         {
             Show = legend.Show,
@@ -241,7 +251,8 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
                 LegendIcon.Arrow => "arrow",
                 LegendIcon.None => "none",
                 _ => ""
-            }
+            },
+            TextStyle = textStyle
         };
     }
     

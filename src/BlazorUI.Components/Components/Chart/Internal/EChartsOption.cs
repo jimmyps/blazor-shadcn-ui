@@ -725,6 +725,24 @@ public sealed class EChartsTextStyle
     /// </summary>
     [JsonPropertyName("color")]
     public string? Color { get; set; }
+    
+    /// <summary>
+    /// Font size in pixels.
+    /// </summary>
+    [JsonPropertyName("fontSize")]
+    public int? FontSize { get; set; }
+    
+    /// <summary>
+    /// Font weight (e.g., "normal", "bold", "bolder", "lighter", or numeric values like "400", "700").
+    /// </summary>
+    [JsonPropertyName("fontWeight")]
+    public string? FontWeight { get; set; }
+    
+    /// <summary>
+    /// Font family.
+    /// </summary>
+    [JsonPropertyName("fontFamily")]
+    public string? FontFamily { get; set; }
 }
 
 public sealed class EChartsAxisPointer
@@ -763,6 +781,12 @@ public sealed class EChartsLegend
 
     [JsonPropertyName("icon")]
     public string? Icon { get; set; }
+    
+    /// <summary>
+    /// Text style configuration for legend labels.
+    /// </summary>
+    [JsonPropertyName("textStyle")]
+    public EChartsTextStyle? TextStyle { get; set; }
 }
 
 public sealed class EChartsRadar
@@ -795,6 +819,12 @@ public sealed class EChartsRadar
     public List<EChartsRadarIndicator>? Indicator { get; set; }
     
     /// <summary>
+    /// Axis name (indicator label) configuration.
+    /// </summary>
+    [JsonPropertyName("axisName")]
+    public EChartsAxisName? AxisName { get; set; }
+    
+    /// <summary>
     /// Axis line configuration.
     /// </summary>
     [JsonPropertyName("axisLine")]
@@ -820,6 +850,42 @@ public sealed class EChartsRadarIndicator
 
     [JsonPropertyName("max")]
     public double? Max { get; set; }
+}
+
+/// <summary>
+/// Axis name (indicator label) configuration for radar charts.
+/// </summary>
+public sealed class EChartsAxisName
+{
+    /// <summary>
+    /// Whether to show the axis names (indicator labels).
+    /// </summary>
+    [JsonPropertyName("show")]
+    public bool? Show { get; set; }
+    
+    /// <summary>
+    /// Text color for axis names.
+    /// </summary>
+    [JsonPropertyName("color")]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Font size for axis names.
+    /// </summary>
+    [JsonPropertyName("fontSize")]
+    public int? FontSize { get; set; }
+    
+    /// <summary>
+    /// Font weight for axis names.
+    /// </summary>
+    [JsonPropertyName("fontWeight")]
+    public string? FontWeight { get; set; }
+    
+    /// <summary>
+    /// Font family for axis names.
+    /// </summary>
+    [JsonPropertyName("fontFamily")]
+    public string? FontFamily { get; set; }
 }
 
 public sealed class EChartsLinearGradient
