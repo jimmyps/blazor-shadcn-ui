@@ -28,7 +28,7 @@ public class MotionOptions
 
     /// <summary>
     /// Number of times to repeat the animation.
-    /// Use -1 or double.PositiveInfinity for infinite loops.
+    /// Use -1 for infinite loops.
     /// </summary>
     public double? Repeat { get; set; }
 

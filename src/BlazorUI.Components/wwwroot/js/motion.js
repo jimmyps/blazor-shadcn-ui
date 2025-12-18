@@ -26,10 +26,14 @@ function convertKeyframe(keyframe) {
     if (keyframe.scale !== null && keyframe.scale !== undefined) {
         converted.scale = keyframe.scale;
     }
-    if (keyframe.x) converted.x = keyframe.x;
-    if (keyframe.y) converted.y = keyframe.y;
     if (keyframe.rotate !== null && keyframe.rotate !== undefined) {
         converted.rotate = keyframe.rotate;
+    }
+    if (keyframe.x !== null && keyframe.x !== undefined) {
+        converted.x = keyframe.x;
+    }
+    if (keyframe.y !== null && keyframe.y !== undefined) {
+        converted.y = keyframe.y;
     }
     if (keyframe.scaleX !== null && keyframe.scaleX !== undefined) {
         converted.scaleX = keyframe.scaleX;
@@ -43,7 +47,9 @@ function convertKeyframe(keyframe) {
     if (keyframe.rotateY !== null && keyframe.rotateY !== undefined) {
         converted.rotateY = keyframe.rotateY;
     }
-    if (keyframe.z) converted.z = keyframe.z;
+    if (keyframe.z !== null && keyframe.z !== undefined) {
+        converted.z = keyframe.z;
+    }
     if (keyframe.skewX !== null && keyframe.skewX !== undefined) {
         converted.skewX = keyframe.skewX;
     }
