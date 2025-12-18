@@ -1,49 +1,156 @@
-@using BlazorUI.Components.Chart
+@page "/components/charts/radar"
 @using BlazorUI.Components.Card
+@using BlazorUI.Components.Chart
+
+<PageTitle>Chart Components - Radar Chart</PageTitle>
 
 <div class="space-y-8">
-    <!-- Radar Chart - Simple -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Radar Chart</h3>
-            <p class="text-sm text-muted-foreground">A simple radar chart</p>
-        </div>
-        
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+        @* Basic Radar *@
         <Card>
-            <CardHeader>
-                <CardTitle>Skills Assessment</CardTitle>
-                <CardDescription>Developer skill profile</CardDescription>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Basic Radar</CardTitle>
+                <CardDescription>Skill assessment across 5 dimensions</CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer Height="400">
-                    <RadarChart Data="@radarData">
-                        <Tooltip Mode="TooltipMode.Item" />
-                        <Legend />
-                        <Radar DataKey="score" Name="Skills" Fill="true" />
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-1)" />
                     </RadarChart>
                 </ChartContainer>
             </CardContent>
         </Card>
-    </div>
 
-    <!-- Radar Chart - Without Fill -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Radar Without Fill</h3>
-            <p class="text-sm text-muted-foreground">Line-only radar chart</p>
-        </div>
-        
+        @* Multiple Series *@
         <Card>
-            <CardHeader>
-                <CardTitle>Performance Metrics</CardTitle>
-                <CardDescription>System performance indicators</CardDescription>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Team Comparison</CardTitle>
+                <CardDescription>Compare two developers</CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer Height="400">
-                    <RadarChart Data="@radarData">
-                        <Tooltip Mode="TooltipMode.Item" />
+                <ChartContainer Height="200">
+                    <RadarChart Data="@teamSkillData">
+                        <XAxis DataKey="skill" />
+                        <Tooltip />
                         <Legend />
-                        <Radar DataKey="score" Name="Metrics" Fill="false" />
+                        <Radar DataKey="developer1" Name="Dev A" FillArea="true" AreaOpacity="0.2" Color="var(--chart-1)" />
+                        <Radar DataKey="developer2" Name="Dev B" FillArea="true" AreaOpacity="0.2" Color="var(--chart-2)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Filled Radar *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Filled Areas</CardTitle>
+                <CardDescription>Radar with increased opacity</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.6" Color="var(--chart-3)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Circle Shape Radar *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Circle Grid</CardTitle>
+                <CardDescription>Circular radar grid shape</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <RadarGrid Shape="RadarShape.Circle" SplitNumber="4" />
+                        <XAxis DataKey="skill" />
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-4)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Performance Metrics *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Performance Metrics</CardTitle>
+                <CardDescription>Department KPI comparison</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@performanceData">
+                        <XAxis DataKey="metric" />
+                        <Tooltip />
+                        <Legend />
+                        <Radar DataKey="sales" Name="Sales" FillArea="true" AreaOpacity="0.25" Color="var(--chart-1)" />
+                        <Radar DataKey="marketing" Name="Marketing" FillArea="true" AreaOpacity="0.25" Color="var(--chart-2)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* With Legend *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">With Legend</CardTitle>
+                <CardDescription>Multiple series with legend</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@productComparison">
+                        <XAxis DataKey="feature" />
+                        <Tooltip />
+                        <Legend VerticalAlign="LegendVerticalAlign.Bottom" />
+                        <Radar DataKey="productA" Name="Product A" FillArea="true" AreaOpacity="0.2" Color="var(--chart-3)" />
+                        <Radar DataKey="productB" Name="Product B" FillArea="true" AreaOpacity="0.2" Color="var(--chart-4)" />
+                        <Radar DataKey="productC" Name="Product C" FillArea="true" AreaOpacity="0.2" Color="var(--chart-5)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Polygon Shape (Default) *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Polygon Grid</CardTitle>
+                <CardDescription>Standard polygon radar grid</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <RadarGrid Shape="RadarShape.Polygon" SplitNumber="5" />
+                        <XAxis DataKey="skill" />
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-5)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Without Fill *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Line Only</CardTitle>
+                <CardDescription>Radar without filled area</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="false" Color="var(--chart-2)" />
                     </RadarChart>
                 </ChartContainer>
             </CardContent>
@@ -52,10 +159,72 @@
 </div>
 
 @code {
-    private record RadarData(int score, int performance, int reliability, int usability, int security, int scalability);
-
-    private List<RadarData> radarData = new()
+    // Basic skill data
+    private List<SkillData> skillData = new()
     {
-        new(85, 90, 75, 88, 82, 78)
+        new() { skill = "Coding", score = 85 },
+        new() { skill = "Design", score = 70 },
+        new() { skill = "Testing", score = 90 },
+        new() { skill = "DevOps", score = 75 },
+        new() { skill = "Communication", score = 80 }
     };
+
+    // Team skill comparison
+    private List<TeamSkillData> teamSkillData = new()
+    {
+        new() { skill = "Coding", developer1 = 85, developer2 = 75 },
+        new() { skill = "Design", developer1 = 70, developer2 = 85 },
+        new() { skill = "Testing", developer1 = 90, developer2 = 80 },
+        new() { skill = "DevOps", developer1 = 75, developer2 = 70 },
+        new() { skill = "Communication", developer1 = 80, developer2 = 90 }
+    };
+
+    // Performance metrics
+    private List<PerformanceData> performanceData = new()
+    {
+        new() { metric = "Revenue", sales = 90, marketing = 75 },
+        new() { metric = "Growth", sales = 85, marketing = 80 },
+        new() { metric = "Efficiency", sales = 78, marketing = 88 },
+        new() { metric = "Quality", sales = 82, marketing = 85 },
+        new() { metric = "Innovation", sales = 70, marketing = 92 }
+    };
+
+    // Product comparison
+    private List<ProductComparison> productComparison = new()
+    {
+        new() { feature = "Speed", productA = 85, productB = 78, productC = 90 },
+        new() { feature = "Usability", productA = 90, productB = 85, productC = 75 },
+        new() { feature = "Security", productA = 80, productB = 92, productC = 88 },
+        new() { feature = "Cost", productA = 75, productB = 80, productC = 85 },
+        new() { feature = "Support", productA = 88, productB = 75, productC = 82 }
+    };
+
+    // Data classes
+    public class SkillData
+    {
+        public string skill { get; set; } = "";
+        public int score { get; set; }
+    }
+
+    public class TeamSkillData
+    {
+        public string skill { get; set; } = "";
+        public int developer1 { get; set; }
+        public int developer2 { get; set; }
+    }
+
+    public class PerformanceData
+    {
+        public string metric { get; set; } = "";
+        public int sales { get; set; }
+        public int marketing { get; set; }
+    }
+
+    public class ProductComparison
+    {
+        public string feature { get; set; } = "";
+        public int productA { get; set; }
+        public int productB { get; set; }
+        public int productC { get; set; }
+    }
 }
