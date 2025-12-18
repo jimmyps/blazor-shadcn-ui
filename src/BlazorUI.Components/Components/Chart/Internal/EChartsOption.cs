@@ -822,7 +822,7 @@ public sealed class EChartsRadar
     /// Axis name (indicator label) configuration.
     /// </summary>
     [JsonPropertyName("axisName")]
-    public EChartsAxisName? AxisName { get; set; }
+    public EChartsRadarAxisName? AxisName { get; set; }
     
     /// <summary>
     /// Axis line configuration.
@@ -853,9 +853,10 @@ public sealed class EChartsRadarIndicator
 }
 
 /// <summary>
-/// Axis name (indicator label) configuration for radar charts.
+/// Radar axis name (indicator label) configuration.
+/// Controls the styling of indicator labels (e.g., "Coding", "Design") on radar charts.
 /// </summary>
-public sealed class EChartsAxisName
+public sealed class EChartsRadarAxisName
 {
     /// <summary>
     /// Whether to show the axis names (indicator labels).
