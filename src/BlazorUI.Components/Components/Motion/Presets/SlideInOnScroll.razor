@@ -1,0 +1,39 @@
+@inherits MotionPresetBase
+@namespace BlazorUI.Components.Motion
+
+@*
+    SlideInOnScroll Preset - Slide in from bottom when element enters viewport
+    Use with Trigger="MotionTrigger.OnInView"
+*@
+
+@code {
+    /// <summary>
+    /// Starting Y position (pixels or percentage). Default: "50px"
+    /// </summary>
+    [Parameter]
+    public string From { get; set; } = "50px";
+
+    /// <summary>
+    /// Duration in seconds. Default: 0.6
+    /// </summary>
+    [Parameter]
+    public double Duration { get; set; } = 0.6;
+
+    public override List<MotionKeyframe> GetKeyframes()
+    {
+        return new List<MotionKeyframe>
+        {
+            new MotionKeyframe { Y = From, Opacity = 0 },
+            new MotionKeyframe { Y = "0", Opacity = 1 }
+        };
+    }
+
+    public override MotionOptions? GetOptions()
+    {
+        return new MotionOptions
+        {
+            Duration = Duration,
+            Easing = MotionEasing.EaseOut
+        };
+    }
+}

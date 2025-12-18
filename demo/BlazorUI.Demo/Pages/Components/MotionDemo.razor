@@ -1,0 +1,285 @@
+@page "/components/motion"
+@using BlazorUI.Components.Motion
+
+<PageTitle>Motion - BlazorUI</PageTitle>
+
+<div class="space-y-8">
+    <div>
+        <h1 class="text-3xl font-bold">Motion</h1>
+        <p class="text-muted-foreground mt-2">
+            Declarative animation system powered by Motion.dev
+        </p>
+    </div>
+
+    <!-- Installation Warning -->
+    <Alert>
+        <AlertTitle>Motion.dev Required</AlertTitle>
+        <AlertDescription>
+            Add Motion.dev to your App.razor:
+            <code class="block mt-2 p-2 bg-muted rounded text-sm">
+                &lt;script src="https://cdn.jsdelivr.net/npm/motion@10.16.2/dist/motion.js"&gt;&lt;/script&gt;
+            </code>
+        </AlertDescription>
+    </Alert>
+
+    <!-- Basic Fade In -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Fade In</h2>
+            <p class="text-muted-foreground">Simple fade animation on appear</p>
+        </div>
+        
+        <div class="border rounded-lg p-6">
+            <Motion Trigger="@MotionTrigger.OnAppear">
+                <Presets>
+                    <FadeIn Duration="0.5" />
+                </Presets>
+                <Card class="max-w-md">
+                    <CardHeader>
+                        <CardTitle>Animated Card</CardTitle>
+                        <CardDescription>This card fades in on page load</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p>Content appears smoothly with a fade animation.</p>
+                    </CardContent>
+                </Card>
+            </Motion>
+        </div>
+    </section>
+
+    <!-- Scale In with Spring -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Scale In with Spring</h2>
+            <p class="text-muted-foreground">Bouncy scale animation using spring physics</p>
+        </div>
+        
+        <div class="border rounded-lg p-6">
+            <Motion Trigger="@MotionTrigger.OnAppear">
+                <Presets>
+                    <ScaleIn From="0.5" />
+                    <Spring Stiffness="200" Damping="15" />
+                </Presets>
+                <Card class="max-w-md">
+                    <CardHeader>
+                        <CardTitle>Spring Physics</CardTitle>
+                        <CardDescription>Natural, bouncy animation</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p>This card scales in with spring-based easing for a more natural feel.</p>
+                    </CardContent>
+                </Card>
+            </Motion>
+        </div>
+    </section>
+
+    <!-- Slide In From Bottom -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Slide In</h2>
+            <p class="text-muted-foreground">Slide animations from different directions</p>
+        </div>
+        
+        <div class="border rounded-lg p-6 space-y-4">
+            <Motion Trigger="@MotionTrigger.OnAppear">
+                <Presets>
+                    <SlideInFromLeft />
+                </Presets>
+                <Alert>
+                    <AlertTitle>From Left</AlertTitle>
+                    <AlertDescription>Slides in from the left side</AlertDescription>
+                </Alert>
+            </Motion>
+
+            <Motion Trigger="@MotionTrigger.OnAppear">
+                <Presets>
+                    <SlideInFromBottom />
+                </Presets>
+                <Alert>
+                    <AlertTitle>From Bottom</AlertTitle>
+                    <AlertDescription>Slides in from the bottom</AlertDescription>
+                </Alert>
+            </Motion>
+        </div>
+    </section>
+
+    <!-- Combined Animations -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Combined Animations</h2>
+            <p class="text-muted-foreground">Combine multiple animation effects</p>
+        </div>
+        
+        <div class="border rounded-lg p-6">
+            <Motion Trigger="@MotionTrigger.OnAppear">
+                <Presets>
+                    <FadeIn />
+                    <ScaleIn From="0.8" />
+                    <SlideInFromBottom From="30px" />
+                </Presets>
+                <Card class="max-w-md">
+                    <CardHeader>
+                        <CardTitle>Fade + Scale + Slide</CardTitle>
+                        <CardDescription>Three animations working together</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p>This combines fade, scale, and slide for a sophisticated entrance.</p>
+                    </CardContent>
+                </Card>
+            </Motion>
+        </div>
+    </section>
+
+    <!-- Micro-Interactions -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Micro-Interactions</h2>
+            <p class="text-muted-foreground">Subtle animations triggered manually</p>
+        </div>
+        
+        <div class="border rounded-lg p-6 space-y-4">
+            <div class="flex gap-4">
+                <Motion @ref="_shakeMotion" Trigger="@MotionTrigger.Manual">
+                    <Presets>
+                        <ShakeX />
+                    </Presets>
+                    <Button OnClick="@(() => _shakeMotion?.PlayAsync())">
+                        Shake Me
+                    </Button>
+                </Motion>
+
+                <Motion @ref="_bounceMotion" Trigger="@MotionTrigger.Manual">
+                    <Presets>
+                        <BounceOnce />
+                    </Presets>
+                    <Button OnClick="@(() => _bounceMotion?.PlayAsync())" Variant="ButtonVariant.Secondary">
+                        Bounce Me
+                    </Button>
+                </Motion>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pulse Animation -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Pulse Animation</h2>
+            <p class="text-muted-foreground">Continuous pulsing effect</p>
+        </div>
+        
+        <div class="border rounded-lg p-6">
+            <Motion Trigger="@MotionTrigger.OnAppear">
+                <Presets>
+                    <Pulse Scale="1.05" Duration="1.0" />
+                </Presets>
+                <Badge Variant="BadgeVariant.Destructive" Class="text-lg px-4 py-2">
+                    🔴 Live
+                </Badge>
+            </Motion>
+        </div>
+    </section>
+
+    <!-- Scroll-Triggered Animation -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Scroll-Triggered Animations</h2>
+            <p class="text-muted-foreground">Animations that trigger when scrolling into view</p>
+        </div>
+        
+        <div class="border rounded-lg p-6 space-y-32">
+            <div class="text-muted-foreground text-center py-8">
+                Scroll down to see animations trigger ↓
+            </div>
+
+            @for (int i = 0; i < 3; i++)
+            {
+                var index = i;
+                <Motion Trigger="@MotionTrigger.OnInView" 
+                        InViewOptions="@(new InViewOptions { Threshold = 0.3 })">
+                    <Presets>
+                        <FadeInOnScroll />
+                        <SlideInOnScroll From="50px" />
+                    </Presets>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Card @(index + 1)</CardTitle>
+                            <CardDescription>Appears when scrolled into view</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <p>This card animates in as you scroll past it.</p>
+                        </CardContent>
+                    </Card>
+                </Motion>
+            }
+        </div>
+    </section>
+
+    <!-- Staggered List -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Staggered List</h2>
+            <p class="text-muted-foreground">List items animate in sequence</p>
+        </div>
+        
+        <div class="border rounded-lg p-6">
+            <Motion Trigger="@MotionTrigger.OnAppear" StaggerChildren="0.1">
+                @foreach (var item in _listItems)
+                {
+                    <Motion>
+                        <Presets>
+                            <ListItemEnter />
+                        </Presets>
+                        <Card class="mb-3">
+                            <CardContent class="pt-6">
+                                <p>@item</p>
+                            </CardContent>
+                        </Card>
+                    </Motion>
+                }
+            </Motion>
+        </div>
+    </section>
+
+    <!-- Grid Animation -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Staggered Grid</h2>
+            <p class="text-muted-foreground">Grid items animate in with delay</p>
+        </div>
+        
+        <div class="border rounded-lg p-6">
+            <Motion Trigger="@MotionTrigger.OnAppear" StaggerChildren="0.05">
+                <div class="grid grid-cols-3 gap-4">
+                    @for (int i = 1; i <= 9; i++)
+                    {
+                        var index = i;
+                        <Motion>
+                            <Presets>
+                                <GridItemEnter Duration="0.4" />
+                            </Presets>
+                            <Card class="h-24 flex items-center justify-center">
+                                <CardContent class="pt-6">
+                                    <span class="text-2xl font-bold">@index</span>
+                                </CardContent>
+                            </Card>
+                        </Motion>
+                    }
+                </div>
+            </Motion>
+        </div>
+    </section>
+</div>
+
+@code {
+    private Motion? _shakeMotion;
+    private Motion? _bounceMotion;
+
+    private List<string> _listItems = new()
+    {
+        "First item appears first",
+        "Second item follows shortly after",
+        "Third item comes next",
+        "Fourth item with a slight delay",
+        "Fifth item completes the sequence"
+    };
+}
