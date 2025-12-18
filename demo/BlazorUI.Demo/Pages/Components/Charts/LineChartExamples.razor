@@ -1,213 +1,476 @@
-@using BlazorUI.Components.Chart
 @using BlazorUI.Components.Card
+@using BlazorUI.Components.Chart
+
+<PageTitle>Chart Components - Line Chart</PageTitle>
 
 <div class="space-y-8">
-    <!-- Line Chart - Default -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Line Chart</h3>
-            <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
-        </div>
-        
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Line Chart</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <LineChart Data="@lineData" 
-                          XAxisDataKey="Month"
-                          YAxisDataKey="Desktop"
-                          Label="Desktop"
-                          Height="300"
-                          Curved="true"
-                          ShowExportButton="true"
-                          ExportFileName="line-chart" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month <span class="ml-1">📈</span>
-                </div>
-                <div class="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
-    </div>
+    @* Hero - Interactive Line Chart with Date Filter *@
+    <Card>
+        <CardHeader Class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
+            <div class="grid flex-1 gap-1">
+                <CardTitle Class="text-xl">Line Chart - Interactive</CardTitle>
+                <CardDescription>Showing trends for the @(timeRange == "7d" ? "last 7 days" : timeRange == "30d" ? "last 30 days" : "last 3 months")</CardDescription>
+            </div>
+            <Select @bind-Value="@timeRange" TValue="string" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
+                <SelectTrigger>
+                    <SelectValue Placeholder="Last 3 months" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem Value="@("90d")" TValue="string" Text="Last 3 months">Last 3 months</SelectItem>
+                    <SelectItem Value="@("30d")" TValue="string" Text="Last 30 days">Last 30 days</SelectItem>
+                    <SelectItem Value="@("7d")" TValue="string" Text="Last 7 days">Last 7 days</SelectItem>
+                </SelectContent>
+            </Select>
+        </CardHeader>
+        <CardContent Class="p-6 pt-2 sm:px-6 sm:pt-6">
+            <ChartContainer Height="250" Class="w-full">
+                <LineChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
+                    <Grid Vertical="false" />
+                    <XAxis DataKey="date" TickLine="false" Color="var(--border)">
+                        <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
+                    </XAxis>
+                    <YAxis Show="false" TickLine="false">
+                        <AxisLabel Show="false" />
+                    </YAxis>
+                    <Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" Formatter="@tooltipFormatter" />
+                    <Legend />
+                    <Line DataKey="desktop" Name="Desktop" Color="var(--chart-1)" />
+                    <Line DataKey="mobile" Name="Mobile" Color="var(--chart-2)" />
+                </LineChart>
+            </ChartContainer>
+        </CardContent>
+    </Card>
 
-    <!-- Line Chart - Linear -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Linear</h3>
-            <p class="text-sm text-muted-foreground">A line chart with straight lines</p>
-        </div>
-        
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Line Chart - Linear</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <LineChart Data="@lineData" 
-                          XAxisDataKey="Month"
-                          YAxisDataKey="Desktop"
-                          Label="Desktop"
-                          Height="300"
-                          Curved="false"
-                          LineColor="hsl(var(--chart-2))" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex w-full items-start gap-2 text-sm">
-                    <div class="grid gap-2">
-                        <div class="flex items-center gap-2 font-medium leading-none">
-                            Trending up by 5.2% this month <span class="ml-1">📈</span>
-                        </div>
-                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            January - June 2024
-                        </div>
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
-    </div>
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+        @* Default Line Chart with shadcn theme *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Line Chart</CardTitle>
+                <CardDescription>Default line chart</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(-border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Sales" Color="var(--chart-1)" />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
 
-    <!-- Line Chart - Multiple -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Multiple</h3>
-            <p class="text-sm text-muted-foreground">A line chart with multiple lines</p>
-        </div>
-        
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Line Chart - Multiple</ChartPanelTitle>
-                <ChartPanelDescription>Showing total visitors for the last 6 months</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <MultiSeriesLineChart Data="@multipleData"
-                                     XAxisDataKey="Month"
-                                     Series="@multipleSeries"
-                                     Height="300"
-                                     />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex w-full items-start gap-2 text-sm">
-                    <div class="grid gap-2">
-                        <div class="flex items-center gap-2 font-medium leading-none">
-                            Trending up by 5.2% this month <span class="ml-1">📈</span>
-                        </div>
-                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            January - June 2024
-                        </div>
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
-    </div>
+        @* Multiple Lines *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Multiple Lines</CardTitle>
+                <CardDescription>Multiple line series with custom interval</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <LineChart Data="@multiData" Padding="@(new Padding(6, 0, 32, 0))">
+                        <Grid Show="false" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Interval="100" Position="YAxisPosition.Right" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Circle" />
+                        <Line DataKey="product1" Name="Product A" Color="var(--chart-1)" />
+                        <Line DataKey="product2" Name="Product B" Color="var(--chart-2)" />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
 
-    <!-- Line Chart - Dots -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Dots</h3>
-            <p class="text-sm text-muted-foreground">A line chart with customized dots</p>
-        </div>
-        
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Line Chart - Dots</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <LineChart Data="@lineData" 
-                          XAxisDataKey="Month"
-                          YAxisDataKey="Desktop"
-                          Label="Desktop"
-                          Height="300"
-                          Curved="true"
-                          ShowDots="true"
-                          LineColor="hsl(var(--chart-3))" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month <span class="ml-1">📈</span>
-                </div>
-                <div class="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
-    </div>
+        @* Line with Dots *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">With Dots</CardTitle>
+                <CardDescription>Visible data point markers</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Sales" ShowDots="true" Color="var(--chart-3)" />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
 
-    <!-- Line Chart - Label -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Label</h3>
-            <p class="text-sm text-muted-foreground">A line chart with custom labels</p>
-        </div>
-        
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Line Chart - Custom Label</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <LineChart Data="@lineData" 
-                          XAxisDataKey="Month"
-                          YAxisDataKey="Desktop"
-                          Label="Total Visitors"
-                          Height="300"
-                          Curved="true"
-                          LineColor="hsl(var(--chart-4))" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex gap-2 font-medium leading-none">
-                    Trending up by 5.2% this month <span class="ml-1">📈</span>
-                </div>
-                <div class="leading-none text-muted-foreground">
-                    Showing total visitors for the last 6 months
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
+        @* Dots with Custom Colors *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Custom Dot Colors</CardTitle>
+                <CardDescription>Different colored dots</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <LineChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend />
+                        <Line DataKey="product1" Name="Product A" ShowDots="true" Color="var(--chart-1)" />
+                        <Line DataKey="product2" Name="Product B" ShowDots="true" Color="var(--chart-2)" />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Custom Dot Styles *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Custom Dots</CardTitle>
+                <CardDescription>Styled data points</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Sales" ShowDots="true" DotSize="8"
+                              DotShape="SymbolShape.Diamond" Color="var(--chart-4)" />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Linear Interpolation *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Linear</CardTitle>
+                <CardDescription>Linear interpolation</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Sales" Interpolation="InterpolationType.Linear" Color="var(--chart-5)" />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Step Interpolation (MVP+ Feature) *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Step Line</CardTitle>
+                <CardDescription>Step interpolation</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Sales" Interpolation="InterpolationType.Step" Color="var(--chart-1)" />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Line with Labels (MVP+ Feature) *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">With Labels</CardTitle>
+                <CardDescription>Data labels on points</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Sales" ShowDots="true" ShowLabel="true" LabelPosition="LabelPosition.Top" Color="var(--chart-2)">
+                            <LabelList Position="LabelPosition.Top" Formatter="{c}" FontSize="10" Color="#666" />
+                        </Line>
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Custom Label Formatting (MVP+ Feature) *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Custom Labels</CardTitle>
+                <CardDescription>Custom label formatting</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Sales" ShowDots="true" ShowLabel="true" Color="var(--chart-3)">
+                            <LabelList Position="LabelPosition.Top" Formatter="function(params) { return '$' + params.value; }" FontSize="9" Color="#2563eb" />
+                        </Line>
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Dashed Line *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Dashed Line</CardTitle>
+                <CardDescription>Dashed line style</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Forecast" Dashed="true" ShowDots="true" Color="var(--chart-4)" />
+                    </LineChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 </div>
 
 @code {
-    private readonly List<LineData> lineData = new()
+    private string timeRange = "90d";
+
+    private const string dateFormatter = @"
+function (value) {
+    const date = new Date(value);
+    return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric'})
+}";
+
+    private const string tooltipFormatter = @"
+function (params) {
+debugger;
+  const label = new Date(params[0].axisValue).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric'
+  })
+
+  const rows = params.map(p => {
+      return `${p.marker} ${p.seriesName}: <b>${p.value}</b>`
+    }).join('<br/>')
+
+  return `<div>${label}</div>${rows}`  
+}";
+
+    // 90-day comprehensive dataset
+    private List<ChartDataPoint> chartData = new()
     {
-        new() { Month = "January", Desktop = 186 },
-        new() { Month = "February", Desktop = 305 },
-        new() { Month = "March", Desktop = 237 },
-        new() { Month = "April", Desktop = 73 },
-        new() { Month = "May", Desktop = 209 },
-        new() { Month = "June", Desktop = 214 }
+        new() { date = "2024-04-01", desktop = 222, mobile = 150 },
+        new() { date = "2024-04-02", desktop = 97,  mobile = 180 },
+        new() { date = "2024-04-03", desktop = 167, mobile = 120 },
+        new() { date = "2024-04-04", desktop = 242, mobile = 260 },
+        new() { date = "2024-04-05", desktop = 373, mobile = 290 },
+        new() { date = "2024-04-06", desktop = 301, mobile = 340 },
+        new() { date = "2024-04-07", desktop = 245, mobile = 180 },
+        new() { date = "2024-04-08", desktop = 409, mobile = 320 },
+        new() { date = "2024-04-09", desktop = 59,  mobile = 110 },
+        new() { date = "2024-04-10", desktop = 261, mobile = 190 },
+        new() { date = "2024-04-11", desktop = 327, mobile = 350 },
+        new() { date = "2024-04-12", desktop = 292, mobile = 210 },
+        new() { date = "2024-04-13", desktop = 342, mobile = 380 },
+        new() { date = "2024-04-14", desktop = 137, mobile = 220 },
+        new() { date = "2024-04-15", desktop = 120, mobile = 170 },
+        new() { date = "2024-04-16", desktop = 138, mobile = 190 },
+        new() { date = "2024-04-17", desktop = 446, mobile = 360 },
+        new() { date = "2024-04-18", desktop = 364, mobile = 410 },
+        new() { date = "2024-04-19", desktop = 243, mobile = 180 },
+        new() { date = "2024-04-20", desktop = 89,  mobile = 150 },
+        new() { date = "2024-04-21", desktop = 137, mobile = 200 },
+        new() { date = "2024-04-22", desktop = 224, mobile = 170 },
+        new() { date = "2024-04-23", desktop = 138, mobile = 230 },
+        new() { date = "2024-04-24", desktop = 387, mobile = 290 },
+        new() { date = "2024-04-25", desktop = 215, mobile = 250 },
+        new() { date = "2024-04-26", desktop = 75,  mobile = 130 },
+        new() { date = "2024-04-27", desktop = 383, mobile = 420 },
+        new() { date = "2024-04-28", desktop = 122, mobile = 180 },
+        new() { date = "2024-04-29", desktop = 315, mobile = 240 },
+        new() { date = "2024-04-30", desktop = 454, mobile = 380 },
+
+        new() { date = "2024-05-01", desktop = 165, mobile = 220 },
+        new() { date = "2024-05-02", desktop = 293, mobile = 310 },
+        new() { date = "2024-05-03", desktop = 247, mobile = 190 },
+        new() { date = "2024-05-04", desktop = 385, mobile = 420 },
+        new() { date = "2024-05-05", desktop = 481, mobile = 390 },
+        new() { date = "2024-05-06", desktop = 498, mobile = 520 },
+        new() { date = "2024-05-07", desktop = 388, mobile = 300 },
+        new() { date = "2024-05-08", desktop = 149, mobile = 210 },
+        new() { date = "2024-05-09", desktop = 227, mobile = 180 },
+        new() { date = "2024-05-10", desktop = 293, mobile = 330 },
+        new() { date = "2024-05-11", desktop = 335, mobile = 270 },
+        new() { date = "2024-05-12", desktop = 197, mobile = 240 },
+        new() { date = "2024-05-13", desktop = 197, mobile = 160 },
+        new() { date = "2024-05-14", desktop = 448, mobile = 490 },
+        new() { date = "2024-05-15", desktop = 473, mobile = 380 },
+        new() { date = "2024-05-16", desktop = 338, mobile = 400 },
+        new() { date = "2024-05-17", desktop = 499, mobile = 420 },
+        new() { date = "2024-05-18", desktop = 315, mobile = 350 },
+        new() { date = "2024-05-19", desktop = 235, mobile = 180 },
+        new() { date = "2024-05-20", desktop = 177, mobile = 230 },
+        new() { date = "2024-05-21", desktop = 82,  mobile = 140 },
+        new() { date = "2024-05-22", desktop = 81,  mobile = 120 },
+        new() { date = "2024-05-23", desktop = 252, mobile = 290 },
+        new() { date = "2024-05-24", desktop = 294, mobile = 220 },
+        new() { date = "2024-05-25", desktop = 201, mobile = 250 },
+        new() { date = "2024-05-26", desktop = 213, mobile = 170 },
+        new() { date = "2024-05-27", desktop = 420, mobile = 460 },
+        new() { date = "2024-05-28", desktop = 233, mobile = 190 },
+        new() { date = "2024-05-29", desktop = 78,  mobile = 130 },
+        new() { date = "2024-05-30", desktop = 340, mobile = 280 },
+        new() { date = "2024-05-31", desktop = 178, mobile = 230 },
+
+        new() { date = "2024-06-01", desktop = 178, mobile = 200 },
+        new() { date = "2024-06-02", desktop = 470, mobile = 410 },
+        new() { date = "2024-06-03", desktop = 103, mobile = 160 },
+        new() { date = "2024-06-04", desktop = 439, mobile = 380 },
+        new() { date = "2024-06-05", desktop = 88,  mobile = 140 },
+        new() { date = "2024-06-06", desktop = 294, mobile = 250 },
+        new() { date = "2024-06-07", desktop = 323, mobile = 370 },
+        new() { date = "2024-06-08", desktop = 385, mobile = 320 },
+        new() { date = "2024-06-09", desktop = 438, mobile = 480 },
+        new() { date = "2024-06-10", desktop = 155, mobile = 200 },
+        new() { date = "2024-06-11", desktop = 92,  mobile = 150 },
+        new() { date = "2024-06-12", desktop = 492, mobile = 420 },
+        new() { date = "2024-06-13", desktop = 81,  mobile = 130 },
+        new() { date = "2024-06-14", desktop = 426, mobile = 380 },
+        new() { date = "2024-06-15", desktop = 307, mobile = 350 },
+        new() { date = "2024-06-16", desktop = 371, mobile = 310 },
+        new() { date = "2024-06-17", desktop = 475, mobile = 520 },
+        new() { date = "2024-06-18", desktop = 107, mobile = 170 },
+        new() { date = "2024-06-19", desktop = 341, mobile = 290 },
+        new() { date = "2024-06-20", desktop = 408, mobile = 450 },
+        new() { date = "2024-06-21", desktop = 169, mobile = 210 },
+        new() { date = "2024-06-22", desktop = 317, mobile = 270 },
+        new() { date = "2024-06-23", desktop = 480, mobile = 530 },
+        new() { date = "2024-06-24", desktop = 132, mobile = 180 },
+        new() { date = "2024-06-25", desktop = 141, mobile = 190 },
+        new() { date = "2024-06-26", desktop = 434, mobile = 380 },
+        new() { date = "2024-06-27", desktop = 448, mobile = 490 },
+        new() { date = "2024-06-28", desktop = 149, mobile = 200 },
+        new() { date = "2024-06-29", desktop = 103, mobile = 160 },
+        new() { date = "2024-06-30", desktop = 446, mobile = 400 }
     };
 
-    private readonly List<MultipleLineData> multipleData = new()
+    private List<ChartDataPoint> FilteredData
     {
-        new() { Month = "January", Desktop = 186, Mobile = 80 },
-        new() { Month = "February", Desktop = 305, Mobile = 200 },
-        new() { Month = "March", Desktop = 237, Mobile = 120 },
-        new() { Month = "April", Desktop = 73, Mobile = 190 },
-        new() { Month = "May", Desktop = 209, Mobile = 130 },
-        new() { Month = "June", Desktop = 214, Mobile = 140 }
-    };
+        get
+        {
+            DateTime latestDay = DateTime.Parse(chartData.Last().date);
 
-    private readonly List<ChartSeriesConfig> multipleSeries = new()
-    {
-        new() { DataKey = "Desktop", Label = "Desktop", Color = "hsl(var(--chart-1))", Curved = true },
-        new() { DataKey = "Mobile", Label = "Mobile", Color = "hsl(var(--chart-2))", Curved = true }
-    };
+            DateTime fromDate = timeRange switch
+            {
+                "7d"  => latestDay.AddDays(-7),
+                "30d" => latestDay.AddDays(-30),
+                "90d" => latestDay.AddDays(-90),
+                _     => DateTime.MinValue
+            };
 
-    public class LineData
-    {
-        public string Month { get; set; } = string.Empty;
-        public int Desktop { get; set; }
+            if (fromDate == DateTime.MinValue)
+            {
+                // "90d" or unknown => no filter (or you can use -90 if you prefer)
+                return chartData;
+            }
+
+            return chartData
+                .Where(p =>
+                    DateTime.TryParse(p.date, out var d) &&
+                    d >= fromDate && d <= latestDay)
+                .ToList();
+        }
     }
 
-    public class MultipleLineData
+    private List<SimpleChartData> simpleData = new()
     {
-        public string Month { get; set; } = string.Empty;
-        public int Desktop { get; set; }
-        public int Mobile { get; set; }
+        new() { month = "Jan", sales = 186 },
+        new() { month = "Feb", sales = 305 },
+        new() { month = "Mar", sales = 237 },
+        new() { month = "Apr", sales = 273 },
+        new() { month = "May", sales = 209 },
+        new() { month = "Jun", sales = 214 }
+    };
+
+    private List<MultiChartData> multiData = new()
+    {
+        new() { month = "Jan", product1 = 186, product2 = 80 },
+        new() { month = "Feb", product1 = 305, product2 = 200 },
+        new() { month = "Mar", product1 = 237, product2 = 120 },
+        new() { month = "Apr", product1 = 273, product2 = 190 },
+        new() { month = "May", product1 = 209, product2 = 130 },
+        new() { month = "Jun", product1 = 214, product2 = 140 }
+    };
+
+    public class ChartDataPoint
+    {
+        public string date { get; set; } = "";
+        public int desktop { get; set; }
+        public int mobile { get; set; }
+    }
+
+    public class SimpleChartData
+    {
+        public string month { get; set; } = "";
+        public int sales { get; set; }
+    }
+
+    public class MultiChartData
+    {
+        public string month { get; set; } = "";
+        public int product1 { get; set; }
+        public int product2 { get; set; }
     }
 }

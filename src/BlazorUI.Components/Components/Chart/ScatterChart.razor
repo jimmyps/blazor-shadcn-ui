@@ -1,0 +1,187 @@
+@namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Chart.Internal
+@typeparam TData
+@inherits ChartBase<TData>
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-scatter-container" style="width: 100%; height: 100%; position: relative;">
+        <div @ref="_canvasRef" style="width: 100%; height: 100%;"></div>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private List<Scatter> _scatters = new();
+    
+    protected override EChartsOption BuildEChartsOption()
+    {
+        var option = new EChartsOption
+        {
+            Grid = BuildGrid(),
+            Legend = BuildLegend(),
+            Tooltip = BuildTooltip(),
+            XAxis = BuildXAxis(),
+            YAxis = BuildYAxis(),
+            Series = BuildSeries(),
+            Animation = EnableAnimation,
+            AnimationDuration = EnableAnimation ? AnimationDuration : 0,
+            AnimationEasing = MapAnimationEasing(AnimationEasing),
+            AnimationDelay = AnimationDelay,
+            AnimationDurationUpdate = AnimationDurationUpdate,
+            AnimationEasingUpdate = MapAnimationEasing(AnimationEasingUpdate)
+        };
+        
+        return option;
+    }
+    
+    private EChartsAxis BuildXAxis()
+    {
+        var xAxis = _xAxis ?? new XAxis();
+        var axis = BuildAxis(xAxis, null, true);
+        axis.Type = "value"; // Scatter always uses value axes
+        return axis;
+    }
+    
+    private EChartsAxis BuildYAxis()
+    {
+        var yAxis = _yAxis ?? new YAxis();
+        var axis = BuildAxis(null, yAxis, false);
+        axis.Type = "value"; // Scatter always uses value axes
+        return axis;
+    }
+    
+    private List<EChartsSeries> BuildSeries()
+    {
+        var seriesList = new List<EChartsSeries>();
+        
+        if (_scatters.Any())
+        {
+            for (int i = 0; i < _scatters.Count; i++)
+            {
+                var scatter = _scatters[i];
+                
+                // Build scatter data from DataKey (contains both X and Y values)
+                var scatterData = new List<object>();
+                
+                // Use axis data keys if available
+                if (_xAxis != null && _yAxis != null && 
+                    !string.IsNullOrEmpty(_xAxis.DataKey) && 
+                    !string.IsNullOrEmpty(_yAxis.DataKey))
+                {
+                    foreach (var item in Data)
+                    {
+                        var x = Convert.ToDouble(DataExtractor.GetValue(item, _xAxis.DataKey) ?? 0);
+                        var y = Convert.ToDouble(DataExtractor.GetValue(item, _yAxis.DataKey) ?? 0);
+                        scatterData.Add(new[] { x, y });
+                    }
+                }
+                
+                var series = new EChartsSeries
+                {
+                    Type = "scatter",
+                    Name = scatter.Name,
+                    Data = scatterData,
+                    Symbol = scatter.Symbol switch
+                    {
+                        SymbolShape.Rect => "rect",
+                        SymbolShape.RoundRect => "roundRect",
+                        SymbolShape.Triangle => "triangle",
+                        SymbolShape.Diamond => "diamond",
+                        SymbolShape.Pin => "pin",
+                        SymbolShape.Arrow => "arrow",
+                        SymbolShape.None => "none",
+                        _ => "circle"
+                    },
+                    SymbolSize = !string.IsNullOrEmpty(scatter.SymbolSizeFunction) 
+                        ? null 
+                        : scatter.SymbolSize,
+                    SymbolSizeFunction = scatter.SymbolSizeFunction,
+                    SymbolRotate = scatter.SymbolRotate,
+                    ItemStyle = new EChartsItemStyle
+                    {
+                        Color = GetSeriesColor(i, scatter.Color),
+                        BorderColor = scatter.BorderColor,
+                        BorderWidth = scatter.BorderWidth
+                    },
+                    Emphasis = new EChartsEmphasis
+                    {
+                        Disabled = !scatter.Emphasis,
+                        Focus = scatter.Focus == Focus.Self ? "self" : null
+                    },
+                    Large = scatter.Large,
+                    LargeThreshold = scatter.LargeThreshold,
+                    Progressive = scatter.Progressive,
+                    Clip = scatter.Clip
+                };
+                
+                // Map label parameters to ECharts series.label
+                if (scatter.ShowLabel || scatter.LabelList != null)
+                {
+                    var labelList = scatter.LabelList;
+                    series.Label = new EChartsLabel
+                    {
+                        Show = labelList?.Show ?? scatter.ShowLabel,
+                        Position = MapLabelPosition(labelList?.Position ?? scatter.LabelPosition ?? LabelPosition.Top),
+                        Formatter = labelList?.Formatter ?? scatter.LabelFormatter,
+                        Color = labelList?.Color,
+                        FontSize = labelList?.FontSize,
+                        Offset = labelList?.Offset
+                    };
+                }
+                
+                // Map animation properties (series-level overrides chart-level defaults)
+                series.Animation = scatter.EnableAnimation ?? EnableAnimation;
+                series.AnimationDuration = scatter.AnimationDuration ?? AnimationDuration;
+                series.AnimationEasing = MapAnimationEasing(scatter.AnimationEasing ?? AnimationEasing);
+                series.AnimationDelay = scatter.AnimationDelay ?? AnimationDelay;
+                series.AnimationDurationUpdate = scatter.AnimationDurationUpdate ?? AnimationDurationUpdate;
+                series.AnimationEasingUpdate = MapAnimationEasing(scatter.AnimationEasingUpdate ?? AnimationEasingUpdate);
+                
+                seriesList.Add(series);
+            }
+        }
+        
+        return seriesList;
+    }
+    
+    protected override ChartType GetChartType()
+    {
+        return ChartType.Scatter;
+    }
+    
+    protected override TooltipMode GetDefaultTooltipMode()
+    {
+        return TooltipMode.Axis;
+    }
+    
+    private string MapLabelPosition(LabelPosition position)
+    {
+        return position switch
+        {
+            LabelPosition.Top => "top",
+            LabelPosition.Bottom => "bottom",
+            LabelPosition.Left => "left",
+            LabelPosition.Right => "right",
+            LabelPosition.Inside => "inside",
+            LabelPosition.InsideTop => "insideTop",
+            LabelPosition.InsideBottom => "insideBottom",
+            LabelPosition.InsideLeft => "insideLeft",
+            LabelPosition.InsideRight => "insideRight",
+            LabelPosition.Center => "center",
+            LabelPosition.Outside => "outside",
+            _ => "top"
+        };
+    }
+    
+    internal void RegisterScatter(Scatter scatter)
+    {
+        _scatters.Add(scatter);
+        StateHasChanged();
+    }
+    
+    internal void RegisterGrid(Grid grid) { _grid = grid; StateHasChanged(); }
+    internal void RegisterXAxis(XAxis xAxis) { _xAxis = xAxis; StateHasChanged(); }
+    internal void RegisterYAxis(YAxis yAxis) { _yAxis = yAxis; StateHasChanged(); }
+    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+}

@@ -1,280 +1,280 @@
 @namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Chart.Internal
 @typeparam TData
-@inherits RadarChartBase<TData>
-@implements IAsyncDisposable
+@inherits ChartBase<TData>
 
-<div class="@ContainerClass" style="position: relative; height: @(Height)px; width: 100%;">
-    <canvas @ref="_canvasRef"></canvas>
-    
-    @if (ShowExportButton && _isInitialized)
-    {
-        <div style="position: absolute; top: 8px; right: 8px; z-index: 10;">
-            <button @onclick="ExportChart" 
-                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9"
-                    title="Export chart">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" x2="12" y1="15" y2="3"/>
-                </svg>
-            </button>
-        </div>
-    }
-</div>
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-radar-container" style="width: 100%; height: 100%; position: relative;">
+        <div @ref="_canvasRef" style="width: 100%; height: 100%;"></div>
+    </div>
+    @ChildContent
+</CascadingValue>
 
 @code {
-    private ElementReference _canvasRef;
-    private IChartRenderer? _renderer;
-    private string? _chartId;
-    private bool _isInitialized;
+    private List<Radar> _radars = new();
+    private RadarGrid? _radarGrid;
     
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override EChartsOption BuildEChartsOption()
     {
-        if (firstRender && Data != null && Data.Any())
+        var option = new EChartsOption
         {
-            await InitializeChartAsync();
-        }
+            Legend = BuildLegend(),
+            Tooltip = BuildTooltip(),
+            Radar = BuildRadarCoordinate(),
+            Series = BuildSeries(),
+            Animation = EnableAnimation,
+            AnimationDuration = EnableAnimation ? AnimationDuration : 0,
+            AnimationEasing = MapAnimationEasing(AnimationEasing),
+            AnimationDelay = AnimationDelay,
+            AnimationDurationUpdate = AnimationDurationUpdate,
+            AnimationEasingUpdate = MapAnimationEasing(AnimationEasingUpdate)
+        };
+        
+        return option;
     }
     
-    protected override async Task OnParametersSetAsync()
+    private EChartsRadar BuildRadarCoordinate()
     {
-        if (_isInitialized && Data != null && Data.Any())
+        var radarGrid = _radarGrid ?? new RadarGrid(); // Implicit default
+        
+        // Build radar indicators from data or XAxis
+        var indicators = new List<EChartsRadarIndicator>();
+        
+        if (_xAxis != null && !string.IsNullOrEmpty(_xAxis.DataKey))
         {
-            await UpdateChartDataAsync();
-        }
-    }
-    
-    private async Task InitializeChartAsync()
-    {
-        try
-        {
-            _renderer = ChartRendererFactory.CreateRenderer(Engine, JSRuntime);
+            // Use XAxis DataKey to get indicator names
+            var labels = DataExtractor.GetStringValues(Data, _xAxis.DataKey);
             
-            var chartConfig = new ChartConfig
+            foreach (var label in labels)
             {
-                Type = ChartType.Radar,
-                Responsive = Responsive,
-                MaintainAspectRatio = false,
-                Data = BuildChartData(),
-                Options = BuildChartOptions()
-            };
+                indicators.Add(new EChartsRadarIndicator
+                {
+                    Name = label,
+                    Min = _xAxis.Min,
+                    Max = _xAxis.Max
+                });
+            }
+        }
+        else if (_radars.Any() && Data.Any())
+        {
+            // Fallback to property-based indicators
+            var properties = typeof(TData).GetProperties()
+                .Where(p => p.PropertyType == typeof(int) || 
+                           p.PropertyType == typeof(double) || 
+                           p.PropertyType == typeof(decimal) ||
+                           p.PropertyType == typeof(float) ||
+                           p.PropertyType == typeof(int?) ||
+                           p.PropertyType == typeof(double?) ||
+                           p.PropertyType == typeof(decimal?) ||
+                           p.PropertyType == typeof(float?))
+                .ToList();
             
-            _chartId = await _renderer.InitializeAsync(_canvasRef, chartConfig);
-            _isInitialized = true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"RadarChart: Failed to initialize chart: {ex.Message}");
-            // Chart initialization failed - component will render empty canvas
-        }
-    }
-    
-    private async Task ExportChart()
-    {
-        if (_renderer == null || string.IsNullOrEmpty(_chartId))
-        {
-            Console.WriteLine("RadarChart: Cannot export - chart not initialized");
-            return;
+            foreach (var prop in properties)
+            {
+                // Calculate max value across all data items for this property
+                var values = Data.Select(d => {
+                    var val = prop.GetValue(d);
+                    return val != null ? Convert.ToDouble(val) : 0.0;
+                }).ToList();
+                
+                var maxValue = values.Any() ? values.Max() : 100;
+                indicators.Add(new EChartsRadarIndicator
+                {
+                    Name = prop.Name,
+                    Max = Math.Max(maxValue * 1.2, 1) // Add 20% headroom, minimum 1
+                });
+            }
         }
         
-        try
+        return new EChartsRadar
         {
-            var format = Engine == ChartEngine.ECharts ? ImageFormat.Svg : ImageFormat.Png;
-            var dataUrl = await _renderer.ExportAsImageAsync(_chartId, format);
-            
-            if (string.IsNullOrEmpty(dataUrl))
+            Shape = radarGrid.Shape == RadarShape.Circle ? "circle" : "polygon",
+            SplitNumber = radarGrid.SplitNumber,
+            Radius = radarGrid.Radius,
+            Center = radarGrid.Center ?? new[] { "50%", "50%" },
+            Indicator = indicators.Any() ? indicators : null,
+            AxisLine = new EChartsAxisLine
             {
-                Console.WriteLine("RadarChart: Export returned empty data URL");
-                return;
-            }
-            
-            var extension = format == ImageFormat.Svg ? "svg" : "png";
-            var filename = $"{ExportFileName}.{extension}";
-            await DownloadFile(dataUrl, filename);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"RadarChart: Export failed - {ex.Message}");
-        }
-    }
-    
-    private async Task DownloadFile(string dataUrl, string filename)
-    {
-        var script = @"
-            (function(url, name) {
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = name;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            })(arguments[0], arguments[1]);
-        ";
-        await JSRuntime.InvokeVoidAsync("eval", script, dataUrl, filename);
-    }
-    
-    private async Task UpdateChartDataAsync()
-    {
-        if (_renderer != null && !string.IsNullOrEmpty(_chartId))
-        {
-            try
-            {
-                var chartData = BuildChartData();
-                await _renderer.UpdateDataAsync(_chartId, chartData);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to update chart data: {ex.Message}");
-            }
-        }
-    }
-    
-    private object BuildChartOptions()
-    {
-        return new
-        {
-            responsive = Responsive,
-            maintainAspectRatio = false,
-            plugins = new
-            {
-                legend = new
+                Show = radarGrid.ShowAxisLine,
+                LineStyle = new EChartsLineStyle
                 {
-                    display = ShowLegend
-                },
-                tooltip = new
-                {
-                    enabled = ShowTooltip
+                    Color = radarGrid.AxisLineColor,
+                    Width = radarGrid.AxisLineWidth
                 }
             },
-            scales = new
+            SplitLine = new EChartsSplitLine
             {
-                r = new
+                Show = radarGrid.ShowSplitLine,
+                LineStyle = new EChartsLineStyle
                 {
-                    beginAtZero = true,
-                    grid = new
+                    Color = radarGrid.SplitLineColor,
+                    Width = radarGrid.SplitLineWidth
+                }
+            }
+        };
+    }
+    
+    private List<EChartsSeries> BuildSeries()
+    {
+        var seriesList = new List<EChartsSeries>();
+        
+        if (_radars.Any())
+        {
+            // Get numeric properties once
+            var properties = typeof(TData).GetProperties()
+                .Where(p => p.PropertyType == typeof(int) || 
+                           p.PropertyType == typeof(double) || 
+                           p.PropertyType == typeof(decimal) ||
+                           p.PropertyType == typeof(float) ||
+                           p.PropertyType == typeof(int?) ||
+                           p.PropertyType == typeof(double?) ||
+                           p.PropertyType == typeof(decimal?) ||
+                           p.PropertyType == typeof(float?))
+                .ToList();
+            
+            for (int i = 0; i < _radars.Count; i++)
+            {
+                var radar = _radars[i];
+                
+                // Build radar data - extract values using DataKey to create one series
+                List<double> values;
+                if (!string.IsNullOrEmpty(radar.DataKey))
+                {
+                    // Extract one value per data item using DataKey (e.g., "score" from each skill record)
+                    // This creates a list like [85, 70, 90, 75, 80] for radar chart axes
+                    values = DataExtractor.GetNumericValues(Data, radar.DataKey);
+                }
+                else
+                {
+                    // Fallback: use all numeric properties from first data item only
+                    // Note: This is a legacy fallback and may not represent the full dataset
+                    values = new List<double>();
+                    var firstItem = Data.FirstOrDefault();
+                    if (firstItem != null)
                     {
-                        display = ShowGrid
-                    },
-                    pointLabels = new
-                    {
-                        display = ShowLabels
+                        foreach (var prop in properties)
+                        {
+                            var val = prop.GetValue(firstItem);
+                            values.Add(val != null ? Convert.ToDouble(val) : 0.0);
+                        }
                     }
                 }
-            },
-            animation = new
-            {
-                duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
-                easing = ChartUtilities.MapEasingFunction(Animation?.Easing ?? AnimationEasing.EaseInOutQuart)
+                
+                // Create single radar data entry with all values
+                var radarData = new List<Dictionary<string, object>>
+                {
+                    new Dictionary<string, object>
+                    {
+                        ["value"] = values,
+                        ["name"] = radar.Name ?? radar.DataKey
+                    }
+                };
+                
+                var series = new EChartsSeries
+                {
+                    Type = "radar",
+                    Name = radar.Name ?? radar.DataKey,
+                    Data = radarData.Cast<object>().ToList(),
+                    ItemStyle = new EChartsItemStyle
+                    {
+                        Color = GetSeriesColor(i, radar.Color)
+                    },
+                    AreaStyle = radar.FillArea ? new EChartsAreaStyle
+                    {
+                        Color = GetSeriesColor(i, radar.Color),
+                        Opacity = radar.AreaOpacity ?? 0.3
+                    } : null,
+                    LineStyle = new EChartsLineStyle
+                    {
+                        Color = GetSeriesColor(i, radar.Color),
+                        Width = radar.LineWidth
+                    },
+                    Emphasis = new EChartsEmphasis
+                    {
+                        Disabled = !radar.Emphasis,
+                        Focus = radar.Focus == Focus.Self ? "self" : null
+                    }
+                };
+                
+                // Map label parameters to ECharts series.label
+                if (radar.ShowLabel || radar.LabelList != null)
+                {
+                    var labelList = radar.LabelList;
+                    series.Label = new EChartsLabel
+                    {
+                        Show = labelList?.Show ?? radar.ShowLabel,
+                        Position = MapLabelPosition(labelList?.Position ?? radar.LabelPosition ?? LabelPosition.Top),
+                        Formatter = labelList?.Formatter ?? radar.LabelFormatter,
+                        Color = labelList?.Color,
+                        FontSize = labelList?.FontSize,
+                        Offset = labelList?.Offset
+                    };
+                }
+                
+                // Map animation properties (series-level overrides chart-level defaults)
+                series.Animation = radar.EnableAnimation ?? EnableAnimation;
+                series.AnimationDuration = radar.AnimationDuration ?? AnimationDuration;
+                series.AnimationEasing = MapAnimationEasing(radar.AnimationEasing ?? AnimationEasing);
+                series.AnimationDelay = radar.AnimationDelay ?? AnimationDelay;
+                series.AnimationDurationUpdate = radar.AnimationDurationUpdate ?? AnimationDurationUpdate;
+                series.AnimationEasingUpdate = MapAnimationEasing(radar.AnimationEasingUpdate ?? AnimationEasingUpdate);
+                
+                seriesList.Add(series);
             }
+        }
+        
+        return seriesList;
+    }
+    
+    private string MapLabelPosition(LabelPosition position)
+    {
+        return position switch
+        {
+            LabelPosition.Top => "top",
+            LabelPosition.Bottom => "bottom",
+            LabelPosition.Left => "left",
+            LabelPosition.Right => "right",
+            LabelPosition.Inside => "inside",
+            LabelPosition.InsideTop => "insideTop",
+            LabelPosition.InsideBottom => "insideBottom",
+            LabelPosition.InsideLeft => "insideLeft",
+            LabelPosition.InsideRight => "insideRight",
+            LabelPosition.Center => "center",
+            LabelPosition.Outside => "outside",
+            _ => "top"
         };
     }
     
-    private object BuildChartData()
+    protected override ChartType GetChartType()
     {
-        if (Data == null || !Data.Any())
-        {
-            return new
-            {
-                labels = Array.Empty<string>(),
-                datasets = Array.Empty<object>()
-            };
-        }
-        
-        var labels = ExtractLabels();
-        var datasets = BuildDatasets();
-        
-        return new
-        {
-            labels,
-            datasets
-        };
+        return ChartType.Radar;
     }
     
-    private string[] ExtractLabels()
+    protected override TooltipMode GetDefaultTooltipMode()
     {
-        if (Data == null || !Data.Any()) return Array.Empty<string>();
-        
-        if (!string.IsNullOrEmpty(LabelDataKey))
-        {
-            return Data.Select(item =>
-            {
-                var prop = item?.GetType().GetProperty(LabelDataKey);
-                return prop?.GetValue(item)?.ToString() ?? "";
-            }).ToArray();
-        }
-        
-        return Data.Select((_, i) => $"Metric {i + 1}").ToArray();
+        return TooltipMode.Item;
     }
     
-    private object[] BuildDatasets()
+    internal void RegisterRadar(Radar radar)
     {
-        if (Series == null || !Series.Any())
-        {
-            return Array.Empty<object>();
-        }
-        
-        var datasets = new List<object>();
-        var colorIndex = 0;
-        
-        foreach (var series in Series)
-        {
-            var values = Data.Select(item =>
-            {
-                var prop = item?.GetType().GetProperty(series.DataKey);
-                var value = prop?.GetValue(item);
-                
-                if (value == null) return 0.0;
-                
-                return Convert.ToDouble(value);
-            }).ToArray();
-            
-            var color = series.Color ?? ChartUtilities.GetChartColor(colorIndex);
-            var backgroundColor = ChartUtilities.GetColorWithAlpha(color, FillOpacity);
-            
-            datasets.Add(new
-            {
-                label = series.Label ?? series.DataKey,
-                data = values,
-                borderColor = color,
-                backgroundColor = backgroundColor,
-                borderWidth = series.LineWidth,
-                pointBackgroundColor = color,
-                pointBorderColor = "#fff",
-                pointHoverBackgroundColor = "#fff",
-                pointHoverBorderColor = color
-            });
-            
-            colorIndex++;
-        }
-        
-        return datasets.ToArray();
+        _radars.Add(radar);
+        StateHasChanged();
     }
     
-    
-    public async ValueTask DisposeAsync()
+    internal void RegisterRadarGrid(RadarGrid radarGrid)
     {
-        if (_renderer != null && !string.IsNullOrEmpty(_chartId))
-        {
-            try
-            {
-                await _renderer.DestroyAsync(_chartId);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error during RadarChart disposal: {ex.Message}");
-            }
-        }
-        
-        if (_renderer != null)
-        {
-            try
-            {
-                await _renderer.DisposeAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error disposing RadarChart renderer: {ex.Message}");
-            }
-        }
+        _radarGrid = radarGrid;
+        StateHasChanged();
     }
+
+    internal void RegisterXAxis(XAxis xAxis)
+    {
+        _xAxis = xAxis;
+        StateHasChanged();
+    }
+
+    
+    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+
 }

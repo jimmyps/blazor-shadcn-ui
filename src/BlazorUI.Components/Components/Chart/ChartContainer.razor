@@ -1,0 +1,33 @@
+@namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Utilities
+
+<div class="@ContainerClass" style="@ContainerStyle">
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the height of the chart container in pixels.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public int Height { get; set; }
+        
+    /// <summary>
+    /// Gets or sets additional CSS classes.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the child content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    
+    private string ContainerClass => ClassNames.cn(
+        "chart-container w-full",
+        Class
+    );
+    
+    private string ContainerStyle => $"height: {Height}px; width:99%";
+}

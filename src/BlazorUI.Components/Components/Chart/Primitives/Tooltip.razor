@@ -1,0 +1,69 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to show the tooltip.
+    /// </summary>
+    [Parameter]
+    public bool Show { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the tooltip trigger mode.
+    /// Default depends on chart type (see spec section 4.4).
+    /// </summary>
+    [Parameter]
+    public TooltipMode? Mode { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the cursor/axis pointer type.
+    /// </summary>
+    [Parameter]
+    public TooltipCursor Cursor { get; set; } = TooltipCursor.None;
+    
+    /// <summary>
+    /// Gets or sets the formatter string. Can be either an ECharts template string or a JavaScript function as a string.
+    /// Examples:
+    /// - Template: "{b}: {c}" 
+    /// - Function: "function(params) { return params.name + ': ' + params.value; }"
+    /// </summary>
+    [Parameter]
+    public string? Formatter { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the background color for the tooltip.
+    /// Maps to tooltip.backgroundColor.
+    /// </summary>
+    [Parameter]
+    public string? BackgroundColor { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the border color for the tooltip.
+    /// Maps to tooltip.borderColor.
+    /// </summary>
+    [Parameter]
+    public string? BorderColor { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the border width for the tooltip in pixels.
+    /// Maps to tooltip.borderWidth.
+    /// </summary>
+    [Parameter]
+    public int? BorderWidth { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the text color for the tooltip.
+    /// Maps to tooltip.textStyle.color.
+    /// </summary>
+    [Parameter]
+    public string? TextColor { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterTooltip(this); } catch { }
+        }
+    }
+}
