@@ -15,6 +15,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ScatterChart Data="@heightWeightData">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="height" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -38,6 +39,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ScatterChart Data="@customerData">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="age" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -45,7 +47,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Scatter DataKey="premium" Name="Premium" SymbolSize="8" Color="var(--chart-1)" />
                         <Scatter DataKey="standard" Name="Standard" SymbolSize="8" Color="var(--chart-2)" />
                     </ScatterChart>
@@ -62,6 +64,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ScatterChart Data="@salesData">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="sales" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -85,6 +88,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ScatterChart Data="@symbolData">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="x" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -92,7 +96,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Scatter DataKey="diamonds" Name="Diamond" SymbolSize="10" Symbol="SymbolShape.Diamond" Color="var(--chart-1)" />
                         <Scatter DataKey="triangles" Name="Triangle" SymbolSize="10" Symbol="SymbolShape.Triangle" Color="var(--chart-2)" />
                     </ScatterChart>
@@ -133,6 +137,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ScatterChart Data="@largeDataset">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="x" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -156,6 +161,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ScatterChart Data="@trendData">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="experience" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -179,6 +185,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ScatterChart Data="@colorData">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="x" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -186,7 +193,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Scatter DataKey="series1" Name="Series A" SymbolSize="8" Color="var(--chart-3)" />
                         <Scatter DataKey="series2" Name="Series B" SymbolSize="8" Color="var(--chart-4)" />
                         <Scatter DataKey="series3" Name="Series C" SymbolSize="8" Color="var(--chart-5)" />

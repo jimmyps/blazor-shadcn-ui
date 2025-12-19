@@ -25,7 +25,7 @@
         <CardContent Class="p-6 pt-2 sm:px-6 sm:pt-6">
             <ChartContainer Height="250" Class="w-full">
                 <BarChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
-                    <Grid Vertical="false" />
+                    <Grid Vertical="false" Stroke="var(--border)" />
                     <XAxis DataKey="date" TickLine="false" Color="var(--border)">
                         <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
                     </XAxis>
@@ -33,7 +33,7 @@
                         <AxisLabel Show="false" />
                     </YAxis>
                     <Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Shadow" />
-                    <Legend />
+                    <Legend TextColor="var(--foreground)" />
                     <Bar DataKey="desktop" Name="Desktop" Radius="4" Color="var(--chart-1)" />
                     <Bar DataKey="mobile" Name="Mobile" Radius="4" Color="var(--chart-2)" />
                 </BarChart>
@@ -51,6 +51,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -74,6 +75,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <BarChart Data="@simpleData" Layout="BarLayout.Horizontal" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="sales" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -97,6 +99,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <BarChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -104,7 +107,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="product1" Name="Product A" Radius="4" Color="var(--chart-1)" />
                         <Bar DataKey="product2" Name="Product B" Radius="4" Color="var(--chart-2)" />
                     </BarChart>
@@ -121,6 +124,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <BarChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -128,7 +132,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="product1" Name="Product A" StackId="total" Radius="4" Color="var(--chart-1)" />
                         <Bar DataKey="product2" Name="Product B" StackId="total" Radius="4" Color="var(--chart-2)" />
                     </BarChart>
@@ -145,6 +149,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -170,6 +175,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -195,6 +201,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <BarChart Data="@multiData" StackOffset="StackOffset.Expand" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -202,7 +209,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip Formatter="function(params) { return params.seriesName + ': ' + params.value.toFixed(1) + '%'; }" />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="product1" Name="Product A" StackId="total" Radius="4" Color="var(--chart-1)" />
                         <Bar DataKey="product2" Name="Product B" StackId="total" Radius="4" Color="var(--chart-2)" />
                     </BarChart>
@@ -219,6 +226,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -242,6 +250,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ComposedChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -249,7 +258,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="product1" Name="Product A" Radius="4" Color="var(--chart-1)" />
                         <Line DataKey="product2" Name="Product B" Color="var(--chart-2)" />
                     </ComposedChart>
@@ -266,6 +275,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <BarChart Data="@negativeData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>

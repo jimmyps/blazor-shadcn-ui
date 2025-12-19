@@ -35,7 +35,7 @@
                     <RadarChart Data="@teamSkillData">
                         <XAxis DataKey="skill" />
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <RadarGrid Radius="50%" Center="@(new string[] { "50%", "65%" })" />
                         <Radar DataKey="developer1" Name="Dev A" FillArea="true" AreaOpacity="0.2" Color="var(--chart-1)" />
                         <Radar DataKey="developer2" Name="Dev B" FillArea="true" AreaOpacity="0.2" Color="var(--chart-2)" />
@@ -92,7 +92,7 @@
                     <RadarChart Data="@performanceData">
                         <XAxis DataKey="metric" />
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <RadarGrid Radius="60%" Center="@(new string[] { "50%", "65%" })" />
                         <Radar DataKey="sales" Name="Sales" FillArea="true" AreaOpacity="0.25" Color="var(--chart-1)" />
                         <Radar DataKey="marketing" Name="Marketing" FillArea="true" AreaOpacity="0.25" Color="var(--chart-2)" />
@@ -112,7 +112,7 @@
                     <RadarChart Data="@productComparison">
                         <XAxis DataKey="feature" />
                         <Tooltip />
-                        <Legend VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Diamond" />
+                        <Legend TextColor="var(--foreground)" VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Diamond" />
                         <RadarGrid Radius="50%" />
                         <Radar DataKey="productA" Name="Product A" Emphasis="true" FillArea="true" AreaOpacity="0.2" Color="var(--chart-3)" />
                         <Radar DataKey="productB" Name="Product B" Emphasis="true" FillArea="true" AreaOpacity="0.2" Color="var(--chart-4)" />
@@ -154,6 +154,47 @@
                         <Tooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="false" Color="var(--chart-2)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+        
+        @* Styled Radar Indicators *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Styled Indicators</CardTitle>
+                <CardDescription>Custom indicator label styling</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <RadarGrid 
+                            IndicatorColor="var(--foreground)"
+                            IndicatorFontSize="12"
+                            IndicatorFontWeight="bold" />
+                        <Tooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-3)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+        
+        @* Hidden Radar Indicators *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Hidden Indicators</CardTitle>
+                <CardDescription>Radar chart without indicator labels</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <RadarGrid ShowIndicatorLabels="false" />
+                        <Tooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.4" Color="var(--chart-4)" />
                     </RadarChart>
                 </ChartContainer>
             </CardContent>

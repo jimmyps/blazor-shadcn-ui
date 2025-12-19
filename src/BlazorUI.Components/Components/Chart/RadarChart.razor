@@ -93,6 +93,13 @@
             Radius = radarGrid.Radius,
             Center = radarGrid.Center ?? new[] { "50%", "50%" },
             Indicator = indicators.Any() ? indicators : null,
+            AxisName = new EChartsRadarAxisName
+            {
+                Show = radarGrid.ShowIndicatorLabels,
+                Color = radarGrid.IndicatorColor ?? "var(--foreground)",
+                FontSize = radarGrid.IndicatorFontSize,
+                FontWeight = radarGrid.IndicatorFontWeight
+            },
             AxisLine = new EChartsAxisLine
             {
                 Show = radarGrid.ShowAxisLine,

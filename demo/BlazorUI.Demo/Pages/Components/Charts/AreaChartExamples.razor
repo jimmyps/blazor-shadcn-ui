@@ -33,7 +33,7 @@
                         <AxisLabel Show="false" />
                     </YAxis>
                     <Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Line" Formatter="@tooltipFormatter" />
-                    <Legend />
+                    <Legend TextColor="var(--foreground)" />
                     <Area DataKey="desktop" Name="Desktop" StackId="Total">
                         <Fill>
                             <LinearGradient Direction="GradientDirection.Vertical">
@@ -97,7 +97,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Area DataKey="product1" Name="Product A" StackId="total" Color="var(--chart-1)" />
                         <Area DataKey="product2" Name="Product B" StackId="total" Color="var(--chart-2)" />
                         <Area DataKey="product3" Name="Product C" StackId="total" Color="var(--chart-3)" />
@@ -178,7 +178,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend Align="LegendAlign.Right" VerticalAlign="LegendVerticalAlign.Bottom" />
+                        <Legend TextColor="var(--foreground)" Align="LegendAlign.Right" VerticalAlign="LegendVerticalAlign.Bottom" />
                         <Area DataKey="product1" Name="Product A" Color="var(--chart-1)" />
                         <Area DataKey="product2" Name="Product B" Color="var(--chart-2)" />
                     </AreaChart>
@@ -203,7 +203,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Area DataKey="product1" Name="Product A" Color="var(--chart-1)" />
                         <Area DataKey="product2" Name="Product B" Color="var(--chart-2)" />
                     </AreaChart>
@@ -324,7 +324,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip Formatter="function(params) { return params.seriesName + ': ' + params.value.toFixed(1) + '%'; }" />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Area DataKey="product1" Name="Product A" StackId="total" Color="var(--chart-1)" />
                         <Area DataKey="product2" Name="Product B" StackId="total" Color="var(--chart-2)" />
                         <Area DataKey="product3" Name="Product C" StackId="total" Color="var(--chart-3)" />
