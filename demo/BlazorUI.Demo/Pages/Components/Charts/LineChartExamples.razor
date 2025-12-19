@@ -55,7 +55,7 @@
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
-                        <YAxis Color="var(-border)">
+                        <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
@@ -304,7 +304,6 @@ function (value) {
 
     private const string tooltipFormatter = @"
 function (params) {
-debugger;
   const label = new Date(params[0].axisValue).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric'

@@ -158,6 +158,68 @@
                 </ChartContainer>
             </CardContent>
         </Card>
+        
+        @* Legend with Custom Text Color *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Legend Text Color</CardTitle>
+                <CardDescription>Custom legend text color using CSS variables</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@teamSkillData">
+                        <XAxis DataKey="skill" />
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <RadarGrid Radius="50%" />
+                        <Radar DataKey="developer1" Name="Dev A" FillArea="true" AreaOpacity="0.2" Color="var(--chart-1)" />
+                        <Radar DataKey="developer2" Name="Dev B" FillArea="true" AreaOpacity="0.2" Color="var(--chart-2)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+        
+        @* Styled Radar Indicators *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Styled Indicators</CardTitle>
+                <CardDescription>Custom indicator label styling</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <RadarGrid 
+                            ShowIndicatorLabels="true"
+                            IndicatorColor="var(--foreground)"
+                            IndicatorFontSize="12"
+                            IndicatorFontWeight="bold" />
+                        <Tooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-3)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+        
+        @* Hidden Radar Indicators *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Hidden Indicators</CardTitle>
+                <CardDescription>Radar chart without indicator labels</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <RadarGrid ShowIndicatorLabels="false" />
+                        <Tooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.4" Color="var(--chart-4)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 </div>
 

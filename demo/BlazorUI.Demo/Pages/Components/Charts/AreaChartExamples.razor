@@ -186,6 +186,31 @@
             </CardContent>
         </Card>
 
+        @* Legend with Custom Text Color *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Legend Text Color</CardTitle>
+                <CardDescription>Custom legend text color using CSS variables</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <AreaChart Data="@multiData" Padding="@(new Padding(6, 0, 32, 0))">
+                        <Grid Show="false" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Area DataKey="product1" Name="Product A" Color="var(--chart-1)" />
+                        <Area DataKey="product2" Name="Product B" Color="var(--chart-2)" />
+                    </AreaChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
         @* Multiple Independent Areas *@
         <Card>
             <CardHeader Class="pb-2">
@@ -359,7 +384,6 @@ function (value) {
 
     private const string tooltipFormatter = @"
 function (params) {
-debugger;
   const label = new Date(params[0].axisValue).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric'
