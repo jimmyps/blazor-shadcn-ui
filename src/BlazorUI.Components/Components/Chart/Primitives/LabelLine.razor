@@ -1,0 +1,53 @@
+@namespace BlazorUI.Components.Chart
+
+@*
+LabelLine Component
+Controls the label connector line for Pie chart labels.
+Child of Pie series component.
+*@
+
+@code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+
+    /// <summary>
+    /// Whether to show the label line.
+    /// </summary>
+    [Parameter]
+    public bool Show { get; set; } = true;
+    
+    /// <summary>
+    /// Length of the first segment (in pixels).
+    /// </summary>
+    [Parameter]
+    public double? Length { get; set; }
+    
+    /// <summary>
+    /// Length of the second segment (in pixels).
+    /// </summary>
+    [Parameter]
+    public double? Length2 { get; set; }
+    
+    /// <summary>
+    /// Whether to use smooth curved lines.
+    /// When true, label lines will be smoothly curved.
+    /// When false or null, label lines will be straight.
+    /// </summary>
+    [Parameter]
+    public bool? Smooth { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Register with parent series
+        if (Parent != null)
+        {
+            try
+            {
+                Parent.RegisterLabelLine(this);
+            }
+            catch
+            {
+                // Parent doesn't support LabelLine
+            }
+        }
+    }
+}

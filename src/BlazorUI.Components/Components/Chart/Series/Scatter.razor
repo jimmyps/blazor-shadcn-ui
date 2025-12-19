@@ -1,0 +1,102 @@
+@namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Chart.Series
+@inherits SeriesBase
+
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the marker color (legacy, use Fill instead).
+    /// Note: Scatter uses XAxis.DataKey and YAxis.DataKey for X/Y coordinates.
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the size of scatter symbols in pixels.
+    /// Maps to series.symbolSize.
+    /// </summary>
+    [Parameter]
+    public int SymbolSize { get; set; } = 10;
+    
+    /// <summary>
+    /// Gets or sets the shape of scatter symbols.
+    /// Maps to series.symbol.
+    /// </summary>
+    [Parameter]
+    public SymbolShape Symbol { get; set; } = SymbolShape.Circle;
+    
+    /// <summary>
+    /// Gets or sets whether emphasis is enabled.
+    /// </summary>
+    [Parameter]
+    public bool Emphasis { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the focus behavior.
+    /// </summary>
+    [Parameter]
+    public Focus Focus { get; set; } = Focus.None;
+    
+    /// <summary>
+    /// Gets or sets a JavaScript function string to dynamically calculate symbol size.
+    /// Example: "function(data) { return data[2] / 100; }" for bubble charts.
+    /// If set, overrides SymbolSize parameter.
+    /// </summary>
+    [Parameter]
+    public string? SymbolSizeFunction { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the symbol rotation in degrees.
+    /// </summary>
+    [Parameter]
+    public int? SymbolRotate { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the border color for scatter symbols.
+    /// </summary>
+    [Parameter]
+    public string? BorderColor { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the border width for scatter symbols in pixels.
+    /// </summary>
+    [Parameter]
+    public int? BorderWidth { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to enable large dataset optimization (10K+ points).
+    /// </summary>
+    [Parameter]
+    public bool Large { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the threshold for enabling large mode automatically.
+    /// </summary>
+    [Parameter]
+    public int? LargeThreshold { get; set; } = 2000;
+    
+    /// <summary>
+    /// Gets or sets the progressive rendering chunk size for huge datasets.
+    /// </summary>
+    [Parameter]
+    public int? Progressive { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to clip points outside axis range.
+    /// </summary>
+    [Parameter]
+    public bool Clip { get; set; } = true;
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterScatter(this); } catch { }
+        }
+    }
+}

@@ -1,277 +1,245 @@
 @namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Chart.Internal
 @typeparam TData
-@inherits LineChartBase<TData>
-@implements IAsyncDisposable
-@inject IJSRuntime JSRuntime
+@inherits ChartBase<TData>
 
-<div class="@ContainerClass" style="position: relative; height: @(Height)px; width: 100%;">
-    <canvas @ref="_canvasRef"></canvas>
-    
-    @if (ShowExportButton && _isInitialized)
-    {
-        <div style="position: absolute; top: 8px; right: 8px; z-index: 10;">
-            <button @onclick="ExportAsPng" 
-                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9"
-                    title="Export chart">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" x2="12" y1="15" y2="3"/>
-                </svg>
-            </button>
-        </div>
-    }
-</div>
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-line-container" style="width: 100%; height: 100%; position: relative;">
+        <div @ref="_canvasRef" style="width: 100%; height: 100%;"></div>
+    </div>
+    @ChildContent
+</CascadingValue>
 
 @code {
-    private ElementReference _canvasRef;
-    private IChartRenderer? _renderer;
-    private string? _chartId;
-    private bool _isInitialized;
+    private List<Line> _lines = new();
     
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnInitialized()
     {
-        if (firstRender && Data != null && Data.Any())
-        {
-            await InitializeChartAsync();
-        }
+        // Capture child components (primitives will be set via cascading parameters or direct capture)
     }
     
-    protected override async Task OnParametersSetAsync()
+    protected override EChartsOption BuildEChartsOption()
     {
-        if (_isInitialized && Data != null && Data.Any())
+        var option = new EChartsOption
         {
-            await UpdateChartDataAsync();
-        }
+            Grid = BuildGrid(),
+            Legend = BuildLegend(),
+            Tooltip = BuildTooltip(),
+            XAxis = BuildXAxis(),
+            YAxis = BuildYAxis(),
+            Series = BuildSeries(),
+            Animation = EnableAnimation,
+            AnimationDuration = EnableAnimation ? AnimationDuration : 0,
+            AnimationEasing = MapAnimationEasing(AnimationEasing),
+            AnimationDelay = AnimationDelay,
+            AnimationDurationUpdate = AnimationDurationUpdate,
+            AnimationEasingUpdate = MapAnimationEasing(AnimationEasingUpdate)
+        };
+        
+        return option;
     }
     
-    private async Task InitializeChartAsync()
+    private EChartsAxis BuildXAxis()
     {
-        try
+        var xAxis = _xAxis ?? new XAxis();
+        var axis = BuildAxis(xAxis, null, true);
+        
+        // For line charts, X axis is typically category with labels from data
+        if (!string.IsNullOrEmpty(xAxis.DataKey))
         {
-            _renderer = ChartRendererFactory.CreateRenderer(Engine, JSRuntime);
-            
-            var chartConfig = new ChartConfig
-            {
-                Type = ChartType.Line,
-                Responsive = Responsive,
-                MaintainAspectRatio = false,
-                Data = BuildChartData(),
-                Options = BuildChartOptions()
-            };
-            
-            _chartId = await _renderer.InitializeAsync(_canvasRef, chartConfig);
-            _isInitialized = true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"LineChart: Failed to initialize chart: {ex.Message}");
-        }
-    }
-    
-    private async Task ExportAsPng()
-    {
-        if (_renderer == null || string.IsNullOrEmpty(_chartId))
-        {
-            Console.WriteLine("LineChart: Cannot export - chart not initialized");
-            return;
+            axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
         }
         
-        try
-        {
-            var format = Engine == ChartEngine.ECharts ? ImageFormat.Svg : ImageFormat.Png;
-            var dataUrl = await _renderer.ExportAsImageAsync(_chartId, format);
-            
-            if (string.IsNullOrEmpty(dataUrl))
-            {
-                Console.WriteLine("LineChart: Export returned empty data URL");
-                return;
-            }
-            
-            // Trigger download via JS helper
-            var extension = format == ImageFormat.Svg ? "svg" : "png";
-            var filename = $"{ExportFileName}.{extension}";
-            await DownloadFile(dataUrl, filename);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"LineChart: Export failed - {ex.Message}");
-        }
+        return axis;
     }
     
-    private async Task DownloadFile(string dataUrl, string filename)
+    private EChartsAxis BuildYAxis()
     {
-        var script = @"
-            (function(url, name) {
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = name;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            })(arguments[0], arguments[1]);
-        ";
-        await JSRuntime.InvokeVoidAsync("eval", script, dataUrl, filename);
+        var yAxis = _yAxis ?? new YAxis();
+        return BuildAxis(null, yAxis, false);
     }
     
-    private async Task UpdateChartDataAsync()
+    private List<EChartsSeries> BuildSeries()
     {
-        if (_renderer != null && !string.IsNullOrEmpty(_chartId))
+        var seriesList = new List<EChartsSeries>();
+        
+        // Collect Line components from ChildContent
+        // For MVP, we'll support rendering even without explicit Line children
+        // by using a default series if Lines are not provided
+        
+        if (_lines.Any())
         {
-            try
+            for (int i = 0; i < _lines.Count; i++)
             {
-                var chartData = BuildChartData();
-                await _renderer.UpdateDataAsync(_chartId, chartData);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to update chart data: {ex.Message}");
-            }
-        }
-    }
-    
-    private object BuildChartOptions()
-    {
-        return new
-        {
-            responsive = Responsive,
-            maintainAspectRatio = false,
-            plugins = new
-            {
-                legend = new
+                var line = _lines[i];
+                var data = DataExtractor.GetNumericValues(Data, line.DataKey);
+                
+                // Check if Fill component is present for gradient support
+                var fillGradient = BuildGradient(line.Fill);
+                var seriesColor = fillGradient ?? GetSeriesColor(i, line.Color);
+                
+                var series = new EChartsSeries
                 {
-                    display = ShowLegend
-                },
-                tooltip = new
-                {
-                    enabled = ShowTooltip
-                }
-            },
-            scales = new
-            {
-                x = new
-                {
-                    display = ShowXAxis,
-                    grid = new
+                    Type = "line",
+                    Name = line.Name ?? line.DataKey,
+                    Data = data.Cast<object>().ToList(),
+                    Smooth = line.Interpolation == InterpolationType.Natural || line.Interpolation == InterpolationType.Monotone,
+                    ShowSymbol = line.ShowDots,
+                    Symbol = line.DotShape switch
                     {
-                        display = ShowGrid
-                    }
-                },
-                y = new
-                {
-                    display = ShowYAxis,
-                    grid = new
+                        SymbolShape.Rect => "rect",
+                        SymbolShape.RoundRect => "roundRect",
+                        SymbolShape.Triangle => "triangle",
+                        SymbolShape.Diamond => "diamond",
+                        SymbolShape.Pin => "pin",
+                        SymbolShape.Arrow => "arrow",
+                        SymbolShape.None => "none",
+                        _ => "emptyCircle"
+                    },
+                    SymbolSize = line.DotSize,
+                    LineStyle = new EChartsLineStyle
                     {
-                        display = ShowGrid
+                        Width = line.LineWidth,
+                        Type = line.Dashed ? "dashed" : "solid",
+                        Color = seriesColor,
+                        Opacity = line.Opacity
+                    },
+                    ItemStyle = new EChartsItemStyle
+                    {
+                        Color = seriesColor,
+                        Opacity = line.Opacity
+                    },
+                    Emphasis = new EChartsEmphasis
+                    {
+                        Disabled = !line.Emphasis,
+                        Focus = line.Focus == Focus.Self ? "self" : null
                     }
+                };
+                
+                // Map interpolation type to ECharts step property
+                if (line.Interpolation == InterpolationType.Step)
+                {
+                    series.Step = "middle";
                 }
-            },
-            animation = new
-            {
-                duration = DisableAnimations ? 0 : (Animation?.Duration ?? 750),
-                easing = ChartUtilities.MapEasingFunction(Animation?.Easing ?? AnimationEasing.EaseInOutQuart)
+                else if (line.Interpolation == InterpolationType.StepBefore)
+                {
+                    series.Step = "start";
+                }
+                else if (line.Interpolation == InterpolationType.StepAfter)
+                {
+                    series.Step = "end";
+                }
+                
+                // Map label parameters to ECharts series.label
+                if (line.ShowLabel || line.LabelList != null)
+                {
+                    var labelList = line.LabelList;
+                    series.Label = new EChartsLabel
+                    {
+                        Show = labelList?.Show ?? line.ShowLabel,
+                        Position = MapLabelPosition(labelList?.Position ?? line.LabelPosition ?? LabelPosition.Top),
+                        Formatter = labelList?.Formatter ?? line.LabelFormatter,
+                        Color = labelList?.Color,
+                        FontSize = labelList?.FontSize,
+                        Offset = labelList?.Offset
+                    };
+                }
+                
+                // Map animation properties (series-level overrides chart-level defaults)
+                series.Animation = line.EnableAnimation ?? EnableAnimation;
+                series.AnimationDuration = line.AnimationDuration ?? AnimationDuration;
+                series.AnimationEasing = MapAnimationEasing(line.AnimationEasing ?? AnimationEasing);
+                series.AnimationDelay = line.AnimationDelay ?? AnimationDelay;
+                series.AnimationDurationUpdate = line.AnimationDurationUpdate ?? AnimationDurationUpdate;
+                series.AnimationEasingUpdate = MapAnimationEasing(line.AnimationEasingUpdate ?? AnimationEasingUpdate);
+                
+                seriesList.Add(series);
             }
+        }
+        
+        return seriesList;
+    }
+    
+    private string MapLabelPosition(LabelPosition position)
+    {
+        return position switch
+        {
+            LabelPosition.Top => "top",
+            LabelPosition.Bottom => "bottom",
+            LabelPosition.Left => "left",
+            LabelPosition.Right => "right",
+            LabelPosition.Inside => "inside",
+            LabelPosition.InsideTop => "insideTop",
+            LabelPosition.InsideBottom => "insideBottom",
+            LabelPosition.InsideLeft => "insideLeft",
+            LabelPosition.InsideRight => "insideRight",
+            LabelPosition.Center => "center",
+            LabelPosition.Outside => "outside",
+            _ => "top"
         };
     }
     
-    private object BuildChartData()
+    protected override ChartType GetChartType()
     {
-        if (Data == null || !Data.Any())
-        {
-            return new
-            {
-                labels = Array.Empty<string>(),
-                datasets = Array.Empty<object>()
-            };
-        }
-        
-        // Extract labels from the first property or use indices
-        var labels = ExtractLabels();
-        var datasets = BuildDatasets();
-        
-        return new
-        {
-            labels,
-            datasets
-        };
+        return ChartType.Line;
     }
     
-    private string[] ExtractLabels()
+    protected override TooltipMode GetDefaultTooltipMode()
     {
-        if (Data == null || !Data.Any()) return Array.Empty<string>();
-        
-        // If DataKey is specified for X axis, use that property
-        if (!string.IsNullOrEmpty(XAxisDataKey))
-        {
-            return Data.Select(item =>
-            {
-                var prop = item?.GetType().GetProperty(XAxisDataKey);
-                return prop?.GetValue(item)?.ToString() ?? "";
-            }).ToArray();
-        }
-        
-        // Otherwise use indices
-        return Data.Select((_, i) => i.ToString()).ToArray();
+        return TooltipMode.Axis;
     }
     
-    private object[] BuildDatasets()
+    /// <summary>
+    /// Internal method to register a Line series component.
+    /// </summary>
+    internal void RegisterLine(Line line)
     {
-        if (string.IsNullOrEmpty(YAxisDataKey))
-        {
-            return Array.Empty<object>();
-        }
-        
-        var values = Data.Select(item =>
-        {
-            var prop = item?.GetType().GetProperty(YAxisDataKey);
-            var value = prop?.GetValue(item);
-            
-            if (value == null) return 0.0;
-            
-            return Convert.ToDouble(value);
-        }).ToArray();
-        
-        return new[]
-        {
-            new
-            {
-                label = Label ?? YAxisDataKey,
-                data = values,
-                borderColor = LineColor ?? "hsl(var(--chart-1))",
-                backgroundColor = FillArea ? (LineColor ?? "hsl(var(--chart-1))") : "transparent",
-                borderWidth = LineWidth,
-                tension = Curved ? 0.4 : 0,
-                fill = FillArea,
-                pointRadius = ShowDots ? 3 : 0,
-                pointHoverRadius = ShowDots ? 5 : 0
-            }
-        };
+        _lines.Add(line);
+        StateHasChanged();
     }
     
-    public async ValueTask DisposeAsync()
+    /// <summary>
+    /// Internal method to register a Grid component.
+    /// </summary>
+    internal void RegisterGrid(Grid grid)
     {
-        if (_renderer != null && !string.IsNullOrEmpty(_chartId))
-        {
-            try
-            {
-                await _renderer.DestroyAsync(_chartId);
-            }
-            catch
-            {
-                // Ignore disposal errors
-            }
-        }
-        
-        if (_renderer != null)
-        {
-            try
-            {
-                await _renderer.DisposeAsync();
-            }
-            catch
-            {
-                // Ignore disposal errors
-            }
-        }
+        _grid = grid;
+        StateHasChanged();
+    }
+    
+    /// <summary>
+    /// Internal method to register an XAxis component.
+    /// </summary>
+    internal void RegisterXAxis(XAxis xAxis)
+    {
+        _xAxis = xAxis;
+        StateHasChanged();
+    }
+    
+    /// <summary>
+    /// Internal method to register a YAxis component.
+    /// </summary>
+    internal void RegisterYAxis(YAxis yAxis)
+    {
+        _yAxis = yAxis;
+        StateHasChanged();
+    }
+    
+    /// <summary>
+    /// Internal method to register a Tooltip component.
+    /// </summary>
+    internal void RegisterTooltip(Tooltip tooltip)
+    {
+        _tooltip = tooltip;
+        StateHasChanged();
+    }
+    
+    /// <summary>
+    /// Internal method to register a Legend component.
+    /// </summary>
+    internal void RegisterLegend(Legend legend)
+    {
+        _legend = legend;
+        StateHasChanged();
     }
 }

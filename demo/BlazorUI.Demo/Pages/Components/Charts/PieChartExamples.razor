@@ -1,244 +1,305 @@
-@using BlazorUI.Components.Chart
+@page "/components/charts/pie"
 @using BlazorUI.Components.Card
+@using BlazorUI.Components.Chart
+
+<PageTitle>Chart Components - Pie Chart</PageTitle>
 
 <div class="space-y-8">
-    <!-- Pie Chart - Default -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Pie Chart</h3>
-            <p class="text-sm text-muted-foreground">Showing visitor distribution by browser</p>
-        </div>
-
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Pie Chart</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <PieChart Data="@pieData"
-                          LabelDataKey="Browser"
-                          ValueDataKey="Visitors"
-                          Height="300"
-                          ShowExportButton="true"
-                          ExportFileName="pie-chart" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex-col items-start gap-2 text-sm">
-                    <div class="flex gap-2 font-medium leading-none">
-                        Trending up by 5.2% this month <span class="ml-1">📈</span>
-                    </div>
-                    <div class="leading-none text-muted-foreground">
-                        Showing total visitors for the last 6 months
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
-    </div>
-
-    <!-- Donut Chart -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Donut</h3>
-            <p class="text-sm text-muted-foreground">A donut chart with center content</p>
-        </div>
-
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Donut Chart</ChartPanelTitle>
-                <ChartPanelDescription>January - June 2024</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <PieChart Data="@pieData"
-                          LabelDataKey="Browser"
-                          ValueDataKey="Visitors"
-                          Height="300"
-                          IsDonut="true">
-                    <CenterContent>
-                        <div class="flex flex-col items-center justify-center">
-                            <div class="text-3xl font-bold">@totalVisitors</div>
-                            <div class="text-sm text-muted-foreground">Visitors</div>
-                        </div>
-                    </CenterContent>
+    @* Hero - Interactive Pie Chart with Month Selector *@
+    <Card>
+        <CardHeader Class="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+            <div class="grid flex-1 gap-1">
+                <CardTitle>Pie Chart - Interactive</CardTitle>
+                <CardDescription>Browser usage statistics for @(selectedMonth == "jan" ? "January" : selectedMonth == "feb" ? "February" : "March")</CardDescription>
+            </div>
+            <Select @bind-Value="@selectedMonth" Class="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
+                <SelectTrigger>
+                    <SelectValue Placeholder="January" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem Value="@("jan")" Text="January">January</SelectItem>
+                    <SelectItem Value="@("feb")" Text="February">February</SelectItem>
+                    <SelectItem Value="@("mar")" Text="March">March</SelectItem>
+                </SelectContent>
+            </Select>
+        </CardHeader>
+        <CardContent Class="px-2 pt-4 sm:px-6 sm:pt-6">
+            <ChartContainer Height="250" Class="w-full">
+                <PieChart Data="@FilteredBrowserData">
+                    <Tooltip />
+                    <Legend Show="false" />
+                    <Pie DataKey="value" NameKey="name" Color="var(--chart-1)">
+                        <LabelList Color="var(--muted-foreground)" />
+                    </Pie>
                 </PieChart>
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex w-full items-start gap-2 text-sm">
-                    <div class="grid gap-2">
-                        <div class="flex items-center gap-2 font-medium leading-none">
-                            Trending up by 5.2% this month <span class="ml-1">📈</span>
-                        </div>
-                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            January - June 2024
-                        </div>
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
-    </div>
+            </ChartContainer>
+        </CardContent>
+    </Card>
 
-    <!-- Donut Chart - Label -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Label</h3>
-            <p class="text-sm text-muted-foreground">A donut chart with custom labels</p>
-        </div>
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+        @* Simple Pie Chart *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Simple Pie</CardTitle>
+                <CardDescription>Basic pie chart</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Pie DataKey="value" NameKey="name">
+                            <LabelList Show="false" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
 
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Browser Usage</ChartPanelTitle>
-                <ChartPanelDescription>Distribution of visitors by browser type</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <PieChart Data="@browserData"
-                          LabelDataKey="Browser"
-                          ValueDataKey="Share"
-                          Height="300"
-                          IsDonut="true">
-                    <CenterContent>
-                        <div class="flex flex-col items-center justify-center">
-                            <div class="text-2xl font-bold">Browsers</div>
-                            <div class="text-sm text-muted-foreground">Total Share</div>
-                        </div>
-                    </CenterContent>
-                </PieChart>
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex gap-2 font-medium leading-none">
-                    Chrome leads with 47.3% market share
-                </div>
-                <div class="leading-none text-muted-foreground">
-                    Based on the last 6 months
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
-    </div>
+        @* Donut Chart *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Donut Chart</CardTitle>
+                <CardDescription>Pie with inner radius</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Pie DataKey="value" NameKey="name" InnerRadius="30%">
+                            <LabelList Color="var(--muted-foreground)" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
 
-    <!-- Pie Chart - Legend -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Legend</h3>
-            <p class="text-sm text-muted-foreground">A pie chart with interactive legend</p>
-        </div>
+        @* Donut Active (Emphasis) *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Ring Chart</CardTitle>
+                <CardDescription>Ring chart with emphasis effect</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Pie DataKey="value" NameKey="name" InnerRadius="60%" EmphasisScaleSize="10">
+                            <LabelList Color="var(--muted-foreground)" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
 
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Market Share</ChartPanelTitle>
-                <ChartPanelDescription>Product market share distribution</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <PieChart Data="@marketData"
-                          LabelDataKey="Product"
-                          ValueDataKey="Sales"
-                          Height="300" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex w-full items-start gap-2 text-sm">
-                    <div class="grid gap-2">
-                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            Showing product sales distribution
-                        </div>
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
-    </div>
+        @* Rose/Nightingale Chart *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Rose Chart</CardTitle>
+                <CardDescription>Nightingale rose chart where radius represents value</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Pie DataKey="value" NameKey="name" RoseType="radius">
+                            <LabelList Color="var(--muted-foreground)" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
 
-    <!-- Donut Chart - Text -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Text</h3>
-            <p class="text-sm text-muted-foreground">A donut chart with text in the center</p>
-        </div>
+        @* Pie with Labels *@
+        <Card>
+            <CardHeader>
+                <CardTitle>With Labels</CardTitle>
+                <CardDescription>Data labels on slices</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Pie DataKey="value" NameKey="name" ShowLabel="true">
+                            <LabelList Position="LabelPosition.Outside" Formatter="{b}: {c}%" FontSize="10" Color="var(--muted-foreground)" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
 
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Completion Status</ChartPanelTitle>
-                <ChartPanelDescription>Project completion overview</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <PieChart Data="@statusData"
-                          LabelDataKey="Status"
-                          ValueDataKey="Count"
-                          Height="300"
-                          IsDonut="true">
-                    <CenterContent>
-                        <div class="flex flex-col items-center justify-center">
-                            <div class="text-4xl font-bold text-green-600">78%</div>
-                            <div class="text-sm text-muted-foreground">Complete</div>
-                        </div>
-                    </CenterContent>
-                </PieChart>
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex gap-2 font-medium leading-none">
-                    On track for Q2 delivery <span class="ml-1">✓</span>
-                </div>
-                <div class="leading-none text-muted-foreground">
-                    Updated daily
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
+        @* Pie with Custom Labels *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Custom Labels</CardTitle>
+                <CardDescription>Custom formatted labels</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Pie DataKey="value" NameKey="name" ShowLabel="true">
+                            <LabelList Position="LabelPosition.Outside" Formatter="function(params) { return params.name + '\n' + params.value + '%'; }" FontSize="9" Color="var(--muted-foreground)" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Pie with Label Lines *@
+        <Card>
+            <CardHeader>
+                <CardTitle>With Label Lines</CardTitle>
+                <CardDescription>Labels connected with curved lines</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Pie DataKey="value" NameKey="name" ShowLabel="true">
+                            <LabelList Position="LabelPosition.Outside" Formatter="{b}" FontSize="10" Color="var(--muted-foreground)" />
+                            <LabelLine Length="10" Length2="15" Smooth="true" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Pie Label List *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Label List</CardTitle>
+                <CardDescription>Inside labels with percentage</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Pie DataKey="value" NameKey="name" ShowLabel="true">
+                            <LabelList Position="LabelPosition.Inside" Formatter="{c}%" FontSize="11" Color="var(--color-white)" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Pie with Legend *@
+        <Card>
+            <CardHeader>
+                <CardTitle>With Legend</CardTitle>
+                <CardDescription>Legend and chart positioning</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Legend VerticalAlign="LegendVerticalAlign.Bottom" Align="LegendAlign.Center" />
+                        <Pie DataKey="value" NameKey="name" OuterRadius="40%" Center="@(new string[] {"50%", "40%"})">
+                            <LabelList Color="var(--muted-foreground)" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Slice Spacing with PadAngle *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Slice Spacing</CardTitle>
+                <CardDescription>PadAngle adds gaps between slices</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Pie DataKey="value" NameKey="name" PadAngle="5">
+                            <LabelList Color="var(--muted-foreground)" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Semi-Circle Gauge *@
+        <Card>
+            <CardHeader>
+                <CardTitle>Semi-Circle</CardTitle>
+                <CardDescription>Half-circle gauge using custom angles</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <PieChart Data="@browserData">
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Pie DataKey="value" NameKey="name" StartAngle="180" EndAngle="360" InnerRadius="50%">
+                            <LabelList Color="var(--muted-foreground)" />
+                        </Pie>
+                    </PieChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 </div>
 
 @code {
-        private readonly List<PieData> pieData = new()
-        {
-                new() { Browser = "Chrome", Visitors = 275 },
-                new() { Browser = "Safari", Visitors = 200 },
-                new() { Browser = "Firefox", Visitors = 187 },
-                new() { Browser = "Edge", Visitors = 173 },
-                new() { Browser = "Other", Visitors = 90 }
-        };
+    private string selectedMonth = "jan";
 
-        private readonly List<BrowserData> browserData = new()
-        {
-                new() { Browser = "Chrome", Share = 47.3m },
-                new() { Browser = "Safari", Share = 22.1m },
-                new() { Browser = "Firefox", Share = 16.4m },
-                new() { Browser = "Edge", Share = 9.8m },
-                new() { Browser = "Other", Share = 4.4m }
-        };
+    // Monthly browser usage statistics
+    private List<BrowserMonthData> browserMonthlyData = new()
+    {
+        // January
+        new() { month = "jan", name = "Chrome", value = 45 },
+        new() { month = "jan", name = "Firefox", value = 25 },
+        new() { month = "jan", name = "Safari", value = 15 },
+        new() { month = "jan", name = "Edge", value = 10 },
+        new() { month = "jan", name = "Other", value = 5 },
+        
+        // February - Larger values to show significant change in interactive demo
+        new() { month = "feb", name = "Chrome", value = 58 },
+        new() { month = "feb", name = "Firefox", value = 43 },
+        new() { month = "feb", name = "Safari", value = 26 },
+        new() { month = "feb", name = "Edge", value = 19 },
+        new() { month = "feb", name = "Other", value = 14 },
+        
+        // March - Even larger values to show progressive increase
+        new() { month = "mar", name = "Chrome", value = 77 },
+        new() { month = "mar", name = "Firefox", value = 64 },
+        new() { month = "mar", name = "Safari", value = 37 },
+        new() { month = "mar", name = "Edge", value = 28 },
+        new() { month = "mar", name = "Other", value = 34 }
+    };
 
-        private readonly List<MarketData> marketData = new()
-        {
-                new() { Product = "Product A", Sales = 450 },
-                new() { Product = "Product B", Sales = 380 },
-                new() { Product = "Product C", Sales = 290 },
-                new() { Product = "Product D", Sales = 210 },
-                new() { Product = "Product E", Sales = 140 }
-        };
+    private List<BrowserData> browserData => FilteredBrowserData;
 
-        private readonly List<StatusData> statusData = new()
+    private List<BrowserData> FilteredBrowserData
+    {
+        get
         {
-                new() { Status = "Completed", Count = 78 },
-                new() { Status = "In Progress", Count = 15 },
-                new() { Status = "Pending", Count = 7 }
-        };
-
-        private int totalVisitors => pieData.Sum(x => x.Visitors);
-
-        public class PieData
-        {
-                public string Browser { get; set; } = string.Empty;
-                public int Visitors { get; set; }
+            return browserMonthlyData
+                .Where(x => x.month == selectedMonth)
+                .Select(x => new BrowserData { name = x.name, value = x.value })
+                .ToList();
         }
+    }
 
-        public class BrowserData
-        {
-                public string Browser { get; set; } = string.Empty;
-                public decimal Share { get; set; }
-        }
+    public class BrowserMonthData
+    {
+        public string month { get; set; } = "";
+        public string name { get; set; } = "";
+        public int value { get; set; }
+    }
 
-        public class MarketData
-        {
-                public string Product { get; set; } = string.Empty;
-                public int Sales { get; set; }
-        }
-
-        public class StatusData
-        {
-                public string Status { get; set; } = string.Empty;
-                public int Count { get; set; }
-        }
+    public class BrowserData
+    {
+        public string name { get; set; } = "";
+        public int value { get; set; }
+    }
 }

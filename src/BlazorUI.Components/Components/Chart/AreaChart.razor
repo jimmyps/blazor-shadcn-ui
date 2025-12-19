@@ -4,20 +4,14 @@
 @inherits ChartBase<TData>
 
 <CascadingValue Value="this" IsFixed="true">
-    <div class="chart-bar-container" style="width: 100%; height: 100%; position: relative;">
+    <div class="chart-area-container" style="width: 100%; height: 100%; position: relative;">
         <div @ref="_canvasRef" style="width: 100%; height: 100%;"></div>
     </div>
     @ChildContent
 </CascadingValue>
 
 @code {
-    private List<Bar> _bars = new();
-    
-    /// <summary>
-    /// Gets or sets the bar chart layout (vertical or horizontal).
-    /// </summary>
-    [Parameter]
-    public BarLayout Layout { get; set; } = BarLayout.Vertical;
+    private List<Area> _areas = new();
     
     /// <summary>
     /// Gets or sets the stack offset mode for percentage stacking.
@@ -51,17 +45,9 @@
         var xAxis = _xAxis ?? new XAxis();
         var axis = BuildAxis(xAxis, null, true);
         
-        // For vertical bars, X is category; for horizontal, X is value
-        if (Layout == BarLayout.Vertical)
+        if (!string.IsNullOrEmpty(xAxis.DataKey))
         {
-            if (!string.IsNullOrEmpty(xAxis.DataKey))
-            {
-                axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
-            }
-        }
-        else
-        {
-            axis.Type = "value";
+            axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
         }
         
         return axis;
@@ -70,60 +56,74 @@
     private EChartsAxis BuildYAxis()
     {
         var yAxis = _yAxis ?? new YAxis();
-        var axis = BuildAxis(null, yAxis, false);
-        
-        // For horizontal bars, Y is category
-        if (Layout == BarLayout.Horizontal)
-        {
-            axis.Type = "category";
-            if (_xAxis != null && !string.IsNullOrEmpty(_xAxis.DataKey))
-            {
-                axis.Data = DataExtractor.GetStringValues(Data, _xAxis.DataKey);
-            }
-        }
-        
-        return axis;
+        return BuildAxis(null, yAxis, false);
     }
     
     private List<EChartsSeries> BuildSeries()
     {
         var seriesList = new List<EChartsSeries>();
         
-        if (_bars.Any())
+        if (_areas.Any())
         {
-            for (int i = 0; i < _bars.Count; i++)
+            for (int i = 0; i < _areas.Count; i++)
             {
-                var bar = _bars[i];
-                var data = DataExtractor.GetNumericValues(Data, bar.DataKey);
+                var area = _areas[i];
+                var data = DataExtractor.GetNumericValues(Data, area.DataKey);
                 
                 var series = new EChartsSeries
                 {
-                    Type = "bar",
-                    Name = bar.Name ?? bar.DataKey,
+                    Type = "line",
+                    Name = area.Name ?? area.DataKey,
                     Data = data.Cast<object>().ToList(),
-                    Stack = bar.StackId,
+                    Smooth = area.Interpolation == InterpolationType.Natural || area.Interpolation == InterpolationType.Monotone,
+                    ShowSymbol = area.ShowDots,
+                    LineStyle = new EChartsLineStyle
+                    {
+                        Width = area.LineWidth,
+                        Color = GetSeriesColor(i, area.Color)
+                    },
+                    AreaStyle = new EChartsAreaStyle
+                    {
+                        // Use gradient if Fill component is present, otherwise use series color
+                        Color = BuildGradient(area.Fill) ?? GetSeriesColor(i, area.Color),
+                        // Priority: Fill.Opacity > Area.Opacity > default (0.3)
+                        Opacity = area.Fill?.Opacity ?? area.Opacity ?? 0.3
+                    },
                     ItemStyle = new EChartsItemStyle
                     {
-                        Color = GetSeriesColor(i, bar.Color),
-                        BorderRadius = bar.Radius.HasValue ? bar.Radius.Value : null,
-                        Opacity = bar.Opacity
+                        Color = GetSeriesColor(i, area.Color)
                     },
+                    Stack = area.StackId,
                     Emphasis = new EChartsEmphasis
                     {
-                        Disabled = !bar.Emphasis,
-                        Focus = bar.Focus == Focus.Self ? "self" : null
+                        Disabled = !area.Emphasis,
+                        Focus = area.Focus == Focus.Self ? "self" : null
                     }
                 };
                 
-                // Map label parameters to ECharts series.label
-                if (bar.ShowLabel || bar.LabelList != null)
+                // Map interpolation type to ECharts step property
+                if (area.Interpolation == InterpolationType.Step)
                 {
-                    var labelList = bar.LabelList;
+                    series.Step = "middle";
+                }
+                else if (area.Interpolation == InterpolationType.StepBefore)
+                {
+                    series.Step = "start";
+                }
+                else if (area.Interpolation == InterpolationType.StepAfter)
+                {
+                    series.Step = "end";
+                }
+                
+                // Map label parameters to ECharts series.label
+                if (area.ShowLabel || area.LabelList != null)
+                {
+                    var labelList = area.LabelList;
                     series.Label = new EChartsLabel
                     {
-                        Show = labelList?.Show ?? bar.ShowLabel,
-                        Position = MapLabelPosition(labelList?.Position ?? bar.LabelPosition ?? LabelPosition.Top),
-                        Formatter = labelList?.Formatter ?? bar.LabelFormatter,
+                        Show = labelList?.Show ?? area.ShowLabel,
+                        Position = MapLabelPosition(labelList?.Position ?? area.LabelPosition ?? Chart.LabelPosition.Top),
+                        Formatter = labelList?.Formatter ?? area.LabelFormatter,
                         Color = labelList?.Color,
                         FontSize = labelList?.FontSize,
                         Offset = labelList?.Offset
@@ -131,12 +131,12 @@
                 }
                 
                 // Map animation properties (series-level overrides chart-level defaults)
-                series.Animation = bar.EnableAnimation ?? EnableAnimation;
-                series.AnimationDuration = bar.AnimationDuration ?? AnimationDuration;
-                series.AnimationEasing = MapAnimationEasing(bar.AnimationEasing ?? AnimationEasing);
-                series.AnimationDelay = bar.AnimationDelay ?? AnimationDelay;
-                series.AnimationDurationUpdate = bar.AnimationDurationUpdate ?? AnimationDurationUpdate;
-                series.AnimationEasingUpdate = MapAnimationEasing(bar.AnimationEasingUpdate ?? AnimationEasingUpdate);
+                series.Animation = area.EnableAnimation ?? EnableAnimation;
+                series.AnimationDuration = area.AnimationDuration ?? AnimationDuration;
+                series.AnimationEasing = MapAnimationEasing(area.AnimationEasing ?? AnimationEasing);
+                series.AnimationDelay = area.AnimationDelay ?? AnimationDelay;
+                series.AnimationDurationUpdate = area.AnimationDurationUpdate ?? AnimationDurationUpdate;
+                series.AnimationEasingUpdate = MapAnimationEasing(area.AnimationEasingUpdate ?? AnimationEasingUpdate);
                 
                 seriesList.Add(series);
             }
@@ -226,7 +226,7 @@
     
     protected override ChartType GetChartType()
     {
-        return ChartType.Bar;
+        return ChartType.Line; // Area is rendered as line with areaStyle
     }
     
     protected override TooltipMode GetDefaultTooltipMode()
@@ -234,9 +234,9 @@
         return TooltipMode.Axis;
     }
     
-    internal void RegisterBar(Bar bar)
+    internal void RegisterArea(Area area)
     {
-        _bars.Add(bar);
+        _areas.Add(area);
         StateHasChanged();
     }
     

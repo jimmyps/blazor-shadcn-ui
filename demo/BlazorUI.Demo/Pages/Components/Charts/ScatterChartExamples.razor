@@ -1,0 +1,357 @@
+@page "/components/charts/scatter"
+@using BlazorUI.Components.Card
+@using BlazorUI.Components.Chart
+
+<PageTitle>Chart Components - Scatter Chart</PageTitle>
+
+<div class="space-y-8">
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+        @* Basic Scatter *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Basic Scatter</CardTitle>
+                <CardDescription>Height vs Weight correlation</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ScatterChart Data="@heightWeightData">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="height" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis DataKey="weight" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Scatter DataKey="weight" SymbolSize="8" Symbol="SymbolShape.Circle" Color="var(--chart-1)" />
+                    </ScatterChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Multiple Series *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Multiple Series</CardTitle>
+                <CardDescription>Customer segments comparison</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ScatterChart Data="@customerData">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="age" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis DataKey="spending" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Scatter DataKey="premium" Name="Premium" SymbolSize="8" Color="var(--chart-1)" />
+                        <Scatter DataKey="standard" Name="Standard" SymbolSize="8" Color="var(--chart-2)" />
+                    </ScatterChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Bubble Chart *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Bubble Chart</CardTitle>
+                <CardDescription>Sales by region visualization</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ScatterChart Data="@salesData">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="sales" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis DataKey="customers" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Scatter DataKey="customers" SymbolSize="12" Color="var(--chart-3)" />
+                    </ScatterChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Custom Symbols *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Custom Symbols</CardTitle>
+                <CardDescription>Different symbol shapes</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ScatterChart Data="@symbolData">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="x" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis DataKey="y" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Scatter DataKey="diamonds" Name="Diamond" SymbolSize="10" Symbol="SymbolShape.Diamond" Color="var(--chart-1)" />
+                        <Scatter DataKey="triangles" Name="Triangle" SymbolSize="10" Symbol="SymbolShape.Triangle" Color="var(--chart-2)" />
+                    </ScatterChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* With Grid *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">With Grid</CardTitle>
+                <CardDescription>Scatter with grid lines</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ScatterChart Data="@heightWeightData">
+                        <Grid Horizontal="true" Vertical="true" Stroke="var(--border)" />
+                        <XAxis DataKey="height" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis DataKey="weight" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Scatter DataKey="weight" SymbolSize="8" Color="var(--chart-4)" />
+                    </ScatterChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Large Dataset *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Large Dataset</CardTitle>
+                <CardDescription>Performance with 120 points</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ScatterChart Data="@largeDataset">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="x" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis DataKey="y" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Scatter DataKey="y" SymbolSize="4" Color="var(--chart-5)" />
+                    </ScatterChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Scatter with Trend *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Trend Pattern</CardTitle>
+                <CardDescription>Positive correlation pattern</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ScatterChart Data="@trendData">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="experience" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis DataKey="salary" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend Show="false" />
+                        <Scatter DataKey="salary" SymbolSize="8" Color="var(--chart-1)" />
+                    </ScatterChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Custom Colors *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Color Variations</CardTitle>
+                <CardDescription>Different color combinations</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ScatterChart Data="@colorData">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="x" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis DataKey="y" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Scatter DataKey="series1" Name="Series A" SymbolSize="8" Color="var(--chart-3)" />
+                        <Scatter DataKey="series2" Name="Series B" SymbolSize="8" Color="var(--chart-4)" />
+                        <Scatter DataKey="series3" Name="Series C" SymbolSize="8" Color="var(--chart-5)" />
+                    </ScatterChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    </div>
+</div>
+
+@code {
+    // Height vs Weight data
+    private List<HeightWeightData> heightWeightData = new()
+    {
+        new() { height = 160, weight = 55 },
+        new() { height = 162, weight = 58 },
+        new() { height = 165, weight = 62 },
+        new() { height = 168, weight = 65 },
+        new() { height = 170, weight = 68 },
+        new() { height = 172, weight = 70 },
+        new() { height = 175, weight = 72 },
+        new() { height = 178, weight = 76 },
+        new() { height = 180, weight = 78 },
+        new() { height = 183, weight = 82 },
+        new() { height = 185, weight = 85 },
+        new() { height = 188, weight = 88 }
+    };
+
+    // Customer segments data
+    private List<CustomerData> customerData = new()
+    {
+        new() { age = 25, spending = 1200, premium = 1200, standard = 0 },
+        new() { age = 28, spending = 1500, premium = 1500, standard = 0 },
+        new() { age = 32, spending = 1800, premium = 1800, standard = 0 },
+        new() { age = 35, spending = 2100, premium = 2100, standard = 0 },
+        new() { age = 30, spending = 800, premium = 0, standard = 800 },
+        new() { age = 33, spending = 950, premium = 0, standard = 950 },
+        new() { age = 38, spending = 1100, premium = 0, standard = 1100 },
+        new() { age = 42, spending = 1300, premium = 0, standard = 1300 }
+    };
+
+    // Sales data for bubble chart
+    private List<SalesData> salesData = new()
+    {
+        new() { sales = 15000, customers = 120 },
+        new() { sales = 22000, customers = 180 },
+        new() { sales = 18000, customers = 150 },
+        new() { sales = 28000, customers = 220 },
+        new() { sales = 32000, customers = 250 },
+        new() { sales = 25000, customers = 190 }
+    };
+
+    // Symbol shape data
+    private List<SymbolData> symbolData = new()
+    {
+        new() { x = 10, y = 20, diamonds = 20, triangles = 0 },
+        new() { x = 15, y = 35, diamonds = 35, triangles = 0 },
+        new() { x = 20, y = 28, diamonds = 28, triangles = 0 },
+        new() { x = 25, y = 42, diamonds = 42, triangles = 0 },
+        new() { x = 12, y = 15, diamonds = 0, triangles = 15 },
+        new() { x = 18, y = 25, diamonds = 0, triangles = 25 },
+        new() { x = 22, y = 32, diamonds = 0, triangles = 32 },
+        new() { x = 28, y = 38, diamonds = 0, triangles = 38 }
+    };
+
+    // Large dataset (100+ points)
+    private List<LargeData> largeDataset = new();
+
+    // Trend data
+    private List<TrendData> trendData = new()
+    {
+        new() { experience = 0, salary = 35000 },
+        new() { experience = 1, salary = 38000 },
+        new() { experience = 2, salary = 42000 },
+        new() { experience = 3, salary = 45000 },
+        new() { experience = 4, salary = 50000 },
+        new() { experience = 5, salary = 55000 },
+        new() { experience = 6, salary = 58000 },
+        new() { experience = 7, salary = 63000 },
+        new() { experience = 8, salary = 68000 },
+        new() { experience = 10, salary = 75000 }
+    };
+
+    // Color variation data
+    private List<ColorData> colorData = new()
+    {
+        new() { x = 10, y = 15, series1 = 15, series2 = 0, series3 = 0 },
+        new() { x = 15, y = 22, series1 = 22, series2 = 0, series3 = 0 },
+        new() { x = 20, y = 18, series1 = 18, series2 = 0, series3 = 0 },
+        new() { x = 12, y = 28, series1 = 0, series2 = 28, series3 = 0 },
+        new() { x = 18, y = 35, series1 = 0, series2 = 35, series3 = 0 },
+        new() { x = 22, y = 30, series1 = 0, series2 = 30, series3 = 0 },
+        new() { x = 14, y = 38, series1 = 0, series2 = 0, series3 = 38 },
+        new() { x = 19, y = 42, series1 = 0, series2 = 0, series3 = 42 },
+        new() { x = 24, y = 36, series1 = 0, series2 = 0, series3 = 36 }
+    };
+
+    protected override void OnInitialized()
+    {
+        // Generate large dataset
+        var random = new Random(42);
+        for (int i = 0; i < 120; i++)
+        {
+            largeDataset.Add(new LargeData
+            {
+                x = random.Next(0, 100),
+                y = random.Next(0, 100)
+            });
+        }
+    }
+
+    // Data classes
+    public class HeightWeightData
+    {
+        public int height { get; set; }
+        public int weight { get; set; }
+    }
+
+    public class CustomerData
+    {
+        public int age { get; set; }
+        public int spending { get; set; }
+        public int premium { get; set; }
+        public int standard { get; set; }
+    }
+
+    public class SalesData
+    {
+        public int sales { get; set; }
+        public int customers { get; set; }
+    }
+
+    public class SymbolData
+    {
+        public int x { get; set; }
+        public int y { get; set; }
+        public int diamonds { get; set; }
+        public int triangles { get; set; }
+    }
+
+    public class LargeData
+    {
+        public int x { get; set; }
+        public int y { get; set; }
+    }
+
+    public class TrendData
+    {
+        public int experience { get; set; }
+        public int salary { get; set; }
+    }
+
+    public class ColorData
+    {
+        public int x { get; set; }
+        public int y { get; set; }
+        public int series1 { get; set; }
+        public int series2 { get; set; }
+        public int series3 { get; set; }
+    }
+}

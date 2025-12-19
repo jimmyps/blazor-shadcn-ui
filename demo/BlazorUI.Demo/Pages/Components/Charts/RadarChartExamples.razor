@@ -1,214 +1,274 @@
-@using BlazorUI.Components.Chart
+@page "/components/charts/radar"
 @using BlazorUI.Components.Card
+@using BlazorUI.Components.Chart
+
+<PageTitle>Chart Components - Radar Chart</PageTitle>
 
 <div class="space-y-8">
-    <!-- Radar Chart - Default -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Radar Chart</h3>
-            <p class="text-sm text-muted-foreground">Showing skill assessment across multiple dimensions</p>
-        </div>
-        
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Radar Chart</ChartPanelTitle>
-                <ChartPanelDescription>Skills Assessment</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <RadarChart Data="@radarData" 
-                           LabelDataKey="Skill"
-                           Series="@radarSeries"
-                           Height="400"
-                           ShowExportButton="true"
-                           ExportFileName="radar-chart" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex gap-2 font-medium leading-none">
-                    Overall performance trending up <span class="ml-1">📈</span>
-                </div>
-                <div class="leading-none text-muted-foreground">
-                    Quarterly skills assessment
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
-    </div>
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+        @* Basic Radar *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Basic Radar</CardTitle>
+                <CardDescription>Skill assessment across 5 dimensions</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <Tooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-1)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
 
-    <!-- Radar Chart - Multiple Series -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Multiple Series</h3>
-            <p class="text-sm text-muted-foreground">Comparing multiple datasets on radar chart</p>
-        </div>
-        
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Team Comparison</ChartPanelTitle>
-                <ChartPanelDescription>Performance across different metrics</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <RadarChart Data="@comparisonData" 
-                           LabelDataKey="Metric"
-                           Series="@comparisonSeries"
-                           Height="400" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex w-full items-start gap-2 text-sm">
-                    <div class="grid gap-2">
-                        <div class="flex items-center gap-2 font-medium leading-none">
-                            Team A leads in most categories
-                        </div>
-                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            Q1 2024 Performance Review
-                        </div>
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
-    </div>
+        @* Multiple Series *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Team Comparison</CardTitle>
+                <CardDescription>Compare two developers</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@teamSkillData">
+                        <XAxis DataKey="skill" />
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <RadarGrid Radius="50%" Center="@(new string[] { "50%", "65%" })" />
+                        <Radar DataKey="developer1" Name="Dev A" FillArea="true" AreaOpacity="0.2" Color="var(--chart-1)" />
+                        <Radar DataKey="developer2" Name="Dev B" FillArea="true" AreaOpacity="0.2" Color="var(--chart-2)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
 
-    <!-- Radar Chart - Icons -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Icons</h3>
-            <p class="text-sm text-muted-foreground">A radar chart with icon labels</p>
-        </div>
-        
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Developer Skills</ChartPanelTitle>
-                <ChartPanelDescription>Technical competencies assessment</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <RadarChart Data="@skillsData" 
-                           LabelDataKey="Area"
-                           Series="@skillsSeries"
-                           Height="400" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex gap-2 font-medium leading-none">
-                    Strong full-stack capabilities
-                </div>
-                <div class="leading-none text-muted-foreground">
-                    Annual skills review
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
-    </div>
+        @* Filled Radar *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Filled Areas</CardTitle>
+                <CardDescription>Radar with increased opacity</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <Tooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.6" Color="var(--chart-3)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
 
-    <!-- Radar Chart - Dots -->
-    <div class="space-y-4">
-        <div>
-            <h3 class="text-lg font-semibold">Dots</h3>
-            <p class="text-sm text-muted-foreground">A radar chart with visible data points</p>
-        </div>
+        @* Circle Shape Radar *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Circle Grid</CardTitle>
+                <CardDescription>Circular radar grid shape</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <RadarGrid Shape="RadarShape.Circle" SplitNumber="4" />
+                        <XAxis DataKey="skill" />
+                        <Tooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-4)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Performance Metrics *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Performance Metrics</CardTitle>
+                <CardDescription>Department KPI comparison</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@performanceData">
+                        <XAxis DataKey="metric" />
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <RadarGrid Radius="60%" Center="@(new string[] { "50%", "65%" })" />
+                        <Radar DataKey="sales" Name="Sales" FillArea="true" AreaOpacity="0.25" Color="var(--chart-1)" />
+                        <Radar DataKey="marketing" Name="Marketing" FillArea="true" AreaOpacity="0.25" Color="var(--chart-2)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* With Legend *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">With Legend and Emphasis</CardTitle>
+                <CardDescription>Multiple series with custom legend and emphasis</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@productComparison">
+                        <XAxis DataKey="feature" />
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Diamond" />
+                        <RadarGrid Radius="50%" />
+                        <Radar DataKey="productA" Name="Product A" Emphasis="true" FillArea="true" AreaOpacity="0.2" Color="var(--chart-3)" />
+                        <Radar DataKey="productB" Name="Product B" Emphasis="true" FillArea="true" AreaOpacity="0.2" Color="var(--chart-4)" />
+                        <Radar DataKey="productC" Name="Product C" Emphasis="true" FillArea="true" AreaOpacity="0.2" Color="var(--chart-5)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Polygon Shape (Default) *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Polygon Grid</CardTitle>
+                <CardDescription>Standard polygon radar grid</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <RadarGrid Shape="RadarShape.Polygon" SplitNumber="5" />
+                        <XAxis DataKey="skill" />
+                        <Tooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-5)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Without Fill *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Line Only</CardTitle>
+                <CardDescription>Radar without filled area</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <Tooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="false" Color="var(--chart-2)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
         
-        <ChartPanel>
-            <ChartPanelHeader>
-                <ChartPanelTitle>Product Features</ChartPanelTitle>
-                <ChartPanelDescription>Feature completeness assessment</ChartPanelDescription>
-            </ChartPanelHeader>
-            <ChartPanelContent>
-                <RadarChart Data="@featuresData" 
-                           LabelDataKey="Feature"
-                           Series="@featuresSeries"
-                           Height="400" />
-            </ChartPanelContent>
-            <ChartPanelFooter>
-                <div class="flex w-full items-start gap-2 text-sm">
-                    <div class="grid gap-2">
-                        <div class="flex items-center gap-2 leading-none text-muted-foreground">
-                            Product roadmap progress tracking
-                        </div>
-                    </div>
-                </div>
-            </ChartPanelFooter>
-        </ChartPanel>
+        @* Styled Radar Indicators *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Styled Indicators</CardTitle>
+                <CardDescription>Custom indicator label styling</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <RadarGrid 
+                            IndicatorColor="var(--foreground)"
+                            IndicatorFontSize="12"
+                            IndicatorFontWeight="bold" />
+                        <Tooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-3)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+        
+        @* Hidden Radar Indicators *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Hidden Indicators</CardTitle>
+                <CardDescription>Radar chart without indicator labels</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <RadarGrid ShowIndicatorLabels="false" />
+                        <Tooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.4" Color="var(--chart-4)" />
+                    </RadarChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
     </div>
 </div>
 
 @code {
-    private readonly List<RadarData> radarData = new()
+    // Basic skill data
+    private List<SkillData> skillData = new()
     {
-        new() { Skill = "Communication", Current = 85 },
-        new() { Skill = "Problem Solving", Current = 90 },
-        new() { Skill = "Technical", Current = 78 },
-        new() { Skill = "Leadership", Current = 72 },
-        new() { Skill = "Teamwork", Current = 88 },
-        new() { Skill = "Creativity", Current = 80 }
+        new() { skill = "Coding", score = 85 },
+        new() { skill = "Design", score = 70 },
+        new() { skill = "Testing", score = 90 },
+        new() { skill = "DevOps", score = 75 },
+        new() { skill = "Communication", score = 80 }
     };
 
-    private readonly List<RadarSeriesConfig> radarSeries = new()
+    // Team skill comparison
+    private List<TeamSkillData> teamSkillData = new()
     {
-        new() { DataKey = "Current", Label = "Current Quarter", Color = "hsl(var(--chart-1))" }
+        new() { skill = "Coding", developer1 = 85, developer2 = 75 },
+        new() { skill = "Design", developer1 = 70, developer2 = 95 },
+        new() { skill = "Testing", developer1 = 90, developer2 = 60 },
+        new() { skill = "DevOps", developer1 = 75, developer2 = 50 },
+        new() { skill = "Communication", developer1 = 70, developer2 = 90 }
     };
 
-    private readonly List<ComparisonData> comparisonData = new()
+    // Performance metrics
+    private List<PerformanceData> performanceData = new()
     {
-        new() { Metric = "Speed", TeamA = 85, TeamB = 78 },
-        new() { Metric = "Quality", TeamA = 90, TeamB = 85 },
-        new() { Metric = "Efficiency", TeamA = 75, TeamB = 82 },
-        new() { Metric = "Innovation", TeamA = 88, TeamB = 70 },
-        new() { Metric = "Collaboration", TeamA = 82, TeamB = 88 }
+        new() { metric = "Revenue", sales = 90, marketing = 75 },
+        new() { metric = "Growth", sales = 85, marketing = 80 },
+        new() { metric = "Efficiency", sales = 78, marketing = 88 },
+        new() { metric = "Quality", sales = 82, marketing = 85 },
+        new() { metric = "Innovation", sales = 70, marketing = 92 }
     };
 
-    private readonly List<RadarSeriesConfig> comparisonSeries = new()
+    // Product comparison
+    private List<ProductComparison> productComparison = new()
     {
-        new() { DataKey = "TeamA", Label = "Team A", Color = "hsl(var(--chart-1))" },
-        new() { DataKey = "TeamB", Label = "Team B", Color = "hsl(var(--chart-2))" }
+        new() { feature = "Speed", productA = 75, productB = 68, productC = 90 },
+        new() { feature = "Usability", productA = 90, productB = 85, productC = 75 },
+        new() { feature = "Security", productA = 80, productB = 92, productC = 68 },
+        new() { feature = "Cost", productA = 95, productB = 60, productC = 85 },
+        new() { feature = "Support", productA = 88, productB = 45, productC = 62 }
     };
 
-    private readonly List<SkillsData> skillsData = new()
+    // Data classes
+    public class SkillData
     {
-        new() { Area = "💻 Frontend", Score = 88 },
-        new() { Area = "⚙️ Backend", Score = 85 },
-        new() { Area = "🗄️ Database", Score = 78 },
-        new() { Area = "☁️ Cloud", Score = 82 },
-        new() { Area = "🔒 Security", Score = 75 },
-        new() { Area = "📱 Mobile", Score = 70 }
-    };
-
-    private readonly List<RadarSeriesConfig> skillsSeries = new()
-    {
-        new() { DataKey = "Score", Label = "Proficiency", Color = "hsl(var(--chart-3))" }
-    };
-
-    private readonly List<FeaturesData> featuresData = new()
-    {
-        new() { Feature = "Authentication", Progress = 95 },
-        new() { Feature = "Dashboard", Progress = 88 },
-        new() { Feature = "Reporting", Progress = 72 },
-        new() { Feature = "API", Progress = 90 },
-        new() { Feature = "Mobile App", Progress = 65 },
-        new() { Feature = "Analytics", Progress = 78 }
-    };
-
-    private readonly List<RadarSeriesConfig> featuresSeries = new()
-    {
-        new() { DataKey = "Progress", Label = "Completion %", Color = "hsl(var(--chart-4))" }
-    };
-
-    public class RadarData
-    {
-        public string Skill { get; set; } = string.Empty;
-        public int Current { get; set; }
+        public string skill { get; set; } = "";
+        public int score { get; set; }
     }
 
-    public class ComparisonData
+    public class TeamSkillData
     {
-        public string Metric { get; set; } = string.Empty;
-        public int TeamA { get; set; }
-        public int TeamB { get; set; }
+        public string skill { get; set; } = "";
+        public int developer1 { get; set; }
+        public int developer2 { get; set; }
     }
 
-    public class SkillsData
+    public class PerformanceData
     {
-        public string Area { get; set; } = string.Empty;
-        public int Score { get; set; }
+        public string metric { get; set; } = "";
+        public int sales { get; set; }
+        public int marketing { get; set; }
     }
 
-    public class FeaturesData
+    public class ProductComparison
     {
-        public string Feature { get; set; } = string.Empty;
-        public int Progress { get; set; }
+        public string feature { get; set; } = "";
+        public int productA { get; set; }
+        public int productB { get; set; }
+        public int productC { get; set; }
     }
 }

@@ -1,0 +1,67 @@
+@namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Chart.Series
+@inherits SeriesBase
+
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the series color (legacy, use Fill instead).
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the inner radius (e.g., "60%" or "60").
+    /// </summary>
+    [Parameter]
+    public string? InnerRadius { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the outer radius (e.g., "80%" or "80").
+    /// </summary>
+    [Parameter]
+    public string? OuterRadius { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the corner radius for rounded bars.
+    /// </summary>
+    [Parameter]
+    public int? CornerRadius { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the stack group ID for stacked radial bars.
+    /// </summary>
+    [Parameter]
+    public string? StackId { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to show a background track.
+    /// </summary>
+    [Parameter]
+    public bool ShowBackground { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the background track color.
+    /// </summary>
+    [Parameter]
+    public string? BackgroundColor { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the background track opacity (0.0 to 1.0).
+    /// </summary>
+    [Parameter]
+    public double? BackgroundOpacity { get; set; } = 0.1;
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterRadialBar(this); } catch { }
+        }
+    }
+}

@@ -1,0 +1,362 @@
+@page "/components/charts/composed"
+@using BlazorUI.Components.Card
+@using BlazorUI.Components.Chart
+
+<PageTitle>Chart Components - Composed Chart</PageTitle>
+
+<div class="space-y-8">
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+        @* Revenue & Target *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Revenue & Target</CardTitle>
+                <CardDescription>Actual revenue vs monthly target</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ComposedChart Data="@revenueData">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Bar DataKey="actual" Name="Actual Revenue" Radius="4" Color="var(--chart-1)" />
+                        <Line DataKey="target" Name="Target" Color="var(--chart-2)" />
+                    </ComposedChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Sales Forecast *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Sales Forecast</CardTitle>
+                <CardDescription>Sales with forecast trend</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ComposedChart Data="@salesData">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-1)" />
+                        <Line DataKey="forecast" Name="Forecast" Dashed="true" Color="var(--chart-2)" />
+                    </ComposedChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Inventory Management *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Inventory Levels</CardTitle>
+                <CardDescription>Stock levels with reorder points</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ComposedChart Data="@inventoryData">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Bar DataKey="stock" Name="Stock Level" Radius="4" Color="var(--chart-1)" />
+                        <Line DataKey="reorder" Name="Reorder Point" Color="var(--chart-3)" />
+                        <Area DataKey="safety" Name="Safety Stock" Opacity="0.3" Color="var(--chart-2)" />
+                    </ComposedChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Customer Metrics *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Customer Metrics</CardTitle>
+                <CardDescription>New customers with retention rate</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ComposedChart Data="@customerData">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Bar DataKey="newCustomers" Name="New Customers" Radius="4" Color="var(--chart-4)" />
+                        <Line DataKey="retention" Name="Retention Rate" Color="var(--chart-5)" />
+                    </ComposedChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Financial Dashboard *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Financial Overview</CardTitle>
+                <CardDescription>Revenue, expenses, and profit margin</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ComposedChart Data="@financialData">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Bar DataKey="expenses" Name="Expenses" Radius="4" Color="var(--chart-3)" />
+                        <Line DataKey="revenue" Name="Revenue" Color="var(--chart-1)" />
+                        <Area DataKey="profit" Name="Profit Margin" Opacity="0.3" Color="var(--chart-2)" />
+                    </ComposedChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Marketing ROI *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Marketing ROI</CardTitle>
+                <CardDescription>Ad spend vs conversions</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ComposedChart Data="@marketingData">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Bar DataKey="adSpend" Name="Ad Spend" Radius="4" Color="var(--chart-5)" />
+                        <Line DataKey="conversions" Name="Conversions" Color="var(--chart-1)" />
+                    </ComposedChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* Website Analytics *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">Website Analytics</CardTitle>
+                <CardDescription>Page views, bounce rate, engagement</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ComposedChart Data="@analyticsData">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Bar DataKey="pageViews" Name="Page Views" Radius="4" Color="var(--chart-2)" />
+                        <Line DataKey="bounceRate" Name="Bounce Rate" Color="var(--chart-3)" />
+                        <Area DataKey="engagement" Name="Engagement" Opacity="0.3" Color="var(--chart-4)" />
+                    </ComposedChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+
+        @* KPIs with Thresholds *@
+        <Card>
+            <CardHeader Class="pb-2">
+                <CardTitle Class="text-xl">KPIs & Thresholds</CardTitle>
+                <CardDescription>Actual performance vs target goals</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ChartContainer Height="200">
+                    <ComposedChart Data="@kpiData">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <Tooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Bar DataKey="actual" Name="Actual" Radius="4" Color="var(--chart-1)" />
+                        <Line DataKey="threshold" Name="Threshold" Dashed="true" Color="var(--chart-3)" />
+                    </ComposedChart>
+                </ChartContainer>
+            </CardContent>
+        </Card>
+    </div>
+</div>
+
+@code {
+    // Revenue & Target data
+    private List<RevenueData> revenueData = new()
+    {
+        new() { month = "Jan", actual = 12000, target = 15000 },
+        new() { month = "Feb", actual = 18000, target = 15000 },
+        new() { month = "Mar", actual = 14000, target = 15000 },
+        new() { month = "Apr", actual = 16000, target = 15000 },
+        new() { month = "May", actual = 19000, target = 15000 },
+        new() { month = "Jun", actual = 21000, target = 15000 }
+    };
+
+    // Sales forecast data
+    private List<SalesData> salesData = new()
+    {
+        new() { month = "Jan", sales = 8500, forecast = 9000 },
+        new() { month = "Feb", sales = 9200, forecast = 9500 },
+        new() { month = "Mar", sales = 9800, forecast = 10000 },
+        new() { month = "Apr", sales = 10500, forecast = 10500 },
+        new() { month = "May", sales = 11200, forecast = 11000 },
+        new() { month = "Jun", sales = 11800, forecast = 11500 }
+    };
+
+    // Inventory data
+    private List<InventoryData> inventoryData = new()
+    {
+        new() { month = "Jan", stock = 450, reorder = 300, safety = 200 },
+        new() { month = "Feb", stock = 380, reorder = 300, safety = 200 },
+        new() { month = "Mar", stock = 520, reorder = 300, safety = 200 },
+        new() { month = "Apr", stock = 420, reorder = 300, safety = 200 },
+        new() { month = "May", stock = 350, reorder = 300, safety = 200 },
+        new() { month = "Jun", stock = 480, reorder = 300, safety = 200 }
+    };
+
+    // Customer metrics data
+    private List<CustomerData> customerData = new()
+    {
+        new() { month = "Jan", newCustomers = 120, retention = 85 },
+        new() { month = "Feb", newCustomers = 150, retention = 87 },
+        new() { month = "Mar", newCustomers = 135, retention = 86 },
+        new() { month = "Apr", newCustomers = 165, retention = 89 },
+        new() { month = "May", newCustomers = 180, retention = 90 },
+        new() { month = "Jun", newCustomers = 200, retention = 91 }
+    };
+
+    // Financial data
+    private List<FinancialData> financialData = new()
+    {
+        new() { month = "Jan", revenue = 25000, expenses = 18000, profit = 7000 },
+        new() { month = "Feb", revenue = 28000, expenses = 19000, profit = 9000 },
+        new() { month = "Mar", revenue = 26500, expenses = 18500, profit = 8000 },
+        new() { month = "Apr", revenue = 30000, expenses = 20000, profit = 10000 },
+        new() { month = "May", revenue = 32000, expenses = 21000, profit = 11000 },
+        new() { month = "Jun", revenue = 35000, expenses = 22000, profit = 13000 }
+    };
+
+    // Marketing ROI data
+    private List<MarketingData> marketingData = new()
+    {
+        new() { month = "Jan", adSpend = 5000, conversions = 120 },
+        new() { month = "Feb", adSpend = 6000, conversions = 155 },
+        new() { month = "Mar", adSpend = 5500, conversions = 140 },
+        new() { month = "Apr", adSpend = 7000, conversions = 185 },
+        new() { month = "May", adSpend = 7500, conversions = 200 },
+        new() { month = "Jun", adSpend = 8000, conversions = 220 }
+    };
+
+    // Website analytics data
+    private List<AnalyticsData> analyticsData = new()
+    {
+        new() { month = "Jan", pageViews = 15000, bounceRate = 45, engagement = 8500 },
+        new() { month = "Feb", pageViews = 18000, bounceRate = 42, engagement = 10500 },
+        new() { month = "Mar", pageViews = 16500, bounceRate = 43, engagement = 9500 },
+        new() { month = "Apr", pageViews = 20000, bounceRate = 40, engagement = 12000 },
+        new() { month = "May", pageViews = 22000, bounceRate = 38, engagement = 13500 },
+        new() { month = "Jun", pageViews = 25000, bounceRate = 35, engagement = 16000 }
+    };
+
+    // KPI data
+    private List<KpiData> kpiData = new()
+    {
+        new() { month = "Jan", actual = 82, threshold = 85 },
+        new() { month = "Feb", actual = 88, threshold = 85 },
+        new() { month = "Mar", actual = 84, threshold = 85 },
+        new() { month = "Apr", actual = 90, threshold = 85 },
+        new() { month = "May", actual = 87, threshold = 85 },
+        new() { month = "Jun", actual = 92, threshold = 85 }
+    };
+
+    // Data classes
+    public class RevenueData
+    {
+        public string month { get; set; } = "";
+        public int actual { get; set; }
+        public int target { get; set; }
+    }
+
+    public class SalesData
+    {
+        public string month { get; set; } = "";
+        public int sales { get; set; }
+        public int forecast { get; set; }
+    }
+
+    public class InventoryData
+    {
+        public string month { get; set; } = "";
+        public int stock { get; set; }
+        public int reorder { get; set; }
+        public int safety { get; set; }
+    }
+
+    public class CustomerData
+    {
+        public string month { get; set; } = "";
+        public int newCustomers { get; set; }
+        public int retention { get; set; }
+    }
+
+    public class FinancialData
+    {
+        public string month { get; set; } = "";
+        public int revenue { get; set; }
+        public int expenses { get; set; }
+        public int profit { get; set; }
+    }
+
+    public class MarketingData
+    {
+        public string month { get; set; } = "";
+        public int adSpend { get; set; }
+        public int conversions { get; set; }
+    }
+
+    public class AnalyticsData
+    {
+        public string month { get; set; } = "";
+        public int pageViews { get; set; }
+        public int bounceRate { get; set; }
+        public int engagement { get; set; }
+    }
+
+    public class KpiData
+    {
+        public string month { get; set; } = "";
+        public int actual { get; set; }
+        public int threshold { get; set; }
+    }
+}
