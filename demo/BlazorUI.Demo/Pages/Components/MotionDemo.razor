@@ -1,5 +1,7 @@
 @page "/components/motion"
+@using BlazorUI.Components.Card
 @using BlazorUI.Components.Motion
+@using BlazorUI.Components.Alert
 
 <PageTitle>Motion - BlazorUI</PageTitle>
 
@@ -34,15 +36,17 @@
                 <Presets>
                     <FadeIn Duration="0.5" />
                 </Presets>
-                <Card class="max-w-md">
-                    <CardHeader>
-                        <CardTitle>Animated Card</CardTitle>
-                        <CardDescription>This card fades in on page load</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p>Content appears smoothly with a fade animation.</p>
-                    </CardContent>
-                </Card>
+                <ChildContent>
+                    <Card class="max-w-md">
+                        <CardHeader>
+                            <CardTitle>Animated Card</CardTitle>
+                            <CardDescription>This card fades in on page load</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <p>Content appears smoothly with a fade animation.</p>
+                        </CardContent>
+                    </Card>
+                </ChildContent>
             </Motion>
         </div>
     </section>
@@ -60,15 +64,17 @@
                     <ScaleIn From="0.5" />
                     <Spring Stiffness="200" Damping="15" />
                 </Presets>
-                <Card class="max-w-md">
-                    <CardHeader>
-                        <CardTitle>Spring Physics</CardTitle>
-                        <CardDescription>Natural, bouncy animation</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p>This card scales in with spring-based easing for a more natural feel.</p>
-                    </CardContent>
-                </Card>
+                <ChildContent>
+                    <Card class="max-w-md">
+                        <CardHeader>
+                            <CardTitle>Spring Physics</CardTitle>
+                            <CardDescription>Natural, bouncy animation</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <p>This card scales in with spring-based easing for a more natural feel.</p>
+                        </CardContent>
+                    </Card>
+                </ChildContent>
             </Motion>
         </div>
     </section>
@@ -85,20 +91,24 @@
                 <Presets>
                     <SlideInFromLeft />
                 </Presets>
-                <Alert>
-                    <AlertTitle>From Left</AlertTitle>
-                    <AlertDescription>Slides in from the left side</AlertDescription>
-                </Alert>
+                <ChildContent>
+                    <Alert>
+                        <AlertTitle>From Left</AlertTitle>
+                        <AlertDescription>Slides in from the left side</AlertDescription>
+                    </Alert>
+                </ChildContent>
             </Motion>
 
             <Motion Trigger="@MotionTrigger.OnAppear">
                 <Presets>
                     <SlideInFromBottom />
                 </Presets>
-                <Alert>
-                    <AlertTitle>From Bottom</AlertTitle>
-                    <AlertDescription>Slides in from the bottom</AlertDescription>
-                </Alert>
+                <ChildContent>
+                    <Alert>
+                        <AlertTitle>From Bottom</AlertTitle>
+                        <AlertDescription>Slides in from the bottom</AlertDescription>
+                    </Alert>
+                </ChildContent>
             </Motion>
         </div>
     </section>
@@ -117,15 +127,17 @@
                     <ScaleIn From="0.8" />
                     <SlideInFromBottom From="30px" />
                 </Presets>
-                <Card class="max-w-md">
-                    <CardHeader>
-                        <CardTitle>Fade + Scale + Slide</CardTitle>
-                        <CardDescription>Three animations working together</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <p>This combines fade, scale, and slide for a sophisticated entrance.</p>
-                    </CardContent>
-                </Card>
+                <ChildContent>
+                    <Card class="max-w-md">
+                        <CardHeader>
+                            <CardTitle>Fade + Scale + Slide</CardTitle>
+                            <CardDescription>Three animations working together</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <p>This combines fade, scale, and slide for a sophisticated entrance.</p>
+                        </CardContent>
+                    </Card>
+                </ChildContent>
             </Motion>
         </div>
     </section>
@@ -143,18 +155,22 @@
                     <Presets>
                         <ShakeX />
                     </Presets>
-                    <Button OnClick="@(() => _shakeMotion?.PlayAsync())">
-                        Shake Me
-                    </Button>
+                    <ChildContent>
+                        <Button OnClick="@(() => _shakeMotion?.PlayAsync())">
+                            Shake Me
+                        </Button>
+                    </ChildContent>
                 </Motion>
 
                 <Motion @ref="_bounceMotion" Trigger="@MotionTrigger.Manual">
                     <Presets>
                         <BounceOnce />
                     </Presets>
-                    <Button OnClick="@(() => _bounceMotion?.PlayAsync())" Variant="ButtonVariant.Secondary">
-                        Bounce Me
-                    </Button>
+                    <ChildContent>
+                        <Button OnClick="@(() => _bounceMotion?.PlayAsync())" Variant="ButtonVariant.Secondary">
+                            Bounce Me
+                        </Button>
+                    </ChildContent>
                 </Motion>
             </div>
         </div>
@@ -172,9 +188,11 @@
                 <Presets>
                     <Pulse Scale="1.05" Duration="1.0" />
                 </Presets>
-                <Badge Variant="BadgeVariant.Destructive" Class="text-lg px-4 py-2">
-                    🔴 Live
-                </Badge>
+                <ChildContent>
+                    <Badge Variant="BadgeVariant.Destructive" Class="text-lg px-4 py-2">
+                        🔴 Live
+                    </Badge>
+                </ChildContent>
             </Motion>
         </div>
     </section>
@@ -200,15 +218,17 @@
                         <FadeInOnScroll />
                         <SlideInOnScroll From="50px" />
                     </Presets>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Card @(index + 1)</CardTitle>
-                            <CardDescription>Appears when scrolled into view</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <p>This card animates in as you scroll past it.</p>
-                        </CardContent>
-                    </Card>
+                    <ChildContent>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Card @(index + 1)</CardTitle>
+                                <CardDescription>Appears when scrolled into view</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <p>This card animates in as you scroll past it.</p>
+                            </CardContent>
+                        </Card>
+                    </ChildContent>
                 </Motion>
             }
         </div>
@@ -229,11 +249,13 @@
                         <Presets>
                             <ListItemEnter />
                         </Presets>
-                        <Card class="mb-3">
-                            <CardContent class="pt-6">
-                                <p>@item</p>
-                            </CardContent>
-                        </Card>
+                        <ChildContent>
+                            <Card class="mb-3">
+                                <CardContent class="pt-6">
+                                    <p>@item</p>
+                                </CardContent>
+                            </Card>
+                        </ChildContent>
                     </Motion>
                 }
             </Motion>
@@ -257,11 +279,13 @@
                             <Presets>
                                 <GridItemEnter Duration="0.4" />
                             </Presets>
-                            <Card class="h-24 flex items-center justify-center">
-                                <CardContent class="pt-6">
-                                    <span class="text-2xl font-bold">@index</span>
-                                </CardContent>
-                            </Card>
+                            <ChildContent>
+                                <Card class="h-24 flex items-center justify-center">
+                                    <CardContent class="pt-6">
+                                        <span class="text-2xl font-bold">@index</span>
+                                    </CardContent>
+                                </Card>
+                            </ChildContent>
                         </Motion>
                     }
                 </div>
