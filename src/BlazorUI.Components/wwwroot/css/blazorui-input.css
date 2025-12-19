@@ -68,32 +68,32 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 20px;
-    background: linear-gradient(to bottom, hsl(var(--background)) 0%, transparent 100%);
+    height: 60px;
+    background: linear-gradient(to bottom, var(--background) 0%, transparent 100%);
   }
 
   .scroll-shadow-bottom {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 20px;
-    background: linear-gradient(to top, hsl(var(--background)) 0%, transparent 100%);
+    height: 60px;
+    background: linear-gradient(to top, var(--background) 0%, transparent 100%);
   }
 
   .scroll-shadow-left {
     top: 0;
     bottom: 0;
     left: 0;
-    width: 20px;
-    background: linear-gradient(to right, hsl(var(--background)) 0%, transparent 100%);
+    width: 60px;
+    background: linear-gradient(to right, var(--background) 0%, transparent 100%);
   }
 
   .scroll-shadow-right {
     top: 0;
     bottom: 0;
     right: 0;
-    width: 20px;
-    background: linear-gradient(to left, hsl(var(--background)) 0%, transparent 100%);
+    width: 60px;
+    background: linear-gradient(to left, var(--background) 0%, transparent 100%);
   }
 
   /* Show shadows when scrollable */
