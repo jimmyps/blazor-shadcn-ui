@@ -38,7 +38,14 @@
     private string GetThumbClass()
     {
         // Thumb with rounded corners, subtle background, and cursor pointer for dragging
-        return "rounded-full bg-border/50 hover:bg-border/80 transition-colors cursor-pointer";
+        var baseThumbClass = "rounded-full bg-border/50 hover:bg-border/80 transition-colors cursor-pointer";
+        
+        if (Orientation == Orientation.Vertical)
+        {
+            return $"{baseThumbClass} w-full";
+        }
+        
+        return baseThumbClass;
     }
 
     private Dictionary<string, object> GetAttributes()
