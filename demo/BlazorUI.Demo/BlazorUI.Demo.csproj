@@ -6,6 +6,11 @@
     <ProjectReference Include="..\..\src\BlazorUI.Icons.Heroicons\BlazorUI.Icons.Heroicons.csproj" />
     <ProjectReference Include="..\..\src\BlazorUI.Icons.Feather\BlazorUI.Icons.Feather.csproj" />
     <ProjectReference Include="..\..\src\BlazorUI.Primitives\BlazorUI.Primitives.csproj" />
+    <ProjectReference Include="..\BlazorUI.Demo.Client\BlazorUI.Demo.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.1" />
   </ItemGroup>
 
   <PropertyGroup>
