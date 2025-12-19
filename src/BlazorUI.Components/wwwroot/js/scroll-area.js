@@ -210,6 +210,62 @@ export function initialize(scrollAreaElement, options) {
     document.addEventListener('mouseup', handleDragEnd);
     document.addEventListener('touchend', handleDragEnd);
 
+    // Track click functionality for vertical scrollbar
+    if (verticalScrollbar && verticalThumb) {
+        const handleVerticalTrackClick = (e) => {
+            // Don't handle if clicking on thumb
+            if (e.target === verticalThumb || verticalThumb.contains(e.target)) {
+                return;
+            }
+            
+            const trackRect = verticalScrollbar.getBoundingClientRect();
+            const clickY = e.clientY - trackRect.top;
+            
+            const { scrollHeight, clientHeight } = viewport;
+            const scrollableHeight = scrollHeight - clientHeight;
+            const thumbHeightRatio = clientHeight / scrollHeight;
+            const thumbHeight = Math.max(thumbHeightRatio * clientHeight, 20);
+            
+            // Calculate target scroll position
+            // Click position minus half thumb height to center thumb on click
+            const targetThumbPosition = clickY - (thumbHeight / 2);
+            const maxThumbOffset = clientHeight - thumbHeight;
+            const scrollRatio = Math.max(0, Math.min(1, targetThumbPosition / maxThumbOffset));
+            
+            viewport.scrollTop = scrollRatio * scrollableHeight;
+        };
+        
+        verticalScrollbar.addEventListener('mousedown', handleVerticalTrackClick);
+    }
+
+    // Track click functionality for horizontal scrollbar
+    if (horizontalScrollbar && horizontalThumb) {
+        const handleHorizontalTrackClick = (e) => {
+            // Don't handle if clicking on thumb
+            if (e.target === horizontalThumb || horizontalThumb.contains(e.target)) {
+                return;
+            }
+            
+            const trackRect = horizontalScrollbar.getBoundingClientRect();
+            const clickX = e.clientX - trackRect.left;
+            
+            const { scrollWidth, clientWidth } = viewport;
+            const scrollableWidth = scrollWidth - clientWidth;
+            const thumbWidthRatio = clientWidth / scrollWidth;
+            const thumbWidth = Math.max(thumbWidthRatio * clientWidth, 20);
+            
+            // Calculate target scroll position
+            // Click position minus half thumb width to center thumb on click
+            const targetThumbPosition = clickX - (thumbWidth / 2);
+            const maxThumbOffset = clientWidth - thumbWidth;
+            const scrollRatio = Math.max(0, Math.min(1, targetThumbPosition / maxThumbOffset));
+            
+            viewport.scrollLeft = scrollRatio * scrollableWidth;
+        };
+        
+        horizontalScrollbar.addEventListener('mousedown', handleHorizontalTrackClick);
+    }
+
     // Return instance with cleanup method
     return {
         dispose: () => {
