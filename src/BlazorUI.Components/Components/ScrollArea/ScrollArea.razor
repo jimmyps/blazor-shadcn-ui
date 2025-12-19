@@ -99,7 +99,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && EnableScrollShadows)
+        if (firstRender)
         {
             try
             {
@@ -135,7 +135,7 @@
 
     private Dictionary<string, object> GetRootAttributes()
     {
-        var baseClass = "relative overflow-hidden";
+        var baseClass = "group/scroll-area relative overflow-hidden";
         var classValue = string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
 
         var attributes = new Dictionary<string, object> { ["class"] = classValue };
