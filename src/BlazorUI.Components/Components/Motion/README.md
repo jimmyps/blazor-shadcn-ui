@@ -15,19 +15,13 @@ A **declarative, strongly-typed animation system** for Blazor that wraps the [Mo
 
 ### 1. Add Motion.dev Library
 
-Add the Motion.dev script to your `App.razor` or `_Host.cshtml`:
+The Motion.dev library is included with BlazorUI.Components. Add the script to your `App.razor` or `_Host.cshtml`:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/motion@10.16.2/dist/motion.js"></script>
+<script src="_content/BlazorUI.Components/js/motion-one.min.js"></script>
 ```
 
-> **Note:** Version 10.16.2 is shown as an example. Check [motion.dev](https://motion.dev) or [npm](https://www.npmjs.com/package/motion) for the latest compatible version.
-
-Or install via npm:
-
-```bash
-npm install motion
-```
+This loads the Motion.dev library (version 10.16.2) that's bundled with the component package.
 
 ### 2. Import Namespace
 
