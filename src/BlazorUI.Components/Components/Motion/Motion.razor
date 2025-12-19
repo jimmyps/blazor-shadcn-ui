@@ -206,7 +206,11 @@
 
     private async Task AnimateAsync()
     {
-        if (_jsModule == null) return;
+        if (_jsModule == null)
+        {
+            Console.WriteLine("Motion: JS module not loaded");
+            return;
+        }
 
         // Check for reduced motion preference
         if (RespectReducedMotion)
@@ -215,6 +219,7 @@
             if (prefersReducedMotion)
             {
                 // Skip animation or use simplified version
+                Console.WriteLine("Motion: Animation skipped due to reduced motion preference");
                 return;
             }
         }
@@ -225,6 +230,8 @@
             List<MotionKeyframe> keyframes;
             MotionOptions? options = Options;
             SpringOptions? spring = Spring;
+
+            Console.WriteLine($"Motion: Starting animation with {CollectedPresets.Count} presets");
 
             if (CollectedPresets.Any())
             {
@@ -257,8 +264,11 @@
             else
             {
                 // No animation to perform
+                Console.WriteLine("Motion: No keyframes to animate");
                 return;
             }
+
+            Console.WriteLine($"Motion: Animating with {keyframes.Count} keyframes");
 
             // Apply stagger if in context
             if (Context != null && Context.StaggerDelay > 0)
@@ -273,10 +283,16 @@
                 keyframes,
                 options,
                 spring);
+            
+            Console.WriteLine($"Motion: Animation started with ID {_animationId}");
         }
         catch (JSException ex)
         {
             Console.WriteLine($"Motion: Animation failed - {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Motion: Unexpected error - {ex.Message}");
         }
     }
 

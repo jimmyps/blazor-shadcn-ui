@@ -141,7 +141,12 @@ export function motionAnimate(element, keyframes, options, springOptions) {
     try {
         // Check if Motion library is available (use window.Motion to avoid ReferenceError)
         if (typeof window.Motion === 'undefined') {
-            console.error('Motion.dev library not loaded. Include it via CDN in your HTML.');
+            console.error('Motion.dev library not loaded. Include it via script tag: <script src="_content/BlazorUI.Components/js/motion-one.min.js"></script>');
+            return -1;
+        }
+
+        if (typeof window.Motion.animate !== 'function') {
+            console.error('Motion.animate is not a function. Motion library may not be fully loaded.', window.Motion);
             return -1;
         }
 
@@ -164,7 +169,9 @@ export function motionAnimate(element, keyframes, options, springOptions) {
         }
         
         // Create animation
+        console.log('Motion: Calling Motion.animate with', { element, keyframes: convertedKeyframes, options: animationOptions });
         const animation = MotionLib.animate(element, convertedKeyframes, animationOptions);
+        console.log('Motion: Animation created successfully', animation);
         
         // Store in registry
         const id = animationIdCounter++;
@@ -173,6 +180,7 @@ export function motionAnimate(element, keyframes, options, springOptions) {
         return id;
     } catch (error) {
         console.error('Motion: Animation failed', error);
+        console.error('Motion: Error details - element:', element, 'keyframes:', keyframes, 'options:', options);
         return -1;
     }
 }
