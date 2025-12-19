@@ -7,6 +7,9 @@ public partial class MainLayout : LayoutComponentBase
 {
     [Inject]
     private CollapsibleStateService StateService { get; set; } = null!;
+    
+    // Reference to the SpotlightCommandPalette component
+    private SpotlightCommandPalette? _spotlightRef;
 
     // State for each collapsible menu section
     private bool _primitivesMenuOpen;
@@ -49,5 +52,10 @@ public partial class MainLayout : LayoutComponentBase
     {
         _iconsMenuOpen = isOpen;
         await StateService.SetStateAsync(IconsMenuKey, isOpen);
+    }
+    
+    private void OpenSpotlight()
+    {
+        _spotlightRef?.Open();
     }
 }
