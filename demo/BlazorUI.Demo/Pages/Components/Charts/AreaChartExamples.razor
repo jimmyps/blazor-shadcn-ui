@@ -33,7 +33,7 @@
                         <AxisLabel Show="false" />
                     </YAxis>
                     <Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Line" Formatter="@tooltipFormatter" />
-                    <Legend />
+                    <Legend TextColor="var(--foreground)" />
                     <Area DataKey="desktop" Name="Desktop" StackId="Total">
                         <Fill>
                             <LinearGradient Direction="GradientDirection.Vertical">
@@ -97,7 +97,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Area DataKey="product1" Name="Product A" StackId="total" Color="var(--chart-1)" />
                         <Area DataKey="product2" Name="Product B" StackId="total" Color="var(--chart-2)" />
                         <Area DataKey="product3" Name="Product C" StackId="total" Color="var(--chart-3)" />
@@ -178,32 +178,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend Align="LegendAlign.Right" VerticalAlign="LegendVerticalAlign.Bottom" />
-                        <Area DataKey="product1" Name="Product A" Color="var(--chart-1)" />
-                        <Area DataKey="product2" Name="Product B" Color="var(--chart-2)" />
-                    </AreaChart>
-                </ChartContainer>
-            </CardContent>
-        </Card>
-
-        @* Legend with Custom Text Color *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Legend Text Color</CardTitle>
-                <CardDescription>Custom legend text color using CSS variables</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <ChartContainer Height="200">
-                    <AreaChart Data="@multiData" Padding="@(new Padding(6, 0, 32, 0))">
-                        <Grid Show="false" />
-                        <XAxis DataKey="month" Color="var(--border)">
-                            <AxisLabel Color="var(--muted-foreground)" />
-                        </XAxis>
-                        <YAxis Color="var(--border)">
-                            <AxisLabel Color="var(--muted-foreground)" />
-                        </YAxis>
-                        <Tooltip />
-                        <Legend TextColor="var(--foreground)" />
+                        <Legend TextColor="var(--foreground)" Align="LegendAlign.Right" VerticalAlign="LegendVerticalAlign.Bottom" />
                         <Area DataKey="product1" Name="Product A" Color="var(--chart-1)" />
                         <Area DataKey="product2" Name="Product B" Color="var(--chart-2)" />
                     </AreaChart>
@@ -228,7 +203,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Area DataKey="product1" Name="Product A" Color="var(--chart-1)" />
                         <Area DataKey="product2" Name="Product B" Color="var(--chart-2)" />
                     </AreaChart>
@@ -349,7 +324,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip Formatter="function(params) { return params.seriesName + ': ' + params.value.toFixed(1) + '%'; }" />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Area DataKey="product1" Name="Product A" StackId="total" Color="var(--chart-1)" />
                         <Area DataKey="product2" Name="Product B" StackId="total" Color="var(--chart-2)" />
                         <Area DataKey="product3" Name="Product C" StackId="total" Color="var(--chart-3)" />

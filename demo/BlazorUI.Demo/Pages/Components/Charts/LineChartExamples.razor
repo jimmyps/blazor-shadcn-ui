@@ -33,7 +33,7 @@
                         <AxisLabel Show="false" />
                     </YAxis>
                     <Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" Formatter="@tooltipFormatter" />
-                    <Legend />
+                    <Legend TextColor="var(--foreground)" />
                     <Line DataKey="desktop" Name="Desktop" Color="var(--chart-1)" />
                     <Line DataKey="mobile" Name="Mobile" Color="var(--chart-2)" />
                 </LineChart>
@@ -83,7 +83,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Circle" />
+                        <Legend TextColor="var(--foreground)" VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Circle" />
                         <Line DataKey="product1" Name="Product A" Color="var(--chart-1)" />
                         <Line DataKey="product2" Name="Product B" Color="var(--chart-2)" />
                     </LineChart>
@@ -132,7 +132,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Line DataKey="product1" Name="Product A" ShowDots="true" Color="var(--chart-1)" />
                         <Line DataKey="product2" Name="Product B" ShowDots="true" Color="var(--chart-2)" />
                     </LineChart>

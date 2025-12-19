@@ -15,14 +15,15 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ComposedChart Data="@revenueData">
-                        <XAxis DataKey="month" Color="var(--border)">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="actual" Name="Actual Revenue" Radius="4" Color="var(--chart-1)" />
                         <Line DataKey="target" Name="Target" Color="var(--chart-2)" />
                     </ComposedChart>
@@ -39,14 +40,15 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ComposedChart Data="@salesData">
-                        <XAxis DataKey="month" Color="var(--border)">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-1)" />
                         <Line DataKey="forecast" Name="Forecast" Dashed="true" Color="var(--chart-2)" />
                     </ComposedChart>
@@ -63,14 +65,15 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ComposedChart Data="@inventoryData">
-                        <XAxis DataKey="month" Color="var(--border)">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="stock" Name="Stock Level" Radius="4" Color="var(--chart-1)" />
                         <Line DataKey="reorder" Name="Reorder Point" Color="var(--chart-3)" />
                         <Area DataKey="safety" Name="Safety Stock" Opacity="0.3" Color="var(--chart-2)" />
@@ -88,14 +91,15 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ComposedChart Data="@customerData">
-                        <XAxis DataKey="month" Color="var(--border)">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="newCustomers" Name="New Customers" Radius="4" Color="var(--chart-4)" />
                         <Line DataKey="retention" Name="Retention Rate" Color="var(--chart-5)" />
                     </ComposedChart>
@@ -112,14 +116,15 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ComposedChart Data="@financialData">
-                        <XAxis DataKey="month" Color="var(--border)">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="expenses" Name="Expenses" Radius="4" Color="var(--chart-3)" />
                         <Line DataKey="revenue" Name="Revenue" Color="var(--chart-1)" />
                         <Area DataKey="profit" Name="Profit Margin" Opacity="0.3" Color="var(--chart-2)" />
@@ -137,14 +142,15 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ComposedChart Data="@marketingData">
-                        <XAxis DataKey="month" Color="var(--border)">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="adSpend" Name="Ad Spend" Radius="4" Color="var(--chart-5)" />
                         <Line DataKey="conversions" Name="Conversions" Color="var(--chart-1)" />
                     </ComposedChart>
@@ -161,14 +167,15 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ComposedChart Data="@analyticsData">
-                        <XAxis DataKey="month" Color="var(--border)">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="pageViews" Name="Page Views" Radius="4" Color="var(--chart-2)" />
                         <Line DataKey="bounceRate" Name="Bounce Rate" Color="var(--chart-3)" />
                         <Area DataKey="engagement" Name="Engagement" Opacity="0.3" Color="var(--chart-4)" />
@@ -186,14 +193,15 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <ComposedChart Data="@kpiData">
-                        <XAxis DataKey="month" Color="var(--border)">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" BoundaryGap="true" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="actual" Name="Actual" Radius="4" Color="var(--chart-1)" />
                         <Line DataKey="threshold" Name="Threshold" Dashed="true" Color="var(--chart-3)" />
                     </ComposedChart>

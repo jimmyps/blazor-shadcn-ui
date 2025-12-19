@@ -33,7 +33,7 @@
                         <AxisLabel Show="false" />
                     </YAxis>
                     <Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Shadow" />
-                    <Legend />
+                    <Legend TextColor="var(--foreground)" />
                     <Bar DataKey="desktop" Name="Desktop" Radius="4" Color="var(--chart-1)" />
                     <Bar DataKey="mobile" Name="Mobile" Radius="4" Color="var(--chart-2)" />
                 </BarChart>
@@ -107,7 +107,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="product1" Name="Product A" Radius="4" Color="var(--chart-1)" />
                         <Bar DataKey="product2" Name="Product B" Radius="4" Color="var(--chart-2)" />
                     </BarChart>
@@ -132,7 +132,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="product1" Name="Product A" StackId="total" Radius="4" Color="var(--chart-1)" />
                         <Bar DataKey="product2" Name="Product B" StackId="total" Radius="4" Color="var(--chart-2)" />
                     </BarChart>
@@ -209,7 +209,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip Formatter="function(params) { return params.seriesName + ': ' + params.value.toFixed(1) + '%'; }" />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="product1" Name="Product A" StackId="total" Radius="4" Color="var(--chart-1)" />
                         <Bar DataKey="product2" Name="Product B" StackId="total" Radius="4" Color="var(--chart-2)" />
                     </BarChart>
@@ -258,7 +258,7 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <Tooltip />
-                        <Legend />
+                        <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="product1" Name="Product A" Radius="4" Color="var(--chart-1)" />
                         <Line DataKey="product2" Name="Product B" Color="var(--chart-2)" />
                     </ComposedChart>
