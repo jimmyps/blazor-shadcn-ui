@@ -28,6 +28,11 @@ export function initialize(scrollAreaElement, options) {
 
     let rafId = null;
     let isDisposed = false;
+    let isDragging = false;
+    let dragStartY = 0;
+    let dragStartX = 0;
+    let dragStartScrollTop = 0;
+    let dragStartScrollLeft = 0;
 
     // Update scrollbar thumb size and position based on scroll state
     function updateScrollbars() {
@@ -127,6 +132,84 @@ export function initialize(scrollAreaElement, options) {
     });
     resizeObserver.observe(viewport);
 
+    // Drag functionality for vertical scrollbar
+    if (verticalThumb) {
+        const handleVerticalDragStart = (e) => {
+            isDragging = true;
+            dragStartY = e.clientY || e.touches?.[0]?.clientY || 0;
+            dragStartScrollTop = viewport.scrollTop;
+            e.preventDefault();
+        };
+
+        const handleVerticalDragMove = (e) => {
+            if (!isDragging) return;
+            
+            const clientY = e.clientY || e.touches?.[0]?.clientY || 0;
+            const deltaY = clientY - dragStartY;
+            
+            const { scrollHeight, clientHeight } = viewport;
+            const scrollableHeight = scrollHeight - clientHeight;
+            const thumbHeightRatio = clientHeight / scrollHeight;
+            const thumbHeight = Math.max(thumbHeightRatio * clientHeight, 20);
+            const maxThumbOffset = clientHeight - thumbHeight;
+            
+            // Convert thumb movement to scroll position
+            const scrollDelta = (deltaY / maxThumbOffset) * scrollableHeight;
+            viewport.scrollTop = dragStartScrollTop + scrollDelta;
+            
+            e.preventDefault();
+        };
+
+        verticalThumb.addEventListener('mousedown', handleVerticalDragStart);
+        verticalThumb.addEventListener('touchstart', handleVerticalDragStart, { passive: false });
+        
+        document.addEventListener('mousemove', handleVerticalDragMove);
+        document.addEventListener('touchmove', handleVerticalDragMove, { passive: false });
+    }
+
+    // Drag functionality for horizontal scrollbar
+    if (horizontalThumb) {
+        const handleHorizontalDragStart = (e) => {
+            isDragging = true;
+            dragStartX = e.clientX || e.touches?.[0]?.clientX || 0;
+            dragStartScrollLeft = viewport.scrollLeft;
+            e.preventDefault();
+        };
+
+        const handleHorizontalDragMove = (e) => {
+            if (!isDragging) return;
+            
+            const clientX = e.clientX || e.touches?.[0]?.clientX || 0;
+            const deltaX = clientX - dragStartX;
+            
+            const { scrollWidth, clientWidth } = viewport;
+            const scrollableWidth = scrollWidth - clientWidth;
+            const thumbWidthRatio = clientWidth / scrollWidth;
+            const thumbWidth = Math.max(thumbWidthRatio * clientWidth, 20);
+            const maxThumbOffset = clientWidth - thumbWidth;
+            
+            // Convert thumb movement to scroll position
+            const scrollDelta = (deltaX / maxThumbOffset) * scrollableWidth;
+            viewport.scrollLeft = dragStartScrollLeft + scrollDelta;
+            
+            e.preventDefault();
+        };
+
+        horizontalThumb.addEventListener('mousedown', handleHorizontalDragStart);
+        horizontalThumb.addEventListener('touchstart', handleHorizontalDragStart, { passive: false });
+        
+        document.addEventListener('mousemove', handleHorizontalDragMove);
+        document.addEventListener('touchmove', handleHorizontalDragMove, { passive: false });
+    }
+
+    // Global drag end handler
+    const handleDragEnd = () => {
+        isDragging = false;
+    };
+    
+    document.addEventListener('mouseup', handleDragEnd);
+    document.addEventListener('touchend', handleDragEnd);
+
     // Return instance with cleanup method
     return {
         dispose: () => {
@@ -144,6 +227,10 @@ export function initialize(scrollAreaElement, options) {
 
             viewport.removeEventListener('scroll', handleScroll);
             resizeObserver.disconnect();
+            
+            // Remove drag event listeners
+            document.removeEventListener('mouseup', handleDragEnd);
+            document.removeEventListener('touchend', handleDragEnd);
         },
         
         scrollTo: (options) => {
