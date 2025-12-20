@@ -1,10 +1,50 @@
 /**
- * Motion.dev JavaScript Interop Module
- * Provides Blazor integration for Motion.dev animation library
+ * Motion One JavaScript Interop Module
+ * Provides Blazor integration for Motion One animation library
+ * 
+ * Motion One provides: animate(), timeline(), stagger(), scroll(), inView()
+ * 
+ * Usage:
+ * 1. Include Motion One in your app (recommended):
+ *    <script src="https://cdn.jsdelivr.net/npm/motion@latest/dist/motion.js"></script>
+ * 2. Or let this module auto-load from CDN as ESM module
  */
 
-// Import Motion.dev from CDN (will be loaded via script tag in HTML)
-// This assumes motion.dev library is loaded globally as 'Motion'
+// Import Motion One functions from CDN or use global if available
+let motionLib = null;
+let loadingPromise = null; // Track in-flight loading
+
+async function loadMotion() {
+    // If already loaded, return immediately
+    if (motionLib) return motionLib;
+    
+    // If currently loading, wait for that promise
+    if (loadingPromise) {
+        return loadingPromise;
+    }
+    
+    // Check if Motion One is already loaded globally (via script tag)
+    if (typeof window.Motion !== 'undefined' && window.Motion) {
+        motionLib = window.Motion;
+        return motionLib;
+    }
+    
+    // Start loading from CDN and store the promise
+    loadingPromise = (async () => {
+        try {
+            const lib = await import('https://cdn.jsdelivr.net/npm/motion@latest/+esm');
+            motionLib = lib;
+            return lib;
+        } catch (error) {
+            console.error('Motion: Failed to load library', error);
+            throw new Error('Motion One library could not be loaded. Include it via script tag or check network connection.');
+        } finally {
+            loadingPromise = null;
+        }
+    })();
+    
+    return loadingPromise;
+}
 
 // Registry to store active animation instances
 const animationRegistry = new Map();
@@ -22,7 +62,9 @@ function isDefined(value) {
 }
 
 /**
- * Convert MotionKeyframe C# object to Motion.dev keyframe format
+ * Convert MotionKeyframe C# object to Motion One keyframe format
+ * Motion One expects: animate(element, { opacity: [0, 1], scale: [0.8, 1] }, options)
+ * Or: animate(element, [{ opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1 }], options)
  */
 function convertKeyframe(keyframe) {
     const converted = {};
@@ -55,107 +97,135 @@ function convertKeyframe(keyframe) {
 }
 
 /**
- * Convert MotionOptions C# object to Motion.dev options format
+ * Convert array of keyframes to Motion One's preferred object format
+ * Input: [{ opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1 }]
+ * Output: { opacity: [0, 1], scale: [0.8, 1] }
+ */
+function convertKeyframesToObjectFormat(keyframes) {
+    if (!Array.isArray(keyframes) || keyframes.length === 0) {
+        return {};
+    }
+    
+    // If only one keyframe, return it as-is (Motion One will animate from current state)
+    if (keyframes.length === 1) {
+        return keyframes[0];
+    }
+    
+    // Convert multiple keyframes to object format with arrays
+    const result = {};
+    const properties = new Set();
+    
+    // Collect all unique properties
+    keyframes.forEach(kf => {
+        Object.keys(kf).forEach(prop => properties.add(prop));
+    });
+    
+    // Build arrays for each property
+    properties.forEach(prop => {
+        result[prop] = keyframes.map(kf => kf[prop]);
+    });
+    
+    return result;
+}
+
+/**
+ * Convert MotionOptions C# object to Motion One options format
  */
 function convertOptions(options) {
     if (!options) return {};
     
     const converted = {};
     
-    if (options.duration !== null && options.duration !== undefined) {
+    if (isDefined(options.duration)) {
         converted.duration = options.duration;
     }
-    if (options.delay !== null && options.delay !== undefined) {
+    if (isDefined(options.delay)) {
         converted.delay = options.delay;
     }
-    if (options.easing !== null && options.easing !== undefined) {
-        // Convert enum to easing string
+    
+    // Handle easing: Motion One accepts CSS-style cubic-bezier strings
+    // Check for customEasing FIRST before checking the enum
+    if (options.customEasing && Array.isArray(options.customEasing) && options.customEasing.length === 4) {
+        // Convert array to CSS cubic-bezier string
+        converted.ease = options.customEasing;
+        
+    } else if (isDefined(options.easing)) {
+        // Map enum to Motion One's named easings
         const easingMap = {
             0: 'linear',
-            1: 'ease-in',
-            2: 'ease-out',
-            3: 'ease-in-out',
-            4: options.customEasing ? `cubic-bezier(${options.customEasing.join(',')})` : 'ease'
+            1: 'easeIn',
+            2: 'easeOut',
+            3: 'easeInOut',
+            4: 'easeOut' // Default fallback
         };
-        converted.easing = easingMap[options.easing] || 'ease';
+        converted.ease = easingMap[options.easing] || 'easeOut';
     }
-    if (options.repeat !== null && options.repeat !== undefined) {
+    
+    if (isDefined(options.repeat)) {
         converted.repeat = options.repeat === -1 ? Infinity : options.repeat;
     }
-    if (options.repeatReverse !== null && options.repeatReverse !== undefined) {
-        converted.repeatType = options.repeatReverse ? 'reverse' : 'loop';
+    if (options.direction) {
+        converted.direction = options.direction;
     }
-    if (options.repeatDelay !== null && options.repeatDelay !== undefined) {
-        converted.repeatDelay = options.repeatDelay;
-    }
-    if (options.fill) converted.fill = options.fill;
-    if (options.direction) converted.direction = options.direction;
     
     return converted;
 }
 
 /**
- * Convert SpringOptions C# object to Motion.dev spring format
+ * Convert SpringOptions C# object to Motion One spring format
  */
 function convertSpringOptions(springOptions) {
-    if (!springOptions) return { type: 'spring' };
+    if (!springOptions) return null;
     
-    const converted = { type: 'spring' };
+    const spring = {};
     
-    if (springOptions.mass !== null && springOptions.mass !== undefined) {
-        converted.mass = springOptions.mass;
+    if (isDefined(springOptions.stiffness)) {
+        spring.stiffness = springOptions.stiffness;
     }
-    if (springOptions.stiffness !== null && springOptions.stiffness !== undefined) {
-        converted.stiffness = springOptions.stiffness;
+    if (isDefined(springOptions.damping)) {
+        spring.damping = springOptions.damping;
     }
-    if (springOptions.damping !== null && springOptions.damping !== undefined) {
-        converted.damping = springOptions.damping;
+    if (isDefined(springOptions.mass)) {
+        spring.mass = springOptions.mass;
     }
-    if (springOptions.velocity !== null && springOptions.velocity !== undefined) {
-        converted.velocity = springOptions.velocity;
+    if (isDefined(springOptions.velocity)) {
+        spring.velocity = springOptions.velocity;
     }
-    if (springOptions.bounce !== null && springOptions.bounce !== undefined) {
-        converted.bounce = springOptions.bounce;
-    }
-    if (springOptions.duration !== null && springOptions.duration !== undefined) {
-        converted.duration = springOptions.duration;
+    if (isDefined(springOptions.duration)) {
+        spring.duration = springOptions.duration;
     }
     
-    return converted;
+    // Motion One spring format: { type: 'spring', stiffness, damping, mass }
+    return Object.keys(spring).length > 0 ? { type: 'spring', ...spring } : null;
 }
 
 /**
- * Animate an element with Motion.dev
+ * Animate an element with Motion One
  * @param {HTMLElement} element - The element to animate
  * @param {Object|Array} keyframes - Single keyframe or array of keyframes
  * @param {Object} options - Animation options
  * @param {Object} springOptions - Optional spring physics options
  * @returns {number} Animation instance ID for cleanup
  */
-export function motionAnimate(element, keyframes, options, springOptions) {
+export async function motionAnimate(element, keyframes, options, springOptions) {
     if (!element) {
         console.error('Motion: Invalid element provided');
         return -1;
     }
 
     try {
-        // Check if Motion library is available (use window.Motion to avoid ReferenceError)
-        if (typeof window.Motion === 'undefined') {
-            console.error('Motion.dev library not loaded. Include it via script tag: <script src="_content/BlazorUI.Components/js/motion-one.min.js"></script>');
+        const motion = await loadMotion();
+        
+        if (!motion || !motion.animate) {
+            console.error('Motion: animate function not available');
             return -1;
         }
-
-        if (typeof window.Motion.animate !== 'function') {
-            console.error('Motion.animate is not a function. Motion library may not be fully loaded.', window.Motion);
-            return -1;
-        }
-
-        const MotionLib = window.Motion;
         
         // Convert keyframes
         let convertedKeyframes;
         if (Array.isArray(keyframes)) {
-            convertedKeyframes = keyframes.map(k => convertKeyframe(k));
+            const converted = keyframes.map(k => convertKeyframe(k));
+            convertedKeyframes = convertKeyframesToObjectFormat(converted);
         } else {
             convertedKeyframes = convertKeyframe(keyframes);
         }
@@ -163,15 +233,23 @@ export function motionAnimate(element, keyframes, options, springOptions) {
         // Convert options
         let animationOptions = convertOptions(options);
         
-        // Apply spring physics if provided
+        // Apply spring physics if provided (overrides easing)
         if (springOptions) {
-            animationOptions = { ...animationOptions, ...convertSpringOptions(springOptions) };
+            const spring = convertSpringOptions(springOptions);
+            if (spring) {
+                delete animationOptions.ease;
+                animationOptions = { ...animationOptions, ...spring };
+            }
         }
         
-        // Create animation
-        console.log('Motion: Calling Motion.animate with', { element, keyframes: convertedKeyframes, options: animationOptions });
-        const animation = MotionLib.animate(element, convertedKeyframes, animationOptions);
-        console.log('Motion: Animation created successfully', animation);
+        console.log('Motion: Calling motion.animate with', { 
+            element, 
+            keyframes: convertedKeyframes, 
+            options: animationOptions 
+        });
+        
+        // Call Motion One's animate function
+        const animation = motion.animate(element, convertedKeyframes, animationOptions);
         
         // Store in registry
         const id = animationIdCounter++;
@@ -180,7 +258,6 @@ export function motionAnimate(element, keyframes, options, springOptions) {
         return id;
     } catch (error) {
         console.error('Motion: Animation failed', error);
-        console.error('Motion: Error details - element:', element, 'keyframes:', keyframes, 'options:', options);
         return -1;
     }
 }
@@ -189,7 +266,6 @@ export function motionAnimate(element, keyframes, options, springOptions) {
  * Set up IntersectionObserver for in-view animations
  * @param {HTMLElement} element - The element to observe
  * @param {Object} inViewOptions - IntersectionObserver options
- * @param {Function} callback - Callback to invoke via DotNetObjectReference
  * @param {Object} dotNetHelper - DotNet object reference
  * @returns {number} Observer instance ID for cleanup
  */
@@ -201,17 +277,15 @@ export function setupInViewObserver(element, inViewOptions, dotNetHelper) {
 
     try {
         const options = {
-            threshold: inViewOptions?.threshold || 0.1,
-            rootMargin: inViewOptions?.rootMargin || '0px'
+            threshold: inViewOptions?.threshold ?? 0.1,
+            rootMargin: inViewOptions?.rootMargin ?? '0px'
         };
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Notify Blazor component
                     dotNetHelper.invokeMethodAsync('OnIntersecting');
                     
-                    // Disconnect if "once" is true
                     if (inViewOptions?.once !== false) {
                         observer.disconnect();
                     }
@@ -239,10 +313,15 @@ export function stopAnimation(animationId) {
     const animation = animationRegistry.get(animationId);
     if (animation) {
         try {
-            animation.stop();
-            animation.cancel();
+            // Motion One animations have .stop() and .cancel() methods
+            if (typeof animation.stop === 'function') {
+                animation.stop();
+            }
+            if (typeof animation.cancel === 'function') {
+                animation.cancel();
+            }
         } catch (error) {
-            console.warn('Motion: Failed to stop animation', error);
+            console.warn('Motion: Failed to stop animation', animationId, error);
         }
         animationRegistry.delete(animationId);
     }
@@ -258,7 +337,7 @@ export function cleanupInViewObserver(observerId) {
         try {
             entry.observer.disconnect();
         } catch (error) {
-            console.warn('Motion: Failed to disconnect observer', error);
+            console.warn('Motion: Failed to disconnect observer', observerId, error);
         }
         observerRegistry.delete(observerId);
     }
@@ -268,32 +347,43 @@ export function cleanupInViewObserver(observerId) {
  * Cleanup all animations and observers
  */
 export function cleanupAll() {
-    animationRegistry.forEach(animation => {
+    // Clean up all animations
+    animationRegistry.forEach((animation, id) => {
         try {
-            animation.stop();
-            animation.cancel();
+            if (typeof animation.stop === 'function') {
+                animation.stop();
+            }
+            if (typeof animation.cancel === 'function') {
+                animation.cancel();
+            }
         } catch (error) {
-            // Ignore cleanup errors
+            console.warn('Motion: Failed to cleanup animation', id, error);
         }
     });
     animationRegistry.clear();
 
-    observerRegistry.forEach(entry => {
+    // Clean up all observers
+    observerRegistry.forEach((entry, id) => {
         try {
             entry.observer.disconnect();
         } catch (error) {
-            // Ignore cleanup errors
+            console.warn('Motion: Failed to cleanup observer', id, error);
         }
     });
     observerRegistry.clear();
 }
 
 /**
- * Check if Motion.dev library is loaded
+ * Check if Motion One library is loaded
  * @returns {boolean} True if Motion is available
  */
-export function isMotionAvailable() {
-    return typeof window.Motion !== 'undefined';
+export async function isMotionAvailable() {
+    try {
+        await loadMotion();
+        return motionLib !== null;
+    } catch {
+        return false;
+    }
 }
 
 /**

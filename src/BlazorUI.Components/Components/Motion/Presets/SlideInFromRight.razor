@@ -7,10 +7,10 @@
 
 @code {
     /// <summary>
-    /// Distance to slide from (pixels or percentage). Default: "100%"
+    /// Distance to slide from in pixels. Default: 100
     /// </summary>
     [Parameter]
-    public string From { get; set; } = "100%";
+    public double From { get; set; } = 100;
 
     /// <summary>
     /// Duration in seconds. Default: 0.3
@@ -22,17 +22,20 @@
     {
         return new List<MotionKeyframe>
         {
-            new MotionKeyframe { X = From, Opacity = 0 },
-            new MotionKeyframe { X = "0", Opacity = 1 }
+            new MotionKeyframe { X = $"{From}px", Opacity = 0 },
+            new MotionKeyframe { X = "0px", Opacity = 1 }
         };
     }
 
     public override MotionOptions? GetOptions()
     {
-        return new MotionOptions
+        var options = new MotionOptions
         {
-            Duration = Duration,
-            Easing = MotionEasing.EaseOut
+            Duration = Duration
         };
+        
+        ApplyEasing(options, MotionEasing.EaseOut);
+        
+        return options;
     }
 }

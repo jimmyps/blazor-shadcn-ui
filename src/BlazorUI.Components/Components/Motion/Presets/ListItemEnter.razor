@@ -34,10 +34,13 @@
 
     public override MotionOptions? GetOptions()
     {
-        return new MotionOptions
+        var options = new MotionOptions
         {
-            Duration = Duration,
-            Easing = MotionEasing.EaseOut
+            Duration = Duration
         };
+        
+        ApplyEasing(options, MotionEasing.EaseOut);
+        
+        return options;
     }
 }

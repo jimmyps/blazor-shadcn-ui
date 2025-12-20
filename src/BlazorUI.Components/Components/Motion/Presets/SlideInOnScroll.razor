@@ -8,10 +8,10 @@
 
 @code {
     /// <summary>
-    /// Starting Y position (pixels or percentage). Default: "50px"
+    /// Starting Y position in pixels. Default: 50
     /// </summary>
     [Parameter]
-    public string From { get; set; } = "50px";
+    public double From { get; set; } = 50;
 
     /// <summary>
     /// Duration in seconds. Default: 0.6
@@ -23,17 +23,20 @@
     {
         return new List<MotionKeyframe>
         {
-            new MotionKeyframe { Y = From, Opacity = 0 },
-            new MotionKeyframe { Y = "0", Opacity = 1 }
+            new MotionKeyframe { Y = $"{From}px", Opacity = 0 },
+            new MotionKeyframe { Y = "0px", Opacity = 1 }
         };
     }
 
     public override MotionOptions? GetOptions()
     {
-        return new MotionOptions
+        var options = new MotionOptions
         {
-            Duration = Duration,
-            Easing = MotionEasing.EaseOut
+            Duration = Duration
         };
+        
+        ApplyEasing(options, MotionEasing.EaseOut);
+        
+        return options;
     }
 }
