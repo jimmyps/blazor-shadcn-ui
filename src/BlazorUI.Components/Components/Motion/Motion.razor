@@ -1,0 +1,526 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@implements IDisposable
+@namespace BlazorUI.Components.Motion
+
+@*
+    Motion Component - Declarative Animation System
+    
+    Provides declarative, composable animations using Motion One library.
+    
+    Usage Example:
+    
+    <Motion Trigger="@MotionTrigger.OnAppear">
+        <Presets>
+            <FadeIn />
+            <ScaleIn From="0.6" />
+            <Spring Stiffness="200" Damping="22" />
+        </Presets>
+        <ChildContent>
+            <div>Animated content</div>
+        </ChildContent>
+    </Motion>
+*@
+
+<CascadingValue Value="this" IsFixed="false">
+    @if (Presets != null)
+    {
+        @* Render presets to instantiate them - they'll register themselves via OnInitialized *@
+        @Presets
+    }
+</CascadingValue>
+
+<div @ref="_elementRef" class="@GetCombinedClasses()" style="@Style">
+    @if (StaggerChildren.HasValue && StaggerChildren.Value > 0)
+    {
+        <CascadingValue Value="@_staggerContext" Name="MotionContext">
+            <CascadingValue Value="this" Name="ParentMotion">
+                @ChildContent
+            </CascadingValue>
+        </CascadingValue>
+    }
+    else
+    {
+        @ChildContent
+    }
+</div>
+
+@code {
+    private ElementReference _elementRef;
+    private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<Motion>? _dotNetRef;
+    private int _animationId = -1;
+    private int _observerId = -1;
+    private bool _hasAnimated = false;
+    private MotionContext? _staggerContext;
+
+    /// <summary>
+    /// The content to render and animate.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Preset animations to apply (FadeIn, ScaleIn, Spring, etc.).
+    /// </summary>
+    [Parameter]
+    public RenderFragment? Presets { get; set; }
+
+    /// <summary>
+    /// When the animation should trigger.
+    /// </summary>
+    [Parameter]
+    public MotionTrigger Trigger { get; set; } = MotionTrigger.OnAppear;
+
+    /// <summary>
+    /// Additional CSS classes to apply.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional inline styles to apply.
+    /// </summary>
+    [Parameter]
+    public string? Style { get; set; }
+
+    /// <summary>
+    /// Options for IntersectionObserver when Trigger is OnInView.
+    /// </summary>
+    [Parameter]
+    public InViewOptions? InViewOptions { get; set; }
+
+    /// <summary>
+    /// Stagger delay for child animations in seconds.
+    /// </summary>
+    [Parameter]
+    public double? StaggerChildren { get; set; }
+
+    /// <summary>
+    /// Whether to respect user's reduced motion preference.
+    /// Default: true
+    /// </summary>
+    [Parameter]
+    public bool RespectReducedMotion { get; set; } = true;
+
+    /// <summary>
+    /// Custom keyframes to animate (alternative to using presets).
+    /// </summary>
+    [Parameter]
+    public List<MotionKeyframe>? Keyframes { get; set; }
+
+    /// <summary>
+    /// Animation options (duration, delay, easing, etc.).
+    /// </summary>
+    [Parameter]
+    public MotionOptions? Options { get; set; }
+
+    /// <summary>
+    /// Spring physics options (overrides standard easing).
+    /// </summary>
+    [Parameter]
+    public SpringOptions? Spring { get; set; }
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
+
+    [CascadingParameter(Name = "MotionContext")]
+    private MotionContext? Context { get; set; }
+    
+    [CascadingParameter(Name = "ParentMotion")]
+    private Motion? ParentMotion { get; set; }
+
+    // Internal state for preset collection
+    internal List<IMotionPreset> CollectedPresets { get; } = new();
+    
+    // List of child Motion components for staggering
+    private readonly List<Motion> _childMotions = new();
+    
+    // Store this child's own index in the stagger sequence
+    private int _myStaggerIndex = 0;
+
+    /// <summary>
+    /// Register a child Motion component for staggering.
+    /// Called internally by child components.
+    /// </summary>
+    internal void RegisterChild(Motion child)
+    {
+        if (StaggerChildren.HasValue && StaggerChildren.Value > 0)
+        {
+            _childMotions.Add(child);
+        }
+    }
+    
+    /// <summary>
+    /// Unregister a child Motion component.
+    /// </summary>
+    internal void UnregisterChild(Motion child)
+    {
+        _childMotions.Remove(child);
+    }
+
+    /// <summary>
+    /// Manually trigger the animation.
+    /// Only works when Trigger is set to Manual.
+    /// For stagger parents, this triggers all children with delays.
+    /// </summary>
+    public async Task PlayAsync()
+    {
+        // If this is a stagger parent, trigger all children
+        if (StaggerChildren.HasValue && StaggerChildren.Value > 0 && _childMotions.Any())
+        {
+            // Trigger all children - they will apply their own stagger delays
+            var tasks = _childMotions.Select(child => child.AnimateAsync());
+            await Task.WhenAll(tasks);
+        }
+        else if (Trigger == MotionTrigger.Manual)
+        {
+            // Regular manual trigger
+            await AnimateAsync();
+        }
+    }
+
+    /// <summary>
+    /// Internal animation trigger that can be called by parent for staggering.
+    /// Public PlayAsync() checks the Trigger, but this bypasses that check.
+    /// </summary>
+    internal async Task AnimateAsync()
+    {
+        await AnimateInternalAsync();
+    }
+
+    private async Task SetupInViewTriggerAsync()
+    {
+        if (_jsModule == null || _dotNetRef == null) return;
+
+        try
+        {
+            var options = InViewOptions ?? new InViewOptions();
+            _observerId = await _jsModule.InvokeAsync<int>(
+                "setupInViewObserver",
+                _elementRef,
+                options,
+                _dotNetRef);
+        }
+        catch (JSException ex)
+        {
+            Console.WriteLine($"Motion: Failed to setup IntersectionObserver - {ex.Message}");
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnIntersecting()
+    {
+        if (!_hasAnimated || InViewOptions?.Once == false)
+        {
+            _hasAnimated = true;
+            // Force re-render to remove opacity-0 class
+            StateHasChanged();
+            await AnimateInternalAsync();
+        }
+    }
+
+    private async Task AnimateInternalAsync()
+    {
+        if (_jsModule == null)
+        {
+            Console.WriteLine("Motion: JS module not loaded");
+            return;
+        }
+
+        // Check for reduced motion preference
+        if (RespectReducedMotion)
+        {
+            var prefersReducedMotion = await CheckReducedMotionAsync();
+            if (prefersReducedMotion)
+            {
+                // Skip animation or use simplified version
+                Console.WriteLine("Motion: Animation skipped due to reduced motion preference");
+                return;
+            }
+        }
+
+        try
+        {
+            // Collect keyframes from presets or use custom keyframes
+            List<MotionKeyframe> keyframes;
+            MotionOptions? options = Options;
+            SpringOptions? spring = Spring;
+
+            Console.WriteLine($"Motion: Starting animation with {CollectedPresets.Count} presets");
+
+            if (CollectedPresets.Any())
+            {
+                // Separate presets into keyframe providers and option/spring providers
+                var keyframePresets = CollectedPresets.Where(p => p.GetKeyframes()?.Any() == true).ToList();
+                var springPreset = CollectedPresets.FirstOrDefault(p => p.GetSpringOptions() != null);
+                
+                // Merge all options first
+                foreach (var preset in CollectedPresets)
+                {
+                    if (preset.GetOptions() != null)
+                    {
+                        options = MergeOptions(options, preset.GetOptions());
+                    }
+                }
+                
+                // Apply spring if available (overrides easing)
+                if (springPreset?.GetSpringOptions() != null)
+                {
+                    spring = springPreset.GetSpringOptions();
+                }
+                
+                // Now handle keyframes
+                if (keyframePresets.Count == 0)
+                {
+                    // No keyframes to animate (shouldn't happen, but handle gracefully)
+                    Console.WriteLine("Motion: No keyframes from any preset");
+                    return;
+                }
+                else if (keyframePresets.Count == 1)
+                {
+                    // Single preset with keyframes: use all keyframes as-is
+                    keyframes = keyframePresets[0].GetKeyframes();
+                    Console.WriteLine($"Motion: Using {keyframes.Count} keyframes from single preset");
+                }
+                else
+                {
+                    // Multiple presets with keyframes: merge their FROM/TO
+                    var fromKeyframe = new MotionKeyframe();
+                    var toKeyframe = new MotionKeyframe();
+                    
+                    foreach (var preset in keyframePresets)
+                    {
+                        var presetKeyframes = preset.GetKeyframes();
+                        var from = presetKeyframes.First();
+                        var to = presetKeyframes.Last();
+
+                        MergeKeyframe(fromKeyframe, from);
+                        MergeKeyframe(toKeyframe, to);
+                    }
+
+                    keyframes = new List<MotionKeyframe> { fromKeyframe, toKeyframe };
+                    Console.WriteLine($"Motion: Merged {keyframePresets.Count} keyframe presets into 2 keyframes");
+                }
+            }
+            else if (Keyframes != null && Keyframes.Any())
+            {
+                keyframes = Keyframes;
+            }
+            else
+            {
+                // No animation to perform
+                Console.WriteLine("Motion: No keyframes to animate");
+                return;
+            }
+
+            Console.WriteLine($"Motion: Animating with {keyframes.Count} keyframes");
+
+            // Apply stagger if in context
+            if (Context != null && Context.StaggerDelay > 0)
+            {
+                options = options ?? new MotionOptions();
+                options.Delay = (options.Delay ?? 0) + (_myStaggerIndex * Context.StaggerDelay);
+                Console.WriteLine($"Motion: Stagger delay applied - MyIndex={_myStaggerIndex}, StaggerDelay={Context.StaggerDelay}, TotalDelay={options.Delay}");
+            }
+
+            _animationId = await _jsModule.InvokeAsync<int>(
+                "motionAnimate",
+                _elementRef,
+                keyframes,
+                options,
+                spring);
+            
+            Console.WriteLine($"Motion: Animation started with ID {_animationId}");
+        }
+        catch (JSException ex)
+        {
+            Console.WriteLine($"Motion: Animation failed - {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Motion: Unexpected error - {ex.Message}");
+        }
+    }
+
+    private async Task<bool> CheckReducedMotionAsync()
+    {
+        try
+        {
+            if (_jsModule != null)
+            {
+                return await _jsModule.InvokeAsync<bool>("checkReducedMotion");
+            }
+            
+            // Fallback if module not loaded
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Motion: Failed to check reduced motion preference - {ex.Message}");
+            return false;
+        }
+    }
+
+    private MotionOptions? MergeOptions(MotionOptions? current, MotionOptions? preset)
+    {
+        if (current == null) return preset;
+        if (preset == null) return current;
+
+        // User-specified options (current) take precedence over preset defaults
+        return new MotionOptions
+        {
+            Duration = current.Duration ?? preset.Duration,
+            Delay = current.Delay ?? preset.Delay,
+            Easing = current.Easing ?? preset.Easing,
+            CustomEasing = current.CustomEasing ?? preset.CustomEasing,
+            Repeat = current.Repeat ?? preset.Repeat,
+            RepeatReverse = current.RepeatReverse ?? preset.RepeatReverse,
+            RepeatDelay = current.RepeatDelay ?? preset.RepeatDelay,
+            Fill = current.Fill ?? preset.Fill,
+            Direction = current.Direction ?? preset.Direction
+        };
+    }
+
+    /// <summary>
+    /// Merges properties from source keyframe into target keyframe.
+    /// Properties from source overwrite properties in target.
+    /// </summary>
+    private void MergeKeyframe(MotionKeyframe target, MotionKeyframe source)
+    {
+        if (source.Opacity.HasValue) target.Opacity = source.Opacity;
+        if (source.Scale.HasValue) target.Scale = source.Scale;
+        if (source.Rotate.HasValue) target.Rotate = source.Rotate;
+        if (source.ScaleX.HasValue) target.ScaleX = source.ScaleX;
+        if (source.ScaleY.HasValue) target.ScaleY = source.ScaleY;
+        if (source.RotateX.HasValue) target.RotateX = source.RotateX;
+        if (source.RotateY.HasValue) target.RotateY = source.RotateY;
+        if (source.SkewX.HasValue) target.SkewX = source.SkewX;
+        if (source.SkewY.HasValue) target.SkewY = source.SkewY;
+        if (!string.IsNullOrEmpty(source.X)) target.X = source.X;
+        if (!string.IsNullOrEmpty(source.Y)) target.Y = source.Y;
+        if (!string.IsNullOrEmpty(source.Z)) target.Z = source.Z;
+        if (!string.IsNullOrEmpty(source.Filter)) target.Filter = source.Filter;
+        if (!string.IsNullOrEmpty(source.BackgroundColor)) target.BackgroundColor = source.BackgroundColor;
+        if (!string.IsNullOrEmpty(source.Color)) target.Color = source.Color;
+        if (!string.IsNullOrEmpty(source.BorderRadius)) target.BorderRadius = source.BorderRadius;
+        if (!string.IsNullOrEmpty(source.Width)) target.Width = source.Width;
+        if (!string.IsNullOrEmpty(source.Height)) target.Height = source.Height;
+    }
+
+    protected override void OnInitialized()
+    {
+        // Initialize stagger context if this component provides staggering
+        if (StaggerChildren.HasValue && StaggerChildren.Value > 0)
+        {
+            _staggerContext = new MotionContext { StaggerDelay = StaggerChildren.Value };
+        }
+        
+        // If we're a child in a stagger context, register with parent
+        if (Context != null && ParentMotion != null)
+        {
+            // Get next index and SAVE it to OUR OWN field (not shared context)
+            _myStaggerIndex = Context.GetNextChildIndex();
+            ParentMotion.RegisterChild(this);
+        }
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorUI.Components/js/motion.js");
+
+                _dotNetRef = DotNetObjectReference.Create(this);
+            }
+            catch (JSException ex)
+            {
+                Console.WriteLine($"Motion: Failed to load module - {ex.Message}");
+                return;
+            }
+
+            // Set up trigger
+            if (Trigger == MotionTrigger.OnAppear)
+            {
+                await AnimateInternalAsync();
+            }
+            else if (Trigger == MotionTrigger.OnInView)
+            {
+                await SetupInViewTriggerAsync();
+            }
+        }
+    }
+    
+    public void Dispose()
+    {
+        // Unregister from parent if we were registered
+        if (ParentMotion != null)
+        {
+            ParentMotion.UnregisterChild(this);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule != null)
+        {
+            if (_animationId != -1)
+            {
+                try
+                {
+                    await _jsModule.InvokeVoidAsync("stopAnimation", _animationId);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Motion: Failed to stop animation during disposal - {ex.Message}");
+                }
+            }
+
+            if (_observerId != -1)
+            {
+                try
+                {
+                    await _jsModule.InvokeVoidAsync("cleanupInViewObserver", _observerId);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Motion: Failed to cleanup observer during disposal - {ex.Message}");
+                }
+            }
+
+            try
+            {
+                await _jsModule.DisposeAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Motion: Failed to dispose JS module - {ex.Message}");
+            }
+        }
+
+        _dotNetRef?.Dispose();
+    }
+
+    private string GetCombinedClasses()
+    {
+        var classes = new List<string>();
+        
+        // Add user-provided classes
+        if (!string.IsNullOrEmpty(Class))
+        {
+            classes.Add(Class);
+        }
+        
+        // For OnInView triggers, hide initially to prevent flash before animation
+        if (Trigger == MotionTrigger.OnInView && !_hasAnimated)
+        {
+            classes.Add("opacity-0");
+        }
+        
+        return string.Join(" ", classes);
+    }
+}

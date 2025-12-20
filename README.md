@@ -224,7 +224,7 @@ Primitives give you complete control over styling while handling all the complex
 
 ## Components
 
-BlazorUI includes **40 styled components** with full shadcn/ui design compatibility:
+BlazorUI includes **41 styled components** with full shadcn/ui design compatibility:
 
 ### Form Components
 - **Button** - Multiple variants (default, destructive, outline, secondary, ghost, link) with icon support
@@ -276,6 +276,9 @@ BlazorUI includes **40 styled components** with full shadcn/ui design compatibil
 - **Toggle** - Pressable toggle buttons
 - **Toggle Group** - Single/multiple selection toggle groups
 - **Typography** - Semantic text styling
+
+### Animation
+- **Motion** - Declarative animation system powered by Motion.dev with 20+ presets including fade, scale, slide, shake, bounce, pulse, spring physics, scroll-triggered animations, and staggered list/grid animations
 
 ### Icons
 

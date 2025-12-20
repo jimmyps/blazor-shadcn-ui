@@ -1,0 +1,48 @@
+@inherits MotionPresetBase
+@namespace BlazorUI.Components.Motion
+
+@*
+    FadeInOnScroll Preset - Fade in when element enters viewport
+    Use with Trigger="MotionTrigger.OnInView"
+*@
+
+@code {
+    /// <summary>
+    /// Starting opacity (0-1). Default: 0
+    /// </summary>
+    [Parameter]
+    public double From { get; set; } = 0;
+
+    /// <summary>
+    /// Ending opacity (0-1). Default: 1
+    /// </summary>
+    [Parameter]
+    public double To { get; set; } = 1;
+
+    /// <summary>
+    /// Duration in seconds. Default: 0.6
+    /// </summary>
+    [Parameter]
+    public double Duration { get; set; } = 0.6;
+
+    public override List<MotionKeyframe> GetKeyframes()
+    {
+        return new List<MotionKeyframe>
+        {
+            new MotionKeyframe { Opacity = From },
+            new MotionKeyframe { Opacity = To }
+        };
+    }
+
+    public override MotionOptions? GetOptions()
+    {
+        var options = new MotionOptions
+        {
+            Duration = Duration
+        };
+        
+        ApplyEasing(options, MotionEasing.EaseOut);
+        
+        return options;
+    }
+}
