@@ -257,12 +257,11 @@
                 var springPreset = CollectedPresets.FirstOrDefault(p => p.GetSpringOptions() != null);
                 
                 // Merge all options first
-                foreach (var preset in CollectedPresets)
+                foreach (var presetOptions in CollectedPresets
+                    .Select(p => p.GetOptions())
+                    .Where(opts => opts != null))
                 {
-                    if (preset.GetOptions() != null)
-                    {
-                        options = MergeOptions(options, preset.GetOptions());
-                    }
+                    options = MergeOptions(options, presetOptions);
                 }
                 
                 // Apply spring if available (overrides easing)
@@ -290,12 +289,12 @@
                     var fromKeyframe = new MotionKeyframe();
                     var toKeyframe = new MotionKeyframe();
                     
-                    foreach (var preset in keyframePresets)
+                    foreach (var (from, to) in keyframePresets.Select(preset =>
                     {
                         var presetKeyframes = preset.GetKeyframes();
-                        var from = presetKeyframes.First();
-                        var to = presetKeyframes.Last();
-
+                        return (from: presetKeyframes.First(), to: presetKeyframes.Last());
+                    }))
+                    {
                         MergeKeyframe(fromKeyframe, from);
                         MergeKeyframe(toKeyframe, to);
                     }

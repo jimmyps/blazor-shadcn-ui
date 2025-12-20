@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>BlazorUI.Demo</RootNamespace>
     <AssemblyName>BlazorUI.Demo.Client</AssemblyName>
+    <!-- Use a different base path when referenced as a project to avoid static asset conflicts -->
+    <StaticWebAssetBasePath Condition="'$(IsPublishing)' != 'true'">_content/BlazorUI.Demo.Client</StaticWebAssetBasePath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,5 +18,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.14" PrivateAssets="all" />
   </ItemGroup>
+
+  <!-- Build Tailwind CSS (skipped in CI if tailwindcss.exe not available) -->
+  <Target Name="BuildTailwindCSS" BeforeTargets="BeforeBuild" Condition="Exists('$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe')">
+    <Message Text="Building Tailwind CSS..." Importance="high" />
+    <Exec Command="$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe -i wwwroot/css/app-input.css -o wwwroot/css/app.css" />
+  </Target>
 
 </Project>
