@@ -1,11 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BlazorUI.Components\BlazorUI.Components.csproj" />
-    <ProjectReference Include="..\..\src\BlazorUI.Icons.Lucide\BlazorUI.Icons.Lucide.csproj" />
-    <ProjectReference Include="..\..\src\BlazorUI.Icons.Heroicons\BlazorUI.Icons.Heroicons.csproj" />
-    <ProjectReference Include="..\..\src\BlazorUI.Icons.Feather\BlazorUI.Icons.Feather.csproj" />
-    <ProjectReference Include="..\..\src\BlazorUI.Primitives\BlazorUI.Primitives.csproj" />
+    <ProjectReference Include="..\BlazorUI.Demo.Shared\BlazorUI.Demo.Shared.csproj" />
+    <ProjectReference Include="..\BlazorUI.Demo.Client\BlazorUI.Demo.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.14" />
   </ItemGroup>
 
   <PropertyGroup>
