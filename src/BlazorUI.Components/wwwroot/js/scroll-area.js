@@ -133,14 +133,8 @@ export function initialize(scrollAreaElement, options) {
     resizeObserver.observe(viewport);
 
     // Drag functionality for vertical scrollbar
+    let verticalDragHandlers = null;
     if (verticalThumb) {
-        const handleVerticalDragStart = (e) => {
-            isDragging = true;
-            dragStartY = e.clientY || e.touches?.[0]?.clientY || 0;
-            dragStartScrollTop = viewport.scrollTop;
-            e.preventDefault();
-        };
-
         const handleVerticalDragMove = (e) => {
             if (!isDragging) return;
             
@@ -160,22 +154,43 @@ export function initialize(scrollAreaElement, options) {
             e.preventDefault();
         };
 
-        verticalThumb.addEventListener('mousedown', handleVerticalDragStart);
-        verticalThumb.addEventListener('touchstart', handleVerticalDragStart, { passive: false });
-        
-        document.addEventListener('mousemove', handleVerticalDragMove);
-        document.addEventListener('touchmove', handleVerticalDragMove, { passive: false });
-    }
+        const handleVerticalDragEnd = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            document.removeEventListener('mousemove', handleVerticalDragMove);
+            document.removeEventListener('touchmove', handleVerticalDragMove);
+            document.removeEventListener('mouseup', handleVerticalDragEnd);
+            document.removeEventListener('touchend', handleVerticalDragEnd);
+        };
 
-    // Drag functionality for horizontal scrollbar
-    if (horizontalThumb) {
-        const handleHorizontalDragStart = (e) => {
+        const handleVerticalDragStart = (e) => {
             isDragging = true;
-            dragStartX = e.clientX || e.touches?.[0]?.clientX || 0;
-            dragStartScrollLeft = viewport.scrollLeft;
+            dragStartY = e.clientY || e.touches?.[0]?.clientY || 0;
+            dragStartScrollTop = viewport.scrollTop;
+            
+            document.addEventListener('mousemove', handleVerticalDragMove);
+            document.addEventListener('touchmove', handleVerticalDragMove, { passive: false });
+            document.addEventListener('mouseup', handleVerticalDragEnd);
+            document.addEventListener('touchend', handleVerticalDragEnd);
+            
             e.preventDefault();
         };
 
+        verticalThumb.addEventListener('mousedown', handleVerticalDragStart);
+        verticalThumb.addEventListener('touchstart', handleVerticalDragStart, { passive: false });
+        
+        // Store handlers for cleanup
+        verticalDragHandlers = {
+            start: handleVerticalDragStart,
+            move: handleVerticalDragMove,
+            end: handleVerticalDragEnd
+        };
+    }
+
+    // Drag functionality for horizontal scrollbar
+    let horizontalDragHandlers = null;
+    if (horizontalThumb) {
         const handleHorizontalDragMove = (e) => {
             if (!isDragging) return;
             
@@ -195,20 +210,39 @@ export function initialize(scrollAreaElement, options) {
             e.preventDefault();
         };
 
+        const handleHorizontalDragEnd = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            document.removeEventListener('mousemove', handleHorizontalDragMove);
+            document.removeEventListener('touchmove', handleHorizontalDragMove);
+            document.removeEventListener('mouseup', handleHorizontalDragEnd);
+            document.removeEventListener('touchend', handleHorizontalDragEnd);
+        };
+
+        const handleHorizontalDragStart = (e) => {
+            isDragging = true;
+            dragStartX = e.clientX || e.touches?.[0]?.clientX || 0;
+            dragStartScrollLeft = viewport.scrollLeft;
+            
+            document.addEventListener('mousemove', handleHorizontalDragMove);
+            document.addEventListener('touchmove', handleHorizontalDragMove, { passive: false });
+            document.addEventListener('mouseup', handleHorizontalDragEnd);
+            document.addEventListener('touchend', handleHorizontalDragEnd);
+            
+            e.preventDefault();
+        };
+
         horizontalThumb.addEventListener('mousedown', handleHorizontalDragStart);
         horizontalThumb.addEventListener('touchstart', handleHorizontalDragStart, { passive: false });
         
-        document.addEventListener('mousemove', handleHorizontalDragMove);
-        document.addEventListener('touchmove', handleHorizontalDragMove, { passive: false });
+        // Store handlers for cleanup
+        horizontalDragHandlers = {
+            start: handleHorizontalDragStart,
+            move: handleHorizontalDragMove,
+            end: handleHorizontalDragEnd
+        };
     }
-
-    // Global drag end handler
-    const handleDragEnd = () => {
-        isDragging = false;
-    };
-    
-    document.addEventListener('mouseup', handleDragEnd);
-    document.addEventListener('touchend', handleDragEnd);
 
     // Track click functionality for vertical scrollbar
     if (verticalScrollbar && verticalThumb) {
@@ -284,9 +318,27 @@ export function initialize(scrollAreaElement, options) {
             viewport.removeEventListener('scroll', handleScroll);
             resizeObserver.disconnect();
             
-            // Remove drag event listeners
-            document.removeEventListener('mouseup', handleDragEnd);
-            document.removeEventListener('touchend', handleDragEnd);
+            // Clean up vertical drag handlers
+            if (verticalDragHandlers && verticalThumb) {
+                verticalThumb.removeEventListener('mousedown', verticalDragHandlers.start);
+                verticalThumb.removeEventListener('touchstart', verticalDragHandlers.start);
+                // Also ensure move/end listeners are removed in case drag is in progress
+                document.removeEventListener('mousemove', verticalDragHandlers.move);
+                document.removeEventListener('touchmove', verticalDragHandlers.move);
+                document.removeEventListener('mouseup', verticalDragHandlers.end);
+                document.removeEventListener('touchend', verticalDragHandlers.end);
+            }
+            
+            // Clean up horizontal drag handlers
+            if (horizontalDragHandlers && horizontalThumb) {
+                horizontalThumb.removeEventListener('mousedown', horizontalDragHandlers.start);
+                horizontalThumb.removeEventListener('touchstart', horizontalDragHandlers.start);
+                // Also ensure move/end listeners are removed in case drag is in progress
+                document.removeEventListener('mousemove', horizontalDragHandlers.move);
+                document.removeEventListener('touchmove', horizontalDragHandlers.move);
+                document.removeEventListener('mouseup', horizontalDragHandlers.end);
+                document.removeEventListener('touchend', horizontalDragHandlers.end);
+            }
         },
         
         scrollTo: (options) => {

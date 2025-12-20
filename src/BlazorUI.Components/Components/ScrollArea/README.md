@@ -95,7 +95,7 @@ A styled scrollable region with custom scrollbars, scroll shadows, and enhanced 
 | `ScrollHideDelay` | `int` | `600` | Controls visibility delay of scrollbars in milliseconds |
 | `ShowVerticalScrollbar` | `bool` | `true` | Whether to show the vertical scrollbar |
 | `ShowHorizontalScrollbar` | `bool` | `false` | Whether to show the horizontal scrollbar |
-| `EnableScrollShadows` | `bool` | `true` | Whether to enable scroll shadows indicating more content |
+| `EnableScrollShadows` | `bool` | `false` | Whether to enable scroll shadows indicating more content |
 | `Class` | `string?` | `null` | Additional CSS classes to apply |
 | `AdditionalAttributes` | `Dictionary<string, object>?` | `null` | Additional HTML attributes |
 

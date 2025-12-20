@@ -1,7 +1,9 @@
 @namespace BlazorUI.Components.ScrollArea
 @using Microsoft.JSInterop
+@using Microsoft.Extensions.Logging
 @implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
+@inject ILogger<ScrollArea> Logger
 
 @* ScrollArea - styled scrollable region with custom scrollbars and scroll shadows *@
 <div @ref="_scrollAreaRef" @attributes="GetRootAttributes()">
@@ -111,13 +113,15 @@
                     _scrollAreaRef,
                     new { enableShadows = EnableScrollShadows });
             }
-            catch (JSException)
+            catch (JSException ex)
             {
-                // Silently handle JS interop errors during initialization
+                // Log JS interop errors during initialization for debugging
+                Logger.LogWarning(ex, "ScrollArea: JavaScript initialization failed. Component will work without JS features.");
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException ex)
             {
-                // Silently handle errors when JS runtime is not available (e.g., during server-side prerendering)
+                // Log when JS runtime is not available (e.g., during server-side prerendering)
+                Logger.LogDebug(ex, "ScrollArea: JS runtime not available during initialization (likely prerendering).");
             }
         }
     }
