@@ -1,12 +1,30 @@
 @namespace BlazorUI.Components.ScrollArea
+@using Microsoft.JSInterop
+@using Microsoft.Extensions.Logging
+@implements IAsyncDisposable
+@inject IJSRuntime JSRuntime
+@inject ILogger<ScrollArea> Logger
 
-@* ScrollArea - styled scrollable region with custom scrollbars *@
-<div @attributes="GetRootAttributes()">
-    <div class="h-full w-full rounded-[inherit] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style="@GetOverflowStyle()">
+@* ScrollArea - styled scrollable region with custom scrollbars and scroll shadows *@
+<div @ref="_scrollAreaRef" @attributes="GetRootAttributes()">
+    <div @ref="_viewportRef" 
+         class="h-full w-full rounded-[inherit] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" 
+         style="@GetOverflowStyle()"
+         data-scroll-viewport>
         <div style="min-width: 100%; display: table;">
             @ChildContent
         </div>
     </div>
+    
+    @* Scroll shadows *@
+    @if (EnableScrollShadows)
+    {
+        <div class="scroll-shadow scroll-shadow-top"></div>
+        <div class="scroll-shadow scroll-shadow-bottom"></div>
+        <div class="scroll-shadow scroll-shadow-left"></div>
+        <div class="scroll-shadow scroll-shadow-right"></div>
+    }
+    
     @if (ShowVerticalScrollbar)
     {
         <ScrollBar Orientation="Orientation.Vertical" />
@@ -22,6 +40,11 @@
 </div>
 
 @code {
+    private ElementReference _scrollAreaRef;
+    private ElementReference _viewportRef;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _scrollAreaInstance;
+
     /// <summary>
     /// The content to render within the scrollable area.
     /// </summary>
@@ -58,6 +81,13 @@
     public bool ShowHorizontalScrollbar { get; set; } = false;
 
     /// <summary>
+    /// Whether to enable scroll shadows that indicate more content is available.
+    /// Default is false.
+    /// </summary>
+    [Parameter]
+    public bool EnableScrollShadows { get; set; } = false;
+
+    /// <summary>
     /// Additional CSS classes to apply to the root element.
     /// </summary>
     [Parameter]
@@ -68,6 +98,33 @@
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorUI.Components/js/scroll-area.js");
+
+                _scrollAreaInstance = await _module.InvokeAsync<IJSObjectReference>(
+                    "initialize",
+                    _scrollAreaRef,
+                    new { enableShadows = EnableScrollShadows });
+            }
+            catch (JSException ex)
+            {
+                // Log JS interop errors during initialization for debugging
+                Logger.LogWarning(ex, "ScrollArea: JavaScript initialization failed. Component will work without JS features.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Log when JS runtime is not available (e.g., during server-side prerendering)
+                Logger.LogDebug(ex, "ScrollArea: JS runtime not available during initialization (likely prerendering).");
+            }
+        }
+    }
 
     private string GetOverflowStyle()
     {
@@ -82,7 +139,7 @@
 
     private Dictionary<string, object> GetRootAttributes()
     {
-        var baseClass = "relative overflow-hidden";
+        var baseClass = "group/scroll-area relative overflow-hidden";
         var classValue = string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
 
         var attributes = new Dictionary<string, object> { ["class"] = classValue };
@@ -96,5 +153,34 @@
         }
 
         return attributes;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_module != null && _scrollAreaInstance != null)
+            {
+                await _module.InvokeVoidAsync("dispose", _scrollAreaInstance);
+            }
+
+            if (_scrollAreaInstance != null)
+            {
+                await _scrollAreaInstance.DisposeAsync();
+            }
+
+            if (_module != null)
+            {
+                await _module.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Silently handle - JS runtime already disconnected
+        }
+        catch (JSException)
+        {
+            // Silently handle - component already disposed or JS error
+        }
     }
 }

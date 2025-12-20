@@ -113,6 +113,64 @@
     overflow-x: hidden;
   }
 
+  /* ScrollArea Shadows */
+  .scroll-shadow {
+    position: absolute;
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 150ms ease-in-out;
+  }
+
+  .scroll-shadow-top {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--background) 0%, transparent 100%);
+  }
+
+  .scroll-shadow-bottom {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to top, var(--background) 0%, transparent 100%);
+  }
+
+  .scroll-shadow-left {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    background: linear-gradient(to right, var(--background) 0%, transparent 100%);
+  }
+
+  .scroll-shadow-right {
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 60px;
+    background: linear-gradient(to left, var(--background) 0%, transparent 100%);
+  }
+
+  /* Show shadows when scrollable */
+  [data-scroll-top="true"] .scroll-shadow-top {
+    opacity: 1;
+  }
+
+  [data-scroll-bottom="true"] .scroll-shadow-bottom {
+    opacity: 1;
+  }
+
+  [data-scroll-left="true"] .scroll-shadow-left {
+    opacity: 1;
+  }
+
+  [data-scroll-right="true"] .scroll-shadow-right {
+    opacity: 1;
+  }
+
   /* Dialog Animation Classes - reusable for any component */
   /* Apply animations per instance using dialog-animated class on both panel and overlay */
 
