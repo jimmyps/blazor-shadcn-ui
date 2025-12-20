@@ -7,29 +7,24 @@ A **declarative, strongly-typed animation system** for Blazor that wraps the [Mo
 - 🎯 **Declarative API** - Define animations directly in Razor markup
 - 💪 **Strongly Typed** - Full IntelliSense support for all animation properties
 - 🎨 **Composable Presets** - Combine multiple animation effects
+- 🎭 **27 Easing Functions** - Comprehensive easing options from linear to spring physics
+- ⚡ **Auto-Loading** - Motion.dev library loads automatically from CDN (no manual setup required)
+- 🔧 **Spring Physics** - Natural, physics-based animations
 - ♿ **Accessible** - Respects user's reduced motion preferences
 - 📱 **Responsive** - Works across all Blazor hosting models
 - 🔧 **Flexible** - Use presets or define custom keyframes
 
 ## Installation
 
-### 1. Add Motion.dev Library
-
-The Motion.dev library is included with BlazorUI.Components. Add the script to your `App.razor` or `_Host.cshtml`:
-
-```html
-<script src="_content/BlazorUI.Components/js/motion-one.min.js"></script>
-```
-
-This loads the Motion.dev library (version 10.16.2) that's bundled with the component package.
-
-### 2. Import Namespace
+### Import Namespace
 
 Add to your `_Imports.razor`:
 
 ```razor
 @using BlazorUI.Components.Motion
 ```
+
+That's it! The Motion.dev library loads automatically on first use.
 
 ## Basic Usage
 
@@ -54,6 +49,75 @@ Add to your `_Imports.razor`:
         <Spring Stiffness="200" Damping="22" />
     </Presets>
     <div class="card">Fade + Scale with spring physics</div>
+</Motion>
+```
+
+### Custom Easing
+
+All presets support custom easing functions:
+
+```razor
+<Motion Trigger="@MotionTrigger.OnAppear">
+    <Presets>
+        <SlideInFromLeft Easing="MotionEasing.BackOut" />
+    </Presets>
+    <div class="card">Slides in with overshoot effect!</div>
+</Motion>
+```
+
+## Easing Functions
+
+Choose from **27 built-in easing functions**:
+
+**Basic:**
+- `Linear` - Constant speed
+
+**Quadratic:**
+- `QuadraticIn`, `QuadraticOut`, `QuadraticInOut` - Gentle acceleration curves
+
+**Cubic:**
+- `CubicIn`, `CubicOut`, `CubicInOut` - Smooth acceleration
+
+**Quartic:**
+- `QuarticIn`, `QuarticOut`, `QuarticInOut` - Strong acceleration
+
+**Quintic:**
+- `QuinticIn`, `QuinticOut`, `QuinticInOut` - Very strong acceleration
+
+**Sinusoidal:**
+- `SinusoidalIn`, `SinusoidalOut`, `SinusoidalInOut` - Smooth sine wave motion
+
+**Exponential:**
+- `ExponentialIn`, `ExponentialOut`, `ExponentialInOut` - Dramatic acceleration
+
+**Circular:**
+- `CircularIn`, `CircularOut`, `CircularInOut` - Smooth arc motion
+
+**Back (Overshoot):**
+- `BackIn`, `BackOut`, `BackInOut` - ⭐ **Popular!** Overshoots target then settles
+
+**Elastic:**
+- `ElasticIn`, `ElasticOut`, `ElasticInOut` - Spring-like oscillation
+
+**Bounce:**
+- `BounceIn`, `BounceOut`, `BounceInOut` - Bouncing ball effect
+
+**Legacy Aliases:**
+- `EaseIn` (QuadraticIn), `EaseOut` (QuadraticOut), `EaseInOut` (QuadraticInOut)
+
+**Custom:**
+- `Custom` - Define your own cubic-bezier curve
+
+### Example: Overshoot Effect
+
+```razor
+<Motion Trigger="@MotionTrigger.Manual" @ref="_motion">
+    <Presets>
+        <ScaleIn From="0.8" Easing="MotionEasing.BackOut" />
+    </Presets>
+    <Button OnClick="@(() => _motion?.PlayAsync())">
+        Click me - I overshoot!
+    </Button>
 </Motion>
 ```
 
@@ -122,28 +186,23 @@ Trigger animation programmatically:
 - `<SlideInFromLeft />` - Slide in from left
 - `<SlideInFromRight />` - Slide in from right
 
-**Exit:**
-- `<FadeOut />` - Fade to transparent
-- `<ScaleOut />` - Scale down
+All entry presets support custom easing via `Easing` parameter!
 
 ### Micro-Interactions
 
 - `<Pulse />` - Pulsing scale animation
 - `<BounceOnce />` - Single bounce effect
 - `<ShakeX />` - Horizontal shake (great for errors)
-- `<ShakeY />` - Vertical shake
 
 ### List & Grid Animations
 
 - `<ListItemEnter />` - Polished list item entry
-- `<ListItemExit />` - Polished list item exit
 - `<GridItemEnter />` - Grid item entry with scale
 
 ### Scroll-Based Animations
 
 - `<FadeInOnScroll />` - Fade in on viewport entry
 - `<SlideInOnScroll />` - Slide up on viewport entry
-- `<ExpandOnScroll />` - Scale up on viewport entry
 
 ### Physics
 
@@ -186,7 +245,7 @@ Define custom animations without presets:
     private MotionOptions _options = new()
     {
         Duration = 0.6,
-        Easing = MotionEasing.EaseOut
+        Easing = MotionEasing.BackOut  // Try the overshoot effect!
     };
 }
 ```
@@ -234,7 +293,7 @@ To force animations even with reduced motion preference:
 
 ## Advanced Examples
 
-### Dialog Entry Animation
+### Dialog Entry Animation with Overshoot
 
 ```razor
 <Dialog>
@@ -245,13 +304,12 @@ To force animations even with reduced motion preference:
     <Motion Trigger="@MotionTrigger.OnAppear">
         <Presets>
             <FadeIn />
-            <ScaleIn From="0.8" />
-            <Spring Stiffness="200" Damping="25" />
+            <ScaleIn From="0.8" Easing="MotionEasing.BackOut" />
         </Presets>
         <DialogContent>
             <DialogTitle>Animated Dialog</DialogTitle>
             <DialogDescription>
-                This dialog slides in with spring physics!
+                This dialog bounces in with an overshoot effect!
             </DialogDescription>
         </DialogContent>
     </Motion>
@@ -267,7 +325,7 @@ To force animations even with reduced motion preference:
             InViewOptions="@(new InViewOptions { Threshold = 0.2 })">
         <Presets>
             <FadeInOnScroll />
-            <SlideInOnScroll From="100px" />
+            <SlideInOnScroll From="100px" Easing="MotionEasing.CircularOut" />
         </Presets>
         
         <Card class="mb-4">
@@ -282,7 +340,7 @@ To force animations even with reduced motion preference:
 }
 ```
 
-### Staggered Grid
+### Staggered Grid with Different Easings
 
 ```razor
 <Motion Trigger="@MotionTrigger.OnAppear" StaggerChildren="0.1">
@@ -291,8 +349,7 @@ To force animations even with reduced motion preference:
         {
             <Motion>
                 <Presets>
-                    <GridItemEnter Duration="0.5" />
-                    <Spring Bounce="0.3" />
+                    <GridItemEnter Duration="0.5" Easing="MotionEasing.BackOut" />
                 </Presets>
                 <Card>@item</Card>
             </Motion>
@@ -345,6 +402,18 @@ To force animations even with reduced motion preference:
 | `Class` | `string` | - | CSS classes |
 | `Style` | `string` | - | Inline styles |
 
+### Preset Parameters
+
+All animation presets support the following parameters:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `Easing` | `MotionEasing?` | Easing function (overrides default) |
+| `CustomEasing` | `double[]?` | Custom cubic-bezier [x1, y1, x2, y2] |
+| `Duration` | `double` | Animation duration in seconds |
+
+Individual presets may have additional parameters like `From`, `To`, `Intensity`, etc.
+
 ### MotionKeyframe
 
 All properties are optional:
@@ -364,7 +433,8 @@ All properties are optional:
 
 - `Duration` (double?) - Animation duration in seconds
 - `Delay` (double?) - Delay before start in seconds
-- `Easing` (MotionEasing?) - Easing function
+- `Easing` (MotionEasing?) - Easing function (27 options!)
+- `CustomEasing` (double[]?) - Custom cubic-bezier curve
 - `Repeat` (double?) - Repeat count (-1 for infinite)
 - `RepeatReverse` (bool?) - Reverse on repeat
 - `RepeatDelay` (double?) - Delay between repeats
@@ -395,31 +465,61 @@ Motion.dev supports all modern browsers:
 - Safari 14+
 - Edge 90+
 
+The Motion.dev library is automatically loaded from CDN on first use.
+
 ## Performance Tips
 
 1. **Prefer transforms** - Use `scale`, `x`, `y`, `rotate` instead of width/height
 2. **Use `Once: true`** - For scroll animations that should trigger once
 3. **Limit simultaneous animations** - Don't animate too many elements at once
 4. **Use springs sparingly** - Spring physics are more expensive than standard easing
+5. **Try BackOut for UI elements** - Creates a satisfying "bounce-in" effect with minimal performance cost
+
+## Easing Guide
+
+### Most Popular Easings
+
+- **`BackOut`** - ⭐ Best for buttons, dialogs, modals (overshoots slightly)
+- **`CircularOut`** - Smooth deceleration, natural feeling
+- **`CubicOut`** - All-purpose smooth easing
+- **`ExponentialOut`** - Dramatic slow-down effect
+
+### When to Use Each
+
+- **Linear** - Progress bars, loading indicators
+- **QuadraticOut / CubicOut** - General UI animations
+- **BackOut** - Attention-grabbing elements (buttons, dialogs)
+- **CircularOut** - Smooth, natural transitions
+- **ExponentialOut** - Dramatic reveals
+- **Spring** - Natural physics-based motion
 
 ## Troubleshooting
 
 ### Animations not working?
 
-1. Ensure Motion.dev script is loaded:
-   ```html
-   <script src="https://cdn.jsdelivr.net/npm/motion@10.16.2/dist/motion.js"></script>
-   ```
-
-2. Check browser console for errors
-
-3. Verify component has `@ref` if using Manual trigger
+1. **Check browser console** - The Motion.dev library loads automatically, check for network errors
+2. **Verify component has `@ref`** - Required when using `Trigger="@MotionTrigger.Manual"`
+3. **Test in a modern browser** - Motion.dev requires Chrome 90+, Firefox 88+, Safari 14+, or Edge 90+
 
 ### Scroll animations not triggering?
 
-1. Ensure `Trigger="@MotionTrigger.OnInView"`
-2. Check `InViewOptions.Threshold` - lower values trigger earlier
-3. Verify element is actually in/out of viewport
+1. **Ensure `Trigger="@MotionTrigger.OnInView"`**
+2. **Lower the threshold** - Try `Threshold = 0.1` for earlier triggering
+3. **Verify element scrolls into view** - Must actually enter the viewport
+4. **Check `Once` setting** - Default is `true` (triggers only once)
+
+### Easing doesn't look right?
+
+Motion.dev maps our 27 easing functions to its built-in easing names. Some complex easings (like Elastic and Bounce) are approximated. For the most precise control, use the `Spring` preset with custom physics parameters.
+
+## What's New
+
+### Latest Features
+
+✨ **Auto-Loading** - Motion.dev library now loads automatically from CDN
+✨ **27 Easing Functions** - Comprehensive easing options including popular BackOut
+✨ **Easing Parameters** - All presets support `Easing` and `CustomEasing` parameters
+✨ **Smart Mapping** - Easing functions automatically mapped to Motion.dev's API
 
 ## License
 
