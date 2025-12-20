@@ -108,26 +108,34 @@ dotnet build BlazorUI.sln
 ## Static Assets Strategy
 
 ### CSS and Styling
-Both projects include Tailwind CSS build support:
-- **BlazorUI.Demo**: Builds Tailwind CSS from `wwwroot/css/app-input.css` to `wwwroot/css/app.css`
-- **BlazorUI.Demo.Client**: Has its own Tailwind build pipeline with the same configuration
-- Tailwind config scans both projects and the Shared project for utility classes
+Tailwind CSS is built once in the Client project and shared with Demo:
+- **BlazorUI.Demo.Client**: Builds Tailwind CSS from `wwwroot/css/app-input.css` to `wwwroot/css/app.css`
+- **BlazorUI.Demo**: References Client's CSS via `_content/BlazorUI.Demo.Client/css/app.css` (no duplicate build)
+- Tailwind config scans the Shared project and component libraries for utility classes
 - Component library styles (`blazorui.css`) are served via `_content/` paths
+- **Benefit**: Single source of truth for CSS, no duplication
 
 ### Asset Management
-- **BlazorUI.Demo**: Contains all static assets (favicon, images, custom JS)
-- **BlazorUI.Demo.Client**: Contains its own copy of required assets (favicon, CSS)
+- **BlazorUI.Demo**: Contains static assets (favicon, images, custom JS) but NO CSS
+- **BlazorUI.Demo.Client**: Contains all CSS and required assets (favicon, CSS)
 - Static asset conflicts are avoided by using `StaticWebAssetBasePath` in the Client project when referenced by Demo
 - When running standalone, Client serves assets from root path
 - When referenced by Auto mode, Client assets are served from `_content/BlazorUI.Demo.Client/`
 
 ### Tailwind CSS Build
-Both projects have a build target that runs before compilation:
+Only the Client project builds Tailwind CSS:
 ```xml
+<!-- In BlazorUI.Demo.Client.csproj -->
 <Target Name="BuildTailwindCSS" BeforeTargets="BeforeBuild" 
         Condition="Exists('$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe')">
   <Exec Command="tailwindcss.exe -i wwwroot/css/app-input.css -o wwwroot/css/app.css" />
 </Target>
+```
+
+The Demo project references the built CSS:
+```html
+<!-- In BlazorUI.Demo/App.razor -->
+<link href="_content/BlazorUI.Demo.Client/css/app.css" rel="stylesheet" />
 ```
 
 ## Troubleshooting
@@ -139,10 +147,11 @@ If you encounter conflicts about duplicate static assets:
 - When published standalone, assets are served from root
 
 ### Missing Styles
-If the WASM client appears unstyled:
-- Ensure Tailwind CSS is built: `dotnet build BlazorUI.Demo.Client`
+If either project appears unstyled:
+- Ensure Tailwind CSS is built in Client: `dotnet build BlazorUI.Demo.Client`
 - Check that `wwwroot/css/app.css` exists in the Client project
-- Verify `index.html` references both `css/app.css` and `_content/BlazorUI.Components/blazorui.css`
+- Demo references CSS via `_content/BlazorUI.Demo.Client/css/app.css`
+- Client references CSS via `css/app.css` (standalone mode)
 
 ## Future Enhancements
 
