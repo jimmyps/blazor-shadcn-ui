@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BlazorUI.Components\BlazorUI.Components.csproj" />
@@ -17,9 +17,9 @@
   </PropertyGroup>
 
   <!-- Build Tailwind CSS (skipped in CI if tailwindcss.exe not available) -->
-  <Target Name="BuildTailwindCSS" BeforeTargets="BeforeBuild" Condition="Exists('$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe')">
+  <!--<Target Name="BuildTailwindCSS" BeforeTargets="BeforeBuild" Condition="Exists('$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe')">
     <Message Text="Building Tailwind CSS..." Importance="high" />
     <Exec Command="$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe -i wwwroot/css/app-input.css -o wwwroot/css/app.css" />
-  </Target>
+  </Target>-->
 
 </Project>
