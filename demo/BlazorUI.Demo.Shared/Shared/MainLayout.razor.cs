@@ -1,5 +1,6 @@
 using BlazorUI.Demo.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace BlazorUI.Demo.Shared;
 
@@ -7,6 +8,15 @@ public partial class MainLayout : LayoutComponentBase
 {
     [Inject]
     private CollapsibleStateService StateService { get; set; } = null!;
+    
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = null!;
+    
+    // Reference to the SpotlightCommandPalette component
+    private SpotlightCommandPalette? _spotlightRef;
+    
+    // Platform-specific modifier key (⌘ for Mac, Ctrl for others)
+    private string _modifierKey = "Ctrl";
 
     // State for each collapsible menu section
     private bool _primitivesMenuOpen;
@@ -26,6 +36,19 @@ public partial class MainLayout : LayoutComponentBase
             _primitivesMenuOpen = await StateService.GetStateAsync(PrimitivesMenuKey, defaultValue: false);
             _componentsMenuOpen = await StateService.GetStateAsync(ComponentsMenuKey, defaultValue: false);
             _iconsMenuOpen = await StateService.GetStateAsync(IconsMenuKey, defaultValue: false);
+
+            // Detect platform-specific modifier key
+            try
+            {
+                var module = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./js/keyboard-shortcuts.js");
+                _modifierKey = await module.InvokeAsync<string>("getModifierKey");
+            }
+            catch
+            {
+                // Fallback to Ctrl if detection fails
+                _modifierKey = "Ctrl";
+            }
 
             // Trigger re-render with loaded state
             StateHasChanged();
@@ -49,5 +72,10 @@ public partial class MainLayout : LayoutComponentBase
     {
         _iconsMenuOpen = isOpen;
         await StateService.SetStateAsync(IconsMenuKey, isOpen);
+    }
+    
+    private void OpenSpotlight()
+    {
+        _spotlightRef?.Open();
     }
 }

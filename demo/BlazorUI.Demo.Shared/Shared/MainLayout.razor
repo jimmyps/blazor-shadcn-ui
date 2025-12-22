@@ -7,7 +7,7 @@
 <PageTitle>BlazorUI Demo</PageTitle>
 
 <SidebarProvider DefaultOpen="true">
-    <Sidebar Collapsible="true">
+    <Sidebar Collapsible="true" Class="duration-500 ease-cubic-in-out">
         <SidebarHeader>
             <SidebarMenu>
                 <SidebarMenuItem>
@@ -517,7 +517,27 @@
     <SidebarInset>
         <header class="sticky top-0 flex h-16 shrink-0 items-center gap-4 border-b bg-background px-4 z-10 focus:outline-none">
             <SidebarTrigger />
-            <div class="ml-auto">
+            <div class="ml-auto flex items-center gap-4">
+                <Button 
+                    Variant="ButtonVariant.Outline" 
+                    Size="ButtonSize.Small"
+                    OnClick="@OpenSpotlight"
+                    Class="hidden sm:flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground w-72 justify-start">
+                    <LucideIcon Name="search" Size="16" />
+                    <span>Search components</span>
+                    <div class="ml-auto flex items-center gap-1">
+                        <kbd class="px-1.5 py-0.5 text-xs bg-muted/50 border border-border/40 rounded font-mono">@_modifierKey</kbd>
+                        <kbd class="px-1.5 py-0.5 text-xs bg-muted/50 border border-border/40 rounded font-mono">K</kbd>
+                    </div>
+                </Button>
+                <Button 
+                    Variant="ButtonVariant.Outline" 
+                    Size="ButtonSize.Icon"
+                    OnClick="@OpenSpotlight"
+                    Class="sm:hidden"
+                    AriaLabel="Search components">
+                    <LucideIcon Name="search" Size="16" />
+                </Button>
                 <DarkModeToggle />
             </div>
         </header>
@@ -529,5 +549,5 @@
 </SidebarProvider>
 
 <ToastViewport Position="ToastPosition.BottomRight" />
-<SpotlightCommandPalette />
+<SpotlightCommandPalette @ref="_spotlightRef" />
 <PortalHost />
