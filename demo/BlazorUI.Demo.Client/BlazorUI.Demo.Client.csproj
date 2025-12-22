@@ -1,13 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>BlazorUI.Demo</RootNamespace>
+    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <RootNamespace>BlazorUI.Demo.Client</RootNamespace>
     <AssemblyName>BlazorUI.Demo.Client</AssemblyName>
-    <!-- Use a different base path when referenced as a project to avoid static asset conflicts -->
-    <StaticWebAssetBasePath Condition="'$(IsPublishing)' != 'true'">_content/BlazorUI.Demo.Client</StaticWebAssetBasePath>
+    <!-- When built as a project reference, exclude index.html from being served -->
+    <!-- This allows the Server's App.razor to be used instead -->
+    <ResolveStaticWebAssetsInputsDependsOn>
+      RemoveIndexHtmlFromStaticAssets;
+      $(ResolveStaticWebAssetsInputsDependsOn)
+    </ResolveStaticWebAssetsInputsDependsOn>
+    <Configurations>Debug;Release;DebugWasm</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugWasm|AnyCPU'">
+    <DefineConstants>$(DefineConstants);WASM_STANDALONE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,14 +25,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.14" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.14" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.0" PrivateAssets="all" />
   </ItemGroup>
 
+  <!-- Remove index.html from static web assets when referenced as a project (not when running standalone) -->
+  <Target Name="RemoveIndexHtmlFromStaticAssets" Condition="'$(IsPublishing)' != 'true'">
+    <ItemGroup>
+      <Content Remove="wwwroot\index.html" />
+    </ItemGroup>
+  </Target>
+
   <!-- Build Tailwind CSS (skipped in CI if tailwindcss.exe not available) -->
-  <Target Name="BuildTailwindCSS" BeforeTargets="BeforeBuild" Condition="Exists('$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe')">
+  <!--<Target Name="BuildTailwindCSS" BeforeTargets="BeforeBuild" Condition="Exists('$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe')">
     <Message Text="Building Tailwind CSS..." Importance="high" />
     <Exec Command="$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe -i wwwroot/css/app-input.css -o wwwroot/css/app.css" />
-  </Target>
+  </Target>-->
 
 </Project>

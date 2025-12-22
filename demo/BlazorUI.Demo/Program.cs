@@ -33,20 +33,24 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 
+app.UseAntiforgery();
+
+// Serve static files (required for WebAssembly framework files)
 app.UseStaticFiles();
 
-app.UseAntiforgery();
+// Map static assets (for optimized asset delivery)
+app.MapStaticAssets();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(BlazorUI.Demo.Routes).Assembly);
+    .AddAdditionalAssemblies(typeof(BlazorUI.Demo.Shared.Routes).Assembly);
 
 app.Run();

@@ -2,33 +2,38 @@
 <html lang="en" data-theme="default">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BlazorUI - WebAssembly Demo</title>
-    <base href="/" />
-    <link href="css/app.css" rel="stylesheet" />
-    <link href="_content/BlazorUI.Components/blazorui.css" rel="stylesheet" />
-    <link rel="icon" type="image/png" href="favicon.png" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlazorUI - WebAssembly Demo</title>
+  <base href="/" />
+  <link rel="preload" id="webassembly" />
+  <link rel="stylesheet" href="css/app.css" />
+  <link href="_content/BlazorUI.Components/blazorui.css" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <script type="importmap"></script>
 </head>
 
 <body>
-    <div id="app">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-            <p style="font-size: 1.2rem; color: #888;">Loading...</p>
-        </div>
-    </div>
 
-    <div id="blazor-error-ui" style="display: none; position: fixed; top: 0; left: 0; right: 0; background: #dc3545; color: white; padding: 1rem; z-index: 1000;">
-        An unhandled error has occurred.
-        <a href="" class="reload" style="color: white; text-decoration: underline; margin-left: 1rem;">Reload</a>
-        <a class="dismiss" style="color: white; margin-left: 1rem; cursor: pointer;">🗙</a>
-    </div>
+  <div id="app">
+    <svg class="loading-progress">
+      <circle r="40%" cx="50%" cy="50%" />
+      <circle r="40%" cx="50%" cy="50%" />
+    </svg>
+    <div class="loading-progress-text"></div>
+  </div>
 
-    <script src="_framework/blazor.webassembly.js"></script>
-    <script>
-        window.toggleDarkMode = () => document.documentElement.classList.toggle('dark');
-        window.isDarkModeEnabled = () => document.documentElement.classList.contains('dark');
-    </script>
+  <div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+  </div>
+  <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
+
+  <script>
+    window.toggleDarkMode = () => document.documentElement.classList.toggle('dark');
+    window.isDarkModeEnabled = () => document.documentElement.classList.contains('dark');
+  </script>
 </body>
 
 </html>

@@ -1,6 +1,6 @@
 using BlazorUI.Components.Chart;
 
-namespace BlazorUI.Demo.Pages.Components.Charts
+namespace BlazorUI.Demo.Shared.Pages.Components.Charts
 {
     public static class ChartDefaults
     {

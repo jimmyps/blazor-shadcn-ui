@@ -1,12 +1,16 @@
+using BlazorUI.Components.Toast;
+using BlazorUI.Demo.Services;
+using BlazorUI.Demo.Shared;
+using BlazorUI.Primitives.Extensions;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using BlazorUI.Primitives.Extensions;
-using BlazorUI.Demo.Services;
-using BlazorUI.Components.Toast;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
-builder.RootComponents.Add<BlazorUI.Demo.Routes>("#app");
+
+#if WASM_STANDALONE
+builder.RootComponents.Add<Routes>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
+#endif
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
