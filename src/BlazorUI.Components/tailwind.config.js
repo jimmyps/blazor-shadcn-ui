@@ -13,7 +13,7 @@ module.exports = {
     'data-[motion=from-end]:slide-in-from-right-52',
     'data-[motion=from-start]:slide-in-from-left-52',
     'data-[motion=to-end]:slide-out-to-right-52',
-    'data-[motion=to-start]:slide-out-to-left-52',
+    'data-[motion=to-start]:slide-out-to-left-52'
   ],
   theme: {
     extend: {
@@ -81,6 +81,69 @@ module.exports = {
         "sidebar": "var(--sidebar-width)",
         "sidebar-mobile": "var(--sidebar-width-mobile)",
         "sidebar-icon": "var(--sidebar-width-icon)",
+      },
+      // Add to theme.extend in tailwind.config.js
+      transitionTimingFunction: {
+        // Quad easing
+        'quad-in': 'var(--ease-quad-in)',
+        'quad-out': 'var(--ease-quad-out)',
+        'quad-in-out': 'var(--ease-quad-in-out)',
+
+        // Cubic easing
+        'cubic-in': 'var(--ease-cubic-in)',
+        'cubic-out': 'var(--ease-cubic-out)',
+        'cubic-in-out': 'var(--ease-cubic-in-out)',
+
+        // Quart easing
+        'quart-in': 'var(--ease-quart-in)',
+        'quart-out': 'var(--ease-quart-out)',
+        'quart-in-out': 'var(--ease-quart-in-out)',
+
+        // Quint easing
+        'quint-in': 'var(--ease-quint-in)',
+        'quint-out': 'var(--ease-quint-out)',
+        'quint-in-out': 'var(--ease-quint-in-out)',
+
+        // Sine easing
+        'sine-in': 'var(--ease-sine-in)',
+        'sine-out': 'var(--ease-sine-out)',
+        'sine-in-out': 'var(--ease-sine-in-out)',
+
+        // Expo easing
+        'expo-in': 'var(--ease-expo-in)',
+        'expo-out': 'var(--ease-expo-out)',
+        'expo-in-out': 'var(--ease-expo-in-out)',
+
+        // Circ easing
+        'circ-in': 'var(--ease-circ-in)',
+        'circ-out': 'var(--ease-circ-out)',
+        'circ-in-out': 'var(--ease-circ-in-out)',
+
+        // Back easing
+        'back-in': 'var(--ease-back-in)',
+        'back-out': 'var(--ease-back-out)',
+        'back-in-out': 'var(--ease-back-in-out)',
+
+        // Elastic easing
+        'elastic-in': 'var(--ease-elastic-in)',
+        'elastic-out': 'var(--ease-elastic-out)',
+        'elastic-in-out': 'var(--ease-elastic-in-out)',
+
+        // Bounce easing
+        'bounce-in': 'var(--ease-bounce-in)',
+        'bounce-out': 'var(--ease-bounce-out)',
+        'bounce-in-out': 'var(--ease-bounce-in-out)',
+
+        // Step easing
+        'step-start': 'var(--ease-step-start)',
+        'step-end': 'var(--ease-step-end)',
+        'steps-4': 'var(--ease-steps-4)',
+        'steps-8': 'var(--ease-steps-8)',
+
+        // Custom easing
+        'modal': 'var(--ease-modal)',
+        'pop': 'var(--ease-pop)',
+        'snap': 'var(--ease-snap)',
       },
       keyframes: {
         "accordion-down": {

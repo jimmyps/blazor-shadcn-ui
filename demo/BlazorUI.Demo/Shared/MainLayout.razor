@@ -7,7 +7,7 @@
 <PageTitle>BlazorUI Demo</PageTitle>
 
 <SidebarProvider DefaultOpen="true">
-    <Sidebar Collapsible="true">
+    <Sidebar Collapsible="true" Class="duration-500 ease-cubic-in-out">
         <SidebarHeader>
             <SidebarMenu>
                 <SidebarMenuItem>
@@ -524,7 +524,7 @@
                     OnClick="@OpenSpotlight"
                     Class="hidden sm:flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground w-72 justify-start">
                     <LucideIcon Name="search" Size="16" />
-                    <span>Search components...</span>
+                    <span>Search components</span>
                     <div class="ml-auto flex items-center gap-1">
                         <kbd class="px-1.5 py-0.5 text-xs bg-muted/50 border border-border/40 rounded font-mono">@_modifierKey</kbd>
                         <kbd class="px-1.5 py-0.5 text-xs bg-muted/50 border border-border/40 rounded font-mono">K</kbd>
