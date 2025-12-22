@@ -8,23 +8,64 @@
 /* Component structural variables */
 @layer base {
   :root {
+    /* ──────────────────────────────────────────────────────────
+     Power easings
+     ────────────────────────────────────────────────────────── */
+    --ease-quad-in: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    --ease-quad-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --ease-quad-in-out: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    --ease-cubic-in: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    --ease-cubic-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+    --ease-cubic-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+    --ease-quart-in: cubic-bezier(0.895, 0.03, 0.685, 0.22);
+    --ease-quart-out: cubic-bezier(0.165, 0.84, 0.44, 1);
+    --ease-quart-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --ease-quint-in: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+    --ease-quint-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-quint-in-out: cubic-bezier(0.86, 0, 0.07, 1);
+    --ease-sine-in: cubic-bezier(0.47, 0, 0.745, 0.715);
+    --ease-sine-out: cubic-bezier(0.39, 0.575, 0.565, 1);
+    --ease-sine-in-out: cubic-bezier(0.445, 0.05, 0.55, 0.95);
+    --ease-expo-in: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+    --ease-expo-out: cubic-bezier(0.19, 1, 0.22, 1);
+    --ease-expo-in-out: cubic-bezier(1, 0, 0, 1);
+    --ease-circ-in: cubic-bezier(0.6, 0.04, 0.98, 0.335);
+    --ease-circ-out: cubic-bezier(0.075, 0.82, 0.165, 1);
+    --ease-circ-in-out: cubic-bezier(0.785, 0.135, 0.15, 0.86);
+    --ease-back-in: cubic-bezier(0.6, -0.28, 0.735, 0.045);
+    --ease-back-out: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --ease-back-in-out: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --ease-elastic-in: cubic-bezier(0.36, 0, 0.66, -0.56);
+    --ease-elastic-out: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-elastic-in-out: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+    --ease-bounce-in: cubic-bezier(0.3, 0, 0.66, -0.56);
+    --ease-bounce-out: cubic-bezier(0.34, 1.61, 0.7, 1);
+    --ease-bounce-in-out: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --ease-step-start: steps(1, start);
+    --ease-step-end: steps(1, end);
+    --ease-steps-4: steps(4, end);
+    --ease-steps-8: steps(8, end);
+    --ease-modal: cubic-bezier(0.32, 0.72, 0, 1);
+    --ease-pop: cubic-bezier(0.2, 1.05, 0.3, 1);
+    --ease-snap: cubic-bezier(0.4, 0, 1, 1);
+    /* Sidebar */
     --sidebar-width: 16rem;
     --sidebar-width-mobile: 18rem;
     --sidebar-width-icon: 3rem;
     /* Height animation variables */
-    --height-animation-duration: 200ms;
-    --height-animation-timing: cubic-bezier(0.4, 0, 0.2, 1);
+    --height-animation-duration: 300ms;
+    --height-animation-timing: var(--ease-cubic-out);
     /* Dialog animation values - reusable for all components */
     --dialog-panel-translate-start: -8px;
     --dialog-panel-scale-start: 0.96;
     --dialog-panel-translate-exit: 8px;
     --dialog-panel-scale-exit: 0.98;
-    --dialog-panel-duration: 300ms;
-    --dialog-panel-easing: cubic-bezier(0.42, 0, 0.58, 1);
+    --dialog-panel-duration: 1s;
+    --dialog-panel-easing: var(--ease-modal);
     --dialog-item-translate-start: -4px;
     --dialog-item-translate-exit: 4px;
     --dialog-item-duration: 150ms;
-    --dialog-item-easing: cubic-bezier(0.4, 0, 0.2, 1);
+    --dialog-item-easing: var(--ease-out);
     --dialog-overlay-duration: 150ms;
     /* Chart color palette (5 colors for data series) */
     --chart-1: oklch(0.646 0.222 41.116);
@@ -36,7 +77,6 @@
     --chart-up: oklch(0.646 0.222 41.116); /* Green for upward movement */
     --chart-down: oklch(0.628 0.258 29.234); /* Red for downward movement */
     --chart-neutral: oklch(0.5 0 0); /* Gray for no change */
-
     /* Optional axis/opacity helpers – not used by Tailwind by default */
     --shadow-x: 0;
     --shadow-y: 0;
@@ -266,5 +306,154 @@
 
   .data-\[motion\=to-start\]\:slide-out-to-left-52[data-motion=to-start] {
     --tw-exit-translate-x: -13rem !important;
+  }
+
+  /* Easing Utility Classes */
+  .ease-quad-in {
+    transition-timing-function: var(--ease-quad-in);
+  }
+
+  .ease-quad-out {
+    transition-timing-function: var(--ease-quad-out);
+  }
+
+  .ease-quad-in-out {
+    transition-timing-function: var(--ease-quad-in-out);
+  }
+
+  .ease-cubic-in {
+    transition-timing-function: var(--ease-cubic-in);
+  }
+
+  .ease-cubic-out {
+    transition-timing-function: var(--ease-cubic-out);
+  }
+
+  .ease-cubic-in-out {
+    transition-timing-function: var(--ease-cubic-in-out);
+  }
+
+  .ease-quart-in {
+    transition-timing-function: var(--ease-quart-in);
+  }
+
+  .ease-quart-out {
+    transition-timing-function: var(--ease-quart-out);
+  }
+
+  .ease-quart-in-out {
+    transition-timing-function: var(--ease-quart-in-out);
+  }
+
+  .ease-quint-in {
+    transition-timing-function: var(--ease-quint-in);
+  }
+
+  .ease-quint-out {
+    transition-timing-function: var(--ease-quint-out);
+  }
+
+  .ease-quint-in-out {
+    transition-timing-function: var(--ease-quint-in-out);
+  }
+
+  .ease-sine-in {
+    transition-timing-function: var(--ease-sine-in);
+  }
+
+  .ease-sine-out {
+    transition-timing-function: var(--ease-sine-out);
+  }
+
+  .ease-sine-in-out {
+    transition-timing-function: var(--ease-sine-in-out);
+  }
+
+  .ease-expo-in {
+    transition-timing-function: var(--ease-expo-in);
+  }
+
+  .ease-expo-out {
+    transition-timing-function: var(--ease-expo-out);
+  }
+
+  .ease-expo-in-out {
+    transition-timing-function: var(--ease-expo-in-out);
+  }
+
+  .ease-circ-in {
+    transition-timing-function: var(--ease-circ-in);
+  }
+
+  .ease-circ-out {
+    transition-timing-function: var(--ease-circ-out);
+  }
+
+  .ease-circ-in-out {
+    transition-timing-function: var(--ease-circ-in-out);
+  }
+
+  .ease-back-in {
+    transition-timing-function: var(--ease-back-in);
+  }
+
+  .ease-back-out {
+    transition-timing-function: var(--ease-back-out);
+  }
+
+  .ease-back-in-out {
+    transition-timing-function: var(--ease-back-in-out);
+  }
+
+  .ease-elastic-in {
+    transition-timing-function: var(--ease-elastic-in);
+  }
+
+  .ease-elastic-out {
+    transition-timing-function: var(--ease-elastic-out);
+  }
+
+  .ease-elastic-in-out {
+    transition-timing-function: var(--ease-elastic-in-out);
+  }
+
+  .ease-bounce-in {
+    transition-timing-function: var(--ease-bounce-in);
+  }
+
+  .ease-bounce-out {
+    transition-timing-function: var(--ease-bounce-out);
+  }
+
+  .ease-bounce-in-out {
+    transition-timing-function: var(--ease-bounce-in-out);
+  }
+
+  .ease-step-start {
+    transition-timing-function: var(--ease-step-start);
+  }
+
+  .ease-step-end {
+    transition-timing-function: var(--ease-step-end);
+  }
+
+  .ease-steps-4 {
+    transition-timing-function: var(--ease-steps-4);
+  }
+
+  .ease-steps-8 {
+    transition-timing-function: var(--ease-steps-8);
+  }
+
+  .ease-modal {
+    transition-timing-function: var(--ease-modal);
+  }
+
+  .ease-pop {
+    transition-timing-function: var(--ease-pop);
+  }
+
+  .ease-snap {
+    transition-timing-function: var(--ease-snap);
   }
 }

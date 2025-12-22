@@ -137,6 +137,10 @@ public static class TailwindMerge
     private static readonly Regex ZIndexRegex = new(@"^z-(\d+|auto)$", RegexOptions.Compiled);
     private static readonly Regex GridColsRegex = new(@"^grid-cols-(\d+|none)$", RegexOptions.Compiled);
     private static readonly Regex GridRowsRegex = new(@"^grid-rows-(\d+|none)$", RegexOptions.Compiled);
+    private static readonly Regex DurationRegex = new(@"^duration-(\d+)$", RegexOptions.Compiled);
+    private static readonly Regex DelayRegex = new(@"^delay-(\d+)$", RegexOptions.Compiled);
+    private static readonly Regex EasingRegex = new(@"^ease-(.+)$", RegexOptions.Compiled);
+    private static readonly Regex AnimateRegex = new(@"^animate-(.+)$", RegexOptions.Compiled);
 
     /// <summary>
     /// Merges an array of CSS class strings, resolving Tailwind utility conflicts.
@@ -247,6 +251,22 @@ public static class TailwindMerge
         // Check grid rows
         if (GridRowsRegex.IsMatch(className))
             return "grid-rows";
+
+        // Check animation duration
+        if (DurationRegex.IsMatch(className))
+            return "animation-duration";
+
+        // Check animation delay
+        if (DelayRegex.IsMatch(className))
+            return "animation-delay";
+
+        // Check animation timing function (ease-*)
+        if (EasingRegex.IsMatch(className))
+            return "animation-timing-function";
+
+        // Check named animations (animate-*)
+        if (AnimateRegex.IsMatch(className))
+            return "animation";
 
         // Unknown utility
         return null;

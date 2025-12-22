@@ -2,7 +2,9 @@
 @using BlazorUI.Components.Dialog
 @using BlazorUI.Components.HeightAnimation
 @using BlazorUI.Demo.Services
+@using Microsoft.AspNetCore.Components
 @inject KeyboardShortcutService KeyboardShortcuts
+@inject NavigationManager NavigationManager
 @implements IAsyncDisposable
 
 @* Spotlight Command Palette - Global search and command interface *@
@@ -18,7 +20,7 @@
                     Placeholder="Type a command or search..." 
                     Class="border-0 border-b border-border/40 rounded-none focus-visible:ring-0" />
                 
-                <CommandList Class="max-h-[400px] scrollbar-thin">
+                <CommandList Class="max-h-[350px] scrollbar-thin">
                     <CommandEmpty>
                         <div class="flex flex-col items-center gap-2 py-6 text-muted-foreground">
                             <LucideIcon Name="search-x" Size="32" />
@@ -27,7 +29,7 @@
                     </CommandEmpty>
                     
                     <CommandGroup Heading="Navigation">
-                        <CommandItem Value="home">
+                        <CommandItem Value="">
                             <LucideIcon Name="house" Size="16" Class="mr-2" />
                             <span>Home</span>
                         </CommandItem>
@@ -48,52 +50,29 @@
                     <CommandSeparator />
                     
                     <CommandGroup Heading="Components">
-                        <CommandItem Value="button">
-                            <LucideIcon Name="hand" Size="16" Class="mr-2" />
-                            <span>Button</span>
-                            <CommandShortcut>Component</CommandShortcut>
-                        </CommandItem>
-                        <CommandItem Value="dialog">
-                            <LucideIcon Name="square" Size="16" Class="mr-2" />
-                            <span>Dialog</span>
-                            <CommandShortcut>Component</CommandShortcut>
-                        </CommandItem>
-                        <CommandItem Value="command">
-                            <LucideIcon Name="terminal" Size="16" Class="mr-2" />
-                            <span>Command</span>
-                            <CommandShortcut>Component</CommandShortcut>
-                        </CommandItem>
-                        <CommandItem Value="card">
-                            <LucideIcon Name="credit-card" Size="16" Class="mr-2" />
-                            <span>Card</span>
-                            <CommandShortcut>Component</CommandShortcut>
-                        </CommandItem>
-                        <CommandItem Value="input">
-                            <LucideIcon Name="type" Size="16" Class="mr-2" />
-                            <span>Input</span>
-                            <CommandShortcut>Component</CommandShortcut>
-                        </CommandItem>
+                        @foreach (var component in _components)
+                        {
+                            <CommandItem Value="@component.Value">
+                                <LucideIcon Name="@component.Icon" Size="16" Class="mr-2" />
+                                <span>@component.Name</span>
+                                <CommandShortcut>Component</CommandShortcut>
+                            </CommandItem>
+                        }
                     </CommandGroup>
                     
                     <CommandSeparator />
                     
-                    <CommandGroup Heading="Actions">
-                        <CommandItem Value="search">
-                            <LucideIcon Name="search" Size="16" Class="mr-2" />
-                            <span>Search Documentation</span>
-                            <CommandShortcut>⌘S</CommandShortcut>
-                        </CommandItem>
-                        <CommandItem Value="theme">
-                            <LucideIcon Name="moon" Size="16" Class="mr-2" />
-                            <span>Toggle Theme</span>
-                            <CommandShortcut>⌘T</CommandShortcut>
-                        </CommandItem>
-                        <CommandItem Value="github">
-                            <LucideIcon Name="github" Size="16" Class="mr-2" />
-                            <span>View on GitHub</span>
-                            <CommandShortcut>⌘G</CommandShortcut>
-                        </CommandItem>
+                    <CommandGroup Heading="Primitives">
+                        @foreach (var primitive in _primitives)
+                        {
+                            <CommandItem Value="@primitive.Value">
+                                <LucideIcon Name="@primitive.Icon" Size="16" Class="mr-2" />
+                                <span>@primitive.Name</span>
+                                <CommandShortcut>Primitive</CommandShortcut>
+                            </CommandItem>
+                        }
                     </CommandGroup>
+
                 </CommandList>
             </BlazorUI.Components.Command.Command>
         </HeightAnimation>
@@ -115,6 +94,7 @@
     public void Open()
     {
         _isOpen = true;
+        StateHasChanged();
     }
 
     /// <summary>
@@ -141,11 +121,100 @@
 
     private void HandleSelect(string value)
     {
-        // Handle navigation based on selected value
-        // In a real app, you would use NavigationManager here
         _isOpen = false;
+        
+        // Navigate based on the selected value
+        NavigationManager.NavigateTo(value);
+        
         StateHasChanged();
     }
+    
+    // Component data structure
+    private record ComponentItem(string Name, string Value, string Icon);
+    
+    // List of all components
+    private readonly List<ComponentItem> _components = new()
+    {
+        new("Accordion", "components/accordion", "chevrons-down-up"),
+        new("Alert", "components/alert", "circle-alert"),
+        new("Alert Dialog", "components/alert-dialog", "triangle-alert"),
+        new("Aspect Ratio", "components/aspectratio", "square"),
+        new("Avatar", "components/avatar", "user"),
+        new("Badge", "components/badge", "award"),
+        new("Breadcrumb", "components/breadcrumb", "chevron-right"),
+        new("Button", "components/button", "pointer"),
+        new("Button Group", "components/button-group", "boxes"),
+        new("Calendar", "components/calendar", "calendar"),
+        new("Card", "components/card", "credit-card"),
+        new("Carousel", "components/carousel", "images"),
+        new("Chart", "components/chart", "area-chart"),
+        new("Checkbox", "components/checkbox", "square-check"),
+        new("Collapsible", "components/collapsible", "circle-chevron-down"),
+        new("Combobox", "components/combobox", "square-chevron-down"),
+        new("Command", "components/command", "terminal"),
+        new("Context Menu", "components/context-menu", "menu"),
+        new("Data Table", "components/datatable", "table"),
+        new("Date Picker", "components/date-picker", "calendar-days"),
+        new("Dialog", "components/dialog", "square"),
+        new("Dropdown Menu", "components/dropdown-menu", "panel-top-open"),
+        new("Empty", "components/empty", "inbox"),
+        new("Field", "components/field", "text"),
+        new("Hover Card", "components/hovercard", "square-mouse-pointer"),
+        new("Input", "components/input", "type"),
+        new("Input Group", "components/input-group", "blocks"),
+        new("Input OTP", "components/input-otp", "shield-check"),
+        new("Item", "components/item", "circle"),
+        new("Kbd", "components/kbd", "keyboard"),
+        new("Label", "components/label", "tag"),
+        new("Menubar", "components/menubar", "square-menu"),
+        new("Motion", "components/motion", "zap"),
+        new("MultiSelect", "components/multiselect", "list-checks"),
+        new("Native Select", "components/native-select", "chevrons-up-down"),
+        new("Navigation Menu", "components/navigation-menu", "compass"),
+        new("Pagination", "components/pagination", "chevrons-left-right"),
+        new("Popover", "components/popover", "message-square"),
+        new("Progress", "components/progress", "loader"),
+        new("Radio Group", "components/radio-group", "circle-dot"),
+        new("Resizable", "components/resizable", "panel-left"),
+        new("Scroll Area", "components/scroll-area", "scroll-text"),
+        new("Select", "components/select", "list"),
+        new("Separator", "components/separator", "minus"),
+        new("Sheet", "components/sheet", "panel-right"),
+        new("Sidebar", "components/sidebar", "panel-left"),
+        new("Skeleton", "components/skeleton", "box"),
+        new("Slider", "components/slider", "sliders-horizontal"),
+        new("Spinner", "components/spinner", "loader-circle"),
+        new("Switch", "components/switch", "toggle-left"),
+        new("Tabs", "components/tabs", "folder"),
+        new("Textarea", "components/textarea", "text-cursor-input"),
+        new("Time Picker", "components/time-picker", "clock"),
+        new("Toast", "components/toast", "bell"),
+        new("Toggle", "components/toggle", "toggle-right"),
+        new("Toggle Group", "components/toggle-group", "boxes"),
+        new("Tooltip", "components/tooltip", "message-circle"),
+        new("Typography", "components/typography", "heading"),
+    };
+    
+    // List of all primitives
+    private readonly List<ComponentItem> _primitives = new()
+    {
+        new("Accordion", "primitives/accordion", "chevrons-down-up"),
+        new("Checkbox", "primitives/checkbox", "square-check"),
+        new("Collapsible", "primitives/collapsible", "chevron-down"),
+        new("Combobox", "primitives/combobox", "square-chevron-down"),
+        new("Dialog", "primitives/dialog", "square"),
+        new("Dropdown Menu", "primitives/dropdown-menu", "chevron-down"),
+        new("Hover Card", "primitives/hovercard", "square-mouse-pointer"),
+        new("Label", "primitives/label", "tag"),
+        new("Popover", "primitives/popover", "message-square"),
+        new("Radio Group", "primitives/radio-group", "circle-dot"),
+        new("Select", "primitives/select", "list"),
+        new("Sheet", "primitives/sheet", "panel-right"),
+        new("Switch", "primitives/switch", "toggle-left"),
+        new("Table", "primitives/table", "table"),
+        new("Tabs", "primitives/tabs", "folder"),
+        new("Tooltip", "primitives/tooltip", "message-circle"),
+    };
 
     public async ValueTask DisposeAsync()
     {

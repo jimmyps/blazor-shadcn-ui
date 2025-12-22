@@ -3,8 +3,9 @@
 @using BlazorUI.Primitives.Combobox
 
 @* Command - styled wrapper over Combobox *@
-<Combobox class="@CssClass"
-                   @attributes="AdditionalAttributes">
+<Combobox OnValueChange="@OnSelect"
+          class="@CssClass"
+          @attributes="AdditionalAttributes">
     @ChildContent
 </Combobox>
 
@@ -20,6 +21,13 @@
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Event callback invoked when a command item is selected.
+    /// Receives the selected value as a parameter.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnSelect { get; set; }
 
     /// <summary>
     /// Gets or sets additional attributes to apply to the component.
