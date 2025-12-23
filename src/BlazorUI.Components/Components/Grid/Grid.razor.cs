@@ -1,3 +1,4 @@
+using BlazorUI.Components.Services.Grid;
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
@@ -157,8 +158,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         // Update grid data when Items parameter changes
         if (_initialized)
         {
-            // TODO: Integrate with IGridRenderer when available
-            // await _gridRenderer.UpdateDataAsync(Items);
+            await GridRenderer.UpdateDataAsync(Items);
         }
     }
 
@@ -197,10 +197,8 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
 
     private async Task InitializeGridAsync()
     {
-        // TODO: Integrate with IGridRenderer when available (Milestone 3)
-        // await _gridRenderer.InitializeAsync(_gridContainer, _gridDefinition);
-        // await _gridRenderer.UpdateDataAsync(Items);
-        await Task.CompletedTask;
+        await GridRenderer.InitializeAsync(_gridContainer, _gridDefinition);
+        await GridRenderer.UpdateDataAsync(Items);
     }
 
     private string GetThemeClass()
@@ -230,15 +228,12 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         {
             try
             {
-                // TODO: Integrate with IGridRenderer when available
-                // await _gridRenderer.DisposeAsync();
+                await GridRenderer.DisposeAsync();
             }
             catch
             {
                 // Ignore disposal errors
             }
         }
-
-        await Task.CompletedTask;
     }
 }

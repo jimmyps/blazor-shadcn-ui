@@ -2,6 +2,8 @@
 @typeparam TItem
 @attribute [CascadingTypeParameter(nameof(TItem))]
 @using BlazorUI.Components.Utilities
+@using BlazorUI.Components.Services.Grid
+@inject IGridRenderer GridRenderer
 @implements IAsyncDisposable
 
 <CascadingValue Value="this" IsFixed="true">
