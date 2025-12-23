@@ -1,0 +1,213 @@
+@namespace BlazorUI.Components.Grid
+@typeparam TItem where TItem : class
+@using BlazorUI.Components.Utilities
+@using BlazorUI.Components.Checkbox
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="@ContainerCssClass" style="@Style">
+        @if (ShowToolbar && !IsLoading)
+        {
+            <div class="flex items-center justify-between py-4">
+                <div class="flex flex-1 items-center space-x-2">
+                    @if (ShowGlobalSearch)
+                    {
+                        <input 
+                            type="text" 
+                            placeholder="Search..." 
+                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 max-w-sm"
+                            value="@_globalSearchValue"
+                            @oninput="@(e => HandleGlobalSearchChanged(e.Value?.ToString() ?? string.Empty))" />
+                    }
+                    @ToolbarContent
+                </div>
+            </div>
+        }
+
+        <div class="@TableContainerCssClass">
+            @if (IsLoading)
+            {
+                @if (LoadingTemplate != null)
+                {
+                    @LoadingTemplate
+                }
+                else
+                {
+                    <div class="flex items-center justify-center p-8 text-muted-foreground">
+                        <div class="text-sm">Loading...</div>
+                    </div>
+                }
+            }
+            else if (!_processedData.Any())
+            {
+                @if (EmptyTemplate != null)
+                {
+                    @EmptyTemplate
+                }
+                else
+                {
+                    <div class="flex items-center justify-center p-8 text-muted-foreground">
+                        <div class="text-sm">No data available.</div>
+                    </div>
+                }
+            }
+            else
+            {
+                <table class="@TableCssClass" role="grid" aria-label="@AriaLabel">
+                    <thead>
+                        <tr class="@HeaderRowCssClass">
+                            @if (SelectionMode == GridSelectionMode.Multiple)
+                            {
+                                <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-12" role="columnheader">
+                                    <Checkbox Checked="@IsAllSelected()"
+                                              CheckedChanged="@HandleSelectAllChanged"
+                                              AriaLabel="Select all rows" />
+                                </th>
+                            }
+                            @foreach (var column in GetVisibleColumns())
+                            {
+                                var isSorted = _currentState.SortDescriptors.Any(s => s.Field == column.EffectiveField);
+                                var sortDescriptor = _currentState.SortDescriptors.FirstOrDefault(s => s.Field == column.EffectiveField);
+                                var ariaSortValue = column.Sortable && isSorted
+                                    ? (sortDescriptor?.Direction == GridSortDirection.Ascending ? "ascending" : "descending")
+                                    : (column.Sortable ? "none" : null);
+
+                                <th class="@GetHeaderCellClass(column)"
+                                    style="@GetColumnWidthStyle(column)"
+                                    aria-sort="@ariaSortValue"
+                                    role="columnheader"
+                                    @onclick="@(() => column.Sortable ? HandleColumnSort(column.EffectiveField) : Task.CompletedTask)">
+                                    @if (column.HeaderTemplate != null)
+                                    {
+                                        @column.HeaderTemplate
+                                    }
+                                    else
+                                    {
+                                        <div class="flex items-center gap-2">
+                                            <span>@column.Header</span>
+                                            @if (column.Sortable && isSorted)
+                                            {
+                                                @if (sortDescriptor?.Direction == GridSortDirection.Ascending)
+                                                {
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                                    </svg>
+                                                }
+                                                else if (sortDescriptor?.Direction == GridSortDirection.Descending)
+                                                {
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                }
+                                            }
+                                            else if (column.Sortable)
+                                            {
+                                                <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                                </svg>
+                                            }
+                                        </div>
+                                    }
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in _processedData)
+                        {
+                            var isSelected = IsItemSelected(item);
+                            <tr class="@GetRowClass(isSelected)" @onclick="@(() => HandleRowClick(item))" role="row">
+                                @if (SelectionMode == GridSelectionMode.Multiple)
+                                {
+                                    <td class="p-4 align-middle w-12" role="gridcell">
+                                        <Checkbox Checked="@isSelected"
+                                                  CheckedChanged="@(isChecked => HandleRowSelectionChanged(item, isChecked))"
+                                                  AriaLabel="Select row" />
+                                    </td>
+                                }
+                                @foreach (var column in GetVisibleColumns())
+                                {
+                                    <td class="@GetCellClass(column)" role="gridcell">
+                                        @if (column.CellTemplate != null)
+                                        {
+                                            @column.CellTemplate(item)
+                                        }
+                                        else
+                                        {
+                                            var value = column.Property(item);
+                                            @(value?.ToString() ?? "")
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+
+        @if (ShowPagination && !IsLoading && _processedData.Any())
+        {
+            <div class="flex items-center justify-between px-2 py-4">
+                <div class="flex-1 text-sm text-muted-foreground">
+                    @if (SelectionMode != GridSelectionMode.None && GetSelectedItems().Any())
+                    {
+                        <span>@GetSelectedItems().Count of @_totalCount row(s) selected.</span>
+                    }
+                    else
+                    {
+                        <span>Showing @(_currentState.PageNumber) of @GetTotalPages() page(s).</span>
+                    }
+                </div>
+                <div class="flex items-center space-x-6 lg:space-x-8">
+                    <div class="flex items-center space-x-2">
+                        <p class="text-sm font-medium">Rows per page</p>
+                        <select class="h-8 w-[70px] rounded-md border border-input bg-background text-sm"
+                                value="@_currentState.PageSize"
+                                @onchange="@HandlePageSizeChanged">
+                            @foreach (var size in PageSizes)
+                            {
+                                <option value="@size">@size</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="flex w-[100px] items-center justify-center text-sm font-medium">
+                        Page @_currentState.PageNumber of @GetTotalPages()
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8 p-0"
+                                @onclick="HandleFirstPage"
+                                disabled="@(_currentState.PageNumber == 1)">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8 p-0"
+                                @onclick="HandlePreviousPage"
+                                disabled="@(_currentState.PageNumber == 1)">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8 p-0"
+                                @onclick="HandleNextPage"
+                                disabled="@(_currentState.PageNumber >= GetTotalPages())">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                        <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8 p-0"
+                                @onclick="HandleLastPage"
+                                disabled="@(_currentState.PageNumber >= GetTotalPages())">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @* Capture column definitions *@
+    @Columns
+</CascadingValue>
