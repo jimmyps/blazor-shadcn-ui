@@ -1,0 +1,337 @@
+@page "/components/grid"
+@using BlazorUI.Components.Grid
+@using BlazorUI.Components.Badge
+@using BlazorUI.Components.Button
+@using BlazorUI.Demo.Services
+@inject MockDataService MockDataService
+
+<PageTitle>Grid Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-7xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Grid Component</h1>
+            <p class="text-xl text-muted-foreground">
+                A comprehensive grid component with sorting, filtering, pagination, row selection, and state persistence.
+            </p>
+        </div>
+    </div>
+
+    <!-- Basic Example -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic Grid</h2>
+            <p class="text-sm text-muted-foreground">
+                A simple grid with automatic sorting and pagination.
+            </p>
+        </div>
+        <Grid TItem="Person" Data="@people" PageSizes="@(new[] { 5, 10, 25 })">
+            <Columns>
+                <GridColumn TItem="Person" TValue="int" Property="@(p => p.Id)" Header="ID" Width="80px" Sortable />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable Filterable />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Email)" Header="Email" Sortable Filterable />
+                <GridColumn TItem="Person" TValue="int" Property="@(p => p.Age)" Header="Age" Sortable Width="100px" />
+            </Columns>
+        </Grid>
+    </div>
+
+    <!-- Row Selection -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Row Selection</h2>
+            <p class="text-sm text-muted-foreground">
+                Grid with multiple row selection using checkboxes.
+            </p>
+        </div>
+        <Grid TItem="Person"
+              Data="@people"
+              SelectionMode="GridSelectionMode.Multiple"
+              OnSelectionChanged="@HandleSelectionChanged"
+              PageSizes="@(new[] { 5, 10, 25 })">
+            <Columns>
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Role)" Header="Role" />
+            </Columns>
+        </Grid>
+        @if (selectedPeople.Any())
+        {
+            <div class="p-4 bg-muted rounded-md">
+                <p class="text-sm font-medium">Selected: @selectedPeople.Count people</p>
+                <div class="flex flex-wrap gap-2 mt-2">
+                    @foreach (var person in selectedPeople)
+                    {
+                        <Badge>@person.Name</Badge>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Custom Cell Templates -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Cell Templates</h2>
+            <p class="text-sm text-muted-foreground">
+                Use custom templates to render cells with badges, buttons, and other components.
+            </p>
+        </div>
+        <Grid TItem="Person" Data="@people" ShowPagination="true" PageSizes="@(new[] { 5, 10 })">
+            <Columns>
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Status)" Header="Status" Sortable>
+                    <CellTemplate Context="person">
+                        <Badge Variant="@(person.Status == "Active" ? BadgeVariant.Default : person.Status == "Inactive" ? BadgeVariant.Outline : BadgeVariant.Secondary)">
+                            @person.Status
+                        </Badge>
+                    </CellTemplate>
+                </GridColumn>
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Role)" Header="Role">
+                    <CellTemplate Context="person">
+                        <Badge Variant="BadgeVariant.Secondary">@person.Role</Badge>
+                    </CellTemplate>
+                </GridColumn>
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Department)" Header="Department" Sortable />
+            </Columns>
+        </Grid>
+    </div>
+
+    <!-- Themes -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Grid Themes</h2>
+            <p class="text-sm text-muted-foreground">
+                Different visual themes for the grid: Default, Striped, Bordered, and Minimal.
+            </p>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <h3 class="text-lg font-medium mb-2">Striped Theme</h3>
+                <Grid TItem="Person" Data="@people.Take(5)" Theme="GridTheme.Striped" ShowPagination="false">
+                    <Columns>
+                        <GridColumn TItem="Person" TValue="string" Property="@(p => p.Name)" Header="Name" />
+                        <GridColumn TItem="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+                        <GridColumn TItem="Person" TValue="string" Property="@(p => p.Role)" Header="Role" />
+                    </Columns>
+                </Grid>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-medium mb-2">Bordered Theme</h3>
+                <Grid TItem="Person" Data="@people.Take(5)" Theme="GridTheme.Bordered" ShowPagination="false">
+                    <Columns>
+                        <GridColumn TItem="Person" TValue="string" Property="@(p => p.Name)" Header="Name" />
+                        <GridColumn TItem="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+                        <GridColumn TItem="Person" TValue="string" Property="@(p => p.Role)" Header="Role" />
+                    </Columns>
+                </Grid>
+            </div>
+        </div>
+    </div>
+
+    <!-- Density Options -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Grid Density</h2>
+            <p class="text-sm text-muted-foreground">
+                Different density options: Compact, Comfortable (default), and Spacious.
+            </p>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <h3 class="text-lg font-medium mb-2">Compact Density</h3>
+                <Grid TItem="Person" Data="@people.Take(5)" Density="GridDensity.Compact" ShowPagination="false">
+                    <Columns>
+                        <GridColumn TItem="Person" TValue="string" Property="@(p => p.Name)" Header="Name" />
+                        <GridColumn TItem="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+                        <GridColumn TItem="Person" TValue="int" Property="@(p => p.Age)" Header="Age" />
+                    </Columns>
+                </Grid>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-medium mb-2">Spacious Density</h3>
+                <Grid TItem="Person" Data="@people.Take(5)" Density="GridDensity.Spacious" ShowPagination="false">
+                    <Columns>
+                        <GridColumn TItem="Person" TValue="string" Property="@(p => p.Name)" Header="Name" />
+                        <GridColumn TItem="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+                        <GridColumn TItem="Person" TValue="int" Property="@(p => p.Age)" Header="Age" />
+                    </Columns>
+                </Grid>
+            </div>
+        </div>
+    </div>
+
+    <!-- Column Pinning -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Column Pinning</h2>
+            <p class="text-sm text-muted-foreground">
+                Pin columns to the left or right side of the grid.
+            </p>
+        </div>
+        <Grid TItem="Person" Data="@people" PageSizes="@(new[] { 5, 10 })">
+            <Columns>
+                <GridColumn TItem="Person" TValue="int" Property="@(p => p.Id)" Header="ID" Width="80px" Pinned="GridColumnPinPosition.Left" />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Department)" Header="Department" Sortable />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Role)" Header="Role" />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Status)" Header="Status" Pinned="GridColumnPinPosition.Right">
+                    <CellTemplate Context="person">
+                        <Badge Variant="@(person.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Outline)">
+                            @person.Status
+                        </Badge>
+                    </CellTemplate>
+                </GridColumn>
+            </Columns>
+        </Grid>
+    </div>
+
+    <!-- Global Search -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Global Search</h2>
+            <p class="text-sm text-muted-foreground">
+                Search across all filterable columns with the global search feature.
+            </p>
+        </div>
+        <Grid TItem="Person" Data="@people" ShowGlobalSearch="true" PageSizes="@(new[] { 10, 25 })">
+            <Columns>
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable Filterable />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Email)" Header="Email" Filterable />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Department)" Header="Department" Sortable Filterable />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Role)" Header="Role" Filterable />
+            </Columns>
+        </Grid>
+    </div>
+
+    <!-- State Persistence -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">State Persistence</h2>
+            <p class="text-sm text-muted-foreground">
+                Save and restore grid state including sorting, filtering, pagination, and column visibility.
+            </p>
+        </div>
+        <div class="flex gap-2 mb-4">
+            <Button OnClick="@SaveGridState">Save State</Button>
+            <Button Variant="ButtonVariant.Outline" OnClick="@RestoreGridState">Restore State</Button>
+            <Button Variant="ButtonVariant.Ghost" OnClick="@ClearGridState">Clear State</Button>
+        </div>
+        <Grid @ref="stateGrid" TItem="Person" Data="@people" @bind-State="@gridState">
+            <Columns>
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable Filterable />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Department)" Header="Department" Sortable />
+                <GridColumn TItem="Person" TValue="int" Property="@(p => p.Age)" Header="Age" Sortable />
+            </Columns>
+        </Grid>
+        @if (!string.IsNullOrEmpty(savedStateJson))
+        {
+            <div class="p-4 bg-muted rounded-md mt-4">
+                <p class="text-sm font-medium mb-2">Saved State (JSON):</p>
+                <pre class="text-xs bg-background p-2 rounded overflow-auto max-h-40">@savedStateJson</pre>
+            </div>
+        }
+    </div>
+
+    <!-- Loading State -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Loading State</h2>
+            <p class="text-sm text-muted-foreground">
+                Display a loading indicator while data is being fetched.
+            </p>
+        </div>
+        <div class="mb-4">
+            <Button OnClick="@ToggleLoading">Toggle Loading</Button>
+        </div>
+        <Grid TItem="Person" Data="@people" IsLoading="@isLoading" PageSizes="@(new[] { 5, 10 })">
+            <Columns>
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Name)" Header="Name" />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Role)" Header="Role" />
+            </Columns>
+        </Grid>
+    </div>
+
+    <!-- Empty State -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Empty State</h2>
+            <p class="text-sm text-muted-foreground">
+                Custom empty state template when no data is available.
+            </p>
+        </div>
+        <Grid TItem="Person" Data="@emptyPeople">
+            <Columns>
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Name)" Header="Name" />
+                <GridColumn TItem="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+            </Columns>
+            <EmptyTemplate>
+                <div class="flex flex-col items-center justify-center p-12 text-center">
+                    <svg class="w-16 h-16 text-muted-foreground mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
+                    <h3 class="text-lg font-semibold mb-2">No data available</h3>
+                    <p class="text-sm text-muted-foreground">There are no records to display at this time.</p>
+                </div>
+            </EmptyTemplate>
+        </Grid>
+    </div>
+</div>
+
+@code {
+    private List<Person> people = new();
+    private List<Person> emptyPeople = new();
+    private List<Person> selectedPeople = new();
+    private GridState? gridState = new();
+    private Grid<Person>? stateGrid;
+    private string savedStateJson = string.Empty;
+    private bool isLoading = false;
+
+    protected override void OnInitialized()
+    {
+        people = MockDataService.GeneratePersons(100);
+    }
+
+    private void HandleSelectionChanged(IReadOnlyCollection<Person> selected)
+    {
+        selectedPeople = selected.ToList();
+        StateHasChanged();
+    }
+
+    private void SaveGridState()
+    {
+        if (stateGrid != null)
+        {
+            savedStateJson = stateGrid.ExportState();
+            StateHasChanged();
+        }
+    }
+
+    private async Task RestoreGridState()
+    {
+        if (stateGrid != null && !string.IsNullOrEmpty(savedStateJson))
+        {
+            await stateGrid.ImportState(savedStateJson);
+            StateHasChanged();
+        }
+    }
+
+    private void ClearGridState()
+    {
+        savedStateJson = string.Empty;
+        gridState = new GridState();
+        StateHasChanged();
+    }
+
+    private void ToggleLoading()
+    {
+        isLoading = !isLoading;
+        StateHasChanged();
+    }
+}
