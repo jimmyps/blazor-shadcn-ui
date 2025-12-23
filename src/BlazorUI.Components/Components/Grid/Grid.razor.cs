@@ -35,6 +35,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
 
     /// <summary>
     /// Gets or sets the number of items per page.
+    /// Must be greater than 0. Default is 25.
     /// </summary>
     [Parameter]
     public int PageSize { get; set; } = 25;
@@ -142,6 +143,12 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
 
     protected override void OnInitialized()
     {
+        // Validate PageSize
+        if (PageSize <= 0)
+        {
+            throw new ArgumentException("PageSize must be greater than 0.", nameof(PageSize));
+        }
+        
         // BuildGridDefinition will be called in OnAfterRenderAsync after child columns have registered
     }
 

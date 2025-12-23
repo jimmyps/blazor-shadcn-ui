@@ -140,9 +140,17 @@ public partial class GridColumn<TItem> : ComponentBase
 
     internal GridColumnDefinition<TItem> ToDefinition()
     {
+        // Generate ID from Field first, then Header as fallback
+        // Use Guid suffix to ensure uniqueness if neither Field nor Header are suitable
+        var generatedId = !string.IsNullOrEmpty(Field) 
+            ? Field 
+            : !string.IsNullOrEmpty(Header)
+                ? $"{Header.ToLowerInvariant().Replace(" ", "-")}-{Guid.NewGuid().ToString("N")[..8]}"
+                : Guid.NewGuid().ToString("N")[..8];
+        
         return new GridColumnDefinition<TItem>
         {
-            Id = Id ?? Field ?? Header.ToLowerInvariant().Replace(" ", "-"),
+            Id = Id ?? generatedId,
             Field = Field,
             Header = Header,
             Sortable = Sortable,

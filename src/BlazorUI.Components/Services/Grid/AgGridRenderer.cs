@@ -34,11 +34,15 @@ public class AgGridRenderer : IGridRenderer, IGridRendererCapabilities
 
         var config = BuildAgGridConfig(definition);
         
-        // TODO: Uncomment when AG Grid Community library is installed
+        // Placeholder: AG Grid Community library not yet installed
+        // When AG Grid is installed, uncomment:
         // _gridInstance = await _jsModule.InvokeAsync<IJSObjectReference>(
         //     "createGrid", element, config, _dotNetRef);
         
-        await Task.CompletedTask;
+        // TODO: Remove this line when AG Grid integration is complete
+        throw new NotImplementedException(
+            "AG Grid renderer requires AG Grid Community library. " +
+            "Install the library and uncomment the createGrid call in AgGridRenderer.InitializeAsync.");
     }
 
     /// <inheritdoc/>
@@ -86,13 +90,14 @@ public class AgGridRenderer : IGridRenderer, IGridRendererCapabilities
     /// </summary>
     /// <param name="request">The data request parameters.</param>
     /// <returns>The data response with items and counts.</returns>
+    /// <exception cref="NotImplementedException">AG Grid library not yet integrated.</exception>
     [JSInvokable]
-    public async Task<GridDataResponse<object>> OnDataRequested(GridDataRequest<object> request)
+    public Task<GridDataResponse<object>> OnDataRequested(GridDataRequest<object> request)
     {
-        // Called from JS for server-side data loading
-        // TODO: Invoke OnDataRequest callback from GridDefinition
-        await Task.CompletedTask;
-        return new GridDataResponse<object>();
+        // TODO: Implement when AG Grid integration is complete
+        throw new NotImplementedException(
+            "Server-side data loading requires full AG Grid integration. " +
+            "This will be implemented when AG Grid Community library is installed.");
     }
 
     private object BuildAgGridConfig<TItem>(GridDefinition<TItem> definition)
@@ -130,8 +135,22 @@ public class AgGridRenderer : IGridRenderer, IGridRendererCapabilities
     private int? ParseWidth(string? width)
     {
         if (string.IsNullOrEmpty(width)) return null;
-        if (width.EndsWith("px") && int.TryParse(width[..^2], out var px)) return px;
-        return null;
+        
+        // Only parse pixel values for AG Grid
+        // Percentage and other CSS units will be handled by AG Grid's column sizing
+        if (width.EndsWith("px", StringComparison.OrdinalIgnoreCase) && 
+            int.TryParse(width[..^2], out var px))
+        {
+            return px;
+        }
+        
+        // If it's just a number, assume pixels
+        if (int.TryParse(width, out var numericWidth))
+        {
+            return numericWidth;
+        }
+        
+        return null; // Let AG Grid handle percentages and other units via CSS
     }
 
     // IGridRendererCapabilities implementation
