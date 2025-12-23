@@ -115,6 +115,8 @@ All enums use `[JsonConverter(typeof(JsonStringEnumConverter))]` for JSON serial
 
 **GridSelectionMode.cs:**
 ```csharp
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -128,6 +130,8 @@ public enum GridSelectionMode
 
 **GridPagingMode.cs:**
 ```csharp
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -142,6 +146,8 @@ public enum GridPagingMode
 
 **GridVirtualizationMode.cs:**
 ```csharp
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -156,6 +162,8 @@ public enum GridVirtualizationMode
 
 **GridColumnPinPosition.cs:**
 ```csharp
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -169,6 +177,8 @@ public enum GridColumnPinPosition
 
 **GridSortDirection.cs:**
 ```csharp
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -182,6 +192,8 @@ public enum GridSortDirection
 
 **GridFilterOperator.cs:**
 ```csharp
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -204,6 +216,8 @@ public enum GridFilterOperator
 
 **GridTheme.cs:**
 ```csharp
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -218,6 +232,8 @@ public enum GridTheme
 
 **GridDensity.cs:**
 ```csharp
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -233,6 +249,8 @@ public enum GridDensity
 
 **GridSortDescriptor.cs:**
 ```csharp
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 public class GridSortDescriptor
@@ -250,6 +268,8 @@ public class GridSortDescriptor
 
 **GridFilterDescriptor.cs:**
 ```csharp
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 public class GridFilterDescriptor
@@ -270,6 +290,8 @@ public class GridFilterDescriptor
 
 **GridColumnState.cs:**
 ```csharp
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 public class GridColumnState
@@ -293,6 +315,8 @@ public class GridColumnState
 
 **GridState.cs:**
 ```csharp
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 public class GridState
@@ -319,6 +343,8 @@ public class GridState
 
 **GridDataRequest.cs:**
 ```csharp
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 public class GridDataRequest<TItem>
@@ -348,6 +374,8 @@ public class GridDataRequest<TItem>
 
 **GridDataResponse.cs:**
 ```csharp
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 public class GridDataResponse<TItem>
@@ -367,6 +395,8 @@ public class GridDataResponse<TItem>
 
 **GridColumnDefinition.cs:**
 ```csharp
+using Microsoft.AspNetCore.Components;
+
 namespace BlazorUI.Components.Grid;
 
 internal class GridColumnDefinition<TItem>
@@ -404,6 +434,8 @@ internal class GridColumnDefinition<TItem>
 
 **GridDefinition.cs:**
 ```csharp
+using Microsoft.AspNetCore.Components;
+
 namespace BlazorUI.Components.Grid;
 
 internal class GridDefinition<TItem>
@@ -621,13 +653,23 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     
     protected override void OnInitialized()
     {
-        BuildGridDefinition();
+        // BuildGridDefinition will be called in OnAfterRenderAsync after child columns have registered
+    }
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        // Update grid data when Items parameter changes
+        if (_initialized)
+        {
+            await GridRenderer.UpdateDataAsync(Items);
+        }
     }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !_initialized)
         {
+            BuildGridDefinition();
             await InitializeGridAsync();
             _initialized = true;
         }
@@ -761,6 +803,8 @@ public static class GridDemoData
 
 **IGridRenderer.cs:**
 ```csharp
+using Microsoft.AspNetCore.Components;
+
 namespace BlazorUI.Components.Services.Grid;
 
 /// <summary>
@@ -845,6 +889,9 @@ public interface IGridExportService
 
 **AgGridRenderer.cs:**
 ```csharp
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+
 namespace BlazorUI.Components.Services.Grid;
 
 /// <summary>
@@ -1063,16 +1110,17 @@ function getState(api) {
 }
 
 function buildDataRequest(params) {
+    const pageSize = params.endRow - params.startRow;
     return {
         startIndex: params.startRow,
-        count: params.endRow - params.startRow,
+        count: pageSize,
         sortDescriptors: params.sortModel ? params.sortModel.map(s => ({
             field: s.colId,
             direction: s.sort === 'asc' ? 'Ascending' : 'Descending'
         })) : [],
         filterDescriptors: [], // Build from params.filterModel
-        pageNumber: Math.floor(params.startRow / (params.endRow - params.startRow)) + 1,
-        pageSize: params.endRow - params.startRow
+        pageNumber: Math.floor(params.startRow / pageSize) + 1,
+        pageSize: pageSize
     };
 }
 ```
@@ -1131,6 +1179,8 @@ gridOptions.components = {
 
 **CsvExportService.cs:**
 ```csharp
+using System.Text;
+
 namespace BlazorUI.Components.Services.Grid;
 
 public class CsvExportService : IGridExportService
@@ -1168,12 +1218,30 @@ public class CsvExportService : IGridExportService
         throw new NotImplementedException("Excel export requires additional package.");
     }
     
+    /// <summary>
+    /// Escapes a value for CSV output, and mitigates formula injection by prefixing risky values.
+    /// </summary>
     private string EscapeCsvValue(string? value)
     {
         if (string.IsNullOrEmpty(value)) return string.Empty;
+        value = SanitizeCsvValueForFormulaInjection(value);
         if (value.Contains(",") || value.Contains("\"") || value.Contains("\n"))
         {
             return $"\"{value.Replace("\"", "\"\"")}\"";
+        }
+        return value;
+    }
+
+    /// <summary>
+    /// Prefixes a single quote to values starting with =, +, -, or @ to prevent formula injection.
+    /// </summary>
+    private string SanitizeCsvValueForFormulaInjection(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return value;
+        char first = value[0];
+        if (first == '=' || first == '+' || first == '-' || first == '@')
+        {
+            return "'" + value;
         }
         return value;
     }

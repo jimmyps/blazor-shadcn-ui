@@ -55,7 +55,7 @@ Developers building enterprise applications need a production-ready data grid th
 - [ ] `Grid<TItem>` component created with generic type inference and cascading type parameter
 - [ ] `GridColumn<TItem>` child component created with automatic TItem inference from parent Grid
 - [ ] Internal `GridDefinition<TItem>` and `GridColumnDefinition<TItem>` object model created
-- [ ] `IGridRenderer` interface defined with Initialize, UpdateData, UpdateState, GetState, Render methods
+- [ ] `IGridRenderer` interface defined with Initialize, UpdateData, UpdateState, GetState methods
 - [ ] No AG Grid or JS-specific types exposed in public component APIs
 
 ### Enums and Types
