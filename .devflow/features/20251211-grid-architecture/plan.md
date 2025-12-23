@@ -700,6 +700,63 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
 }
 ```
 
+### Demo Data Schema (Defined Upfront)
+
+**Lesson from Charts:** Chart demos redefined data schema 3 times mid-PR. Grid defines schema before implementation.
+
+**File:** `demo/BlazorUI.Demo/Data/GridDemoData.cs`
+
+```csharp
+namespace BlazorUI.Demo.Data;
+
+public class Order
+{
+    public int Id { get; set; }
+    public string Customer { get; set; } = "";
+    public OrderStatus Status { get; set; }
+    public decimal Amount { get; set; }
+    public DateTime OrderDate { get; set; }
+    public string ShipTo { get; set; } = "";
+}
+
+public enum OrderStatus
+{
+    Pending,
+    Processing,
+    Shipped,
+    Delivered,
+    Cancelled
+}
+
+public static class GridDemoData
+{
+    public static List<Order> GenerateOrders(int count = 1000)
+    {
+        var statuses = new[] { OrderStatus.Pending, OrderStatus.Processing, OrderStatus.Shipped, OrderStatus.Delivered, OrderStatus.Cancelled };
+        var customers = new[] { "Acme Corp", "TechStart Inc", "GlobalTrade LLC", "FastShip Co", "MegaMart" };
+        var cities = new[] { "New York", "Los Angeles", "Chicago", "Houston", "Phoenix" };
+        var random = new Random(42); // Fixed seed for reproducibility
+        
+        return Enumerable.Range(1, count)
+            .Select(i => new Order
+            {
+                Id = i,
+                Customer = customers[random.Next(customers.Length)],
+                Status = statuses[random.Next(statuses.Length)],
+                Amount = Math.Round((decimal)(random.NextDouble() * 10000), 2),
+                OrderDate = DateTime.Now.AddDays(-random.Next(365)),
+                ShipTo = cities[random.Next(cities.Length)]
+            })
+            .ToList();
+    }
+}
+```
+
+**Usage in Demos:**
+- Small demos (grid-default, grid-cell-template): 100 rows
+- Pagination demos: 1000 rows
+- Performance test (grid-height with virtualization): 10,000 rows
+
 ### Phase 3: Renderer Abstraction (Week 2)
 
 **IGridRenderer.cs:**
@@ -737,6 +794,36 @@ public interface IGridRendererCapabilities
     bool SupportsServerSidePaging { get; }
     bool SupportsExport { get; }
     string[] UnsupportedFeatures { get; }
+}
+```
+
+**Usage Example:**
+
+```csharp
+// In Grid.razor.cs
+protected override async Task OnInitializedAsync()
+{
+    if (GridRenderer is IGridRendererCapabilities capabilities)
+    {
+        if (Columns.Any(c => c.Pinned != GridColumnPinPosition.None) && !capabilities.SupportsColumnPinning)
+        {
+            Logger.LogWarning("Current renderer ({RendererType}) does not support column pinning. Pinned columns will be ignored.",
+                GridRenderer.GetType().Name);
+        }
+        
+        if (VirtualizationMode != GridVirtualizationMode.None && !capabilities.SupportsVirtualization)
+        {
+            Logger.LogWarning("Current renderer ({RendererType}) does not support virtualization. Performance may degrade with large datasets.",
+                GridRenderer.GetType().Name);
+        }
+        
+        if (capabilities.UnsupportedFeatures.Any())
+        {
+            Logger.LogInformation("Renderer capabilities: {SupportedFeatures}. Unsupported: {UnsupportedFeatures}",
+                GetSupportedFeaturesList(capabilities),
+                string.Join(", ", capabilities.UnsupportedFeatures));
+        }
+    }
 }
 ```
 
@@ -990,6 +1077,56 @@ function buildDataRequest(params) {
 }
 ```
 
+#### Task 4.4: Implement Template Precompilation
+
+**Acceptance Criteria:**
+
+- [ ] CellTemplate renders to HTML string using HtmlRenderer service
+- [ ] Custom BlazorDomRenderer JavaScript class created (extends ICellRendererComp)
+- [ ] Renderer receives HTML via cellRendererParams and creates DOM element
+- [ ] DOM element created with `document.createElement('div')` and `innerHTML`
+- [ ] getGui() returns DOM element (not string)
+- [ ] refresh() method updates DOM element for data changes
+- [ ] Template context includes full TItem data
+- [ ] Handles null/empty templates gracefully
+- [ ] Performance acceptable for 1000+ rows (pre-render on init)
+- [ ] No interactive Blazor components (documented limitation for v1)
+
+#### BlazorDomRenderer Implementation Example
+
+```javascript
+// wwwroot/js/blazor-grid-renderers.js
+class BlazorDomRenderer {
+  init(params) {
+    this.eGui = document.createElement('div');
+    if (params.html) {
+      this.eGui.innerHTML = params.html; // Safe: HTML from Blazor is sanitized
+    }
+  }
+  
+  getGui() {
+    return this.eGui; // Return DOM element, not string
+  }
+  
+  refresh(params) {
+    if (params.html) {
+      this.eGui.innerHTML = params.html;
+      return true; // Refreshed successfully
+    }
+    return false;
+  }
+  
+  destroy() {
+    this.eGui = null;
+  }
+}
+
+// Register with AG Grid
+gridOptions.components = {
+  blazorDomRenderer: BlazorDomRenderer
+};
+```
+
 ### Phase 5: Export Service (Week 4)
 
 **CsvExportService.cs:**
@@ -1114,6 +1251,113 @@ Migration path:
 - CSV export works
 - No AG Grid types in public API
 - Documentation complete
+
+## Appendix A: AG Grid DTOs (Complete Reference)
+
+### AGGridOption.cs
+
+```csharp
+using System.Text.Json.Serialization;
+
+namespace BlazorUI.Components.Grid.Internal;
+
+/// <summary>
+/// Root AG Grid option - 1:1 match to AG Grid's GridOptions interface.
+/// See: https://www.ag-grid.com/javascript-data-grid/grid-options/
+/// </summary>
+public sealed class AGGridOption
+{
+    [JsonPropertyName("columnDefs")]
+    public List<AGColumnDef>? ColumnDefs { get; set; }
+    
+    [JsonPropertyName("rowData")]
+    public object? RowData { get; set; }
+    
+    [JsonPropertyName("pagination")]
+    public bool? Pagination { get; set; }
+    
+    [JsonPropertyName("paginationPageSize")]
+    public int? PaginationPageSize { get; set; }
+    
+    [JsonPropertyName("rowSelection")]
+    public string? RowSelection { get; set; } // "single" | "multiple"
+    
+    [JsonPropertyName("suppressRowClickSelection")]
+    public bool? SuppressRowClickSelection { get; set; }
+    
+    [JsonPropertyName("domLayout")]
+    public string? DomLayout { get; set; } // "normal" | "autoHeight" | "print"
+    
+    [JsonPropertyName("defaultColDef")]
+    public AGColumnDef? DefaultColDef { get; set; }
+    
+    [JsonPropertyName("rowModelType")]
+    public string? RowModelType { get; set; } // "clientSide" | "serverSide" | "infinite"
+    
+    [JsonPropertyName("theme")]
+    public string? Theme { get; set; } // "ag-theme-quartz"
+    
+    [JsonPropertyName("components")]
+    public Dictionary<string, object>? Components { get; set; }
+    
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement>? ExtensionData { get; set; }
+}
+
+public sealed class AGColumnDef
+{
+    [JsonPropertyName("field")]
+    public string? Field { get; set; }
+    
+    [JsonPropertyName("headerName")]
+    public string? HeaderName { get; set; }
+    
+    [JsonPropertyName("colId")]
+    public string? ColId { get; set; }
+    
+    [JsonPropertyName("sortable")]
+    public bool? Sortable { get; set; }
+    
+    [JsonPropertyName("resizable")]
+    public bool? Resizable { get; set; }
+    
+    [JsonPropertyName("filter")]
+    public object? Filter { get; set; } // bool | "agTextColumnFilter" | AGFilterConfig
+    
+    [JsonPropertyName("pinned")]
+    public string? Pinned { get; set; } // "left" | "right" | null
+    
+    [JsonPropertyName("width")]
+    public int? Width { get; set; }
+    
+    [JsonPropertyName("minWidth")]
+    public int? MinWidth { get; set; }
+    
+    [JsonPropertyName("maxWidth")]
+    public int? MaxWidth { get; set; }
+    
+    [JsonPropertyName("flex")]
+    public int? Flex { get; set; }
+    
+    [JsonPropertyName("cellRenderer")]
+    public string? CellRenderer { get; set; } // "blazorDomRenderer" for templates
+    
+    [JsonPropertyName("cellRendererParams")]
+    public object? CellRendererParams { get; set; } // { html: "..." }
+    
+    [JsonPropertyName("hide")]
+    public bool? Hide { get; set; }
+    
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement>? ExtensionData { get; set; }
+}
+```
+
+**Key Design Decisions:**
+- Uses `[JsonPropertyName]` with camelCase to match AG Grid JSON exactly
+- `object?` type for polymorphic properties (filter, cellRendererParams)
+- `[JsonExtensionData]` for future AG Grid options not yet mapped
+- Sealed classes to prevent inheritance (DTOs should be data-only)
 
 ## Approval
 
