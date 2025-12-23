@@ -1,0 +1,56 @@
+name: Build and deploy .NET Core application to Web App BlazorUIDemo20251223130817
+on:
+  push:
+    branches:
+    - main
+permissions:
+  id-token: write
+  contents: read
+env:
+  AZURE_WEBAPP_NAME: BlazorUIDemo20251223130817
+  AZURE_WEBAPP_PACKAGE_PATH: demo\BlazorUI.Demo\published
+  CONFIGURATION: Release
+  DOTNET_CORE_VERSION: 10.0.x
+  WORKING_DIRECTORY: demo\BlazorUI.Demo
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+    - name: Restore
+      run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+    - name: Build
+      run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+    - name: Test
+      run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
+    - name: Publish
+      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+    - name: Publish Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: webapp
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+  deploy:
+    runs-on: windows-latest
+    needs: build
+    steps:
+    - name: Download artifact from build job
+      uses: actions/download-artifact@v4
+      with:
+        name: webapp
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ vars.BlazorUIDemo20251223130817_CLIENT_ID_EEE8 }}
+        tenant-id: ${{ vars.BlazorUIDemo20251223130817_TENANT_ID_C505 }}
+        subscription-id: ${{ vars.BlazorUIDemo20251223130817_SUBSCRIPTION_ID_C505 }}
+    - name: Deploy to Azure WebApp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
