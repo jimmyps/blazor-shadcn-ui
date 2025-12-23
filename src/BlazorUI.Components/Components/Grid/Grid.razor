@@ -1,0 +1,36 @@
+@namespace BlazorUI.Components.Grid
+@typeparam TItem
+@attribute [CascadingTypeParameter(nameof(TItem))]
+@using BlazorUI.Components.Utilities
+@implements IAsyncDisposable
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="@ContainerCssClass" style="@Style">
+        @if (IsLoading)
+        {
+            @if (LoadingTemplate != null)
+            {
+                @LoadingTemplate
+            }
+            else
+            {
+                <div class="flex items-center justify-center p-8 text-muted-foreground">
+                    <div class="text-sm">Loading...</div>
+                </div>
+            }
+        }
+        else if (_gridDefinition.Columns.Count == 0)
+        {
+            <div class="text-sm text-muted-foreground p-4">
+                No columns defined. Add GridColumn components inside the Columns parameter.
+            </div>
+        }
+        else
+        {
+            <div @ref="_gridContainer" class="@GridCssClass"></div>
+        }
+    </div>
+    
+    @* Capture column definitions *@
+    @Columns
+</CascadingValue>

@@ -4,10 +4,10 @@ namespace BlazorUI.Components.Grid;
 
 /// <summary>
 /// Internal representation of a grid configuration.
-/// This class is not exposed in the public API.
+/// Used by renderers to configure the grid.
 /// </summary>
 /// <typeparam name="TItem">The type of items in the grid.</typeparam>
-internal class GridDefinition<TItem>
+public class GridDefinition<TItem>
 {
     /// <summary>
     /// Gets or sets the list of column definitions.
