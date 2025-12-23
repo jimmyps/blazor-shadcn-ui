@@ -65,10 +65,10 @@ dotnet add package BlazorUI.Icons.Feather     # 286 icons - minimalist, stroke-b
     <link rel="stylesheet" href="styles/theme.css" />
     <!-- Pre-built BlazorUI styles -->
     <link rel="stylesheet" href="_content/BlazorUI.Components/blazorui.css" />
-    <HeadOutlet @rendermode="InteractiveServer" />
+    <HeadOutlet @rendermode="InteractiveAuto" />
 </head>
 <body>
-    <Routes @rendermode="InteractiveServer" />
+    <Routes @rendermode="InteractiveAuto" />
     <script src="_framework/blazor.web.js"></script>
 </body>
 </html>
@@ -97,6 +97,55 @@ dotnet add package BlazorUI.Icons.Feather     # 286 icons - minimalist, stroke-b
 ### Learn More
 
 - **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines
+
+## Architecture
+
+BlazorUI uses a **two-layer architecture** with modern .NET 10 features and Auto rendering mode:
+
+### Project Structure
+
+- **BlazorUI.Primitives** - Headless components (runs on both Server and WebAssembly)
+- **BlazorUI.Components** - Pre-styled components (runs on both Server and WebAssembly)
+- **BlazorUI.Demo** - Demo application (.NET 10, Auto rendering mode)
+- **BlazorUI.Demo.Client** - WebAssembly-specific code (.NET 10, WASM)
+- **BlazorUI.Demo.Shared** - Shared code between Server and WASM (.NET 10)
+
+### Rendering Mode
+
+All components support **.NET 10's Auto rendering mode**, which automatically switches between Server and WebAssembly based on availability:
+
+```razor
+<!-- App.razor -->
+<HeadOutlet @rendermode="InteractiveAuto" />
+<Routes @rendermode="InteractiveAuto" />
+```
+
+This provides:
+- Fast initial load (Server-side rendering)
+- Rich interactivity (WebAssembly after download)
+- Seamless transition between modes
+- Optimal performance for all scenarios
+
+### Styled Components Layer (`BlazorUI.Components`)
+- Pre-styled components matching shadcn/ui design system
+- **Pre-built CSS included** - no Tailwind configuration needed
+- Built on top of primitives for consistency
+- Ready to use out of the box
+- Full theme support via CSS variables
+
+### Primitives Layer (`BlazorUI.Primitives`)
+- Headless, unstyled components
+- Complete accessibility implementation
+- Keyboard navigation and ARIA support
+- Maximum flexibility for custom styling
+
+### Key Principles
+- **Feature-based organization** - Each component in its own folder with all related files
+- **Code-behind pattern** - Clean separation of markup (`.razor`) and logic (`.razor.cs`)
+- **CSS Variables theming** - Runtime theme switching with light/dark mode support
+- **Accessibility first** - WCAG 2.1 AA compliance with comprehensive keyboard navigation
+- **Composition over inheritance** - Components designed to be composed together
+- **Progressive enhancement** - Works without JavaScript where possible
 
 ## Theming
 
@@ -180,10 +229,10 @@ Simply add two CSS files to your `App.razor`:
     <!-- 2. Pre-built BlazorUI styles (included in NuGet package) -->
     <link rel="stylesheet" href="_content/BlazorUI.Components/blazorui.css" />
 
-    <HeadOutlet @rendermode="InteractiveServer" />
+    <HeadOutlet @rendermode="InteractiveAuto" />
 </head>
 <body>
-    <Routes @rendermode="InteractiveServer" />
+    <Routes @rendermode="InteractiveAuto" />
     <script src="_framework/blazor.web.js"></script>
 </body>
 </html>
@@ -224,20 +273,24 @@ Primitives give you complete control over styling while handling all the complex
 
 ## Components
 
-BlazorUI includes **41 styled components** with full shadcn/ui design compatibility:
+BlazorUI includes **60+ styled components** with full shadcn/ui design compatibility:
 
 ### Form Components
 - **Button** - Multiple variants (default, destructive, outline, secondary, ghost, link) with icon support
+- **Button Group** - Visually grouped related buttons with connected styling
 - **Checkbox** - Accessible checkbox with indeterminate state
+- **Field** - Combine labels, controls, and help text for accessible forms
 - **Input** - Text input with multiple types and validation support
 - **Input Group** - Enhanced inputs with icons, buttons, and addons
+- **Input OTP** - One-time password input with individual character slots
 - **Label** - Accessible form labels
+- **Multi Select** - Searchable multi-selection with tags and checkboxes
 - **Native Select** - Styled native HTML select dropdown
-- **RadioGroup** - Radio button groups with keyboard navigation
+- **Radio Group** - Radio button groups with keyboard navigation
 - **Select** - Dropdown select with search and keyboard navigation
 - **Slider** - Range input for numeric value selection
 - **Switch** - Toggle switch component
-- **Combobox** - Searchable autocomplete dropdown
+- **Textarea** - Multi-line text input with automatic content sizing
 
 ### Date & Time
 - **Calendar** - Date selection grid with month navigation
@@ -246,29 +299,39 @@ BlazorUI includes **41 styled components** with full shadcn/ui design compatibil
 
 ### Layout & Navigation
 - **Accordion** - Collapsible content sections
+- **Aspect Ratio** - Display content within a desired width/height ratio
 - **Breadcrumb** - Hierarchical navigation with customizable separators
 - **Carousel** - Slideshow component with touch gestures and animations
 - **Collapsible** - Expandable/collapsible panels
+- **Navigation Menu** - Horizontal navigation with dropdown panels
 - **Pagination** - Page navigation with Previous/Next/Ellipsis support
+- **Resizable** - Split layouts with draggable handles
+- **Scroll Area** - Custom scrollbars for styled scroll regions
 - **Separator** - Visual dividers
 - **Sidebar** - Responsive sidebar with collapsible icon mode, variants (default, floating, inset), and mobile sheet integration
 - **Tabs** - Tabbed interfaces with controlled/uncontrolled modes
 
 ### Overlay Components
 - **Alert Dialog** - Modal for critical confirmations
+- **Context Menu** - Right-click menus with actions and shortcuts
 - **Dialog** - Modal dialogs
-- **Sheet** - Slide-out panels (top, right, bottom, left)
+- **Dropdown Menu** - Context menus with nested submenus
+- **Hover Card** - Rich hover previews
+- **Menubar** - Desktop application-style horizontal menu bar
 - **Popover** - Floating content containers
+- **Sheet** - Slide-out panels (top, right, bottom, left)
+- **Toast** - Temporary notifications with variants and actions
 - **Tooltip** - Contextual hover tooltips
-- **HoverCard** - Rich hover previews
-- **DropdownMenu** - Context menus with nested submenus
-- **Command** - Command palette with keyboard navigation
 
 ### Display Components
 - **Alert** - Status messages and callouts
 - **Avatar** - User avatars with fallback support
 - **Badge** - Status badges and labels
+- **Card** - Container for grouped content with header and footer
+- **Command** - Command palette with keyboard navigation
+- **Data Table** - Powerful tables with sorting, filtering, pagination, and selection
 - **Empty** - Empty state displays
+- **Item** - Flexible list items with media, content, and actions
 - **Kbd** - Keyboard shortcut badges
 - **Progress** - Progress bars with animations
 - **Skeleton** - Loading placeholders
@@ -276,6 +339,17 @@ BlazorUI includes **41 styled components** with full shadcn/ui design compatibil
 - **Toggle** - Pressable toggle buttons
 - **Toggle Group** - Single/multiple selection toggle groups
 - **Typography** - Semantic text styling
+
+### Data Visualization
+- **Chart** - Beautiful data visualizations with multiple chart types:
+  - **Area Chart** - Stacked and gradient area charts
+  - **Bar Chart** - Vertical and horizontal bar charts (grouped/stacked)
+  - **Composed Chart** - Mix multiple chart types (line + bar + area)
+  - **Line Chart** - Single and multi-series line charts
+  - **Pie Chart** - Pie and donut charts with labels
+  - **Radar Chart** - Multi-axis radar/spider charts
+  - **Radial Bar Chart** - Circular progress and gauge charts
+  - **Scatter Chart** - X/Y coordinate plotting
 
 ### Animation
 - **Motion** - Declarative animation system powered by Motion.dev with 20+ presets including fade, scale, slide, shake, bounce, pulse, spring physics, scroll-triggered animations, and staggered list/grid animations
@@ -325,6 +399,8 @@ All primitives are fully accessible, keyboard-navigable, and provide complete co
 
 - **Full shadcn/ui Compatibility** - Drop-in Blazor equivalents of shadcn/ui components
 - **Zero Configuration** - Pre-built CSS included, no Tailwind setup required
+- **.NET 10 Support** - Built for the latest .NET platform with Auto rendering mode
+- **Auto Rendering Mode** - Seamless transition between Server and WebAssembly rendering
 - **Dark Mode Support** - Built-in light/dark theme switching with CSS variables
 - **Responsive Design** - Mobile-first components that adapt to all screen sizes
 - **Accessibility First** - WCAG 2.1 AA compliant with keyboard navigation and ARIA attributes
@@ -335,35 +411,9 @@ All primitives are fully accessible, keyboard-navigable, and provide complete co
 - **Icon Library Options** - 3 separate icon packages (Lucide, Heroicons, Feather) with 3,200+ total icons
 - **Form Validation Ready** - Works seamlessly with Blazor's form validation
 
-## Architecture
-
-BlazorUI uses a **two-layer architecture**:
-
-### Styled Components Layer (`BlazorUI.Components`)
-- Pre-styled components matching shadcn/ui design system
-- **Pre-built CSS included** - no Tailwind configuration needed
-- Built on top of primitives for consistency
-- Ready to use out of the box
-- Full theme support via CSS variables
-
-### Primitives Layer (`BlazorUI.Primitives`)
-- Headless, unstyled components
-- Complete accessibility implementation
-- Keyboard navigation and ARIA support
-- Maximum flexibility for custom styling
-
-### Key Principles
-- **Feature-based organization** - Each component in its own folder with all related files
-- **Code-behind pattern** - Clean separation of markup (`.razor`) and logic (`.razor.cs`)
-- **CSS Variables theming** - Runtime theme switching with light/dark mode support
-- **Accessibility first** - WCAG 2.1 AA compliance with comprehensive keyboard navigation
-- **Composition over inheritance** - Components designed to be composed together
-- **Progressive enhancement** - Works without JavaScript where possible
-
 ## License
 
 BlazorUI is open source software licensed under the [MIT License](LICENSE).
-
 
 ## Acknowledgments
 
@@ -375,7 +425,6 @@ While BlazorUI is a complete reimplementation for Blazor/C# and contains no code
 - Radix UI: MIT License - Copyright (c) 2022-present WorkOS
 
 BlazorUI is an independent project and is not affiliated with or endorsed by shadcn or Radix UI.
-
 
 - [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
 - [Lucide Icons](https://lucide.dev/) - Beautiful stroke-based icon library (ISC License)
