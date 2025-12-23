@@ -2,9 +2,8 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './Pages/**/*.{razor,html,cs}',
-    './Shared/**/*.{razor,html,cs}',
-    './Components/**/*.{razor,html,cs}',
+    './**/*.{razor,html,cs}',
+    '../BlazorUI.Demo.Shared/**/*.{razor,html,cs}',
     '../../src/BlazorUI.Components/**/*.{razor,html,cs}',
     '../../src/BlazorUI.Primitives/**/*.{razor,html,cs}',
     '../../src/BlazorUI.Icons/**/*.{razor,html,cs}',

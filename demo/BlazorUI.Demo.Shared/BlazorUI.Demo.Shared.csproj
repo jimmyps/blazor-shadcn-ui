@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>BlazorUI.Demo.Shared</RootNamespace>
+    <AssemblyName>BlazorUI.Demo.Shared</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BlazorUI.Components\BlazorUI.Components.csproj" />
+    <ProjectReference Include="..\..\src\BlazorUI.Primitives\BlazorUI.Primitives.csproj" />
+    <ProjectReference Include="..\..\src\BlazorUI.Icons.Lucide\BlazorUI.Icons.Lucide.csproj" />
+    <ProjectReference Include="..\..\src\BlazorUI.Icons.Heroicons\BlazorUI.Icons.Heroicons.csproj" />
+    <ProjectReference Include="..\..\src\BlazorUI.Icons.Feather\BlazorUI.Icons.Feather.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0" />
+  </ItemGroup>
+
+</Project>

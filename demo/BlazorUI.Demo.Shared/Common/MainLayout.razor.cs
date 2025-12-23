@@ -2,7 +2,7 @@ using BlazorUI.Demo.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace BlazorUI.Demo.Shared;
+namespace BlazorUI.Demo.Shared.Common;
 
 public partial class MainLayout : LayoutComponentBase
 {

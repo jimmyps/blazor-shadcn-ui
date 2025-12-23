@@ -7,7 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents();
 
 // Add BlazorUI.Primitives services
 builder.Services.AddBlazorUIPrimitives();
@@ -32,18 +33,24 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
-
 app.UseAntiforgery();
 
+// Serve static files (required for WebAssembly framework files)
+app.UseStaticFiles();
+
+// Map static assets (for optimized asset delivery)
+app.MapStaticAssets();
+
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(BlazorUI.Demo.Shared.Routes).Assembly);
 
 app.Run();

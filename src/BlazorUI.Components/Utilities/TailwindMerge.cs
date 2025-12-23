@@ -141,11 +141,14 @@ public static class TailwindMerge
     private static readonly Regex DelayRegex = new(@"^delay-(\d+)$", RegexOptions.Compiled);
     private static readonly Regex EasingRegex = new(@"^ease-(.+)$", RegexOptions.Compiled);
     private static readonly Regex AnimateRegex = new(@"^animate-(.+)$", RegexOptions.Compiled);
+    private static readonly Regex TranslateRegex = new(@"^-?(translate-x|translate-y|translate)-(.+)$", RegexOptions.Compiled);
+    private static readonly Regex PositionRegex = new(@"^-?(top|right|bottom|left|inset|inset-x|inset-y)-(.+)$", RegexOptions.Compiled);
+    private static readonly Regex ShadowRegex = new(@"^shadow(-(.+))?$", RegexOptions.Compiled);
 
     /// <summary>
     /// Merges an array of CSS class strings, resolving Tailwind utility conflicts.
     /// Later classes in the array take precedence over earlier ones when conflicts occur.
-    /// </summary>
+    /// /// </summary>
     /// <param name="classes">Array of class strings to merge</param>
     /// <returns>Merged class string with conflicts resolved</returns>
     public static string Merge(string[] classes)
@@ -267,6 +270,26 @@ public static class TailwindMerge
         // Check named animations (animate-*)
         if (AnimateRegex.IsMatch(className))
             return "animation";
+
+        // Check translate utilities (translate-x, translate-y, translate)
+        if (TranslateRegex.IsMatch(className))
+        {
+            var match = TranslateRegex.Match(className);
+            var prefix = match.Groups[1].Value;
+            return prefix; // Returns "translate-x", "translate-y", or "translate"
+        }
+
+        // Check position utilities (top, right, bottom, left, inset, inset-x, inset-y)
+        if (PositionRegex.IsMatch(className))
+        {
+            var match = PositionRegex.Match(className);
+            var prefix = match.Groups[1].Value;
+            return prefix; // Returns "top", "right", "bottom", "left", "inset", "inset-x", or "inset-y"
+        }
+
+        // Check shadow utilities (shadow, shadow-sm, shadow-md, shadow-lg, shadow-xl, shadow-2xl, shadow-inner, shadow-none)
+        if (ShadowRegex.IsMatch(className))
+            return "box-shadow";
 
         // Unknown utility
         return null;
