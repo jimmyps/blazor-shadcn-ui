@@ -240,6 +240,40 @@ Developers building enterprise applications need a production-ready data grid th
 5. **Localization strategy?**
    - **Decision:** Use `LocalizationKeyPrefix` parameter, integrate with existing i18n infrastructure (future).
 
+## Ambiguity Resolution
+
+### A. `Field` vs `Property`
+**Decision:** GridColumn uses `Field` (string) to match AG Grid JSON mapping.  
+**Rationale:** DataTable uses `Property` (Func<TData, TValue> lambda) because it's client-side C# only. Grid needs string field names for AG Grid columnDefs.
+
+### B. Template Precompilation Strategy
+**Decision (v1):** Use AG Grid's class-based `cellRenderer` with DOM element creation.  
+**Implementation:** 
+- Pre-render Blazor `RenderFragment<TItem>` to HTML using HtmlRenderer
+- Pass HTML to custom `BlazorDomRenderer` JavaScript class via `cellRendererParams`
+- Renderer creates DOM element with `innerHTML` (safe, Blazor-sanitized)
+- **NOT** HTML string return (deprecated in modern AG Grid)
+
+**Limitation:** v1 does not support interactive Blazor components in cells (buttons with @onclick won't work)  
+**Future (v2):** Lazy rendering with JSInterop callbacks for interactivity
+
+### C. Theming Integration
+**Decision:** Use `ag-theme-quartz` as base, override with shadcn CSS variables.  
+**Implementation:** Map `--primary`, `--background`, `--border` etc. to AG Grid theme variables.
+
+### D. Error Handling for Invalid Fields
+**Decision:** Validate column field names early, throw descriptive exceptions.  
+**Rationale:** DataTable fails silently when property doesn't exist. Grid should not - throw `InvalidOperationException` with clear message during initialization.
+
+### E. Selection State Persistence
+**Decision (v1):** Selection state lost across pagination in client-side mode.  
+**Rationale:** AG Grid client-side model uses row references, not IDs.  
+**Future (v2):** Track selection by row ID for persistence across pages.
+
+### F. GridColumn Type Inference
+**Decision:** Yes, use `[CascadingTypeParameter]` attribute.  
+**Implementation:** GridColumn<TItem> infers TItem from parent Grid<TItem> automatically.
+
 ## Related Features
 
 - **20251210-charting-components** - Similar renderer architecture pattern
