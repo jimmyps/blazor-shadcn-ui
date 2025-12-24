@@ -31,7 +31,7 @@
 @code {
 
     /// <summary>
-    /// Cascading parameter to receive the accordion context.
+    /// Cascading parameter to receive the dropdown menu context.
     /// </summary>
     [CascadingParameter]
     public DropdownMenuContext Context { get; set; } = null!;
@@ -97,12 +97,13 @@
         }
     }
 
-    private void OnCheckedChanged(bool isChecked)
+    private async Task OnCheckedChanged(bool isChecked)
     {
+        // Invoke parent callback first
         if (CheckedChanged.HasDelegate)
-            CheckedChanged.InvokeAsync(isChecked);
+            await CheckedChanged.InvokeAsync(isChecked);
 
-        // Ensure internal state is updated
+        // Ensure internal state is updated to stay in sync with primitive
         if (Checked != isChecked)
             Checked = isChecked;
     }
