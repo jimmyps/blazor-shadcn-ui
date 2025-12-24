@@ -17,7 +17,7 @@
         <HeightAnimation Config="@_heightAnimationConfig" Enabled="@_isOpen">
             <BlazorUI.Components.Command.Command OnSelect="@HandleSelect">
                 <CommandInput 
-                    Placeholder="Type a command or search..." 
+                    Placeholder="Type a command or search..." SearchInterval="500"
                     Class="border-0 border-b border-border/40 rounded-none focus-visible:ring-0" />
                 
                 <CommandList Class="max-h-[350px] scrollbar-thin">

@@ -25,6 +25,8 @@
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<ComboboxInput>? _dotNetRef;
     private bool _previousAutoFocus;
+    private Timer? _debounceTimer;
+    private string? _pendingSearchQuery;
 
     /// <summary>
     /// Additional attributes to apply to the input element.
@@ -37,6 +39,13 @@
     /// </summary>
     [Parameter]
     public bool AutoFocus { get; set; }
+
+    /// <summary>
+    /// Gets or sets the debounce interval in milliseconds before triggering search.
+    /// Default is 0 (no debouncing). Set to 150-300ms for better performance with large datasets.
+    /// </summary>
+    [Parameter]
+    public int SearchInterval { get; set; } = 0;
 
     protected override void OnInitialized()
     {
@@ -96,8 +105,35 @@
     private void HandleInput(ChangeEventArgs e)
     {
         var newQuery = e.Value?.ToString() ?? string.Empty;
-        Context.UpdateSearchQuery(newQuery);
-        StateHasChanged(); // Force immediate re-render
+        
+        if (SearchInterval <= 0)
+        {
+            // No debouncing - update immediately
+            Context.UpdateSearchQuery(newQuery);
+            StateHasChanged(); // Force immediate re-render
+        }
+        else
+        {
+            // Debounce the search
+            _pendingSearchQuery = newQuery;
+            
+            // Dispose existing timer
+            _debounceTimer?.Dispose();
+            
+            // Create new timer for debounced search
+            _debounceTimer = new Timer(_ =>
+            {
+                InvokeAsync(() =>
+                {
+                    if (_pendingSearchQuery != null)
+                    {
+                        Context.UpdateSearchQuery(_pendingSearchQuery);
+                        _pendingSearchQuery = null;
+                        StateHasChanged();
+                    }
+                });
+            }, null, SearchInterval, Timeout.Infinite);
+        }
     }
 
     /// <summary>
@@ -106,6 +142,10 @@
     [JSInvokable]
     public void HandleEscape()
     {
+        // Cancel any pending search
+        _debounceTimer?.Dispose();
+        _pendingSearchQuery = null;
+        
         Context.ClearSearch();
     }
 
@@ -133,6 +173,9 @@
         {
             Context.OnStateChanged -= HandleContextStateChanged;
         }
+
+        // Cleanup debounce timer
+        _debounceTimer?.Dispose();
 
         // Cleanup JavaScript interop
         if (_jsModule != null && Context != null)
