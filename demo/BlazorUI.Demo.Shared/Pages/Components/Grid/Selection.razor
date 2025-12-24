@@ -1,0 +1,195 @@
+@using BlazorUI.Components.Grid
+@using BlazorUI.Components.Button
+@using BlazorUI.Components.Badge
+@using BlazorUI.Demo.Shared.Data
+
+<PageTitle>Grid Components - Selection Examples</PageTitle>
+
+<div class="space-y-8">
+    @* Demo 10: Single Row Selection *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Single Row Selection</h2>
+            <p class="text-muted-foreground">
+                Radio-style single row selection with visual feedback.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+            <Grid Items="@orders" SelectionMode="GridSelectionMode.Single" OnSelectionChanged="@((IReadOnlyCollection<Order> selection) => HandleSingleSelection(selection))">
+                <Columns>
+                    <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                    <GridColumn Field="Customer" Header="Customer" />
+                    <GridColumn Field="Status" Header="Status" Width="130px" />
+                    <GridColumn Field="Amount" Header="Amount" Width="120px" />
+                </Columns>
+            </Grid>
+        </div>
+
+        @if (selectedOrder != null)
+        {
+            <div class="rounded-lg border bg-muted p-4">
+                <h3 class="font-semibold mb-2">Selected Order</h3>
+                <p class="text-sm">ID: @selectedOrder.Id - @selectedOrder.Customer - @selectedOrder.Amount.ToString("C")</p>
+            </div>
+        }
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" 
+      SelectionMode="GridSelectionMode.Single" 
+      OnSelectionChanged="HandleSelection"&gt;
+    &lt;Columns&gt;...&lt;/Columns&gt;
+&lt;/Grid&gt;</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 11: Multiple Row Selection *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Multiple Row Selection</h2>
+            <p class="text-muted-foreground">
+                Checkbox-based multiple row selection with select all functionality.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+            <Grid Items="@orders" SelectionMode="GridSelectionMode.Multiple" OnSelectionChanged="@((IReadOnlyCollection<Order> selection) => HandleMultipleSelection(selection))">
+                <Columns>
+                    <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                    <GridColumn Field="Customer" Header="Customer" />
+                    <GridColumn Field="Status" Header="Status" Width="130px" />
+                    <GridColumn Field="Amount" Header="Amount" Width="120px" />
+                </Columns>
+            </Grid>
+        </div>
+
+        <div class="flex items-center gap-2 mt-4">
+            <span class="text-sm text-muted-foreground">
+                @selectedOrders.Count of @orders.Count row(s) selected
+            </span>
+            @if (selectedOrders.Count > 0)
+            {
+                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Destructive" OnClick="DeleteSelected">
+                    Delete Selected (@selectedOrders.Count)
+                </Button>
+            }
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" 
+      SelectionMode="GridSelectionMode.Multiple" 
+      OnSelectionChanged="HandleSelection"&gt;
+    &lt;Columns&gt;...&lt;/Columns&gt;
+&lt;/Grid&gt;</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 12: Controlled Selection *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Controlled Selection State</h2>
+            <p class="text-muted-foreground">
+                Programmatic control of selection with external buttons.
+            </p>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <Button Size="ButtonSize.Small" OnClick="SelectHighValueOrders">Select High Value Orders</Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearSelection">Clear Selection</Button>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+            <Grid Items="@orders" 
+                  SelectionMode="GridSelectionMode.Multiple" 
+                  SelectedItems="@controlledSelection"
+                  OnSelectionChanged="@((IReadOnlyCollection<Order> selection) => HandleControlledSelection(selection))">
+                <Columns>
+                    <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                    <GridColumn Field="Customer" Header="Customer" />
+                    <GridColumn Field="Amount" Header="Amount" Width="120px" />
+                    <GridColumn Field="Status" Header="Status" Width="130px" />
+                </Columns>
+            </Grid>
+        </div>
+
+        <div class="mt-4 text-sm text-muted-foreground">
+            @controlledSelection.Count row(s) selected programmatically
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;Button OnClick="SelectHighValueOrders"&gt;Select High Value&lt;/Button&gt;
+
+&lt;Grid Items="@@orders" 
+      SelectionMode="GridSelectionMode.Multiple"
+      SelectedItems="@@selectedItems"
+      OnSelectionChanged="HandleSelection"&gt;
+    &lt;Columns&gt;...&lt;/Columns&gt;
+&lt;/Grid&gt;
+
+@@code {
+    private void SelectHighValueOrders()
+    {
+        selectedItems = orders.Where(o =&gt; o.Amount &gt; 5000).ToList();
+    }
+}</code></pre>
+            </div>
+        </details>
+    </section>
+</div>
+
+@code {
+    private List<Order> orders = new();
+    private Order? selectedOrder;
+    private IReadOnlyCollection<Order> selectedOrders = Array.Empty<Order>();
+    private IReadOnlyCollection<Order> controlledSelection = Array.Empty<Order>();
+
+    protected override void OnInitialized()
+    {
+        orders = GridDemoData.GenerateOrders(50);
+    }
+
+    private void HandleSingleSelection(IReadOnlyCollection<Order> selection)
+    {
+        selectedOrder = selection.FirstOrDefault();
+    }
+
+    private void HandleMultipleSelection(IReadOnlyCollection<Order> selection)
+    {
+        selectedOrders = selection;
+    }
+
+    private void HandleControlledSelection(IReadOnlyCollection<Order> selection)
+    {
+        controlledSelection = selection;
+    }
+
+    private void SelectHighValueOrders()
+    {
+        controlledSelection = orders.Where(o => o.Amount > 5000).ToList();
+    }
+
+    private void ClearSelection()
+    {
+        controlledSelection = Array.Empty<Order>();
+    }
+
+    private void DeleteSelected()
+    {
+        // Demo action - would delete selected orders
+        selectedOrders = Array.Empty<Order>();
+    }
+}

@@ -1,0 +1,149 @@
+@using BlazorUI.Components.Grid
+@using BlazorUI.Demo.Shared.Data
+
+<PageTitle>Grid Components - Advanced Examples</PageTitle>
+
+<div class="space-y-8">
+    @* Demo 19: Flexible Column Sizing *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Flexible Column Sizing</h2>
+            <p class="text-muted-foreground">
+                Responsive columns using flex sizing with MinWidth constraints that adapt to container width.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+            <Grid Items="@orders.Take(15).ToList()">
+                <Columns>
+                    <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                    <GridColumn Field="Customer" Header="Customer" MinWidth="150px" />
+                    <GridColumn Field="Status" Header="Status" Width="120px" />
+                    <GridColumn Field="Amount" Header="Amount" Width="120px" />
+                    <GridColumn Field="OrderDate" Header="Order Date" MinWidth="150px" />
+                    <GridColumn Field="ShipTo" Header="Ship To" MinWidth="150px" />
+                </Columns>
+            </Grid>
+        </div>
+
+        <div class="text-sm text-muted-foreground">
+            Resize your browser window to see columns with MinWidth adapt proportionally while fixed-width columns stay constant.
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders"&gt;
+    &lt;Columns&gt;
+        &lt;GridColumn Field="Id" Width="100px" /&gt; @* Fixed width *@
+        &lt;GridColumn Field="Customer" MinWidth="150px" /&gt; @* Flex with min constraint *@
+        &lt;GridColumn Field="Status" Width="120px" /&gt; @* Fixed width *@
+        &lt;GridColumn Field="OrderDate" MinWidth="150px" /&gt; @* Flex with min constraint *@
+    &lt;/Columns&gt;
+&lt;/Grid&gt;</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 20: Custom Theme Variables *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Theme Variables</h2>
+            <p class="text-muted-foreground">
+                Override grid theme CSS variables for custom styling without changing component code.
+            </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2">
+            <div class="space-y-2">
+                <h3 class="font-medium">Default Theme</h3>
+                <div class="rounded-lg border bg-card p-4">
+                    <Grid Items="@orders.Take(5).ToList()" Theme="GridTheme.Bordered" Density="GridDensity.Compact">
+                        <Columns>
+                            <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="80px" />
+                            <GridColumn Field="Customer" Header="Customer" Sortable="true" />
+                            <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="100px" />
+                        </Columns>
+                    </Grid>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="font-medium">Custom Theme (Purple Accent)</h3>
+                <div class="rounded-lg border bg-card p-4" style="--grid-border-color: hsl(280 60% 50% / 0.2); --grid-header-bg: hsl(280 60% 95%); --grid-row-hover-bg: hsl(280 60% 98%);">
+                    <Grid Items="@orders.Take(5).ToList()" Theme="GridTheme.Bordered" Density="GridDensity.Compact">
+                        <Columns>
+                            <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="80px" />
+                            <GridColumn Field="Customer" Header="Customer" Sortable="true" />
+                            <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="100px" />
+                        </Columns>
+                    </Grid>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="font-medium">Custom Theme (Blue Accent)</h3>
+                <div class="rounded-lg border bg-card p-4" style="--grid-border-color: hsl(210 100% 50% / 0.2); --grid-header-bg: hsl(210 100% 95%); --grid-row-hover-bg: hsl(210 100% 98%);">
+                    <Grid Items="@orders.Take(5).ToList()" Theme="GridTheme.Bordered" Density="GridDensity.Compact">
+                        <Columns>
+                            <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="80px" />
+                            <GridColumn Field="Customer" Header="Customer" Sortable="true" />
+                            <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="100px" />
+                        </Columns>
+                    </Grid>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="font-medium">Custom Theme (Green Accent)</h3>
+                <div class="rounded-lg border bg-card p-4" style="--grid-border-color: hsl(142 76% 36% / 0.2); --grid-header-bg: hsl(142 76% 95%); --grid-row-hover-bg: hsl(142 76% 98%);">
+                    <Grid Items="@orders.Take(5).ToList()" Theme="GridTheme.Bordered" Density="GridDensity.Compact">
+                        <Columns>
+                            <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="80px" />
+                            <GridColumn Field="Customer" Header="Customer" Sortable="true" />
+                            <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="100px" />
+                        </Columns>
+                    </Grid>
+                </div>
+            </div>
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;div style="--grid-border-color: hsl(280 60% 50% / 0.2); 
+            --grid-header-bg: hsl(280 60% 95%); 
+            --grid-row-hover-bg: hsl(280 60% 98%);"&gt;
+    &lt;Grid Items="@@orders" Theme="GridTheme.Bordered"&gt;
+        &lt;Columns&gt;...&lt;/Columns&gt;
+    &lt;/Grid&gt;
+&lt;/div&gt;
+
+&lt;style&gt;
+    /* Available CSS variables */
+    :root {
+        --grid-border-color: hsl(var(--border));
+        --grid-header-bg: hsl(var(--muted));
+        --grid-row-hover-bg: hsl(var(--muted) / 0.5);
+        --grid-row-height-compact: 32px;
+        --grid-row-height-comfortable: 40px;
+        --grid-row-height-spacious: 48px;
+    }
+&lt;/style&gt;</code></pre>
+            </div>
+        </details>
+    </section>
+</div>
+
+@code {
+    private List<Order> orders = new();
+
+    protected override void OnInitialized()
+    {
+        orders = GridDemoData.GenerateOrders(50);
+    }
+}
