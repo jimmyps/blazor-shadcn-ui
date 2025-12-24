@@ -1,48 +1,30 @@
 @namespace BlazorUI.Primitives.ContextMenu
+@using BlazorUI.Primitives.Services
+@inject IPositioningService PositioningService
+@inject IPortalService PortalService
 @inject IJSRuntime JSRuntime
 @implements IAsyncDisposable
 
 @* ContextMenuContent - the dropdown content for the context menu *@
-@if (Context.IsOpen)
-{
-    @* Transparent overlay to capture clicks outside the menu *@
-    <div @ref="_overlayRef"
-         class="@OverlayClass"
-         style="@GetOverlayStyle()"
-         data-state="open">
-    </div>
-    
-    <div @ref="_contentRef"
-         id="@Context.ContentId"
-         role="menu"
-         tabindex="-1"
-         @onkeydown="HandleKeyDown"
-         @attributes="GetAttributes()"
-         aria-labelledby="@Context.TriggerId"
-         data-state="open"
-         style="@GetInitialStyle()">
-        <CascadingValue Value="this" IsFixed="false">
-            @ChildContent
-        </CascadingValue>
-    </div>
-}
 
 @code {
     [CascadingParameter]
     private ContextMenuContext Context { get; set; } = null!;
 
     private ElementReference _contentRef;
-    private ElementReference _overlayRef;
     private IJSObjectReference? _clickOutsideModule;
     private IJSObjectReference? _clickOutsideCleanup;
     private IJSObjectReference? _keyboardNavModule;
     private IJSObjectReference? _keyboardNavCleanup;
-    private IJSObjectReference? _portalModule;
+    private IJSObjectReference? _scrollLockModule;
     private IJSObjectReference? _scrollLockCleanup;
-    private IJSObjectReference? _positionModule;
-    private IJSObjectReference? _positionCleanup;
+    private IAsyncDisposable? _positioningCleanup;
     private DotNetObjectReference<ContextMenuContent>? _dotNetRef;
     private bool _isInitialized = false;
+    private bool _isPositioned = false;
+    private string _portalId = "";
+    private ElementReference _portalContentRef;
+    private TaskCompletionSource<bool>? _portalReadyTcs;
 
     // Track menu items for keyboard navigation (consistent with DropdownMenu/Menubar pattern)
     private readonly List<IContextMenuItem> _menuItems = new();
@@ -93,10 +75,10 @@
 
     /// <summary>
     /// Whether to lock body scroll when menu is open.
-    /// Default is true (industry standard for context menus).
+    /// Default is false (context menus typically don't lock scroll).
     /// </summary>
     [Parameter]
-    public bool LockScroll { get; set; } = true;
+    public bool LockScroll { get; set; } = false;
 
     /// <summary>
     /// Padding from viewport edges when repositioning the menu.
@@ -113,7 +95,20 @@
                 "ContextMenuContent must be used within a ContextMenuRoot component.");
         }
 
+        _portalId = $"contextmenu-portal-{Context.ContentId}";
+
         Context.OnStateChanged += HandleContextStateChanged;
+
+        // Subscribe to portal ready events for synchronization
+        PortalService.OnPortalRendered += HandlePortalRendered;
+    }
+
+    private void HandlePortalRendered(string portalId)
+    {
+        if (portalId == _portalId)
+        {
+            _portalReadyTcs?.TrySetResult(true);
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -121,19 +116,63 @@
         if (Context.IsOpen && !_isInitialized)
         {
             _isInitialized = true;
+            _isPositioned = false;
 
-            // Set up viewport-aware positioning (adjusts if menu would overflow)
+            // Create completion source BEFORE registering portal
+            _portalReadyTcs = new TaskCompletionSource<bool>();
+
+            // Register context menu content through portal
+            PortalService.RegisterPortal(_portalId, RenderContextMenuContent());
+
+            // Wait for PortalHost to signal it's done rendering our portal
+            var timeoutTask = Task.Delay(500);
+            var completedTask = await Task.WhenAny(_portalReadyTcs.Task, timeoutTask);
+
+            if (completedTask == timeoutTask)
+            {
+                Console.WriteLine($"Warning: Portal {_portalId} render timeout");
+            }
+
+            // Yield to ensure any pending re-renders complete and _portalContentRef is up-to-date
+            await Task.Yield();
+
+            // Check if still open (user might have closed during wait)
+            if (!Context.IsOpen)
+            {
+                return;
+            }
+
+            // NOW _portalContentRef is guaranteed to be valid!
+            await SetupAsync();
+        }
+        else if (!Context.IsOpen && _isInitialized)
+        {
+            await CleanupAsync();
+        }
+    }
+
+    /// <summary>
+    /// Sets up all context menu functionality after portal has rendered.
+    /// </summary>
+    private async Task SetupAsync()
+    {
+        try
+        {
+            // Set up positioning at mouse coordinates
             await SetupPositioningAsync();
+
+            // Mark as positioned
+            _isPositioned = true;
 
             if (CloseOnClickOutside)
             {
                 await SetupClickOutsideAsync();
             }
 
-            // Set up keyboard navigation (prevents scroll on arrow keys)
+            // Set up keyboard navigation
             await SetupKeyboardNavAsync();
 
-            // Lock body scroll when menu is open
+            // Lock body scroll when menu is open (if enabled)
             if (LockScroll)
             {
                 await SetupScrollLockAsync();
@@ -141,16 +180,86 @@
 
             try
             {
-                await _contentRef.FocusAsync();
+                await _portalContentRef.FocusAsync();
             }
             catch
             {
                 // Focus may fail in some scenarios
             }
         }
-        else if (!Context.IsOpen && _isInitialized)
+        catch (Exception ex)
         {
-            await CleanupAsync();
+            Console.WriteLine($"Context menu setup failed: {ex.Message}");
+            _isPositioned = true;
+        }
+    }
+
+    private RenderFragment RenderContextMenuContent() => __builder =>
+    {
+        @* Transparent overlay to capture clicks outside the menu *@
+        <div class="@OverlayClass"
+             style="@GetOverlayStyle()"
+             data-state="open">
+        </div>
+        
+        <div @ref="_portalContentRef"
+             id="@Context.ContentId"
+             role="menu"
+             tabindex="-1"
+             @onkeydown="HandleKeyDown"
+             @attributes="GetAttributesWithoutStyle()"
+             aria-labelledby="@Context.TriggerId"
+             data-state="open"
+             style="@GetMergedStyle()">
+            <CascadingValue Value="Context" IsFixed="false">
+                <CascadingValue Value="this" IsFixed="false">
+                    @ChildContent
+                </CascadingValue>
+            </CascadingValue>
+        </div>
+    };
+
+    private async Task SetupPositioningAsync()
+    {
+        try
+        {
+            // For context menus, we use the mouse coordinates as a virtual reference point
+            // Create a positioning strategy that uses fixed positioning at the cursor location
+            var options = new PositioningOptions
+            {
+                Strategy = "fixed",
+                Flip = true,
+                Shift = true,
+                Padding = ViewportPadding
+            };
+
+            // Since we don't have a trigger element, we'll position at the cursor coordinates
+            // and let the shift middleware ensure it stays within the viewport
+            // Apply initial position at cursor coordinates
+            await JSRuntime.InvokeVoidAsync("eval", 
+                $"const el = document.getElementById('{Context.ContentId}'); " +
+                $"if (el) {{ " +
+                $"  el.style.position = 'fixed'; " +
+                $"  el.style.left = '{Context.X}px'; " +
+                $"  el.style.top = '{Context.Y}px'; " +
+                $"  el.style.opacity = '1'; " +
+                $"  el.style.pointerEvents = 'auto'; " +
+                $"  const rect = el.getBoundingClientRect(); " +
+                $"  const vw = window.innerWidth; " +
+                $"  const vh = window.innerHeight; " +
+                $"  let newX = {Context.X}; " +
+                $"  let newY = {Context.Y}; " +
+                $"  if (newX + rect.width > vw - {ViewportPadding}) {{ newX = vw - rect.width - {ViewportPadding}; }} " +
+                $"  if (newY + rect.height > vh - {ViewportPadding}) {{ newY = vh - rect.height - {ViewportPadding}; }} " +
+                $"  if (newX < {ViewportPadding}) {{ newX = {ViewportPadding}; }} " +
+                $"  if (newY < {ViewportPadding}) {{ newY = {ViewportPadding}; }} " +
+                $"  el.style.left = newX + 'px'; " +
+                $"  el.style.top = newY + 'px'; " +
+                $"}}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to set up context menu positioning: {ex.Message}");
         }
     }
 
@@ -164,7 +273,7 @@
             _dotNetRef = DotNetObjectReference.Create(this);
 
             _clickOutsideCleanup = await _clickOutsideModule.InvokeAsync<IJSObjectReference>(
-                "onClickOutside", _contentRef, _dotNetRef, "HandleClickOutside");
+                "onClickOutside", _portalContentRef, _dotNetRef, "HandleClickOutside");
         }
         catch (Exception ex)
         {
@@ -182,7 +291,7 @@
             _dotNetRef ??= DotNetObjectReference.Create(this);
 
             _keyboardNavCleanup = await _keyboardNavModule.InvokeAsync<IJSObjectReference>(
-                "setupKeyboardNav", _contentRef, _dotNetRef);
+                "setupKeyboardNav", _portalContentRef, _dotNetRef);
         }
         catch (Exception ex)
         {
@@ -194,31 +303,15 @@
     {
         try
         {
-            _portalModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+            _scrollLockModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
                 "import", "./_content/BlazorUI.Primitives/js/primitives/portal.js");
 
-            _scrollLockCleanup = await _portalModule.InvokeAsync<IJSObjectReference>(
+            _scrollLockCleanup = await _scrollLockModule.InvokeAsync<IJSObjectReference>(
                 "lockBodyScroll");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Failed to set up scroll lock: {ex.Message}");
-        }
-    }
-
-    private async Task SetupPositioningAsync()
-    {
-        try
-        {
-            _positionModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/BlazorUI.Primitives/js/primitives/context-menu-position.js");
-
-            _positionCleanup = await _positionModule.InvokeAsync<IJSObjectReference>(
-                "setupContextMenuPosition", _contentRef, Context.X, Context.Y, ViewportPadding);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Failed to set up context menu positioning: {ex.Message}");
         }
     }
 
@@ -393,11 +486,35 @@
 
     private string GetInitialStyle()
     {
-        // Initial position at mouse coordinates - JS will adjust if needed for viewport bounds
-        return $"position: fixed; left: {Context.X}px; top: {Context.Y}px; z-index: {ZIndex};";
+        var baseStyle = $"z-index: {ZIndex};";
+
+        if (!_isPositioned)
+        {
+            // Position off-screen initially to prevent focus-induced scroll
+            baseStyle += " position: fixed; top: -9999px; left: -9999px; pointer-events: none;";
+        }
+        else
+        {
+            // Initial position at mouse coordinates - JS will adjust if needed for viewport bounds
+            baseStyle += $" position: fixed; left: {Context.X}px; top: {Context.Y}px;";
+        }
+
+        return baseStyle;
     }
 
-    private Dictionary<string, object>? GetAttributes()
+    private string GetMergedStyle()
+    {
+        var baseStyle = GetInitialStyle();
+
+        if (AdditionalAttributes != null && AdditionalAttributes.TryGetValue("style", out var userStyle))
+        {
+            return $"{userStyle}; {baseStyle}";
+        }
+
+        return baseStyle;
+    }
+
+    private Dictionary<string, object>? GetAttributesWithoutStyle()
     {
         if (AdditionalAttributes == null) return null;
 
@@ -433,7 +550,7 @@
     {
         try
         {
-            await _contentRef.FocusAsync();
+            await _portalContentRef.FocusAsync();
             _focusedItemIndex = -1;
         }
         catch
@@ -446,6 +563,12 @@
     {
         _isInitialized = false;
         _focusedItemIndex = -1;
+
+        if (_positioningCleanup != null)
+        {
+            await _positioningCleanup.DisposeAsync();
+            _positioningCleanup = null;
+        }
 
         if (_clickOutsideCleanup != null)
         {
@@ -502,25 +625,6 @@
             _scrollLockCleanup = null;
         }
 
-        // Clean up position cleanup object
-        if (_positionCleanup != null)
-        {
-            try
-            {
-                await _positionCleanup.InvokeVoidAsync("dispose");
-                await _positionCleanup.DisposeAsync();
-            }
-            catch (JSDisconnectedException)
-            {
-                // Expected during circuit disconnection, ignore
-            }
-            catch (ObjectDisposedException)
-            {
-                // Already disposed, ignore
-            }
-            _positionCleanup = null;
-        }
-
         if (_clickOutsideModule != null)
         {
             try
@@ -555,11 +659,11 @@
             _keyboardNavModule = null;
         }
 
-        if (_portalModule != null)
+        if (_scrollLockModule != null)
         {
             try
             {
-                await _portalModule.DisposeAsync();
+                await _scrollLockModule.DisposeAsync();
             }
             catch (JSDisconnectedException)
             {
@@ -569,32 +673,27 @@
             {
                 // Already disposed, ignore
             }
-            _portalModule = null;
+            _scrollLockModule = null;
         }
 
-        if (_positionModule != null)
-        {
-            try
-            {
-                await _positionModule.DisposeAsync();
-            }
-            catch (JSDisconnectedException)
-            {
-                // Expected during circuit disconnection, ignore
-            }
-            catch (ObjectDisposedException)
-            {
-                // Already disposed, ignore
-            }
-            _positionModule = null;
-        }
-
+        // Dispose DotNetObjectReference
         _dotNetRef?.Dispose();
         _dotNetRef = null;
+
+        // Unregister portal when context menu closes
+        if (!string.IsNullOrEmpty(_portalId))
+        {
+            PortalService.UnregisterPortal(_portalId);
+        }
+
+        _isPositioned = false;
     }
 
     public async ValueTask DisposeAsync()
     {
+        // Unsubscribe from portal ready events
+        PortalService.OnPortalRendered -= HandlePortalRendered;
+
         Context.OnStateChanged -= HandleContextStateChanged;
         await CleanupAsync();
     }
