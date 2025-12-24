@@ -100,8 +100,7 @@
     private async Task OnCheckedChanged(bool isChecked)
     {
         // Invoke parent callback first
-        if (CheckedChanged.HasDelegate)
-            await CheckedChanged.InvokeAsync(isChecked);
+        await CheckedChanged.InvokeAsync(isChecked);
 
         // Ensure internal state is updated to stay in sync with primitive
         if (Checked != isChecked)
