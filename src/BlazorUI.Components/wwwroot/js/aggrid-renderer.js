@@ -156,7 +156,7 @@ export function createGrid(element, config, dotNetRef) {
                 const columnState = state.columnStates.map(cs => ({
                     colId: cs.field,
                     hide: !cs.visible,
-                    width: parseInt(cs.width) || undefined,
+                    width: parseInt(cs.width, 10) || undefined, // Use base-10 parsing
                     pinned: cs.pinned === 'Left' ? 'left' : cs.pinned === 'Right' ? 'right' : null
                 }));
                 gridOptions.api.applyColumnState({ state: columnState });

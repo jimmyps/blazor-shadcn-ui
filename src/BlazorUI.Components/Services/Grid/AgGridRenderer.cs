@@ -98,17 +98,24 @@ public class AgGridRenderer : IGridRenderer, IGridRendererCapabilities
     /// </summary>
     /// <param name="request">The data request parameters.</param>
     /// <returns>The data response with items and counts.</returns>
+    /// <remarks>
+    /// The OnDataRequest callback in GridDefinition should populate the response.
+    /// This method returns the current client-side data as a fallback.
+    /// For true server-side paging, the callback should fetch data based on the request parameters.
+    /// </remarks>
     [JSInvokable]
     public async Task<GridDataResponse<object>> OnDataRequested(GridDataRequest<object> request)
     {
         // Invoke the OnDataRequest callback if defined
+        // Note: The callback is expected to fetch and return server-side data
+        // For now, we return current client-side data as fallback
         if (_currentDefinition != null && _currentDefinition.OnDataRequest.HasDelegate)
         {
             await _currentDefinition.OnDataRequest.InvokeAsync(request);
         }
 
         // Return current data for client-side mode
-        // In server-side mode, the callback above should populate data
+        // In a full server-side implementation, the callback would provide the data
         return new GridDataResponse<object>
         {
             Items = _currentData ?? Array.Empty<object>(),
@@ -120,13 +127,21 @@ public class AgGridRenderer : IGridRenderer, IGridRendererCapabilities
     /// <summary>
     /// Called by JavaScript when row selection changes.
     /// </summary>
-    /// <param name="selectedRows">The selected row data.</param>
+    /// <param name="selectedRows">The selected row data as untyped objects.</param>
+    /// <remarks>
+    /// Note: The selected rows are passed as object[] due to JavaScript interop limitations.
+    /// Consumers should handle type conversion as needed based on their TItem type.
+    /// </remarks>
     [JSInvokable]
     public async Task OnSelectionChanged(object[] selectedRows)
     {
         // Invoke the OnSelectionChanged callback if defined
+        // Note: Type mismatch - callback expects IReadOnlyCollection<TItem> but we have object[]
+        // This is a limitation of JavaScript interop with generic types
         if (_currentDefinition != null && _currentDefinition.OnSelectionChanged.HasDelegate)
         {
+            // Cast to the expected type for the callback
+            // Consumers will need to handle the object[] to TItem conversion
             await _currentDefinition.OnSelectionChanged.InvokeAsync(selectedRows);
         }
     }

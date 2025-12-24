@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Logging;
 using System.Text.Encodings.Web;
 
 namespace BlazorUI.Components.Services.Grid;
@@ -11,14 +12,17 @@ namespace BlazorUI.Components.Services.Grid;
 public class TemplateRenderer
 {
     private readonly HtmlRenderer _htmlRenderer;
+    private readonly ILogger<TemplateRenderer> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TemplateRenderer"/> class.
     /// </summary>
     /// <param name="htmlRenderer">The HTML renderer service.</param>
-    public TemplateRenderer(HtmlRenderer htmlRenderer)
+    /// <param name="logger">The logger instance.</param>
+    public TemplateRenderer(HtmlRenderer htmlRenderer, ILogger<TemplateRenderer> logger)
     {
         _htmlRenderer = htmlRenderer;
+        _logger = logger;
     }
 
     /// <summary>
@@ -54,7 +58,7 @@ public class TemplateRenderer
         catch (Exception ex)
         {
             // Log error and return empty string to avoid breaking the grid
-            Console.Error.WriteLine($"Error rendering template: {ex.Message}");
+            _logger.LogError(ex, "Error rendering cell template for type {ItemType}", typeof(TItem).Name);
             return string.Empty;
         }
     }
@@ -89,7 +93,7 @@ public class TemplateRenderer
         catch (Exception ex)
         {
             // Log error and return empty string to avoid breaking the grid
-            Console.Error.WriteLine($"Error rendering template: {ex.Message}");
+            _logger.LogError(ex, "Error rendering non-generic template");
             return string.Empty;
         }
     }
