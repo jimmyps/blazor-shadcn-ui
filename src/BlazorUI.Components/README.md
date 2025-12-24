@@ -31,7 +31,18 @@ This package automatically includes:
 
 ```razor
 @using BlazorUI.Components
+@using BlazorUI.Components.Button
+@using BlazorUI.Components.Input
+@using BlazorUI.Components.Dialog
+@using BlazorUI.Components.Sheet
+@using BlazorUI.Components.Accordion
+@using BlazorUI.Components.Tabs
+@using BlazorUI.Components.Select
+@using BlazorUI.Components.Avatar
+@using BlazorUI.Components.Badge
 ```
+
+Add imports for each component namespace you use. This gives access to component-specific enums like `ButtonVariant`, `InputType`, etc.
 
 ### 2. Add CSS to your `App.razor`:
 
@@ -76,6 +87,11 @@ BlazorUI Components come with pre-built CSS - no Tailwind setup required!
                 Beautiful Blazor components with zero configuration
             </DialogDescription>
         </DialogHeader>
+        <DialogFooter>
+            <DialogClose AsChild>
+                <Button Variant="ButtonVariant.Outline">Close</Button>
+            </DialogClose>
+        </DialogFooter>
     </DialogContent>
 </Dialog>
 ```
@@ -91,22 +107,31 @@ That's it! No Tailwind installation, no build configuration needed.
 - **Badge**: Labels for status, categories, and metadata
 - **Breadcrumb**: Hierarchical navigation with customizable separators
 - **Button**: Interactive buttons with multiple variants and sizes
+- **ButtonGroup**: Grouped button controls with shared styling
+- **Card**: Content container with header, content, and footer sections
 - **Checkbox**: Binary selection control with indeterminate state
 - **Collapsible**: Expandable content area with trigger control
 - **Combobox**: Autocomplete input with searchable dropdown
 - **Command**: Command palette for quick actions and navigation
+- **DataTable**: Data table with sorting, pagination, and toolbar
 - **Dialog**: Modal dialogs with backdrop and focus management
 - **Dropdown Menu**: Context menus with items, separators, and shortcuts
 - **Empty**: Empty state displays with icon, title, and actions
+- **Field**: Form field wrapper with label, description, and error states
 - **Hover Card**: Rich preview cards on hover with delay control
 - **Input**: Text input fields with multiple types and sizes
 - **Kbd**: Keyboard shortcut badges with semantic markup
+- **InputGroup**: Grouped input controls with addons
+- **Item**: List item container for menus and lists
 - **Label**: Accessible labels for form controls
 - **Native Select**: Styled native HTML select dropdown
 - **Pagination**: Page navigation with Previous/Next/Ellipsis
+- **MarkdownEditor**: Markdown editor with toolbar and live preview
+- **MultiSelect**: Multi-select dropdown with tag support
 - **Popover**: Floating panels for additional content and actions
 - **Progress**: Progress bars with ARIA support and animations
 - **Radio Group**: Mutually exclusive options with keyboard navigation
+- **RichTextEditor**: Rich text editor with formatting toolbar
 - **Select**: Dropdown selection with groups and labels
 - **Separator**: Visual dividers for content sections
 - **Sheet**: Side panels that slide in from viewport edges
@@ -118,8 +143,175 @@ That's it! No Tailwind installation, no build configuration needed.
 - **Tabs**: Tabbed interface for organizing related content
 - **Toggle**: Pressable toggle buttons with variants
 - **Toggle Group**: Single/multiple selection toggle groups
+- **Textarea**: Multi-line text input field
 - **Tooltip**: Brief informational popups on hover or focus
 - **Typography**: Semantic text styling with consistent typography
+
+## Component API Reference
+
+### Button
+
+```razor
+<Button
+    Variant="ButtonVariant.Default"
+    Size="ButtonSize.Default"
+    Type="ButtonType.Button"
+    IconPosition="IconPosition.Start"
+    Disabled="false">
+    Click me
+</Button>
+```
+
+| Parameter | Type | Default | Values |
+|-----------|------|---------|--------|
+| `Variant` | `ButtonVariant` | `Default` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
+| `Size` | `ButtonSize` | `Default` | `Small`, `Default`, `Large`, `Icon`, `IconSmall`, `IconLarge` |
+| `Type` | `ButtonType` | `Button` | `Button`, `Submit`, `Reset` |
+| `IconPosition` | `IconPosition` | `Start` | `Start`, `End` |
+
+### Input
+
+```razor
+<Input
+    Type="InputType.Email"
+    Placeholder="name@example.com"
+    Disabled="false" />
+```
+
+| Parameter | Type | Default | Values |
+|-----------|------|---------|--------|
+| `Type` | `InputType` | `Text` | `Text`, `Email`, `Password`, `Number`, `Tel`, `Url`, `Search`, `Date`, `Time`, `File` |
+
+### Avatar
+
+```razor
+<Avatar Size="AvatarSize.Default">
+    <AvatarImage Src="user.jpg" Alt="User" />
+    <AvatarFallback>JD</AvatarFallback>
+</Avatar>
+```
+
+| Parameter | Type | Default | Values |
+|-----------|------|---------|--------|
+| `Size` | `AvatarSize` | `Default` | `Small`, `Default`, `Large`, `ExtraLarge` |
+
+### Badge
+
+```razor
+<Badge Variant="BadgeVariant.Default">New</Badge>
+```
+
+| Parameter | Type | Default | Values |
+|-----------|------|---------|--------|
+| `Variant` | `BadgeVariant` | `Default` | `Default`, `Secondary`, `Destructive`, `Outline` |
+
+### Accordion
+
+```razor
+<Accordion Type="AccordionType.Single" Collapsible="true">
+    <AccordionItem Value="item-1">
+        <AccordionTrigger>Section 1</AccordionTrigger>
+        <AccordionContent>Content 1</AccordionContent>
+    </AccordionItem>
+</Accordion>
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Type` | `AccordionType` | `Single` | `Single` (one item open) or `Multiple` (many items open) |
+| `Collapsible` | `bool` | `false` | When `Single`, allows closing all items |
+
+### Tabs
+
+```razor
+<Tabs
+    DefaultValue="tab1"
+    Orientation="TabsOrientation.Horizontal"
+    ActivationMode="TabsActivationMode.Automatic">
+    <TabsList>
+        <TabsTrigger Value="tab1">Tab 1</TabsTrigger>
+        <TabsTrigger Value="tab2">Tab 2</TabsTrigger>
+    </TabsList>
+    <TabsContent Value="tab1">Content 1</TabsContent>
+    <TabsContent Value="tab2">Content 2</TabsContent>
+</Tabs>
+```
+
+| Parameter | Type | Default | Values |
+|-----------|------|---------|--------|
+| `Orientation` | `TabsOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
+| `ActivationMode` | `TabsActivationMode` | `Automatic` | `Automatic` (on focus), `Manual` (on click) |
+
+### Sheet
+
+```razor
+<Sheet>
+    <SheetTrigger AsChild>
+        <Button>Open Sheet</Button>
+    </SheetTrigger>
+    <SheetContent Side="SheetSide.Right">
+        <SheetHeader>
+            <SheetTitle>Sheet Title</SheetTitle>
+            <SheetDescription>Sheet description</SheetDescription>
+        </SheetHeader>
+        <!-- Content -->
+    </SheetContent>
+</Sheet>
+```
+
+| Parameter | Type | Default | Values |
+|-----------|------|---------|--------|
+| `Side` | `SheetSide` | `Right` | `Top`, `Right`, `Bottom`, `Left` |
+
+### Select
+
+```razor
+<Select TValue="string" @bind-Value="selectedValue">
+    <SelectTrigger>
+        <SelectValue Placeholder="Select an option" />
+    </SelectTrigger>
+    <SelectContent>
+        <SelectItem Value="@("option1")">Option 1</SelectItem>
+        <SelectItem Value="@("option2")">Option 2</SelectItem>
+    </SelectContent>
+</Select>
+```
+
+Select is a generic component. Specify `TValue` for type safety.
+
+### Separator
+
+```razor
+<Separator Orientation="SeparatorOrientation.Horizontal" />
+```
+
+| Parameter | Type | Default | Values |
+|-----------|------|---------|--------|
+| `Orientation` | `SeparatorOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
+
+### Skeleton
+
+```razor
+<Skeleton Shape="SkeletonShape.Rectangular" Class="w-full h-4" />
+<Skeleton Shape="SkeletonShape.Circular" Class="w-12 h-12" />
+```
+
+| Parameter | Type | Default | Values |
+|-----------|------|---------|--------|
+| `Shape` | `SkeletonShape` | `Rectangular` | `Rectangular`, `Circular` |
+
+### DataTable
+
+```razor
+<DataTable TItem="User" Items="users" SelectionMode="DataTableSelectionMode.Multiple">
+    <DataTableColumn TItem="User" Field="x => x.Name" Header="Name" />
+    <DataTableColumn TItem="User" Field="x => x.Email" Header="Email" />
+</DataTable>
+```
+
+| Parameter | Type | Default | Values |
+|-----------|------|---------|--------|
+| `SelectionMode` | `DataTableSelectionMode` | `None` | `None`, `Single`, `Multiple` |
 
 ## Theming
 
@@ -174,7 +366,9 @@ Dark mode automatically activates when you add the `.dark` class to the `<html>`
 @using BlazorUI.Components.Dialog
 
 <Dialog>
-    <DialogTrigger>Open Dialog</DialogTrigger>
+    <DialogTrigger AsChild>
+        <Button>Open Dialog</Button>
+    </DialogTrigger>
     <DialogContent>
         <DialogHeader>
             <DialogTitle>Confirm Action</DialogTitle>
@@ -184,32 +378,35 @@ Dark mode automatically activates when you add the `.dark` class to the `<html>`
         </DialogHeader>
         <p>This action cannot be undone.</p>
         <DialogFooter>
-            <DialogClose>Cancel</DialogClose>
-            <Button Variant="default">Confirm</Button>
+            <DialogClose AsChild>
+                <Button Variant="ButtonVariant.Outline">Cancel</Button>
+            </DialogClose>
+            <Button Variant="ButtonVariant.Default">Confirm</Button>
         </DialogFooter>
     </DialogContent>
 </Dialog>
 ```
 
-## Button Variants
+### AsChild Pattern
+
+Use `AsChild` on trigger components to use your own styled elements instead of the default button:
 
 ```razor
-@using BlazorUI.Components.Button
-
-<Button Variant="default">Default</Button>
-<Button Variant="destructive">Destructive</Button>
-<Button Variant="outline">Outline</Button>
-<Button Variant="secondary">Secondary</Button>
-<Button Variant="ghost">Ghost</Button>
-<Button Variant="link">Link</Button>
-
-<Button Size="sm">Small</Button>
-<Button Size="default">Default</Button>
-<Button Size="lg">Large</Button>
-<Button Size="icon">
-    <IconPlus />
-</Button>
+<DropdownMenu>
+    <DropdownMenuTrigger AsChild>
+        <Button Variant="ButtonVariant.Outline">
+            Actions
+            <LucideIcon Name="chevron-down" Size="16" />
+        </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent>
+        <DropdownMenuItem>Edit</DropdownMenuItem>
+        <DropdownMenuItem>Delete</DropdownMenuItem>
+    </DropdownMenuContent>
+</DropdownMenu>
 ```
+
+This is the industry-standard pattern from Radix UI/shadcn/ui. When `AsChild` is true, the child component (e.g., Button) automatically receives trigger behavior via `TriggerContext`.
 
 ## Form Example
 
@@ -222,7 +419,7 @@ Dark mode automatically activates when you add the `.dark` class to the `<html>`
 <div class="space-y-4">
     <div>
         <Label For="email">Email</Label>
-        <Input Id="email" Type="email" Placeholder="name@example.com" />
+        <Input Id="email" Type="InputType.Email" Placeholder="name@example.com" />
     </div>
 
     <div class="flex items-center space-x-2">

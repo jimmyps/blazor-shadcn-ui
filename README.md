@@ -90,9 +90,16 @@ dotnet add package BlazorUI.Icons.Feather     # 286 icons - minimalist, stroke-b
                 Beautiful Blazor components inspired by shadcn/ui
             </DialogDescription>
         </DialogHeader>
+        <DialogFooter>
+            <DialogClose AsChild>
+                <Button Variant="ButtonVariant.Outline">Close</Button>
+            </DialogClose>
+        </DialogFooter>
     </DialogContent>
 </Dialog>
 ```
+
+**AsChild Pattern:** Use `AsChild` on trigger components to use your own styled elements (like Button) instead of the default button. This is the industry-standard pattern from Radix UI/shadcn/ui.
 
 ### Learn More
 
@@ -279,6 +286,7 @@ BlazorUI includes **60+ styled components** with full shadcn/ui design compatibi
 - **Button** - Multiple variants (default, destructive, outline, secondary, ghost, link) with icon support
 - **Button Group** - Visually grouped related buttons with connected styling
 - **Checkbox** - Accessible checkbox with indeterminate state
+- **Combobox** - Searchable autocomplete dropdown
 - **Field** - Combine labels, controls, and help text for accessible forms
 - **Input** - Text input with multiple types and validation support
 - **Input Group** - Enhanced inputs with icons, buttons, and addons
@@ -302,11 +310,13 @@ BlazorUI includes **60+ styled components** with full shadcn/ui design compatibi
 - **Aspect Ratio** - Display content within a desired width/height ratio
 - **Breadcrumb** - Hierarchical navigation with customizable separators
 - **Carousel** - Slideshow component with touch gestures and animations
+- **Card** - Container for grouped content with header and footer
 - **Collapsible** - Expandable/collapsible panels
 - **Navigation Menu** - Horizontal navigation with dropdown panels
 - **Pagination** - Page navigation with Previous/Next/Ellipsis support
 - **Resizable** - Split layouts with draggable handles
 - **Scroll Area** - Custom scrollbars for styled scroll regions
+- **Item** - Flexible list items with media, content, and actions
 - **Separator** - Visual dividers
 - **Sidebar** - Responsive sidebar with collapsible icon mode, variants (default, floating, inset), and mobile sheet integration
 - **Tabs** - Tabbed interfaces with controlled/uncontrolled modes
@@ -314,6 +324,7 @@ BlazorUI includes **60+ styled components** with full shadcn/ui design compatibi
 ### Overlay Components
 - **Alert Dialog** - Modal for critical confirmations
 - **Context Menu** - Right-click menus with actions and shortcuts
+- **Command** - Command palette with keyboard navigation
 - **Dialog** - Modal dialogs
 - **Dropdown Menu** - Context menus with nested submenus
 - **Hover Card** - Rich hover previews
@@ -322,6 +333,11 @@ BlazorUI includes **60+ styled components** with full shadcn/ui design compatibi
 - **Sheet** - Slide-out panels (top, right, bottom, left)
 - **Toast** - Temporary notifications with variants and actions
 - **Tooltip** - Contextual hover tooltips
+
+### Data & Content
+- **DataTable** - Powerful tables with sorting, filtering, pagination, and selection
+- **MarkdownEditor** - Rich text editor with toolbar formatting and live preview
+- **RichTextEditor** - WYSIWYG editor with formatting toolbar and HTML output
 
 ### Display Components
 - **Alert** - Status messages and callouts
@@ -375,7 +391,7 @@ BlazorUI offers **three icon library packages** to suit different design prefere
 
 ## Primitives
 
-BlazorUI also includes **15 headless primitive components** for building custom UI:
+BlazorUI also includes **17 headless primitive components** for building custom UI:
 
 - Accordion Primitive
 - Checkbox Primitive
@@ -385,11 +401,13 @@ BlazorUI also includes **15 headless primitive components** for building custom 
 - Dropdown Menu Primitive
 - Hover Card Primitive
 - Label Primitive
+- MultiSelect Primitive
 - Popover Primitive
 - Radio Group Primitive
 - Select Primitive
 - Sheet Primitive
 - Switch Primitive
+- Table Primitive
 - Tabs Primitive
 - Tooltip Primitive
 
