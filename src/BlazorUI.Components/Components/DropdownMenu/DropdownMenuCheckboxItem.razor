@@ -5,7 +5,7 @@
 <BlazorUI.Primitives.DropdownMenu.DropdownMenuCheckboxItem class="@CssClass"
                                                            Disabled="@Disabled"
                                                            Checked="@Checked"
-                                                           CheckedChanged="@CheckedChanged"
+                                                           CheckedChanged="@OnCheckedChanged"
                                                            OnCheckedChange="@OnCheckedChange"
                                                            CloseOnSelect="@CloseOnSelect">
     <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
@@ -95,6 +95,16 @@
 
             return string.IsNullOrWhiteSpace(Class) ? baseClasses : $"{baseClasses} {Class}";
         }
+    }
+
+    private void OnCheckedChanged(bool isChecked)
+    {
+        if (CheckedChanged.HasDelegate)
+            CheckedChanged.InvokeAsync(isChecked);
+
+        // Ensure internal state is updated
+        if (Checked != isChecked)
+            Checked = isChecked;
     }
 
 }
