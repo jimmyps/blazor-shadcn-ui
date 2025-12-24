@@ -162,7 +162,10 @@ else
             // Yield to ensure any pending re-renders complete and _portalContentRef is up-to-date
             await Task.Yield();
 
-            // Check if still should render (user might have closed during wait)
+            // Important: Check if combobox was closed during async operations above.
+            // _shouldRender can be set to false by HandleContextStateChanged event handler
+            // if user closes combobox while we're waiting for portal/positioning.
+            // This prevents positioning a closed combobox.
             if (!_shouldRender)
             {
                 return;
