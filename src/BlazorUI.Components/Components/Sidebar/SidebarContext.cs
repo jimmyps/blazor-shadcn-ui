@@ -66,6 +66,17 @@ public class SidebarState
     /// Which side the sidebar appears on.
     /// </summary>
     public SidebarSide Side { get; set; } = SidebarSide.Left;
+
+    /// <summary>
+    /// Whether menu items should automatically detect their active state based on current URL.
+    /// </summary>
+    public bool AutoDetectActive { get; set; } = false;
+
+    /// <summary>
+    /// The current navigation path (absolute path from NavigationManager.Uri).
+    /// Updated when AutoDetectActive is enabled.
+    /// </summary>
+    public string CurrentPath { get; set; } = "/";
 }
 
 /// <summary>
@@ -110,6 +121,16 @@ public class SidebarContext
     /// Gets which side the sidebar appears on.
     /// </summary>
     public SidebarSide Side => _state.Side;
+
+    /// <summary>
+    /// Gets whether menu items should automatically detect their active state based on current URL.
+    /// </summary>
+    public bool AutoDetectActive => _state.AutoDetectActive;
+
+    /// <summary>
+    /// Gets the current navigation path.
+    /// </summary>
+    public string CurrentPath => _state.CurrentPath;
 
     /// <summary>
     /// Event raised when the sidebar state changes.
@@ -194,9 +215,34 @@ public class SidebarContext
     }
 
     /// <summary>
+    /// Sets whether menu items should automatically detect their active state.
+    /// </summary>
+    public void SetAutoDetectActive(bool autoDetectActive)
+    {
+        if (_state.AutoDetectActive != autoDetectActive)
+        {
+            _state.AutoDetectActive = autoDetectActive;
+            OnStateChanged();
+        }
+    }
+
+    /// <summary>
+    /// Sets the current navigation path.
+    /// Called by Sidebar component when AutoDetectActive is enabled.
+    /// </summary>
+    public void SetCurrentPath(string path)
+    {
+        if (_state.CurrentPath != path)
+        {
+            _state.CurrentPath = path;
+            OnStateChanged();
+        }
+    }
+
+    /// <summary>
     /// Initializes the state from values (typically from cookies or defaults).
     /// </summary>
-    public void Initialize(bool? open = null, SidebarVariant? variant = null, SidebarSide? side = null)
+    public void Initialize(bool? open = null, SidebarVariant? variant = null, SidebarSide? side = null, bool? autoDetectActive = null, string? currentPath = null)
     {
         bool changed = false;
 
@@ -215,6 +261,18 @@ public class SidebarContext
         if (side.HasValue && _state.Side != side.Value)
         {
             _state.Side = side.Value;
+            changed = true;
+        }
+
+        if (autoDetectActive.HasValue && _state.AutoDetectActive != autoDetectActive.Value)
+        {
+            _state.AutoDetectActive = autoDetectActive.Value;
+            changed = true;
+        }
+
+        if (currentPath != null && _state.CurrentPath != currentPath)
+        {
+            _state.CurrentPath = currentPath;
             changed = true;
         }
 

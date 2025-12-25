@@ -5,6 +5,7 @@
 @using BlazorUI.Primitives.Collapsible
 @using Microsoft.AspNetCore.Components.Routing
 @using BlazorUI.Primitives.Services
+@inject NavigationManager NavigationManager
 
 @*
     SidebarMenuButton component for clickable menu items with tooltip support.
@@ -59,9 +60,10 @@ else
 
     /// <summary>
     /// Whether this menu item is active/selected.
+    /// If not set, active state will be auto-detected based on Href and Match if the Sidebar has AutoDetectActive enabled.
     /// </summary>
     [Parameter]
-    public bool IsActive { get; set; }
+    public bool? IsActive { get; set; }
 
     /// <summary>
     /// The element type to render. Defaults to Button, but automatically switches to Anchor if Href is provided.
@@ -98,19 +100,58 @@ else
         return !string.IsNullOrEmpty(Tooltip) && Context != null && !Context.Open;
     }
 
+    private bool GetEffectiveActiveState()
+    {
+        // If IsActive is explicitly set, use that value
+        if (IsActive.HasValue)
+        {
+            return IsActive.Value;
+        }
+
+        // Otherwise, use auto-detected state if enabled
+        if (Context?.AutoDetectActive == true && !string.IsNullOrEmpty(Href))
+        {
+            return IsPathActive(Href, Match);
+        }
+
+        return false;
+    }
+
+    private bool IsPathActive(string href, NavLinkMatch match)
+    {
+        if (Context == null || string.IsNullOrEmpty(href))
+        {
+            return false;
+        }
+
+        var currentPath = Context.CurrentPath;
+        var hrefUri = NavigationManager.ToAbsoluteUri(href);
+        var hrefPath = hrefUri.AbsolutePath;
+
+        if (match == NavLinkMatch.All)
+        {
+            return string.Equals(currentPath, hrefPath, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // NavLinkMatch.Prefix
+        return currentPath.StartsWith(hrefPath, StringComparison.OrdinalIgnoreCase);
+    }
+
     private RenderFragment RenderButton() => __builder =>
     {
         // Auto-detect: if Href is provided and AsChild wasn't explicitly set to Button, render as Anchor
         var shouldRenderAsAnchor = AsChild == SidebarMenuButtonElement.Anchor ||
-                                   (!string.IsNullOrEmpty(Href) && AsChild == SidebarMenuButtonElement.Button);
+                                   (Href != null && AsChild == SidebarMenuButtonElement.Button);
+
+        var effectiveActive = GetEffectiveActiveState();
 
         if (shouldRenderAsAnchor)
         {
             <NavLink href="@Href"
                      class="@GetClasses()"
-                     data-active="@IsActive"
+                     data-active="@(effectiveActive ? "true" : "false")"
                      data-state="@(CollapsibleContext?.Open ?? false ? "open" : "closed")"
-                     aria-current="@(IsActive ? "page" : null)"
+                     aria-current="@(effectiveActive ? "page" : null)"
                      aria-expanded="@(CollapsibleContext?.Open ?? false)"
                      Match="@Match"
                      ActiveClass="data-[active=true]:bg-sidebar-accent"
@@ -122,9 +163,9 @@ else
         {
             <button type="button"
                     class="@GetClasses()"
-                    data-active="@IsActive"
+                    data-active="@effectiveActive"
                     data-state="@(CollapsibleContext?.Open ?? false ? "open" : "closed")"
-                    aria-current="@(IsActive ? "page" : null)"
+                    aria-current="@(effectiveActive ? "page" : null)"
                     aria-expanded="@(CollapsibleContext?.Open ?? false)"
                     @onclick="HandleClick"
                     @attributes="AdditionalAttributes">
