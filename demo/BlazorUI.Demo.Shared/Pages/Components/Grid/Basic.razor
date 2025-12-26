@@ -1,0 +1,259 @@
+@using BlazorUI.Components.Grid
+@using BlazorUI.Components.Badge
+@using BlazorUI.Demo.Shared.Data
+
+<PageTitle>Grid Components - Basic Examples</PageTitle>
+
+<div class="space-y-8">
+    @* Demo 1: Simple Grid *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <div class="flex items-center gap-2">
+                <h2 class="text-2xl font-semibold">Simple Grid</h2>
+                <Badge Variant="BadgeVariant.Outline">100 rows</Badge>
+            </div>
+            <p class="text-muted-foreground">
+                Basic 3-column grid with sortable columns displaying order data.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+            <Grid Items="@simpleOrders">
+                <Columns>
+                    <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+                    <GridColumn Field="Customer" Header="Customer" Sortable="true" />
+                    <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
+                </Columns>
+            </Grid>
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders"&gt;
+    &lt;Columns&gt;
+        &lt;GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" /&gt;
+        &lt;GridColumn Field="Customer" Header="Customer" Sortable="true" /&gt;
+        &lt;GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" /&gt;
+    &lt;/Columns&gt;
+&lt;/Grid&gt;</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 2: Paginated Grid *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <div class="flex items-center gap-2">
+                <h2 class="text-2xl font-semibold">Paginated Grid</h2>
+                <Badge Variant="BadgeVariant.Outline">1000 rows</Badge>
+            </div>
+            <p class="text-muted-foreground">
+                Client-side pagination with configurable page size.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+            <Grid Items="@allOrders" PagingMode="GridPagingMode.Client" PageSize="25">
+                <Columns>
+                    <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+                    <GridColumn Field="Customer" Header="Customer" Sortable="true" />
+                    <GridColumn Field="Status" Header="Status" Sortable="true" Width="120px" />
+                    <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
+                    <GridColumn Field="OrderDate" Header="Date" Sortable="true" Width="140px" />
+                </Columns>
+            </Grid>
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" PagingMode="GridPagingMode.Client" PageSize="25"&gt;
+    &lt;Columns&gt;
+        &lt;GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" /&gt;
+        &lt;GridColumn Field="Customer" Header="Customer" Sortable="true" /&gt;
+        &lt;GridColumn Field="Status" Header="Status" Sortable="true" Width="120px" /&gt;
+        &lt;GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" /&gt;
+        &lt;GridColumn Field="OrderDate" Header="Date" Sortable="true" Width="140px" /&gt;
+    &lt;/Columns&gt;
+&lt;/Grid&gt;</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 3: Fixed Height Grid *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <div class="flex items-center gap-2">
+                <h2 class="text-2xl font-semibold">Fixed Height Grid</h2>
+                <Badge Variant="BadgeVariant.Outline">Virtualized</Badge>
+            </div>
+            <p class="text-muted-foreground">
+                Grid with fixed 500px height and row virtualization for performance.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+            <Grid Items="@allOrders" Style="height: 500px;" VirtualizationMode="GridVirtualizationMode.Auto">
+                <Columns>
+                    <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+                    <GridColumn Field="Customer" Header="Customer" Sortable="true" />
+                    <GridColumn Field="Status" Header="Status" Sortable="true" Width="120px" />
+                    <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
+                    <GridColumn Field="ShipTo" Header="Ship To" Sortable="true" Width="150px" />
+                </Columns>
+            </Grid>
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" Style="height: 500px;" VirtualizationMode="GridVirtualizationMode.Auto"&gt;
+    &lt;Columns&gt;
+        &lt;GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" /&gt;
+        &lt;GridColumn Field="Customer" Header="Customer" Sortable="true" /&gt;
+        &lt;GridColumn Field="Status" Header="Status" Sortable="true" Width="120px" /&gt;
+        &lt;GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" /&gt;
+        &lt;GridColumn Field="ShipTo" Header="Ship To" Sortable="true" Width="150px" /&gt;
+    &lt;/Columns&gt;
+&lt;/Grid&gt;</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 4: Themed Grids *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Themed Grids</h2>
+            <p class="text-muted-foreground">
+                Different visual themes: Default, Striped, Bordered, and Minimal.
+            </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2">
+            <div class="space-y-2">
+                <h3 class="font-medium">Default Theme</h3>
+                <div class="rounded-lg border bg-card p-4">
+                    <Grid Items="@simpleOrders.Take(5).ToList()" Theme="GridTheme.Default">
+                        <Columns>
+                            <GridColumn Field="Id" Header="ID" Width="80px" />
+                            <GridColumn Field="Customer" Header="Customer" />
+                            <GridColumn Field="Amount" Header="Amount" Width="100px" />
+                        </Columns>
+                    </Grid>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="font-medium">Striped Theme</h3>
+                <div class="rounded-lg border bg-card p-4">
+                    <Grid Items="@simpleOrders.Take(5).ToList()" Theme="GridTheme.Striped">
+                        <Columns>
+                            <GridColumn Field="Id" Header="ID" Width="80px" />
+                            <GridColumn Field="Customer" Header="Customer" />
+                            <GridColumn Field="Amount" Header="Amount" Width="100px" />
+                        </Columns>
+                    </Grid>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="font-medium">Bordered Theme</h3>
+                <div class="rounded-lg border bg-card p-4">
+                    <Grid Items="@simpleOrders.Take(5).ToList()" Theme="GridTheme.Bordered">
+                        <Columns>
+                            <GridColumn Field="Id" Header="ID" Width="80px" />
+                            <GridColumn Field="Customer" Header="Customer" />
+                            <GridColumn Field="Amount" Header="Amount" Width="100px" />
+                        </Columns>
+                    </Grid>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="font-medium">Minimal Theme</h3>
+                <div class="rounded-lg border bg-card p-4">
+                    <Grid Items="@simpleOrders.Take(5).ToList()" Theme="GridTheme.Minimal">
+                        <Columns>
+                            <GridColumn Field="Id" Header="ID" Width="80px" />
+                            <GridColumn Field="Customer" Header="Customer" />
+                            <GridColumn Field="Amount" Header="Amount" Width="100px" />
+                        </Columns>
+                    </Grid>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @* Demo 5: Density Variations *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Density Variations</h2>
+            <p class="text-muted-foreground">
+                Control the spacing and size: Compact, Comfortable (default), and Spacious.
+            </p>
+        </div>
+
+        <div class="grid gap-6">
+            <div class="space-y-2">
+                <h3 class="font-medium">Compact Density</h3>
+                <div class="rounded-lg border bg-card p-4">
+                    <Grid Items="@simpleOrders.Take(5).ToList()" Density="GridDensity.Compact">
+                        <Columns>
+                            <GridColumn Field="Id" Header="ID" Width="80px" />
+                            <GridColumn Field="Customer" Header="Customer" />
+                            <GridColumn Field="Status" Header="Status" Width="120px" />
+                            <GridColumn Field="Amount" Header="Amount" Width="100px" />
+                        </Columns>
+                    </Grid>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="font-medium">Comfortable Density (Default)</h3>
+                <div class="rounded-lg border bg-card p-4">
+                    <Grid Items="@simpleOrders.Take(5).ToList()" Density="GridDensity.Comfortable">
+                        <Columns>
+                            <GridColumn Field="Id" Header="ID" Width="80px" />
+                            <GridColumn Field="Customer" Header="Customer" />
+                            <GridColumn Field="Status" Header="Status" Width="120px" />
+                            <GridColumn Field="Amount" Header="Amount" Width="100px" />
+                        </Columns>
+                    </Grid>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="font-medium">Spacious Density</h3>
+                <div class="rounded-lg border bg-card p-4">
+                    <Grid Items="@simpleOrders.Take(5).ToList()" Density="GridDensity.Spacious">
+                        <Columns>
+                            <GridColumn Field="Id" Header="ID" Width="80px" />
+                            <GridColumn Field="Customer" Header="Customer" />
+                            <GridColumn Field="Status" Header="Status" Width="120px" />
+                            <GridColumn Field="Amount" Header="Amount" Width="100px" />
+                        </Columns>
+                    </Grid>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@code {
+    private List<Order> simpleOrders = new();
+    private List<Order> allOrders = new();
+
+    protected override void OnInitialized()
+    {
+        // Generate demo data
+        simpleOrders = GridDemoData.GenerateOrders(100);
+        allOrders = GridDemoData.GenerateOrders(1000);
+    }
+}

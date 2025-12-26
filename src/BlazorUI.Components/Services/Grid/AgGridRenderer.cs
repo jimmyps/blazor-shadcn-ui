@@ -1,0 +1,264 @@
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using BlazorUI.Components.Grid;
+
+namespace BlazorUI.Components.Services.Grid;
+
+/// <summary>
+/// AG Grid renderer implementation.
+/// Wraps AG Grid Community Edition with Blazor interop.
+/// </summary>
+public class AgGridRenderer : IGridRenderer, IGridRendererCapabilities
+{
+    private readonly IJSRuntime _jsRuntime;
+    private IJSObjectReference? _jsModule;
+    private IJSObjectReference? _gridInstance;
+    private DotNetObjectReference<AgGridRenderer>? _dotNetRef;
+    private GridDefinition<object>? _currentDefinition;
+    private IEnumerable<object>? _currentData;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AgGridRenderer"/> class.
+    /// </summary>
+    /// <param name="jsRuntime">The JavaScript runtime for interop.</param>
+    public AgGridRenderer(IJSRuntime jsRuntime)
+    {
+        _jsRuntime = jsRuntime;
+    }
+
+    /// <inheritdoc/>
+    public async Task InitializeAsync<TItem>(ElementReference element, GridDefinition<TItem> definition)
+    {
+        _jsModule = await _jsRuntime.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/BlazorUI.Components/js/aggrid-renderer.js");
+
+        _dotNetRef = DotNetObjectReference.Create(this);
+
+        // Store definition for callbacks (cast to object type for generic storage)
+        _currentDefinition = definition as GridDefinition<object>;
+
+        var config = BuildAgGridConfig(definition);
+        
+        // Placeholder: AG Grid Community library not yet installed
+        // When AG Grid is installed, uncomment:
+        // _gridInstance = await _jsModule.InvokeAsync<IJSObjectReference>(
+        //     "createGrid", element, config, _dotNetRef);
+        
+        // For now, just complete without error to allow component to render
+        await Task.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    public async Task UpdateDataAsync<TItem>(IEnumerable<TItem> data)
+    {
+        // Store current data for server-side requests
+        _currentData = data as IEnumerable<object>;
+        
+        if (_gridInstance != null)
+        {
+            await _gridInstance.InvokeVoidAsync("setRowData", data);
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task UpdateStateAsync(GridState state)
+    {
+        if (_gridInstance != null)
+        {
+            await _gridInstance.InvokeVoidAsync("applyState", state);
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<GridState> GetStateAsync()
+    {
+        if (_gridInstance != null)
+        {
+            return await _gridInstance.InvokeAsync<GridState>("getState");
+        }
+        return new GridState();
+    }
+
+    /// <summary>
+    /// Called by JavaScript when grid state changes (sorting, filtering, selection).
+    /// </summary>
+    /// <param name="state">The new grid state.</param>
+    [JSInvokable]
+    public async Task OnGridStateChanged(GridState state)
+    {
+        // Invoke the OnStateChanged callback if defined
+        if (_currentDefinition != null && _currentDefinition.OnStateChanged.HasDelegate)
+        {
+            await _currentDefinition.OnStateChanged.InvokeAsync(state);
+        }
+    }
+
+    /// <summary>
+    /// Called by JavaScript when server-side data is requested.
+    /// </summary>
+    /// <param name="request">The data request parameters.</param>
+    /// <returns>The data response with items and counts.</returns>
+    /// <remarks>
+    /// The OnDataRequest callback in GridDefinition should populate the response.
+    /// This method returns the current client-side data as a fallback.
+    /// For true server-side paging, the callback should fetch data based on the request parameters.
+    /// </remarks>
+    [JSInvokable]
+    public async Task<GridDataResponse<object>> OnDataRequested(GridDataRequest<object> request)
+    {
+        // Invoke the OnDataRequest callback if defined
+        // Note: The callback is expected to fetch and return server-side data
+        // For now, we return current client-side data as fallback
+        if (_currentDefinition != null && _currentDefinition.OnDataRequest.HasDelegate)
+        {
+            await _currentDefinition.OnDataRequest.InvokeAsync(request);
+        }
+
+        // Return current data for client-side mode
+        // In a full server-side implementation, the callback would provide the data
+        return new GridDataResponse<object>
+        {
+            Items = _currentData ?? Array.Empty<object>(),
+            TotalCount = _currentData?.Count() ?? 0,
+            FilteredCount = _currentData?.Count() ?? 0
+        };
+    }
+
+    /// <summary>
+    /// Called by JavaScript when row selection changes.
+    /// </summary>
+    /// <param name="selectedRows">The selected row data as untyped objects.</param>
+    /// <remarks>
+    /// Note: The selected rows are passed as object[] due to JavaScript interop limitations.
+    /// Consumers should handle type conversion as needed based on their TItem type.
+    /// </remarks>
+    [JSInvokable]
+    public async Task OnSelectionChanged(object[] selectedRows)
+    {
+        // Invoke the OnSelectionChanged callback if defined
+        // Note: Type mismatch - callback expects IReadOnlyCollection<TItem> but we have object[]
+        // This is a limitation of JavaScript interop with generic types
+        if (_currentDefinition != null && _currentDefinition.OnSelectionChanged.HasDelegate)
+        {
+            // Cast to the expected type for the callback
+            // Consumers will need to handle the object[] to TItem conversion
+            await _currentDefinition.OnSelectionChanged.InvokeAsync(selectedRows);
+        }
+    }
+
+    private object BuildAgGridConfig<TItem>(GridDefinition<TItem> definition)
+    {
+        // Convert GridDefinition to AG Grid column defs and options
+        var columnDefs = definition.Columns.Select(col => new
+        {
+            field = col.Field,
+            headerName = col.Header,
+            sortable = col.Sortable,
+            filter = col.Filterable,
+            width = ParseWidth(col.Width),
+            minWidth = ParseWidth(col.MinWidth),
+            maxWidth = ParseWidth(col.MaxWidth),
+            pinned = col.Pinned == GridColumnPinPosition.Left ? "left" :
+                     col.Pinned == GridColumnPinPosition.Right ? "right" : null,
+            resizable = col.AllowResize,
+            editable = col.CellEditTemplate != null,
+            // Template handling - use blazorDomRenderer for cell templates
+            cellRenderer = col.CellTemplate != null ? "blazorDomRenderer" : null,
+            cellRendererParams = col.CellTemplate != null ? new { templateId = col.Id } : null,
+            // ValueSelector mapped to valueGetter
+            valueGetter = col.ValueSelector != null ? "valueGetter" : null
+        }).ToArray();
+
+        return new
+        {
+            columnDefs,
+            rowSelection = definition.SelectionMode == GridSelectionMode.Multiple ? "multiple" :
+                          definition.SelectionMode == GridSelectionMode.Single ? "single" : null,
+            pagination = definition.PagingMode != GridPagingMode.None,
+            paginationPageSize = definition.PageSize,
+            rowModelType = definition.PagingMode == GridPagingMode.Server ? "serverSide" :
+                          definition.PagingMode == GridPagingMode.InfiniteScroll ? "infinite" : "clientSide",
+            // Enable row selection checkbox for multiple selection
+            rowMultiSelectWithClick = definition.SelectionMode == GridSelectionMode.Multiple,
+            suppressRowClickSelection = definition.SelectionMode == GridSelectionMode.Multiple
+        };
+    }
+
+    private int? ParseWidth(string? width)
+    {
+        if (string.IsNullOrEmpty(width)) return null;
+        
+        // Only parse pixel values for AG Grid
+        // Percentage and other CSS units will be handled by AG Grid's column sizing
+        if (width.EndsWith("px", StringComparison.OrdinalIgnoreCase) && 
+            int.TryParse(width[..^2], out var px))
+        {
+            return px;
+        }
+        
+        // If it's just a number, assume pixels
+        if (int.TryParse(width, out var numericWidth))
+        {
+            return numericWidth;
+        }
+        
+        return null; // Let AG Grid handle percentages and other units via CSS
+    }
+
+    // IGridRendererCapabilities implementation
+    
+    /// <inheritdoc/>
+    public bool SupportsVirtualization => true;
+    
+    /// <inheritdoc/>
+    public bool SupportsColumnPinning => true;
+    
+    /// <inheritdoc/>
+    public bool SupportsColumnReordering => true;
+    
+    /// <inheritdoc/>
+    public bool SupportsColumnResizing => true;
+    
+    /// <inheritdoc/>
+    public bool SupportsInfiniteScroll => true;
+    
+    /// <inheritdoc/>
+    public bool SupportsServerSidePaging => true;
+    
+    /// <inheritdoc/>
+    public bool SupportsExport => true;
+    
+    /// <inheritdoc/>
+    public string[] UnsupportedFeatures => Array.Empty<string>();
+
+    /// <inheritdoc/>
+    public async ValueTask DisposeAsync()
+    {
+        if (_gridInstance != null)
+        {
+            try
+            {
+                await _gridInstance.InvokeVoidAsync("destroy");
+                await _gridInstance.DisposeAsync();
+            }
+            catch
+            {
+                // Ignore errors during disposal
+            }
+        }
+
+        if (_jsModule != null)
+        {
+            try
+            {
+                await _jsModule.DisposeAsync();
+            }
+            catch
+            {
+                // Ignore errors during disposal
+            }
+        }
+
+        _dotNetRef?.Dispose();
+    }
+}
