@@ -1,0 +1,420 @@
+# BlazorUI Grid - Developer Quick Reference
+
+## Installation
+
+```bash
+dotnet add package BlazorUI.Components
+```
+
+## Service Registration
+
+### Basic (Field-Based Rendering Only)
+```csharp
+// Program.cs
+builder.Services.AddBlazorUIComponents();
+```
+
+### Full Features (With Template Rendering)
+```csharp
+// Program.cs
+builder.Services.AddBlazorUIComponents();
+builder.Services.AddScoped<ITemplateRenderer, TemplateRenderer>();
+```
+
+---
+
+## Usage Patterns
+
+### 1. Simple Grid (Field-Based)
+
+```razor
+<Grid TItem="Product" Data="@products">
+    <GridColumn Field="@nameof(Product.Name)" Header="Name" Sortable="true" />
+    <GridColumn Field="@nameof(Product.Price)" Header="Price" />
+    <GridColumn Field="@nameof(Product.Stock)" Header="Stock" Filterable="true" />
+</Grid>
+```
+
+### 2. Grid with Templates
+
+```razor
+<Grid TItem="Customer" Data="@customers">
+    <GridColumn Field="@nameof(Customer.Name)" Header="Name">
+        <CellTemplate Context="customer">
+            <div class="flex items-center gap-2">
+                <Avatar>
+                    <AvatarFallback>@customer.Name[0]</AvatarFallback>
+                </Avatar>
+                <span class="font-medium">@customer.Name</span>
+            </div>
+        </CellTemplate>
+    </GridColumn>
+    
+    <GridColumn Field="@nameof(Customer.Status)" Header="Status">
+        <CellTemplate Context="customer">
+            <Badge Variant="@(customer.IsActive ? BadgeVariant.Success : BadgeVariant.Secondary)">
+                @customer.Status
+            </Badge>
+        </CellTemplate>
+    </GridColumn>
+</Grid>
+```
+
+**Requirements:** Register `ITemplateRenderer` in DI (see above)
+
+### 3. Server-Side Grid
+
+```razor
+<Grid TItem="Order" 
+      PagingMode="GridPagingMode.Server"
+      PageSize="25"
+      OnDataRequest="@LoadDataAsync">
+      
+    <GridColumn Field="@nameof(Order.Id)" Header="Order #" />
+    <GridColumn Field="@nameof(Order.CustomerName)" Header="Customer" Sortable="true" />
+    <GridColumn Field="@nameof(Order.Total)" Header="Total" />
+</Grid>
+
+@code {
+    private async Task<GridDataResponse<Order>> LoadDataAsync(GridDataRequest<Order> request)
+    {
+        // Apply sorting
+        var query = _context.Orders.AsQueryable();
+        foreach (var sort in request.SortDescriptors)
+        {
+            query = sort.Direction == GridSortDirection.Ascending
+                ? query.OrderBy(o => EF.Property<object>(o, sort.Field))
+                : query.OrderByDescending(o => EF.Property<object>(o, sort.Field));
+        }
+        
+        // Apply filtering
+        foreach (var filter in request.FilterDescriptors)
+        {
+            // ... apply filters
+        }
+        
+        // Paginate
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip(request.StartIndex)
+            .Take(request.Count)
+            .ToListAsync();
+        
+        return new GridDataResponse<Order>
+        {
+            Items = items,
+            TotalCount = totalCount
+        };
+    }
+}
+```
+
+### 4. Grid with State Management
+
+```razor
+<Grid TItem="Product" 
+      Data="@products"
+      @bind-State="@gridState"
+      OnStateChanged="@SaveGridState">
+      
+    <GridColumn Field="@nameof(Product.Name)" Header="Name" Sortable="true" />
+    <GridColumn Field="@nameof(Product.Price)" Header="Price" Sortable="true" />
+</Grid>
+
+@code {
+    private GridState gridState = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        // Restore state from localStorage or database
+        gridState = await LoadGridStateAsync();
+    }
+    
+    private async Task SaveGridState(GridState state)
+    {
+        // Save to localStorage or database
+        await _localStorage.SetItemAsync("product-grid-state", state);
+    }
+}
+```
+
+### 5. Grid with Selection
+
+```razor
+<Grid TItem="Customer" 
+      Data="@customers"
+      SelectionMode="GridSelectionMode.Multiple"
+      OnSelectionChanged="@HandleSelectionChanged">
+      
+    <GridColumn Field="@nameof(Customer.Name)" Header="Name" />
+    <GridColumn Field="@nameof(Customer.Email)" Header="Email" />
+</Grid>
+
+<div class="mt-4">
+    <p>Selected: @selectedCustomers.Count customers</p>
+    <Button OnClick="@ProcessSelected" Disabled="@(!selectedCustomers.Any())">
+        Process Selected
+    </Button>
+</div>
+
+@code {
+    private List<Customer> selectedCustomers = new();
+    
+    private void HandleSelectionChanged(IReadOnlyCollection<Customer> selection)
+    {
+        selectedCustomers = selection.ToList();
+        StateHasChanged();
+    }
+    
+    private void ProcessSelected()
+    {
+        // Do something with selectedCustomers
+    }
+}
+```
+
+---
+
+## Grid Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Data` | `IEnumerable<TItem>` | Required | Grid data source |
+| `SelectionMode` | `GridSelectionMode` | `None` | None, Single, Multiple |
+| `PagingMode` | `GridPagingMode` | `ClientSide` | ClientSide, Server, InfiniteScroll, None |
+| `PageSize` | `int` | `10` | Rows per page |
+| `OnStateChanged` | `EventCallback<GridState>` | - | Fired on sort/filter/page change |
+| `OnDataRequest` | `EventCallback<GridDataRequest<TItem>>` | - | Fired for server-side data |
+| `OnSelectionChanged` | `EventCallback<IReadOnlyCollection<TItem>>` | - | Fired on selection change |
+
+## Column Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Field` | `string` | - | Property name to bind |
+| `Header` | `string` | - | Column header text |
+| `Sortable` | `bool` | `false` | Enable sorting |
+| `Filterable` | `bool` | `false` | Enable filtering |
+| `Width` | `string` | `null` | Column width (px, %, auto) |
+| `MinWidth` | `string` | `null` | Minimum width |
+| `MaxWidth` | `string` | `null` | Maximum width |
+| `Pinned` | `GridColumnPinPosition` | `None` | Left, Right, None |
+| `AllowResize` | `bool` | `true` | Allow column resizing |
+| `CellTemplate` | `RenderFragment<TItem>` | `null` | Custom cell template |
+
+---
+
+## Enums
+
+### GridSelectionMode
+- `None` - No selection
+- `Single` - Single row selection
+- `Multiple` - Multiple row selection with checkboxes
+
+### GridPagingMode
+- `None` - No pagination
+- `ClientSide` - Client-side pagination (all data loaded)
+- `Server` - Server-side pagination (fetch on demand)
+- `InfiniteScroll` - Infinite scroll loading
+
+### GridSortDirection
+- `Ascending` - A → Z, 0 → 9
+- `Descending` - Z → A, 9 → 0
+
+### GridFilterOperator
+- `Equals` - Exact match
+- `NotEquals` - Not equal
+- `Contains` - Contains substring
+- `StartsWith` - Starts with
+- `EndsWith` - Ends with
+- `GreaterThan` - >
+- `LessThan` - <
+- `GreaterThanOrEqual` - ≥
+- `LessThanOrEqual` - ≤
+
+---
+
+## API Reference
+
+### GridState
+
+```csharp
+public class GridState
+{
+    public List<GridSortDescriptor> SortDescriptors { get; set; }
+    public List<GridFilterDescriptor> FilterDescriptors { get; set; }
+    public int PageNumber { get; set; }
+    public int PageSize { get; set; }
+    public List<GridColumnState> ColumnStates { get; set; }
+    public List<object> SelectedRowIds { get; set; }
+}
+```
+
+### GridDataRequest<TItem>
+
+```csharp
+public class GridDataRequest<TItem>
+{
+    public int StartIndex { get; set; }
+    public int Count { get; set; }
+    public List<GridSortDescriptor> SortDescriptors { get; set; }
+    public List<GridFilterDescriptor> FilterDescriptors { get; set; }
+    public int PageNumber { get; set; }
+    public int PageSize { get; set; }
+}
+```
+
+### GridDataResponse<TItem>
+
+```csharp
+public class GridDataResponse<TItem>
+{
+    public IEnumerable<TItem> Items { get; set; }
+    public int TotalCount { get; set; }
+    public int? FilteredCount { get; set; }
+}
+```
+
+---
+
+## Troubleshooting
+
+### Templates not rendering?
+**Check:**
+1. ✅ `ITemplateRenderer` registered in DI
+2. ✅ `CellTemplate` defined on column
+3. ✅ Browser console for errors
+4. ✅ AG Grid loaded (Network tab)
+
+### Callbacks not firing?
+**Check:**
+1. ✅ Callback assigned to grid parameter
+2. ✅ Interactive render mode (`@rendermode InteractiveServer`)
+3. ✅ Grid initialized (wait for `OnAfterRenderAsync`)
+
+### Styling issues?
+**Check:**
+1. ✅ `blazorui.css` loaded in App.razor
+2. ✅ AG Grid theme CSS loaded from CDN
+3. ✅ Custom CSS classes applied correctly
+
+---
+
+## Performance Tips
+
+1. **Use field-based rendering for simple columns** (no templates needed)
+2. **Enable virtualization** for large datasets (automatic with AG Grid)
+3. **Use server-side paging** for 1000+ rows
+4. **Debounce filter inputs** to reduce API calls
+5. **Cache grid state** in localStorage for better UX
+
+---
+
+## Complete Example
+
+```razor
+@page "/customers"
+@inject ICustomerService CustomerService
+@inject ILocalStorageService LocalStorage
+
+<div class="container mx-auto p-4 space-y-4">
+    <h1 class="text-2xl font-bold">Customers</h1>
+    
+    <Grid TItem="Customer" 
+          PagingMode="GridPagingMode.Server"
+          PageSize="25"
+          SelectionMode="GridSelectionMode.Multiple"
+          @bind-State="@gridState"
+          OnDataRequest="@LoadDataAsync"
+          OnStateChanged="@SaveStateAsync"
+          OnSelectionChanged="@HandleSelectionChanged">
+          
+        <GridColumn Field="@nameof(Customer.Name)" Header="Name" Sortable="true">
+            <CellTemplate Context="customer">
+                <div class="flex items-center gap-2">
+                    <Avatar>
+                        <AvatarImage Src="@customer.AvatarUrl" />
+                        <AvatarFallback>@customer.Name[0]</AvatarFallback>
+                    </Avatar>
+                    <span class="font-medium">@customer.Name</span>
+                </div>
+            </CellTemplate>
+        </GridColumn>
+        
+        <GridColumn Field="@nameof(Customer.Email)" Header="Email" Filterable="true" />
+        
+        <GridColumn Field="@nameof(Customer.Status)" Header="Status" Sortable="true">
+            <CellTemplate Context="customer">
+                <Badge Variant="@(customer.Status == "Active" ? BadgeVariant.Success : BadgeVariant.Secondary)">
+                    @customer.Status
+                </Badge>
+            </CellTemplate>
+        </GridColumn>
+        
+        <GridColumn Field="@nameof(Customer.CreatedAt)" Header="Created" Sortable="true">
+            <CellTemplate Context="customer">
+                <span class="text-sm text-muted-foreground">
+                    @customer.CreatedAt.ToString("MMM dd, yyyy")
+                </span>
+            </CellTemplate>
+        </GridColumn>
+    </Grid>
+    
+    @if (selectedCustomers.Any())
+    {
+        <div class="flex items-center gap-2">
+            <p class="text-sm text-muted-foreground">
+                @selectedCustomers.Count customers selected
+            </p>
+            <Button Variant="ButtonVariant.Destructive" Size="ButtonSize.Sm" OnClick="@DeleteSelected">
+                Delete Selected
+            </Button>
+        </div>
+    }
+</div>
+
+@code {
+    private GridState gridState = new();
+    private List<Customer> selectedCustomers = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        // Restore grid state
+        gridState = await LocalStorage.GetItemAsync<GridState>("customer-grid-state") ?? new();
+    }
+    
+    private async Task<GridDataResponse<Customer>> LoadDataAsync(GridDataRequest<Customer> request)
+    {
+        var result = await CustomerService.GetCustomersAsync(request);
+        return result;
+    }
+    
+    private async Task SaveStateAsync(GridState state)
+    {
+        await LocalStorage.SetItemAsync("customer-grid-state", state);
+    }
+    
+    private void HandleSelectionChanged(IReadOnlyCollection<Customer> selection)
+    {
+        selectedCustomers = selection.ToList();
+    }
+    
+    private async Task DeleteSelected()
+    {
+        await CustomerService.DeleteCustomersAsync(selectedCustomers.Select(c => c.Id));
+        selectedCustomers.Clear();
+        // Trigger grid refresh
+        StateHasChanged();
+    }
+}
+```
+
+---
+
+**See Also:**
+- Full documentation: `.devflow/ag-grid-implementation.md`
+- Component patterns: `llms/patterns.txt`
+- Grid primitives: `llms/primitives.txt`
+
+**Last Updated:** 2025-12-11
+

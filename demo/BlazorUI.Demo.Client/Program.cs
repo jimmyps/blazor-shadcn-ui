@@ -1,4 +1,5 @@
 using BlazorUI.Components.Toast;
+using BlazorUI.Components.Extensions;
 using BlazorUI.Demo.Services;
 using BlazorUI.Demo.Shared;
 using BlazorUI.Primitives.Extensions;
@@ -16,6 +17,9 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 // Add BlazorUI.Primitives services
 builder.Services.AddBlazorUIPrimitives();
+
+// Add BlazorUI.Components services (includes Grid renderer)
+builder.Services.AddBlazorUIComponents();
 
 // Add theme service for dark mode management (scoped because it depends on IJSRuntime)
 builder.Services.AddScoped<ThemeService>();

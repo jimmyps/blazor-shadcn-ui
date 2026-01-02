@@ -1,0 +1,237 @@
+# Grid AG Theme Support
+
+## Overview
+
+The Grid component supports all **AG Grid built-in themes** through the `Theme` parameter, and visual style modifiers through the `Style` parameter.
+
+## Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Theme` | `GridTheme` | `Alpine` | AG Grid base theme (Alpine, Balham, Material, Quartz) |
+| `Style` | `GridStyle` | `Default` | Visual style modifier (Default, Striped, Bordered, Minimal) |
+| `Density` | `GridDensity` | `Comfortable` | Row spacing density (Compact, Comfortable, Spacious) |
+
+## Available AG Grid Themes
+
+| Theme | Description | Use When |
+|-------|-------------|----------|
+| **Alpine** (default) | Clean, modern look | General purpose, default choice |
+| **Balham** | Professional business theme | Enterprise applications |
+| **Material** | Google Material Design styled | Material Design apps |
+| **Quartz** | Modern, polished appearance | Modern, sleek UIs |
+
+## Visual Style Modifiers
+
+| Style | Effect | Example |
+|-------|--------|---------|
+| **Default** | Standard appearance | Default grid styling |
+| **Striped** | Alternating row colors | Easier to track rows |
+| **Bordered** | Cell borders visible | Clear cell boundaries |
+| **Minimal** | Minimal/no borders | Clean, spacious look |
+
+## Usage
+
+### Basic Example
+
+```razor
+<Grid TItem="Product" 
+      Items="@products" 
+      Theme="GridTheme.Balham"
+      Style="GridStyle.Striped"
+      Height="400px">
+    <Columns>
+        <GridColumn TItem="Product" Field="Name" Header="Product" />
+        <GridColumn TItem="Product" Field="Price" Header="Price" />
+    </Columns>
+</Grid>
+```
+
+### All Parameters Together
+
+```razor
+<!-- Material theme with striped rows and compact density -->
+<Grid TItem="Product" 
+      Items="@products" 
+      Theme="GridTheme.Material"
+      Style="GridStyle.Striped"
+      Density="GridDensity.Compact"
+      Height="400px">
+    <Columns>
+        <GridColumn TItem="Product" Field="Name" Header="Product" />
+    </Columns>
+</Grid>
+```
+
+## Theme Integration
+
+All AG Grid themes automatically use **BlazorUI color tokens**:
+
+- `--background` → Grid background
+- `--foreground` → Text color
+- `--border` → Cell borders
+- `--muted` → Header background / striped row background
+- `--accent` → Row hover color
+- `--primary` → Selected row background
+- `--ring` → Focus/selection border
+
+This means:
+- ✅ **Dark mode works automatically** (colors adapt when `.dark` class is applied)
+- ✅ **Custom themes are supported** (change BlazorUI colors, grid updates automatically)
+- ✅ **Consistent look** across all AG Grid themes
+
+## CSS Setup
+
+### Required AG Grid CSS
+
+Include the AG Grid theme CSS in your `App.razor` or `index.html`:
+
+```html
+<!-- Choose ONE or ALL of these AG Grid theme files -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31/styles/ag-theme-alpine.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31/styles/ag-theme-balham.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31/styles/ag-theme-material.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31/styles/ag-theme-quartz.css" />
+
+<!-- BlazorUI Grid customizations (REQUIRED) -->
+<link rel="stylesheet" href="_content/BlazorUI.Components/css/grid-theme.css" />
+```
+
+**Tip**: Include **all theme CSS files** if you want users to be able to switch themes dynamically.
+
+## Density Options
+
+The `Density` parameter controls spacing and works with **all AG Grid themes**:
+
+| Density | Row Height | Grid Size | Use Case |
+|---------|-----------|-----------|----------|
+| `Compact` | 28px | 3px | Dense data, many rows |
+| `Comfortable` (default) | 42px | 4px | Balanced, general use |
+| `Spacious` | 56px | 6px | Easy reading, accessibility |
+
+## Examples
+
+### Alpine Theme (Default)
+
+```razor
+<Grid TItem="Product" 
+      Items="@products" 
+      Theme="GridTheme.Alpine">
+    <Columns>
+        <GridColumn TItem="Product" Field="Name" Header="Product" />
+    </Columns>
+</Grid>
+```
+
+### Balham Theme with Striped Rows
+
+```razor
+<Grid TItem="Product" 
+      Items="@products" 
+      Theme="GridTheme.Balham"
+      Style="GridStyle.Striped">
+    <Columns>
+        <GridColumn TItem="Product" Field="Name" Header="Product" />
+    </Columns>
+</Grid>
+```
+
+### Material Theme with Compact Density
+
+```razor
+<Grid TItem="Product" 
+      Items="@products" 
+      Theme="GridTheme.Material"
+      Density="GridDensity.Compact">
+    <Columns>
+        <GridColumn TItem="Product" Field="Name" Header="Product" />
+    </Columns>
+</Grid>
+```
+
+### Quartz Theme with Borders and Spacious Layout
+
+```razor
+<Grid TItem="Product" 
+      Items="@products" 
+      Theme="GridTheme.Quartz"
+      Style="GridStyle.Bordered"
+      Density="GridDensity.Spacious">
+    <Columns>
+        <GridColumn TItem="Product" Field="Name" Header="Product" />
+    </Columns>
+</Grid>
+```
+
+## Dynamic Theme Switching
+
+You can let users switch themes dynamically:
+
+```razor
+<div class="flex gap-2">
+    <Button OnClick="@(() => currentTheme = GridTheme.Alpine)">Alpine</Button>
+    <Button OnClick="@(() => currentTheme = GridTheme.Balham)">Balham</Button>
+    <Button OnClick="@(() => currentTheme = GridTheme.Material)">Material</Button>
+    <Button OnClick="@(() => currentTheme = GridTheme.Quartz)">Quartz</Button>
+</div>
+
+<Grid TItem="Product" 
+      Items="@products" 
+      Theme="@currentTheme">
+    <Columns>
+        <GridColumn TItem="Product" Field="Name" Header="Product" />
+    </Columns>
+</Grid>
+
+@code {
+    private GridTheme currentTheme = GridTheme.Alpine;
+}
+```
+
+## Customization
+
+### Override AG Grid Variables
+
+You can further customize AG Grid themes using CSS:
+
+```css
+/* Custom Alpine theme with your brand colors */
+.ag-theme-alpine.my-custom-grid {
+  --ag-selected-row-background-color: #ff6b6b;
+  --ag-row-hover-color: #ffe66d;
+}
+```
+
+```razor
+<Grid TItem="Product" 
+      Items="@products" 
+      Theme="GridTheme.Alpine"
+      Class="my-custom-grid">
+    <!-- ... -->
+</Grid>
+```
+
+### Complete List of AG Grid CSS Variables
+
+See AG Grid's documentation for all available CSS variables:
+- [AG Grid Themes Documentation](https://www.ag-grid.com/javascript-data-grid/themes/)
+
+## Best Practices
+
+1. **Choose one base theme** (`Theme`) for consistency across your app
+2. **Use Style modifiers** (`Striped`, `Bordered`, `Minimal`) for variation
+3. **Use Density** to match your data density needs
+4. **Let BlazorUI colors handle theming** - AG Grid themes automatically adapt to your color scheme
+5. **Test in dark mode** to ensure all themes look good
+
+## Naming Clarification
+
+- **`Theme`** = Which AG Grid base theme to use (Alpine, Balham, Material, Quartz)
+- **`Style`** = Visual style modifiers (Default, Striped, Bordered, Minimal)
+- **`Density`** = Row spacing density (Compact, Comfortable, Spacious)
+
+## See Also
+
+- [Grid Quick Reference](grid-quick-reference.txt) - Complete Grid API
+- [AG Grid Themes Demo](/components/grid/themes) - Live examples
+- [AG Grid Documentation](https://www.ag-grid.com/javascript-data-grid/themes/) - Official theme docs
