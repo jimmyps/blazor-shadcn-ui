@@ -93,12 +93,12 @@
                 <Badge Variant="BadgeVariant.Outline">Virtualized</Badge>
             </div>
             <p class="text-muted-foreground">
-                Grid with fixed 500px height and row virtualization for performance.
+                Grid with fixed 400px height and row virtualization for performance.
             </p>
         </div>
 
         <div class="rounded-lg border bg-card p-6">
-            <Grid Items="@allOrders" Style="height: 500px;" VirtualizationMode="GridVirtualizationMode.Auto">
+            <Grid Items="@allOrders" Height="400px" VirtualizationMode="GridVirtualizationMode.Auto">
                 <Columns>
                     <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
                     <GridColumn Field="Customer" Header="Customer" Sortable="true" />
@@ -114,7 +114,7 @@
                 View Code
             </summary>
             <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" Style="height: 500px;" VirtualizationMode="GridVirtualizationMode.Auto"&gt;
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" Height="400px" VirtualizationMode="GridVirtualizationMode.Auto"&gt;
     &lt;Columns&gt;
         &lt;GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" /&gt;
         &lt;GridColumn Field="Customer" Header="Customer" Sortable="true" /&gt;
@@ -127,20 +127,64 @@
         </details>
     </section>
 
+    @* Demo 3b: 100% Height Grid *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <div class="flex items-center gap-2">
+                <h2 class="text-2xl font-semibold">Container-Filling Grid</h2>
+                <Badge Variant="BadgeVariant.Outline">100% Height</Badge>
+            </div>
+            <p class="text-muted-foreground">
+                Grid that fills 100% of its parent container's height (600px container in this example).
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6" style="height: 600px;">
+            <Grid Items="@allOrders" Height="100%" VirtualizationMode="GridVirtualizationMode.Auto">
+                <Columns>
+                    <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+                    <GridColumn Field="Customer" Header="Customer" Sortable="true" />
+                    <GridColumn Field="Status" Header="Status" Sortable="true" Width="120px" />
+                    <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
+                    <GridColumn Field="OrderDate" Header="Date" Sortable="true" Width="140px" />
+                </Columns>
+            </Grid>
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;div style="height: 600px;"&gt;
+    &lt;Grid Items="@@orders" Height="100%" VirtualizationMode="GridVirtualizationMode.Auto"&gt;
+        &lt;Columns&gt;
+            &lt;GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" /&gt;
+            &lt;GridColumn Field="Customer" Header="Customer" Sortable="true" /&gt;
+            &lt;GridColumn Field="Status" Header="Status" Sortable="true" Width="120px" /&gt;
+            &lt;GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" /&gt;
+            &lt;GridColumn Field="OrderDate" Header="Date" Sortable="true" Width="140px" /&gt;
+        &lt;/Columns&gt;
+    &lt;/Grid&gt;
+&lt;/div&gt;</code></pre>
+            </div>
+        </details>
+    </section>
+
     @* Demo 4: Themed Grids *@
     <section class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Themed Grids</h2>
+            <h2 class="text-2xl font-semibold">Visual Styles</h2>
             <p class="text-muted-foreground">
-                Different visual themes: Default, Striped, Bordered, and Minimal.
+                Different visual style modifiers: Default, Striped, Bordered, and Minimal.
             </p>
         </div>
 
         <div class="grid gap-6 md:grid-cols-2">
             <div class="space-y-2">
-                <h3 class="font-medium">Default Theme</h3>
+                <h3 class="font-medium">Default Style</h3>
                 <div class="rounded-lg border bg-card p-4">
-                    <Grid Items="@simpleOrders.Take(5).ToList()" Theme="GridTheme.Default">
+                    <Grid Items="@simpleOrders.Take(5).ToList()" VisualStyle="GridStyle.Default">
                         <Columns>
                             <GridColumn Field="Id" Header="ID" Width="80px" />
                             <GridColumn Field="Customer" Header="Customer" />
@@ -151,9 +195,9 @@
             </div>
 
             <div class="space-y-2">
-                <h3 class="font-medium">Striped Theme</h3>
+                <h3 class="font-medium">Striped Style</h3>
                 <div class="rounded-lg border bg-card p-4">
-                    <Grid Items="@simpleOrders.Take(5).ToList()" Theme="GridTheme.Striped">
+                    <Grid Items="@simpleOrders.Take(5).ToList()" VisualStyle="GridStyle.Striped">
                         <Columns>
                             <GridColumn Field="Id" Header="ID" Width="80px" />
                             <GridColumn Field="Customer" Header="Customer" />
@@ -164,9 +208,9 @@
             </div>
 
             <div class="space-y-2">
-                <h3 class="font-medium">Bordered Theme</h3>
+                <h3 class="font-medium">Bordered Style</h3>
                 <div class="rounded-lg border bg-card p-4">
-                    <Grid Items="@simpleOrders.Take(5).ToList()" Theme="GridTheme.Bordered">
+                    <Grid Items="@simpleOrders.Take(5).ToList()" VisualStyle="GridStyle.Bordered">
                         <Columns>
                             <GridColumn Field="Id" Header="ID" Width="80px" />
                             <GridColumn Field="Customer" Header="Customer" />
@@ -177,9 +221,9 @@
             </div>
 
             <div class="space-y-2">
-                <h3 class="font-medium">Minimal Theme</h3>
+                <h3 class="font-medium">Minimal Style</h3>
                 <div class="rounded-lg border bg-card p-4">
-                    <Grid Items="@simpleOrders.Take(5).ToList()" Theme="GridTheme.Minimal">
+                    <Grid Items="@simpleOrders.Take(5).ToList()" VisualStyle="GridStyle.Minimal">
                         <Columns>
                             <GridColumn Field="Id" Header="ID" Width="80px" />
                             <GridColumn Field="Customer" Header="Customer" />

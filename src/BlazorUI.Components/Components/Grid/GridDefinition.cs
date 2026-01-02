@@ -30,9 +30,14 @@ public class GridDefinition<TItem>
     public GridVirtualizationMode VirtualizationMode { get; set; } = GridVirtualizationMode.Auto;
 
     /// <summary>
-    /// Gets or sets the visual theme for the grid.
+    /// Gets or sets the AG Grid theme to use (Alpine, Balham, Material, Quartz).
     /// </summary>
-    public GridTheme Theme { get; set; } = GridTheme.Default;
+    public GridTheme Theme { get; set; } = GridTheme.Alpine;
+
+    /// <summary>
+    /// Gets or sets the visual style modifiers for the grid (Default, Striped, Bordered, Minimal).
+    /// </summary>
+    public GridStyle VisualStyle { get; set; } = GridStyle.Default;
 
     /// <summary>
     /// Gets or sets the spacing density for the grid.
@@ -70,9 +75,9 @@ public class GridDefinition<TItem>
     public string? Class { get; set; }
 
     /// <summary>
-    /// Gets or sets the inline style to apply to the grid container.
+    /// Gets or sets the inline CSS style to apply to the grid container.
     /// </summary>
-    public string? Style { get; set; }
+    public string? InlineStyle { get; set; }
 
     /// <summary>
     /// Gets or sets the localization key prefix for grid text resources.

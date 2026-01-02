@@ -1,107 +1,57 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.Extensions.Logging;
 using System.Text.Encodings.Web;
 
 namespace BlazorUI.Components.Services.Grid;
 
 /// <summary>
-/// Service for rendering Blazor RenderFragment templates to HTML strings.
-/// Used for AG Grid cell template rendering.
+/// Default implementation of ITemplateRenderer using Blazor's HtmlRenderer.
+/// Renders RenderFragment templates to HTML strings for use in JavaScript grid libraries.
 /// </summary>
-public class TemplateRenderer
+public class TemplateRenderer : ITemplateRenderer
 {
-    private readonly HtmlRenderer _htmlRenderer;
-    private readonly ILogger<TemplateRenderer> _logger;
+    private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TemplateRenderer"/> class.
     /// </summary>
-    /// <param name="htmlRenderer">The HTML renderer service.</param>
-    /// <param name="logger">The logger instance.</param>
-    public TemplateRenderer(HtmlRenderer htmlRenderer, ILogger<TemplateRenderer> logger)
+    /// <param name="serviceProvider">Service provider for resolving dependencies.</param>
+    public TemplateRenderer(IServiceProvider serviceProvider)
     {
-        _htmlRenderer = htmlRenderer;
-        _logger = logger;
+        _serviceProvider = serviceProvider;
     }
 
-    /// <summary>
-    /// Renders a RenderFragment to an HTML string.
-    /// </summary>
-    /// <typeparam name="TItem">The type of the template context.</typeparam>
-    /// <param name="template">The template to render.</param>
-    /// <param name="context">The context object for the template.</param>
-    /// <returns>The rendered HTML string.</returns>
-    public async Task<string> RenderTemplateAsync<TItem>(RenderFragment<TItem>? template, TItem context)
+    /// <inheritdoc/>
+    public async Task<string> RenderToStringAsync<TItem>(RenderFragment<TItem> template, TItem context)
     {
         if (template == null)
         {
             return string.Empty;
         }
 
-        try
-        {
-            var htmlContent = await _htmlRenderer.Dispatcher.InvokeAsync(async () =>
-            {
-                var output = await _htmlRenderer.RenderComponentAsync<TemplateHost<TItem>>(
-                    ParameterView.FromDictionary(new Dictionary<string, object?>
-                    {
-                        { nameof(TemplateHost<TItem>.Template), template },
-                        { nameof(TemplateHost<TItem>.Context), context }
-                    }));
+        await using var htmlRenderer = new HtmlRenderer(_serviceProvider, NullLoggerFactory.Instance);
 
-                return output.ToHtmlString();
-            });
-
-            return htmlContent;
-        }
-        catch (Exception ex)
+        var parameters = ParameterView.Empty;
+        var html = await htmlRenderer.Dispatcher.InvokeAsync(async () =>
         {
-            // Log error and return empty string to avoid breaking the grid
-            _logger.LogError(ex, "Error rendering cell template for type {ItemType}", typeof(TItem).Name);
-            return string.Empty;
-        }
+            var output = await htmlRenderer.RenderComponentAsync<TemplateWrapper<TItem>>(
+                ParameterView.FromDictionary(new Dictionary<string, object?>
+                {
+                    [nameof(TemplateWrapper<TItem>.Template)] = template,
+                    [nameof(TemplateWrapper<TItem>.Context)] = context
+                }));
+
+            return output.ToHtmlString();
+        });
+
+        return html;
     }
 
     /// <summary>
-    /// Renders a non-generic RenderFragment to an HTML string.
+    /// Wrapper component that renders a template with context.
+    /// Internal helper for rendering templates to HTML.
     /// </summary>
-    /// <param name="template">The template to render.</param>
-    /// <returns>The rendered HTML string.</returns>
-    public async Task<string> RenderTemplateAsync(RenderFragment? template)
-    {
-        if (template == null)
-        {
-            return string.Empty;
-        }
-
-        try
-        {
-            var htmlContent = await _htmlRenderer.Dispatcher.InvokeAsync(async () =>
-            {
-                var output = await _htmlRenderer.RenderComponentAsync<SimpleTemplateHost>(
-                    ParameterView.FromDictionary(new Dictionary<string, object?>
-                    {
-                        { nameof(SimpleTemplateHost.Template), template }
-                    }));
-
-                return output.ToHtmlString();
-            });
-
-            return htmlContent;
-        }
-        catch (Exception ex)
-        {
-            // Log error and return empty string to avoid breaking the grid
-            _logger.LogError(ex, "Error rendering non-generic template");
-            return string.Empty;
-        }
-    }
-
-    /// <summary>
-    /// Helper component to host a RenderFragment with context.
-    /// </summary>
-    private class TemplateHost<TItem> : ComponentBase
+    private class TemplateWrapper<TItem> : ComponentBase
     {
         [Parameter]
         public RenderFragment<TItem>? Template { get; set; }
@@ -119,19 +69,17 @@ public class TemplateRenderer
     }
 
     /// <summary>
-    /// Helper component to host a simple RenderFragment.
+    /// Null logger factory for HtmlRenderer (no logging needed for template rendering).
     /// </summary>
-    private class SimpleTemplateHost : ComponentBase
+    private class NullLoggerFactory : Microsoft.Extensions.Logging.ILoggerFactory
     {
-        [Parameter]
-        public RenderFragment? Template { get; set; }
+        public static readonly NullLoggerFactory Instance = new();
 
-        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
-        {
-            if (Template != null)
-            {
-                builder.AddContent(0, Template);
-            }
-        }
+        public void AddProvider(Microsoft.Extensions.Logging.ILoggerProvider provider) { }
+
+        public Microsoft.Extensions.Logging.ILogger CreateLogger(string categoryName) =>
+            Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+
+        public void Dispose() { }
     }
 }

@@ -1,0 +1,274 @@
+@page "/components/grid/themes"
+@using BlazorUI.Components.Grid
+
+<PageTitle>Grid Themes - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-7xl">
+    <div>
+        <h1 class="text-4xl font-bold tracking-tight mb-2">Grid Themes</h1>
+        <p class="text-xl text-muted-foreground">
+            Compare different AG Grid themes with BlazorUI styling
+        </p>
+    </div>
+
+    <!-- Theme Selector -->
+    <div class="flex gap-4 items-center">
+        <Label>Select AG Grid Theme:</Label>
+        <div class="flex gap-2">
+            <Button 
+                Variant="@(selectedTheme == GridTheme.Alpine ? ButtonVariant.Default : ButtonVariant.Outline)"
+                OnClick="@(() => selectedTheme = GridTheme.Alpine)">
+                Alpine
+            </Button>
+            <Button 
+                Variant="@(selectedTheme == GridTheme.Balham ? ButtonVariant.Default : ButtonVariant.Outline)"
+                OnClick="@(() => selectedTheme = GridTheme.Balham)">
+                Balham
+            </Button>
+            <Button 
+                Variant="@(selectedTheme == GridTheme.Material ? ButtonVariant.Default : ButtonVariant.Outline)"
+                OnClick="@(() => selectedTheme = GridTheme.Material)">
+                Material
+            </Button>
+            <Button 
+                Variant="@(selectedTheme == GridTheme.Quartz ? ButtonVariant.Default : ButtonVariant.Outline)"
+                OnClick="@(() => selectedTheme = GridTheme.Quartz)">
+                Quartz
+            </Button>
+        </div>
+    </div>
+
+    <!-- Theme Examples with Style Modifiers -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold mb-2">@selectedTheme Theme</h2>
+            <p class="text-muted-foreground">
+                AG Grid's @selectedTheme theme with different style modifiers
+            </p>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2">
+            <!-- Default -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Default Style</CardTitle>
+                    <CardDescription>Standard @selectedTheme theme</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Grid TItem="Product" 
+                          Items="@products" 
+                          Theme="@selectedTheme"
+                          VisualStyle="GridStyle.Default"
+                          Height="300px">
+                        <Columns>
+                            <GridColumn TItem="Product" Field="Name" Header="Product" />
+                            <GridColumn TItem="Product" Field="Category" Header="Category" />
+                            <GridColumn TItem="Product" Field="Price" Header="Price" />
+                        </Columns>
+                    </Grid>
+                </CardContent>
+            </Card>
+
+            <!-- Striped -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Striped Style</CardTitle>
+                    <CardDescription>@selectedTheme with alternating row colors</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Grid TItem="Product" 
+                          Items="@products" 
+                          Theme="@selectedTheme"
+                          VisualStyle="GridStyle.Striped"
+                          Height="300px">
+                        <Columns>
+                            <GridColumn TItem="Product" Field="Name" Header="Product" />
+                            <GridColumn TItem="Product" Field="Category" Header="Category" />
+                            <GridColumn TItem="Product" Field="Price" Header="Price" />
+                        </Columns>
+                    </Grid>
+                </CardContent>
+            </Card>
+
+            <!-- Bordered -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Bordered Style</CardTitle>
+                    <CardDescription>@selectedTheme with cell borders</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Grid TItem="Product" 
+                          Items="@products" 
+                          Theme="@selectedTheme"
+                          VisualStyle="GridStyle.Bordered"
+                          Height="300px">
+                        <Columns>
+                            <GridColumn TItem="Product" Field="Name" Header="Product" />
+                            <GridColumn TItem="Product" Field="Category" Header="Category" />
+                            <GridColumn TItem="Product" Field="Price" Header="Price" />
+                        </Columns>
+                    </Grid>
+                </CardContent>
+            </Card>
+
+            <!-- Minimal -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Minimal Style</CardTitle>
+                    <CardDescription>@selectedTheme with minimal borders</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Grid TItem="Product" 
+                          Items="@products" 
+                          Theme="@selectedTheme"
+                          VisualStyle="GridStyle.Minimal"
+                          Height="300px">
+                        <Columns>
+                            <GridColumn TItem="Product" Field="Name" Header="Product" />
+                            <GridColumn TItem="Product" Field="Category" Header="Category" />
+                            <GridColumn TItem="Product" Field="Price" Header="Price" />
+                        </Columns>
+                    </Grid>
+                </CardContent>
+            </Card>
+        </div>
+    </section>
+
+    <!-- Density Comparison -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold mb-2">Density Options</h2>
+            <p class="text-muted-foreground">
+                Different density settings with @selectedTheme theme
+            </p>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-3">
+            <!-- Compact -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Compact</CardTitle>
+                    <CardDescription>Dense layout (28px rows)</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Grid TItem="Product" 
+                          Items="@products" 
+                          Theme="@selectedTheme"
+                          Density="GridDensity.Compact"
+                          Height="300px">
+                        <Columns>
+                            <GridColumn TItem="Product" Field="Name" Header="Product" />
+                            <GridColumn TItem="Product" Field="Category" Header="Category" />
+                            <GridColumn TItem="Product" Field="Price" Header="Price" />
+                        </Columns>
+                    </Grid>
+                </CardContent>
+            </Card>
+
+            <!-- Comfortable -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Comfortable</CardTitle>
+                    <CardDescription>Default layout (42px rows)</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Grid TItem="Product" 
+                          Items="@products" 
+                          Theme="@selectedTheme"
+                          Density="GridDensity.Comfortable"
+                          Height="300px">
+                        <Columns>
+                            <GridColumn TItem="Product" Field="Name" Header="Product" />
+                            <GridColumn TItem="Product" Field="Category" Header="Category" />
+                            <GridColumn TItem="Product" Field="Price" Header="Price" />
+                        </Columns>
+                    </Grid>
+                </CardContent>
+            </Card>
+
+            <!-- Spacious -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Spacious</CardTitle>
+                    <CardDescription>Relaxed layout (56px rows)</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Grid TItem="Product" 
+                          Items="@products" 
+                          Theme="@selectedTheme"
+                          Density="GridDensity.Spacious"
+                          Height="300px">
+                        <Columns>
+                            <GridColumn TItem="Product" Field="Name" Header="Product" />
+                            <GridColumn TItem="Product" Field="Category" Header="Category" />
+                            <GridColumn TItem="Product" Field="Price" Header="Price" />
+                        </Columns>
+                    </Grid>
+                </CardContent>
+            </Card>
+        </div>
+    </section>
+
+    <!-- Code Example -->
+    <Card>
+        <CardHeader>
+            <CardTitle>Usage Example</CardTitle>
+            <CardDescription>How to use AG Grid themes and styles</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <pre class="bg-muted p-4 rounded-md overflow-x-auto"><code>@@page "/my-page"
+@@using BlazorUI.Components.Grid
+
+&lt;Grid TItem="Product" 
+      Items="@@products" 
+      Theme="GridTheme.@selectedTheme"      @* AG Grid base theme *@
+      VisualStyle="GridStyle.Striped"             @* Visual style modifier *@
+      Density="GridDensity.Comfortable"
+      Height="400px"&gt;
+    &lt;Columns&gt;
+        &lt;GridColumn TItem="Product" Field="Name" Header="Product" /&gt;
+        &lt;GridColumn TItem="Product" Field="Category" Header="Category" /&gt;
+        &lt;GridColumn TItem="Product" Field="Price" Header="Price" /&gt;
+    &lt;/Columns&gt;
+&lt;/Grid&gt;
+
+@@code {
+    private List&lt;Product&gt; products = new()
+    {
+        new() { Name = "Laptop", Category = "Electronics", Price = 999.99m },
+        // ...more products
+    };
+
+    public class Product
+    {
+        public string Name { get; set; } = "";
+        public string Category { get; set; } = "";
+        public decimal Price { get; set; }
+    }
+}</code></pre>
+        </CardContent>
+    </Card>
+</div>
+
+@code {
+    private GridTheme selectedTheme = GridTheme.Alpine;
+
+    private List<Product> products = new()
+    {
+        new() { Name = "Laptop", Category = "Electronics", Price = 999.99m },
+        new() { Name = "Mouse", Category = "Accessories", Price = 29.99m },
+        new() { Name = "Keyboard", Category = "Accessories", Price = 79.99m },
+        new() { Name = "Monitor", Category = "Electronics", Price = 299.99m },
+        new() { Name = "Desk", Category = "Furniture", Price = 399.99m },
+        new() { Name = "Chair", Category = "Furniture", Price = 249.99m },
+        new() { Name = "Headphones", Category = "Accessories", Price = 149.99m },
+        new() { Name = "Webcam", Category = "Electronics", Price = 89.99m }
+    };
+
+    public class Product
+    {
+        public string Name { get; set; } = "";
+        public string Category { get; set; } = "";
+        public decimal Price { get; set; }
+    }
+}

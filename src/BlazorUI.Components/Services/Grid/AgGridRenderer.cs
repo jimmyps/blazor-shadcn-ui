@@ -1,62 +1,104 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using BlazorUI.Components.Grid;
+using System.Text.Json;
 
 namespace BlazorUI.Components.Services.Grid;
 
 /// <summary>
 /// AG Grid renderer implementation.
 /// Wraps AG Grid Community Edition with Blazor interop.
+/// AG Grid is automatically loaded from CDN when first used.
 /// </summary>
-public class AgGridRenderer : IGridRenderer, IGridRendererCapabilities
+/// <typeparam name="TItem">The type of items in the grid.</typeparam>
+public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabilities
 {
     private readonly IJSRuntime _jsRuntime;
+    private readonly ITemplateRenderer? _templateRenderer;
     private IJSObjectReference? _jsModule;
     private IJSObjectReference? _gridInstance;
-    private DotNetObjectReference<AgGridRenderer>? _dotNetRef;
-    private GridDefinition<object>? _currentDefinition;
-    private IEnumerable<object>? _currentData;
+    private DotNetObjectReference<AgGridRenderer<TItem>>? _dotNetRef;
+    private GridDefinition<TItem>? _currentDefinition;
+    private readonly Dictionary<string, RenderFragment<TItem>> _templates = new();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AgGridRenderer"/> class.
+    /// Initializes a new instance of the <see cref="AgGridRenderer{TItem}"/> class.
     /// </summary>
     /// <param name="jsRuntime">The JavaScript runtime for interop.</param>
-    public AgGridRenderer(IJSRuntime jsRuntime)
+    /// <param name="templateRenderer">Optional template renderer for cell templates.</param>
+    public AgGridRenderer(IJSRuntime jsRuntime, ITemplateRenderer? templateRenderer = null)
     {
         _jsRuntime = jsRuntime;
+        _templateRenderer = templateRenderer;
     }
 
     /// <inheritdoc/>
-    public async Task InitializeAsync<TItem>(ElementReference element, GridDefinition<TItem> definition)
+    public async Task InitializeAsync(ElementReference element, GridDefinition<TItem> definition)
     {
+        Console.WriteLine("[AgGridRenderer] InitializeAsync called");
+        
         _jsModule = await _jsRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/BlazorUI.Components/js/aggrid-renderer.js");
+        Console.WriteLine("[AgGridRenderer] JS module imported");
 
         _dotNetRef = DotNetObjectReference.Create(this);
+        _currentDefinition = definition;
 
-        // Store definition for callbacks (cast to object type for generic storage)
-        _currentDefinition = definition as GridDefinition<object>;
+        // Store templates for later rendering
+        _templates.Clear();
+        foreach (var column in definition.Columns)
+        {
+            if (column.CellTemplate != null)
+            {
+                _templates[column.Id] = column.CellTemplate;
+            }
+        }
 
         var config = BuildAgGridConfig(definition);
+        Console.WriteLine($"[AgGridRenderer] Config built with {definition.Columns.Count} columns");
         
-        // Placeholder: AG Grid Community library not yet installed
-        // When AG Grid is installed, uncomment:
-        // _gridInstance = await _jsModule.InvokeAsync<IJSObjectReference>(
-        //     "createGrid", element, config, _dotNetRef);
-        
-        // For now, just complete without error to allow component to render
-        await Task.CompletedTask;
+        // Verify element is valid before passing to JS
+        // The ElementReference should be serialized properly by Blazor's JS interop
+        try
+        {
+            // AG Grid will be auto-loaded from CDN by the JavaScript module
+            _gridInstance = await _jsModule.InvokeAsync<IJSObjectReference>(
+                "createGrid", element, config, _dotNetRef);
+            Console.WriteLine("[AgGridRenderer] Grid instance created successfully");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AgGridRenderer] Failed to create grid: {ex.Message}");
+            Console.WriteLine($"[AgGridRenderer] Stack trace: {ex.StackTrace}");
+            throw;
+        }
     }
 
     /// <inheritdoc/>
-    public async Task UpdateDataAsync<TItem>(IEnumerable<TItem> data)
+    public async Task UpdateDataAsync(IEnumerable<TItem> data)
     {
-        // Store current data for server-side requests
-        _currentData = data as IEnumerable<object>;
+        Console.WriteLine($"[AgGridRenderer] UpdateDataAsync called with {data?.Count() ?? 0} items");
         
         if (_gridInstance != null)
         {
-            await _gridInstance.InvokeVoidAsync("setRowData", data);
+            // Convert to list to ensure it's serializable
+            var dataList = data?.ToList() ?? new List<TItem>();
+            Console.WriteLine($"[AgGridRenderer] Setting row data: {dataList.Count} rows");
+            
+            if (dataList.Any())
+            {
+                // Log first item to verify data structure
+                var firstItem = dataList.First();
+                Console.WriteLine($"[AgGridRenderer] First item type: {firstItem?.GetType().Name}");
+                Console.WriteLine($"[AgGridRenderer] First item JSON: {System.Text.Json.JsonSerializer.Serialize(firstItem)}");
+            }
+            
+            await _gridInstance.InvokeVoidAsync("setRowData", dataList);
+            Console.WriteLine("[AgGridRenderer] Row data set successfully");
+        }
+        else
+        {
+            Console.WriteLine("[AgGridRenderer] Grid instance is null, cannot set data");
         }
     }
 
@@ -86,8 +128,7 @@ public class AgGridRenderer : IGridRenderer, IGridRendererCapabilities
     [JSInvokable]
     public async Task OnGridStateChanged(GridState state)
     {
-        // Invoke the OnStateChanged callback if defined
-        if (_currentDefinition != null && _currentDefinition.OnStateChanged.HasDelegate)
+        if (_currentDefinition?.OnStateChanged.HasDelegate == true)
         {
             await _currentDefinition.OnStateChanged.InvokeAsync(state);
         }
@@ -98,60 +139,95 @@ public class AgGridRenderer : IGridRenderer, IGridRendererCapabilities
     /// </summary>
     /// <param name="request">The data request parameters.</param>
     /// <returns>The data response with items and counts.</returns>
-    /// <remarks>
-    /// The OnDataRequest callback in GridDefinition should populate the response.
-    /// This method returns the current client-side data as a fallback.
-    /// For true server-side paging, the callback should fetch data based on the request parameters.
-    /// </remarks>
     [JSInvokable]
-    public async Task<GridDataResponse<object>> OnDataRequested(GridDataRequest<object> request)
+    public async Task<GridDataResponse<object>> OnDataRequested(GridDataRequest<TItem> request)
     {
-        // Invoke the OnDataRequest callback if defined
-        // Note: The callback is expected to fetch and return server-side data
-        // For now, we return current client-side data as fallback
-        if (_currentDefinition != null && _currentDefinition.OnDataRequest.HasDelegate)
+        // TODO: Server-side data loading needs redesign. 
+        // EventCallback<T> doesn't return values - need Func<> or state update pattern
+        if (_currentDefinition?.OnDataRequest.HasDelegate == true)
         {
             await _currentDefinition.OnDataRequest.InvokeAsync(request);
         }
-
-        // Return current data for client-side mode
-        // In a full server-side implementation, the callback would provide the data
+        
+        // Return empty response - proper implementation needs API redesign
         return new GridDataResponse<object>
         {
-            Items = _currentData ?? Array.Empty<object>(),
-            TotalCount = _currentData?.Count() ?? 0,
-            FilteredCount = _currentData?.Count() ?? 0
+            Items = Array.Empty<object>(),
+            TotalCount = 0,
+            FilteredCount = 0
         };
     }
 
     /// <summary>
-    /// Called by JavaScript when row selection changes.
+    /// Called by JavaScript when selection changes.
     /// </summary>
-    /// <param name="selectedRows">The selected row data as untyped objects.</param>
-    /// <remarks>
-    /// Note: The selected rows are passed as object[] due to JavaScript interop limitations.
-    /// Consumers should handle type conversion as needed based on their TItem type.
-    /// </remarks>
+    /// <param name="selectedItems">The selected items as JSON elements.</param>
     [JSInvokable]
-    public async Task OnSelectionChanged(object[] selectedRows)
+    public async Task OnSelectionChanged(List<JsonElement> selectedItems)
     {
-        // Invoke the OnSelectionChanged callback if defined
-        // Note: Type mismatch - callback expects IReadOnlyCollection<TItem> but we have object[]
-        // This is a limitation of JavaScript interop with generic types
-        if (_currentDefinition != null && _currentDefinition.OnSelectionChanged.HasDelegate)
+        if (_currentDefinition?.OnSelectionChanged.HasDelegate == true)
         {
-            // Cast to the expected type for the callback
-            // Consumers will need to handle the object[] to TItem conversion
-            await _currentDefinition.OnSelectionChanged.InvokeAsync(selectedRows);
+            // Deserialize JSON elements to typed items
+            var typedItems = selectedItems
+                .Select(json => JsonSerializer.Deserialize<TItem>(json.GetRawText()))
+                .Where(item => item != null)
+                .Cast<TItem>()
+                .ToList();
+            
+            await _currentDefinition.OnSelectionChanged.InvokeAsync(typedItems.AsReadOnly());
         }
     }
 
-    private object BuildAgGridConfig<TItem>(GridDefinition<TItem> definition)
+    /// <summary>
+    /// Called by JavaScript to render a cell template.
+    /// Returns the HTML string for the template.
+    /// </summary>
+    /// <param name="templateId">The column ID containing the template.</param>
+    /// <param name="data">The row data object as JSON element.</param>
+    /// <returns>HTML string representing the rendered template.</returns>
+    [JSInvokable]
+    public async Task<string?> RenderCellTemplate(string templateId, JsonElement data)
+    {
+        // Check if template renderer is available
+        if (_templateRenderer == null)
+        {
+            return null; // Fall back to field-based rendering
+        }
+
+        // Check if template exists for this column
+        if (!_templates.TryGetValue(templateId, out var template))
+        {
+            return null; // Fall back to field-based rendering
+        }
+
+        try
+        {
+            // Deserialize JSON to typed item
+            var item = JsonSerializer.Deserialize<TItem>(data.GetRawText());
+            if (item == null)
+            {
+                return null;
+            }
+            
+            // Render template to HTML string
+            var html = await _templateRenderer.RenderToStringAsync(template, item);
+            return html;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AgGridRenderer] Template rendering failed for column '{templateId}': {ex.Message}");
+            return null; // Fall back to field-based rendering
+        }
+    }
+
+    private object BuildAgGridConfig(GridDefinition<TItem> definition)
     {
         // Convert GridDefinition to AG Grid column defs and options
         var columnDefs = definition.Columns.Select(col => new
         {
-            field = col.Field,
+            // Convert field name to camelCase to match JSON serialization
+            // C# property "Id" becomes JSON "id"
+            field = ToCamelCase(col.Field),
             headerName = col.Header,
             sortable = col.Sortable,
             filter = col.Filterable,
@@ -162,12 +238,18 @@ public class AgGridRenderer : IGridRenderer, IGridRendererCapabilities
                      col.Pinned == GridColumnPinPosition.Right ? "right" : null,
             resizable = col.AllowResize,
             editable = col.CellEditTemplate != null,
-            // Template handling - use blazorDomRenderer for cell templates
-            cellRenderer = col.CellTemplate != null ? "blazorDomRenderer" : null,
-            cellRendererParams = col.CellTemplate != null ? new { templateId = col.Id } : null,
+            // Template handling - will use HtmlRenderer when available
+            cellRenderer = col.CellTemplate != null && _templateRenderer != null ? "templateRenderer" : null,
+            cellRendererParams = col.CellTemplate != null && _templateRenderer != null ? new { templateId = col.Id } : null,
             // ValueSelector mapped to valueGetter
             valueGetter = col.ValueSelector != null ? "valueGetter" : null
         }).ToArray();
+
+        Console.WriteLine($"[AgGridRenderer] Column defs built:");
+        foreach (var col in columnDefs)
+        {
+            Console.WriteLine($"  - field: '{col.field}', headerName: '{col.headerName}'");
+        }
 
         return new
         {
@@ -182,6 +264,15 @@ public class AgGridRenderer : IGridRenderer, IGridRendererCapabilities
             rowMultiSelectWithClick = definition.SelectionMode == GridSelectionMode.Multiple,
             suppressRowClickSelection = definition.SelectionMode == GridSelectionMode.Multiple
         };
+    }
+
+    private string? ToCamelCase(string? str)
+    {
+        if (string.IsNullOrEmpty(str) || str.Length == 0)
+            return str;
+
+        // Convert first character to lowercase
+        return char.ToLowerInvariant(str[0]) + str.Substring(1);
     }
 
     private int? ParseWidth(string? width)
@@ -229,7 +320,9 @@ public class AgGridRenderer : IGridRenderer, IGridRendererCapabilities
     public bool SupportsExport => true;
     
     /// <inheritdoc/>
-    public string[] UnsupportedFeatures => Array.Empty<string>();
+    public string[] UnsupportedFeatures => _templateRenderer == null 
+        ? new[] { "Cell templates (ITemplateRenderer not registered)" }
+        : Array.Empty<string>();
 
     /// <inheritdoc/>
     public async ValueTask DisposeAsync()
@@ -260,5 +353,6 @@ public class AgGridRenderer : IGridRenderer, IGridRendererCapabilities
         }
 
         _dotNetRef?.Dispose();
+        _templates.Clear();
     }
 }

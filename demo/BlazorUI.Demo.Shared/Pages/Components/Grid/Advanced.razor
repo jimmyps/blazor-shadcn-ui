@@ -60,7 +60,7 @@
             <div class="space-y-2">
                 <h3 class="font-medium">Default Theme</h3>
                 <div class="rounded-lg border bg-card p-4">
-                    <Grid Items="@orders.Take(5).ToList()" Theme="GridTheme.Bordered" Density="GridDensity.Compact">
+                    <Grid Items="@orders.Take(5).ToList()" VisualStyle="GridStyle.Bordered" Density="GridDensity.Compact">
                         <Columns>
                             <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="80px" />
                             <GridColumn Field="Customer" Header="Customer" Sortable="true" />
@@ -73,7 +73,7 @@
             <div class="space-y-2">
                 <h3 class="font-medium">Custom Theme (Purple Accent)</h3>
                 <div class="rounded-lg border bg-card p-4" style="--grid-border-color: hsl(280 60% 50% / 0.2); --grid-header-bg: hsl(280 60% 95%); --grid-row-hover-bg: hsl(280 60% 98%);">
-                    <Grid Items="@orders.Take(5).ToList()" Theme="GridTheme.Bordered" Density="GridDensity.Compact">
+                    <Grid Items="@orders.Take(5).ToList()" VisualStyle="GridStyle.Bordered" Density="GridDensity.Compact">
                         <Columns>
                             <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="80px" />
                             <GridColumn Field="Customer" Header="Customer" Sortable="true" />
@@ -86,7 +86,7 @@
             <div class="space-y-2">
                 <h3 class="font-medium">Custom Theme (Blue Accent)</h3>
                 <div class="rounded-lg border bg-card p-4" style="--grid-border-color: hsl(210 100% 50% / 0.2); --grid-header-bg: hsl(210 100% 95%); --grid-row-hover-bg: hsl(210 100% 98%);">
-                    <Grid Items="@orders.Take(5).ToList()" Theme="GridTheme.Bordered" Density="GridDensity.Compact">
+                    <Grid Items="@orders.Take(5).ToList()" VisualStyle="GridStyle.Bordered" Density="GridDensity.Compact">
                         <Columns>
                             <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="80px" />
                             <GridColumn Field="Customer" Header="Customer" Sortable="true" />
@@ -99,7 +99,7 @@
             <div class="space-y-2">
                 <h3 class="font-medium">Custom Theme (Green Accent)</h3>
                 <div class="rounded-lg border bg-card p-4" style="--grid-border-color: hsl(142 76% 36% / 0.2); --grid-header-bg: hsl(142 76% 95%); --grid-row-hover-bg: hsl(142 76% 98%);">
-                    <Grid Items="@orders.Take(5).ToList()" Theme="GridTheme.Bordered" Density="GridDensity.Compact">
+                    <Grid Items="@orders.Take(5).ToList()" VisualStyle="GridStyle.Bordered" Density="GridDensity.Compact">
                         <Columns>
                             <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="80px" />
                             <GridColumn Field="Customer" Header="Customer" Sortable="true" />
@@ -118,7 +118,7 @@
                 <pre class="overflow-x-auto text-sm"><code>&lt;div style="--grid-border-color: hsl(280 60% 50% / 0.2); 
             --grid-header-bg: hsl(280 60% 95%); 
             --grid-row-hover-bg: hsl(280 60% 98%);"&gt;
-    &lt;Grid Items="@@orders" Theme="GridTheme.Bordered"&gt;
+    &lt;Grid Items="@@orders" VisualStyle="GridStyle.Bordered"&gt;
         &lt;Columns&gt;...&lt;/Columns&gt;
     &lt;/Grid&gt;
 &lt;/div&gt;
