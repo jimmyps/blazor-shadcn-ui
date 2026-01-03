@@ -96,6 +96,25 @@ function getThemeCssUrl(theme) {
 }
 
 /**
+ * Gets the base AG Grid theme object from the global agGrid object
+ */
+function getBaseTheme(themeName) {
+    switch (themeName) {
+        case 'Shadcn':
+        case 'Quartz':
+            return window.agGrid.themeQuartz;
+        case 'Alpine':
+            return window.agGrid.themeAlpine;
+        case 'Balham':
+            return window.agGrid.themeBalham;
+        case 'Material':
+            return window.agGrid.themeMaterial;
+        default:
+            return window.agGrid.themeQuartz;
+    }
+}
+
+/**
  * Dynamically loads a script from URL
  */
 function loadScript(url) {
@@ -274,10 +293,10 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
         
         console.log('[AG Grid] DOM element validated successfully');
         
-        // Build grid options with event handlers and theme parameters
-        const gridOptions = buildGridOptionsWithEvents(config, dotNetRef);
+        // Create theme with parameters using AG Grid's native API
+        let theme;
         
-        // Prepare theme parameters
+        // Prepare theme parameters by merging defaults with config
         let themeParams = config.themeParams || {};
         
         // For Shadcn theme, merge with dynamically read shadcn design tokens
@@ -285,13 +304,23 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
             const shadcnDefaults = createShadcnTheme();
             // Merge: shadcn defaults < config.themeParams (C# side takes precedence)
             themeParams = { ...shadcnDefaults, ...themeParams };
-            console.log('[AG Grid] Applied Shadcn theme with design tokens');
+            console.log('[AG Grid] Creating Shadcn theme with parameters:', themeParams);
+            theme = window.agGrid.themeQuartz.withParams(themeParams);
+        } else {
+            // Use other AG Grid themes with parameters
+            const baseTheme = getBaseTheme(config.theme);
+            if (baseTheme && Object.keys(themeParams).length > 0) {
+                console.log(`[AG Grid] Creating ${config.theme} theme with parameters:`, themeParams);
+                theme = baseTheme.withParams(themeParams);
+            } else {
+                console.log(`[AG Grid] Using ${config.theme} theme without parameters`);
+                theme = baseTheme;
+            }
         }
         
-        // Apply theme parameters as CSS custom properties
-        if (themeParams && Object.keys(themeParams).length > 0) {
-            applyThemeParameters(element, themeParams);
-        }
+        // Build grid options with event handlers and theme
+        const gridOptions = buildGridOptionsWithEvents(config, dotNetRef);
+        gridOptions.theme = theme;
         
         // Create AG Grid instance - returns the API directly
         const gridApi = window.agGrid.createGrid(element, gridOptions);
@@ -331,80 +360,6 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
         console.error('[AG Grid] Error message:', error.message);
         console.error('[AG Grid] Error stack:', error.stack);
         throw error;
-    }
-}
-
-/**
- * Applies theme parameters as CSS custom properties on the grid element
- * @param {HTMLElement} element - The grid container element
- * @param {Object} params - Theme parameters to apply
- */
-function applyThemeParameters(element, params) {
-    console.log('[AG Grid] Applying theme parameters:', params);
-    
-    // Map parameter names to AG Grid CSS variable names
-    const parameterMap = {
-        // Spacing & Sizing
-        'spacing': '--ag-grid-size',
-        'rowHeight': '--ag-row-height',
-        'headerHeight': '--ag-header-height',
-        'fontSize': '--ag-font-size',
-        'iconSize': '--ag-icon-size',
-        'inputHeight': '--ag-list-item-height',
-        
-        // Colors
-        'accentColor': '--ag-accent-color',
-        'backgroundColor': '--ag-background-color',
-        'foregroundColor': '--ag-foreground-color',
-        'borderColor': '--ag-border-color',
-        'headerBackgroundColor': '--ag-header-background-color',
-        'headerForegroundColor': '--ag-header-foreground-color',
-        'rowHoverColor': '--ag-row-hover-color',
-        'oddRowBackgroundColor': '--ag-odd-row-background-color',
-        'selectedRowBackgroundColor': '--ag-selected-row-background-color',
-        'rangeSelectionBorderColor': '--ag-range-selection-border-color',
-        'cellTextColor': '--ag-data-color',
-        'invalidColor': '--ag-invalid-color',
-        'modalOverlayBackgroundColor': '--ag-modal-overlay-background-color',
-        'chromeBackgroundColor': '--ag-chrome-background-color',
-        'tooltipBackgroundColor': '--ag-tooltip-background-color',
-        'tooltipTextColor': '--ag-tooltip-text-color',
-        
-        // Typography
-        'fontFamily': '--ag-font-family',
-        'headerFontSize': '--ag-header-column-resize-handle-height',
-        'headerFontWeight': '--ag-header-font-weight',
-        
-        // Borders
-        'borderRadius': '--ag-border-radius',
-        'wrapperBorderRadius': '--ag-wrapper-border-radius',
-    };
-    
-    for (const [key, value] of Object.entries(params)) {
-        const cssVar = parameterMap[key];
-        if (cssVar) {
-            let cssValue = value;
-            
-            // Convert numeric values to pixels for size/spacing parameters
-            if (typeof value === 'number') {
-                if (key.includes('Height') || key.includes('Size') || key === 'spacing' || key.includes('Width')) {
-                    cssValue = `${value}px`;
-                } else if (key === 'borderRadius' || key === 'wrapperBorderRadius') {
-                    cssValue = `${value}px`;
-                }
-            }
-            
-            element.style.setProperty(cssVar, cssValue);
-            console.log(`[AG Grid] Set ${cssVar} = ${cssValue}`);
-        }
-    }
-    
-    // Handle special boolean parameters
-    if (params.borders === false) {
-        element.classList.add('ag-no-borders');
-    }
-    if (params.wrapperBorder === true) {
-        element.classList.add('ag-wrapper-border');
     }
 }
 
