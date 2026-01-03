@@ -471,8 +471,8 @@ Automatically integrates with shadcn/ui design tokens and supports dark mode:
 **Custom Brand Colors:**
 ```razor
 <GridThemeParameters
-    AccentColor="hsl(var(--primary))"
-    HeaderBackgroundColor="hsl(var(--muted))"
+    AccentColor="var(--primary)"
+    HeaderBackgroundColor="var(--muted)"
 />
 ```
 

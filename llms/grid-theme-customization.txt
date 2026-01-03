@@ -225,7 +225,7 @@ If you were previously customizing grids with manual CSS variables, migrate to t
     <Columns>
         <!-- Optional: Override specific theme parameters -->
         <GridThemeParameters
-            AccentColor="hsl(var(--primary))"
+            AccentColor="var(--primary)"
             BorderRadius="6"
             HeaderFontWeight="600"
         />

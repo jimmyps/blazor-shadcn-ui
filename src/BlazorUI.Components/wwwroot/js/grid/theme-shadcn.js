@@ -16,12 +16,13 @@ export function createShadcnTheme(customParams = {}) {
     const value = root.getPropertyValue(name).trim();
     if (!value) return fallback;
     
-    // If value contains hsl/rgb/rgba, use it as is
-    if (value.includes('hsl') || value.includes('rgb')) {
+    // If value already contains a color function (hsl, rgb, rgba, oklch, etc.), use it as is
+    if (value.includes('(')) {
       return value;
     }
     
-    // Otherwise, assume it's just the HSL values (e.g., "222.2 84% 4.9%")
+    // Otherwise, assume it's shadcn-style space-separated HSL values (e.g., "222.2 84% 4.9%")
+    // and wrap with hsl()
     return `hsl(${value})`;
   };
   

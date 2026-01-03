@@ -88,74 +88,74 @@ public partial class GridThemeParameters : ComponentBase
 
     /// <summary>
     /// Gets or sets the primary accent color used for active states, selections, and focus indicators.
-    /// Accepts CSS color values (hex, rgb, hsl).
-    /// Default for Shadcn theme: hsl(var(--primary))
+    /// Accepts CSS color values (hex, rgb, hsl, oklch, etc.) or CSS variables.
+    /// Default for Shadcn theme: var(--primary)
     /// </summary>
-    /// <example>"#2563eb" or "hsl(var(--primary))"</example>
+    /// <example>"#2563eb" or "var(--primary)"</example>
     [Parameter]
     public string? AccentColor { get; set; }
 
     /// <summary>
     /// Gets or sets the background color for cells and the grid body.
-    /// Default for Shadcn theme: hsl(var(--background))
+    /// Default for Shadcn theme: var(--background)
     /// </summary>
-    /// <example>"#ffffff" or "hsl(var(--background))"</example>
+    /// <example>"#ffffff" or "var(--background)"</example>
     [Parameter]
     public string? BackgroundColor { get; set; }
 
     /// <summary>
     /// Gets or sets the default text color for grid content.
-    /// Default for Shadcn theme: hsl(var(--foreground))
+    /// Default for Shadcn theme: var(--foreground)
     /// </summary>
-    /// <example>"#000000" or "hsl(var(--foreground))"</example>
+    /// <example>"#000000" or "var(--foreground)"</example>
     [Parameter]
     public string? ForegroundColor { get; set; }
 
     /// <summary>
     /// Gets or sets the color of borders and dividing lines.
-    /// Default for Shadcn theme: hsl(var(--border))
+    /// Default for Shadcn theme: var(--border)
     /// </summary>
-    /// <example>"#e5e7eb" or "hsl(var(--border))"</example>
+    /// <example>"#e5e7eb" or "var(--border)"</example>
     [Parameter]
     public string? BorderColor { get; set; }
 
     /// <summary>
     /// Gets or sets the background color for column headers.
-    /// Default for Shadcn theme: hsl(var(--muted))
+    /// Default for Shadcn theme: var(--muted)
     /// </summary>
-    /// <example>"#f9fafb" or "hsl(var(--muted))"</example>
+    /// <example>"#f9fafb" or "var(--muted)"</example>
     [Parameter]
     public string? HeaderBackgroundColor { get; set; }
 
     /// <summary>
     /// Gets or sets the text color for column headers.
-    /// Default for Shadcn theme: hsl(var(--foreground))
+    /// Default for Shadcn theme: var(--foreground)
     /// </summary>
-    /// <example>"#000000" or "hsl(var(--foreground))"</example>
+    /// <example>"#000000" or "var(--foreground)"</example>
     [Parameter]
     public string? HeaderForegroundColor { get; set; }
 
     /// <summary>
     /// Gets or sets the background color when hovering over a row.
-    /// Default for Shadcn theme: hsl(var(--accent) / 0.1)
+    /// Default for Shadcn theme: color-mix(in srgb, var(--accent) 10%, transparent)
     /// </summary>
-    /// <example>"rgba(37, 99, 235, 0.1)" or "hsl(var(--accent) / 0.1)"</example>
+    /// <example>"rgba(37, 99, 235, 0.1)" or "color-mix(in srgb, var(--accent) 10%, transparent)"</example>
     [Parameter]
     public string? RowHoverColor { get; set; }
 
     /// <summary>
     /// Gets or sets the background color for odd rows (used with Striped style).
-    /// Default for Shadcn theme with Striped style: hsl(var(--muted) / 0.3)
+    /// Default for Shadcn theme with Striped style: color-mix(in srgb, var(--muted) 30%, transparent)
     /// </summary>
-    /// <example>"#f9fafb" or "hsl(var(--muted) / 0.3)"</example>
+    /// <example>"#f9fafb" or "color-mix(in srgb, var(--muted) 30%, transparent)"</example>
     [Parameter]
     public string? OddRowBackgroundColor { get; set; }
 
     /// <summary>
     /// Gets or sets the background color for selected rows.
-    /// Default for Shadcn theme: hsl(var(--primary) / 0.1)
+    /// Default for Shadcn theme: color-mix(in srgb, var(--primary) 10%, transparent)
     /// </summary>
-    /// <example>"rgba(37, 99, 235, 0.1)" or "hsl(var(--primary) / 0.1)"</example>
+    /// <example>"rgba(37, 99, 235, 0.1)" or "color-mix(in srgb, var(--primary) 10%, transparent)"</example>
     [Parameter]
     public string? SelectedRowBackgroundColor { get; set; }
 
@@ -175,9 +175,9 @@ public partial class GridThemeParameters : ComponentBase
 
     /// <summary>
     /// Gets or sets the color used to indicate validation errors.
-    /// Default for Shadcn theme: hsl(var(--destructive))
+    /// Default for Shadcn theme: var(--destructive)
     /// </summary>
-    /// <example>"#dc2626" or "hsl(var(--destructive))"</example>
+    /// <example>"#dc2626" or "var(--destructive)"</example>
     [Parameter]
     public string? InvalidColor { get; set; }
 
@@ -197,17 +197,17 @@ public partial class GridThemeParameters : ComponentBase
 
     /// <summary>
     /// Gets or sets the background color for tooltips.
-    /// Default for Shadcn theme: hsl(var(--popover))
+    /// Default for Shadcn theme: var(--popover)
     /// </summary>
-    /// <example>"#ffffff" or "hsl(var(--popover))"</example>
+    /// <example>"#ffffff" or "var(--popover)"</example>
     [Parameter]
     public string? TooltipBackgroundColor { get; set; }
 
     /// <summary>
     /// Gets or sets the text color for tooltips.
-    /// Default for Shadcn theme: hsl(var(--popover-foreground))
+    /// Default for Shadcn theme: var(--popover-foreground)
     /// </summary>
-    /// <example>"#000000" or "hsl(var(--popover-foreground))"</example>
+    /// <example>"#000000" or "var(--popover-foreground)"</example>
     [Parameter]
     public string? TooltipTextColor { get; set; }
 

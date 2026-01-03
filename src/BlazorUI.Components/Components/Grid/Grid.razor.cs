@@ -273,19 +273,19 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         {
             return new Dictionary<string, object>
             {
-                { "accentColor", "hsl(var(--primary))" },
-                { "backgroundColor", "hsl(var(--background))" },
-                { "foregroundColor", "hsl(var(--foreground))" },
-                { "borderColor", "hsl(var(--border))" },
-                { "headerBackgroundColor", "hsl(var(--muted))" },
-                { "headerForegroundColor", "hsl(var(--foreground))" },
-                { "rowHoverColor", "hsl(var(--accent) / 0.1)" },
-                { "selectedRowBackgroundColor", "hsl(var(--primary) / 0.1)" },
-                { "invalidColor", "hsl(var(--destructive))" },
+                { "accentColor", "var(--primary)" },
+                { "backgroundColor", "var(--background)" },
+                { "foregroundColor", "var(--foreground)" },
+                { "borderColor", "var(--border)" },
+                { "headerBackgroundColor", "var(--muted)" },
+                { "headerForegroundColor", "var(--foreground)" },
+                { "rowHoverColor", "color-mix(in srgb, var(--accent) 10%, transparent)" },
+                { "selectedRowBackgroundColor", "color-mix(in srgb, var(--primary) 10%, transparent)" },
+                { "invalidColor", "var(--destructive)" },
                 { "fontFamily", "var(--font-sans)" },
                 { "borderRadius", 4 },
-                { "tooltipBackgroundColor", "hsl(var(--popover))" },
-                { "tooltipTextColor", "hsl(var(--popover-foreground))" },
+                { "tooltipBackgroundColor", "var(--popover)" },
+                { "tooltipTextColor", "var(--popover-foreground)" },
             };
         }
         return new Dictionary<string, object>();
@@ -331,7 +331,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         {
             GridStyle.Striped => new Dictionary<string, object>
             {
-                { "oddRowBackgroundColor", "hsl(var(--muted) / 0.3)" },
+                { "oddRowBackgroundColor", "color-mix(in srgb, var(--muted) 30%, transparent)" },
             },
             GridStyle.Bordered => new Dictionary<string, object>
             {
