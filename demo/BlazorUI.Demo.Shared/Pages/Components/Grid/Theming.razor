@@ -1,0 +1,314 @@
+@using BlazorUI.Components.Grid
+@using BlazorUI.Components
+@using BlazorUI.Components.Card
+@using BlazorUI.Components.Label
+@using BlazorUI.Components.Tabs
+
+<PageTitle>Grid Theming - BlazorUI</PageTitle>
+
+<div class="space-y-8">
+    <div>
+        <h2 class="text-3xl font-bold tracking-tight mb-2">Grid Theme Customization</h2>
+        <p class="text-muted-foreground">
+            Explore the three-level customization system: High-level presets, fine-grained parameters, and CSS overrides.
+        </p>
+    </div>
+
+    <!-- Level 1: High-Level Presets -->
+    <section class="space-y-4">
+        <div>
+            <h3 class="text-2xl font-semibold mb-2">Level 1: High-Level Presets</h3>
+            <p class="text-muted-foreground mb-4">
+                Use Theme, Density, and VisualStyle parameters for quick customization.
+            </p>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2">
+            <!-- Compact Striped -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Compact + Striped</CardTitle>
+                    <CardDescription>Dense layout with alternating rows</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Grid TItem="Product" 
+                          Items="@products" 
+                          Density="GridDensity.Compact" 
+                          VisualStyle="GridStyle.Striped"
+                          Height="250px">
+                        <Columns>
+                            <GridColumn TItem="Product" Field="Name" Header="Product" />
+                            <GridColumn TItem="Product" Field="Category" Header="Category" />
+                            <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
+                        </Columns>
+                    </Grid>
+                </CardContent>
+            </Card>
+
+            <!-- Spacious Bordered -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Spacious + Bordered</CardTitle>
+                    <CardDescription>Relaxed layout with cell borders</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Grid TItem="Product" 
+                          Items="@products" 
+                          Density="GridDensity.Spacious" 
+                          VisualStyle="GridStyle.Bordered"
+                          Height="250px">
+                        <Columns>
+                            <GridColumn TItem="Product" Field="Name" Header="Product" />
+                            <GridColumn TItem="Product" Field="Category" Header="Category" />
+                            <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
+                        </Columns>
+                    </Grid>
+                </CardContent>
+            </Card>
+        </div>
+    </section>
+
+    <!-- Level 2: Fine-Grained Parameters -->
+    <section class="space-y-4">
+        <div>
+            <h3 class="text-2xl font-semibold mb-2">Level 2: Fine-Grained Parameters</h3>
+            <p class="text-muted-foreground mb-4">
+                Override specific theme settings with GridThemeParameters component.
+            </p>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2">
+            <!-- Custom Accent Color -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Custom Accent Color</CardTitle>
+                    <CardDescription>Red accent with custom row height</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Grid TItem="Product" 
+                          Items="@products" 
+                          Density="GridDensity.Comfortable"
+                          Height="250px">
+                        <Columns>
+                            <GridThemeParameters
+                                AccentColor="#dc2626"
+                                RowHeight="36"
+                            />
+                            <GridColumn TItem="Product" Field="Name" Header="Product" />
+                            <GridColumn TItem="Product" Field="Category" Header="Category" />
+                            <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
+                        </Columns>
+                    </Grid>
+                </CardContent>
+            </Card>
+
+            <!-- Custom Typography -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Custom Typography</CardTitle>
+                    <CardDescription>Larger font with custom border radius</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Grid TItem="Product" 
+                          Items="@products" 
+                          Density="GridDensity.Comfortable"
+                          Height="250px">
+                        <Columns>
+                            <GridThemeParameters
+                                FontSize="16"
+                                BorderRadius="8"
+                                HeaderFontWeight="700"
+                            />
+                            <GridColumn TItem="Product" Field="Name" Header="Product" />
+                            <GridColumn TItem="Product" Field="Category" Header="Category" />
+                            <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
+                        </Columns>
+                    </Grid>
+                </CardContent>
+            </Card>
+        </div>
+    </section>
+
+    <!-- Theme Comparison -->
+    <section class="space-y-4">
+        <div>
+            <h3 class="text-2xl font-semibold mb-2">Theme Comparison</h3>
+            <p class="text-muted-foreground mb-4">
+                Compare Shadcn theme with AG Grid's built-in themes.
+            </p>
+        </div>
+
+        <div class="flex gap-4 items-center mb-4">
+            <Label>Select Theme:</Label>
+            <div class="flex gap-2 flex-wrap">
+                <Button 
+                    Variant="@(selectedTheme == GridTheme.Shadcn ? ButtonVariant.Default : ButtonVariant.Outline)"
+                    Size="ButtonSize.Small"
+                    OnClick="@(() => selectedTheme = GridTheme.Shadcn)">
+                    Shadcn
+                </Button>
+                <Button 
+                    Variant="@(selectedTheme == GridTheme.Alpine ? ButtonVariant.Default : ButtonVariant.Outline)"
+                    Size="ButtonSize.Small"
+                    OnClick="@(() => selectedTheme = GridTheme.Alpine)">
+                    Alpine
+                </Button>
+                <Button 
+                    Variant="@(selectedTheme == GridTheme.Balham ? ButtonVariant.Default : ButtonVariant.Outline)"
+                    Size="ButtonSize.Small"
+                    OnClick="@(() => selectedTheme = GridTheme.Balham)">
+                    Balham
+                </Button>
+                <Button 
+                    Variant="@(selectedTheme == GridTheme.Material ? ButtonVariant.Default : ButtonVariant.Outline)"
+                    Size="ButtonSize.Small"
+                    OnClick="@(() => selectedTheme = GridTheme.Material)">
+                    Material
+                </Button>
+                <Button 
+                    Variant="@(selectedTheme == GridTheme.Quartz ? ButtonVariant.Default : ButtonVariant.Outline)"
+                    Size="ButtonSize.Small"
+                    OnClick="@(() => selectedTheme = GridTheme.Quartz)">
+                    Quartz
+                </Button>
+            </div>
+        </div>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>@selectedTheme Theme</CardTitle>
+                <CardDescription>View how the grid looks with the @selectedTheme theme</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Grid TItem="Product" 
+                      Items="@products" 
+                      Theme="@selectedTheme"
+                      Density="GridDensity.Comfortable"
+                      Height="300px">
+                    <Columns>
+                        <GridColumn TItem="Product" Field="Name" Header="Product" />
+                        <GridColumn TItem="Product" Field="Category" Header="Category" />
+                        <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
+                        <GridColumn TItem="Product" Field="@nameof(Product.Stock)" Header="Stock" />
+                    </Columns>
+                </Grid>
+            </CardContent>
+        </Card>
+    </section>
+
+    <!-- Precedence Demonstration -->
+    <section class="space-y-4">
+        <div>
+            <h3 class="text-2xl font-semibold mb-2">Precedence Demonstration</h3>
+            <p class="text-muted-foreground mb-4">
+                GridThemeParameters overrides Density presets. Compact sets rowHeight=28, but we override it to 50.
+            </p>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2">
+            <!-- Standard Compact -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Standard Compact (28px rows)</CardTitle>
+                    <CardDescription>Default compact density</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Grid TItem="Product" 
+                          Items="@products" 
+                          Density="GridDensity.Compact"
+                          Height="250px">
+                        <Columns>
+                            <GridColumn TItem="Product" Field="Name" Header="Product" />
+                            <GridColumn TItem="Product" Field="Category" Header="Category" />
+                            <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
+                        </Columns>
+                    </Grid>
+                </CardContent>
+            </Card>
+
+            <!-- Compact with Override -->
+            <Card>
+                <CardHeader>
+                    <CardTitle>Compact Override (50px rows)</CardTitle>
+                    <CardDescription>Compact density but custom row height</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Grid TItem="Product" 
+                          Items="@products" 
+                          Density="GridDensity.Compact"
+                          Height="250px">
+                        <Columns>
+                            <GridThemeParameters
+                                RowHeight="50"
+                            />
+                            <GridColumn TItem="Product" Field="Name" Header="Product" />
+                            <GridColumn TItem="Product" Field="Category" Header="Category" />
+                            <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
+                        </Columns>
+                    </Grid>
+                </CardContent>
+            </Card>
+        </div>
+    </section>
+
+    <!-- Code Example -->
+    <Card>
+        <CardHeader>
+            <CardTitle>Usage Examples</CardTitle>
+            <CardDescription>How to use the three-level customization system</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <pre class="bg-muted p-4 rounded-md overflow-x-auto text-sm"><code>@@* Level 1: High-Level Presets *@@
+&lt;Grid TItem="Order" Items="@@orders" 
+      Density="GridDensity.Compact" 
+      VisualStyle="GridStyle.Striped"&gt;
+    &lt;Columns&gt;...&lt;/Columns&gt;
+&lt;/Grid&gt;
+
+@@* Level 2: Fine-Grained Parameters *@@
+&lt;Grid TItem="Order" Items="@@orders"&gt;
+    &lt;GridThemeParameters
+        AccentColor="#ff6b6b"
+        BorderRadius="8"
+        RowHeight="48"
+    /&gt;
+    &lt;Columns&gt;...&lt;/Columns&gt;
+&lt;/Grid&gt;
+
+@@* Level 3: Advanced CSS (not shown, use style or Class parameter) *@@
+&lt;Grid TItem="Order" Items="@@orders" Class="my-custom-grid"&gt;
+    &lt;Columns&gt;...&lt;/Columns&gt;
+&lt;/Grid&gt;
+
+&lt;style&gt;
+.my-custom-grid {
+  --ag-cell-horizontal-padding: 20px;
+}
+&lt;/style&gt;</code></pre>
+        </CardContent>
+    </Card>
+</div>
+
+@code {
+    private GridTheme selectedTheme = GridTheme.Shadcn;
+
+    private List<Product> products = new()
+    {
+        new() { Name = "Laptop", Category = "Electronics", Price = 999.99m, Stock = 15 },
+        new() { Name = "Mouse", Category = "Accessories", Price = 29.99m, Stock = 120 },
+        new() { Name = "Keyboard", Category = "Accessories", Price = 79.99m, Stock = 85 },
+        new() { Name = "Monitor", Category = "Electronics", Price = 299.99m, Stock = 42 },
+        new() { Name = "Desk", Category = "Furniture", Price = 399.99m, Stock = 8 },
+        new() { Name = "Chair", Category = "Furniture", Price = 249.99m, Stock = 24 },
+        new() { Name = "Headphones", Category = "Accessories", Price = 149.99m, Stock = 67 },
+        new() { Name = "Webcam", Category = "Electronics", Price = 89.99m, Stock = 53 }
+    };
+
+    public class Product
+    {
+        public string Name { get; set; } = "";
+        public string Category { get; set; } = "";
+        public decimal Price { get; set; }
+        public int Stock { get; set; }
+    }
+}
