@@ -1,32 +1,28 @@
+using System.Text.Json.Serialization;
+
 namespace BlazorUI.Components.Grid;
 
 /// <summary>
-/// Defines the AG Grid built-in theme to use.
-/// Each theme has a different visual appearance and is provided by AG Grid.
+/// Specifies the base theme for the grid.
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum GridTheme
 {
     /// <summary>
-    /// AG Grid Alpine theme - Clean, modern look (default).
-    /// Requires: ag-theme-alpine.css
+    /// Shadcn theme integrated with shadcn/ui design tokens (default).
+    /// Automatically adapts to your app's color scheme and supports dark mode.
     /// </summary>
-    Alpine = 0,
-
-    /// <summary>
-    /// AG Grid Balham theme - Professional business theme.
-    /// Requires: ag-theme-balham.css
-    /// </summary>
-    Balham = 1,
-
-    /// <summary>
-    /// AG Grid Material theme - Google Material Design styled.
-    /// Requires: ag-theme-material.css
-    /// </summary>
-    Material = 2,
-
-    /// <summary>
-    /// AG Grid Quartz theme - Modern, polished appearance.
-    /// Requires: ag-theme-quartz.css
-    /// </summary>
-    Quartz = 3
+    Shadcn = 0,
+    
+    /// <summary>AG Grid's Alpine theme (clean, modern look).</summary>
+    Alpine = 1,
+    
+    /// <summary>AG Grid's Balham theme (professional business theme).</summary>
+    Balham = 2,
+    
+    /// <summary>AG Grid's Material theme (Google Material Design styled).</summary>
+    Material = 3,
+    
+    /// <summary>AG Grid's Quartz theme (modern, polished appearance).</summary>
+    Quartz = 4,
 }

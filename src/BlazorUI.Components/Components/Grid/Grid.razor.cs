@@ -18,6 +18,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     private IGridRenderer<TItem>? _gridRenderer;
     private bool _initialized = false;
     private bool _columnsRegistered = false;
+    private GridThemeParameters? _themeParameters;
 
     [Inject]
     private IServiceProvider ServiceProvider { get; set; } = default!;
@@ -54,11 +55,11 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public GridVirtualizationMode VirtualizationMode { get; set; } = GridVirtualizationMode.Auto;
 
     /// <summary>
-    /// Gets or sets the AG Grid theme to use (Alpine, Balham, Material, Quartz).
-    /// Default is Alpine.
+    /// Gets or sets the AG Grid theme to use (Shadcn, Alpine, Balham, Material, Quartz).
+    /// Default is Shadcn.
     /// </summary>
     [Parameter]
-    public GridTheme Theme { get; set; } = GridTheme.Alpine;
+    public GridTheme Theme { get; set; } = GridTheme.Shadcn;
 
     /// <summary>
     /// Gets or sets the visual style modifiers for the grid (Default, Striped, Bordered, Minimal).
@@ -261,6 +262,95 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         Console.WriteLine($"[Grid] Column registered: {column.Header} (Total: {_columns.Count})");
     }
 
+    internal void RegisterThemeParameters(GridThemeParameters parameters)
+    {
+        _themeParameters = parameters;
+    }
+
+    private Dictionary<string, object> GetThemeDefaults(GridTheme theme)
+    {
+        if (theme == GridTheme.Shadcn)
+        {
+            return new Dictionary<string, object>
+            {
+                { "accentColor", "hsl(var(--primary))" },
+                { "backgroundColor", "hsl(var(--background))" },
+                { "foregroundColor", "hsl(var(--foreground))" },
+                { "borderColor", "hsl(var(--border))" },
+                { "headerBackgroundColor", "hsl(var(--muted))" },
+                { "headerForegroundColor", "hsl(var(--foreground))" },
+                { "rowHoverColor", "hsl(var(--accent) / 0.1)" },
+                { "selectedRowBackgroundColor", "hsl(var(--primary) / 0.1)" },
+                { "invalidColor", "hsl(var(--destructive))" },
+                { "fontFamily", "var(--font-sans)" },
+                { "borderRadius", 4 },
+                { "tooltipBackgroundColor", "hsl(var(--popover))" },
+                { "tooltipTextColor", "hsl(var(--popover-foreground))" },
+            };
+        }
+        return new Dictionary<string, object>();
+    }
+
+    private Dictionary<string, object> GetDensityPreset(GridDensity density)
+    {
+        return density switch
+        {
+            GridDensity.Compact => new Dictionary<string, object>
+            {
+                { "spacing", 3 },
+                { "rowHeight", 28 },
+                { "headerHeight", 32 },
+                { "fontSize", 12 },
+                { "iconSize", 14 },
+                { "inputHeight", 28 },
+            },
+            GridDensity.Spacious => new Dictionary<string, object>
+            {
+                { "spacing", 6 },
+                { "rowHeight", 56 },
+                { "headerHeight", 64 },
+                { "fontSize", 16 },
+                { "iconSize", 20 },
+                { "inputHeight", 40 },
+            },
+            GridDensity.Comfortable or _ => new Dictionary<string, object>
+            {
+                { "spacing", 4 },
+                { "rowHeight", 42 },
+                { "headerHeight", 48 },
+                { "fontSize", 14 },
+                { "iconSize", 16 },
+                { "inputHeight", 32 },
+            },
+        };
+    }
+
+    private Dictionary<string, object> GetVisualStylePreset(GridStyle style)
+    {
+        return style switch
+        {
+            GridStyle.Striped => new Dictionary<string, object>
+            {
+                { "oddRowBackgroundColor", "hsl(var(--muted) / 0.3)" },
+            },
+            GridStyle.Bordered => new Dictionary<string, object>
+            {
+                { "borders", true },
+                { "wrapperBorder", true },
+            },
+            GridStyle.Minimal => new Dictionary<string, object>
+            {
+                { "borders", false },
+                { "wrapperBorder", false },
+            },
+            GridStyle.Default or _ => new Dictionary<string, object>
+            {
+                { "borders", true },
+                { "wrapperBorder", false },
+            },
+        };
+    }
+
     private void BuildGridDefinition()
     {
         _gridDefinition.Columns = _columns.Select(c => c.ToDefinition()).ToList();
@@ -278,6 +368,32 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         _gridDefinition.Class = Class;
         _gridDefinition.InlineStyle = InlineStyle;          // CSS inline style
         _gridDefinition.LocalizationKeyPrefix = LocalizationKeyPrefix;
+
+        // Merge theme parameters with precedence: ThemeDefaults < Density < VisualStyle < GridThemeParameters
+        var themeParams = GetThemeDefaults(Theme);
+        
+        // Apply density preset
+        foreach (var kvp in GetDensityPreset(Density))
+        {
+            themeParams[kvp.Key] = kvp.Value;
+        }
+        
+        // Apply visual style preset
+        foreach (var kvp in GetVisualStylePreset(VisualStyle))
+        {
+            themeParams[kvp.Key] = kvp.Value;
+        }
+        
+        // Apply user's GridThemeParameters (highest priority)
+        if (_themeParameters != null)
+        {
+            foreach (var kvp in _themeParameters.ToDictionary())
+            {
+                themeParams[kvp.Key] = kvp.Value;
+            }
+        }
+        
+        _gridDefinition.ThemeParams = themeParams;
     }
 
     private async Task InitializeGridAsync()
@@ -293,11 +409,12 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     {
         return Theme switch
         {
+            GridTheme.Shadcn => "ag-theme-quartz", // Shadcn extends Quartz theme
             GridTheme.Alpine => "ag-theme-alpine",
             GridTheme.Balham => "ag-theme-balham",
             GridTheme.Material => "ag-theme-material",
             GridTheme.Quartz => "ag-theme-quartz",
-            _ => "ag-theme-alpine"
+            _ => "ag-theme-quartz"
         };
     }
 
