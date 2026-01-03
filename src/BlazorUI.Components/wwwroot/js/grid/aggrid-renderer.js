@@ -3,6 +3,8 @@
  * Auto-loads AG Grid Community from CDN and provides grid rendering with theme support
  */
 
+import { createShadcnTheme } from './theme-shadcn.js';
+
 // AG Grid version and CDN URLs
 const AG_GRID_VERSION = '32.3.3';
 const AG_GRID_CDN = `https://cdn.jsdelivr.net/npm/ag-grid-community@${AG_GRID_VERSION}/dist/ag-grid-community.min.js`;
@@ -275,9 +277,20 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
         // Build grid options with event handlers and theme parameters
         const gridOptions = buildGridOptionsWithEvents(config, dotNetRef);
         
+        // Prepare theme parameters
+        let themeParams = config.themeParams || {};
+        
+        // For Shadcn theme, merge with dynamically read shadcn design tokens
+        if (config.theme === 'Shadcn') {
+            const shadcnDefaults = createShadcnTheme();
+            // Merge: shadcn defaults < config.themeParams (C# side takes precedence)
+            themeParams = { ...shadcnDefaults, ...themeParams };
+            console.log('[AG Grid] Applied Shadcn theme with design tokens');
+        }
+        
         // Apply theme parameters as CSS custom properties
-        if (config.themeParams) {
-            applyThemeParameters(element, config.themeParams);
+        if (themeParams && Object.keys(themeParams).length > 0) {
+            applyThemeParameters(element, themeParams);
         }
         
         // Create AG Grid instance - returns the API directly

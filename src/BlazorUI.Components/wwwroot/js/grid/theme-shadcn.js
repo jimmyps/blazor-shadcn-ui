@@ -1,11 +1,12 @@
-// Import AG Grid theming API
-import { themeQuartz } from 'ag-grid-community';
-
 /**
- * Creates the Shadcn theme by extending AG Grid's Quartz theme
- * and mapping to shadcn/ui design tokens.
+ * Creates the Shadcn theme configuration for AG Grid
+ * Maps shadcn/ui design tokens to AG Grid theme parameters.
+ * 
+ * Note: This returns theme parameters that will be applied as CSS variables,
+ * not an AG Grid theme object (since we're using the CDN version).
+ * 
  * @param {Object} customParams - Custom parameters to override defaults
- * @returns AG Grid theme with shadcn token integration
+ * @returns {Object} Theme parameters with shadcn token integration
  */
 export function createShadcnTheme(customParams = {}) {
   // Read shadcn CSS variables from document root
@@ -52,5 +53,5 @@ export function createShadcnTheme(customParams = {}) {
   // Merge with custom params (custom params take precedence)
   const params = { ...defaultParams, ...customParams };
   
-  return themeQuartz.withParams(params);
+  return params;
 }
