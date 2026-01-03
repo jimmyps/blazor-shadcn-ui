@@ -14,7 +14,15 @@ export function createShadcnTheme(customParams = {}) {
   // Helper to get CSS variable value
   const getCssVar = (name, fallback) => {
     const value = root.getPropertyValue(name).trim();
-    return value ? `hsl(${value})` : fallback;
+    if (!value) return fallback;
+    
+    // If value contains hsl/rgb/rgba, use it as is
+    if (value.includes('hsl') || value.includes('rgb')) {
+      return value;
+    }
+    
+    // Otherwise, assume it's just the HSL values (e.g., "222.2 84% 4.9%")
+    return `hsl(${value})`;
   };
   
   const defaultParams = {
@@ -25,8 +33,6 @@ export function createShadcnTheme(customParams = {}) {
     borderColor: getCssVar('--border', '#e5e7eb'),
     headerBackgroundColor: getCssVar('--muted', '#f9fafb'),
     headerForegroundColor: getCssVar('--foreground', '#000000'),
-    rowHoverColor: getCssVar('--accent', 'rgba(37, 99, 235, 0.1)').replace(')', ' / 0.1)'),
-    selectedRowBackgroundColor: getCssVar('--primary', 'rgba(37, 99, 235, 0.1)').replace(')', ' / 0.1)'),
     invalidColor: getCssVar('--destructive', '#dc2626'),
     tooltipBackgroundColor: getCssVar('--popover', '#ffffff'),
     tooltipTextColor: getCssVar('--popover-foreground', '#000000'),

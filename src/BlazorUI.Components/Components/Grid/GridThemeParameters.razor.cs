@@ -298,13 +298,21 @@ public partial class GridThemeParameters : ComponentBase
     private bool IsGridComponent(object parent)
     {
         var parentType = parent.GetType();
-        // Check if it's a Grid<TItem> by looking for the generic type definition
+        
+        // Check if the parent type is exactly Grid<TItem> (closed generic type)
+        // or if it inherits from a Grid<TItem> base class
         while (parentType != null)
         {
-            if (parentType.IsGenericType && 
-                parentType.GetGenericTypeDefinition().Name.StartsWith("Grid"))
+            if (parentType.IsGenericType)
             {
-                return true;
+                var genericTypeDef = parentType.GetGenericTypeDefinition();
+                // Check if the generic type definition's full name contains Grid
+                // This is more specific than just checking the name
+                if (genericTypeDef.FullName != null && 
+                    genericTypeDef.FullName.Contains("BlazorUI.Components.Grid.Grid"))
+                {
+                    return true;
+                }
             }
             parentType = parentType.BaseType;
         }
