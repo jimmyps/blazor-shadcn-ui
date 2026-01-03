@@ -1,0 +1,277 @@
+# Grid Theme Customization Guide
+
+## Overview
+
+The BlazorUI Grid component provides a powerful three-level theme customization system built on AG Grid's theming capabilities. This system allows you to customize your grid's appearance from high-level presets down to individual CSS variables.
+
+## Three-Level Architecture
+
+### Level 1: High-Level Presets (Grid Component Parameters)
+
+The quickest way to customize your grid's appearance using component parameters:
+
+**Theme Parameter:**
+- `Shadcn` (default) - Integrates with shadcn/ui design tokens, supports dark mode
+- `Alpine` - AG Grid's clean, modern look
+- `Balham` - Professional business theme
+- `Material` - Google Material Design styled
+- `Quartz` - Modern, polished appearance
+
+**Density Parameter:**
+- `Comfortable` (default) - Standard spacing (42px rows, 48px header, 14px font)
+- `Compact` - Dense layout (28px rows, 32px header, 12px font)
+- `Spacious` - Relaxed layout (56px rows, 64px header, 16px font)
+
+**VisualStyle Parameter:**
+- `Default` - Standard borders, no striping
+- `Striped` - Alternating row background colors
+- `Bordered` - Visible cell borders
+- `Minimal` - Minimal borders for clean look
+
+**Example:**
+```razor
+<Grid TItem="Order" Items="@orders" 
+      Theme="GridTheme.Shadcn"
+      Density="GridDensity.Compact" 
+      VisualStyle="GridStyle.Striped">
+    <Columns>...</Columns>
+</Grid>
+```
+
+### Level 2: Fine-Grained Control (GridThemeParameters Component)
+
+Use the `<GridThemeParameters>` component to override specific theme settings with strong typing and IntelliSense support.
+
+**35 Available Parameters organized in categories:**
+
+**Spacing & Sizing (7):**
+- `Spacing` - Base spacing unit (pixels)
+- `RowHeight` - Row height (pixels)
+- `HeaderHeight` - Header height (pixels)
+- `IconSize` - Icon size (pixels)
+- `InputHeight` - Input/filter height (pixels)
+- `ToggleButtonWidth` - Toggle button width (pixels)
+- `ToggleButtonHeight` - Toggle button height (pixels)
+
+**Colors (16):**
+- `AccentColor` - Primary accent color
+- `BackgroundColor` - Cell/body background
+- `ForegroundColor` - Default text color
+- `BorderColor` - Border color
+- `HeaderBackgroundColor` - Header background
+- `HeaderForegroundColor` - Header text color
+- `RowHoverColor` - Row hover background
+- `OddRowBackgroundColor` - Odd row background (striped)
+- `SelectedRowBackgroundColor` - Selected row background
+- `RangeSelectionBorderColor` - Range selection border
+- `CellTextColor` - Cell text color
+- `InvalidColor` - Validation error color
+- `ModalOverlayBackgroundColor` - Modal overlay
+- `ChromeBackgroundColor` - UI chrome elements
+- `TooltipBackgroundColor` - Tooltip background
+- `TooltipTextColor` - Tooltip text
+
+**Typography (4):**
+- `FontFamily` - Font family
+- `FontSize` - Base font size (pixels)
+- `HeaderFontSize` - Header font size (pixels)
+- `HeaderFontWeight` - Header font weight
+
+**Borders & Effects (4):**
+- `Borders` - Show cell borders (boolean)
+- `BorderRadius` - Border radius (pixels)
+- `WrapperBorder` - Grid wrapper border (boolean)
+- `WrapperBorderRadius` - Wrapper border radius (pixels)
+
+**Example:**
+```razor
+<Grid TItem="Order" Items="@orders" Density="GridDensity.Comfortable">
+    <Columns>
+        <GridThemeParameters
+            AccentColor="#dc2626"
+            RowHeight="48"
+            BorderRadius="8"
+            FontSize="16"
+            HeaderFontWeight="700"
+        />
+        <GridColumn Field="OrderId" Header="ID" />
+        <GridColumn Field="Customer" Header="Customer" />
+    </Columns>
+</Grid>
+```
+
+### Level 3: Advanced CSS Variables
+
+For parameters not supported by GridThemeParameters or for advanced customization, use CSS custom properties directly.
+
+**Example:**
+```razor
+<Grid TItem="Order" Items="@orders" Class="my-custom-grid">
+    <Columns>...</Columns>
+</Grid>
+
+<style>
+.my-custom-grid {
+  --ag-cell-horizontal-padding: 20px;
+  --ag-header-column-separator-color: transparent;
+  --ag-range-selection-highlight-color: rgba(0, 120, 215, 0.2);
+}
+</style>
+```
+
+## Precedence Rules
+
+The customization system follows a clear precedence hierarchy (highest to lowest):
+
+1. **GridThemeParameters** - Explicit parameter overrides (Level 2)
+2. **VisualStyle presets** - Style modifiers like Striped, Bordered
+3. **Density presets** - Spacing/sizing from Compact/Comfortable/Spacious
+4. **Theme defaults** - Base theme values (Shadcn tokens or AG Grid defaults)
+5. **CSS variables** - Manual CSS overrides (Level 3)
+
+**Example demonstrating precedence:**
+```razor
+<!-- Compact sets rowHeight=28, but GridThemeParameters overrides to 50 -->
+<Grid TItem="Order" Items="@orders" Density="GridDensity.Compact">
+    <Columns>
+        <GridThemeParameters RowHeight="50" />
+        <GridColumn Field="OrderId" Header="ID" />
+    </Columns>
+</Grid>
+```
+
+## Shadcn Theme Integration
+
+The `Shadcn` theme (default) automatically integrates with your shadcn/ui design system by reading CSS custom properties from your app:
+
+**Shadcn Token Mapping:**
+| Shadcn Token | AG Grid Parameter | Purpose |
+|--------------|-------------------|---------|
+| `--primary` | `accentColor` | Primary accent, selections |
+| `--background` | `backgroundColor` | Cell backgrounds |
+| `--foreground` | `foregroundColor` | Text color |
+| `--border` | `borderColor` | Grid borders |
+| `--muted` | `headerBackgroundColor` | Header background |
+| `--accent` | `rowHoverColor` | Row hover effect |
+| `--destructive` | `invalidColor` | Validation errors |
+| `--popover` | `tooltipBackgroundColor` | Tooltip background |
+| `--popover-foreground` | `tooltipTextColor` | Tooltip text |
+| `--font-sans` | `fontFamily` | Font family |
+
+**Dark Mode Support:**
+The Shadcn theme automatically adapts to dark mode when you update your shadcn tokens. No additional configuration needed.
+
+## Migration from Manual CSS
+
+If you were previously customizing grids with manual CSS variables, migrate to the new system:
+
+**Before:**
+```razor
+<div style="--ag-grid-size: 3px; --ag-row-height: 28px;">
+    <Grid TItem="Order" Items="@orders">
+        <Columns>...</Columns>
+    </Grid>
+</div>
+```
+
+**After (Level 1 - Recommended):**
+```razor
+<Grid TItem="Order" Items="@orders" Density="GridDensity.Compact">
+    <Columns>...</Columns>
+</Grid>
+```
+
+**After (Level 2 - For custom values):**
+```razor
+<Grid TItem="Order" Items="@orders">
+    <Columns>
+        <GridThemeParameters Spacing="3" RowHeight="28" />
+        <GridColumn Field="OrderId" Header="ID" />
+    </Columns>
+</Grid>
+```
+
+## When to Use Each Level
+
+**Use Level 1 (Presets) when:**
+- You want quick, consistent styling
+- You're following standard design patterns
+- You want to leverage pre-built combinations
+
+**Use Level 2 (GridThemeParameters) when:**
+- You need specific customization beyond presets
+- You want type-safe, IntelliSense-supported configuration
+- You're building reusable themed grids
+- You need to override specific density/style preset values
+
+**Use Level 3 (CSS Variables) when:**
+- You need to customize parameters not available in GridThemeParameters
+- You're doing advanced theming with complex selectors
+- You need dynamic runtime theme switching via JavaScript
+
+## Complete Example
+
+```razor
+@page "/orders"
+@using BlazorUI.Components.Grid
+
+<Grid TItem="Order" 
+      Items="@orders"
+      Theme="GridTheme.Shadcn"
+      Density="GridDensity.Comfortable"
+      VisualStyle="GridStyle.Striped"
+      Height="600px"
+      SelectionMode="GridSelectionMode.Multiple">
+    <Columns>
+        <!-- Optional: Override specific theme parameters -->
+        <GridThemeParameters
+            AccentColor="var(--primary)"
+            BorderRadius="6"
+            HeaderFontWeight="600"
+        />
+        
+        <GridColumn TItem="Order" Field="@nameof(Order.Id)" Header="Order ID" Width="100px" />
+        <GridColumn TItem="Order" Field="@nameof(Order.Customer)" Header="Customer" />
+        <GridColumn TItem="Order" Field="@nameof(Order.Total)" Header="Total" />
+        <GridColumn TItem="Order" Field="@nameof(Order.Status)" Header="Status" />
+    </Columns>
+</Grid>
+
+@code {
+    private List<Order> orders = new();
+}
+```
+
+## Best Practices
+
+1. **Start with Level 1**: Use Theme, Density, and VisualStyle presets first
+2. **Layer in Level 2**: Add GridThemeParameters only for specific overrides
+3. **Reserve Level 3**: Use CSS variables only for advanced scenarios
+4. **Prefer Shadcn Theme**: Use the default Shadcn theme for automatic design system integration
+5. **Test Dark Mode**: If using Shadcn theme, test both light and dark modes
+6. **Use Type Safety**: Leverage GridThemeParameters for compile-time safety
+7. **Document Customizations**: Comment why you're overriding specific parameters
+
+## Troubleshooting
+
+**Theme not applying:**
+- Ensure AG Grid CSS is loaded (automatically handled via CDN)
+- Check browser console for JavaScript errors
+- Verify theme parameter spelling (use IntelliSense)
+
+**Dark mode not working:**
+- Confirm you're using `GridTheme.Shadcn`
+- Verify your shadcn CSS variables update with theme changes
+- Check that theme switcher updates `:root` or `[data-theme]` attributes
+
+**Parameters not overriding:**
+- Remember precedence: GridThemeParameters > Presets > Theme defaults
+- Check parameter placement (inside `<Columns>` block)
+- Verify parameter types (int vs string)
+
+## Reference Links
+
+- [AG Grid Theme Parameters Documentation](https://www.ag-grid.com/javascript-data-grid/theming-parameters/)
+- [AG Grid withParams API](https://www.ag-grid.com/javascript-data-grid/theming-parameters/#using-withparams)
+- [AG Grid Theme Builder](https://www.ag-grid.com/javascript-data-grid/theme-builder/)
+- [shadcn/ui Design Tokens](https://ui.shadcn.com/docs/theming)

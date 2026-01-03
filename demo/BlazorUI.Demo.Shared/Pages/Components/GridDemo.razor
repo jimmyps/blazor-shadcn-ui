@@ -15,13 +15,14 @@
     </div>
 
     <Tabs DefaultValue="basic">
-        <TabsList Class="grid w-full grid-cols-6">
+        <TabsList Class="grid w-full grid-cols-7">
             <TabsTrigger Value="basic">Basic</TabsTrigger>
             <TabsTrigger Value="templating">Templating</TabsTrigger>
             <TabsTrigger Value="selection">Selection</TabsTrigger>
             <TabsTrigger Value="sorting">Sorting & Filtering</TabsTrigger>
             <TabsTrigger Value="state">State</TabsTrigger>
             <TabsTrigger Value="advanced">Advanced</TabsTrigger>
+            <TabsTrigger Value="theming">Theming</TabsTrigger>
         </TabsList>
 
         <TabsContent Value="basic" Class="space-y-8">
@@ -46,6 +47,10 @@
 
         <TabsContent Value="advanced" Class="space-y-8">
             <Advanced />
+        </TabsContent>
+
+        <TabsContent Value="theming" Class="space-y-8">
+            <Theming />
         </TabsContent>
     </Tabs>
 </div>

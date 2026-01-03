@@ -85,6 +85,11 @@ public class GridDefinition<TItem>
     public string? LocalizationKeyPrefix { get; set; }
 
     /// <summary>
+    /// Gets or sets theme parameters for AG Grid's withParams API.
+    /// </summary>
+    public Dictionary<string, object>? ThemeParams { get; set; }
+
+    /// <summary>
     /// Gets or sets additional metadata for the renderer.
     /// </summary>
     public Dictionary<string, object?> Metadata { get; set; } = new();

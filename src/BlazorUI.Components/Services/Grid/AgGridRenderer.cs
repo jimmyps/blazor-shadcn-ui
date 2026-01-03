@@ -38,7 +38,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         Console.WriteLine("[AgGridRenderer] InitializeAsync called");
         
         _jsModule = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/BlazorUI.Components/js/aggrid-renderer.js");
+            "import", "./_content/BlazorUI.Components/js/grid/aggrid-renderer.js");
         Console.WriteLine("[AgGridRenderer] JS module imported");
 
         _dotNetRef = DotNetObjectReference.Create(this);
@@ -262,7 +262,10 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
                           definition.PagingMode == GridPagingMode.InfiniteScroll ? "infinite" : "clientSide",
             // Enable row selection checkbox for multiple selection
             rowMultiSelectWithClick = definition.SelectionMode == GridSelectionMode.Multiple,
-            suppressRowClickSelection = definition.SelectionMode == GridSelectionMode.Multiple
+            suppressRowClickSelection = definition.SelectionMode == GridSelectionMode.Multiple,
+            // Theme and theme parameters
+            theme = definition.Theme.ToString(),
+            themeParams = definition.ThemeParams
         };
     }
 

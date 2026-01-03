@@ -1,0 +1,352 @@
+# Grid Theme Parameters Reference
+
+Complete reference for all GridThemeParameters with types, defaults, and examples.
+
+## Spacing & Sizing Parameters
+
+### Spacing
+- **Type:** `int?`
+- **Unit:** Pixels
+- **Default:** Varies by density (Compact=3, Comfortable=4, Spacious=6)
+- **AG Grid CSS Variable:** `--ag-grid-size`
+- **Description:** Base spacing unit that controls padding and margins throughout the grid
+- **Example:** `<GridThemeParameters Spacing="5" />`
+- **Shadcn Equivalent:** N/A
+
+### RowHeight
+- **Type:** `int?`
+- **Unit:** Pixels
+- **Default:** Varies by density (Compact=28, Comfortable=42, Spacious=56)
+- **AG Grid CSS Variable:** `--ag-row-height`
+- **Description:** Height of each data row in pixels
+- **Example:** `<GridThemeParameters RowHeight="48" />`
+- **Shadcn Equivalent:** N/A
+
+### HeaderHeight
+- **Type:** `int?`
+- **Unit:** Pixels
+- **Default:** Varies by density (Compact=32, Comfortable=48, Spacious=64)
+- **AG Grid CSS Variable:** `--ag-header-height`
+- **Description:** Height of the column header row in pixels
+- **Example:** `<GridThemeParameters HeaderHeight="56" />`
+- **Shadcn Equivalent:** N/A
+
+### IconSize
+- **Type:** `int?`
+- **Unit:** Pixels
+- **Default:** Varies by density (Compact=14, Comfortable=16, Spacious=20)
+- **AG Grid CSS Variable:** `--ag-icon-size`
+- **Description:** Size of icons used in the grid (sort indicators, menu icons, etc.)
+- **Example:** `<GridThemeParameters IconSize="18" />`
+- **Shadcn Equivalent:** N/A
+
+### InputHeight
+- **Type:** `int?`
+- **Unit:** Pixels
+- **Default:** Varies by density (Compact=28, Comfortable=32, Spacious=40)
+- **AG Grid CSS Variable:** `--ag-list-item-height`
+- **Description:** Height of input elements like filters and cell editors
+- **Example:** `<GridThemeParameters InputHeight="36" />`
+- **Shadcn Equivalent:** N/A
+
+### ToggleButtonWidth
+- **Type:** `int?`
+- **Unit:** Pixels
+- **Default:** N/A (AG Grid default)
+- **AG Grid CSS Variable:** `--ag-toggle-button-width`
+- **Description:** Width of toggle buttons
+- **Example:** `<GridThemeParameters ToggleButtonWidth="32" />`
+- **Shadcn Equivalent:** N/A
+
+### ToggleButtonHeight
+- **Type:** `int?`
+- **Unit:** Pixels
+- **Default:** N/A (AG Grid default)
+- **AG Grid CSS Variable:** `--ag-toggle-button-height`
+- **Description:** Height of toggle buttons
+- **Example:** `<GridThemeParameters ToggleButtonHeight="32" />`
+- **Shadcn Equivalent:** N/A
+
+## Color Parameters
+
+### AccentColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** `var(--primary)` for Shadcn theme
+- **AG Grid CSS Variable:** `--ag-accent-color`
+- **Description:** Primary accent color for active states, selections, and focus indicators
+- **Example:** `<GridThemeParameters AccentColor="#2563eb" />`
+- **Shadcn Equivalent:** `--primary`
+
+### BackgroundColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** `var(--background)` for Shadcn theme
+- **AG Grid CSS Variable:** `--ag-background-color`
+- **Description:** Background color for cells and grid body
+- **Example:** `<GridThemeParameters BackgroundColor="#ffffff" />`
+- **Shadcn Equivalent:** `--background`
+
+### ForegroundColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** `var(--foreground)` for Shadcn theme
+- **AG Grid CSS Variable:** `--ag-foreground-color`
+- **Description:** Default text color for grid content
+- **Example:** `<GridThemeParameters ForegroundColor="#000000" />`
+- **Shadcn Equivalent:** `--foreground`
+
+### BorderColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** `var(--border)` for Shadcn theme
+- **AG Grid CSS Variable:** `--ag-border-color`
+- **Description:** Color of borders and dividing lines
+- **Example:** `<GridThemeParameters BorderColor="#e5e7eb" />`
+- **Shadcn Equivalent:** `--border`
+
+### HeaderBackgroundColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** `var(--muted)` for Shadcn theme
+- **AG Grid CSS Variable:** `--ag-header-background-color`
+- **Description:** Background color for column headers
+- **Example:** `<GridThemeParameters HeaderBackgroundColor="#f9fafb" />`
+- **Shadcn Equivalent:** `--muted`
+
+### HeaderForegroundColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** `var(--foreground)` for Shadcn theme
+- **AG Grid CSS Variable:** `--ag-header-foreground-color`
+- **Description:** Text color for column headers
+- **Example:** `<GridThemeParameters HeaderForegroundColor="#000000" />`
+- **Shadcn Equivalent:** `--foreground`
+
+### RowHoverColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** `color-mix(in srgb, var(--accent) 10%, transparent)` for Shadcn theme
+- **AG Grid CSS Variable:** `--ag-row-hover-color`
+- **Description:** Background color when hovering over a row
+- **Example:** `<GridThemeParameters RowHoverColor="rgba(37, 99, 235, 0.1)" />`
+- **Shadcn Equivalent:** `--accent` with opacity
+
+### OddRowBackgroundColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** `color-mix(in srgb, var(--muted) 30%, transparent)` for Shadcn theme with Striped style
+- **AG Grid CSS Variable:** `--ag-odd-row-background-color`
+- **Description:** Background color for odd-numbered rows (used with Striped style)
+- **Example:** `<GridThemeParameters OddRowBackgroundColor="#f9fafb" />`
+- **Shadcn Equivalent:** `--muted` with opacity
+
+### SelectedRowBackgroundColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** `color-mix(in srgb, var(--primary) 10%, transparent)` for Shadcn theme
+- **AG Grid CSS Variable:** `--ag-selected-row-background-color`
+- **Description:** Background color for selected rows
+- **Example:** `<GridThemeParameters SelectedRowBackgroundColor="rgba(37, 99, 235, 0.1)" />`
+- **Shadcn Equivalent:** `--primary` with opacity
+
+### RangeSelectionBorderColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** N/A (AG Grid default)
+- **AG Grid CSS Variable:** `--ag-range-selection-border-color`
+- **Description:** Border color for range selections (multi-cell selections)
+- **Example:** `<GridThemeParameters RangeSelectionBorderColor="#2563eb" />`
+- **Shadcn Equivalent:** N/A
+
+### CellTextColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** N/A (AG Grid default, typically inherits ForegroundColor)
+- **AG Grid CSS Variable:** `--ag-data-color`
+- **Description:** Text color specifically for cell content
+- **Example:** `<GridThemeParameters CellTextColor="#1f2937" />`
+- **Shadcn Equivalent:** N/A
+
+### InvalidColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** `var(--destructive)` for Shadcn theme
+- **AG Grid CSS Variable:** `--ag-invalid-color`
+- **Description:** Color used to indicate validation errors
+- **Example:** `<GridThemeParameters InvalidColor="#dc2626" />`
+- **Shadcn Equivalent:** `--destructive`
+
+### ModalOverlayBackgroundColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** N/A (AG Grid default)
+- **AG Grid CSS Variable:** `--ag-modal-overlay-background-color`
+- **Description:** Background color for modal overlays
+- **Example:** `<GridThemeParameters ModalOverlayBackgroundColor="rgba(0, 0, 0, 0.5)" />`
+- **Shadcn Equivalent:** N/A
+
+### ChromeBackgroundColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** N/A (AG Grid default)
+- **AG Grid CSS Variable:** `--ag-chrome-background-color`
+- **Description:** Background color for UI chrome elements (panels, toolbars)
+- **Example:** `<GridThemeParameters ChromeBackgroundColor="#f9fafb" />`
+- **Shadcn Equivalent:** N/A
+
+### TooltipBackgroundColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** `var(--popover)` for Shadcn theme
+- **AG Grid CSS Variable:** `--ag-tooltip-background-color`
+- **Description:** Background color for tooltips
+- **Example:** `<GridThemeParameters TooltipBackgroundColor="#ffffff" />`
+- **Shadcn Equivalent:** `--popover`
+
+### TooltipTextColor
+- **Type:** `string?`
+- **Format:** CSS color (hex, rgb, hsl)
+- **Default:** `var(--popover-foreground)` for Shadcn theme
+- **AG Grid CSS Variable:** `--ag-tooltip-text-color`
+- **Description:** Text color for tooltips
+- **Example:** `<GridThemeParameters TooltipTextColor="#000000" />`
+- **Shadcn Equivalent:** `--popover-foreground`
+
+## Typography Parameters
+
+### FontFamily
+- **Type:** `string?`
+- **Format:** CSS font-family value
+- **Default:** `var(--font-sans)` for Shadcn theme
+- **AG Grid CSS Variable:** `--ag-font-family`
+- **Description:** Font family for all grid text
+- **Example:** `<GridThemeParameters FontFamily="Inter, system-ui, sans-serif" />`
+- **Shadcn Equivalent:** `--font-sans`
+
+### FontSize
+- **Type:** `int?`
+- **Unit:** Pixels
+- **Default:** Varies by density (Compact=12, Comfortable=14, Spacious=16)
+- **AG Grid CSS Variable:** `--ag-font-size`
+- **Description:** Base font size for grid content
+- **Example:** `<GridThemeParameters FontSize="14" />`
+- **Shadcn Equivalent:** N/A
+
+### HeaderFontSize
+- **Type:** `int?`
+- **Unit:** Pixels
+- **Default:** N/A (typically same as FontSize)
+- **AG Grid CSS Variable:** `--ag-header-column-resize-handle-height`
+- **Description:** Font size for column headers
+- **Example:** `<GridThemeParameters HeaderFontSize="16" />`
+- **Shadcn Equivalent:** N/A
+
+### HeaderFontWeight
+- **Type:** `object?` (accepts `int` or `string`)
+- **Format:** CSS font-weight value (100-900 or keywords)
+- **Default:** N/A (AG Grid default)
+- **AG Grid CSS Variable:** `--ag-header-font-weight`
+- **Description:** Font weight for column headers
+- **Example:** `<GridThemeParameters HeaderFontWeight="600" />` or `<GridThemeParameters HeaderFontWeight="bold" />`
+- **Shadcn Equivalent:** N/A
+
+## Borders & Effects Parameters
+
+### Borders
+- **Type:** `bool?`
+- **Default:** Varies by style (Default=true, Striped=true, Bordered=true, Minimal=false)
+- **AG Grid CSS Variable:** N/A (applies `.ag-no-borders` class when false)
+- **Description:** Whether to show borders between cells and rows
+- **Example:** `<GridThemeParameters Borders="false" />`
+- **Shadcn Equivalent:** N/A
+
+### BorderRadius
+- **Type:** `int?`
+- **Unit:** Pixels
+- **Default:** 4 for Shadcn theme
+- **AG Grid CSS Variable:** `--ag-border-radius`
+- **Description:** Border radius for UI elements
+- **Example:** `<GridThemeParameters BorderRadius="8" />`
+- **Shadcn Equivalent:** `--radius` (typically calc(var(--radius) - 2px))
+
+### WrapperBorder
+- **Type:** `bool?`
+- **Default:** Varies by style (Default=false, Striped=false, Bordered=true, Minimal=false)
+- **AG Grid CSS Variable:** N/A (applies `.ag-wrapper-border` class when true)
+- **Description:** Whether to show a border around the entire grid wrapper
+- **Example:** `<GridThemeParameters WrapperBorder="true" />`
+- **Shadcn Equivalent:** N/A
+
+### WrapperBorderRadius
+- **Type:** `int?`
+- **Unit:** Pixels
+- **Default:** N/A (AG Grid default)
+- **AG Grid CSS Variable:** `--ag-wrapper-border-radius`
+- **Description:** Border radius for the grid wrapper
+- **Example:** `<GridThemeParameters WrapperBorderRadius="12" />`
+- **Shadcn Equivalent:** N/A
+
+## Usage Examples
+
+### Basic Customization
+```razor
+<Grid TItem="Product" Items="@products">
+    <Columns>
+        <GridThemeParameters
+            AccentColor="#dc2626"
+            RowHeight="48"
+        />
+        <GridColumn Field="Name" Header="Product" />
+    </Columns>
+</Grid>
+```
+
+### Complete Typography Override
+```razor
+<Grid TItem="Product" Items="@products">
+    <Columns>
+        <GridThemeParameters
+            FontFamily="'Roboto', sans-serif"
+            FontSize="15"
+            HeaderFontSize="16"
+            HeaderFontWeight="700"
+        />
+        <GridColumn Field="Name" Header="Product" />
+    </Columns>
+</Grid>
+```
+
+### Full Color Scheme
+```razor
+<Grid TItem="Product" Items="@products">
+    <Columns>
+        <GridThemeParameters
+            AccentColor="#0ea5e9"
+            BackgroundColor="#ffffff"
+            ForegroundColor="#0f172a"
+            BorderColor="#e2e8f0"
+            HeaderBackgroundColor="#f8fafc"
+            RowHoverColor="#f1f5f9"
+            SelectedRowBackgroundColor="rgba(14, 165, 233, 0.1)"
+        />
+        <GridColumn Field="Name" Header="Product" />
+    </Columns>
+</Grid>
+```
+
+### Compact Dense Grid
+```razor
+<Grid TItem="Product" Items="@products">
+    <Columns>
+        <GridThemeParameters
+            Spacing="2"
+            RowHeight="24"
+            HeaderHeight="28"
+            FontSize="11"
+            IconSize="12"
+        />
+        <GridColumn Field="Name" Header="Product" />
+    </Columns>
+</Grid>
+```
