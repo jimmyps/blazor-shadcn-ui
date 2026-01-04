@@ -5,7 +5,7 @@
 
 
 import { createGrid as agCreateGrid } from 'https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/package/main.esm.mjs';
-import { themeAlpine, themeBalham, themeMaterial, themeQuartz } from 'https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/package/main.esm.mjs';
+import { themeAlpine, themeBalham, themeQuartz } from 'https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/package/main.esm.mjs';
 
 import { createShadcnTheme } from './theme-shadcn.js';
 
@@ -21,8 +21,6 @@ function getBaseTheme(themeName) {
             return themeAlpine;
         case 'Balham':
             return themeBalham;
-        case 'Material':
-            return themeMaterial;
         default:
             return themeQuartz;
     }

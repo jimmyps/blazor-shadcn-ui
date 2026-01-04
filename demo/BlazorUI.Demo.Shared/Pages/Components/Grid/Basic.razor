@@ -135,11 +135,11 @@
                 <Badge Variant="BadgeVariant.Outline">100% Height</Badge>
             </div>
             <p class="text-muted-foreground">
-                Grid that fills 100% of its parent container's height (600px container in this example).
+                Grid that fills 100% of its parent container's height (50% viewport height in this example).
             </p>
         </div>
 
-        <div class="rounded-lg border bg-card p-6" style="height: 600px;">
+        <div class="rounded-lg border bg-card p-6" style="height: 50vh;">
             <Grid Items="@allOrders" Height="100%" VirtualizationMode="GridVirtualizationMode.Auto">
                 <Columns>
                     <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />

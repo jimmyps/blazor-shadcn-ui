@@ -163,15 +163,8 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public EventCallback<IReadOnlyCollection<TItem>> SelectedItemsChanged { get; set; }
 
     private string ContainerCssClass => ClassNames.cn(
-        "grid-container w-full",
+        "grid-container w-full h-full",
         Class
-    );
-
-    private string GridCssClass => ClassNames.cn(
-        "grid-content",
-        GetThemeClass(),
-        GetStyleClass(),
-        GetDensityClass()
     );
 
     private string GetGridCssClass()
@@ -297,7 +290,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         {
             GridDensity.Compact => new Dictionary<string, object>
             {
-                { "spacing", 3 },
+                { "spacing", 4 },
                 { "rowHeight", 28 },
                 { "headerHeight", 32 },
                 { "fontSize", 12 },
@@ -306,7 +299,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             },
             GridDensity.Spacious => new Dictionary<string, object>
             {
-                { "spacing", 6 },
+                { "spacing", 12 },
                 { "rowHeight", 56 },
                 { "headerHeight", 64 },
                 { "fontSize", 16 },
@@ -315,7 +308,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             },
             GridDensity.Comfortable or _ => new Dictionary<string, object>
             {
-                { "spacing", 4 },
+                { "spacing", 8 },
                 { "rowHeight", 42 },
                 { "headerHeight", 48 },
                 { "fontSize", 14 },
@@ -331,22 +324,21 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         {
             GridStyle.Striped => new Dictionary<string, object>
             {
+                { "wrapperBorder", true },
                 { "oddRowBackgroundColor", "color-mix(in srgb, var(--muted) 30%, transparent)" },
             },
             GridStyle.Bordered => new Dictionary<string, object>
             {
-                { "borders", true },
                 { "wrapperBorder", true },
             },
             GridStyle.Minimal => new Dictionary<string, object>
             {
-                { "borders", false },
                 { "wrapperBorder", false },
+                { "borderWidth", 0 },
             },
             GridStyle.Default or _ => new Dictionary<string, object>
             {
-                { "borders", true },
-                { "wrapperBorder", false },
+                { "wrapperBorder", true },
             },
         };
     }
