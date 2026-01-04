@@ -3,6 +3,7 @@
  * Uses AG Grid ES modules with Theming API (no manual CSS loading needed)
  */
 
+
 import { createGrid as agCreateGrid } from 'https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/package/main.esm.mjs';
 import { themeAlpine, themeBalham, themeMaterial, themeQuartz } from 'https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/package/main.esm.mjs';
 
@@ -27,9 +28,6 @@ function getBaseTheme(themeName) {
     }
 }
 
-/**
- * Custom cell renderer for Blazor templates
- */
 class BlazorTemplateCellRenderer {
     init(params) {
         this.eGui = document.createElement('div');
@@ -101,11 +99,16 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
     try {
         console.log('[AG Grid] createGrid called');
         console.log('[AG Grid] elementOrRef type:', typeof elementOrRef);
-        console.log('[AG Grid] config.theme:', config.theme);
-        console.log('[AG Grid] config.themeParams:', config.themeParams);
+        console.log('[AG Grid] elementOrRef:', elementOrRef);
+        console.log('[AG Grid] elementOrRef constructor:', elementOrRef?.constructor?.name);
         
         // Handle Blazor ElementReference
+        // Blazor passes ElementReference as a plain object with __internalId
         let element = elementOrRef;
+        
+        // If it's a Blazor ElementReference, we need to find the element by ID
+        // But Blazor SHOULD pass the actual element when using ElementReference in JS interop
+        // If we're getting __internalId, something is wrong with how we're passing it
         
         if (!element || typeof element !== 'object') {
             throw new Error('[AG Grid] Invalid element reference - not an object');
@@ -134,36 +137,29 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
         
         console.log('[AG Grid] DOM element validated successfully');
         
-        // Create theme with parameters using AG Grid's native API
+        // Create theme with parameters
         let theme;
-        
-        // Prepare theme parameters by merging defaults with config
         let themeParams = config.themeParams || {};
         
         // For Shadcn theme, merge with dynamically read shadcn design tokens
         if (config.theme === 'Shadcn') {
             const shadcnDefaults = createShadcnTheme();
-            // Merge: shadcn defaults < config.themeParams (C# side takes precedence)
             themeParams = { ...shadcnDefaults, ...themeParams };
-            console.log('[AG Grid] Creating Shadcn theme with parameters:', themeParams);
             theme = themeQuartz.withParams(themeParams);
         } else {
-            // Use other AG Grid themes with parameters
             const baseTheme = getBaseTheme(config.theme);
             if (baseTheme && Object.keys(themeParams).length > 0) {
-                console.log(`[AG Grid] Creating ${config.theme} theme with parameters:`, themeParams);
                 theme = baseTheme.withParams(themeParams);
             } else {
-                console.log(`[AG Grid] Using ${config.theme} theme without parameters`);
                 theme = baseTheme;
             }
         }
         
-        // Build grid options with event handlers and theme
+        // Build grid options with event handlers that will receive the API
         const gridOptions = buildGridOptionsWithEvents(config, dotNetRef);
         gridOptions.theme = theme;
         
-        // Create AG Grid instance using the imported createGrid function
+        // Create AG Grid instance - returns the API directly
         const gridApi = agCreateGrid(element, gridOptions);
         console.log('[AG Grid] Grid instance created successfully');
         console.log('[AG Grid] Grid API:', gridApi);
@@ -217,105 +213,70 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         templateRenderer: BlazorTemplateCellRenderer
     };
     
-    // Map column definitions
-    const columnDefs = config.columns?.map(col => ({
-        field: col.field,
-        headerName: col.headerName,
-        width: col.width,
-        minWidth: col.minWidth,
-        maxWidth: col.maxWidth,
-        flex: col.flex,
-        resizable: col.resizable ?? true,
-        sortable: col.sortable ?? false,
-        filter: col.filter ?? false,
-        editable: col.editable ?? false,
-        hide: col.hide ?? false,
-        pinned: col.pinned,
-        cellRenderer: col.hasTemplate ? 'templateRenderer' : undefined,
-        cellRendererParams: col.hasTemplate ? {
-            templateId: col.templateId,
-            dotNetRef: dotNetRef
-        } : undefined,
-        valueGetter: col.valueGetter ? (params) => {
-            // For complex field paths like "Address.City"
-            const parts = col.field.split('.');
-            let value = params.data;
-            for (const part of parts) {
-                value = value?.[part];
-            }
-            return value;
-        } : undefined
-    })) || [];
+    // Enhance column definitions with dotNetRef for templates
+    const enhancedColumnDefs = config.columnDefs.map(col => {
+        console.log('[AG Grid] Column def:', col);
+        return {
+            ...col,
+            cellRendererParams: col.cellRenderer === 'templateRenderer' 
+                ? { ...col.cellRendererParams, dotNetRef }
+                : col.cellRendererParams
+        };
+    });
     
     const gridOptions = {
-        columnDefs,
+        columnDefs: enhancedColumnDefs,
         rowData: [],
-        components,
+        components: components,
         
         // Selection
-        rowSelection: config.selectionMode === 'None' ? undefined : 
-                     config.selectionMode === 'Single' ? 'single' : 'multiple',
+        rowSelection: config.rowSelection,
         
         // Pagination
-        pagination: config.pagingMode !== 'None',
-        paginationPageSize: config.pageSize || 50,
-        paginationPageSizeSelector: [10, 25, 50, 100],
+        pagination: config.pagination,
+        paginationPageSize: config.paginationPageSize,
+        paginationPageSizeSelector: config.pagination ? [10, 25, 50, 100] : false,
         
-        // Virtualization/Data model
-        rowModelType: config.virtualizationMode === 'ServerSide' ? 'serverSide' :
-                      config.virtualizationMode === 'Infinite' ? 'infinite' : 'clientSide',
-        
-        // Server-side datasource
-        ...(config.virtualizationMode === 'ServerSide' && {
-            serverSideDatasource: createServerSideDatasource(dotNetRef)
-        }),
-        
-        // Infinite scroll datasource
-        ...(config.virtualizationMode === 'Infinite' && {
-            datasource: createInfiniteDatasource(dotNetRef)
-        }),
-        
-        // Event handlers
-        onSelectionChanged: (event) => {
-            if (config.onSelectionChanged && dotNetRef) {
-                const selectedRows = event.api.getSelectedRows();
-                dotNetRef.invokeMethodAsync('OnSelectionChanged', selectedRows);
-            }
-        },
-        
-        onSortChanged: (event) => {
-            notifyStateChanged(event.api, dotNetRef);
-        },
-        
-        onFilterChanged: (event) => {
-            notifyStateChanged(event.api, dotNetRef);
-        },
-        
-        onColumnMoved: (event) => {
-            notifyStateChanged(event.api, dotNetRef);
-        },
-        
-        onColumnResized: (event) => {
-            if (event.finished) {
-                notifyStateChanged(event.api, dotNetRef);
-            }
-        },
-        
-        onColumnVisible: (event) => {
-            notifyStateChanged(event.api, dotNetRef);
-        },
-        
-        onColumnPinned: (event) => {
-            notifyStateChanged(event.api, dotNetRef);
-        },
+        // Row model
+        rowModelType: config.rowModelType,
         
         // Default column settings
         defaultColDef: {
-            resizable: true,
             sortable: true,
-            filter: false,
-        }
+            filter: true,
+            resizable: true,
+        },
+        
+        // Enable features
+        enableRangeSelection: false,
+        suppressRowClickSelection: false,
+        
+        // Event handlers - these receive events with the API attached
+        onSortChanged: (event) => notifyStateChanged(event.api, dotNetRef),
+        onFilterChanged: (event) => notifyStateChanged(event.api, dotNetRef),
+        onPaginationChanged: (event) => notifyStateChanged(event.api, dotNetRef),
+        onColumnMoved: (event) => notifyStateChanged(event.api, dotNetRef),
+        onColumnResized: (event) => notifyStateChanged(event.api, dotNetRef),
+        onColumnPinned: (event) => notifyStateChanged(event.api, dotNetRef),
+        onColumnVisible: (event) => notifyStateChanged(event.api, dotNetRef),
+        onSelectionChanged: (event) => {
+            const selectedRows = event.api.getSelectedRows();
+            dotNetRef.invokeMethodAsync('OnSelectionChanged', selectedRows)
+                .catch(err => console.error('[AG Grid] Selection callback failed:', err));
+        },
     };
+    
+    console.log('[AG Grid] Grid options built:', gridOptions);
+    
+    // Server-side datasource
+    if (config.rowModelType === 'serverSide') {
+        gridOptions.serverSideDatasource = createServerSideDatasource(dotNetRef);
+    }
+    
+    // Infinite scroll datasource
+    if (config.rowModelType === 'infinite') {
+        gridOptions.datasource = createInfiniteDatasource(dotNetRef);
+    }
     
     return gridOptions;
 }
@@ -326,16 +287,12 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
 function createServerSideDatasource(dotNetRef) {
     return {
         getRows: async (params) => {
+            const request = mapServerSideRequest(params.request);
+            
             try {
-                console.log('[AG Grid] Server-side getRows called');
-                console.log('[AG Grid] Request:', params.request);
-                
-                const request = mapServerSideRequest(params.request);
-                const response = await dotNetRef.invokeMethodAsync('OnDataRequest', request);
-                
-                console.log('[AG Grid] Server response:', response);
+                const response = await dotNetRef.invokeMethodAsync('OnDataRequested', request);
                 params.success({
-                    rowData: response.rows,
+                    rowData: response.items,
                     rowCount: response.totalCount
                 });
             } catch (error) {
@@ -352,25 +309,19 @@ function createServerSideDatasource(dotNetRef) {
 function createInfiniteDatasource(dotNetRef) {
     return {
         getRows: async (params) => {
+            const request = {
+                startIndex: params.startRow,
+                count: params.endRow - params.startRow,
+                sortDescriptors: mapSortModel(params.sortModel),
+                filterDescriptors: mapFilterModel(params.filterModel),
+                pageNumber: Math.floor(params.startRow / (params.endRow - params.startRow)) + 1,
+                pageSize: params.endRow - params.startRow,
+                customParameters: {}
+            };
+            
             try {
-                console.log('[AG Grid] Infinite scroll getRows called');
-                console.log('[AG Grid] Start:', params.startRow, 'End:', params.endRow);
-                
-                const request = {
-                    startRow: params.startRow,
-                    endRow: params.endRow,
-                    sortModel: mapSortModel(params.sortModel),
-                    filterModel: mapFilterModel(params.filterModel)
-                };
-                
-                const response = await dotNetRef.invokeMethodAsync('OnDataRequest', request);
-                
-                let lastRow = -1;
-                if (response.rows.length < (params.endRow - params.startRow)) {
-                    lastRow = params.startRow + response.rows.length;
-                }
-                
-                params.successCallback(response.rows, lastRow);
+                const response = await dotNetRef.invokeMethodAsync('OnDataRequested', request);
+                params.successCallback(response.items, response.totalCount);
             } catch (error) {
                 console.error('[AG Grid] Infinite scroll data request failed:', error);
                 params.failCallback();
@@ -380,36 +331,35 @@ function createInfiniteDatasource(dotNetRef) {
 }
 
 /**
- * Maps AG Grid server-side request to our format
+ * Maps AG Grid server-side request to GridDataRequest
  */
 function mapServerSideRequest(agRequest) {
     return {
-        startRow: agRequest.startRow,
-        endRow: agRequest.endRow,
-        sortModel: mapSortModel(agRequest.sortModel),
-        filterModel: mapFilterModel(agRequest.filterModel),
-        groupKeys: agRequest.groupKeys,
-        pivotCols: agRequest.pivotCols,
-        pivotMode: agRequest.pivotMode,
-        rowGroupCols: agRequest.rowGroupCols,
-        valueCols: agRequest.valueCols
+        startIndex: agRequest.startRow || 0,
+        count: (agRequest.endRow || 0) - (agRequest.startRow || 0),
+        sortDescriptors: mapSortModel(agRequest.sortModel || []),
+        filterDescriptors: mapFilterModel(agRequest.filterModel || {}),
+        pageNumber: Math.floor((agRequest.startRow || 0) / ((agRequest.endRow || 0) - (agRequest.startRow || 0))) + 1,
+        pageSize: (agRequest.endRow || 0) - (agRequest.startRow || 0),
+        customParameters: {}
     };
 }
 
 /**
- * Maps AG Grid sort model to our format
+ * Maps AG Grid sort model to GridSortDescriptor[]
  */
 function mapSortModel(sortModel) {
     if (!sortModel || sortModel.length === 0) return [];
     
-    return sortModel.map(sort => ({
+    return sortModel.map((sort, index) => ({
         field: sort.colId,
-        direction: sort.sort === 'asc' ? 'Ascending' : 'Descending'
+        direction: sort.sort === 'asc' ? 1 : 2, // GridSortDirection: None=0, Ascending=1, Descending=2
+        order: index
     }));
 }
 
 /**
- * Maps AG Grid filter model to our format
+ * Maps AG Grid filter model to GridFilterDescriptor[]
  */
 function mapFilterModel(filterModel) {
     if (!filterModel) return [];
@@ -417,139 +367,158 @@ function mapFilterModel(filterModel) {
     const filters = [];
     for (const [field, filter] of Object.entries(filterModel)) {
         filters.push({
-            field,
+            field: field,
             operator: mapFilterOperator(filter.type),
             value: filter.filter,
-            filterType: filter.filterType
+            caseSensitive: false
         });
     }
+    
     return filters;
 }
 
 /**
- * Maps AG Grid filter type to our operator enum
+ * Maps AG Grid filter type to GridFilterOperator enum
  */
 function mapFilterOperator(agType) {
-    switch (agType) {
-        case 'equals': return 'Equals';
-        case 'notEqual': return 'NotEquals';
-        case 'lessThan': return 'LessThan';
-        case 'lessThanOrEqual': return 'LessThanOrEqual';
-        case 'greaterThan': return 'GreaterThan';
-        case 'greaterThanOrEqual': return 'GreaterThanOrEqual';
-        case 'contains': return 'Contains';
-        case 'notContains': return 'NotContains';
-        case 'startsWith': return 'StartsWith';
-        case 'endsWith': return 'EndsWith';
-        case 'blank': return 'IsNull';
-        case 'notBlank': return 'IsNotNull';
-        default: return 'Equals';
-    }
-}
-
-/**
- * Notifies Blazor when grid state changes
- */
-function notifyStateChanged(api, dotNetRef) {
-    if (dotNetRef) {
-        const state = getGridState(api);
-        dotNetRef.invokeMethodAsync('OnStateChanged', state);
-    }
-}
-
-/**
- * Gets the current grid state
- */
-function getGridState(api) {
-    const state = {
-        sortModel: [],
-        filterModel: {},
-        columnState: []
+    const mapping = {
+        'equals': 0,            // Equals
+        'notEqual': 1,          // NotEquals
+        'contains': 2,          // Contains
+        'notContains': 3,       // NotContains
+        'startsWith': 4,        // StartsWith
+        'endsWith': 5,          // EndsWith
+        'lessThan': 6,          // LessThan
+        'lessThanOrEqual': 7,   // LessThanOrEqual
+        'greaterThan': 8,       // GreaterThan
+        'greaterThanOrEqual': 9,// GreaterThanOrEqual
+        'blank': 10,            // IsEmpty
+        'notBlank': 11          // IsNotEmpty
     };
     
-    // Get sort model
-    const sortModel = api.getColumnState().filter(col => col.sort);
-    state.sortModel = sortModel.map(col => ({
-        field: col.colId,
-        direction: col.sort === 'asc' ? 'Ascending' : 'Descending'
-    }));
-    
-    // Get filter model
-    const filterModel = api.getFilterModel();
-    if (filterModel) {
-        for (const [field, filter] of Object.entries(filterModel)) {
-            state.filterModel[field] = {
-                operator: mapFilterOperator(filter.type),
-                value: filter.filter
-            };
-        }
-    }
-    
-    // Get column state
-    state.columnState = api.getColumnState().map(col => ({
-        field: col.colId,
-        width: col.width,
-        hide: col.hide,
-        pinned: col.pinned,
-        sort: col.sort,
-        sortIndex: col.sortIndex
-    }));
-    
-    return state;
+    return mapping[agType] || 0; // Default to Equals
 }
 
 /**
- * Applies a saved state to the grid
+ * Notifies .NET of grid state changes
+ */
+function notifyStateChanged(api, dotNetRef) {
+    if (!api) return;
+    
+    try {
+        const state = getGridState(api);
+        dotNetRef.invokeMethodAsync('OnGridStateChanged', state)
+            .catch(err => console.error('[AG Grid] State change callback failed:', err));
+    } catch (error) {
+        console.error('[AG Grid] Failed to get grid state:', error);
+    }
+}
+
+/**
+ * Gets current grid state
+ */
+function getGridState(api) {
+    const columnState = api.getColumnState();
+    
+    const sortModel = columnState
+        .filter(col => col.sort)
+        .map((col, index) => ({
+            field: col.colId,
+            direction: col.sort === 'asc' ? 1 : 2, // Ascending=1, Descending=2
+            order: col.sortIndex || index
+        }));
+    
+    const filterModel = api.getFilterModel();
+    const filterDescriptors = mapFilterModel(filterModel);
+    
+    const paginationPageSize = api.paginationGetPageSize();
+    const paginationCurrentPage = api.paginationGetCurrentPage();
+    
+    const selectedRows = api.getSelectedRows();
+    
+    return {
+        sortDescriptors: sortModel,
+        filterDescriptors: filterDescriptors,
+        pageNumber: paginationCurrentPage + 1,
+        pageSize: paginationPageSize,
+        columnStates: columnState.map(col => ({
+            field: col.colId,
+            visible: !col.hide,
+            width: col.width ? `${col.width}px` : null,
+            pinned: col.pinned === 'left' ? 1 : col.pinned === 'right' ? 2 : 0, // None=0, Left=1, Right=2
+            order: col.sortIndex || 0
+        })),
+        selectedRowIds: selectedRows.map((row, index) => row.id || index)
+    };
+}
+
+/**
+ * Applies state to the grid
  */
 function applyGridState(api, state) {
-    if (!state) return;
+    if (!api || !state) return;
     
-    // Apply column state
-    if (state.columnState) {
-        api.applyColumnState({
-            state: state.columnState.map(col => ({
-                colId: col.field,
-                width: col.width,
-                hide: col.hide,
-                pinned: col.pinned,
-                sort: col.sort,
-                sortIndex: col.sortIndex
-            })),
-            applyOrder: true
-        });
-    }
-    
-    // Apply filter model
-    if (state.filterModel) {
-        const agFilterModel = {};
-        for (const [field, filter] of Object.entries(state.filterModel)) {
-            agFilterModel[field] = {
-                type: reverseMapFilterOperator(filter.operator),
-                filter: filter.value,
-                filterType: 'text'
-            };
+    try {
+        // Apply column states (visibility, width, pinning, order)
+        if (state.columnStates && state.columnStates.length > 0) {
+            const columnState = state.columnStates.map(cs => ({
+                colId: cs.field,
+                hide: !cs.visible,
+                width: cs.width ? parseInt(cs.width) : undefined,
+                pinned: cs.pinned === 1 ? 'left' : cs.pinned === 2 ? 'right' : null
+            }));
+            api.applyColumnState({ state: columnState });
         }
-        api.setFilterModel(agFilterModel);
+        
+        // Apply sorting
+        if (state.sortDescriptors && state.sortDescriptors.length > 0) {
+            const sortModel = state.sortDescriptors.map(sort => ({
+                colId: sort.field,
+                sort: sort.direction === 1 ? 'asc' : 'desc',
+                sortIndex: sort.order
+            }));
+            api.applyColumnState({ state: sortModel });
+        }
+        
+        // Apply filtering
+        if (state.filterDescriptors && state.filterDescriptors.length > 0) {
+            const filterModel = {};
+            state.filterDescriptors.forEach(filter => {
+                filterModel[filter.field] = {
+                    type: reverseMapFilterOperator(filter.operator),
+                    filter: filter.value
+                };
+            });
+            api.setFilterModel(filterModel);
+        }
+        
+        // Apply pagination
+        if (state.pageNumber) {
+            api.paginationGoToPage(state.pageNumber - 1);
+        }
+    } catch (error) {
+        console.error('[AG Grid] Failed to apply state:', error);
     }
 }
 
 /**
- * Reverse maps our operator enum to AG Grid filter type
+ * Reverse maps GridFilterOperator to AG Grid filter type
  */
 function reverseMapFilterOperator(enumValue) {
-    switch (enumValue) {
-        case 'Equals': return 'equals';
-        case 'NotEquals': return 'notEqual';
-        case 'LessThan': return 'lessThan';
-        case 'LessThanOrEqual': return 'lessThanOrEqual';
-        case 'GreaterThan': return 'greaterThan';
-        case 'GreaterThanOrEqual': return 'greaterThanOrEqual';
-        case 'Contains': return 'contains';
-        case 'NotContains': return 'notContains';
-        case 'StartsWith': return 'startsWith';
-        case 'EndsWith': return 'endsWith';
-        case 'IsNull': return 'blank';
-        case 'IsNotNull': return 'notBlank';
-        default: return 'equals';
-    }
+    const mapping = {
+        0: 'equals',
+        1: 'notEqual',
+        2: 'contains',
+        3: 'notContains',
+        4: 'startsWith',
+        5: 'endsWith',
+        6: 'lessThan',
+        7: 'lessThanOrEqual',
+        8: 'greaterThan',
+        9: 'greaterThanOrEqual',
+        10: 'blank',
+        11: 'notBlank'
+    };
+    
+    return mapping[enumValue] || 'equals';
 }
