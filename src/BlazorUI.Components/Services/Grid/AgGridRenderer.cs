@@ -91,42 +91,118 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         
         if (_gridInstance != null)
         {
-            // Convert to list to ensure it's serializable
+            // Convert to list and enhance with formatted values
             var dataList = data?.ToList() ?? new List<TItem>();
             Console.WriteLine($"[AgGridRenderer] Setting row data: {dataList.Count} rows");
             
-            if (dataList.Any())
+            // Enhance data with formatted properties based on column definitions
+            var enhancedData = EnhanceDataWithFormatting(dataList);
+            
+            if (enhancedData.Any())
             {
                 // Log first item to verify data structure
-                var firstItem = dataList.First();
-                Console.WriteLine($"[AgGridRenderer] First item type: {firstItem?.GetType().Name}");
-                
-                // Serialize to JSON to see what JS will receive
-                var jsonOptions = new JsonSerializerOptions 
-                { 
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase 
-                };
-                var json = JsonSerializer.Serialize(firstItem, jsonOptions);
-                Console.WriteLine($"[AgGridRenderer] First item as JSON: {json}");
-                
-                // Also check column definitions
-                Console.WriteLine($"[AgGridRenderer] Column count: {_currentDefinition?.Columns?.Count ?? 0}");
-                if (_currentDefinition?.Columns != null)
-                {
-                    foreach (var col in _currentDefinition.Columns.Take(5))
-                    {
-                        Console.WriteLine($"[AgGridRenderer] Column: Id={col.Id}, Field={col.Field}, Header={col.Header}");
-                    }
-                }
+                var firstItem = enhancedData.First();
+                // Console.WriteLine($"[AgGridRenderer] First item keys: {string.Join(", ", ((IDictionary<string, object?>)firstItem).Keys)}");
             }
             
-            await _gridInstance.InvokeVoidAsync("setRowData", dataList);
+            await _gridInstance.InvokeVoidAsync("setRowData", enhancedData);
             Console.WriteLine("[AgGridRenderer] Row data set successfully");
         }
         else
         {
             Console.WriteLine("[AgGridRenderer] Grid instance is null, cannot set data");
         }
+    }
+
+    /// <summary>
+    /// Enhances data objects with formatted string properties for columns with DataFormatString.
+    /// Adds {field}_formatted properties alongside original values.
+    /// </summary>
+    private List<object> EnhanceDataWithFormatting(List<TItem> data)
+    {
+        // If no columns have DataFormatString, return original data
+        var columnsWithFormatting = _currentDefinition?.Columns
+            .Where(c => !string.IsNullOrEmpty(c.DataFormatString) && !string.IsNullOrEmpty(c.Field))
+            .ToList();
+        
+        if (columnsWithFormatting == null || !columnsWithFormatting.Any())
+        {
+            return data.Cast<object>().ToList();
+        }
+
+        var enhancedData = new List<object>();
+        var itemType = typeof(TItem);
+        var properties = itemType.GetProperties();
+        
+        foreach (var item in data)
+        {
+            var dict = new Dictionary<string, object?>();
+            
+            // Copy all properties from the original item
+            foreach (var prop in properties)
+            {
+                var value = prop.GetValue(item);
+                var fieldName = ToCamelCase(prop.Name);
+                dict[fieldName] = value;
+            }
+            
+            // Add formatted properties for columns with DataFormatString
+            foreach (var column in columnsWithFormatting)
+            {
+                var fieldName = ToCamelCase(column.Field!);
+                var formattedFieldName = $"{fieldName}_formatted";
+                
+                // Get the property by name
+                var property = properties.FirstOrDefault(p => 
+                    string.Equals(p.Name, column.Field, StringComparison.OrdinalIgnoreCase));
+                
+                if (property != null)
+                {
+                    try
+                    {
+                        var rawValue = property.GetValue(item);
+                        if (rawValue != null)
+                        {
+                            // Use .NET formatting to create the formatted string
+                            var formattedValue = FormatValue(rawValue, column.DataFormatString!);
+                            dict[formattedFieldName] = formattedValue;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[AgGridRenderer] Failed to format field '{column.Field}' with format '{column.DataFormatString}': {ex.Message}");
+                    }
+                }
+            }
+            
+            enhancedData.Add(dict);
+        }
+        
+        return enhancedData;
+    }
+
+    /// <summary>
+    /// Formats a value using .NET format strings.
+    /// </summary>
+    private string FormatValue(object value, string formatString)
+    {
+        // Remove composite format wrapper if present (e.g., "{0:C}" -> "C")
+        var cleanFormat = formatString.Replace("{0:", "").TrimEnd('}');
+        
+        // Handle IFormattable types (numbers, dates, etc.)
+        if (value is IFormattable formattable)
+        {
+            return formattable.ToString(cleanFormat, System.Globalization.CultureInfo.CurrentCulture);
+        }
+        
+        // Fallback to string.Format for composite formats
+        if (formatString.Contains("{0"))
+        {
+            return string.Format(formatString, value);
+        }
+        
+        // Last resort: ToString
+        return value.ToString() ?? string.Empty;
     }
 
     /// <inheritdoc/>
@@ -388,6 +464,8 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             // Header template handling
             headerComponent = col.HeaderTemplate != null && _templateRenderer != null ? "headerTemplateRenderer" : null,
             headerComponentParams = col.HeaderTemplate != null && _templateRenderer != null ? new { templateId = col.Id } : null,
+            // Value formatting - use simple formatter that reads {field}_formatted property
+            valueFormatter = !string.IsNullOrEmpty(col.DataFormatString) && col.CellTemplate == null ? "formattedValueFormatter" : null,
             // ValueSelector mapped to valueGetter
             valueGetter = col.ValueSelector != null ? "valueGetter" : null
         }).ToArray();

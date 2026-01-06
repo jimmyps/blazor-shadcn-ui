@@ -106,6 +106,12 @@ public class GridColumnDefinition<TItem>
     public string? HeaderClass { get; set; }
 
     /// <summary>
+    /// Gets or sets the format string for displaying cell values.
+    /// Supports standard .NET format strings (e.g., "C", "N2", "d", "P2").
+    /// </summary>
+    public string? DataFormatString { get; set; }
+
+    /// <summary>
     /// Gets or sets additional metadata for the renderer.
     /// </summary>
     public Dictionary<string, object?> Metadata { get; set; } = new();

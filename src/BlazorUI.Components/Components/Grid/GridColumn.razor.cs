@@ -124,6 +124,23 @@ public partial class GridColumn<TItem> : ComponentBase
     [Parameter]
     public string? HeaderClass { get; set; }
 
+    /// <summary>
+    /// Gets or sets the format string for displaying cell values.
+    /// Supports standard .NET format strings (e.g., "C" for currency, "N2" for numbers with 2 decimals, "d" for dates).
+    /// Can also use composite format strings (e.g., "{0:C}", "{0:N2}").
+    /// This is a simpler alternative to CellTemplate for basic formatting scenarios.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// &lt;GridColumn Field="Price" Header="Price" DataFormatString="C" /&gt;  // $1,234.56
+    /// &lt;GridColumn Field="Quantity" Header="Quantity" DataFormatString="N0" /&gt;  // 1,234
+    /// &lt;GridColumn Field="Date" Header="Date" DataFormatString="d" /&gt;  // 12/31/2024
+    /// &lt;GridColumn Field="Percentage" Header="%" DataFormatString="P2" /&gt;  // 45.67%
+    /// </code>
+    /// </example>
+    [Parameter]
+    public string? DataFormatString { get; set; }
+
     [CascadingParameter]
     internal Grid<TItem>? ParentGrid { get; set; }
 
@@ -168,7 +185,8 @@ public partial class GridColumn<TItem> : ComponentBase
             CellEditTemplate = CellEditTemplate,
             ValueSelector = ValueSelector,
             CellClass = CellClass,
-            HeaderClass = HeaderClass
+            HeaderClass = HeaderClass,
+            DataFormatString = DataFormatString
         };
     }
 }

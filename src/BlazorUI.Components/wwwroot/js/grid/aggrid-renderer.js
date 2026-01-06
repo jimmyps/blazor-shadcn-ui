@@ -321,10 +321,25 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
     console.log('[AG Grid] buildGridOptionsWithEvents called');
     console.log('[AG Grid] config:', config);
     
-    // Register custom cell renderer
+    // Register custom cell renderer and value formatter
     const components = {
         templateRenderer: BlazorTemplateCellRenderer,
         headerTemplateRenderer: BlazorTemplateHeaderRenderer
+    };
+    
+    // Add value formatter function for DataFormatString support
+    const valueFormatters = {
+        // Simple formatter that uses pre-formatted values from C#
+        // Looks for {field}_formatted property, falls back to raw value
+        formattedValueFormatter: (params) => {
+            const field = params.colDef.field;
+            if (!field) return params.value;
+            
+            const formattedField = `${field}_formatted`;
+            
+            // If formatted value exists, use it; otherwise use raw value
+            return params.data[formattedField] ?? params.value;
+        }
     };
     
     // Enhance column definitions with dotNetRef for templates
@@ -343,6 +358,11 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
                 ...col.headerComponentParams,
                 dotNetRef
             };
+        }
+        
+        // Add value formatter function if specified
+        if (col.valueFormatter === 'formattedValueFormatter') {
+            enhanced.valueFormatter = valueFormatters.formattedValueFormatter;
         }
         
         return enhanced;
