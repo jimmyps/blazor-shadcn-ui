@@ -20,6 +20,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
     private DotNetObjectReference<AgGridRenderer<TItem>>? _dotNetRef;
     private GridDefinition<TItem>? _currentDefinition;
     private readonly Dictionary<string, RenderFragment<TItem>> _templates = new();
+    private readonly Dictionary<string, RenderFragment> _headerTemplates = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AgGridRenderer{TItem}"/> class.
@@ -44,15 +45,24 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         _dotNetRef = DotNetObjectReference.Create(this);
         _currentDefinition = definition;
 
-        // Store templates for later rendering
+        // Store cell templates for later rendering
         _templates.Clear();
+        _headerTemplates.Clear();
+        Console.WriteLine($"[AgGridRenderer] Storing templates for {definition.Columns.Count} columns:");
         foreach (var column in definition.Columns)
         {
             if (column.CellTemplate != null)
             {
                 _templates[column.Id] = column.CellTemplate;
+                Console.WriteLine($"[AgGridRenderer]   - Stored CELL template for column ID: '{column.Id}'");
+            }
+            if (column.HeaderTemplate != null)
+            {
+                _headerTemplates[column.Id] = column.HeaderTemplate;
+                Console.WriteLine($"[AgGridRenderer]   - Stored HEADER template for column ID: '{column.Id}'");
             }
         }
+        Console.WriteLine($"[AgGridRenderer] Total templates stored: {_templates.Count} cell, {_headerTemplates.Count} header");
 
         var config = BuildAgGridConfig(definition);
         Console.WriteLine($"[AgGridRenderer] Config built with {definition.Columns.Count} columns");
@@ -90,7 +100,24 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
                 // Log first item to verify data structure
                 var firstItem = dataList.First();
                 Console.WriteLine($"[AgGridRenderer] First item type: {firstItem?.GetType().Name}");
-                Console.WriteLine($"[AgGridRenderer] First item JSON: {System.Text.Json.JsonSerializer.Serialize(firstItem)}");
+                
+                // Serialize to JSON to see what JS will receive
+                var jsonOptions = new JsonSerializerOptions 
+                { 
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase 
+                };
+                var json = JsonSerializer.Serialize(firstItem, jsonOptions);
+                Console.WriteLine($"[AgGridRenderer] First item as JSON: {json}");
+                
+                // Also check column definitions
+                Console.WriteLine($"[AgGridRenderer] Column count: {_currentDefinition?.Columns?.Count ?? 0}");
+                if (_currentDefinition?.Columns != null)
+                {
+                    foreach (var col in _currentDefinition.Columns.Take(5))
+                    {
+                        Console.WriteLine($"[AgGridRenderer] Column: Id={col.Id}, Field={col.Field}, Header={col.Header}");
+                    }
+                }
             }
             
             await _gridInstance.InvokeVoidAsync("setRowData", dataList);
@@ -191,32 +218,147 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         // Check if template renderer is available
         if (_templateRenderer == null)
         {
+            Console.WriteLine($"[AgGridRenderer] Template renderer is null for column '{templateId}'");
             return null; // Fall back to field-based rendering
         }
 
         // Check if template exists for this column
         if (!_templates.TryGetValue(templateId, out var template))
         {
+            Console.WriteLine($"[AgGridRenderer] No template found for column '{templateId}'");
+            Console.WriteLine($"[AgGridRenderer] Available template IDs: {string.Join(", ", _templates.Keys.Select(k => $"'{k}'"))}");
             return null; // Fall back to field-based rendering
         }
 
         try
         {
+            // Use camelCase naming policy to match Blazor's JS interop serialization
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true
+            };
+            
+            var rawJson = data.GetRawText();
+            Console.WriteLine($"[AgGridRenderer] Deserializing data for template '{templateId}': {rawJson}");
+            
             // Deserialize JSON to typed item
-            var item = JsonSerializer.Deserialize<TItem>(data.GetRawText());
+            var item = JsonSerializer.Deserialize<TItem>(rawJson, jsonOptions);
             if (item == null)
             {
+                Console.WriteLine($"[AgGridRenderer] Deserialization returned null for column '{templateId}'");
                 return null;
             }
             
+            Console.WriteLine($"[AgGridRenderer] Successfully deserialized item of type {item.GetType().Name}");
+            
             // Render template to HTML string
             var html = await _templateRenderer.RenderToStringAsync(template, item);
+            Console.WriteLine($"[AgGridRenderer] Template rendered successfully for column '{templateId}', HTML length: {html?.Length ?? 0}");
             return html;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[AgGridRenderer] Template rendering failed for column '{templateId}': {ex.Message}");
+            Console.WriteLine($"[AgGridRenderer] Stack trace: {ex.StackTrace}");
             return null; // Fall back to field-based rendering
+        }
+    }
+
+    /// <summary>
+    /// Called by JavaScript to render a header template.
+    /// Returns the HTML string for the header template.
+    /// </summary>
+    /// <param name="templateId">The column ID containing the template.</param>
+    /// <returns>HTML string representing the rendered header template.</returns>
+    [JSInvokable]
+    public async Task<string?> RenderHeaderTemplate(string templateId)
+    {
+        // Check if template renderer is available
+        if (_templateRenderer == null)
+        {
+            return null; // Fall back to headerName
+        }
+
+        // Check if template exists for this column
+        if (!_headerTemplates.TryGetValue(templateId, out var template))
+        {
+            return null; // Fall back to headerName
+        }
+
+        try
+        {
+            // Render header template to HTML string (no context needed)
+            var html = await _templateRenderer.RenderToStringAsync(template);
+            return html;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AgGridRenderer] Header template rendering failed for column '{templateId}': {ex.Message}");
+            return null; // Fall back to headerName
+        }
+    }
+
+    /// <summary>
+    /// Called by JavaScript when a cell action is triggered (via data-action attribute).
+    /// </summary>
+    /// <param name="action">The action name (method name to invoke).</param>
+    /// <param name="data">The row data as JSON element.</param>
+    [JSInvokable]
+    public async Task HandleCellAction(string action, JsonElement data)
+    {
+        Console.WriteLine($"[AgGridRenderer] HandleCellAction called: action='{action}'");
+        
+        if (_currentDefinition?.Metadata == null)
+        {
+            Console.WriteLine("[AgGridRenderer] No metadata available for action handling");
+            return;
+        }
+
+        // Check if action handler is registered in metadata
+        var actionKey = $"CellAction_{action}";
+        if (!_currentDefinition.Metadata.TryGetValue(actionKey, out var handler))
+        {
+            Console.WriteLine($"[AgGridRenderer] No handler registered for action '{action}'");
+            return;
+        }
+
+        try
+        {
+            // Deserialize row data
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true
+            };
+            
+            var item = JsonSerializer.Deserialize<TItem>(data.GetRawText(), jsonOptions);
+            if (item == null)
+            {
+                Console.WriteLine($"[AgGridRenderer] Failed to deserialize data for action '{action}'");
+                return;
+            }
+
+            Console.WriteLine($"[AgGridRenderer] Invoking action handler for '{action}'");
+            
+            // Invoke the action handler
+            if (handler is Func<TItem, Task> asyncFunc)
+            {
+                await asyncFunc(item);
+            }
+            else if (handler is Action<TItem> syncAction)
+            {
+                syncAction(item);
+            }
+            else
+            {
+                Console.WriteLine($"[AgGridRenderer] Handler for '{action}' is not a valid type");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AgGridRenderer] Action handler failed for '{action}': {ex.Message}");
+            Console.WriteLine($"[AgGridRenderer] Stack trace: {ex.StackTrace}");
         }
     }
 
@@ -225,12 +367,14 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         // Convert GridDefinition to AG Grid column defs and options
         var columnDefs = definition.Columns.Select(col => new
         {
-            // Convert field name to camelCase to match JSON serialization
-            // C# property "Id" becomes JSON "id"
-            field = ToCamelCase(col.Field),
+            // For template-only columns (no Field), use colId instead of field
+            // This allows AG Grid to render the column without binding to data
+            colId = col.Id,
+            // Only set field if it exists - template-only columns don't need a field
+            field = !string.IsNullOrEmpty(col.Field) ? ToCamelCase(col.Field) : (string?)null,
             headerName = col.Header,
-            sortable = col.Sortable,
-            filter = col.Filterable,
+            sortable = col.Sortable && !string.IsNullOrEmpty(col.Field), // Can't sort without a field
+            filter = col.Filterable && !string.IsNullOrEmpty(col.Field), // Can't filter without a field
             width = ParseWidth(col.Width),
             minWidth = ParseWidth(col.MinWidth),
             maxWidth = ParseWidth(col.MaxWidth),
@@ -241,6 +385,9 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             // Template handling - will use HtmlRenderer when available
             cellRenderer = col.CellTemplate != null && _templateRenderer != null ? "templateRenderer" : null,
             cellRendererParams = col.CellTemplate != null && _templateRenderer != null ? new { templateId = col.Id } : null,
+            // Header template handling
+            headerComponent = col.HeaderTemplate != null && _templateRenderer != null ? "headerTemplateRenderer" : null,
+            headerComponentParams = col.HeaderTemplate != null && _templateRenderer != null ? new { templateId = col.Id } : null,
             // ValueSelector mapped to valueGetter
             valueGetter = col.ValueSelector != null ? "valueGetter" : null
         }).ToArray();
@@ -248,7 +395,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         Console.WriteLine($"[AgGridRenderer] Column defs built:");
         foreach (var col in columnDefs)
         {
-            Console.WriteLine($"  - field: '{col.field}', headerName: '{col.headerName}'");
+            Console.WriteLine($"  - colId: '{col.colId}', field: '{col.field ?? "(none)"}', headerName: '{col.headerName}', cellRenderer: '{col.cellRenderer ?? "(none)"}'");
         }
 
         return new
@@ -274,7 +421,16 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         if (string.IsNullOrEmpty(str) || str.Length == 0)
             return str;
 
-        // Convert first character to lowercase
+        // Don't modify if already camelCase or all lowercase
+        if (char.IsLower(str[0]))
+            return str;
+
+        // Convert PascalCase to camelCase
+        // Handle single character
+        if (str.Length == 1)
+            return char.ToLowerInvariant(str[0]).ToString();
+
+        // Standard conversion: first char to lowercase
         return char.ToLowerInvariant(str[0]) + str.Substring(1);
     }
 

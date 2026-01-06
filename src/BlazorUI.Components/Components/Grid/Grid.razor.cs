@@ -2,6 +2,7 @@ using BlazorUI.Components.Services.Grid;
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace BlazorUI.Components.Grid;
 
@@ -18,10 +19,18 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     private IGridRenderer<TItem>? _gridRenderer;
     private bool _initialized = false;
     private bool _columnsRegistered = false;
+    private bool _actionsRegistered = false;
     private GridThemeParameters? _themeParameters;
 
     [Inject]
     private IServiceProvider ServiceProvider { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the host component that contains grid action methods.
+    /// Set this to 'this' to enable auto-discovery of methods marked with [GridAction].
+    /// </summary>
+    [Parameter]
+    public object? ActionHost { get; set; }
 
     /// <summary>
     /// Gets or sets the collection of items to display in the grid.
@@ -231,6 +240,14 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             Console.WriteLine($"[Grid] Initializing with {_columns.Count} columns");
             BuildGridDefinition();
             
+            // Auto-discover and register grid actions AFTER BuildGridDefinition
+            // This ensures _gridDefinition.Metadata is initialized
+            if (!_actionsRegistered && ActionHost != null)
+            {
+                AutoRegisterActions();
+                _actionsRegistered = true;
+            }
+            
             // Small delay to ensure DOM element is fully ready
             await Task.Delay(100);
             
@@ -258,6 +275,95 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     internal void RegisterThemeParameters(GridThemeParameters parameters)
     {
         _themeParameters = parameters;
+    }
+    
+    /// <summary>
+    /// Registers a cell action handler that can be invoked from templates via data-action attributes.
+    /// </summary>
+    /// <param name="actionName">The name of the action (used in data-action attribute).</param>
+    /// <param name="handler">The handler to invoke when the action is triggered.</param>
+    public void RegisterCellAction(string actionName, Action<TItem> handler)
+    {
+        var actionKey = $"CellAction_{actionName}";
+        _gridDefinition.Metadata ??= new Dictionary<string, object?>();
+        _gridDefinition.Metadata[actionKey] = handler;
+    }
+    
+    /// <summary>
+    /// Registers an async cell action handler that can be invoked from templates via data-action attributes.
+    /// </summary>
+    /// <param name="actionName">The name of the action (used in data-action attribute).</param>
+    /// <param name="handler">The async handler to invoke when the action is triggered.</param>
+    public void RegisterCellAction(string actionName, Func<TItem, Task> handler)
+    {
+        var actionKey = $"CellAction_{actionName}";
+        _gridDefinition.Metadata ??= new Dictionary<string, object?>();
+        _gridDefinition.Metadata[actionKey] = handler;
+    }
+    
+    /// <summary>
+    /// Auto-discovers and registers methods marked with [GridAction] attribute from the ActionHost.
+    /// </summary>
+    private void AutoRegisterActions()
+    {
+        if (ActionHost == null)
+        {
+            Console.WriteLine("[Grid] No ActionHost provided - skipping auto-registration");
+            return;
+        }
+        
+        var hostType = ActionHost.GetType();
+        Console.WriteLine($"[Grid] Auto-discovering actions in {hostType.Name}");
+        
+        // Find all methods with [GridAction] attribute
+        var methods = hostType.GetMethods(BindingFlags.Instance | 
+                                         BindingFlags.Public | 
+                                         BindingFlags.NonPublic)
+            .Where(m => m.GetCustomAttribute<Attributes.GridActionAttribute>() != null);
+        
+        int registeredCount = 0;
+        foreach (var method in methods)
+        {
+            var attr = method.GetCustomAttribute<Attributes.GridActionAttribute>()!;
+            var actionName = attr.Name ?? method.Name;
+            
+            // Validate method signature
+            var parameters = method.GetParameters();
+            if (parameters.Length != 1 || !parameters[0].ParameterType.IsAssignableFrom(typeof(TItem)))
+            {
+                Console.WriteLine($"[Grid] Skipping {method.Name} - invalid signature (must accept single TItem parameter)");
+                continue;
+            }
+            
+            try
+            {
+                // Create delegate based on return type
+                if (method.ReturnType == typeof(Task))
+                {
+                    var handler = (Func<TItem, Task>)Delegate.CreateDelegate(typeof(Func<TItem, Task>), ActionHost, method);
+                    RegisterCellAction(actionName, handler);
+                    registeredCount++;
+                    Console.WriteLine($"[Grid] Registered async action '{actionName}' -> {method.Name}");
+                }
+                else if (method.ReturnType == typeof(void))
+                {
+                    var handler = (Action<TItem>)Delegate.CreateDelegate(typeof(Action<TItem>), ActionHost, method);
+                    RegisterCellAction(actionName, handler);
+                    registeredCount++;
+                    Console.WriteLine($"[Grid] Registered sync action '{actionName}' -> {method.Name}");
+                }
+                else
+                {
+                    Console.WriteLine($"[Grid] Skipping {method.Name} - unsupported return type (must be void or Task)");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Grid] Failed to register action '{actionName}': {ex.Message}");
+            }
+        }
+        
+        Console.WriteLine($"[Grid] Auto-registered {registeredCount} actions");
     }
 
     private Dictionary<string, object> GetThemeDefaults(GridTheme theme)

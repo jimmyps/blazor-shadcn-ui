@@ -15,17 +15,15 @@
             </p>
         </div>
 
-        <div class="rounded-lg border bg-card p-6">
-            <Grid Items="@orders">
-                <Columns>
-                    <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
-                    <GridColumn Field="Customer" Header="Customer" Sortable="true" />
-                    <GridColumn Field="Status" Header="Status" Sortable="true" Width="130px" />
-                    <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
-                    <GridColumn Field="OrderDate" Header="Order Date" Sortable="true" Width="140px" />
-                </Columns>
-            </Grid>
-        </div>
+        <Grid Items="@orders">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" Sortable="true" />
+                <GridColumn Field="Status" Header="Status" Sortable="true" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
+                <GridColumn Field="OrderDate" Header="Order Date" Sortable="true" Width="140px" />
+            </Columns>
+        </Grid>
 
         <details class="rounded-lg border">
             <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
@@ -58,16 +56,14 @@
             <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearSort">Clear Sort</Button>
         </div>
 
-        <div class="rounded-lg border bg-card p-6">
-            <Grid Items="@orders" InitialState="@sortState" OnStateChanged="HandleSortStateChanged">
-                <Columns>
-                    <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
-                    <GridColumn Field="Customer" Header="Customer" Sortable="true" />
-                    <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
-                    <GridColumn Field="OrderDate" Header="Order Date" Sortable="true" Width="140px" />
-                </Columns>
-            </Grid>
-        </div>
+        <Grid Items="@orders" InitialState="@sortState" OnStateChanged="HandleSortStateChanged">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" Sortable="true" />
+                <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
+                <GridColumn Field="OrderDate" Header="Order Date" Sortable="true" Width="140px" />
+            </Columns>
+        </Grid>
 
         @if (sortState.SortDescriptors.Any())
         {
@@ -107,16 +103,14 @@
             </p>
         </div>
 
-        <div class="rounded-lg border bg-card p-6">
-            <Grid Items="@orders">
-                <Columns>
-                    <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
-                    <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
-                    <GridColumn Field="Status" Header="Status" Sortable="true" Filterable="true" Width="130px" />
-                    <GridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
-                </Columns>
-            </Grid>
-        </div>
+        <Grid Items="@orders">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
+                <GridColumn Field="Status" Header="Status" Sortable="true" Filterable="true" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
+            </Columns>
+        </Grid>
 
         <details class="rounded-lg border">
             <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
@@ -158,16 +152,14 @@
             <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearFilters">Clear Filters</Button>
         </div>
 
-        <div class="rounded-lg border bg-card p-6">
-            <Grid Items="@orders" InitialState="@filterState" OnStateChanged="HandleFilterStateChanged">
-                <Columns>
-                    <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                    <GridColumn Field="Customer" Header="Customer" />
-                    <GridColumn Field="Status" Header="Status" Width="130px" />
-                    <GridColumn Field="Amount" Header="Amount" Width="120px" />
-                </Columns>
-            </Grid>
-        </div>
+        <Grid Items="@orders" InitialState="@filterState" OnStateChanged="HandleFilterStateChanged">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" />
+            </Columns>
+        </Grid>
 
         @if (filterState.FilterDescriptors.Any())
         {

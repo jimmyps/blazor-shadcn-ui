@@ -15,16 +15,14 @@
             </p>
         </div>
 
-        <div class="rounded-lg border bg-card p-6">
-            <Grid Items="@orders" SelectionMode="GridSelectionMode.Single" OnSelectionChanged="@((IReadOnlyCollection<Order> selection) => HandleSingleSelection(selection))">
-                <Columns>
-                    <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                    <GridColumn Field="Customer" Header="Customer" />
-                    <GridColumn Field="Status" Header="Status" Width="130px" />
-                    <GridColumn Field="Amount" Header="Amount" Width="120px" />
-                </Columns>
-            </Grid>
-        </div>
+        <Grid Items="@orders" SelectionMode="GridSelectionMode.Single" OnSelectionChanged="@((IReadOnlyCollection<Order> selection) => HandleSingleSelection(selection))">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" />
+            </Columns>
+        </Grid>
 
         @if (selectedOrder != null)
         {
@@ -57,16 +55,14 @@
             </p>
         </div>
 
-        <div class="rounded-lg border bg-card p-6">
-            <Grid Items="@orders" SelectionMode="GridSelectionMode.Multiple" OnSelectionChanged="@((IReadOnlyCollection<Order> selection) => HandleMultipleSelection(selection))">
-                <Columns>
-                    <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                    <GridColumn Field="Customer" Header="Customer" />
-                    <GridColumn Field="Status" Header="Status" Width="130px" />
-                    <GridColumn Field="Amount" Header="Amount" Width="120px" />
-                </Columns>
-            </Grid>
-        </div>
+        <Grid Items="@orders" SelectionMode="GridSelectionMode.Multiple" OnSelectionChanged="@((IReadOnlyCollection<Order> selection) => HandleMultipleSelection(selection))">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" />
+            </Columns>
+        </Grid>
 
         <div class="flex items-center gap-2 mt-4">
             <span class="text-sm text-muted-foreground">
@@ -108,19 +104,17 @@
             <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearSelection">Clear Selection</Button>
         </div>
 
-        <div class="rounded-lg border bg-card p-6">
-            <Grid Items="@orders" 
-                  SelectionMode="GridSelectionMode.Multiple" 
-                  SelectedItems="@controlledSelection"
-                  OnSelectionChanged="@((IReadOnlyCollection<Order> selection) => HandleControlledSelection(selection))">
-                <Columns>
-                    <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                    <GridColumn Field="Customer" Header="Customer" />
-                    <GridColumn Field="Amount" Header="Amount" Width="120px" />
-                    <GridColumn Field="Status" Header="Status" Width="130px" />
-                </Columns>
-            </Grid>
-        </div>
+        <Grid Items="@orders" 
+              SelectionMode="GridSelectionMode.Multiple" 
+              SelectedItems="@controlledSelection"
+              OnSelectionChanged="@((IReadOnlyCollection<Order> selection) => HandleControlledSelection(selection))">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+            </Columns>
+        </Grid>
 
         <div class="mt-4 text-sm text-muted-foreground">
             @controlledSelection.Count row(s) selected programmatically

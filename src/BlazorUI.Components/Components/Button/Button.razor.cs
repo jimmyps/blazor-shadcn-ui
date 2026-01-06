@@ -139,6 +139,12 @@ public partial class Button : ComponentBase
     public IconPosition IconPosition { get; set; } = IconPosition.Start;
 
     /// <summary>
+    /// Gets or sets additional HTML attributes to apply to the button element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
     /// Gets the computed CSS classes for the button element.
     /// </summary>
     /// <remarks>

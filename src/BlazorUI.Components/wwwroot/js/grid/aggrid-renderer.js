@@ -39,12 +39,26 @@ class BlazorTemplateCellRenderer {
         // Request template rendering from Blazor
         const templateId = params.colDef.cellRendererParams?.templateId;
         if (templateId && params.dotNetRef) {
-            this.renderTemplate(templateId, params.data);
+            // Get row data - params.data should always be available for all columns
+            const rowData = params.data || params.node?.data;
+            console.log('[AG Grid] Cell renderer init for template:', templateId);
+            console.log('[AG Grid] Has params.data:', !!params.data);
+            console.log('[AG Grid] Has params.node.data:', !!params.node?.data);
+            console.log('[AG Grid] Row data:', rowData);
+            
+            if (rowData) {
+                this.renderTemplate(templateId, rowData);
+            } else {
+                console.error('[AG Grid] No row data available for template:', templateId);
+                this.eGui.textContent = '[No data]';
+            }
         }
     }
     
     async renderTemplate(templateId, data) {
         try {
+            console.log('[AG Grid] Rendering template:', templateId, 'with data:', data);
+            
             // Request HTML from Blazor
             const html = await this.params.dotNetRef.invokeMethodAsync(
                 'RenderCellTemplate', 
@@ -53,18 +67,58 @@ class BlazorTemplateCellRenderer {
             );
             
             if (html) {
+                console.log('[AG Grid] Template rendered successfully, HTML length:', html.length);
                 this.eGui.innerHTML = html;
+                
+                // Add event delegation for data-action attributes
+                this.setupActionHandlers(data);
             } else {
+                console.warn('[AG Grid] Template renderer returned empty HTML for:', templateId);
                 // Fallback to field value
                 const field = this.params.colDef.field;
                 this.eGui.textContent = field ? this.params.data[field] : '';
             }
         } catch (error) {
             console.error('[AG Grid] Template rendering failed:', error);
+            console.error('[AG Grid] Error details:', error.message, error.stack);
             // Fallback to field value
             const field = this.params.colDef.field;
-            this.eGui.textContent = field ? this.params.data[field] : '';
+            this.eGui.textContent = field ? this.params.data[field] : '[Error]';
         }
+    }
+    
+    setupActionHandlers(rowData) {
+        // Remove existing listeners to prevent duplicates
+        if (this.actionClickHandler) {
+            this.eGui.removeEventListener('click', this.actionClickHandler);
+        }
+        
+        // Create new click handler
+        this.actionClickHandler = async (e) => {
+            // Find closest element with data-action attribute
+            const actionElement = e.target.closest('[data-action]');
+            if (!actionElement) return;
+            
+            // Prevent default behavior and stop propagation
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const action = actionElement.dataset.action;
+            console.log('[AG Grid] Cell action triggered:', action);
+            
+            try {
+                await this.params.dotNetRef.invokeMethodAsync(
+                    'HandleCellAction',
+                    action,
+                    rowData
+                );
+            } catch (error) {
+                console.error('[AG Grid] Failed to invoke cell action:', error);
+            }
+        };
+        
+        // Add the click listener
+        this.eGui.addEventListener('click', this.actionClickHandler);
     }
     
     getGui() {
@@ -76,14 +130,75 @@ class BlazorTemplateCellRenderer {
         const templateId = params.colDef.cellRendererParams?.templateId;
         if (templateId && params.dotNetRef) {
             this.params = params;
-            this.renderTemplate(templateId, params.data);
-            return true;
+            const rowData = params.data || params.node?.data;
+            if (rowData) {
+                this.renderTemplate(templateId, rowData);
+                return true;
+            }
         }
         return false;
     }
     
     destroy() {
-        // Cleanup
+        // Cleanup event listeners
+        if (this.actionClickHandler) {
+            this.eGui.removeEventListener('click', this.actionClickHandler);
+            this.actionClickHandler = null;
+        }
+    }
+}
+
+/**
+ * Custom header renderer for Blazor templates
+ */
+class BlazorTemplateHeaderRenderer {
+    init(params) {
+        this.eGui = document.createElement('div');
+        this.eGui.className = 'blazor-header-template';
+        this.params = params;
+        
+        // Request template rendering from Blazor
+        const templateId = params.templateId;
+        if (templateId && params.dotNetRef) {
+            this.renderTemplate(templateId);
+        }
+    }
+    
+    async renderTemplate(templateId) {
+        try {
+            console.log('[AG Grid] Rendering header template:', templateId);
+            
+            // Request HTML from Blazor
+            const html = await this.params.dotNetRef.invokeMethodAsync(
+                'RenderHeaderTemplate', 
+                templateId
+            );
+            
+            if (html) {
+                console.log('[AG Grid] Header template rendered successfully');
+                this.eGui.innerHTML = html;
+            } else {
+                console.warn('[AG Grid] Header template renderer returned empty HTML for:', templateId);
+                // Fallback to headerName
+                this.eGui.textContent = this.params.displayName || '';
+            }
+        } catch (error) {
+            console.error('[AG Grid] Header template rendering failed:', error);
+            // Fallback to headerName
+            this.eGui.textContent = this.params.displayName || '[Error]';
+        }
+    }
+    
+    getGui() {
+        return this.eGui;
+    }
+    
+    refresh(params) {
+        return false; // Header doesn't need refresh
+    }
+    
+    destroy() {
+        // Cleanup if needed
     }
 }
 
@@ -208,18 +323,29 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
     
     // Register custom cell renderer
     const components = {
-        templateRenderer: BlazorTemplateCellRenderer
+        templateRenderer: BlazorTemplateCellRenderer,
+        headerTemplateRenderer: BlazorTemplateHeaderRenderer
     };
     
     // Enhance column definitions with dotNetRef for templates
     const enhancedColumnDefs = config.columnDefs.map(col => {
         console.log('[AG Grid] Column def:', col);
-        return {
+        const enhanced = {
             ...col,
             cellRendererParams: col.cellRenderer === 'templateRenderer' 
                 ? { ...col.cellRendererParams, dotNetRef }
                 : col.cellRendererParams
         };
+        
+        // Also enhance header component params with dotNetRef
+        if (col.headerComponent === 'headerTemplateRenderer') {
+            enhanced.headerComponentParams = {
+                ...col.headerComponentParams,
+                dotNetRef
+            };
+        }
+        
+        return enhanced;
     });
     
     const gridOptions = {

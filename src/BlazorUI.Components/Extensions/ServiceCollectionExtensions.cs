@@ -15,12 +15,14 @@ public static class ServiceCollectionExtensions
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddBlazorUIComponents(this IServiceCollection services)
     {
-        // Register generic grid renderer (AG Grid implementation)
-        // Use open generic registration so DI can resolve IGridRenderer<TItem> for any TItem
-        services.AddScoped(typeof(IGridRenderer<>), typeof(AgGridRenderer<>));
+        // Register template renderer for Grid cell templates
+        // This enables rendering of Blazor components (like Badge) inside AG Grid cells
+        services.AddScoped<ITemplateRenderer, TemplateRenderer>();
         
-        // Note: ITemplateRenderer is optional and can be registered by the application
-        // if cell template rendering is needed
+        // Register generic grid renderer as TRANSIENT
+        // Each Grid<TItem> component gets its own renderer instance with its own template dictionary
+        // This prevents template conflicts when multiple grids are on the same page
+        services.AddTransient(typeof(IGridRenderer<>), typeof(AgGridRenderer<>));
 
         return services;
     }

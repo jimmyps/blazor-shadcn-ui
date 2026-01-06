@@ -26,17 +26,15 @@
             }
         </div>
 
-        <div class="rounded-lg border bg-card p-6">
-            <Grid Items="@orders" InitialState="@gridState" OnStateChanged="HandleStateChanged">
-                <Columns>
-                    <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
-                    <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
-                    <GridColumn Field="Status" Header="Status" Sortable="true" Filterable="true" Width="130px" />
-                    <GridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
-                    <GridColumn Field="OrderDate" Header="Order Date" Sortable="true" Filterable="true" Width="140px" />
-                </Columns>
-            </Grid>
-        </div>
+        <Grid Items="@orders" InitialState="@gridState" OnStateChanged="HandleStateChanged">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
+                <GridColumn Field="Status" Header="Status" Sortable="true" Filterable="true" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
+                <GridColumn Field="OrderDate" Header="Order Date" Sortable="true" Filterable="true" Width="140px" />
+            </Columns>
+        </Grid>
 
         <div class="text-sm text-muted-foreground">
             Try sorting, filtering, or resizing columns, then click "Save State". Refresh the page to see state restored.
@@ -95,15 +93,13 @@ private async Task SaveState()
             </label>
         </div>
 
-        <div class="rounded-lg border bg-card p-6">
-            <Grid Items="@orders" InitialState="@exportState" OnStateChanged="HandleExportStateChanged">
-                <Columns>
-                    <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
-                    <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
-                    <GridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
-                </Columns>
-            </Grid>
-        </div>
+        <Grid Items="@orders" InitialState="@exportState" OnStateChanged="HandleExportStateChanged">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
+                <GridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
+            </Columns>
+        </Grid>
 
         <details class="mt-4 rounded-lg border">
             <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">

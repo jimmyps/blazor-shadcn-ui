@@ -13,18 +13,16 @@
             </p>
         </div>
 
-        <div class="rounded-lg border bg-card p-6">
-            <Grid Items="@orders.Take(15).ToList()">
-                <Columns>
-                    <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                    <GridColumn Field="Customer" Header="Customer" MinWidth="150px" />
-                    <GridColumn Field="Status" Header="Status" Width="120px" />
-                    <GridColumn Field="Amount" Header="Amount" Width="120px" />
-                    <GridColumn Field="OrderDate" Header="Order Date" MinWidth="150px" />
-                    <GridColumn Field="ShipTo" Header="Ship To" MinWidth="150px" />
-                </Columns>
-            </Grid>
-        </div>
+        <Grid Items="@orders.Take(15).ToList()">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" MinWidth="150px" />
+                <GridColumn Field="Status" Header="Status" Width="120px" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" />
+                <GridColumn Field="OrderDate" Header="Order Date" MinWidth="150px" />
+                <GridColumn Field="ShipTo" Header="Ship To" MinWidth="150px" />
+            </Columns>
+        </Grid>
 
         <div class="text-sm text-muted-foreground">
             Resize your browser window to see columns with MinWidth adapt proportionally while fixed-width columns stay constant.
@@ -59,20 +57,18 @@
         <div class="grid gap-6 md:grid-cols-2">
             <div class="space-y-2">
                 <h3 class="font-medium">Default Theme</h3>
-                <div class="rounded-lg border bg-card p-4">
-                    <Grid Items="@orders.Take(5).ToList()" VisualStyle="GridStyle.Bordered" Density="GridDensity.Compact">
-                        <Columns>
-                            <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="80px" />
-                            <GridColumn Field="Customer" Header="Customer" Sortable="true" />
-                            <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="100px" />
-                        </Columns>
-                    </Grid>
-                </div>
+                <Grid Items="@orders.Take(5).ToList()" VisualStyle="GridStyle.Bordered" Density="GridDensity.Compact">
+                    <Columns>
+                        <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="80px" />
+                        <GridColumn Field="Customer" Header="Customer" Sortable="true" />
+                        <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="100px" />
+                    </Columns>
+                </Grid>
             </div>
 
             <div class="space-y-2">
                 <h3 class="font-medium">Custom Theme (Purple Accent)</h3>
-                <div class="rounded-lg border bg-card p-4" style="--grid-border-color: hsl(280 60% 50% / 0.2); --grid-header-bg: hsl(280 60% 95%); --grid-row-hover-bg: hsl(280 60% 98%);">
+                <div style="--grid-border-color: hsl(280 60% 50% / 0.2); --grid-header-bg: hsl(280 60% 95%); --grid-row-hover-bg: hsl(280 60% 98%);">
                     <Grid Items="@orders.Take(5).ToList()" VisualStyle="GridStyle.Bordered" Density="GridDensity.Compact">
                         <Columns>
                             <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="80px" />
@@ -85,7 +81,7 @@
 
             <div class="space-y-2">
                 <h3 class="font-medium">Custom Theme (Blue Accent)</h3>
-                <div class="rounded-lg border bg-card p-4" style="--grid-border-color: hsl(210 100% 50% / 0.2); --grid-header-bg: hsl(210 100% 95%); --grid-row-hover-bg: hsl(210 100% 98%);">
+                <div style="--grid-border-color: hsl(210 100% 50% / 0.2); --grid-header-bg: hsl(210 100% 95%); --grid-row-hover-bg: hsl(210 100% 98%);">
                     <Grid Items="@orders.Take(5).ToList()" VisualStyle="GridStyle.Bordered" Density="GridDensity.Compact">
                         <Columns>
                             <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="80px" />
@@ -98,7 +94,7 @@
 
             <div class="space-y-2">
                 <h3 class="font-medium">Custom Theme (Green Accent)</h3>
-                <div class="rounded-lg border bg-card p-4" style="--grid-border-color: hsl(142 76% 36% / 0.2); --grid-header-bg: hsl(142 76% 95%); --grid-row-hover-bg: hsl(142 76% 98%);">
+                <div style="--grid-border-color: hsl(142 76% 36% / 0.2); --grid-header-bg: hsl(142 76% 95%); --grid-row-hover-bg: hsl(142 76% 98%);">
                     <Grid Items="@orders.Take(5).ToList()" VisualStyle="GridStyle.Bordered" Density="GridDensity.Compact">
                         <Columns>
                             <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="80px" />
