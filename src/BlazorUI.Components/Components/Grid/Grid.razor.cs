@@ -180,10 +180,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     {
         // Combine AG Grid theme with our custom style modifiers
         return ClassNames.cn(
-            "grid-content",
-            GetThemeClass(),  // AG Grid's base theme (Alpine, Balham, etc.)
-            GetStyleClass(),  // Our style modifiers (Striped, Bordered, etc.)
-            GetDensityClass() // Our density modifiers
+            "grid-content"
         );
     }
 
@@ -378,8 +375,8 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
                 { "borderColor", "var(--border)" },
                 { "headerBackgroundColor", "var(--muted)" },
                 { "headerForegroundColor", "var(--foreground)" },
-                { "rowHoverColor", "color-mix(in srgb, var(--accent) 10%, transparent)" },
-                { "selectedRowBackgroundColor", "color-mix(in srgb, var(--primary) 10%, transparent)" },
+                { "rowHoverColor", "color-mix(in srgb, var(--accent) 50%, transparent)" },
+                { "selectedRowBackgroundColor", "color-mix(in srgb, var(--accent) 70%, transparent)" },
                 { "invalidColor", "var(--destructive)" },
                 { "fontFamily", "var(--font-sans)" },
                 { "borderRadius", 4 },
@@ -501,40 +498,6 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             await _gridRenderer.InitializeAsync(_gridContainer, _gridDefinition);
             await _gridRenderer.UpdateDataAsync(Items);
         }
-    }
-
-    private string GetThemeClass()
-    {
-        return Theme switch
-        {
-            GridTheme.Shadcn => "ag-theme-quartz", // Shadcn extends Quartz theme
-            GridTheme.Alpine => "ag-theme-alpine",
-            GridTheme.Balham => "ag-theme-balham",
-            GridTheme.Material => "ag-theme-material",
-            GridTheme.Quartz => "ag-theme-quartz",
-            _ => "ag-theme-quartz"
-        };
-    }
-
-    private string GetStyleClass()
-    {
-        return VisualStyle switch
-        {
-            GridStyle.Striped => "grid-striped",
-            GridStyle.Bordered => "grid-bordered",
-            GridStyle.Minimal => "grid-minimal",
-            _ => "grid-default"
-        };
-    }
-
-    private string GetDensityClass()
-    {
-        return Density switch
-        {
-            GridDensity.Compact => "grid-compact",
-            GridDensity.Spacious => "grid-spacious",
-            _ => "grid-comfortable"
-        };
     }
 
     private string GetGridContainerStyle()

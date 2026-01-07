@@ -153,9 +153,9 @@ public partial class GridThemeParameters : ComponentBase
 
     /// <summary>
     /// Gets or sets the background color for selected rows.
-    /// Default for Shadcn theme: color-mix(in srgb, var(--primary) 10%, transparent)
+    /// Default for Shadcn theme: color-mix(in srgb, var(--primary) 20%, transparent)
     /// </summary>
-    /// <example>"rgba(37, 99, 235, 0.1)" or "color-mix(in srgb, var(--primary) 10%, transparent)"</example>
+    /// <example>"rgba(37, 99, 235, 0.2)" or "color-mix(in srgb, var(--primary) 20%, transparent)"</example>
     [Parameter]
     public string? SelectedRowBackgroundColor { get; set; }
 

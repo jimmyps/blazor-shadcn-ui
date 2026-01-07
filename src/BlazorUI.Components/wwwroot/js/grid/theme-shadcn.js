@@ -27,24 +27,6 @@ export function createShadcnTheme(customParams = {}) {
   };
   
   const defaultParams = {
-    // ===== COLORS (Map to shadcn tokens) =====
-    accentColor: getCssVar('--primary', '#2563eb'),
-    backgroundColor: getCssVar('--background', '#ffffff'),
-    foregroundColor: getCssVar('--foreground', '#000000'),
-    borderColor: getCssVar('--border', '#e5e7eb'),
-    headerBackgroundColor: getCssVar('--muted', '#f9fafb'),
-    headerForegroundColor: getCssVar('--foreground', '#000000'),
-    // invalidColor: getCssVar('--destructive', '#dc2626'),
-    // tooltipBackgroundColor: getCssVar('--popover', '#ffffff'),
-    // tooltipTextColor: getCssVar('--popover-foreground', '#000000'),
-    
-    // ===== TYPOGRAPHY =====
-    fontFamily: 'var(--font-sans)',
-    
-    // ===== BORDERS =====
-    borderRadius: 4, // Will be overridden by calc(var(--radius) - 2px) via CSS if needed
-    // borders: true,
-    
     // Note: Spacing, rowHeight, headerHeight, fontSize are set by density presets
     // and should not have hardcoded defaults here
   };
