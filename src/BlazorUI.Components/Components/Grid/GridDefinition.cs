@@ -50,6 +50,14 @@ public class GridDefinition<TItem>
     public int PageSize { get; set; } = 25;
 
     /// <summary>
+    /// Gets or sets the property name to use as the unique row identifier.
+    /// This is critical for row selection persistence across data updates.
+    /// Common values: "Id" (C# convention), "id" (JavaScript convention), "_id" (MongoDB).
+    /// If not specified, defaults to "Id".
+    /// </summary>
+    public string IdField { get; set; } = "Id";
+
+    /// <summary>
     /// Gets or sets the initial state of the grid.
     /// </summary>
     public GridState? InitialState { get; set; }
@@ -68,6 +76,12 @@ public class GridDefinition<TItem>
     /// Gets or sets the callback invoked when the selection changes.
     /// </summary>
     public EventCallback<IReadOnlyCollection<TItem>> OnSelectionChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback for two-way binding of selected items.
+    /// This enables @bind-SelectedItems support.
+    /// </summary>
+    public EventCallback<IReadOnlyCollection<TItem>> SelectedItemsChanged { get; set; }
 
     /// <summary>
     /// Gets or sets the CSS class to apply to the grid container.

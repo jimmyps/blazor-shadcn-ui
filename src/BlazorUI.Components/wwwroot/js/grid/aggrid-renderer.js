@@ -293,8 +293,26 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
                 console.log('[AG Grid] rowData set successfully');
             },
             
+            applyTransaction: (transaction) => {
+                console.log('[AG Grid] applyTransaction called');
+                console.log('[AG Grid] Transaction:', {
+                    add: transaction.add?.length || 0,
+                    remove: transaction.remove?.length || 0,
+                    update: transaction.update?.length || 0
+                });
+                
+                // AG Grid's applyTransaction expects { add, remove, update }
+                const result = gridApi.applyTransaction(transaction);
+                
+                console.log('[AG Grid] Transaction result:', {
+                    added: result.add?.length || 0,
+                    removed: result.remove?.length || 0,
+                    updated: result.update?.length || 0
+                });
+            },
+            
             applyState: (state) => {
-                applyGridState(gridApi, state);
+                applyGridState(gridApi, state, gridOptions);
             },
             
             getState: () => {
@@ -320,6 +338,9 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
 function buildGridOptionsWithEvents(config, dotNetRef) {
     console.log('[AG Grid] buildGridOptionsWithEvents called');
     console.log('[AG Grid] config:', config);
+    
+    // Flag to prevent selection event during programmatic sync
+    let isSyncingSelection = false;
     
     // Register custom cell renderer and value formatter
     const components = {
@@ -368,13 +389,65 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         return enhanced;
     });
     
+    // ✅ AG Grid v32.2+ Migration: rowSelection as object instead of string
+    // Convert legacy string rowSelection to new object format
+    let rowSelectionConfig = config.rowSelection;
+    if (typeof config.rowSelection === 'string') {
+        // Map legacy string values to new object format
+        // "single" → { mode: 'singleRow' }
+        // "multiple" → { mode: 'multiRow' }
+        rowSelectionConfig = {
+            mode: config.rowSelection === 'multiple' ? 'multiRow' : 'singleRow',
+            enableClickSelection: true  // ✅ Replaces deprecated suppressRowClickSelection: false
+        };
+    }
+    
+    // ✅ AG Grid v32.2+: Provide getRowId for stable row identification
+    // This is CRITICAL for row selection persistence across data updates
+    // Developer specifies the ID field via config.idField (e.g., "Id", "ProductId", "OrderId")
+    const idField = config.idField || 'Id'; // Default to 'Id' if not specified
+    
+    const getRowIdFunc = (params) => {
+        if (!params.data) {
+            // Fallback to AG Grid's internal node ID if data is not available
+            return params.node?.id || `row-${params.node?.rowIndex ?? 0}`;
+        }
+        
+        // Try to get the ID from the specified field
+        const idValue = params.data[idField];
+        
+        if (idValue !== undefined && idValue !== null) {
+            // Convert to string to ensure consistent ID type
+            return String(idValue);
+        }
+        
+        // Fallback chain if specified field doesn't exist
+        // Try common conventions: Id, id, _id
+        const fallbackId = params.data.Id 
+            || params.data.id 
+            || params.data._id 
+            || params.node?.id;
+            
+        if (fallbackId !== undefined && fallbackId !== null) {
+            console.warn(`[AG Grid] IdField '${idField}' not found on row data, using fallback: ${fallbackId}`);
+            return String(fallbackId);
+        }
+        
+        // Last resort: use row index (not recommended for production)
+        console.error(`[AG Grid] No ID field found on row data. Specify config.idField or ensure data has 'Id' property.`);
+        return `row-${params.node?.rowIndex ?? 0}`;
+    };
+    
     const gridOptions = {
         columnDefs: enhancedColumnDefs,
         rowData: [],
         components: components,
         
-        // Selection
-        rowSelection: config.rowSelection,
+        // ✅ AG Grid v32.2+: Use object-based rowSelection
+        rowSelection: rowSelectionConfig,
+        
+        // ✅ AG Grid v32.2+: Stable row IDs for selection persistence
+        getRowId: getRowIdFunc,
         
         // Pagination
         pagination: config.pagination,
@@ -391,9 +464,12 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
             resizable: true,
         },
         
-        // Enable features
-        enableRangeSelection: false,
-        suppressRowClickSelection: false,
+        // ✅ AG Grid v32.2+: Removed deprecated enableRangeSelection
+        // Cell/range selection is now controlled via cellSelection property
+        // Only add cellSelection if explicitly needed (we don't need it for basic functionality)
+        
+        // ✅ AG Grid v32.2+: Removed deprecated suppressRowClickSelection
+        // Now controlled via rowSelection.enableClickSelection (set above)
         
         // Event handlers - these receive events with the API attached
         onSortChanged: (event) => notifyStateChanged(event.api, dotNetRef),
@@ -404,13 +480,24 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         onColumnPinned: (event) => notifyStateChanged(event.api, dotNetRef),
         onColumnVisible: (event) => notifyStateChanged(event.api, dotNetRef),
         onSelectionChanged: (event) => {
+            // Skip event if we're currently syncing selection from parent
+            if (isSyncingSelection) {
+                console.log('[AG Grid] Skipping onSelectionChanged - currently syncing from parent');
+                return;
+            }
+            
             const selectedRows = event.api.getSelectedRows();
             dotNetRef.invokeMethodAsync('OnSelectionChanged', selectedRows)
                 .catch(err => console.error('[AG Grid] Selection callback failed:', err));
         },
+        
+        // Store the sync flag in grid options so applyGridState can access it
+        __isSyncingSelection: () => isSyncingSelection,
+        __setIsSyncingSelection: (value) => { isSyncingSelection = value; }
     };
     
     console.log('[AG Grid] Grid options built:', gridOptions);
+    console.log('[AG Grid] ID field configured:', idField);
     
     // Server-side datasource
     if (config.rowModelType === 'serverSide') {
@@ -580,6 +667,15 @@ function getGridState(api) {
     
     const selectedRows = api.getSelectedRows();
     
+    // ✅ AG Grid v32.2+: Get selected row IDs using getRowId
+    // AG Grid's getSelectedRows() returns the data objects with their IDs already resolved
+    // We just need to extract them using the same logic as getRowId
+    const selectedRowIds = selectedRows.map(row => {
+        // Try to extract the ID that was used by getRowId
+        // The grid should have already validated these IDs exist
+        return String(row.Id || row.id || row._id || 'unknown');
+    });
+    
     return {
         sortDescriptors: sortModel,
         filterDescriptors: filterDescriptors,
@@ -592,14 +688,14 @@ function getGridState(api) {
             pinned: col.pinned === 'left' ? 1 : col.pinned === 'right' ? 2 : 0, // None=0, Left=1, Right=2
             order: col.sortIndex || 0
         })),
-        selectedRowIds: selectedRows.map((row, index) => row.id || index)
+        selectedRowIds: selectedRowIds
     };
 }
 
 /**
  * Applies state to the grid
  */
-function applyGridState(api, state) {
+function applyGridState(api, state, gridOptions) {
     if (!api || !state) return;
     
     try {
@@ -639,6 +735,51 @@ function applyGridState(api, state) {
         // Apply pagination
         if (state.pageNumber) {
             api.paginationGoToPage(state.pageNumber - 1);
+        }
+        
+        // ✅ AG Grid v32.2+: Apply row selection using row IDs
+        // CRITICAL: Set sync flag to prevent onSelectionChanged from firing during programmatic sync
+        if (state.selectedRowIds !== undefined && state.selectedRowIds !== null) {
+            const setIsSyncingSelection = gridOptions?.__setIsSyncingSelection;
+            
+            // Set flag before applying selection
+            if (setIsSyncingSelection) {
+                setIsSyncingSelection(true);
+                console.log('[AG Grid] Setting isSyncingSelection = true');
+            }
+            
+            try {
+                // Clear current selection first
+                api.deselectAll();
+                
+                if (state.selectedRowIds.length > 0) {
+                    // Convert to Set for O(1) lookup performance
+                    const selectedRowIds = new Set(state.selectedRowIds.map(id => String(id)));
+                    
+                    console.log('[AG Grid] Selecting rows with IDs:', Array.from(selectedRowIds));
+                    
+                    // Iterate through all rows and select matching ones
+                    // AG Grid's getRowId will be used internally to match row IDs
+                    let selectedCount = 0;
+                    api.forEachNode((node) => {
+                        if (node.data && node.id && selectedRowIds.has(String(node.id))) {
+                            node.setSelected(true);
+                            selectedCount++;
+                        }
+                    });
+                    
+                    console.log('[AG Grid] Selected', selectedCount, 'rows');
+                }
+            } finally {
+                // Always clear the flag after selection is applied
+                // Use setTimeout to ensure the flag is cleared AFTER all selection events have been queued
+                if (setIsSyncingSelection) {
+                    setTimeout(() => {
+                        setIsSyncingSelection(false);
+                        console.log('[AG Grid] Setting isSyncingSelection = false');
+                    }, 0);
+                }
+            }
         }
     } catch (error) {
         console.error('[AG Grid] Failed to apply state:', error);

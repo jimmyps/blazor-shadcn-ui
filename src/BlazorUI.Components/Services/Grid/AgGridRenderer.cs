@@ -113,6 +113,35 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             Console.WriteLine("[AgGridRenderer] Grid instance is null, cannot set data");
         }
     }
+    
+    /// <inheritdoc/>
+    public async Task ApplyTransactionAsync(GridTransaction<TItem> transaction)
+    {
+        if (_gridInstance == null)
+        {
+            Console.WriteLine("[AgGridRenderer] Grid instance is null, cannot apply transaction");
+            return;
+        }
+        
+        if (!transaction.HasChanges)
+        {
+            Console.WriteLine("[AgGridRenderer] Transaction has no changes, skipping");
+            return;
+        }
+        
+        Console.WriteLine($"[AgGridRenderer] Applying transaction: +{transaction.Add?.Count ?? 0} -{transaction.Remove?.Count ?? 0} ~{transaction.Update?.Count ?? 0}");
+        
+        // Enhance data with formatting before sending to AG Grid
+        var transactionData = new
+        {
+            add = transaction.Add != null ? EnhanceDataWithFormatting(transaction.Add) : null,
+            remove = transaction.Remove != null ? EnhanceDataWithFormatting(transaction.Remove) : null,
+            update = transaction.Update != null ? EnhanceDataWithFormatting(transaction.Update) : null
+        };
+        
+        await _gridInstance.InvokeVoidAsync("applyTransaction", transactionData);
+        Console.WriteLine("[AgGridRenderer] Transaction applied successfully");
+    }
 
     /// <summary>
     /// Enhances data objects with formatted string properties for columns with DataFormatString.
@@ -268,16 +297,25 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
     [JSInvokable]
     public async Task OnSelectionChanged(List<JsonElement> selectedItems)
     {
+        // Deserialize JSON elements to typed items
+        var typedItems = selectedItems
+            .Select(json => JsonSerializer.Deserialize<TItem>(json.GetRawText()))
+            .Where(item => item != null)
+            .Cast<TItem>()
+            .ToList();
+        
+        var readOnlyItems = typedItems.AsReadOnly();
+        
+        // Invoke both callbacks for proper two-way binding support
         if (_currentDefinition?.OnSelectionChanged.HasDelegate == true)
         {
-            // Deserialize JSON elements to typed items
-            var typedItems = selectedItems
-                .Select(json => JsonSerializer.Deserialize<TItem>(json.GetRawText()))
-                .Where(item => item != null)
-                .Cast<TItem>()
-                .ToList();
-            
-            await _currentDefinition.OnSelectionChanged.InvokeAsync(typedItems.AsReadOnly());
+            await _currentDefinition.OnSelectionChanged.InvokeAsync(readOnlyItems);
+        }
+        
+        // CRITICAL: Also invoke SelectedItemsChanged for @bind-SelectedItems support
+        if (_currentDefinition?.SelectedItemsChanged.HasDelegate == true)
+        {
+            await _currentDefinition.SelectedItemsChanged.InvokeAsync(readOnlyItems);
         }
     }
 
@@ -488,6 +526,9 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             // Enable row selection checkbox for multiple selection
             rowMultiSelectWithClick = definition.SelectionMode == GridSelectionMode.Multiple,
             suppressRowClickSelection = definition.SelectionMode == GridSelectionMode.Multiple,
+            // ✅ AG Grid v32.2+: ID field for stable row identification
+            // Used by getRowId function in JavaScript for selection persistence
+            idField = ToCamelCase(definition.IdField),
             // Theme and theme parameters
             theme = definition.Theme.ToString(),
             themeParams = definition.ThemeParams

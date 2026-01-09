@@ -45,4 +45,12 @@ public interface IGridRenderer<TItem> : IGridRenderer
     /// <param name="data">The collection of items to display.</param>
     /// <returns>A task that represents the asynchronous update operation.</returns>
     Task UpdateDataAsync(IEnumerable<TItem> data);
+    
+    /// <summary>
+    /// Applies a transaction of batched changes (add, remove, update) to the grid.
+    /// This is more efficient than UpdateDataAsync for incremental changes.
+    /// </summary>
+    /// <param name="transaction">The transaction containing the changes to apply.</param>
+    /// <returns>A task that represents the asynchronous transaction operation.</returns>
+    Task ApplyTransactionAsync(GridTransaction<TItem> transaction);
 }

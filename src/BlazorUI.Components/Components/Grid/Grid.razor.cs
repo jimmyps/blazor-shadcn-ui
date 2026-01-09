@@ -3,6 +3,7 @@ using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using System.Collections.Specialized;
 
 namespace BlazorUI.Components.Grid;
 
@@ -21,6 +22,16 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     private bool _columnsRegistered = false;
     private bool _actionsRegistered = false;
     private GridThemeParameters? _themeParameters;
+    private IReadOnlyCollection<TItem> _previousSelectedItems = Array.Empty<TItem>();
+    private bool _isUpdatingSelectionFromGrid = false;
+    
+    // Observable Collection support
+    private IEnumerable<TItem> _currentItems = Array.Empty<TItem>();
+    private IDisposable? _collectionSubscription;
+    private readonly List<NotifyCollectionChangedEventArgs> _pendingChanges = new();
+    private CancellationTokenSource? _batchCts;
+    private int _previousItemsHash = 0;
+    private Dictionary<object, TItem>? _previousItemsById; // Track items by ID for delta detection
 
     [Inject]
     private IServiceProvider ServiceProvider { get; set; } = default!;
@@ -56,6 +67,15 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     /// </summary>
     [Parameter]
     public int PageSize { get; set; } = 25;
+
+    /// <summary>
+    /// Gets or sets the property name to use as the unique row identifier.
+    /// This is critical for row selection persistence across data updates and pagination.
+    /// Examples: "Id" (C# convention), "ProductId", "OrderId", "id" (JavaScript convention), "_id" (MongoDB).
+    /// Default is "Id".
+    /// </summary>
+    [Parameter]
+    public string IdField { get; set; } = "Id";
 
     /// <summary>
     /// Gets or sets the virtualization mode for the grid.
@@ -198,10 +218,97 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
 
     protected override async Task OnParametersSetAsync()
     {
-        // Update grid data when Items parameter changes
-        if (_initialized && _gridRenderer != null)
+        if (!_initialized || _gridRenderer == null)
+            return;
+
+        // Check if Items collection instance changed (reference comparison)
+        bool collectionReplaced = !ReferenceEquals(_currentItems, Items);
+        
+        if (collectionReplaced)
         {
+            Console.WriteLine("[Grid] Items collection replaced - re-subscribing");
+            
+            // Unsubscribe from old collection
+            UnsubscribeFromCollection();
+            
+            // Subscribe to new collection if it's observable
+            _currentItems = Items;
+            SubscribeToCollection();
+            
+            // Full refresh on collection replacement
+            _previousItemsHash = Items?.Count() ?? 0;
             await _gridRenderer.UpdateDataAsync(Items);
+        }
+        else
+        {
+            // Collection reference is the same, but check count as fallback
+            // (for non-observable collections like List<T> without INotifyCollectionChanged)
+            int currentCount = Items?.Count() ?? 0;
+            bool countChanged = currentCount != _previousItemsHash;
+            
+            if (countChanged)
+            {
+                Console.WriteLine($"[Grid] Non-observable collection count changed ({_previousItemsHash} → {currentCount})");
+                _previousItemsHash = currentCount;
+                await _gridRenderer.UpdateDataAsync(Items);
+            }
+        }
+        
+        // Sync selection state from parent to grid when SelectedItems changes
+        // This is a UI STATE change, NOT a data change - no UpdateDataAsync needed!
+        if (SelectionMode != GridSelectionMode.None && 
+            SelectedItems != null && 
+            !SelectedItems.SequenceEqual(_previousSelectedItems) &&
+            !_isUpdatingSelectionFromGrid)
+        {
+            Console.WriteLine("[Grid] SelectedItems changed programmatically - syncing to grid UI");
+            _previousSelectedItems = SelectedItems;
+            await SyncSelectionToGrid();
+        }
+        else if (_isUpdatingSelectionFromGrid)
+        {
+            // Just update the tracking reference without syncing
+            Console.WriteLine("[Grid] SelectedItems changed from grid - skipping sync");
+            _previousSelectedItems = SelectedItems;
+        }
+    }
+    
+    /// <summary>
+    /// Synchronizes the SelectedItems from the parent component to the grid's internal selection state.
+    /// This ensures that programmatic changes to SelectedItems are reflected in the grid UI.
+    /// </summary>
+    private async Task SyncSelectionToGrid()
+    {
+        if (_gridRenderer == null || SelectedItems == null)
+            return;
+            
+        try
+        {
+            // Build a GridState with the current selection
+            var state = new GridState
+            {
+                SelectedRowIds = SelectedItems
+                    .Select(item =>
+                    {
+                        // Extract the ID using reflection based on IdField
+                        var idProperty = typeof(TItem).GetProperty(IdField);
+                        if (idProperty != null)
+                        {
+                            var idValue = idProperty.GetValue(item);
+                            return (object)(idValue?.ToString() ?? string.Empty);
+                        }
+                        return (object)string.Empty;
+                    })
+                    .Where(id => !string.IsNullOrEmpty((string)id))
+                    .ToList()
+            };
+            
+            // Apply the selection state to the grid
+            await _gridRenderer.UpdateStateAsync(state);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Grid] Failed to sync selection to grid: {ex.Message}");
         }
     }
 
@@ -456,10 +563,35 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         _gridDefinition.VisualStyle = VisualStyle;          // Visual modifiers (Striped, Bordered, etc.)
         _gridDefinition.Density = Density;
         _gridDefinition.PageSize = PageSize;
+        _gridDefinition.IdField = IdField;                  // Row ID field for selection persistence
         _gridDefinition.InitialState = InitialState;
         _gridDefinition.OnStateChanged = OnStateChanged;
         _gridDefinition.OnDataRequest = OnDataRequest;
         _gridDefinition.OnSelectionChanged = OnSelectionChanged;
+        
+        // Wrap SelectedItemsChanged to track when selection is coming from grid
+        _gridDefinition.SelectedItemsChanged = EventCallback.Factory.Create<IReadOnlyCollection<TItem>>(
+            this, 
+            async (items) =>
+            {
+                // Set flag to indicate this selection change originated from the grid
+                _isUpdatingSelectionFromGrid = true;
+                try
+                {
+                    if (SelectedItemsChanged.HasDelegate)
+                    {
+                        await SelectedItemsChanged.InvokeAsync(items);
+                    }
+                }
+                finally
+                {
+                    // Clear flag after a delay to ensure OnParametersSetAsync completes
+                    await Task.Delay(10);
+                    _isUpdatingSelectionFromGrid = false;
+                }
+            }
+        );
+        
         _gridDefinition.Class = Class;
         _gridDefinition.InlineStyle = InlineStyle;          // CSS inline style
         _gridDefinition.LocalizationKeyPrefix = LocalizationKeyPrefix;
@@ -496,10 +628,213 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         if (_gridRenderer != null)
         {
             await _gridRenderer.InitializeAsync(_gridContainer, _gridDefinition);
+            
+            // Set initial data, track count, and subscribe if observable
+            _currentItems = Items;
+            _previousItemsHash = Items?.Count() ?? 0;
+            SubscribeToCollection();
+            
             await _gridRenderer.UpdateDataAsync(Items);
         }
     }
+    
+    private void SubscribeToCollection()
+    {
+        if (_currentItems is INotifyCollectionChanged observable)
+        {
+            Console.WriteLine("[Grid] Subscribing to INotifyCollectionChanged (ObservableCollection detected)");
+            observable.CollectionChanged += HandleCollectionChanged;
+            _collectionSubscription = new CollectionChangedSubscription(observable, HandleCollectionChanged);
+        }
+        else
+        {
+            Console.WriteLine("[Grid] Collection does not implement INotifyCollectionChanged - using count tracking");
+        }
+    }
 
+    private void UnsubscribeFromCollection()
+    {
+        _collectionSubscription?.Dispose();
+        _collectionSubscription = null;
+        
+        // Cancel any pending batch operations
+        _batchCts?.Cancel();
+        _batchCts = null;
+        _pendingChanges.Clear();
+    }
+
+    private void HandleCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        // Synchronous collection of changes - no await here!
+        _pendingChanges.Add(e);
+        
+        // Special case: Reset means full refresh - do it immediately
+        if (e.Action == NotifyCollectionChangedAction.Reset)
+        {
+            _batchCts?.Cancel();
+            _pendingChanges.Clear();
+            _ = InvokeAsync(async () =>
+            {
+                _previousItemsHash = Items?.Count() ?? 0;
+                await _gridRenderer!.UpdateDataAsync(Items);
+                StateHasChanged();
+            });
+            return;
+        }
+        
+        // Debounce: batch multiple rapid changes together
+        _batchCts?.Cancel();
+        _batchCts = new CancellationTokenSource();
+        var token = _batchCts.Token;
+        
+        // 100ms batching window
+        _ = Task.Delay(100, token).ContinueWith(async _ =>
+        {
+            if (!token.IsCancellationRequested)
+            {
+                await InvokeAsync(async () =>
+                {
+                    await ApplyBatchedChangesAsync();
+                    StateHasChanged();
+                });
+            }
+        }, TaskScheduler.Default);
+    }
+
+    private async Task ApplyBatchedChangesAsync()
+    {
+        var changes = _pendingChanges.ToList();
+        _pendingChanges.Clear();
+        
+        if (changes.Count == 0)
+            return;
+        
+        Console.WriteLine($"[Grid] Applying {changes.Count} batched collection changes");
+        
+        // Aggregate all changes into a single transaction
+        var adds = new List<TItem>();
+        var removes = new List<TItem>();
+        var updates = new List<TItem>();
+        
+        foreach (var change in changes)
+        {
+            switch (change.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    adds.AddRange(change.NewItems?.Cast<TItem>() ?? Enumerable.Empty<TItem>());
+                    break;
+                    
+                case NotifyCollectionChangedAction.Remove:
+                    removes.AddRange(change.OldItems?.Cast<TItem>() ?? Enumerable.Empty<TItem>());
+                    break;
+                    
+                case NotifyCollectionChangedAction.Replace:
+                    updates.AddRange(change.NewItems?.Cast<TItem>() ?? Enumerable.Empty<TItem>());
+                    break;
+                    
+                case NotifyCollectionChangedAction.Move:
+                    // Move is just a visual reorder - AG Grid handles this automatically
+                    break;
+            }
+        }
+        
+        // Update count tracking
+        _previousItemsHash = Items?.Count() ?? 0;
+        
+        // Single transaction with all batched changes
+        if (adds.Any() || removes.Any() || updates.Any())
+        {
+            await ApplyTransactionAsync(adds, removes, updates);
+        }
+    }
+
+    private async Task ApplyTransactionAsync(
+        List<TItem> adds,
+        List<TItem> removes,
+        List<TItem> updates)
+    {
+        if (_gridRenderer == null)
+            return;
+        
+        var transaction = new GridTransaction<TItem>
+        {
+            Add = adds.Any() ? adds : null,
+            Remove = removes.Any() ? removes : null,
+            Update = updates.Any() ? updates : null
+        };
+        
+        Console.WriteLine($"[Grid] Transaction: +{adds.Count} -{removes.Count} ~{updates.Count}");
+        await _gridRenderer.ApplyTransactionAsync(transaction);
+    }
+    
+    /// <summary>
+    /// Manually adds rows to the grid using transaction API.
+    /// This is more efficient than replacing the entire Items collection.
+    /// </summary>
+    public async Task AddRowsAsync(params TItem[] rows)
+    {
+        if (_gridRenderer == null || !_initialized)
+            throw new InvalidOperationException("Grid not initialized");
+        
+        await _gridRenderer.ApplyTransactionAsync(new GridTransaction<TItem>
+        {
+            Add = rows.ToList()
+        });
+        
+        // Update count tracking
+        _previousItemsHash = Items?.Count() ?? 0;
+    }
+
+    /// <summary>
+    /// Manually updates rows in the grid using transaction API.
+    /// This is more efficient than replacing the entire Items collection.
+    /// </summary>
+    public async Task UpdateRowsAsync(params TItem[] rows)
+    {
+        if (_gridRenderer == null || !_initialized)
+            throw new InvalidOperationException("Grid not initialized");
+        
+        await _gridRenderer.ApplyTransactionAsync(new GridTransaction<TItem>
+        {
+            Update = rows.ToList()
+        });
+    }
+
+    /// <summary>
+    /// Manually removes rows from the grid using transaction API.
+    /// This is more efficient than replacing the entire Items collection.
+    /// </summary>
+    public async Task RemoveRowsAsync(params TItem[] rows)
+    {
+        if (_gridRenderer == null || !_initialized)
+            throw new InvalidOperationException("Grid not initialized");
+        
+        await _gridRenderer.ApplyTransactionAsync(new GridTransaction<TItem>
+        {
+            Remove = rows.ToList()
+        });
+        
+        // Update count tracking
+        _previousItemsHash = Items?.Count() ?? 0;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        UnsubscribeFromCollection();
+        
+        if (_initialized && _gridRenderer != null)
+        {
+            try
+            {
+                await _gridRenderer.DisposeAsync();
+            }
+            catch
+            {
+                // Ignore disposal errors
+            }
+        }
+    }
+    
     private string GetGridContainerStyle()
     {
         // Build inline styles for the grid container
@@ -516,19 +851,25 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
 
         return string.Join("; ", styles);
     }
+}
+/// <summary>
+/// Helper class for proper disposal of collection change subscriptions.
+/// </summary>
+internal sealed class CollectionChangedSubscription : IDisposable
+{
+    private readonly INotifyCollectionChanged _observable;
+    private readonly NotifyCollectionChangedEventHandler _handler;
 
-    public async ValueTask DisposeAsync()
+    public CollectionChangedSubscription(
+        INotifyCollectionChanged observable,
+        NotifyCollectionChangedEventHandler handler)
     {
-        if (_initialized && _gridRenderer != null)
-        {
-            try
-            {
-                await _gridRenderer.DisposeAsync();
-            }
-            catch
-            {
-                // Ignore disposal errors
-            }
-        }
+        _observable = observable;
+        _handler = handler;
+    }
+
+    public void Dispose()
+    {
+        _observable.CollectionChanged -= _handler;
     }
 }
