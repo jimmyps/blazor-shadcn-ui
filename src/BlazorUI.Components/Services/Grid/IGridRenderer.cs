@@ -53,4 +53,13 @@ public interface IGridRenderer<TItem> : IGridRenderer
     /// <param name="transaction">The transaction containing the changes to apply.</param>
     /// <returns>A task that represents the asynchronous transaction operation.</returns>
     Task ApplyTransactionAsync(GridTransaction<TItem> transaction);
+    
+    /// <summary>
+    /// Updates the grid theme at runtime without recreating the grid.
+    /// Preserves grid state (scroll position, selection, filters).
+    /// </summary>
+    /// <param name="theme">The new theme to apply.</param>
+    /// <param name="themeParams">Optional theme parameters to customize the theme.</param>
+    /// <returns>A task that represents the asynchronous theme update operation.</returns>
+    Task UpdateThemeAsync(GridTheme theme, Dictionary<string, object>? themeParams);
 }

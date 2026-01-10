@@ -25,6 +25,11 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     private IReadOnlyCollection<TItem> _previousSelectedItems = Array.Empty<TItem>();
     private bool _isUpdatingSelectionFromGrid = false;
     
+    // Theme tracking for runtime updates
+    private GridTheme _previousTheme;
+    private GridDensity _previousDensity;
+    private GridStyle _previousVisualStyle;
+    
     // Observable Collection support
     private IEnumerable<TItem> _currentItems = Array.Empty<TItem>();
     private IDisposable? _collectionSubscription;
@@ -221,6 +226,22 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         if (!_initialized || _gridRenderer == null)
             return;
 
+        // Detect theme changes and apply them without grid recreation
+        bool themeChanged = _previousTheme != Theme;
+        bool densityChanged = _previousDensity != Density;
+        bool styleChanged = _previousVisualStyle != VisualStyle;
+
+        if (themeChanged || densityChanged || styleChanged)
+        {
+            Console.WriteLine($"[Grid] Theme parameters changed - updating runtime theme");
+            _previousTheme = Theme;
+            _previousDensity = Density;
+            _previousVisualStyle = VisualStyle;
+            
+            var mergedParams = GetMergedThemeParams();
+            await _gridRenderer.UpdateThemeAsync(Theme, mergedParams);
+        }
+
         // Check if Items collection instance changed (reference comparison)
         bool collectionReplaced = !ReferenceEquals(_currentItems, Items);
         
@@ -291,13 +312,20 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
                     .Select(item =>
                     {
                         // Extract the ID using reflection based on IdField
-                        var idProperty = typeof(TItem).GetProperty(IdField);
-                        if (idProperty != null)
+                        // Use case-insensitive lookup to handle both PascalCase (C#) and camelCase (JSON)
+                        var idProperty = typeof(TItem).GetProperty(
+                            IdField, 
+                            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+                        );
+                        
+                        if (idProperty == null)
                         {
-                            var idValue = idProperty.GetValue(item);
-                            return (object)(idValue?.ToString() ?? string.Empty);
+                            Console.WriteLine($"[Grid] WARNING: IdField '{IdField}' not found on type {typeof(TItem).Name}");
+                            return (object)string.Empty;
                         }
-                        return (object)string.Empty;
+                        
+                        var idValue = idProperty.GetValue(item);
+                        return (object)(idValue?.ToString() ?? string.Empty);
                     })
                     .Where(id => !string.IsNullOrEmpty((string)id))
                     .ToList()
@@ -553,6 +581,35 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         };
     }
 
+    private Dictionary<string, object> GetMergedThemeParams()
+    {
+        // Merge theme parameters with precedence: ThemeDefaults < Density < VisualStyle < GridThemeParameters
+        var themeParams = GetThemeDefaults(Theme);
+        
+        // Apply density preset
+        foreach (var kvp in GetDensityPreset(Density))
+        {
+            themeParams[kvp.Key] = kvp.Value;
+        }
+        
+        // Apply visual style preset
+        foreach (var kvp in GetVisualStylePreset(VisualStyle))
+        {
+            themeParams[kvp.Key] = kvp.Value;
+        }
+        
+        // Apply user's GridThemeParameters (highest priority)
+        if (_themeParameters != null)
+        {
+            foreach (var kvp in _themeParameters.ToDictionary())
+            {
+                themeParams[kvp.Key] = kvp.Value;
+            }
+        }
+        
+        return themeParams;
+    }
+
     private void BuildGridDefinition()
     {
         _gridDefinition.Columns = _columns.Select(c => c.ToDefinition()).ToList();
@@ -596,31 +653,8 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         _gridDefinition.InlineStyle = InlineStyle;          // CSS inline style
         _gridDefinition.LocalizationKeyPrefix = LocalizationKeyPrefix;
 
-        // Merge theme parameters with precedence: ThemeDefaults < Density < VisualStyle < GridThemeParameters
-        var themeParams = GetThemeDefaults(Theme);
-        
-        // Apply density preset
-        foreach (var kvp in GetDensityPreset(Density))
-        {
-            themeParams[kvp.Key] = kvp.Value;
-        }
-        
-        // Apply visual style preset
-        foreach (var kvp in GetVisualStylePreset(VisualStyle))
-        {
-            themeParams[kvp.Key] = kvp.Value;
-        }
-        
-        // Apply user's GridThemeParameters (highest priority)
-        if (_themeParameters != null)
-        {
-            foreach (var kvp in _themeParameters.ToDictionary())
-            {
-                themeParams[kvp.Key] = kvp.Value;
-            }
-        }
-        
-        _gridDefinition.ThemeParams = themeParams;
+        // Use the helper method to merge theme parameters
+        _gridDefinition.ThemeParams = GetMergedThemeParams();
     }
 
     private async Task InitializeGridAsync()
@@ -628,6 +662,11 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         if (_gridRenderer != null)
         {
             await _gridRenderer.InitializeAsync(_gridContainer, _gridDefinition);
+            
+            // Initialize theme tracking
+            _previousTheme = Theme;
+            _previousDensity = Density;
+            _previousVisualStyle = VisualStyle;
             
             // Set initial data, track count, and subscribe if observable
             _currentItems = Items;
