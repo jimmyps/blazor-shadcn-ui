@@ -396,8 +396,8 @@ public class Product
     private List<Order> orders = new();
     private IReadOnlyCollection<Order> singleSelectedOrders = Array.Empty<Order>();
 
-    // Multiple selection demo - using regular List (count-based tracking)
-    private List<Order> multiSelectOrders = new();
+    // Multiple selection demo - using ObservableCollection for automatic delta updates
+    private ObservableCollection<Order> multiSelectOrders = new();
     private IReadOnlyCollection<Order> selectedOrders = Array.Empty<Order>();
 
     // Controlled selection demo
@@ -416,7 +416,7 @@ public class Product
         
         // Initialize separate data sets for each demo
         orders = GridDemoData.GenerateOrders(50);
-        multiSelectOrders = GridDemoData.GenerateOrders(50);
+        multiSelectOrders = new ObservableCollection<Order>(GridDemoData.GenerateOrders(50));
         controlledOrders = GridDemoData.GenerateOrders(50);
         products = GenerateProducts(20);
     }
@@ -476,15 +476,13 @@ public class Product
 
     private void DeleteSelected()
     {
-        // Remove selected orders from the list
-        multiSelectOrders.RemoveAll(o => selectedOrders.Contains(o));
-        
-        // CRITICAL: Must reassign to new instance to trigger @bind-SelectedItems update
-        // This ensures the Grid's OnParametersSetAsync detects the change
+        // ObservableCollection: Remove triggers automatic delta update
+        foreach (var order in selectedOrders.ToList())
+        {
+            multiSelectOrders.Remove(order);  // ← CollectionChanged event → Grid.transaction
+        }
         selectedOrders = Array.Empty<Order>();
-        
-        // Force UI update
-        StateHasChanged();
+        // No StateHasChanged() needed - Grid auto-detects via CollectionChanged event!
     }
 
     private void UpdateProductData()

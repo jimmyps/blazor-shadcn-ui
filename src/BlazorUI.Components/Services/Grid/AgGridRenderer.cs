@@ -253,6 +253,27 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         return new GridState();
     }
 
+    /// <inheritdoc/>
+    public async Task UpdateThemeAsync(GridTheme theme, Dictionary<string, object>? themeParams)
+    {
+        if (_gridInstance == null)
+        {
+            Console.WriteLine("[AgGridRenderer] Cannot update theme - grid instance is null");
+            return;
+        }
+        
+        Console.WriteLine($"[AgGridRenderer] Updating theme to {theme}");
+        
+        var themeUpdate = new
+        {
+            theme = theme.ToString(),
+            themeParams = themeParams ?? new Dictionary<string, object>()
+        };
+        
+        await _gridInstance.InvokeVoidAsync("setGridOptions", themeUpdate);
+        Console.WriteLine("[AgGridRenderer] Theme update completed");
+    }
+
     /// <summary>
     /// Called by JavaScript when grid state changes (sorting, filtering, selection).
     /// </summary>

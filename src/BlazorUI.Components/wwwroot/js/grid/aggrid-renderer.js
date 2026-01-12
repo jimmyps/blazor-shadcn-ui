@@ -319,6 +319,39 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
                 return getGridState(gridApi);
             },
             
+            setGridOptions: (options) => {
+                console.log('[AG Grid] setGridOptions called');
+                console.log('[AG Grid] Options:', options);
+                
+                // Handle theme updates specially
+                if (options.theme || options.themeParams) {
+                    const themeName = options.theme || config.theme;
+                    let themeParams = options.themeParams || {};
+                    
+                    console.log('[AG Grid] Updating theme:', themeName);
+                    console.log('[AG Grid] Theme params:', themeParams);
+                    
+                    // For Shadcn theme, merge with dynamically read shadcn design tokens
+                    if (themeName === 'Shadcn') {
+                        const shadcnDefaults = createShadcnTheme();
+                        themeParams = { ...shadcnDefaults, ...themeParams };
+                    }
+                    
+                    // Create new theme with parameters
+                    const baseTheme = getBaseTheme(themeName);
+                    const newTheme = baseTheme.withParams(themeParams);
+                    
+                    // Apply the new theme using setGridOption
+                    gridApi.setGridOption('theme', newTheme);
+                    console.log('[AG Grid] Theme updated successfully');
+                } else {
+                    // For other options, apply them directly
+                    Object.entries(options).forEach(([key, value]) => {
+                        gridApi.setGridOption(key, value);
+                    });
+                }
+            },
+            
             destroy: () => {
                 gridApi.destroy();
             }
