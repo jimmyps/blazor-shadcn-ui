@@ -1000,6 +1000,23 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         // This ensures all in-place changes are reflected in the grid
         await _gridRenderer.UpdateDataAsync(Items);
     }
+    
+    /// <summary>
+    /// Gets the current state of the grid from AG Grid.
+    /// This returns the actual grid state, not a cached copy.
+    /// Useful for persisting grid state to localStorage or a database.
+    /// </summary>
+    /// <returns>The current grid state including sort, filter, column configuration, and selection.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the grid is not initialized.</exception>
+    public async Task<GridState> GetStateAsync()
+    {
+        if (_gridRenderer == null || !_initialized)
+        {
+            throw new InvalidOperationException("Grid not initialized. Ensure the grid has been rendered before calling GetStateAsync.");
+        }
+        
+        return await _gridRenderer.GetStateAsync();
+    }
 
     public async ValueTask DisposeAsync()
     {
