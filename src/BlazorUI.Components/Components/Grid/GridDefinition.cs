@@ -107,4 +107,16 @@ public class GridDefinition<TItem>
     /// Gets or sets additional metadata for the renderer.
     /// </summary>
     public Dictionary<string, object?> Metadata { get; set; } = new();
+    
+    /// <summary>
+    /// Gets or sets a callback to resolve item IDs back to original instances.
+    /// Used by renderers to convert deserialized items (from JSON) to original references.
+    /// This enables natural C# collection operations like Remove(item) to work correctly.
+    /// </summary>
+    /// <remarks>
+    /// When AG Grid (or other renderers) serialize items to JSON and deserialize them back,
+    /// they create NEW instances. This callback allows the renderer to get the ORIGINAL
+    /// instances from the Grid's Items collection by matching on ID values.
+    /// </remarks>
+    public Func<IEnumerable<object>, IEnumerable<TItem>>? ResolveItemsByIds { get; set; }
 }

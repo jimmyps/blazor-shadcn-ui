@@ -3,6 +3,7 @@
 @using BlazorUI.Components.Card
 @using BlazorUI.Components.Label
 @using BlazorUI.Components.Tabs
+@using BlazorUI.Demo.Shared.Data
 
 <PageTitle>Grid Theming - BlazorUI</PageTitle>
 
@@ -27,7 +28,7 @@
             <!-- Compact Striped -->
             <Card>
                 <CardHeader>
-                    <CardTitle>Compact + Striped</CardTitle>
+                    <CardTitle Class="text-xl">Compact + Striped</CardTitle>
                     <CardDescription>Dense layout with alternating rows</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -48,7 +49,7 @@
             <!-- Spacious Bordered -->
             <Card>
                 <CardHeader>
-                    <CardTitle>Spacious + Bordered</CardTitle>
+                    <CardTitle Class="text-xl">Spacious + Bordered</CardTitle>
                     <CardDescription>Relaxed layout with cell borders</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -81,7 +82,7 @@
             <!-- Custom Accent Color -->
             <Card>
                 <CardHeader>
-                    <CardTitle>Custom Accent Color</CardTitle>
+                    <CardTitle Class="text-xl">Custom Accent Color</CardTitle>
                     <CardDescription>Red accent with custom row height</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -93,7 +94,7 @@
                             <GridThemeParameters
                                 AccentColor="#dc2626"
                                 RowHeight="36"
-                            />
+                                RowHoverColor="#dc262633" />
                             <GridColumn TItem="Product" Field="Name" Header="Product" />
                             <GridColumn TItem="Product" Field="Category" Header="Category" />
                             <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
@@ -105,7 +106,7 @@
             <!-- Custom Typography -->
             <Card>
                 <CardHeader>
-                    <CardTitle>Custom Typography</CardTitle>
+                    <CardTitle Class="text-xl">Custom Typography</CardTitle>
                     <CardDescription>Larger font with custom border radius</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -160,12 +161,6 @@
                     Balham
                 </Button>
                 <Button 
-                    Variant="@(selectedTheme == GridTheme.Material ? ButtonVariant.Default : ButtonVariant.Outline)"
-                    Size="ButtonSize.Small"
-                    OnClick="@(() => selectedTheme = GridTheme.Material)">
-                    Material
-                </Button>
-                <Button 
                     Variant="@(selectedTheme == GridTheme.Quartz ? ButtonVariant.Default : ButtonVariant.Outline)"
                     Size="ButtonSize.Small"
                     OnClick="@(() => selectedTheme = GridTheme.Quartz)">
@@ -176,7 +171,7 @@
 
         <Card>
             <CardHeader>
-                <CardTitle>@selectedTheme Theme</CardTitle>
+                <CardTitle Class="text-xl">@selectedTheme Theme</CardTitle>
                 <CardDescription>View how the grid looks with the @selectedTheme theme</CardDescription>
             </CardHeader>
             <CardContent>
@@ -209,7 +204,7 @@
             <!-- Standard Compact -->
             <Card>
                 <CardHeader>
-                    <CardTitle>Standard Compact (28px rows)</CardTitle>
+                    <CardTitle Class="text-xl">Standard Compact (28px rows)</CardTitle>
                     <CardDescription>Default compact density</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -229,7 +224,7 @@
             <!-- Compact with Override -->
             <Card>
                 <CardHeader>
-                    <CardTitle>Compact Override (50px rows)</CardTitle>
+                    <CardTitle Class="text-xl">Compact Override (50px rows)</CardTitle>
                     <CardDescription>Compact density but custom row height</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -254,7 +249,7 @@
     <!-- Code Example -->
     <Card>
         <CardHeader>
-            <CardTitle>Usage Examples</CardTitle>
+            <CardTitle Class="text-xl">Usage Examples</CardTitle>
             <CardDescription>How to use the three-level customization system</CardDescription>
         </CardHeader>
         <CardContent>
@@ -291,6 +286,12 @@
 
 @code {
     private GridTheme selectedTheme = GridTheme.Shadcn;
+    private List<Order> orders = new();
+
+    protected override void OnInitialized()
+    {
+        orders = GridDemoData.GenerateOrders(50);
+    }
 
     private List<Product> products = new()
     {

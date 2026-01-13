@@ -244,7 +244,8 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
 
         // Check if Items collection instance changed (reference comparison)
         bool collectionReplaced = !ReferenceEquals(_currentItems, Items);
-        
+        bool isObservable = Items is INotifyCollectionChanged;
+
         if (collectionReplaced)
         {
             Console.WriteLine("[Grid] Items collection replaced - re-subscribing");
@@ -260,7 +261,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             _previousItemsHash = Items?.Count() ?? 0;
             await _gridRenderer.UpdateDataAsync(Items);
         }
-        else
+        else if (!isObservable)
         {
             // Collection reference is the same, but check count as fallback
             // (for non-observable collections like List<T> without INotifyCollectionChanged)
@@ -655,6 +656,64 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
 
         // Use the helper method to merge theme parameters
         _gridDefinition.ThemeParams = GetMergedThemeParams();
+        
+        // ✅ Provide a callback for the renderer to resolve IDs back to original instances
+        // This is MUCH cleaner than storing Items in metadata!
+        _gridDefinition.ResolveItemsByIds = (ids) => ResolveItemsByIds(ids);
+    }
+    
+    /// <summary>
+    /// Resolves a collection of IDs to their corresponding original item instances.
+    /// Used by the renderer to convert deserialized items back to original references.
+    /// </summary>
+    /// <param name="ids">The IDs to resolve.</param>
+    /// <returns>Original item instances matching the provided IDs.</returns>
+    private IEnumerable<TItem> ResolveItemsByIds(IEnumerable<object> ids)
+    {
+        if (!ids.Any())
+        {
+            return Enumerable.Empty<TItem>();
+        }
+        
+        // Get the ID property
+        var idProperty = typeof(TItem).GetProperty(
+            IdField,
+            System.Reflection.BindingFlags.Public | 
+            System.Reflection.BindingFlags.Instance | 
+            System.Reflection.BindingFlags.IgnoreCase
+        );
+        
+        if (idProperty == null)
+        {
+            Console.WriteLine($"[Grid] WARNING: IdField '{IdField}' not found on type {typeof(TItem).Name}");
+            return Enumerable.Empty<TItem>();
+        }
+        
+        // Build lookup dictionary of items by ID
+        var itemsById = Items
+            .Select(item => new
+            {
+                Id = idProperty.GetValue(item),
+                Item = item
+            })
+            .Where(x => x.Id != null)
+            .ToDictionary(x => x.Id!, x => x.Item);
+        
+        // Resolve IDs to original items
+        var resolvedItems = new List<TItem>();
+        foreach (var id in ids)
+        {
+            if (itemsById.TryGetValue(id, out var item))
+            {
+                resolvedItems.Add(item);
+            }
+            else
+            {
+                Console.WriteLine($"[Grid] WARNING: Could not resolve ID '{id}' to an item");
+            }
+        }
+        
+        return resolvedItems;
     }
 
     private async Task InitializeGridAsync()
@@ -786,6 +845,57 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             await ApplyTransactionAsync(adds, removes, updates);
         }
     }
+    
+    /// <summary>
+    /// Extract IDs from items using the configured IdField.
+    /// </summary>
+    private IEnumerable<object> GetItemIds(IEnumerable<TItem> items)
+    {
+        var idProperty = typeof(TItem).GetProperty(
+            IdField,
+            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+        );
+        
+        if (idProperty == null)
+        {
+            Console.WriteLine($"[Grid] WARNING: IdField '{IdField}' not found on type {typeof(TItem).Name}");
+            yield break;
+        }
+        
+        foreach (var item in items)
+        {
+            var id = idProperty.GetValue(item);
+            if (id != null)
+            {
+                yield return id;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Get items with their IDs for lookup.
+    /// </summary>
+    private IEnumerable<(object id, TItem item)> GetItemsWithIds(IEnumerable<TItem> items)
+    {
+        var idProperty = typeof(TItem).GetProperty(
+            IdField,
+            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+        );
+        
+        if (idProperty == null)
+        {
+            yield break;
+        }
+        
+        foreach (var item in items)
+        {
+            var id = idProperty.GetValue(item);
+            if (id != null)
+            {
+                yield return (id, item);
+            }
+        }
+    }
 
     private async Task ApplyTransactionAsync(
         List<TItem> adds,
@@ -856,6 +966,40 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         // Update count tracking
         _previousItemsHash = Items?.Count() ?? 0;
     }
+    
+    /// <summary>
+    /// Manually refreshes the grid display to reflect changes in the underlying data.
+    /// This forces a full grid refresh and is useful when:
+    /// - Data properties have been modified in-place (without ObservableCollection events)
+    /// - You want to ensure the grid reflects the current state of the data
+    /// - Debugging or testing scenarios
+    /// 
+    /// For most scenarios, prefer using ObservableCollection or the transaction APIs
+    /// (AddRowsAsync, UpdateRowsAsync, RemoveRowsAsync) which are more efficient.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// // Modify data in-place
+    /// foreach (var product in products)
+    /// {
+    ///     product.Price *= 1.1m; // 10% price increase
+    /// }
+    /// 
+    /// // Force grid to refresh and show updated prices
+    /// await gridRef.RefreshAsync();
+    /// </code>
+    /// </example>
+    public async Task RefreshAsync()
+    {
+        if (_gridRenderer == null || !_initialized)
+            throw new InvalidOperationException("Grid not initialized");
+        
+        Console.WriteLine("[Grid] Manual refresh requested - reloading data");
+        
+        // Force full data reload by calling UpdateDataAsync
+        // This ensures all in-place changes are reflected in the grid
+        await _gridRenderer.UpdateDataAsync(Items);
+    }
 
     public async ValueTask DisposeAsync()
     {
@@ -891,6 +1035,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         return string.Join("; ", styles);
     }
 }
+
 /// <summary>
 /// Helper class for proper disposal of collection change subscriptions.
 /// </summary>

@@ -313,19 +313,34 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
 
     /// <summary>
     /// Called by JavaScript when selection changes.
+    /// ✅ CRITICAL: Resolves deserialized items back to original instances from Items collection.
+    /// AG Grid sends JSON-deserialized objects (new instances), but we need to return the ORIGINAL
+    /// instances from the data source so that developer code like `collection.Remove(item)` works.
     /// </summary>
-    /// <param name="selectedItems">The selected items as JSON elements.</param>
+    /// <param name="selectedItems">The selected items as JSON elements (deserialized - NEW instances).</param>
     [JSInvokable]
     public async Task OnSelectionChanged(List<JsonElement> selectedItems)
     {
-        // Deserialize JSON elements to typed items
-        var typedItems = selectedItems
-            .Select(json => JsonSerializer.Deserialize<TItem>(json.GetRawText()))
+        // Use case-insensitive deserialization to handle camelCase (JS) to PascalCase (C#) conversion
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true  // Critical: Maps camelCase JSON to PascalCase C# properties
+        };
+        
+        // Deserialize JSON elements to typed items (these are NEW instances, not originals!)
+        var deserializedItems = selectedItems
+            .Select(json => JsonSerializer.Deserialize<TItem>(json.GetRawText(), jsonOptions))
             .Where(item => item != null)
             .Cast<TItem>()
             .ToList();
         
-        var readOnlyItems = typedItems.AsReadOnly();
+        // ✅ CRITICAL FIX: Resolve deserialized items back to ORIGINAL instances from Items collection
+        // This ensures that developer code like `collection.Remove(selectedItem)` works correctly
+        // because the items in SelectedItems will be the same references as in the source collection
+        var originalItems = ResolveToOriginalInstances(deserializedItems);
+        
+        var readOnlyItems = originalItems.AsReadOnly();
         
         // Invoke both callbacks for proper two-way binding support
         if (_currentDefinition?.OnSelectionChanged.HasDelegate == true)
@@ -337,6 +352,68 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         if (_currentDefinition?.SelectedItemsChanged.HasDelegate == true)
         {
             await _currentDefinition.SelectedItemsChanged.InvokeAsync(readOnlyItems);
+        }
+    }
+    
+    /// <summary>
+    /// Resolves deserialized items (new instances from JSON) back to the original instances
+    /// from the Items collection using ID-based matching.
+    /// This is CRITICAL for enabling natural C# collection operations like Remove(item).
+    /// </summary>
+    /// <param name="deserializedItems">Items deserialized from JSON (new instances).</param>
+    /// <returns>Original instances from the Items collection.</returns>
+    private List<TItem> ResolveToOriginalInstances(List<TItem> deserializedItems)
+    {
+        if (deserializedItems.Count == 0)
+        {
+            return new List<TItem>();
+        }
+        
+        // Check if the Grid provided a callback to resolve items by IDs
+        if (_currentDefinition?.ResolveItemsByIds == null)
+        {
+            Console.WriteLine("[AgGridRenderer] WARNING: ResolveItemsByIds callback not provided. " +
+                            "Returning deserialized items (this may break .Remove() operations).");
+            return deserializedItems;
+        }
+        
+        // Get the IdField property name (defaults to "Id")
+        var idField = _currentDefinition.IdField ?? "Id";
+        var itemType = typeof(TItem);
+        var idProperty = itemType.GetProperty(idField);
+        
+        if (idProperty == null)
+        {
+            Console.WriteLine($"[AgGridRenderer] WARNING: IdField '{idField}' not found on type '{itemType.Name}'. " +
+                            "Returning deserialized items (this may break .Remove() operations).");
+            return deserializedItems;
+        }
+        
+        try
+        {
+            // Extract IDs from deserialized items
+            var ids = deserializedItems
+                .Select(item => idProperty.GetValue(item))
+                .Where(id => id != null)
+                .ToList();
+            
+            if (ids.Count == 0)
+            {
+                Console.WriteLine("[AgGridRenderer] WARNING: No valid IDs found in deserialized items");
+                return deserializedItems;
+            }
+            
+            // ✅ Use the callback to resolve IDs back to original instances
+            var originalItems = _currentDefinition.ResolveItemsByIds(ids!).ToList();
+            
+            Console.WriteLine($"[AgGridRenderer] Resolved {originalItems.Count}/{deserializedItems.Count} items to original instances");
+            return originalItems;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AgGridRenderer] ERROR resolving items to original instances: {ex.Message}");
+            Console.WriteLine($"[AgGridRenderer] Stack trace: {ex.StackTrace}");
+            return deserializedItems;  // Fallback
         }
     }
 

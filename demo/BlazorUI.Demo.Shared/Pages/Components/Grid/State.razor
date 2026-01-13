@@ -26,7 +26,7 @@
             }
         </div>
 
-        <Grid Items="@orders" InitialState="@gridState" OnStateChanged="HandleStateChanged">
+        <Grid Items="@stateOrders" InitialState="@gridState" OnStateChanged="HandleStateChanged">
             <Columns>
                 <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
                 <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
@@ -93,7 +93,7 @@ private async Task SaveState()
             </label>
         </div>
 
-        <Grid Items="@orders" InitialState="@exportState" OnStateChanged="HandleExportStateChanged">
+        <Grid Items="@exportOrders" InitialState="@exportState" OnStateChanged="HandleExportStateChanged">
             <Columns>
                 <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
                 <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
@@ -134,7 +134,10 @@ private async Task ImportState(ChangeEventArgs e)
 </div>
 
 @code {
-    private List<Order> orders = new();
+    // Separate data sources for each grid to prevent conflicts
+    private List<Order> stateOrders = new();
+    private List<Order> exportOrders = new();
+    
     private GridState gridState = new();
     private GridState exportState = new();
     private string stateJson = "{}";
@@ -142,7 +145,9 @@ private async Task ImportState(ChangeEventArgs e)
 
     protected override async Task OnInitializedAsync()
     {
-        orders = GridDemoData.GenerateOrders(50);
+        // Initialize separate data for each grid
+        stateOrders = GridDemoData.GenerateOrders(50);
+        exportOrders = GridDemoData.GenerateOrders(50);
         await LoadState();
     }
 

@@ -442,6 +442,7 @@ await grid.RemoveRowsAsync(order);
         removeOrders = GridDemoData.GenerateOrders(30).ToList();
         combinedOrders = GridDemoData.GenerateOrders(20).ToList();
         
+        // ✅ Track next ID across ALL datasets to prevent duplicates
         nextId = Math.Max(
             addOrders.DefaultIfEmpty().Max(o => o?.Id ?? 0),
             Math.Max(

@@ -15,7 +15,7 @@
             </p>
         </div>
 
-        <Grid Items="@orders">
+        <Grid Items="@sortingOrders">
             <Columns>
                 <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
                 <GridColumn Field="Customer" Header="Customer" Sortable="true" />
@@ -56,7 +56,7 @@
             <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearSort">Clear Sort</Button>
         </div>
 
-        <Grid Items="@orders" InitialState="@sortState" OnStateChanged="HandleSortStateChanged">
+        <Grid Items="@controlledSortOrders" InitialState="@sortState" OnStateChanged="HandleSortStateChanged">
             <Columns>
                 <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
                 <GridColumn Field="Customer" Header="Customer" Sortable="true" />
@@ -103,7 +103,7 @@
             </p>
         </div>
 
-        <Grid Items="@orders">
+        <Grid Items="@filteringOrders">
             <Columns>
                 <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
                 <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
@@ -136,7 +136,7 @@
         </div>
 
         <div class="flex gap-2 mb-4">
-            <Select @bind-Value="@statusFilter" Class="w-[180px]" OnValueChange="@ApplyStatusFilter">
+            <Select @bind-Value="@statusFilter" Class="w-[180px]">
                 <SelectTrigger>
                     <SelectValue Placeholder="Filter by Status" />
                 </SelectTrigger>
@@ -152,7 +152,7 @@
             <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearFilters">Clear Filters</Button>
         </div>
 
-        <Grid Items="@orders" InitialState="@filterState" OnStateChanged="HandleFilterStateChanged">
+        <Grid Items="@controlledFilterOrders" InitialState="@filterState" OnStateChanged="HandleFilterStateChanged">
             <Columns>
                 <GridColumn Field="Id" Header="Order ID" Width="100px" />
                 <GridColumn Field="Customer" Header="Customer" />
@@ -173,19 +173,33 @@
                 View Code
             </summary>
             <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;Select @@bind-Value="statusFilter" OnValueChange="ApplyFilter"&gt;...&lt;/Select&gt;
+                <pre class="overflow-x-auto text-sm"><code>&lt;Select @@bind-Value="statusFilter"&gt;...&lt;/Select&gt;
 
 @@code {
-    private void ApplyFilter()
-    {
-        gridState.FilterDescriptors.Clear();
-        if (statusFilter != "all")
+    private string _statusFilter = "all";
+    private string statusFilter 
+    { 
+        get => _statusFilter;
+        set 
         {
-            gridState.FilterDescriptors.Add(new GridFilterDescriptor
+            if (_statusFilter != value)
+            {
+                _statusFilter = value;
+                ApplyStatusFilter(value);
+            }
+        }
+    }
+    
+    private void ApplyStatusFilter(string? value)
+    {
+        filterState.FilterDescriptors.Clear();
+        if (value != null && value != "all")
+        {
+            filterState.FilterDescriptors.Add(new GridFilterDescriptor
             {
                 Field = "Status",
                 Operator = GridFilterOperator.Equals,
-                Value = statusFilter
+                Value = value
             });
         }
     }
@@ -196,14 +210,36 @@
 </div>
 
 @code {
-    private List<Order> orders = new();
+    // Separate data sources for each grid to prevent conflicts
+    private List<Order> sortingOrders = new();
+    private List<Order> controlledSortOrders = new();
+    private List<Order> filteringOrders = new();
+    private List<Order> controlledFilterOrders = new();
+    
     private GridState sortState = new();
     private GridState filterState = new();
-    private string statusFilter = "all";
+    
+    private string _statusFilter = "all";
+    private string statusFilter 
+    { 
+        get => _statusFilter;
+        set 
+        {
+            if (_statusFilter != value)
+            {
+                _statusFilter = value;
+                ApplyStatusFilter(value);
+            }
+        }
+    }
 
     protected override void OnInitialized()
     {
-        orders = GridDemoData.GenerateOrders(100);
+        // Initialize separate data for each grid
+        sortingOrders = GridDemoData.GenerateOrders(100);
+        controlledSortOrders = GridDemoData.GenerateOrders(100);
+        filteringOrders = GridDemoData.GenerateOrders(100);
+        controlledFilterOrders = GridDemoData.GenerateOrders(100);
     }
 
     private void SortByAmount()
@@ -233,17 +269,16 @@
         sortState.SortDescriptors.Clear();
     }
 
-    private void ApplyStatusFilter(string value)
+    private void ApplyStatusFilter(string? value)
     {
-        statusFilter = value;
         filterState.FilterDescriptors.Clear();
-        if (statusFilter != "all")
+        if (value != null && value != "all")
         {
             filterState.FilterDescriptors.Add(new GridFilterDescriptor
             {
                 Field = "Status",
                 Operator = GridFilterOperator.Equals,
-                Value = statusFilter
+                Value = value
             });
         }
     }

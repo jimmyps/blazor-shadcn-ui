@@ -41,7 +41,7 @@
             </Button>
         </div>
 
-        <Grid Items="@products" 
+        <Grid @ref="_grid1" Items="@products" 
               SelectionMode="GridSelectionMode.Multiple" 
               IdField="ProductId"
               @bind-SelectedItems="@selectedProducts">
@@ -357,7 +357,7 @@ public class Product
 @@code {
     // Use ObservableCollection for automatic delta updates
     private ObservableCollection&lt;Order&gt; orders = new();
-    private IReadOnlyCollection&lt;Order&gt; selectedOrders = Array.Empty&lt;Order&gt;();
+    private IReadOnlyCollection&lt;Order&gt; selectedOrders = Array.Empty&lt;Order&gt;
 
     protected override void OnInitialized()
     {
@@ -373,7 +373,7 @@ public class Product
         {
             orders.Remove(order);  // ← Triggers CollectionChanged event
         }
-        selectedOrders = Array.Empty&lt;Order&gt;();
+        selectedOrders = Array.Empty&lt;Order&gt;
     }
 
     private void AddOrder()
@@ -388,10 +388,14 @@ public class Product
 </div>
 
 @code {
+
+    private Grid<Product> _grid1;
+
     // ObservableCollection demo - automatic delta updates
     private ObservableCollection<Order> observableOrders = new();
     private IReadOnlyCollection<Order> selectedObservableOrders = Array.Empty<Order>();
-    
+    private int _nextOrderId = 1;  // ✅ Track next available ID to prevent duplicates
+
     // Single selection demo
     private List<Order> orders = new();
     private IReadOnlyCollection<Order> singleSelectedOrders = Array.Empty<Order>();
@@ -414,6 +418,9 @@ public class Product
         var observableData = GridDemoData.GenerateOrders(50);
         observableOrders = new ObservableCollection<Order>(observableData);
         
+        // ✅ Initialize next ID tracker to avoid duplicates
+        _nextOrderId = observableOrders.Any() ? observableOrders.Max(o => o.Id) + 1 : 1;
+
         // Initialize separate data sets for each demo
         orders = GridDemoData.GenerateOrders(50);
         multiSelectOrders = new ObservableCollection<Order>(GridDemoData.GenerateOrders(50));
@@ -435,10 +442,12 @@ public class Product
     {
         var random = new Random();
         var statuses = new[] { OrderStatus.Pending, OrderStatus.Shipped, OrderStatus.Delivered };
+        var customers = new[] { "Acme Corp", "TechStart Inc", "Global Solutions", "FastShip LLC", "MegaStore", "Enterprise Co" };
+        
         var newOrder = new Order
         {
-            Id = observableOrders.Count + 1,
-            Customer = $"New Customer {random.Next(1000)}",
+            Id = _nextOrderId++,  // ✅ Use tracked ID and increment to prevent duplicates
+            Customer = customers[random.Next(customers.Length)],
             Status = statuses[random.Next(statuses.Length)],
             Amount = Math.Round((decimal)(random.NextDouble() * 10000 + 100), 2),
             OrderDate = DateTime.Now
@@ -449,16 +458,16 @@ public class Product
     private void UpdateRandomOrder()
     {
         if (observableOrders.Count == 0) return;
-        
+
         var random = new Random();
         var statuses = new[] { OrderStatus.Pending, OrderStatus.Shipped, OrderStatus.Delivered };
         var index = random.Next(observableOrders.Count);
         var order = observableOrders[index];
-        
+
         // Update properties
         order.Amount = Math.Round((decimal)(random.NextDouble() * 10000 + 100), 2);
         order.Status = statuses[random.Next(statuses.Length)];
-        
+
         // Replace to trigger update (ObservableCollection doesn't track property changes)
         observableOrders[index] = order;  // ← CollectionChanged event → Grid.transaction
     }
@@ -477,15 +486,17 @@ public class Product
     private void DeleteSelected()
     {
         // ObservableCollection: Remove triggers automatic delta update
+        // Grid automatically matches items by ID, so this works even though
+        // selectedOrders contains new instances from JavaScript serialization
         foreach (var order in selectedOrders.ToList())
         {
-            multiSelectOrders.Remove(order);  // ← CollectionChanged event → Grid.transaction
+            multiSelectOrders.Remove(order);  // ← Grid finds item by ID and removes it
         }
         selectedOrders = Array.Empty<Order>();
         // No StateHasChanged() needed - Grid auto-detects via CollectionChanged event!
     }
 
-    private void UpdateProductData()
+    private async Task UpdateProductData()
     {
         // Update product prices - selection should persist
         var random = new Random();
@@ -494,8 +505,10 @@ public class Product
             product.Price = Math.Round((decimal)(random.NextDouble() * 500 + 100), 2);
             product.Stock = random.Next(0, 200);
         }
-        // Trigger re-render
-        StateHasChanged();
+
+        // Force grid to refresh and show updated data
+        // RefreshAsync() calls UpdateDataAsync internally to reload all data
+        await _grid1.RefreshAsync();
     }
 
     private void ShuffleProducts()
