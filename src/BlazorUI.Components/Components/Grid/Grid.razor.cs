@@ -30,8 +30,8 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     private GridDensity _previousDensity;
     private GridStyle _previousVisualStyle;
     
-    // State tracking for programmatic updates
-    private GridState? _previousInitialState;
+    // State tracking for mutation detection
+    private int _previousStateHash;
     
     // Observable Collection support
     private IEnumerable<TItem> _currentItems = Array.Empty<TItem>();
@@ -112,10 +112,18 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public GridDensity Density { get; set; } = GridDensity.Comfortable;
 
     /// <summary>
-    /// Gets or sets the initial state of the grid.
+    /// Gets or sets the current state of the grid.
+    /// Supports two-way binding via @bind-State for automatic state synchronization.
     /// </summary>
     [Parameter]
-    public GridState? InitialState { get; set; }
+    public GridState? State { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the callback invoked when the grid state changes.
+    /// Used for two-way binding support (@bind-State).
+    /// </summary>
+    [Parameter]
+    public EventCallback<GridState> StateChanged { get; set; }
 
     /// <summary>
     /// Gets or sets whether the grid is in a loading state.
@@ -245,13 +253,17 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             await _gridRenderer.UpdateThemeAsync(Theme, mergedParams);
         }
         
-        // ✅ Detect InitialState changes and apply them
-        // This enables controlled sort/filter scenarios where state is changed programmatically
-        if (InitialState != _previousInitialState && InitialState != null)
+        // ✅ Detect State mutations using hash-based change detection
+        // This enables controlled sort/filter scenarios with natural object mutations
+        if (State != null)
         {
-            Console.WriteLine("[Grid] InitialState changed - applying new state");
-            _previousInitialState = InitialState;
-            await _gridRenderer.UpdateStateAsync(InitialState);
+            var currentHash = ComputeStateHash(State);
+            if (currentHash != _previousStateHash)
+            {
+                Console.WriteLine("[Grid] State changed - applying new state");
+                _previousStateHash = currentHash;
+                await _gridRenderer.UpdateStateAsync(State);
+            }
         }
 
         // Check if Items collection instance changed (reference comparison)
@@ -634,7 +646,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         _gridDefinition.Density = Density;
         _gridDefinition.PageSize = PageSize;
         _gridDefinition.IdField = IdField;                  // Row ID field for selection persistence
-        _gridDefinition.InitialState = InitialState;
+        _gridDefinition.State = State;
         _gridDefinition.OnStateChanged = OnStateChanged;
         _gridDefinition.OnDataRequest = OnDataRequest;
         _gridDefinition.OnSelectionChanged = OnSelectionChanged;
@@ -1028,6 +1040,87 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         }
         
         return await _gridRenderer.GetStateAsync();
+    }
+    
+    /// <summary>
+    /// Computes a hash code for the given GridState to detect mutations.
+    /// Uses HashCode struct for efficient, deterministic hashing of state properties.
+    /// </summary>
+    private static int ComputeStateHash(GridState state)
+    {
+        var hash = new HashCode();
+        
+        // Basic pagination state
+        hash.Add(state.PageNumber);
+        hash.Add(state.PageSize);
+        
+        // Sort descriptors
+        foreach (var sort in state.SortDescriptors)
+        {
+            hash.Add(sort.Field);
+            hash.Add(sort.Direction);
+            hash.Add(sort.Order);
+        }
+        
+        // Filter descriptors
+        foreach (var filter in state.FilterDescriptors)
+        {
+            hash.Add(filter.Field);
+            hash.Add(filter.Operator);
+            hash.Add(filter.Value);
+        }
+        
+        // Column states
+        foreach (var col in state.ColumnStates)
+        {
+            hash.Add(col.Field);
+            hash.Add(col.Visible);
+            hash.Add(col.Width);
+            hash.Add(col.Pinned);
+            hash.Add(col.Order);
+        }
+        
+        // Selected row IDs
+        foreach (var id in state.SelectedRowIds)
+        {
+            hash.Add(id);
+        }
+        
+        // Row grouping
+        foreach (var col in state.RowGroupColumns)
+        {
+            hash.Add(col);
+        }
+        
+        // Pivot state
+        hash.Add(state.PivotMode);
+        foreach (var col in state.PivotColumns)
+        {
+            hash.Add(col);
+        }
+        
+        // Focused cell
+        if (state.FocusedCell != null)
+        {
+            hash.Add(state.FocusedCell.RowIndex);
+            hash.Add(state.FocusedCell.ColumnId);
+        }
+        
+        // Sidebar state
+        if (state.SideBar != null)
+        {
+            hash.Add(state.SideBar.Visible);
+            hash.Add(state.SideBar.ActivePanel);
+        }
+        
+        // Scroll position
+        if (state.Scroll != null)
+        {
+            hash.Add(state.Scroll.Top);
+            hash.Add(state.Scroll.Left);
+        }
+        
+        return hash.ToHashCode();
     }
 
     public async ValueTask DisposeAsync()

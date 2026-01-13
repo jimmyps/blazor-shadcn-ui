@@ -26,7 +26,7 @@
             }
         </div>
 
-        <Grid Items="@stateOrders" InitialState="@gridState" OnStateChanged="HandleStateChanged" @ref="stateGridRef">
+        <Grid Items="@stateOrders" @bind-State="@gridState" @ref="stateGridRef">
             <Columns>
                 <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
                 <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
@@ -98,7 +98,7 @@ private async Task SaveState()
             </label>
         </div>
 
-        <Grid Items="@exportOrders" InitialState="@exportState" OnStateChanged="HandleExportStateChanged" @ref="exportGridRef">
+        <Grid Items="@exportOrders" @bind-State="@exportState" @ref="exportGridRef">
             <Columns>
                 <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
                 <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
@@ -211,31 +211,6 @@ private async Task ImportState(ChangeEventArgs e)
         {
             // localStorage not available
         }
-    }
-
-    private void HandleStateChanged(GridState newState)
-    {
-        gridState = newState;
-    }
-
-    private async Task HandleExportStateChanged(GridState newState)
-    {
-        exportState = newState;
-        
-        // ✅ Get actual state from AG Grid for accurate export
-        if (exportGridRef != null)
-        {
-            try
-            {
-                exportState = await exportGridRef.GetStateAsync();
-            }
-            catch
-            {
-                // Grid might not be initialized yet
-            }
-        }
-        
-        stateJson = JsonSerializer.Serialize(exportState, new JsonSerializerOptions { WriteIndented = true });
     }
 
     private async Task ExportState()

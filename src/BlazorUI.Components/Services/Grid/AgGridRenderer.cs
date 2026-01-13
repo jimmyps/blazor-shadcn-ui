@@ -77,10 +77,10 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             Console.WriteLine("[AgGridRenderer] Grid instance created successfully");
             
             // ✅ Apply initial state if provided
-            if (definition.InitialState != null)
+            if (definition.State != null)
             {
                 Console.WriteLine("[AgGridRenderer] Applying initial state");
-                await UpdateStateAsync(definition.InitialState);
+                await UpdateStateAsync(definition.State);
             }
         }
         catch (Exception ex)

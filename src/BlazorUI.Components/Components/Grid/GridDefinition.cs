@@ -58,9 +58,9 @@ public class GridDefinition<TItem>
     public string IdField { get; set; } = "Id";
 
     /// <summary>
-    /// Gets or sets the initial state of the grid.
+    /// Gets or sets the current state of the grid.
     /// </summary>
-    public GridState? InitialState { get; set; }
+    public GridState? State { get; set; }
 
     /// <summary>
     /// Gets or sets the callback invoked when the grid state changes.

@@ -56,7 +56,7 @@
             <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearSort">Clear Sort</Button>
         </div>
 
-        <Grid Items="@controlledSortOrders" InitialState="@sortState" OnStateChanged="HandleSortStateChanged">
+        <Grid Items="@controlledSortOrders" @bind-State="@sortState">
             <Columns>
                 <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
                 <GridColumn Field="Customer" Header="Customer" Sortable="true" />
@@ -77,23 +77,24 @@
                 View Code
             </summary>
             <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>@@code {
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" @@bind-State="@@gridState"&gt;
+    &lt;Columns&gt;
+        &lt;GridColumn Field="Amount" Sortable="true" /&gt;
+    &lt;/Columns&gt;
+&lt;/Grid&gt;
+
+@@code {
     private GridState gridState = new();
     
     private void SortByAmount()
     {
-        // ✅ Create NEW GridState instance for Blazor to detect change
-        gridState = new GridState
+        // ✅ Natural object mutation - hash-based change detection
+        gridState.SortDescriptors.Clear();
+        gridState.SortDescriptors.Add(new GridSortDescriptor
         {
-            SortDescriptors = new List&lt;GridSortDescriptor&gt;
-            {
-                new GridSortDescriptor
-                {
-                    Field = "Amount",
-                    Direction = GridSortDirection.Descending
-                }
-            }
-        };
+            Field = "Amount",
+            Direction = GridSortDirection.Descending
+        });
     }
 }</code></pre>
             </div>
@@ -158,7 +159,7 @@
             <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearFilters">Clear Filters</Button>
         </div>
 
-        <Grid Items="@controlledFilterOrders" InitialState="@filterState" OnStateChanged="HandleFilterStateChanged">
+        <Grid Items="@controlledFilterOrders" @bind-State="@filterState">
             <Columns>
                 <GridColumn Field="Id" Header="Order ID" Width="100px" />
                 <GridColumn Field="Customer" Header="Customer" />
@@ -179,9 +180,16 @@
                 View Code
             </summary>
             <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;Select @@bind-Value="statusFilter"&gt;...&lt;/Select&gt;
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" @@bind-State="@@filterState"&gt;
+    &lt;Columns&gt;
+        &lt;GridColumn Field="Status" /&gt;
+    &lt;/Columns&gt;
+&lt;/Grid&gt;
+
+&lt;Select @@bind-Value="statusFilter"&gt;...&lt;/Select&gt;
 
 @@code {
+    private GridState filterState = new();
     private string _statusFilter = "all";
     private string statusFilter 
     { 
@@ -198,21 +206,17 @@
     
     private void ApplyStatusFilter(string? value)
     {
-        // ✅ Create NEW GridState instance for Blazor to detect change
-        filterState = new GridState
+        // ✅ Natural object mutation - hash-based change detection
+        filterState.FilterDescriptors.Clear();
+        if (value != null && value != "all")
         {
-            FilterDescriptors = value != null && value != "all"
-                ? new List&lt;GridFilterDescriptor&gt;
-                {
-                    new GridFilterDescriptor
-                    {
-                        Field = "Status",
-                        Operator = GridFilterOperator.Equals,
-                        Value = value
-                    }
-                }
-                : new List&lt;GridFilterDescriptor&gt;()
-        };
+            filterState.FilterDescriptors.Add(new GridFilterDescriptor
+            {
+                Field = "Status",
+                Operator = GridFilterOperator.Equals,
+                Value = value
+            });
+        }
     }
 }</code></pre>
             </div>
@@ -255,72 +259,48 @@
 
     private void SortByAmount()
     {
-        sortState = new GridState
+        sortState.SortDescriptors.Clear();
+        sortState.SortDescriptors.Add(new GridSortDescriptor
         {
-            SortDescriptors = new List<GridSortDescriptor>
-            {
-                new GridSortDescriptor
-                {
-                    Field = "Amount",
-                    Direction = GridSortDirection.Descending,
-                    Order = 0
-                }
-            }
-        };
+            Field = "Amount",
+            Direction = GridSortDirection.Descending,
+            Order = 0
+        });
     }
 
     private void SortByDate()
     {
-        sortState = new GridState
+        sortState.SortDescriptors.Clear();
+        sortState.SortDescriptors.Add(new GridSortDescriptor
         {
-            SortDescriptors = new List<GridSortDescriptor>
-            {
-                new GridSortDescriptor
-                {
-                    Field = "OrderDate",
-                    Direction = GridSortDirection.Descending,
-                    Order = 0
-                }
-            }
-        };
+            Field = "OrderDate",
+            Direction = GridSortDirection.Descending,
+            Order = 0
+        });
     }
 
     private void ClearSort()
     {
-        sortState = new GridState();
+        sortState.SortDescriptors.Clear();
     }
 
     private void ApplyStatusFilter(string? value)
     {
-        filterState = new GridState
+        filterState.FilterDescriptors.Clear();
+        if (value != null && value != "all")
         {
-            FilterDescriptors = value != null && value != "all"
-                ? new List<GridFilterDescriptor>
-                {
-                    new GridFilterDescriptor
-                    {
-                        Field = "Status",
-                        Operator = GridFilterOperator.Equals,
-                        Value = value
-                    }
-                }
-                : new List<GridFilterDescriptor>()
-        };
+            filterState.FilterDescriptors.Add(new GridFilterDescriptor
+            {
+                Field = "Status",
+                Operator = GridFilterOperator.Equals,
+                Value = value
+            });
+        }
     }
 
     private void ClearFilters()
     {
         statusFilter = "all";
-        filterState = new GridState();
-    }
-
-    private void HandleSortStateChanged(GridState newState)
-    {
-        sortState = newState;
-    }
-
-    private void HandleFilterStateChanged(GridState newState)
-    {
-        filterState = newState;
+        filterState.FilterDescriptors.Clear();
     }
 }
