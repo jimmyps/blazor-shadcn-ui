@@ -82,12 +82,18 @@
     
     private void SortByAmount()
     {
-        gridState.SortDescriptors.Clear();
-        gridState.SortDescriptors.Add(new GridSortDescriptor
+        // ✅ Create NEW GridState instance for Blazor to detect change
+        gridState = new GridState
         {
-            Field = "Amount",
-            Direction = GridSortDirection.Descending
-        });
+            SortDescriptors = new List&lt;GridSortDescriptor&gt;
+            {
+                new GridSortDescriptor
+                {
+                    Field = "Amount",
+                    Direction = GridSortDirection.Descending
+                }
+            }
+        };
     }
 }</code></pre>
             </div>
@@ -192,16 +198,21 @@
     
     private void ApplyStatusFilter(string? value)
     {
-        filterState.FilterDescriptors.Clear();
-        if (value != null && value != "all")
+        // ✅ Create NEW GridState instance for Blazor to detect change
+        filterState = new GridState
         {
-            filterState.FilterDescriptors.Add(new GridFilterDescriptor
-            {
-                Field = "Status",
-                Operator = GridFilterOperator.Equals,
-                Value = value
-            });
-        }
+            FilterDescriptors = value != null && value != "all"
+                ? new List&lt;GridFilterDescriptor&gt;
+                {
+                    new GridFilterDescriptor
+                    {
+                        Field = "Status",
+                        Operator = GridFilterOperator.Equals,
+                        Value = value
+                    }
+                }
+                : new List&lt;GridFilterDescriptor&gt;()
+        };
     }
 }</code></pre>
             </div>
@@ -244,49 +255,63 @@
 
     private void SortByAmount()
     {
-        sortState.SortDescriptors.Clear();
-        sortState.SortDescriptors.Add(new GridSortDescriptor
+        sortState = new GridState
         {
-            Field = "Amount",
-            Direction = GridSortDirection.Descending,
-            Order = 0
-        });
+            SortDescriptors = new List<GridSortDescriptor>
+            {
+                new GridSortDescriptor
+                {
+                    Field = "Amount",
+                    Direction = GridSortDirection.Descending,
+                    Order = 0
+                }
+            }
+        };
     }
 
     private void SortByDate()
     {
-        sortState.SortDescriptors.Clear();
-        sortState.SortDescriptors.Add(new GridSortDescriptor
+        sortState = new GridState
         {
-            Field = "OrderDate",
-            Direction = GridSortDirection.Descending,
-            Order = 0
-        });
+            SortDescriptors = new List<GridSortDescriptor>
+            {
+                new GridSortDescriptor
+                {
+                    Field = "OrderDate",
+                    Direction = GridSortDirection.Descending,
+                    Order = 0
+                }
+            }
+        };
     }
 
     private void ClearSort()
     {
-        sortState.SortDescriptors.Clear();
+        sortState = new GridState();
     }
 
     private void ApplyStatusFilter(string? value)
     {
-        filterState.FilterDescriptors.Clear();
-        if (value != null && value != "all")
+        filterState = new GridState
         {
-            filterState.FilterDescriptors.Add(new GridFilterDescriptor
-            {
-                Field = "Status",
-                Operator = GridFilterOperator.Equals,
-                Value = value
-            });
-        }
+            FilterDescriptors = value != null && value != "all"
+                ? new List<GridFilterDescriptor>
+                {
+                    new GridFilterDescriptor
+                    {
+                        Field = "Status",
+                        Operator = GridFilterOperator.Equals,
+                        Value = value
+                    }
+                }
+                : new List<GridFilterDescriptor>()
+        };
     }
 
     private void ClearFilters()
     {
         statusFilter = "all";
-        filterState.FilterDescriptors.Clear();
+        filterState = new GridState();
     }
 
     private void HandleSortStateChanged(GridState newState)

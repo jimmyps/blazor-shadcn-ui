@@ -30,6 +30,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     private GridDensity _previousDensity;
     private GridStyle _previousVisualStyle;
     
+    // State tracking for programmatic updates
+    private GridState? _previousInitialState;
+    
     // Observable Collection support
     private IEnumerable<TItem> _currentItems = Array.Empty<TItem>();
     private IDisposable? _collectionSubscription;
@@ -240,6 +243,15 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             
             var mergedParams = GetMergedThemeParams();
             await _gridRenderer.UpdateThemeAsync(Theme, mergedParams);
+        }
+        
+        // ✅ Detect InitialState changes and apply them
+        // This enables controlled sort/filter scenarios where state is changed programmatically
+        if (InitialState != _previousInitialState && InitialState != null)
+        {
+            Console.WriteLine("[Grid] InitialState changed - applying new state");
+            _previousInitialState = InitialState;
+            await _gridRenderer.UpdateStateAsync(InitialState);
         }
 
         // Check if Items collection instance changed (reference comparison)

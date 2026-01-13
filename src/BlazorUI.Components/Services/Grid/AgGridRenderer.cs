@@ -75,6 +75,13 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             _gridInstance = await _jsModule.InvokeAsync<IJSObjectReference>(
                 "createGrid", element, config, _dotNetRef);
             Console.WriteLine("[AgGridRenderer] Grid instance created successfully");
+            
+            // ✅ Apply initial state if provided
+            if (definition.InitialState != null)
+            {
+                Console.WriteLine("[AgGridRenderer] Applying initial state");
+                await UpdateStateAsync(definition.InitialState);
+            }
         }
         catch (Exception ex)
         {
