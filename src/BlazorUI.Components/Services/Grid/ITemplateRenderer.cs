@@ -16,4 +16,11 @@ public interface ITemplateRenderer
     /// <param name="context">The context item to pass to the template.</param>
     /// <returns>The rendered HTML string.</returns>
     Task<string> RenderToStringAsync<TItem>(RenderFragment<TItem> template, TItem context);
+
+    /// <summary>
+    /// Renders a RenderFragment to an HTML string (no context).
+    /// </summary>
+    /// <param name="template">The template to render.</param>
+    /// <returns>The rendered HTML string.</returns>
+    Task<string> RenderToStringAsync(RenderFragment template);
 }

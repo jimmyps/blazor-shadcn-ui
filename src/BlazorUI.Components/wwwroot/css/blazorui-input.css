@@ -148,10 +148,10 @@
     will-change: height;
   }
 
-  .height-animation-container [role="listbox"] {
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
+    .height-animation-container [role="listbox"] {
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
 
   /* ScrollArea Shadows */
   .scroll-shadow {
@@ -237,13 +237,13 @@
     @apply opacity-0;
   }
 
-  .dialog-item.is-visible {
-    @apply motion-safe:animate-dialog-item-in opacity-100;
-  }
+    .dialog-item.is-visible {
+      @apply motion-safe:animate-dialog-item-in opacity-100;
+    }
 
-  .dialog-item.is-hidden {
-    @apply motion-safe:animate-dialog-item-out;
-  }
+    .dialog-item.is-hidden {
+      @apply motion-safe:animate-dialog-item-out;
+    }
 
   /* Reduced motion fallbacks */
   @media (prefers-reduced-motion: reduce) {
@@ -253,107 +253,6 @@
       animation: none !important;
       transition: none !important;
     }
-  }
-
-  /* ============================================
-     AG GRID THEME CUSTOMIZATIONS
-     Apply BlazorUI color tokens to all AG Grid themes
-     ============================================ */
-
-  /* Alpine Theme */
-  .ag-theme-alpine {
-    --ag-background-color: var(--background);
-    --ag-foreground-color: var(--foreground);
-    --ag-border-color: var(--border);
-    --ag-header-background-color: var(--muted);
-    --ag-header-foreground-color: var(--muted-foreground);
-    --ag-odd-row-background-color: var(--background);
-    --ag-row-hover-color: var(--accent);
-    --ag-selected-row-background-color: var(--primary);
-    --ag-range-selection-border-color: var(--ring);
-  }
-
-  /* Balham Theme */
-  .ag-theme-balham {
-    --ag-background-color: var(--background);
-    --ag-foreground-color: var(--foreground);
-    --ag-border-color: var(--border);
-    --ag-header-background-color: var(--muted);
-    --ag-header-foreground-color: var(--muted-foreground);
-    --ag-odd-row-background-color: var(--background);
-    --ag-row-hover-color: var(--accent);
-    --ag-selected-row-background-color: var(--primary);
-    --ag-range-selection-border-color: var(--ring);
-  }
-
-  /* Material Theme */
-  .ag-theme-material {
-    --ag-background-color: var(--background);
-    --ag-foreground-color: var(--foreground);
-    --ag-border-color: var(--border);
-    --ag-header-background-color: var(--muted);
-    --ag-header-foreground-color: var(--muted-foreground);
-    --ag-odd-row-background-color: var(--background);
-    --ag-row-hover-color: var(--accent);
-    --ag-selected-row-background-color: var(--primary);
-    --ag-range-selection-border-color: var(--ring);
-  }
-
-  /* Quartz Theme */
-  .ag-theme-quartz {
-    --ag-background-color: var(--background);
-    --ag-foreground-color: var(--foreground);
-    --ag-border-color: var(--border);
-    --ag-header-background-color: var(--muted);
-    --ag-header-foreground-color: var(--muted-foreground);
-    --ag-odd-row-background-color: var(--background);
-    --ag-row-hover-color: var(--accent);
-    --ag-selected-row-background-color: var(--primary);
-    --ag-range-selection-border-color: var(--ring);
-  }
-
-  /* ============================================
-     GRID STYLE MODIFIERS (work with all AG themes)
-     ============================================ */
-
-  /* Striped rows modifier */
-  .grid-striped {
-    --ag-odd-row-background-color: var(--muted);
-  }
-
-  /* Bordered theme modifier */
-  .grid-bordered .ag-cell {
-    border-right: 1px solid var(--border) !important;
-  }
-
-  .grid-bordered .ag-header-cell {
-    border-right: 1px solid var(--border) !important;
-  }
-
-  /* Minimal theme modifier - minimal borders */
-  .grid-minimal {
-    --ag-borders: none;
-    --ag-row-border-width: 0px;
-    border: none;
-  }
-
-  /* ============================================
-     GRID DENSITY MODIFIERS (work with all AG themes)
-     ============================================ */
-
-  /* Compact density */
-  .grid-compact {
-    --ag-grid-size: 3px !important;  /* Reduces padding/spacing */
-  }
-
-  /* Comfortable density (default) */
-  .grid-comfortable {
-    --ag-grid-size: 4px !important;
-  }
-
-  /* Spacious density */
-  .grid-spacious {
-    --ag-grid-size: 6px !important;
   }
 }
 

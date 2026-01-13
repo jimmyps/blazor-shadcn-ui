@@ -50,6 +50,14 @@ public class GridDefinition<TItem>
     public int PageSize { get; set; } = 25;
 
     /// <summary>
+    /// Gets or sets the property name to use as the unique row identifier.
+    /// This is critical for row selection persistence across data updates.
+    /// Common values: "Id" (C# convention), "id" (JavaScript convention), "_id" (MongoDB).
+    /// If not specified, defaults to "Id".
+    /// </summary>
+    public string IdField { get; set; } = "Id";
+
+    /// <summary>
     /// Gets or sets the initial state of the grid.
     /// </summary>
     public GridState? InitialState { get; set; }
@@ -70,6 +78,12 @@ public class GridDefinition<TItem>
     public EventCallback<IReadOnlyCollection<TItem>> OnSelectionChanged { get; set; }
 
     /// <summary>
+    /// Gets or sets the callback for two-way binding of selected items.
+    /// This enables @bind-SelectedItems support.
+    /// </summary>
+    public EventCallback<IReadOnlyCollection<TItem>> SelectedItemsChanged { get; set; }
+
+    /// <summary>
     /// Gets or sets the CSS class to apply to the grid container.
     /// </summary>
     public string? Class { get; set; }
@@ -85,7 +99,24 @@ public class GridDefinition<TItem>
     public string? LocalizationKeyPrefix { get; set; }
 
     /// <summary>
+    /// Gets or sets theme parameters for AG Grid's withParams API.
+    /// </summary>
+    public Dictionary<string, object>? ThemeParams { get; set; }
+
+    /// <summary>
     /// Gets or sets additional metadata for the renderer.
     /// </summary>
     public Dictionary<string, object?> Metadata { get; set; } = new();
+    
+    /// <summary>
+    /// Gets or sets a callback to resolve item IDs back to original instances.
+    /// Used by renderers to convert deserialized items (from JSON) to original references.
+    /// This enables natural C# collection operations like Remove(item) to work correctly.
+    /// </summary>
+    /// <remarks>
+    /// When AG Grid (or other renderers) serialize items to JSON and deserialize them back,
+    /// they create NEW instances. This callback allows the renderer to get the ORIGINAL
+    /// instances from the Grid's Items collection by matching on ID values.
+    /// </remarks>
+    public Func<IEnumerable<object>, IEnumerable<TItem>>? ResolveItemsByIds { get; set; }
 }

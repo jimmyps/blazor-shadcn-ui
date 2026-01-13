@@ -26,19 +26,76 @@ public class TemplateRenderer : ITemplateRenderer
     {
         if (template == null)
         {
+            Console.WriteLine("[TemplateRenderer] Template is null");
             return string.Empty;
         }
+
+        if (context == null)
+        {
+            Console.WriteLine("[TemplateRenderer] Context is null");
+            return string.Empty;
+        }
+
+        Console.WriteLine($"[TemplateRenderer] Rendering template for context type: {context.GetType().Name}");
 
         await using var htmlRenderer = new HtmlRenderer(_serviceProvider, NullLoggerFactory.Instance);
 
         var parameters = ParameterView.Empty;
         var html = await htmlRenderer.Dispatcher.InvokeAsync(async () =>
         {
-            var output = await htmlRenderer.RenderComponentAsync<TemplateWrapper<TItem>>(
+            try
+            {
+                var output = await htmlRenderer.RenderComponentAsync<TemplateWrapper<TItem>>(
+                    ParameterView.FromDictionary(new Dictionary<string, object?>
+                    {
+                        [nameof(TemplateWrapper<TItem>.Template)] = template,
+                        [nameof(TemplateWrapper<TItem>.Context)] = context
+                    }));
+
+                var htmlString = output.ToHtmlString();
+                Console.WriteLine($"[TemplateRenderer] Rendered HTML length: {htmlString.Length}");
+                if (htmlString.Length > 0 && htmlString.Length < 500)
+                {
+                    Console.WriteLine($"[TemplateRenderer] Rendered HTML: {htmlString}");
+                }
+                else if (htmlString.Length >= 500)
+                {
+                    Console.WriteLine($"[TemplateRenderer] Rendered HTML (truncated): {htmlString.Substring(0, 500)}...");
+                }
+                else
+                {
+                    Console.WriteLine("[TemplateRenderer] WARNING: Rendered HTML is empty!");
+                }
+                
+                return htmlString;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[TemplateRenderer] Error during rendering: {ex.Message}");
+                Console.WriteLine($"[TemplateRenderer] Stack trace: {ex.StackTrace}");
+                throw;
+            }
+        });
+
+        return html;
+    }
+
+    /// <inheritdoc/>
+    public async Task<string> RenderToStringAsync(RenderFragment template)
+    {
+        if (template == null)
+        {
+            return string.Empty;
+        }
+
+        await using var htmlRenderer = new HtmlRenderer(_serviceProvider, NullLoggerFactory.Instance);
+
+        var html = await htmlRenderer.Dispatcher.InvokeAsync(async () =>
+        {
+            var output = await htmlRenderer.RenderComponentAsync<SimpleTemplateWrapper>(
                 ParameterView.FromDictionary(new Dictionary<string, object?>
                 {
-                    [nameof(TemplateWrapper<TItem>.Template)] = template,
-                    [nameof(TemplateWrapper<TItem>.Context)] = context
+                    [nameof(SimpleTemplateWrapper.Template)] = template
                 }));
 
             return output.ToHtmlString();
@@ -64,6 +121,24 @@ public class TemplateRenderer : ITemplateRenderer
             if (Template != null && Context != null)
             {
                 builder.AddContent(0, Template(Context));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Wrapper component that renders a template without context.
+    /// Internal helper for rendering templates to HTML.
+    /// </summary>
+    private class SimpleTemplateWrapper : ComponentBase
+    {
+        [Parameter]
+        public RenderFragment? Template { get; set; }
+
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
+        {
+            if (Template != null)
+            {
+                builder.AddContent(0, Template);
             }
         }
     }

@@ -20,6 +20,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
     private DotNetObjectReference<AgGridRenderer<TItem>>? _dotNetRef;
     private GridDefinition<TItem>? _currentDefinition;
     private readonly Dictionary<string, RenderFragment<TItem>> _templates = new();
+    private readonly Dictionary<string, RenderFragment> _headerTemplates = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AgGridRenderer{TItem}"/> class.
@@ -38,21 +39,30 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         Console.WriteLine("[AgGridRenderer] InitializeAsync called");
         
         _jsModule = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/BlazorUI.Components/js/aggrid-renderer.js");
+            "import", "./_content/BlazorUI.Components/js/grid/aggrid-renderer.js");
         Console.WriteLine("[AgGridRenderer] JS module imported");
 
         _dotNetRef = DotNetObjectReference.Create(this);
         _currentDefinition = definition;
 
-        // Store templates for later rendering
+        // Store cell templates for later rendering
         _templates.Clear();
+        _headerTemplates.Clear();
+        Console.WriteLine($"[AgGridRenderer] Storing templates for {definition.Columns.Count} columns:");
         foreach (var column in definition.Columns)
         {
             if (column.CellTemplate != null)
             {
                 _templates[column.Id] = column.CellTemplate;
+                Console.WriteLine($"[AgGridRenderer]   - Stored CELL template for column ID: '{column.Id}'");
+            }
+            if (column.HeaderTemplate != null)
+            {
+                _headerTemplates[column.Id] = column.HeaderTemplate;
+                Console.WriteLine($"[AgGridRenderer]   - Stored HEADER template for column ID: '{column.Id}'");
             }
         }
+        Console.WriteLine($"[AgGridRenderer] Total templates stored: {_templates.Count} cell, {_headerTemplates.Count} header");
 
         var config = BuildAgGridConfig(definition);
         Console.WriteLine($"[AgGridRenderer] Config built with {definition.Columns.Count} columns");
@@ -81,25 +91,147 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         
         if (_gridInstance != null)
         {
-            // Convert to list to ensure it's serializable
+            // Convert to list and enhance with formatted values
             var dataList = data?.ToList() ?? new List<TItem>();
             Console.WriteLine($"[AgGridRenderer] Setting row data: {dataList.Count} rows");
             
-            if (dataList.Any())
+            // Enhance data with formatted properties based on column definitions
+            var enhancedData = EnhanceDataWithFormatting(dataList);
+            
+            if (enhancedData.Any())
             {
                 // Log first item to verify data structure
-                var firstItem = dataList.First();
-                Console.WriteLine($"[AgGridRenderer] First item type: {firstItem?.GetType().Name}");
-                Console.WriteLine($"[AgGridRenderer] First item JSON: {System.Text.Json.JsonSerializer.Serialize(firstItem)}");
+                var firstItem = enhancedData.First();
+                // Console.WriteLine($"[AgGridRenderer] First item keys: {string.Join(", ", ((IDictionary<string, object?>)firstItem).Keys)}");
             }
             
-            await _gridInstance.InvokeVoidAsync("setRowData", dataList);
+            await _gridInstance.InvokeVoidAsync("setRowData", enhancedData);
             Console.WriteLine("[AgGridRenderer] Row data set successfully");
         }
         else
         {
             Console.WriteLine("[AgGridRenderer] Grid instance is null, cannot set data");
         }
+    }
+    
+    /// <inheritdoc/>
+    public async Task ApplyTransactionAsync(GridTransaction<TItem> transaction)
+    {
+        if (_gridInstance == null)
+        {
+            Console.WriteLine("[AgGridRenderer] Grid instance is null, cannot apply transaction");
+            return;
+        }
+        
+        if (!transaction.HasChanges)
+        {
+            Console.WriteLine("[AgGridRenderer] Transaction has no changes, skipping");
+            return;
+        }
+        
+        Console.WriteLine($"[AgGridRenderer] Applying transaction: +{transaction.Add?.Count ?? 0} -{transaction.Remove?.Count ?? 0} ~{transaction.Update?.Count ?? 0}");
+        
+        // Enhance data with formatting before sending to AG Grid
+        var transactionData = new
+        {
+            add = transaction.Add != null ? EnhanceDataWithFormatting(transaction.Add) : null,
+            remove = transaction.Remove != null ? EnhanceDataWithFormatting(transaction.Remove) : null,
+            update = transaction.Update != null ? EnhanceDataWithFormatting(transaction.Update) : null
+        };
+        
+        await _gridInstance.InvokeVoidAsync("applyTransaction", transactionData);
+        Console.WriteLine("[AgGridRenderer] Transaction applied successfully");
+    }
+
+    /// <summary>
+    /// Enhances data objects with formatted string properties for columns with DataFormatString.
+    /// Adds {field}_formatted properties alongside original values.
+    /// </summary>
+    private List<object> EnhanceDataWithFormatting(List<TItem> data)
+    {
+        // If no columns have DataFormatString, return original data
+        var columnsWithFormatting = _currentDefinition?.Columns
+            .Where(c => !string.IsNullOrEmpty(c.DataFormatString) && !string.IsNullOrEmpty(c.Field))
+            .ToList();
+        
+        if (columnsWithFormatting == null || !columnsWithFormatting.Any())
+        {
+            return data.Cast<object>().ToList();
+        }
+
+        var enhancedData = new List<object>();
+        var itemType = typeof(TItem);
+        var properties = itemType.GetProperties();
+        
+        foreach (var item in data)
+        {
+            var dict = new Dictionary<string, object?>();
+            
+            // Copy all properties from the original item
+            foreach (var prop in properties)
+            {
+                var value = prop.GetValue(item);
+                var fieldName = ToCamelCase(prop.Name);
+                dict[fieldName] = value;
+            }
+            
+            // Add formatted properties for columns with DataFormatString
+            foreach (var column in columnsWithFormatting)
+            {
+                var fieldName = ToCamelCase(column.Field!);
+                var formattedFieldName = $"{fieldName}_formatted";
+                
+                // Get the property by name
+                var property = properties.FirstOrDefault(p => 
+                    string.Equals(p.Name, column.Field, StringComparison.OrdinalIgnoreCase));
+                
+                if (property != null)
+                {
+                    try
+                    {
+                        var rawValue = property.GetValue(item);
+                        if (rawValue != null)
+                        {
+                            // Use .NET formatting to create the formatted string
+                            var formattedValue = FormatValue(rawValue, column.DataFormatString!);
+                            dict[formattedFieldName] = formattedValue;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[AgGridRenderer] Failed to format field '{column.Field}' with format '{column.DataFormatString}': {ex.Message}");
+                    }
+                }
+            }
+            
+            enhancedData.Add(dict);
+        }
+        
+        return enhancedData;
+    }
+
+    /// <summary>
+    /// Formats a value using .NET format strings.
+    /// </summary>
+    private string FormatValue(object value, string formatString)
+    {
+        // Remove composite format wrapper if present (e.g., "{0:C}" -> "C")
+        var cleanFormat = formatString.Replace("{0:", "").TrimEnd('}');
+        
+        // Handle IFormattable types (numbers, dates, etc.)
+        if (value is IFormattable formattable)
+        {
+            return formattable.ToString(cleanFormat, System.Globalization.CultureInfo.CurrentCulture);
+        }
+        
+        // Fallback to string.Format for composite formats
+        if (formatString.Contains("{0"))
+        {
+            return string.Format(formatString, value);
+        }
+        
+        // Last resort: ToString
+        return value.ToString() ?? string.Empty;
     }
 
     /// <inheritdoc/>
@@ -119,6 +251,27 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             return await _gridInstance.InvokeAsync<GridState>("getState");
         }
         return new GridState();
+    }
+
+    /// <inheritdoc/>
+    public async Task UpdateThemeAsync(GridTheme theme, Dictionary<string, object>? themeParams)
+    {
+        if (_gridInstance == null)
+        {
+            Console.WriteLine("[AgGridRenderer] Cannot update theme - grid instance is null");
+            return;
+        }
+        
+        Console.WriteLine($"[AgGridRenderer] Updating theme to {theme}");
+        
+        var themeUpdate = new
+        {
+            theme = theme.ToString(),
+            themeParams = themeParams ?? new Dictionary<string, object>()
+        };
+        
+        await _gridInstance.InvokeVoidAsync("setGridOptions", themeUpdate);
+        Console.WriteLine("[AgGridRenderer] Theme update completed");
     }
 
     /// <summary>
@@ -160,21 +313,107 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
 
     /// <summary>
     /// Called by JavaScript when selection changes.
+    /// ✅ CRITICAL: Resolves deserialized items back to original instances from Items collection.
+    /// AG Grid sends JSON-deserialized objects (new instances), but we need to return the ORIGINAL
+    /// instances from the data source so that developer code like `collection.Remove(item)` works.
     /// </summary>
-    /// <param name="selectedItems">The selected items as JSON elements.</param>
+    /// <param name="selectedItems">The selected items as JSON elements (deserialized - NEW instances).</param>
     [JSInvokable]
     public async Task OnSelectionChanged(List<JsonElement> selectedItems)
     {
+        // Use case-insensitive deserialization to handle camelCase (JS) to PascalCase (C#) conversion
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true  // Critical: Maps camelCase JSON to PascalCase C# properties
+        };
+        
+        // Deserialize JSON elements to typed items (these are NEW instances, not originals!)
+        var deserializedItems = selectedItems
+            .Select(json => JsonSerializer.Deserialize<TItem>(json.GetRawText(), jsonOptions))
+            .Where(item => item != null)
+            .Cast<TItem>()
+            .ToList();
+        
+        // ✅ CRITICAL FIX: Resolve deserialized items back to ORIGINAL instances from Items collection
+        // This ensures that developer code like `collection.Remove(selectedItem)` works correctly
+        // because the items in SelectedItems will be the same references as in the source collection
+        var originalItems = ResolveToOriginalInstances(deserializedItems);
+        
+        var readOnlyItems = originalItems.AsReadOnly();
+        
+        // Invoke both callbacks for proper two-way binding support
         if (_currentDefinition?.OnSelectionChanged.HasDelegate == true)
         {
-            // Deserialize JSON elements to typed items
-            var typedItems = selectedItems
-                .Select(json => JsonSerializer.Deserialize<TItem>(json.GetRawText()))
-                .Where(item => item != null)
-                .Cast<TItem>()
+            await _currentDefinition.OnSelectionChanged.InvokeAsync(readOnlyItems);
+        }
+        
+        // CRITICAL: Also invoke SelectedItemsChanged for @bind-SelectedItems support
+        if (_currentDefinition?.SelectedItemsChanged.HasDelegate == true)
+        {
+            await _currentDefinition.SelectedItemsChanged.InvokeAsync(readOnlyItems);
+        }
+    }
+    
+    /// <summary>
+    /// Resolves deserialized items (new instances from JSON) back to the original instances
+    /// from the Items collection using ID-based matching.
+    /// This is CRITICAL for enabling natural C# collection operations like Remove(item).
+    /// </summary>
+    /// <param name="deserializedItems">Items deserialized from JSON (new instances).</param>
+    /// <returns>Original instances from the Items collection.</returns>
+    private List<TItem> ResolveToOriginalInstances(List<TItem> deserializedItems)
+    {
+        if (deserializedItems.Count == 0)
+        {
+            return new List<TItem>();
+        }
+        
+        // Check if the Grid provided a callback to resolve items by IDs
+        if (_currentDefinition?.ResolveItemsByIds == null)
+        {
+            Console.WriteLine("[AgGridRenderer] WARNING: ResolveItemsByIds callback not provided. " +
+                            "Returning deserialized items (this may break .Remove() operations).");
+            return deserializedItems;
+        }
+        
+        // Get the IdField property name (defaults to "Id")
+        var idField = _currentDefinition.IdField ?? "Id";
+        var itemType = typeof(TItem);
+        var idProperty = itemType.GetProperty(idField);
+        
+        if (idProperty == null)
+        {
+            Console.WriteLine($"[AgGridRenderer] WARNING: IdField '{idField}' not found on type '{itemType.Name}'. " +
+                            "Returning deserialized items (this may break .Remove() operations).");
+            return deserializedItems;
+        }
+        
+        try
+        {
+            // Extract IDs from deserialized items
+            var ids = deserializedItems
+                .Select(item => idProperty.GetValue(item))
+                .Where(id => id != null)
                 .ToList();
             
-            await _currentDefinition.OnSelectionChanged.InvokeAsync(typedItems.AsReadOnly());
+            if (ids.Count == 0)
+            {
+                Console.WriteLine("[AgGridRenderer] WARNING: No valid IDs found in deserialized items");
+                return deserializedItems;
+            }
+            
+            // ✅ Use the callback to resolve IDs back to original instances
+            var originalItems = _currentDefinition.ResolveItemsByIds(ids!).ToList();
+            
+            Console.WriteLine($"[AgGridRenderer] Resolved {originalItems.Count}/{deserializedItems.Count} items to original instances");
+            return originalItems;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AgGridRenderer] ERROR resolving items to original instances: {ex.Message}");
+            Console.WriteLine($"[AgGridRenderer] Stack trace: {ex.StackTrace}");
+            return deserializedItems;  // Fallback
         }
     }
 
@@ -191,32 +430,147 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         // Check if template renderer is available
         if (_templateRenderer == null)
         {
+            Console.WriteLine($"[AgGridRenderer] Template renderer is null for column '{templateId}'");
             return null; // Fall back to field-based rendering
         }
 
         // Check if template exists for this column
         if (!_templates.TryGetValue(templateId, out var template))
         {
+            Console.WriteLine($"[AgGridRenderer] No template found for column '{templateId}'");
+            Console.WriteLine($"[AgGridRenderer] Available template IDs: {string.Join(", ", _templates.Keys.Select(k => $"'{k}'"))}");
             return null; // Fall back to field-based rendering
         }
 
         try
         {
+            // Use camelCase naming policy to match Blazor's JS interop serialization
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true
+            };
+            
+            var rawJson = data.GetRawText();
+            Console.WriteLine($"[AgGridRenderer] Deserializing data for template '{templateId}': {rawJson}");
+            
             // Deserialize JSON to typed item
-            var item = JsonSerializer.Deserialize<TItem>(data.GetRawText());
+            var item = JsonSerializer.Deserialize<TItem>(rawJson, jsonOptions);
             if (item == null)
             {
+                Console.WriteLine($"[AgGridRenderer] Deserialization returned null for column '{templateId}'");
                 return null;
             }
             
+            Console.WriteLine($"[AgGridRenderer] Successfully deserialized item of type {item.GetType().Name}");
+            
             // Render template to HTML string
             var html = await _templateRenderer.RenderToStringAsync(template, item);
+            Console.WriteLine($"[AgGridRenderer] Template rendered successfully for column '{templateId}', HTML length: {html?.Length ?? 0}");
             return html;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[AgGridRenderer] Template rendering failed for column '{templateId}': {ex.Message}");
+            Console.WriteLine($"[AgGridRenderer] Stack trace: {ex.StackTrace}");
             return null; // Fall back to field-based rendering
+        }
+    }
+
+    /// <summary>
+    /// Called by JavaScript to render a header template.
+    /// Returns the HTML string for the header template.
+    /// </summary>
+    /// <param name="templateId">The column ID containing the template.</param>
+    /// <returns>HTML string representing the rendered header template.</returns>
+    [JSInvokable]
+    public async Task<string?> RenderHeaderTemplate(string templateId)
+    {
+        // Check if template renderer is available
+        if (_templateRenderer == null)
+        {
+            return null; // Fall back to headerName
+        }
+
+        // Check if template exists for this column
+        if (!_headerTemplates.TryGetValue(templateId, out var template))
+        {
+            return null; // Fall back to headerName
+        }
+
+        try
+        {
+            // Render header template to HTML string (no context needed)
+            var html = await _templateRenderer.RenderToStringAsync(template);
+            return html;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AgGridRenderer] Header template rendering failed for column '{templateId}': {ex.Message}");
+            return null; // Fall back to headerName
+        }
+    }
+
+    /// <summary>
+    /// Called by JavaScript when a cell action is triggered (via data-action attribute).
+    /// </summary>
+    /// <param name="action">The action name (method name to invoke).</param>
+    /// <param name="data">The row data as JSON element.</param>
+    [JSInvokable]
+    public async Task HandleCellAction(string action, JsonElement data)
+    {
+        Console.WriteLine($"[AgGridRenderer] HandleCellAction called: action='{action}'");
+        
+        if (_currentDefinition?.Metadata == null)
+        {
+            Console.WriteLine("[AgGridRenderer] No metadata available for action handling");
+            return;
+        }
+
+        // Check if action handler is registered in metadata
+        var actionKey = $"CellAction_{action}";
+        if (!_currentDefinition.Metadata.TryGetValue(actionKey, out var handler))
+        {
+            Console.WriteLine($"[AgGridRenderer] No handler registered for action '{action}'");
+            return;
+        }
+
+        try
+        {
+            // Deserialize row data
+            var jsonOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true
+            };
+            
+            var item = JsonSerializer.Deserialize<TItem>(data.GetRawText(), jsonOptions);
+            if (item == null)
+            {
+                Console.WriteLine($"[AgGridRenderer] Failed to deserialize data for action '{action}'");
+                return;
+            }
+
+            Console.WriteLine($"[AgGridRenderer] Invoking action handler for '{action}'");
+            
+            // Invoke the action handler
+            if (handler is Func<TItem, Task> asyncFunc)
+            {
+                await asyncFunc(item);
+            }
+            else if (handler is Action<TItem> syncAction)
+            {
+                syncAction(item);
+            }
+            else
+            {
+                Console.WriteLine($"[AgGridRenderer] Handler for '{action}' is not a valid type");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AgGridRenderer] Action handler failed for '{action}': {ex.Message}");
+            Console.WriteLine($"[AgGridRenderer] Stack trace: {ex.StackTrace}");
         }
     }
 
@@ -225,12 +579,14 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         // Convert GridDefinition to AG Grid column defs and options
         var columnDefs = definition.Columns.Select(col => new
         {
-            // Convert field name to camelCase to match JSON serialization
-            // C# property "Id" becomes JSON "id"
-            field = ToCamelCase(col.Field),
+            // For template-only columns (no Field), use colId instead of field
+            // This allows AG Grid to render the column without binding to data
+            colId = col.Id,
+            // Only set field if it exists - template-only columns don't need a field
+            field = !string.IsNullOrEmpty(col.Field) ? ToCamelCase(col.Field) : (string?)null,
             headerName = col.Header,
-            sortable = col.Sortable,
-            filter = col.Filterable,
+            sortable = col.Sortable && !string.IsNullOrEmpty(col.Field), // Can't sort without a field
+            filter = col.Filterable && !string.IsNullOrEmpty(col.Field), // Can't filter without a field
             width = ParseWidth(col.Width),
             minWidth = ParseWidth(col.MinWidth),
             maxWidth = ParseWidth(col.MaxWidth),
@@ -241,6 +597,11 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             // Template handling - will use HtmlRenderer when available
             cellRenderer = col.CellTemplate != null && _templateRenderer != null ? "templateRenderer" : null,
             cellRendererParams = col.CellTemplate != null && _templateRenderer != null ? new { templateId = col.Id } : null,
+            // Header template handling
+            headerComponent = col.HeaderTemplate != null && _templateRenderer != null ? "headerTemplateRenderer" : null,
+            headerComponentParams = col.HeaderTemplate != null && _templateRenderer != null ? new { templateId = col.Id } : null,
+            // Value formatting - use simple formatter that reads {field}_formatted property
+            valueFormatter = !string.IsNullOrEmpty(col.DataFormatString) && col.CellTemplate == null ? "formattedValueFormatter" : null,
             // ValueSelector mapped to valueGetter
             valueGetter = col.ValueSelector != null ? "valueGetter" : null
         }).ToArray();
@@ -248,7 +609,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         Console.WriteLine($"[AgGridRenderer] Column defs built:");
         foreach (var col in columnDefs)
         {
-            Console.WriteLine($"  - field: '{col.field}', headerName: '{col.headerName}'");
+            Console.WriteLine($"  - colId: '{col.colId}', field: '{col.field ?? "(none)"}', headerName: '{col.headerName}', cellRenderer: '{col.cellRenderer ?? "(none)"}'");
         }
 
         return new
@@ -262,7 +623,13 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
                           definition.PagingMode == GridPagingMode.InfiniteScroll ? "infinite" : "clientSide",
             // Enable row selection checkbox for multiple selection
             rowMultiSelectWithClick = definition.SelectionMode == GridSelectionMode.Multiple,
-            suppressRowClickSelection = definition.SelectionMode == GridSelectionMode.Multiple
+            suppressRowClickSelection = definition.SelectionMode == GridSelectionMode.Multiple,
+            // ✅ AG Grid v32.2+: ID field for stable row identification
+            // Used by getRowId function in JavaScript for selection persistence
+            idField = ToCamelCase(definition.IdField),
+            // Theme and theme parameters
+            theme = definition.Theme.ToString(),
+            themeParams = definition.ThemeParams
         };
     }
 
@@ -271,7 +638,16 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         if (string.IsNullOrEmpty(str) || str.Length == 0)
             return str;
 
-        // Convert first character to lowercase
+        // Don't modify if already camelCase or all lowercase
+        if (char.IsLower(str[0]))
+            return str;
+
+        // Convert PascalCase to camelCase
+        // Handle single character
+        if (str.Length == 1)
+            return char.ToLowerInvariant(str[0]).ToString();
+
+        // Standard conversion: first char to lowercase
         return char.ToLowerInvariant(str[0]) + str.Substring(1);
     }
 

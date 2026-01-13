@@ -1,120 +1,31 @@
 /**
  * AG Grid Renderer for BlazorUI
- * Auto-loads AG Grid Community from CDN and provides grid rendering
+ * Uses AG Grid ES modules with Theming API (no manual CSS loading needed)
  */
 
-// AG Grid version and CDN URLs
-const AG_GRID_VERSION = '31.0.1';
-const AG_GRID_CDN = `https://cdn.jsdelivr.net/npm/ag-grid-community@${AG_GRID_VERSION}/dist/ag-grid-community.min.js`;
-const AG_GRID_CSS = `https://cdn.jsdelivr.net/npm/ag-grid-community@${AG_GRID_VERSION}/styles/ag-grid.min.css`;
-const AG_GRID_THEME_CSS = `https://cdn.jsdelivr.net/npm/ag-grid-community@${AG_GRID_VERSION}/styles/ag-theme-alpine.min.css`;
 
-let agGridLoaded = false;
-let agGridLoadPromise = null;
+import { createGrid as agCreateGrid } from 'https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/package/main.esm.mjs';
+import { themeAlpine, themeBalham, themeQuartz } from 'https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/package/main.esm.mjs';
+
+import { createShadcnTheme } from './theme-shadcn.js';
 
 /**
- * Loads AG Grid library dynamically from CDN
+ * Gets the base AG Grid theme object
  */
-async function ensureAgGridLoaded() {
-    if (agGridLoaded) {
-        return;
+function getBaseTheme(themeName) {
+    switch (themeName) {
+        case 'Shadcn':
+        case 'Quartz':
+            return themeQuartz;
+        case 'Alpine':
+            return themeAlpine;
+        case 'Balham':
+            return themeBalham;
+        default:
+            return themeQuartz;
     }
-    
-    if (agGridLoadPromise) {
-        return agGridLoadPromise;
-    }
-    
-    agGridLoadPromise = (async () => {
-        try {
-            console.log('[AG Grid] Loading AG Grid from CDN...');
-            
-            // Load CSS files
-            await loadStylesheet(AG_GRID_CSS);
-            await loadStylesheet(AG_GRID_THEME_CSS);
-            
-            // Load AG Grid JavaScript
-            await loadScript(AG_GRID_CDN);
-            
-            // Wait for agGrid global to be available
-            await waitForGlobal('agGrid', 5000);
-            
-            agGridLoaded = true;
-            console.log('[AG Grid] AG Grid loaded successfully');
-        } catch (error) {
-            console.error('[AG Grid] Failed to load from CDN:', error);
-            agGridLoadPromise = null; // Reset promise to allow retry
-            throw new Error('AG Grid failed to load. Please check your internet connection and try again.');
-        }
-    })();
-    
-    return agGridLoadPromise;
 }
 
-/**
- * Dynamically loads a script from URL
- */
-function loadScript(url) {
-    return new Promise((resolve, reject) => {
-        // Check if already loaded
-        if (document.querySelector(`script[src="${url}"]`)) {
-            resolve();
-            return;
-        }
-        
-        const script = document.createElement('script');
-        script.src = url;
-        script.onload = resolve;
-        script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
-        document.head.appendChild(script);
-    });
-}
-
-/**
- * Dynamically loads a stylesheet from URL
- */
-function loadStylesheet(url) {
-    return new Promise((resolve, reject) => {
-        // Check if already loaded
-        if (document.querySelector(`link[href="${url}"]`)) {
-            resolve();
-            return;
-        }
-        
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = url;
-        link.onload = resolve;
-        link.onerror = () => reject(new Error(`Failed to load stylesheet: ${url}`));
-        document.head.appendChild(link);
-    });
-}
-
-/**
- * Waits for a global variable to be available
- */
-function waitForGlobal(globalName, timeout = 5000) {
-    return new Promise((resolve, reject) => {
-        if (window[globalName]) {
-            resolve();
-            return;
-        }
-        
-        const startTime = Date.now();
-        const checkInterval = setInterval(() => {
-            if (window[globalName]) {
-                clearInterval(checkInterval);
-                resolve();
-            } else if (Date.now() - startTime > timeout) {
-                clearInterval(checkInterval);
-                reject(new Error(`Timeout waiting for ${globalName} to load`));
-            }
-        }, 50);
-    });
-}
-
-/**
- * Custom cell renderer for Blazor templates
- */
 class BlazorTemplateCellRenderer {
     init(params) {
         this.eGui = document.createElement('div');
@@ -128,12 +39,26 @@ class BlazorTemplateCellRenderer {
         // Request template rendering from Blazor
         const templateId = params.colDef.cellRendererParams?.templateId;
         if (templateId && params.dotNetRef) {
-            this.renderTemplate(templateId, params.data);
+            // Get row data - params.data should always be available for all columns
+            const rowData = params.data || params.node?.data;
+            console.log('[AG Grid] Cell renderer init for template:', templateId);
+            console.log('[AG Grid] Has params.data:', !!params.data);
+            console.log('[AG Grid] Has params.node.data:', !!params.node?.data);
+            console.log('[AG Grid] Row data:', rowData);
+            
+            if (rowData) {
+                this.renderTemplate(templateId, rowData);
+            } else {
+                console.error('[AG Grid] No row data available for template:', templateId);
+                this.eGui.textContent = '[No data]';
+            }
         }
     }
     
     async renderTemplate(templateId, data) {
         try {
+            console.log('[AG Grid] Rendering template:', templateId, 'with data:', data);
+            
             // Request HTML from Blazor
             const html = await this.params.dotNetRef.invokeMethodAsync(
                 'RenderCellTemplate', 
@@ -142,18 +67,58 @@ class BlazorTemplateCellRenderer {
             );
             
             if (html) {
+                console.log('[AG Grid] Template rendered successfully, HTML length:', html.length);
                 this.eGui.innerHTML = html;
+                
+                // Add event delegation for data-action attributes
+                this.setupActionHandlers(data);
             } else {
+                console.warn('[AG Grid] Template renderer returned empty HTML for:', templateId);
                 // Fallback to field value
                 const field = this.params.colDef.field;
                 this.eGui.textContent = field ? this.params.data[field] : '';
             }
         } catch (error) {
             console.error('[AG Grid] Template rendering failed:', error);
+            console.error('[AG Grid] Error details:', error.message, error.stack);
             // Fallback to field value
             const field = this.params.colDef.field;
-            this.eGui.textContent = field ? this.params.data[field] : '';
+            this.eGui.textContent = field ? this.params.data[field] : '[Error]';
         }
+    }
+    
+    setupActionHandlers(rowData) {
+        // Remove existing listeners to prevent duplicates
+        if (this.actionClickHandler) {
+            this.eGui.removeEventListener('click', this.actionClickHandler);
+        }
+        
+        // Create new click handler
+        this.actionClickHandler = async (e) => {
+            // Find closest element with data-action attribute
+            const actionElement = e.target.closest('[data-action]');
+            if (!actionElement) return;
+            
+            // Prevent default behavior and stop propagation
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const action = actionElement.dataset.action;
+            console.log('[AG Grid] Cell action triggered:', action);
+            
+            try {
+                await this.params.dotNetRef.invokeMethodAsync(
+                    'HandleCellAction',
+                    action,
+                    rowData
+                );
+            } catch (error) {
+                console.error('[AG Grid] Failed to invoke cell action:', error);
+            }
+        };
+        
+        // Add the click listener
+        this.eGui.addEventListener('click', this.actionClickHandler);
     }
     
     getGui() {
@@ -165,14 +130,75 @@ class BlazorTemplateCellRenderer {
         const templateId = params.colDef.cellRendererParams?.templateId;
         if (templateId && params.dotNetRef) {
             this.params = params;
-            this.renderTemplate(templateId, params.data);
-            return true;
+            const rowData = params.data || params.node?.data;
+            if (rowData) {
+                this.renderTemplate(templateId, rowData);
+                return true;
+            }
         }
         return false;
     }
     
     destroy() {
-        // Cleanup
+        // Cleanup event listeners
+        if (this.actionClickHandler) {
+            this.eGui.removeEventListener('click', this.actionClickHandler);
+            this.actionClickHandler = null;
+        }
+    }
+}
+
+/**
+ * Custom header renderer for Blazor templates
+ */
+class BlazorTemplateHeaderRenderer {
+    init(params) {
+        this.eGui = document.createElement('div');
+        this.eGui.className = 'blazor-header-template';
+        this.params = params;
+        
+        // Request template rendering from Blazor
+        const templateId = params.templateId;
+        if (templateId && params.dotNetRef) {
+            this.renderTemplate(templateId);
+        }
+    }
+    
+    async renderTemplate(templateId) {
+        try {
+            console.log('[AG Grid] Rendering header template:', templateId);
+            
+            // Request HTML from Blazor
+            const html = await this.params.dotNetRef.invokeMethodAsync(
+                'RenderHeaderTemplate', 
+                templateId
+            );
+            
+            if (html) {
+                console.log('[AG Grid] Header template rendered successfully');
+                this.eGui.innerHTML = html;
+            } else {
+                console.warn('[AG Grid] Header template renderer returned empty HTML for:', templateId);
+                // Fallback to headerName
+                this.eGui.textContent = this.params.displayName || '';
+            }
+        } catch (error) {
+            console.error('[AG Grid] Header template rendering failed:', error);
+            // Fallback to headerName
+            this.eGui.textContent = this.params.displayName || '[Error]';
+        }
+    }
+    
+    getGui() {
+        return this.eGui;
+    }
+    
+    refresh(params) {
+        return false; // Header doesn't need refresh
+    }
+    
+    destroy() {
+        // Cleanup if needed
     }
 }
 
@@ -188,9 +214,6 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
         console.log('[AG Grid] elementOrRef type:', typeof elementOrRef);
         console.log('[AG Grid] elementOrRef:', elementOrRef);
         console.log('[AG Grid] elementOrRef constructor:', elementOrRef?.constructor?.name);
-        
-        // Ensure AG Grid is loaded before proceeding
-        await ensureAgGridLoaded();
         
         // Handle Blazor ElementReference
         // Blazor passes ElementReference as a plain object with __internalId
@@ -227,11 +250,30 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
         
         console.log('[AG Grid] DOM element validated successfully');
         
+        // Create theme with parameters
+        let theme;
+        let themeParams = config.themeParams || {};
+        
+        // For Shadcn theme, merge with dynamically read shadcn design tokens
+        if (config.theme === 'Shadcn') {
+            const shadcnDefaults = createShadcnTheme();
+            themeParams = { ...shadcnDefaults, ...themeParams };
+            theme = themeQuartz.withParams(themeParams);
+        } else {
+            const baseTheme = getBaseTheme(config.theme);
+            if (baseTheme && Object.keys(themeParams).length > 0) {
+                theme = baseTheme.withParams(themeParams);
+            } else {
+                theme = baseTheme;
+            }
+        }
+        
         // Build grid options with event handlers that will receive the API
         const gridOptions = buildGridOptionsWithEvents(config, dotNetRef);
+        gridOptions.theme = theme;
         
         // Create AG Grid instance - returns the API directly
-        const gridApi = window.agGrid.createGrid(element, gridOptions);
+        const gridApi = agCreateGrid(element, gridOptions);
         console.log('[AG Grid] Grid instance created successfully');
         console.log('[AG Grid] Grid API:', gridApi);
         
@@ -251,12 +293,63 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
                 console.log('[AG Grid] rowData set successfully');
             },
             
+            applyTransaction: (transaction) => {
+                console.log('[AG Grid] applyTransaction called');
+                console.log('[AG Grid] Transaction:', {
+                    add: transaction.add?.length || 0,
+                    remove: transaction.remove?.length || 0,
+                    update: transaction.update?.length || 0
+                });
+                
+                // AG Grid's applyTransaction expects { add, remove, update }
+                const result = gridApi.applyTransaction(transaction);
+                
+                console.log('[AG Grid] Transaction result:', {
+                    added: result.add?.length || 0,
+                    removed: result.remove?.length || 0,
+                    updated: result.update?.length || 0
+                });
+            },
+            
             applyState: (state) => {
-                applyGridState(gridApi, state);
+                applyGridState(gridApi, state, gridOptions);
             },
             
             getState: () => {
                 return getGridState(gridApi);
+            },
+            
+            setGridOptions: (options) => {
+                console.log('[AG Grid] setGridOptions called');
+                console.log('[AG Grid] Options:', options);
+                
+                // Handle theme updates specially
+                if (options.theme || options.themeParams) {
+                    const themeName = options.theme || config.theme;
+                    let themeParams = options.themeParams || {};
+                    
+                    console.log('[AG Grid] Updating theme:', themeName);
+                    console.log('[AG Grid] Theme params:', themeParams);
+                    
+                    // For Shadcn theme, merge with dynamically read shadcn design tokens
+                    if (themeName === 'Shadcn') {
+                        const shadcnDefaults = createShadcnTheme();
+                        themeParams = { ...shadcnDefaults, ...themeParams };
+                    }
+                    
+                    // Create new theme with parameters
+                    const baseTheme = getBaseTheme(themeName);
+                    const newTheme = baseTheme.withParams(themeParams);
+                    
+                    // Apply the new theme using setGridOption
+                    gridApi.setGridOption('theme', newTheme);
+                    console.log('[AG Grid] Theme updated successfully');
+                } else {
+                    // For other options, apply them directly
+                    Object.entries(options).forEach(([key, value]) => {
+                        gridApi.setGridOption(key, value);
+                    });
+                }
             },
             
             destroy: () => {
@@ -279,29 +372,115 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
     console.log('[AG Grid] buildGridOptionsWithEvents called');
     console.log('[AG Grid] config:', config);
     
-    // Register custom cell renderer
+    // Flag to prevent selection event during programmatic sync
+    let isSyncingSelection = false;
+    
+    // Register custom cell renderer and value formatter
     const components = {
-        templateRenderer: BlazorTemplateCellRenderer
+        templateRenderer: BlazorTemplateCellRenderer,
+        headerTemplateRenderer: BlazorTemplateHeaderRenderer
+    };
+    
+    // Add value formatter function for DataFormatString support
+    const valueFormatters = {
+        // Simple formatter that uses pre-formatted values from C#
+        // Looks for {field}_formatted property, falls back to raw value
+        formattedValueFormatter: (params) => {
+            const field = params.colDef.field;
+            if (!field) return params.value;
+            
+            const formattedField = `${field}_formatted`;
+            
+            // If formatted value exists, use it; otherwise use raw value
+            return params.data[formattedField] ?? params.value;
+        }
     };
     
     // Enhance column definitions with dotNetRef for templates
     const enhancedColumnDefs = config.columnDefs.map(col => {
         console.log('[AG Grid] Column def:', col);
-        return {
+        const enhanced = {
             ...col,
             cellRendererParams: col.cellRenderer === 'templateRenderer' 
                 ? { ...col.cellRendererParams, dotNetRef }
                 : col.cellRendererParams
         };
+        
+        // Also enhance header component params with dotNetRef
+        if (col.headerComponent === 'headerTemplateRenderer') {
+            enhanced.headerComponentParams = {
+                ...col.headerComponentParams,
+                dotNetRef
+            };
+        }
+        
+        // Add value formatter function if specified
+        if (col.valueFormatter === 'formattedValueFormatter') {
+            enhanced.valueFormatter = valueFormatters.formattedValueFormatter;
+        }
+        
+        return enhanced;
     });
+    
+    // ✅ AG Grid v32.2+ Migration: rowSelection as object instead of string
+    // Convert legacy string rowSelection to new object format
+    let rowSelectionConfig = config.rowSelection;
+    if (typeof config.rowSelection === 'string') {
+        // Map legacy string values to new object format
+        // "single" → { mode: 'singleRow' }
+        // "multiple" → { mode: 'multiRow' }
+        rowSelectionConfig = {
+            mode: config.rowSelection === 'multiple' ? 'multiRow' : 'singleRow',
+            enableClickSelection: true  // ✅ Replaces deprecated suppressRowClickSelection: false
+        };
+    }
+    
+    // ✅ AG Grid v32.2+: Provide getRowId for stable row identification
+    // This is CRITICAL for row selection persistence across data updates
+    // Developer specifies the ID field via config.idField (e.g., "Id", "ProductId", "OrderId")
+    const idField = config.idField || 'Id'; // Default to 'Id' if not specified
+    
+    const getRowIdFunc = (params) => {
+        if (!params.data) {
+            // Fallback to AG Grid's internal node ID if data is not available
+            return params.node?.id || `row-${params.node?.rowIndex ?? 0}`;
+        }
+        
+        // Try to get the ID from the specified field
+        const idValue = params.data[idField];
+        
+        if (idValue !== undefined && idValue !== null) {
+            // Convert to string to ensure consistent ID type
+            return String(idValue);
+        }
+        
+        // Fallback chain if specified field doesn't exist
+        // Try common conventions: Id, id, _id
+        const fallbackId = params.data.Id 
+            || params.data.id 
+            || params.data._id 
+            || params.node?.id;
+            
+        if (fallbackId !== undefined && fallbackId !== null) {
+            console.warn(`[AG Grid] IdField '${idField}' not found on row data, using fallback: ${fallbackId}`);
+            return String(fallbackId);
+        }
+        
+        // Last resort: use row index (not recommended for production)
+        console.error(`[AG Grid] No ID field found on row data. Specify config.idField or ensure data has 'Id' property.`);
+        return `row-${params.node?.rowIndex ?? 0}`;
+    };
     
     const gridOptions = {
         columnDefs: enhancedColumnDefs,
         rowData: [],
         components: components,
         
-        // Selection
-        rowSelection: config.rowSelection,
+        // ✅ AG Grid v32.2+: Use object-based rowSelection
+        rowSelection: rowSelectionConfig,
+        
+        // ✅ AG Grid v32.2+: Stable row IDs for selection persistence
+        getRowId: getRowIdFunc,
         
         // Pagination
         pagination: config.pagination,
@@ -318,9 +497,12 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
             resizable: true,
         },
         
-        // Enable features
-        enableRangeSelection: false,
-        suppressRowClickSelection: false,
+        // ✅ AG Grid v32.2+: Removed deprecated enableRangeSelection
+        // Cell/range selection is now controlled via cellSelection property
+        // Only add cellSelection if explicitly needed (we don't need it for basic functionality)
+        
+        // ✅ AG Grid v32.2+: Removed deprecated suppressRowClickSelection
+        // Now controlled via rowSelection.enableClickSelection (set above)
         
         // Event handlers - these receive events with the API attached
         onSortChanged: (event) => notifyStateChanged(event.api, dotNetRef),
@@ -331,13 +513,24 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         onColumnPinned: (event) => notifyStateChanged(event.api, dotNetRef),
         onColumnVisible: (event) => notifyStateChanged(event.api, dotNetRef),
         onSelectionChanged: (event) => {
+            // Skip event if we're currently syncing selection from parent
+            if (isSyncingSelection) {
+                console.log('[AG Grid] Skipping onSelectionChanged - currently syncing from parent');
+                return;
+            }
+            
             const selectedRows = event.api.getSelectedRows();
             dotNetRef.invokeMethodAsync('OnSelectionChanged', selectedRows)
                 .catch(err => console.error('[AG Grid] Selection callback failed:', err));
         },
+        
+        // Store the sync flag in grid options so applyGridState can access it
+        __isSyncingSelection: () => isSyncingSelection,
+        __setIsSyncingSelection: (value) => { isSyncingSelection = value; }
     };
     
     console.log('[AG Grid] Grid options built:', gridOptions);
+    console.log('[AG Grid] ID field configured:', idField);
     
     // Server-side datasource
     if (config.rowModelType === 'serverSide') {
@@ -507,6 +700,15 @@ function getGridState(api) {
     
     const selectedRows = api.getSelectedRows();
     
+    // ✅ AG Grid v32.2+: Get selected row IDs using getRowId
+    // AG Grid's getSelectedRows() returns the data objects with their IDs already resolved
+    // We just need to extract them using the same logic as getRowId
+    const selectedRowIds = selectedRows.map(row => {
+        // Try to extract the ID that was used by getRowId
+        // The grid should have already validated these IDs exist
+        return String(row.Id || row.id || row._id || 'unknown');
+    });
+    
     return {
         sortDescriptors: sortModel,
         filterDescriptors: filterDescriptors,
@@ -519,14 +721,14 @@ function getGridState(api) {
             pinned: col.pinned === 'left' ? 1 : col.pinned === 'right' ? 2 : 0, // None=0, Left=1, Right=2
             order: col.sortIndex || 0
         })),
-        selectedRowIds: selectedRows.map((row, index) => row.id || index)
+        selectedRowIds: selectedRowIds
     };
 }
 
 /**
  * Applies state to the grid
  */
-function applyGridState(api, state) {
+function applyGridState(api, state, gridOptions) {
     if (!api || !state) return;
     
     try {
@@ -566,6 +768,51 @@ function applyGridState(api, state) {
         // Apply pagination
         if (state.pageNumber) {
             api.paginationGoToPage(state.pageNumber - 1);
+        }
+        
+        // ✅ AG Grid v32.2+: Apply row selection using row IDs
+        // CRITICAL: Set sync flag to prevent onSelectionChanged from firing during programmatic sync
+        if (state.selectedRowIds !== undefined && state.selectedRowIds !== null) {
+            const setIsSyncingSelection = gridOptions?.__setIsSyncingSelection;
+            
+            // Set flag before applying selection
+            if (setIsSyncingSelection) {
+                setIsSyncingSelection(true);
+                console.log('[AG Grid] Setting isSyncingSelection = true');
+            }
+            
+            try {
+                // Clear current selection first
+                api.deselectAll();
+                
+                if (state.selectedRowIds.length > 0) {
+                    // Convert to Set for O(1) lookup performance
+                    const selectedRowIds = new Set(state.selectedRowIds.map(id => String(id)));
+                    
+                    console.log('[AG Grid] Selecting rows with IDs:', Array.from(selectedRowIds));
+                    
+                    // Iterate through all rows and select matching ones
+                    // AG Grid's getRowId will be used internally to match row IDs
+                    let selectedCount = 0;
+                    api.forEachNode((node) => {
+                        if (node.data && node.id && selectedRowIds.has(String(node.id))) {
+                            node.setSelected(true);
+                            selectedCount++;
+                        }
+                    });
+                    
+                    console.log('[AG Grid] Selected', selectedCount, 'rows');
+                }
+            } finally {
+                // Always clear the flag after selection is applied
+                // Use setTimeout to ensure the flag is cleared AFTER all selection events have been queued
+                if (setIsSyncingSelection) {
+                    setTimeout(() => {
+                        setIsSyncingSelection(false);
+                        console.log('[AG Grid] Setting isSyncingSelection = false');
+                    }, 0);
+                }
+            }
         }
     } catch (error) {
         console.error('[AG Grid] Failed to apply state:', error);

@@ -2,6 +2,8 @@ using BlazorUI.Components.Services.Grid;
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
+using System.Collections.Specialized;
 
 namespace BlazorUI.Components.Grid;
 
@@ -18,9 +20,33 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     private IGridRenderer<TItem>? _gridRenderer;
     private bool _initialized = false;
     private bool _columnsRegistered = false;
+    private bool _actionsRegistered = false;
+    private GridThemeParameters? _themeParameters;
+    private IReadOnlyCollection<TItem> _previousSelectedItems = Array.Empty<TItem>();
+    private bool _isUpdatingSelectionFromGrid = false;
+    
+    // Theme tracking for runtime updates
+    private GridTheme _previousTheme;
+    private GridDensity _previousDensity;
+    private GridStyle _previousVisualStyle;
+    
+    // Observable Collection support
+    private IEnumerable<TItem> _currentItems = Array.Empty<TItem>();
+    private IDisposable? _collectionSubscription;
+    private readonly List<NotifyCollectionChangedEventArgs> _pendingChanges = new();
+    private CancellationTokenSource? _batchCts;
+    private int _previousItemsHash = 0;
+    private Dictionary<object, TItem>? _previousItemsById; // Track items by ID for delta detection
 
     [Inject]
     private IServiceProvider ServiceProvider { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the host component that contains grid action methods.
+    /// Set this to 'this' to enable auto-discovery of methods marked with [GridAction].
+    /// </summary>
+    [Parameter]
+    public object? ActionHost { get; set; }
 
     /// <summary>
     /// Gets or sets the collection of items to display in the grid.
@@ -48,17 +74,26 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public int PageSize { get; set; } = 25;
 
     /// <summary>
+    /// Gets or sets the property name to use as the unique row identifier.
+    /// This is critical for row selection persistence across data updates and pagination.
+    /// Examples: "Id" (C# convention), "ProductId", "OrderId", "id" (JavaScript convention), "_id" (MongoDB).
+    /// Default is "Id".
+    /// </summary>
+    [Parameter]
+    public string IdField { get; set; } = "Id";
+
+    /// <summary>
     /// Gets or sets the virtualization mode for the grid.
     /// </summary>
     [Parameter]
     public GridVirtualizationMode VirtualizationMode { get; set; } = GridVirtualizationMode.Auto;
 
     /// <summary>
-    /// Gets or sets the AG Grid theme to use (Alpine, Balham, Material, Quartz).
-    /// Default is Alpine.
+    /// Gets or sets the AG Grid theme to use (Shadcn, Alpine, Balham, Material, Quartz).
+    /// Default is Shadcn.
     /// </summary>
     [Parameter]
-    public GridTheme Theme { get; set; } = GridTheme.Alpine;
+    public GridTheme Theme { get; set; } = GridTheme.Shadcn;
 
     /// <summary>
     /// Gets or sets the visual style modifiers for the grid (Default, Striped, Bordered, Minimal).
@@ -162,25 +197,15 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public EventCallback<IReadOnlyCollection<TItem>> SelectedItemsChanged { get; set; }
 
     private string ContainerCssClass => ClassNames.cn(
-        "grid-container w-full",
+        "grid-container w-full h-full",
         Class
-    );
-
-    private string GridCssClass => ClassNames.cn(
-        "grid-content",
-        GetThemeClass(),
-        GetStyleClass(),
-        GetDensityClass()
     );
 
     private string GetGridCssClass()
     {
         // Combine AG Grid theme with our custom style modifiers
         return ClassNames.cn(
-            "grid-content",
-            GetThemeClass(),  // AG Grid's base theme (Alpine, Balham, etc.)
-            GetStyleClass(),  // Our style modifiers (Striped, Bordered, etc.)
-            GetDensityClass() // Our density modifiers
+            "grid-content"
         );
     }
 
@@ -198,10 +223,121 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
 
     protected override async Task OnParametersSetAsync()
     {
-        // Update grid data when Items parameter changes
-        if (_initialized && _gridRenderer != null)
+        if (!_initialized || _gridRenderer == null)
+            return;
+
+        // Detect theme changes and apply them without grid recreation
+        bool themeChanged = _previousTheme != Theme;
+        bool densityChanged = _previousDensity != Density;
+        bool styleChanged = _previousVisualStyle != VisualStyle;
+
+        if (themeChanged || densityChanged || styleChanged)
         {
+            Console.WriteLine($"[Grid] Theme parameters changed - updating runtime theme");
+            _previousTheme = Theme;
+            _previousDensity = Density;
+            _previousVisualStyle = VisualStyle;
+            
+            var mergedParams = GetMergedThemeParams();
+            await _gridRenderer.UpdateThemeAsync(Theme, mergedParams);
+        }
+
+        // Check if Items collection instance changed (reference comparison)
+        bool collectionReplaced = !ReferenceEquals(_currentItems, Items);
+        bool isObservable = Items is INotifyCollectionChanged;
+
+        if (collectionReplaced)
+        {
+            Console.WriteLine("[Grid] Items collection replaced - re-subscribing");
+            
+            // Unsubscribe from old collection
+            UnsubscribeFromCollection();
+            
+            // Subscribe to new collection if it's observable
+            _currentItems = Items;
+            SubscribeToCollection();
+            
+            // Full refresh on collection replacement
+            _previousItemsHash = Items?.Count() ?? 0;
             await _gridRenderer.UpdateDataAsync(Items);
+        }
+        else if (!isObservable)
+        {
+            // Collection reference is the same, but check count as fallback
+            // (for non-observable collections like List<T> without INotifyCollectionChanged)
+            int currentCount = Items?.Count() ?? 0;
+            bool countChanged = currentCount != _previousItemsHash;
+            
+            if (countChanged)
+            {
+                Console.WriteLine($"[Grid] Non-observable collection count changed ({_previousItemsHash} → {currentCount})");
+                _previousItemsHash = currentCount;
+                await _gridRenderer.UpdateDataAsync(Items);
+            }
+        }
+        
+        // Sync selection state from parent to grid when SelectedItems changes
+        // This is a UI STATE change, NOT a data change - no UpdateDataAsync needed!
+        if (SelectionMode != GridSelectionMode.None && 
+            SelectedItems != null && 
+            !SelectedItems.SequenceEqual(_previousSelectedItems) &&
+            !_isUpdatingSelectionFromGrid)
+        {
+            Console.WriteLine("[Grid] SelectedItems changed programmatically - syncing to grid UI");
+            _previousSelectedItems = SelectedItems;
+            await SyncSelectionToGrid();
+        }
+        else if (_isUpdatingSelectionFromGrid)
+        {
+            // Just update the tracking reference without syncing
+            Console.WriteLine("[Grid] SelectedItems changed from grid - skipping sync");
+            _previousSelectedItems = SelectedItems;
+        }
+    }
+    
+    /// <summary>
+    /// Synchronizes the SelectedItems from the parent component to the grid's internal selection state.
+    /// This ensures that programmatic changes to SelectedItems are reflected in the grid UI.
+    /// </summary>
+    private async Task SyncSelectionToGrid()
+    {
+        if (_gridRenderer == null || SelectedItems == null)
+            return;
+            
+        try
+        {
+            // Build a GridState with the current selection
+            var state = new GridState
+            {
+                SelectedRowIds = SelectedItems
+                    .Select(item =>
+                    {
+                        // Extract the ID using reflection based on IdField
+                        // Use case-insensitive lookup to handle both PascalCase (C#) and camelCase (JSON)
+                        var idProperty = typeof(TItem).GetProperty(
+                            IdField, 
+                            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+                        );
+                        
+                        if (idProperty == null)
+                        {
+                            Console.WriteLine($"[Grid] WARNING: IdField '{IdField}' not found on type {typeof(TItem).Name}");
+                            return (object)string.Empty;
+                        }
+                        
+                        var idValue = idProperty.GetValue(item);
+                        return (object)(idValue?.ToString() ?? string.Empty);
+                    })
+                    .Where(id => !string.IsNullOrEmpty((string)id))
+                    .ToList()
+            };
+            
+            // Apply the selection state to the grid
+            await _gridRenderer.UpdateStateAsync(state);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Grid] Failed to sync selection to grid: {ex.Message}");
         }
     }
 
@@ -237,6 +373,14 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             Console.WriteLine($"[Grid] Initializing with {_columns.Count} columns");
             BuildGridDefinition();
             
+            // Auto-discover and register grid actions AFTER BuildGridDefinition
+            // This ensures _gridDefinition.Metadata is initialized
+            if (!_actionsRegistered && ActionHost != null)
+            {
+                AutoRegisterActions();
+                _actionsRegistered = true;
+            }
+            
             // Small delay to ensure DOM element is fully ready
             await Task.Delay(100);
             
@@ -261,6 +405,212 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         Console.WriteLine($"[Grid] Column registered: {column.Header} (Total: {_columns.Count})");
     }
 
+    internal void RegisterThemeParameters(GridThemeParameters parameters)
+    {
+        _themeParameters = parameters;
+    }
+    
+    /// <summary>
+    /// Registers a cell action handler that can be invoked from templates via data-action attributes.
+    /// </summary>
+    /// <param name="actionName">The name of the action (used in data-action attribute).</param>
+    /// <param name="handler">The handler to invoke when the action is triggered.</param>
+    public void RegisterCellAction(string actionName, Action<TItem> handler)
+    {
+        var actionKey = $"CellAction_{actionName}";
+        _gridDefinition.Metadata ??= new Dictionary<string, object?>();
+        _gridDefinition.Metadata[actionKey] = handler;
+    }
+    
+    /// <summary>
+    /// Registers an async cell action handler that can be invoked from templates via data-action attributes.
+    /// </summary>
+    /// <param name="actionName">The name of the action (used in data-action attribute).</param>
+    /// <param name="handler">The async handler to invoke when the action is triggered.</param>
+    public void RegisterCellAction(string actionName, Func<TItem, Task> handler)
+    {
+        var actionKey = $"CellAction_{actionName}";
+        _gridDefinition.Metadata ??= new Dictionary<string, object?>();
+        _gridDefinition.Metadata[actionKey] = handler;
+    }
+    
+    /// <summary>
+    /// Auto-discovers and registers methods marked with [GridAction] attribute from the ActionHost.
+    /// </summary>
+    private void AutoRegisterActions()
+    {
+        if (ActionHost == null)
+        {
+            Console.WriteLine("[Grid] No ActionHost provided - skipping auto-registration");
+            return;
+        }
+        
+        var hostType = ActionHost.GetType();
+        Console.WriteLine($"[Grid] Auto-discovering actions in {hostType.Name}");
+        
+        // Find all methods with [GridAction] attribute
+        var methods = hostType.GetMethods(BindingFlags.Instance | 
+                                         BindingFlags.Public | 
+                                         BindingFlags.NonPublic)
+            .Where(m => m.GetCustomAttribute<Attributes.GridActionAttribute>() != null);
+        
+        int registeredCount = 0;
+        foreach (var method in methods)
+        {
+            var attr = method.GetCustomAttribute<Attributes.GridActionAttribute>()!;
+            var actionName = attr.Name ?? method.Name;
+            
+            // Validate method signature
+            var parameters = method.GetParameters();
+            if (parameters.Length != 1 || !parameters[0].ParameterType.IsAssignableFrom(typeof(TItem)))
+            {
+                Console.WriteLine($"[Grid] Skipping {method.Name} - invalid signature (must accept single TItem parameter)");
+                continue;
+            }
+            
+            try
+            {
+                // Create delegate based on return type
+                if (method.ReturnType == typeof(Task))
+                {
+                    var handler = (Func<TItem, Task>)Delegate.CreateDelegate(typeof(Func<TItem, Task>), ActionHost, method);
+                    RegisterCellAction(actionName, handler);
+                    registeredCount++;
+                    Console.WriteLine($"[Grid] Registered async action '{actionName}' -> {method.Name}");
+                }
+                else if (method.ReturnType == typeof(void))
+                {
+                    var handler = (Action<TItem>)Delegate.CreateDelegate(typeof(Action<TItem>), ActionHost, method);
+                    RegisterCellAction(actionName, handler);
+                    registeredCount++;
+                    Console.WriteLine($"[Grid] Registered sync action '{actionName}' -> {method.Name}");
+                }
+                else
+                {
+                    Console.WriteLine($"[Grid] Skipping {method.Name} - unsupported return type (must be void or Task)");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Grid] Failed to register action '{actionName}': {ex.Message}");
+            }
+        }
+        
+        Console.WriteLine($"[Grid] Auto-registered {registeredCount} actions");
+    }
+
+    private Dictionary<string, object> GetThemeDefaults(GridTheme theme)
+    {
+        if (theme == GridTheme.Shadcn)
+        {
+            return new Dictionary<string, object>
+            {
+                { "accentColor", "var(--primary)" },
+                { "backgroundColor", "var(--background)" },
+                { "foregroundColor", "var(--foreground)" },
+                { "borderColor", "var(--border)" },
+                { "headerBackgroundColor", "var(--muted)" },
+                { "headerForegroundColor", "var(--foreground)" },
+                { "rowHoverColor", "color-mix(in srgb, var(--accent) 50%, transparent)" },
+                { "selectedRowBackgroundColor", "color-mix(in srgb, var(--accent) 70%, transparent)" },
+                { "invalidColor", "var(--destructive)" },
+                { "fontFamily", "var(--font-sans)" },
+                { "borderRadius", 4 },
+                { "tooltipBackgroundColor", "var(--popover)" },
+                { "tooltipTextColor", "var(--popover-foreground)" },
+            };
+        }
+        return new Dictionary<string, object>();
+    }
+
+    private Dictionary<string, object> GetDensityPreset(GridDensity density)
+    {
+        return density switch
+        {
+            GridDensity.Compact => new Dictionary<string, object>
+            {
+                { "spacing", 4 },
+                { "rowHeight", 28 },
+                { "headerHeight", 32 },
+                { "fontSize", 12 },
+                { "iconSize", 14 },
+                { "inputHeight", 28 },
+            },
+            GridDensity.Spacious => new Dictionary<string, object>
+            {
+                { "spacing", 12 },
+                { "rowHeight", 56 },
+                { "headerHeight", 64 },
+                { "fontSize", 16 },
+                { "iconSize", 20 },
+                { "inputHeight", 40 },
+            },
+            GridDensity.Comfortable or _ => new Dictionary<string, object>
+            {
+                { "spacing", 8 },
+                { "rowHeight", 42 },
+                { "headerHeight", 48 },
+                { "fontSize", 14 },
+                { "iconSize", 16 },
+                { "inputHeight", 32 },
+            },
+        };
+    }
+
+    private Dictionary<string, object> GetVisualStylePreset(GridStyle style)
+    {
+        return style switch
+        {
+            GridStyle.Striped => new Dictionary<string, object>
+            {
+                { "wrapperBorder", true },
+                { "oddRowBackgroundColor", "color-mix(in srgb, var(--muted) 30%, transparent)" },
+            },
+            GridStyle.Bordered => new Dictionary<string, object>
+            {
+                { "wrapperBorder", true },
+            },
+            GridStyle.Minimal => new Dictionary<string, object>
+            {
+                { "wrapperBorder", false },
+                { "borderWidth", 0 },
+            },
+            GridStyle.Default or _ => new Dictionary<string, object>
+            {
+                { "wrapperBorder", true },
+            },
+        };
+    }
+
+    private Dictionary<string, object> GetMergedThemeParams()
+    {
+        // Merge theme parameters with precedence: ThemeDefaults < Density < VisualStyle < GridThemeParameters
+        var themeParams = GetThemeDefaults(Theme);
+        
+        // Apply density preset
+        foreach (var kvp in GetDensityPreset(Density))
+        {
+            themeParams[kvp.Key] = kvp.Value;
+        }
+        
+        // Apply visual style preset
+        foreach (var kvp in GetVisualStylePreset(VisualStyle))
+        {
+            themeParams[kvp.Key] = kvp.Value;
+        }
+        
+        // Apply user's GridThemeParameters (highest priority)
+        if (_themeParameters != null)
+        {
+            foreach (var kvp in _themeParameters.ToDictionary())
+            {
+                themeParams[kvp.Key] = kvp.Value;
+            }
+        }
+        
+        return themeParams;
+    }
+
     private void BuildGridDefinition()
     {
         _gridDefinition.Columns = _columns.Select(c => c.ToDefinition()).ToList();
@@ -271,13 +621,99 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         _gridDefinition.VisualStyle = VisualStyle;          // Visual modifiers (Striped, Bordered, etc.)
         _gridDefinition.Density = Density;
         _gridDefinition.PageSize = PageSize;
+        _gridDefinition.IdField = IdField;                  // Row ID field for selection persistence
         _gridDefinition.InitialState = InitialState;
         _gridDefinition.OnStateChanged = OnStateChanged;
         _gridDefinition.OnDataRequest = OnDataRequest;
         _gridDefinition.OnSelectionChanged = OnSelectionChanged;
+        
+        // Wrap SelectedItemsChanged to track when selection is coming from grid
+        _gridDefinition.SelectedItemsChanged = EventCallback.Factory.Create<IReadOnlyCollection<TItem>>(
+            this, 
+            async (items) =>
+            {
+                // Set flag to indicate this selection change originated from the grid
+                _isUpdatingSelectionFromGrid = true;
+                try
+                {
+                    if (SelectedItemsChanged.HasDelegate)
+                    {
+                        await SelectedItemsChanged.InvokeAsync(items);
+                    }
+                }
+                finally
+                {
+                    // Clear flag after a delay to ensure OnParametersSetAsync completes
+                    await Task.Delay(10);
+                    _isUpdatingSelectionFromGrid = false;
+                }
+            }
+        );
+        
         _gridDefinition.Class = Class;
         _gridDefinition.InlineStyle = InlineStyle;          // CSS inline style
         _gridDefinition.LocalizationKeyPrefix = LocalizationKeyPrefix;
+
+        // Use the helper method to merge theme parameters
+        _gridDefinition.ThemeParams = GetMergedThemeParams();
+        
+        // ✅ Provide a callback for the renderer to resolve IDs back to original instances
+        // This is MUCH cleaner than storing Items in metadata!
+        _gridDefinition.ResolveItemsByIds = (ids) => ResolveItemsByIds(ids);
+    }
+    
+    /// <summary>
+    /// Resolves a collection of IDs to their corresponding original item instances.
+    /// Used by the renderer to convert deserialized items back to original references.
+    /// </summary>
+    /// <param name="ids">The IDs to resolve.</param>
+    /// <returns>Original item instances matching the provided IDs.</returns>
+    private IEnumerable<TItem> ResolveItemsByIds(IEnumerable<object> ids)
+    {
+        if (!ids.Any())
+        {
+            return Enumerable.Empty<TItem>();
+        }
+        
+        // Get the ID property
+        var idProperty = typeof(TItem).GetProperty(
+            IdField,
+            System.Reflection.BindingFlags.Public | 
+            System.Reflection.BindingFlags.Instance | 
+            System.Reflection.BindingFlags.IgnoreCase
+        );
+        
+        if (idProperty == null)
+        {
+            Console.WriteLine($"[Grid] WARNING: IdField '{IdField}' not found on type {typeof(TItem).Name}");
+            return Enumerable.Empty<TItem>();
+        }
+        
+        // Build lookup dictionary of items by ID
+        var itemsById = Items
+            .Select(item => new
+            {
+                Id = idProperty.GetValue(item),
+                Item = item
+            })
+            .Where(x => x.Id != null)
+            .ToDictionary(x => x.Id!, x => x.Item);
+        
+        // Resolve IDs to original items
+        var resolvedItems = new List<TItem>();
+        foreach (var id in ids)
+        {
+            if (itemsById.TryGetValue(id, out var item))
+            {
+                resolvedItems.Add(item);
+            }
+            else
+            {
+                Console.WriteLine($"[Grid] WARNING: Could not resolve ID '{id}' to an item");
+            }
+        }
+        
+        return resolvedItems;
     }
 
     private async Task InitializeGridAsync()
@@ -285,43 +721,303 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         if (_gridRenderer != null)
         {
             await _gridRenderer.InitializeAsync(_gridContainer, _gridDefinition);
+            
+            // Initialize theme tracking
+            _previousTheme = Theme;
+            _previousDensity = Density;
+            _previousVisualStyle = VisualStyle;
+            
+            // Set initial data, track count, and subscribe if observable
+            _currentItems = Items;
+            _previousItemsHash = Items?.Count() ?? 0;
+            SubscribeToCollection();
+            
             await _gridRenderer.UpdateDataAsync(Items);
         }
     }
-
-    private string GetThemeClass()
+    
+    private void SubscribeToCollection()
     {
-        return Theme switch
+        if (_currentItems is INotifyCollectionChanged observable)
         {
-            GridTheme.Alpine => "ag-theme-alpine",
-            GridTheme.Balham => "ag-theme-balham",
-            GridTheme.Material => "ag-theme-material",
-            GridTheme.Quartz => "ag-theme-quartz",
-            _ => "ag-theme-alpine"
-        };
+            Console.WriteLine("[Grid] Subscribing to INotifyCollectionChanged (ObservableCollection detected)");
+            observable.CollectionChanged += HandleCollectionChanged;
+            _collectionSubscription = new CollectionChangedSubscription(observable, HandleCollectionChanged);
+        }
+        else
+        {
+            Console.WriteLine("[Grid] Collection does not implement INotifyCollectionChanged - using count tracking");
+        }
     }
 
-    private string GetStyleClass()
+    private void UnsubscribeFromCollection()
     {
-        return VisualStyle switch
-        {
-            GridStyle.Striped => "grid-striped",
-            GridStyle.Bordered => "grid-bordered",
-            GridStyle.Minimal => "grid-minimal",
-            _ => "grid-default"
-        };
+        _collectionSubscription?.Dispose();
+        _collectionSubscription = null;
+        
+        // Cancel any pending batch operations
+        _batchCts?.Cancel();
+        _batchCts = null;
+        _pendingChanges.Clear();
     }
 
-    private string GetDensityClass()
+    private void HandleCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        return Density switch
+        // Synchronous collection of changes - no await here!
+        _pendingChanges.Add(e);
+        
+        // Special case: Reset means full refresh - do it immediately
+        if (e.Action == NotifyCollectionChangedAction.Reset)
         {
-            GridDensity.Compact => "grid-compact",
-            GridDensity.Spacious => "grid-spacious",
-            _ => "grid-comfortable"
-        };
+            _batchCts?.Cancel();
+            _pendingChanges.Clear();
+            _ = InvokeAsync(async () =>
+            {
+                _previousItemsHash = Items?.Count() ?? 0;
+                await _gridRenderer!.UpdateDataAsync(Items);
+                StateHasChanged();
+            });
+            return;
+        }
+        
+        // Debounce: batch multiple rapid changes together
+        _batchCts?.Cancel();
+        _batchCts = new CancellationTokenSource();
+        var token = _batchCts.Token;
+        
+        // 100ms batching window
+        _ = Task.Delay(100, token).ContinueWith(async _ =>
+        {
+            if (!token.IsCancellationRequested)
+            {
+                await InvokeAsync(async () =>
+                {
+                    await ApplyBatchedChangesAsync();
+                    StateHasChanged();
+                });
+            }
+        }, TaskScheduler.Default);
     }
 
+    private async Task ApplyBatchedChangesAsync()
+    {
+        var changes = _pendingChanges.ToList();
+        _pendingChanges.Clear();
+        
+        if (changes.Count == 0)
+            return;
+        
+        Console.WriteLine($"[Grid] Applying {changes.Count} batched collection changes");
+        
+        // Aggregate all changes into a single transaction
+        var adds = new List<TItem>();
+        var removes = new List<TItem>();
+        var updates = new List<TItem>();
+        
+        foreach (var change in changes)
+        {
+            switch (change.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    adds.AddRange(change.NewItems?.Cast<TItem>() ?? Enumerable.Empty<TItem>());
+                    break;
+                    
+                case NotifyCollectionChangedAction.Remove:
+                    removes.AddRange(change.OldItems?.Cast<TItem>() ?? Enumerable.Empty<TItem>());
+                    break;
+                    
+                case NotifyCollectionChangedAction.Replace:
+                    updates.AddRange(change.NewItems?.Cast<TItem>() ?? Enumerable.Empty<TItem>());
+                    break;
+                    
+                case NotifyCollectionChangedAction.Move:
+                    // Move is just a visual reorder - AG Grid handles this automatically
+                    break;
+            }
+        }
+        
+        // Update count tracking
+        _previousItemsHash = Items?.Count() ?? 0;
+        
+        // Single transaction with all batched changes
+        if (adds.Any() || removes.Any() || updates.Any())
+        {
+            await ApplyTransactionAsync(adds, removes, updates);
+        }
+    }
+    
+    /// <summary>
+    /// Extract IDs from items using the configured IdField.
+    /// </summary>
+    private IEnumerable<object> GetItemIds(IEnumerable<TItem> items)
+    {
+        var idProperty = typeof(TItem).GetProperty(
+            IdField,
+            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+        );
+        
+        if (idProperty == null)
+        {
+            Console.WriteLine($"[Grid] WARNING: IdField '{IdField}' not found on type {typeof(TItem).Name}");
+            yield break;
+        }
+        
+        foreach (var item in items)
+        {
+            var id = idProperty.GetValue(item);
+            if (id != null)
+            {
+                yield return id;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Get items with their IDs for lookup.
+    /// </summary>
+    private IEnumerable<(object id, TItem item)> GetItemsWithIds(IEnumerable<TItem> items)
+    {
+        var idProperty = typeof(TItem).GetProperty(
+            IdField,
+            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase
+        );
+        
+        if (idProperty == null)
+        {
+            yield break;
+        }
+        
+        foreach (var item in items)
+        {
+            var id = idProperty.GetValue(item);
+            if (id != null)
+            {
+                yield return (id, item);
+            }
+        }
+    }
+
+    private async Task ApplyTransactionAsync(
+        List<TItem> adds,
+        List<TItem> removes,
+        List<TItem> updates)
+    {
+        if (_gridRenderer == null)
+            return;
+        
+        var transaction = new GridTransaction<TItem>
+        {
+            Add = adds.Any() ? adds : null,
+            Remove = removes.Any() ? removes : null,
+            Update = updates.Any() ? updates : null
+        };
+        
+        Console.WriteLine($"[Grid] Transaction: +{adds.Count} -{removes.Count} ~{updates.Count}");
+        await _gridRenderer.ApplyTransactionAsync(transaction);
+    }
+    
+    /// <summary>
+    /// Manually adds rows to the grid using transaction API.
+    /// This is more efficient than replacing the entire Items collection.
+    /// </summary>
+    public async Task AddRowsAsync(params TItem[] rows)
+    {
+        if (_gridRenderer == null || !_initialized)
+            throw new InvalidOperationException("Grid not initialized");
+        
+        await _gridRenderer.ApplyTransactionAsync(new GridTransaction<TItem>
+        {
+            Add = rows.ToList()
+        });
+        
+        // Update count tracking
+        _previousItemsHash = Items?.Count() ?? 0;
+    }
+
+    /// <summary>
+    /// Manually updates rows in the grid using transaction API.
+    /// This is more efficient than replacing the entire Items collection.
+    /// </summary>
+    public async Task UpdateRowsAsync(params TItem[] rows)
+    {
+        if (_gridRenderer == null || !_initialized)
+            throw new InvalidOperationException("Grid not initialized");
+        
+        await _gridRenderer.ApplyTransactionAsync(new GridTransaction<TItem>
+        {
+            Update = rows.ToList()
+        });
+    }
+
+    /// <summary>
+    /// Manually removes rows from the grid using transaction API.
+    /// This is more efficient than replacing the entire Items collection.
+    /// </summary>
+    public async Task RemoveRowsAsync(params TItem[] rows)
+    {
+        if (_gridRenderer == null || !_initialized)
+            throw new InvalidOperationException("Grid not initialized");
+        
+        await _gridRenderer.ApplyTransactionAsync(new GridTransaction<TItem>
+        {
+            Remove = rows.ToList()
+        });
+        
+        // Update count tracking
+        _previousItemsHash = Items?.Count() ?? 0;
+    }
+    
+    /// <summary>
+    /// Manually refreshes the grid display to reflect changes in the underlying data.
+    /// This forces a full grid refresh and is useful when:
+    /// - Data properties have been modified in-place (without ObservableCollection events)
+    /// - You want to ensure the grid reflects the current state of the data
+    /// - Debugging or testing scenarios
+    /// 
+    /// For most scenarios, prefer using ObservableCollection or the transaction APIs
+    /// (AddRowsAsync, UpdateRowsAsync, RemoveRowsAsync) which are more efficient.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// // Modify data in-place
+    /// foreach (var product in products)
+    /// {
+    ///     product.Price *= 1.1m; // 10% price increase
+    /// }
+    /// 
+    /// // Force grid to refresh and show updated prices
+    /// await gridRef.RefreshAsync();
+    /// </code>
+    /// </example>
+    public async Task RefreshAsync()
+    {
+        if (_gridRenderer == null || !_initialized)
+            throw new InvalidOperationException("Grid not initialized");
+        
+        Console.WriteLine("[Grid] Manual refresh requested - reloading data");
+        
+        // Force full data reload by calling UpdateDataAsync
+        // This ensures all in-place changes are reflected in the grid
+        await _gridRenderer.UpdateDataAsync(Items);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        UnsubscribeFromCollection();
+        
+        if (_initialized && _gridRenderer != null)
+        {
+            try
+            {
+                await _gridRenderer.DisposeAsync();
+            }
+            catch
+            {
+                // Ignore disposal errors
+            }
+        }
+    }
+    
     private string GetGridContainerStyle()
     {
         // Build inline styles for the grid container
@@ -338,19 +1034,26 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
 
         return string.Join("; ", styles);
     }
+}
 
-    public async ValueTask DisposeAsync()
+/// <summary>
+/// Helper class for proper disposal of collection change subscriptions.
+/// </summary>
+internal sealed class CollectionChangedSubscription : IDisposable
+{
+    private readonly INotifyCollectionChanged _observable;
+    private readonly NotifyCollectionChangedEventHandler _handler;
+
+    public CollectionChangedSubscription(
+        INotifyCollectionChanged observable,
+        NotifyCollectionChangedEventHandler handler)
     {
-        if (_initialized && _gridRenderer != null)
-        {
-            try
-            {
-                await _gridRenderer.DisposeAsync();
-            }
-            catch
-            {
-                // Ignore disposal errors
-            }
-        }
+        _observable = observable;
+        _handler = handler;
+    }
+
+    public void Dispose()
+    {
+        _observable.CollectionChanged -= _handler;
     }
 }

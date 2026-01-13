@@ -2,10 +2,110 @@
 @using BlazorUI.Components.Button
 @using BlazorUI.Components.Badge
 @using BlazorUI.Demo.Shared.Data
+@using System.Collections.ObjectModel
 
 <PageTitle>Grid Components - Selection Examples</PageTitle>
 
 <div class="space-y-8">
+    @* Demo: IdField Configuration *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom ID Field</h2>
+            <p class="text-muted-foreground">
+                Configure the ID field for stable row identification across data updates, sorting, and pagination.
+                This is critical for maintaining selection state when data changes.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-amber-50 dark:bg-amber-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-amber-600 dark:text-amber-400">ℹ️</div>
+                <div>
+                    <p class="font-semibold mb-2">Why IdField Matters:</p>
+                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li>Selection persists across data updates and pagination</li>
+                        <li>Rows maintain stable identity during sorting/filtering</li>
+                        <li>Default is "Id" (C# convention) - works with most models</li>
+                        <li>Customize for models with different primary key names</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <Button Size="ButtonSize.Small" OnClick="UpdateProductData">
+                Update Data (Selection Persists)
+            </Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ShuffleProducts">
+                Shuffle Order (Selection Persists)
+            </Button>
+        </div>
+
+        <Grid @ref="_grid1" Items="@products" 
+              SelectionMode="GridSelectionMode.Multiple" 
+              IdField="ProductId"
+              @bind-SelectedItems="@selectedProducts">
+            <Columns>
+                <GridColumn Field="ProductId" Header="Product ID" Width="120px" />
+                <GridColumn Field="Name" Header="Product Name" />
+                <GridColumn Field="Category" Header="Category" Width="150px" />
+                <GridColumn Field="Price" Header="Price" Width="120px" DataFormatString="{0:C}" />
+                <GridColumn Field="Stock" Header="Stock" Width="100px" />
+            </Columns>
+        </Grid>
+
+        <div class="mt-4 space-y-2">
+            <p class="text-sm text-muted-foreground">
+                @selectedProducts.Count product(s) selected
+            </p>
+            @if (selectedProducts.Count > 0)
+            {
+                <div class="flex gap-2">
+                    @foreach (var product in selectedProducts.Take(5))
+                    {
+                        <Badge Variant="BadgeVariant.Secondary">@product.Name</Badge>
+                    }
+                    @if (selectedProducts.Count > 5)
+                    {
+                        <Badge Variant="BadgeVariant.Outline">+@(selectedProducts.Count - 5) more</Badge>
+                    }
+                </div>
+            }
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>// Model with custom ID field
+public class Product
+{
+    public Guid ProductId { get; set; }  // ← Custom ID field
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+}
+
+&lt;Grid Items="@@products" 
+      SelectionMode="GridSelectionMode.Multiple"
+      IdField="ProductId"  @* ← Specify custom ID field *@
+      @@bind-SelectedItems="@@selectedProducts"&gt;
+    &lt;Columns&gt;
+        &lt;GridColumn Field="ProductId" Header="ID" /&gt;
+        &lt;GridColumn Field="Name" Header="Product" /&gt;
+    &lt;/Columns&gt;
+&lt;/Grid&gt;
+
+// Common ID field patterns:
+// IdField="Id"          // Default (C# convention)
+// IdField="ProductId"   // Specific entity ID
+// IdField="OrderId"     // Another entity
+// IdField="_id"         // MongoDB convention
+// IdField="id"          // JavaScript convention</code></pre>
+            </div>
+        </details>
+    </section>
+
     @* Demo 10: Single Row Selection *@
     <section class="space-y-4">
         <div class="space-y-2">
@@ -15,22 +115,29 @@
             </p>
         </div>
 
-        <div class="rounded-lg border bg-card p-6">
-            <Grid Items="@orders" SelectionMode="GridSelectionMode.Single" OnSelectionChanged="@((IReadOnlyCollection<Order> selection) => HandleSingleSelection(selection))">
-                <Columns>
-                    <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                    <GridColumn Field="Customer" Header="Customer" />
-                    <GridColumn Field="Status" Header="Status" Width="130px" />
-                    <GridColumn Field="Amount" Header="Amount" Width="120px" />
-                </Columns>
-            </Grid>
-        </div>
+        <Grid Items="@orders" 
+              SelectionMode="GridSelectionMode.Single" 
+              @bind-SelectedItems="@singleSelectedOrders">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+            </Columns>
+        </Grid>
 
-        @if (selectedOrder != null)
+        @if (singleSelectedOrders.Count > 0)
         {
+            var selectedOrder = singleSelectedOrders.First();
             <div class="rounded-lg border bg-muted p-4">
                 <h3 class="font-semibold mb-2">Selected Order</h3>
                 <p class="text-sm">ID: @selectedOrder.Id - @selectedOrder.Customer - @selectedOrder.Amount.ToString("C")</p>
+            </div>
+        }
+        else
+        {
+            <div class="rounded-lg border bg-muted p-4">
+                <p class="text-sm text-muted-foreground">No order selected</p>
             </div>
         }
 
@@ -41,9 +148,15 @@
             <div class="border-t bg-muted/20 p-4">
                 <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" 
       SelectionMode="GridSelectionMode.Single" 
-      OnSelectionChanged="HandleSelection"&gt;
+      @@bind-SelectedItems="@@selectedOrders"&gt;
     &lt;Columns&gt;...&lt;/Columns&gt;
-&lt;/Grid&gt;</code></pre>
+&lt;/Grid&gt;
+
+@@if (selectedOrders.Count &gt; 0)
+{
+    var order = selectedOrders.First();
+    &lt;p&gt;Selected: @@order.Customer&lt;/p&gt;
+}</code></pre>
             </div>
         </details>
     </section>
@@ -57,20 +170,20 @@
             </p>
         </div>
 
-        <div class="rounded-lg border bg-card p-6">
-            <Grid Items="@orders" SelectionMode="GridSelectionMode.Multiple" OnSelectionChanged="@((IReadOnlyCollection<Order> selection) => HandleMultipleSelection(selection))">
-                <Columns>
-                    <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                    <GridColumn Field="Customer" Header="Customer" />
-                    <GridColumn Field="Status" Header="Status" Width="130px" />
-                    <GridColumn Field="Amount" Header="Amount" Width="120px" />
-                </Columns>
-            </Grid>
-        </div>
+        <Grid Items="@multiSelectOrders" 
+              SelectionMode="GridSelectionMode.Multiple" 
+              @bind-SelectedItems="@selectedOrders">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+            </Columns>
+        </Grid>
 
         <div class="flex items-center gap-2 mt-4">
             <span class="text-sm text-muted-foreground">
-                @selectedOrders.Count of @orders.Count row(s) selected
+                @selectedOrders.Count of @multiSelectOrders.Count row(s) selected
             </span>
             @if (selectedOrders.Count > 0)
             {
@@ -87,9 +200,20 @@
             <div class="border-t bg-muted/20 p-4">
                 <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" 
       SelectionMode="GridSelectionMode.Multiple" 
-      OnSelectionChanged="HandleSelection"&gt;
+      @@bind-SelectedItems="@@selectedOrders"&gt;
     &lt;Columns&gt;...&lt;/Columns&gt;
-&lt;/Grid&gt;</code></pre>
+&lt;/Grid&gt;
+
+&lt;Button OnClick="DeleteSelected"&gt;Delete Selected&lt;/Button&gt;
+
+@@code {
+    private void DeleteSelected()
+    {
+        // Remove selected items from the list
+        orders.RemoveAll(o =&gt; selectedOrders.Contains(o));
+        selectedOrders = Array.Empty&lt;Order&gt;();
+    }
+}</code></pre>
             </div>
         </details>
     </section>
@@ -105,25 +229,37 @@
 
         <div class="flex gap-2 mb-4">
             <Button Size="ButtonSize.Small" OnClick="SelectHighValueOrders">Select High Value Orders</Button>
-            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearSelection">Clear Selection</Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearControlledSelection">Clear Selection</Button>
         </div>
 
-        <div class="rounded-lg border bg-card p-6">
-            <Grid Items="@orders" 
-                  SelectionMode="GridSelectionMode.Multiple" 
-                  SelectedItems="@controlledSelection"
-                  OnSelectionChanged="@((IReadOnlyCollection<Order> selection) => HandleControlledSelection(selection))">
-                <Columns>
-                    <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                    <GridColumn Field="Customer" Header="Customer" />
-                    <GridColumn Field="Amount" Header="Amount" Width="120px" />
-                    <GridColumn Field="Status" Header="Status" Width="130px" />
-                </Columns>
-            </Grid>
-        </div>
+        <Grid Items="@controlledOrders" 
+              SelectionMode="GridSelectionMode.Multiple" 
+              @bind-SelectedItems="@controlledSelection">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+            </Columns>
+        </Grid>
 
-        <div class="mt-4 text-sm text-muted-foreground">
-            @controlledSelection.Count row(s) selected programmatically
+        <div class="mt-4 space-y-2">
+            <p class="text-sm text-muted-foreground">
+                @controlledSelection.Count row(s) selected programmatically
+            </p>
+            @if (controlledSelection.Count > 0)
+            {
+                <div class="flex flex-wrap gap-2">
+                    @foreach (var order in controlledSelection.Take(5))
+                    {
+                        <Badge Variant="BadgeVariant.Secondary">@order.Customer - @order.Amount.ToString("C")</Badge>
+                    }
+                    @if (controlledSelection.Count > 5)
+                    {
+                        <Badge Variant="BadgeVariant.Outline">+@(controlledSelection.Count - 5) more</Badge>
+                    }
+                </div>
+            }
         </div>
 
         <details class="rounded-lg border">
@@ -135,15 +271,115 @@
 
 &lt;Grid Items="@@orders" 
       SelectionMode="GridSelectionMode.Multiple"
-      SelectedItems="@@selectedItems"
-      OnSelectionChanged="HandleSelection"&gt;
+      @@bind-SelectedItems="@@selectedItems"&gt;
     &lt;Columns&gt;...&lt;/Columns&gt;
 &lt;/Grid&gt;
 
 @@code {
+    private IReadOnlyCollection&lt;Order&gt; selectedItems = Array.Empty&lt;Order&gt;();
+
     private void SelectHighValueOrders()
     {
+        // Set selection programmatically
         selectedItems = orders.Where(o =&gt; o.Amount &gt; 5000).ToList();
+    }
+    
+    private void ClearSelection()
+    {
+        selectedItems = Array.Empty&lt;Order&gt;();
+    }
+}</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo: ObservableCollection with Automatic Delta Updates *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Observable Collection (Automatic Delta Updates)</h2>
+            <p class="text-muted-foreground">
+                Grid automatically detects and applies delta changes when using ObservableCollection.
+                Only changed rows are updated - no full grid refresh needed!
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-blue-50 dark:bg-blue-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-blue-600 dark:text-blue-400">⚡</div>
+                <div>
+                    <p class="font-semibold mb-2">Performance Benefits:</p>
+                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li><strong>Delta Updates:</strong> Only modified rows are re-rendered (not entire grid)</li>
+                        <li><strong>Selection Preserved:</strong> Row selection survives data changes automatically</li>
+                        <li><strong>Batching:</strong> Multiple rapid changes are batched together (100ms window)</li>
+                        <li><strong>Efficient:</strong> Uses AG Grid's transaction API for minimal DOM updates</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <Button Size="ButtonSize.Small" OnClick="DeleteSelectedObservable">
+                Delete Selected (@selectedObservableOrders.Count)
+            </Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="AddRandomOrder">
+                Add Random Order
+            </Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="UpdateRandomOrder">
+                Update Random Order
+            </Button>
+        </div>
+
+        <Grid Items="@observableOrders" 
+              SelectionMode="GridSelectionMode.Multiple" 
+              @bind-SelectedItems="@selectedObservableOrders">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+            </Columns>
+        </Grid>
+
+        <div class="flex items-center gap-2 mt-4">
+            <span class="text-sm text-muted-foreground">
+                @selectedObservableOrders.Count of @observableOrders.Count row(s) selected
+            </span>
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>@@using System.Collections.ObjectModel
+
+@@code {
+    // Use ObservableCollection for automatic delta updates
+    private ObservableCollection&lt;Order&gt; orders = new();
+    private IReadOnlyCollection&lt;Order&gt; selectedOrders = Array.Empty&lt;Order&gt;
+
+    protected override void OnInitialized()
+    {
+        // Initialize with data
+        var data = GridDemoData.GenerateOrders(50);
+        orders = new ObservableCollection&lt;Order&gt;(data);
+    }
+
+    private void DeleteSelected()
+    {
+        // Remove items - Grid automatically detects and applies transaction
+        foreach (var order in selectedOrders.ToList())
+        {
+            orders.Remove(order);  // ← Triggers CollectionChanged event
+        }
+        selectedOrders = Array.Empty&lt;Order&gt;
+    }
+
+    private void AddOrder()
+    {
+        // Add item - Grid automatically applies transaction
+        orders.Add(new Order { ... });  // ← Triggers CollectionChanged event
     }
 }</code></pre>
             </div>
@@ -152,44 +388,168 @@
 </div>
 
 @code {
+
+    private Grid<Product> _grid1;
+
+    // ObservableCollection demo - automatic delta updates
+    private ObservableCollection<Order> observableOrders = new();
+    private IReadOnlyCollection<Order> selectedObservableOrders = Array.Empty<Order>();
+    private int _nextOrderId = 1;  // ✅ Track next available ID to prevent duplicates
+
+    // Single selection demo
     private List<Order> orders = new();
-    private Order? selectedOrder;
+    private IReadOnlyCollection<Order> singleSelectedOrders = Array.Empty<Order>();
+
+    // Multiple selection demo - using ObservableCollection for automatic delta updates
+    private ObservableCollection<Order> multiSelectOrders = new();
     private IReadOnlyCollection<Order> selectedOrders = Array.Empty<Order>();
+
+    // Controlled selection demo
+    private List<Order> controlledOrders = new();
     private IReadOnlyCollection<Order> controlledSelection = Array.Empty<Order>();
+
+    // Product demo data
+    private List<Product> products = new();
+    private IReadOnlyCollection<Product> selectedProducts = Array.Empty<Product>();
 
     protected override void OnInitialized()
     {
+        // Initialize ObservableCollection for delta update demo
+        var observableData = GridDemoData.GenerateOrders(50);
+        observableOrders = new ObservableCollection<Order>(observableData);
+        
+        // ✅ Initialize next ID tracker to avoid duplicates
+        _nextOrderId = observableOrders.Any() ? observableOrders.Max(o => o.Id) + 1 : 1;
+
+        // Initialize separate data sets for each demo
         orders = GridDemoData.GenerateOrders(50);
+        multiSelectOrders = new ObservableCollection<Order>(GridDemoData.GenerateOrders(50));
+        controlledOrders = GridDemoData.GenerateOrders(50);
+        products = GenerateProducts(20);
     }
 
-    private void HandleSingleSelection(IReadOnlyCollection<Order> selection)
+    private void DeleteSelectedObservable()
     {
-        selectedOrder = selection.FirstOrDefault();
+        // ObservableCollection: Remove triggers automatic delta update
+        foreach (var order in selectedObservableOrders.ToList())
+        {
+            observableOrders.Remove(order);  // ← CollectionChanged event → Grid.transaction
+        }
+        selectedObservableOrders = Array.Empty<Order>();
     }
 
-    private void HandleMultipleSelection(IReadOnlyCollection<Order> selection)
+    private void AddRandomOrder()
     {
-        selectedOrders = selection;
+        var random = new Random();
+        var statuses = new[] { OrderStatus.Pending, OrderStatus.Shipped, OrderStatus.Delivered };
+        var customers = new[] { "Acme Corp", "TechStart Inc", "Global Solutions", "FastShip LLC", "MegaStore", "Enterprise Co" };
+        
+        var newOrder = new Order
+        {
+            Id = _nextOrderId++,  // ✅ Use tracked ID and increment to prevent duplicates
+            Customer = customers[random.Next(customers.Length)],
+            Status = statuses[random.Next(statuses.Length)],
+            Amount = Math.Round((decimal)(random.NextDouble() * 10000 + 100), 2),
+            OrderDate = DateTime.Now
+        };
+        observableOrders.Add(newOrder);  // ← CollectionChanged event → Grid transaction
     }
 
-    private void HandleControlledSelection(IReadOnlyCollection<Order> selection)
+    private void UpdateRandomOrder()
     {
-        controlledSelection = selection;
+        if (observableOrders.Count == 0) return;
+
+        var random = new Random();
+        var statuses = new[] { OrderStatus.Pending, OrderStatus.Shipped, OrderStatus.Delivered };
+        var index = random.Next(observableOrders.Count);
+        var order = observableOrders[index];
+
+        // Update properties
+        order.Amount = Math.Round((decimal)(random.NextDouble() * 10000 + 100), 2);
+        order.Status = statuses[random.Next(statuses.Length)];
+
+        // Replace to trigger update (ObservableCollection doesn't track property changes)
+        observableOrders[index] = order;  // ← CollectionChanged event → Grid.transaction
     }
 
     private void SelectHighValueOrders()
     {
-        controlledSelection = orders.Where(o => o.Amount > 5000).ToList();
+        // Programmatically select high value orders
+        controlledSelection = controlledOrders.Where(o => o.Amount > 5000).ToList();
     }
 
-    private void ClearSelection()
+    private void ClearControlledSelection()
     {
         controlledSelection = Array.Empty<Order>();
     }
 
     private void DeleteSelected()
     {
-        // Demo action - would delete selected orders
+        // ObservableCollection: Remove triggers automatic delta update
+        // Grid automatically matches items by ID, so this works even though
+        // selectedOrders contains new instances from JavaScript serialization
+        foreach (var order in selectedOrders.ToList())
+        {
+            multiSelectOrders.Remove(order);  // ← Grid finds item by ID and removes it
+        }
         selectedOrders = Array.Empty<Order>();
+        // No StateHasChanged() needed - Grid auto-detects via CollectionChanged event!
+    }
+
+    private async Task UpdateProductData()
+    {
+        // Update product prices - selection should persist
+        var random = new Random();
+        foreach (var product in products)
+        {
+            product.Price = Math.Round((decimal)(random.NextDouble() * 500 + 100), 2);
+            product.Stock = random.Next(0, 200);
+        }
+
+        // Force grid to refresh and show updated data
+        // RefreshAsync() calls UpdateDataAsync internally to reload all data
+        await _grid1.RefreshAsync();
+    }
+
+    private void ShuffleProducts()
+    {
+        // Shuffle product order - selection should persist due to stable IDs
+        var random = new Random();
+        products = products.OrderBy(x => random.Next()).ToList();
+        StateHasChanged();
+    }
+
+    private List<Product> GenerateProducts(int count)
+    {
+        var categories = new[] { "Electronics", "Clothing", "Books", "Home & Garden", "Toys" };
+        var productNames = new[]
+        {
+            "Laptop", "Smartphone", "Headphones", "Keyboard", "Mouse",
+            "T-Shirt", "Jeans", "Jacket", "Sneakers", "Hat",
+            "Novel", "Cookbook", "Magazine", "Comic Book", "Dictionary",
+            "Plant Pot", "Garden Tools", "Lamp", "Cushion", "Rug",
+            "Action Figure", "Board Game", "Puzzle", "Doll", "Building Blocks"
+        };
+
+        var random = new Random(42);
+        return Enumerable.Range(1, count)
+            .Select(i => new Product
+            {
+                ProductId = Guid.NewGuid(),
+                Name = productNames[random.Next(productNames.Length)],
+                Category = categories[random.Next(categories.Length)],
+                Price = Math.Round((decimal)(random.NextDouble() * 500 + 10), 2),
+                Stock = random.Next(0, 200)
+            })
+            .ToList();
+    }
+
+    public class Product
+    {
+        public Guid ProductId { get; set; }
+        public string Name { get; set; } = "";
+        public string Category { get; set; } = "";
+        public decimal Price { get; set; }
+        public int Stock { get; set; }
     }
 }

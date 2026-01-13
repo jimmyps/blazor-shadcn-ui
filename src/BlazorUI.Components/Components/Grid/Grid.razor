@@ -7,7 +7,7 @@
 
 <CascadingValue Value="this" IsFixed="true">
     <div class="@ContainerCssClass" style="@InlineStyle">
-        @if (IsLoading)
+        @if (IsLoading || !_columnsRegistered)
         {
             @if (LoadingTemplate != null)
             {

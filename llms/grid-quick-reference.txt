@@ -411,10 +411,112 @@ public class GridDataResponse<TItem>
 
 ---
 
+## Theme Customization
+
+### Quick Start - Three Levels
+
+#### Level 1: High-Level Presets
+```razor
+<Grid TItem="Order" Items="@orders" 
+      Theme="GridTheme.Shadcn"           @* Shadcn/Alpine/Balham/Material/Quartz *@
+      Density="GridDensity.Compact"      @* Compact/Comfortable/Spacious *@
+      VisualStyle="GridStyle.Striped">   @* Default/Striped/Bordered/Minimal *@
+    <Columns>...</Columns>
+</Grid>
+```
+
+#### Level 2: Fine-Grained Parameters
+```razor
+<Grid TItem="Order" Items="@orders">
+    <Columns>
+        <GridThemeParameters
+            AccentColor="#dc2626"
+            RowHeight="48"
+            BorderRadius="8"
+            FontSize="16"
+        />
+        <GridColumn Field="OrderId" Header="ID" />
+    </Columns>
+</Grid>
+```
+
+#### Level 3: Advanced CSS
+```razor
+<Grid TItem="Order" Items="@orders" Class="custom-grid">
+    <Columns>...</Columns>
+</Grid>
+
+<style>
+.custom-grid {
+  --ag-cell-horizontal-padding: 20px;
+}
+</style>
+```
+
+### Theme Precedence (Highest → Lowest)
+1. GridThemeParameters (explicit overrides)
+2. VisualStyle presets (Striped, Bordered, etc.)
+3. Density presets (Compact, Comfortable, Spacious)
+4. Theme defaults (Shadcn tokens or AG Grid defaults)
+5. CSS variables (manual overrides)
+
+### Shadcn Theme (Default)
+Automatically integrates with shadcn/ui design tokens and supports dark mode:
+- Uses `--primary`, `--background`, `--foreground`, `--border`, etc.
+- Dark mode works automatically when you update CSS variables
+- Extends AG Grid's Quartz theme with shadcn styling
+
+### Common Customizations
+
+**Custom Brand Colors:**
+```razor
+<GridThemeParameters
+    AccentColor="var(--primary)"
+    HeaderBackgroundColor="var(--muted)"
+/>
+```
+
+**Override Density:**
+```razor
+<!-- Compact preset sets 28px rows, but we want 35px -->
+<Grid Density="GridDensity.Compact">
+    <Columns>
+        <GridThemeParameters RowHeight="35" />
+        <GridColumn ... />
+    </Columns>
+</Grid>
+```
+
+**Custom Typography:**
+```razor
+<GridThemeParameters
+    FontFamily="'Roboto', sans-serif"
+    FontSize="15"
+    HeaderFontWeight="700"
+/>
+```
+
+### Available GridThemeParameters (35 total)
+
+**Spacing & Sizing:** Spacing, RowHeight, HeaderHeight, IconSize, InputHeight, ToggleButtonWidth, ToggleButtonHeight
+
+**Colors:** AccentColor, BackgroundColor, ForegroundColor, BorderColor, HeaderBackgroundColor, HeaderForegroundColor, RowHoverColor, OddRowBackgroundColor, SelectedRowBackgroundColor, RangeSelectionBorderColor, CellTextColor, InvalidColor, ModalOverlayBackgroundColor, ChromeBackgroundColor, TooltipBackgroundColor, TooltipTextColor
+
+**Typography:** FontFamily, FontSize, HeaderFontSize, HeaderFontWeight
+
+**Borders:** Borders, BorderRadius, WrapperBorder, WrapperBorderRadius
+
+**See:** `llms/grid-theme-customization.txt` for complete guide  
+**See:** `llms/grid-theme-parameters-reference.txt` for parameter reference
+
+---
+
 **See Also:**
 - Full documentation: `.devflow/ag-grid-implementation.md`
 - Component patterns: `llms/patterns.txt`
 - Grid primitives: `llms/primitives.txt`
+- Theme customization: `llms/grid-theme-customization.txt`
+- Theme parameters: `llms/grid-theme-parameters-reference.txt`
 
-**Last Updated:** 2025-12-11
+**Last Updated:** 2026-01-03
 
