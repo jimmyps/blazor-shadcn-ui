@@ -1,0 +1,587 @@
+@page "/components/grid/server-side-movies"
+@using BlazorUI.Components.Grid
+@using BlazorUI.Components.Button
+@using BlazorUI.Components.Badge
+@using BlazorUI.Components.Spinner
+@using BlazorUI.Components.Input
+@using System.Net.Http.Json
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject HttpClient Http
+
+<PageTitle>Grid Components - Server-Side Movies (TMDb API)</PageTitle>
+
+<div class="space-y-8">
+    <div class="space-y-2">
+        <h1 class="text-3xl font-bold">Server-Side Movie Database</h1>
+        <p class="text-lg text-muted-foreground">
+            Full-featured server-side Grid with sorting, filtering, and pagination using The Movie Database (TMDb) API.
+        </p>
+    </div>
+
+    @* API Key Configuration *@
+    <section class="space-y-4">
+        <div class="rounded-lg border bg-yellow-50 dark:bg-yellow-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-yellow-600 dark:text-yellow-400">🔑</div>
+                <div class="flex-1">
+                    <p class="font-semibold mb-2">TMDb API Key Required</p>
+                    <p class="text-muted-foreground mb-3">
+                        This demo uses <a href="https://www.themoviedb.org/" target="_blank" class="text-primary underline">The Movie Database (TMDb)</a> API.
+                        Get your free API key at <a href="https://www.themoviedb.org/settings/api" target="_blank" class="text-primary underline">TMDb API Settings</a>.
+                    </p>
+                    <div class="flex gap-2 items-center">
+                        <input @bind="apiKey" 
+                               type="text" 
+                               placeholder="Enter your TMDb API key (Bearer token)"
+                               class="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm max-w-md" />
+                        <Button Size="ButtonSize.Small" 
+                                OnClick="SaveApiKey"
+                                Disabled="string.IsNullOrWhiteSpace(apiKey)">
+                            Save Key
+                        </Button>
+                        @if (hasApiKey)
+                        {
+                            <Badge Variant="BadgeVariant.Default">API Key Configured ✓</Badge>
+                        }
+                    </div>
+                    @if (!hasApiKey && string.IsNullOrEmpty(errorMessage))
+                    {
+                        <p class="text-xs text-muted-foreground mt-2">
+                            Don't have an API key? Using demo data instead.
+                        </p>
+                    }
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <p class="text-xs text-destructive mt-2">⚠️ @errorMessage</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @* Main Grid Demo *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">🎬 Movie Database Grid</h2>
+            <p class="text-muted-foreground">
+                Server-side sorting, filtering, and pagination with @(hasApiKey ? "real TMDb API data" : "demo data").
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-blue-50 dark:bg-blue-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-blue-600 dark:text-blue-400">✨</div>
+                <div>
+                    <p class="font-semibold mb-2">Features Demonstrated:</p>
+                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li><strong>Server-Side Pagination:</strong> Load data in pages from TMDb API</li>
+                        <li><strong>Server-Side Sorting:</strong> Click column headers to sort by popularity, rating, release date, or title</li>
+                        <li><strong>Server-Side Filtering:</strong> Filter movies by year, minimum rating, and genre</li>
+                        <li><strong>Real API Integration:</strong> Actual HTTP requests to TMDb discover endpoint</li>
+                        <li><strong>Loading States:</strong> Visual feedback during data fetches</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        @* Filter Controls *@
+        <div class="flex flex-wrap gap-4 p-4 border rounded-lg bg-muted/20">
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium">Min Year</label>
+                <input @bind="filterYearText" 
+                       type="number" 
+                       placeholder="e.g. 2020"
+                       class="flex h-9 w-32 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm" />
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium">Min Rating</label>
+                <input @bind="filterRatingText" 
+                       type="number" 
+                       placeholder="e.g. 7.0"
+                       class="flex h-9 w-32 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm"
+                       step="0.1" />
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium">Genre</label>
+                <select @bind="filterGenre" class="flex h-9 w-48 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm">
+                    <option value="">All Genres</option>
+                    <option value="28">Action</option>
+                    <option value="12">Adventure</option>
+                    <option value="16">Animation</option>
+                    <option value="35">Comedy</option>
+                    <option value="80">Crime</option>
+                    <option value="18">Drama</option>
+                    <option value="14">Fantasy</option>
+                    <option value="27">Horror</option>
+                    <option value="10749">Romance</option>
+                    <option value="878">Sci-Fi</option>
+                    <option value="53">Thriller</option>
+                </select>
+            </div>
+            <div class="flex items-end gap-2">
+                <Button Size="ButtonSize.Small" OnClick="ApplyFilters">
+                    Apply Filters
+                </Button>
+                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearFilters">
+                    Clear
+                </Button>
+            </div>
+        </div>
+
+        @* Loading Indicator *@
+        <div class="flex items-center gap-4">
+            @if (isLoading)
+            {
+                <div class="flex items-center gap-2">
+                    <Spinner Size="SpinnerSize.Small" />
+                    <span class="text-sm text-muted-foreground">Fetching movies from @(hasApiKey ? "TMDb API" : "demo data")...</span>
+                </div>
+            }
+            else
+            {
+                <div class="text-sm text-muted-foreground">
+                    Showing @currentPageItems movies of @totalMovies total | Page @currentPage
+                </div>
+            }
+        </div>
+
+        @* Grid Component *@
+        <Grid TItem="Movie"
+              @ref="movieGrid" 
+              RowModelType="GridRowModelType.ServerSide"
+              OnServerDataRequest="@HandleMovieDataRequest"
+              SelectionMode="GridSelectionMode.Multiple"
+              Height="600px"
+              PageSize="20">
+            <Columns>
+                <GridColumn Field="Title" Header="Title" Width="300px" Sortable="true" />
+                <GridColumn Field="ReleaseDate" Header="Release Date" Width="130px" Sortable="true" DataFormatString="{0:yyyy-MM-dd}" />
+                <GridColumn Field="VoteAverage" Header="Rating" Width="100px" Sortable="true" DataFormatString="{0:F1}">
+                    <CellTemplate Context="movie">
+                        <div class="flex items-center gap-1">
+                            <span class="text-yellow-500">⭐</span>
+                            <span>@movie.VoteAverage.ToString("F1")</span>
+                        </div>
+                    </CellTemplate>
+                </GridColumn>
+                <GridColumn Field="Popularity" Header="Popularity" Width="120px" Sortable="true" DataFormatString="{0:F1}" />
+                <GridColumn Field="VoteCount" Header="Votes" Width="100px" Sortable="true" />
+                <GridColumn Field="Overview" Header="Overview" MinWidth="400px">
+                    <CellTemplate Context="movie">
+                        <div class="text-xs line-clamp-2" title="@movie.Overview">
+                            @movie.Overview
+                        </div>
+                    </CellTemplate>
+                </GridColumn>
+            </Columns>
+        </Grid>
+
+        @* Stats *@
+        <div class="mt-4 space-y-2">
+            <div class="text-sm text-muted-foreground">
+                <strong>Last Request:</strong> @lastRequestTime | 
+                <strong>Requests Made:</strong> @requestCount |
+                <strong>Data Source:</strong> @(hasApiKey ? "TMDb API (Live)" : "Demo Data")
+            </div>
+            <div class="text-xs">
+                <strong>Last Query Parameters:</strong>
+                <pre class="text-xs bg-muted p-2 rounded mt-1">@lastQueryParams</pre>
+            </div>
+        </div>
+
+        @* Code Example *@
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Implementation Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>private async Task&lt;GridDataResponse&lt;Movie&gt;&gt; HandleMovieDataRequest(
+    GridDataRequest&lt;Movie&gt; request)
+{
+    isLoading = true;
+    StateHasChanged();
+    
+    try
+    {
+        // Build TMDb API URL with parameters
+        var page = (request.StartIndex / request.Count) + 1;
+        var sortBy = MapSortField(request.SortDescriptors.FirstOrDefault());
+        
+        var url = $"https://api.themoviedb.org/3/discover/movie?page={page}";
+        if (!string.IsNullOrEmpty(sortBy)) url += $"&sort_by={sortBy}";
+        if (appliedFilterYear.HasValue) url += $"&primary_release_year={appliedFilterYear}";
+        if (appliedFilterRating.HasValue) url += $"&vote_average.gte={appliedFilterRating}";
+        if (!string.IsNullOrEmpty(appliedFilterGenre)) url += $"&with_genres={appliedFilterGenre}";
+        
+        // Call TMDb API
+        var response = await CallTmdbApiAsync&lt;TmdbDiscoverResponse&gt;(url);
+        
+        // Map to Grid response
+        return new GridDataResponse&lt;Movie&gt;
+        {
+            Items = response.Results.Select(MapToMovie),
+            TotalCount = response.TotalResults
+        };
+    }
+    finally
+    {
+        isLoading = false;
+        StateHasChanged();
+    }
+}</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Best Practices *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Server-Side Best Practices</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="rounded-lg border p-4">
+                <h3 class="font-semibold mb-2 text-green-600 dark:text-green-400">✅ Do</h3>
+                <ul class="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                    <li>Map AG Grid sort/filter to your API's parameters</li>
+                    <li>Return accurate total count for pagination</li>
+                    <li>Show loading states during API calls</li>
+                    <li>Handle errors gracefully with fallback data</li>
+                    <li>Cache API responses when appropriate</li>
+                    <li>Use debouncing for filter changes</li>
+                </ul>
+            </div>
+
+            <div class="rounded-lg border p-4">
+                <h3 class="font-semibold mb-2 text-red-600 dark:text-red-400">❌ Don't</h3>
+                <ul class="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                    <li>Load all data client-side (defeats purpose)</li>
+                    <li>Ignore sort/filter parameters from grid</li>
+                    <li>Return incorrect total counts</li>
+                    <li>Make API calls without loading indicators</li>
+                    <li>Expose API keys in client-side code</li>
+                    <li>Skip error handling</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</div>
+
+@code {
+    private Grid<Movie> movieGrid = null!;
+    
+    // API Configuration
+    private string apiKey = "";
+    private bool hasApiKey = false;
+    private string? errorMessage;
+    
+    // Filter state
+    private string filterYearText = "";
+    private string filterRatingText = "";
+    private string filterGenre = "";
+    
+    // Applied filters (sent to API)
+    private int? appliedFilterYear;
+    private decimal? appliedFilterRating;
+    private string appliedFilterGenre = "";
+    
+    // Stats
+    private bool isLoading = false;
+    private int totalMovies = 0;
+    private int currentPageItems = 0;
+    private int currentPage = 1;
+    private string lastRequestTime = "--:--:--";
+    private int requestCount = 0;
+    private string lastQueryParams = "No requests yet";
+
+    private void SaveApiKey()
+    {
+        if (!string.IsNullOrWhiteSpace(apiKey))
+        {
+            hasApiKey = true;
+            errorMessage = null;
+            StateHasChanged();
+        }
+    }
+
+    private void ApplyFilters()
+    {
+        appliedFilterYear = int.TryParse(filterYearText, out var year) ? year : null;
+        appliedFilterRating = decimal.TryParse(filterRatingText, out var rating) ? rating : null;
+        appliedFilterGenre = filterGenre;
+        
+        // Force grid refresh by triggering StateHasChanged
+        StateHasChanged();
+    }
+
+    private void ClearFilters()
+    {
+        filterYearText = "";
+        filterRatingText = "";
+        filterGenre = "";
+        appliedFilterYear = null;
+        appliedFilterRating = null;
+        appliedFilterGenre = "";
+        
+        StateHasChanged();
+    }
+
+    private async Task<GridDataResponse<Movie>> HandleMovieDataRequest(GridDataRequest<Movie> request)
+    {
+        isLoading = true;
+        requestCount++;
+        lastRequestTime = DateTime.Now.ToString("HH:mm:ss");
+        StateHasChanged();
+        
+        try
+        {
+            if (hasApiKey)
+            {
+                return await FetchFromTmdbApi(request);
+            }
+            else
+            {
+                return await FetchDemoData(request);
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error: {ex.Message}";
+            Console.WriteLine($"Error fetching movies: {ex.Message}");
+            return await FetchDemoData(request);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task<GridDataResponse<Movie>> FetchFromTmdbApi(GridDataRequest<Movie> request)
+    {
+        var page = (request.StartIndex / request.Count) + 1;
+        currentPage = page;
+        
+        // Map AG Grid sort to TMDb sort_by parameter
+        var sortBy = "popularity.desc"; // Default
+        if (request.SortDescriptors.Any())
+        {
+            var sort = request.SortDescriptors.First();
+            sortBy = MapSortField(sort.Field, sort.Direction);
+        }
+        
+        // Build query parameters
+        var queryParams = new List<string>
+        {
+            $"page={page}",
+            $"sort_by={sortBy}"
+        };
+        
+        if (appliedFilterYear.HasValue)
+            queryParams.Add($"primary_release_year={appliedFilterYear}");
+        if (appliedFilterRating.HasValue)
+            queryParams.Add($"vote_average.gte={appliedFilterRating}");
+        if (!string.IsNullOrEmpty(appliedFilterGenre))
+            queryParams.Add($"with_genres={appliedFilterGenre}");
+        
+        lastQueryParams = string.Join("\n", queryParams);
+        
+        var url = $"https://api.themoviedb.org/3/discover/movie?{string.Join("&", queryParams)}";
+        
+        // Call TMDb API with Bearer token
+        var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
+        httpRequest.Headers.Add("Authorization", $"Bearer {apiKey}");
+        httpRequest.Headers.Add("Accept", "application/json");
+        
+        var response = await Http.SendAsync(httpRequest);
+        response.EnsureSuccessStatusCode();
+        
+        var tmdbResponse = await response.Content.ReadFromJsonAsync<TmdbDiscoverResponse>();
+        
+        if (tmdbResponse == null)
+        {
+            throw new Exception("Failed to deserialize TMDb response");
+        }
+        
+        totalMovies = tmdbResponse.TotalResults;
+        currentPageItems = tmdbResponse.Results.Count;
+        
+        var movies = tmdbResponse.Results.Select(r => new Movie
+        {
+            Id = r.Id,
+            Title = r.Title,
+            Overview = r.Overview,
+            ReleaseDate = DateTime.TryParse(r.ReleaseDate, out var date) ? date : DateTime.MinValue,
+            VoteAverage = r.VoteAverage,
+            VoteCount = r.VoteCount,
+            Popularity = r.Popularity
+        }).ToList();
+        
+        return new GridDataResponse<Movie>
+        {
+            Items = movies,
+            TotalCount = tmdbResponse.TotalResults
+        };
+    }
+
+    private string MapSortField(string field, GridSortDirection direction)
+    {
+        var dir = direction == GridSortDirection.Descending ? "desc" : "asc";
+        
+        return field?.ToLower() switch
+        {
+            "popularity" => $"popularity.{dir}",
+            "voteaverage" => $"vote_average.{dir}",
+            "releasedate" => $"release_date.{dir}",
+            "title" => $"original_title.{dir}",
+            _ => "popularity.desc"
+        };
+    }
+
+    private async Task<GridDataResponse<Movie>> FetchDemoData(GridDataRequest<Movie> request)
+    {
+        // Simulate API delay
+        await Task.Delay(300);
+        
+        var page = (request.StartIndex / request.Count) + 1;
+        currentPage = page;
+        
+        // Generate demo movies
+        var allMovies = GenerateDemoMovies(500);
+        
+        // Apply filters
+        var query = allMovies.AsQueryable();
+        
+        if (appliedFilterYear.HasValue)
+            query = query.Where(m => m.ReleaseDate.Year >= appliedFilterYear.Value);
+        if (appliedFilterRating.HasValue)
+            query = query.Where(m => m.VoteAverage >= (double)appliedFilterRating.Value);
+        
+        totalMovies = query.Count();
+        
+        // Apply sorting
+        if (request.SortDescriptors.Any())
+        {
+            var sort = request.SortDescriptors.First();
+            query = ApplyDemoSorting(query, sort);
+        }
+        else
+        {
+            query = query.OrderByDescending(m => m.Popularity);
+        }
+        
+        // Apply pagination
+        var pagedMovies = query
+            .Skip(request.StartIndex)
+            .Take(request.Count)
+            .ToList();
+        
+        currentPageItems = pagedMovies.Count;
+        lastQueryParams = $"Page: {page}\nSort: {request.SortDescriptors.FirstOrDefault()?.Field ?? "Popularity"}\nFilters: Year>={appliedFilterYear}, Rating>={appliedFilterRating}";
+        
+        return new GridDataResponse<Movie>
+        {
+            Items = pagedMovies,
+            TotalCount = totalMovies
+        };
+    }
+
+    private IQueryable<Movie> ApplyDemoSorting(IQueryable<Movie> query, GridSortDescriptor sort)
+    {
+        var isDesc = sort.Direction == GridSortDirection.Descending;
+        
+        return sort.Field?.ToLower() switch
+        {
+            "title" => isDesc ? query.OrderByDescending(m => m.Title) : query.OrderBy(m => m.Title),
+            "releasedate" => isDesc ? query.OrderByDescending(m => m.ReleaseDate) : query.OrderBy(m => m.ReleaseDate),
+            "voteaverage" => isDesc ? query.OrderByDescending(m => m.VoteAverage) : query.OrderBy(m => m.VoteAverage),
+            "popularity" => isDesc ? query.OrderByDescending(m => m.Popularity) : query.OrderBy(m => m.Popularity),
+            "votecount" => isDesc ? query.OrderByDescending(m => m.VoteCount) : query.OrderBy(m => m.VoteCount),
+            _ => query.OrderByDescending(m => m.Popularity)
+        };
+    }
+
+    private List<Movie> GenerateDemoMovies(int count)
+    {
+        var titles = new[] {
+            "The Matrix", "Inception", "Interstellar", "The Dark Knight", "Pulp Fiction",
+            "Fight Club", "Forrest Gump", "The Shawshank Redemption", "The Godfather",
+            "Star Wars", "Jurassic Park", "Avatar", "Titanic", "The Avengers"
+        };
+        
+        var adjectives = new[] { "Amazing", "Incredible", "Fantastic", "Epic", "Legendary", "Ultimate", "Super", "Mega" };
+        var nouns = new[] { "Adventure", "Journey", "Quest", "Mission", "Story", "Legacy", "Chronicles", "Saga" };
+        
+        return Enumerable.Range(1, count)
+            .Select(i =>
+            {
+                var baseTitle = i <= titles.Length ? titles[i - 1] : $"{adjectives[i % adjectives.Length]} {nouns[i % nouns.Length]} {i}";
+                var year = 1990 + (i % 35);
+                
+                return new Movie
+                {
+                    Id = i,
+                    Title = baseTitle,
+                    Overview = $"An amazing story about {baseTitle.ToLower()}. This movie takes you on an unforgettable journey through action, drama, and adventure.",
+                    ReleaseDate = new DateTime(year, (i % 12) + 1, (i % 28) + 1),
+                    VoteAverage = 5.0 + (Random.Shared.NextDouble() * 4.5),
+                    VoteCount = Random.Shared.Next(100, 50000),
+                    Popularity = Random.Shared.NextDouble() * 1000
+                };
+            })
+            .ToList();
+    }
+
+    // ==================== TMDb API Models ====================
+    
+    public class TmdbDiscoverResponse
+    {
+        [JsonPropertyName("page")]
+        public int Page { get; set; }
+        
+        [JsonPropertyName("results")]
+        public List<TmdbMovie> Results { get; set; } = new();
+        
+        [JsonPropertyName("total_pages")]
+        public int TotalPages { get; set; }
+        
+        [JsonPropertyName("total_results")]
+        public int TotalResults { get; set; }
+    }
+    
+    public class TmdbMovie
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+        
+        [JsonPropertyName("title")]
+        public string Title { get; set; } = "";
+        
+        [JsonPropertyName("overview")]
+        public string Overview { get; set; } = "";
+        
+        [JsonPropertyName("release_date")]
+        public string ReleaseDate { get; set; } = "";
+        
+        [JsonPropertyName("vote_average")]
+        public double VoteAverage { get; set; }
+        
+        [JsonPropertyName("vote_count")]
+        public int VoteCount { get; set; }
+        
+        [JsonPropertyName("popularity")]
+        public double Popularity { get; set; }
+    }
+    
+    public class Movie
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = "";
+        public string Overview { get; set; } = "";
+        public DateTime ReleaseDate { get; set; }
+        public double VoteAverage { get; set; }
+        public int VoteCount { get; set; }
+        public double Popularity { get; set; }
+    }
+}
