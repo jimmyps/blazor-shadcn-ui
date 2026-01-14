@@ -1,0 +1,449 @@
+@page "/components/grid/data-mutation"
+@using BlazorUI.Components.Grid
+@using BlazorUI.Components.Button
+@using BlazorUI.Components.Badge
+@using BlazorUI.Demo.Shared.Data
+@using System.Collections.ObjectModel
+
+<PageTitle>Grid Components - Data Mutation (NotifyItemsChanged)</PageTitle>
+
+<div class="space-y-8">
+    <div class="space-y-2">
+        <h1 class="text-3xl font-bold">Grid Data Mutation Pattern</h1>
+        <p class="text-lg text-muted-foreground">
+            Elegant mutation tracking with <code class="px-1 py-0.5 rounded bg-muted">TrackedObservableCollection</code> and <code class="px-1 py-0.5 rounded bg-muted">NotifyItemsChanged()</code>
+        </p>
+    </div>
+
+    @* Demo 1: Natural Mutation Pattern *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Natural Mutation Pattern ✨</h2>
+            <p class="text-muted-foreground">
+                With <code class="px-1 py-0.5 rounded bg-muted">TrackedObservableCollection</code>, you can mutate objects naturally and signal changes when done.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-green-50 dark:bg-green-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-green-600 dark:text-green-400">✅</div>
+                <div>
+                    <p class="font-semibold mb-2">Natural C# Mutation Pattern:</p>
+                    <pre class="text-xs bg-muted p-2 rounded overflow-x-auto mt-2"><code>// Mutate objects naturally
+order1.Status = OrderStatus.Shipped;
+order2.Quantity = 10;
+order3.Total = 299.99m;
+
+// Signal changes - Grid updates only these rows!
+collection.NotifyItemsChanged(order1, order2, order3);</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <Button Size="ButtonSize.Small" OnClick="UpdateRandomOrder">
+                Update Random Order
+            </Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="UpdateMultipleOrders">
+                Update 3 Random Orders
+            </Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Secondary" OnClick="ShipAllPending">
+                Ship All Pending
+            </Button>
+        </div>
+
+        <Grid @ref="mutationGrid" 
+              Items="@mutationOrders" 
+              SelectionMode="GridSelectionMode.None"
+              Height="400px">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+                <GridColumn Field="OrderDate" Header="Order Date" Width="150px" DataFormatString="{0:MM/dd/yyyy}" />
+            </Columns>
+        </Grid>
+
+        <div class="mt-4 text-sm text-muted-foreground">
+            Pending: @mutationOrders.Count(o => o.Status == OrderStatus.Pending) | 
+            Shipped: @mutationOrders.Count(o => o.Status == OrderStatus.Shipped) | 
+            Delivered: @mutationOrders.Count(o => o.Status == OrderStatus.Delivered)
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>@@code {
+    private Grid&lt;Order&gt; mutationGrid;
+    private TrackedObservableCollection&lt;Order&gt; mutationOrders = new();
+
+    private void UpdateRandomOrder()
+    {
+        if (mutationOrders.Count == 0) return;
+        
+        var order = mutationOrders[Random.Shared.Next(mutationOrders.Count)];
+        
+        // Natural mutation
+        order.Status = OrderStatus.Shipped;
+        order.Amount = Math.Round((decimal)(Random.Shared.NextDouble() * 10000 + 100), 2);
+        
+        // Signal the change
+        mutationOrders.NotifyItemsChanged(order);
+    }
+
+    private void UpdateMultipleOrders()
+    {
+        var ordersToUpdate = mutationOrders
+            .OrderBy(x => Random.Shared.Next())
+            .Take(3)
+            .ToArray();
+        
+        // Batch mutations
+        foreach (var order in ordersToUpdate)
+        {
+            order.Status = OrderStatus.Delivered;
+            order.Amount *= 0.9m; // 10% discount
+        }
+        
+        // Signal all changes at once
+        mutationOrders.NotifyItemsChanged(ordersToUpdate);
+    }
+}</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 2: Comparison with Old Pattern *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Comparison: Old vs New Pattern</h2>
+            <p class="text-muted-foreground">
+                Compare the awkward index reassignment with the elegant mutation pattern.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="rounded-lg border p-4">
+                <h3 class="font-semibold mb-2 text-red-600 dark:text-red-400">❌ Old Pattern (Awkward)</h3>
+                <pre class="text-xs bg-muted p-2 rounded overflow-x-auto"><code>var order = orders[5];
+order.Status = "Shipped";
+
+// Awkward: Must reassign at same index
+orders[5] = order;
+
+// Or even worse:
+orders = new List&lt;Order&gt;(orders); // Full refresh!</code></pre>
+            </div>
+
+            <div class="rounded-lg border p-4">
+                <h3 class="font-semibold mb-2 text-green-600 dark:text-green-400">✅ New Pattern (Natural)</h3>
+                <pre class="text-xs bg-muted p-2 rounded overflow-x-auto"><code>var order = orders[5];
+order.Status = OrderStatus.Shipped;
+
+// Natural: Just notify!
+orders.NotifyItemsChanged(order);
+
+// Batch updates also easy
+orders.NotifyItemsChanged(order1, order2, order3);</code></pre>
+            </div>
+        </div>
+    </section>
+
+    @* Demo 3: Batch Updates *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Batch Updates Demo</h2>
+            <p class="text-muted-foreground">
+                Update multiple items and signal all changes in a single efficient transaction.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-blue-50 dark:bg-blue-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-blue-600 dark:text-blue-400">⚡</div>
+                <div>
+                    <p class="font-semibold mb-2">Batch Update Benefits:</p>
+                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li>Mutate multiple objects naturally in a loop or LINQ query</li>
+                        <li>Signal all changes at once with <code>NotifyItemsChanged()</code></li>
+                        <li>Grid applies a single transaction - minimal DOM updates</li>
+                        <li>Perfect for applying business rules or bulk status updates</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <Button Size="ButtonSize.Small" OnClick="ApplyDiscount">
+                Apply 10% Discount to High Value Orders
+            </Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="MarkOldOrdersDelivered">
+                Mark Old Orders as Delivered
+            </Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Secondary" OnClick="ResetBatchOrders">
+                Reset Data
+            </Button>
+        </div>
+
+        <Grid @ref="batchGrid" 
+              Items="@batchOrders" 
+              SelectionMode="GridSelectionMode.None"
+              Height="400px">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+                <GridColumn Field="OrderDate" Header="Order Date" Width="150px" DataFormatString="{0:MM/dd/yyyy}" />
+            </Columns>
+        </Grid>
+
+        <div class="mt-4 text-sm text-muted-foreground">
+            Total Orders: @batchOrders.Count | 
+            High Value (>$5000): @batchOrders.Count(o => o.Amount > 5000)
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>@@code {
+    private void ApplyDiscount()
+    {
+        // Find high-value orders
+        var highValueOrders = batchOrders
+            .Where(o => o.Amount > 5000)
+            .ToArray();
+        
+        if (highValueOrders.Length == 0) return;
+        
+        // Apply 10% discount to all
+        foreach (var order in highValueOrders)
+        {
+            order.Amount *= 0.9m;
+        }
+        
+        // Signal all changes in one batch
+        batchOrders.NotifyItemsChanged(highValueOrders);
+    }
+
+    private void MarkOldOrdersDelivered()
+    {
+        var cutoffDate = DateTime.Now.AddDays(-15);
+        var oldOrders = batchOrders
+            .Where(o => o.OrderDate < cutoffDate && o.Status != OrderStatus.Delivered)
+            .ToArray();
+        
+        if (oldOrders.Length == 0) return;
+        
+        foreach (var order in oldOrders)
+        {
+            order.Status = OrderStatus.Delivered;
+        }
+        
+        batchOrders.NotifyItemsChanged(oldOrders);
+    }
+}</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Best Practices *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Best Practices</h2>
+        </div>
+
+        <div class="rounded-lg border bg-yellow-50 dark:bg-yellow-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-yellow-600 dark:text-yellow-400">💡</div>
+                <div>
+                    <p class="font-semibold mb-2">When to Use Each Pattern:</p>
+                    <ul class="list-disc list-inside space-y-2 text-muted-foreground">
+                        <li>
+                            <strong>TrackedObservableCollection + NotifyItemsChanged:</strong> 
+                            Perfect for in-memory data manipulation, CRUD operations, and batch updates
+                        </li>
+                        <li>
+                            <strong>Regular ObservableCollection:</strong> 
+                            Automatic tracking for Add/Remove operations (still supported!)
+                        </li>
+                        <li>
+                            <strong>Transaction APIs (UpdateRowsAsync):</strong> 
+                            Best when integrating with external APIs or SignalR real-time updates
+                        </li>
+                        <li>
+                            <strong>RefreshAsync():</strong> 
+                            Last resort when data changes unpredictably
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-lg border p-4">
+            <h3 class="font-semibold mb-2">Performance Characteristics</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="text-left p-2">Method</th>
+                            <th class="text-left p-2">Use Case</th>
+                            <th class="text-left p-2">Performance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="p-2"><code>NotifyItemsChanged()</code></td>
+                            <td class="p-2">In-memory mutations</td>
+                            <td class="p-2 text-green-600">⚡ Fast - Delta updates only</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2"><code>ObservableCollection.Add/Remove</code></td>
+                            <td class="p-2">Adding/removing items</td>
+                            <td class="p-2 text-green-600">⚡ Fast - Automatic tracking</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2"><code>UpdateRowsAsync()</code></td>
+                            <td class="p-2">API/SignalR updates</td>
+                            <td class="p-2 text-green-600">⚡ Fast - Manual control</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2"><code>RefreshAsync()</code></td>
+                            <td class="p-2">Full grid refresh</td>
+                            <td class="p-2 text-yellow-600">🐌 Slow - All rows rerendered</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+@code {
+    private Grid<Order> mutationGrid = null!;
+    private TrackedObservableCollection<Order> mutationOrders = new();
+
+    private Grid<Order> batchGrid = null!;
+    private TrackedObservableCollection<Order> batchOrders = new();
+
+    protected override void OnInitialized()
+    {
+        // Initialize mutation demo data
+        var initialMutationOrders = GridDemoData.GenerateOrders(30);
+        foreach (var order in initialMutationOrders)
+        {
+            mutationOrders.Add(order);
+        }
+
+        // Initialize batch demo data
+        var initialBatchOrders = GridDemoData.GenerateOrders(50);
+        foreach (var order in initialBatchOrders)
+        {
+            batchOrders.Add(order);
+        }
+    }
+
+    // ==================== MUTATION DEMO ====================
+
+    private void UpdateRandomOrder()
+    {
+        if (mutationOrders.Count == 0) return;
+
+        var statuses = new[] { OrderStatus.Pending, OrderStatus.Shipped, OrderStatus.Delivered };
+        var order = mutationOrders[Random.Shared.Next(mutationOrders.Count)];
+
+        // Natural mutation
+        order.Status = statuses[Random.Shared.Next(statuses.Length)];
+        order.Amount = Math.Round((decimal)(Random.Shared.NextDouble() * 10000 + 100), 2);
+
+        // Signal the change
+        mutationOrders.NotifyItemsChanged(order);
+    }
+
+    private void UpdateMultipleOrders()
+    {
+        if (mutationOrders.Count < 3) return;
+
+        var statuses = new[] { OrderStatus.Pending, OrderStatus.Shipped, OrderStatus.Delivered };
+        var ordersToUpdate = mutationOrders
+            .OrderBy(x => Random.Shared.Next())
+            .Take(3)
+            .ToArray();
+
+        // Batch mutations
+        foreach (var order in ordersToUpdate)
+        {
+            order.Status = statuses[Random.Shared.Next(statuses.Length)];
+            order.Amount = Math.Round(order.Amount * 0.9m, 2); // 10% discount
+        }
+
+        // Signal all changes at once
+        mutationOrders.NotifyItemsChanged(ordersToUpdate);
+    }
+
+    private void ShipAllPending()
+    {
+        var pendingOrders = mutationOrders
+            .Where(o => o.Status == OrderStatus.Pending)
+            .ToArray();
+
+        if (pendingOrders.Length == 0) return;
+
+        foreach (var order in pendingOrders)
+        {
+            order.Status = OrderStatus.Shipped;
+        }
+
+        mutationOrders.NotifyItemsChanged(pendingOrders);
+    }
+
+    // ==================== BATCH DEMO ====================
+
+    private void ApplyDiscount()
+    {
+        var highValueOrders = batchOrders
+            .Where(o => o.Amount > 5000)
+            .ToArray();
+
+        if (highValueOrders.Length == 0) return;
+
+        foreach (var order in highValueOrders)
+        {
+            order.Amount = Math.Round(order.Amount * 0.9m, 2);
+        }
+
+        batchOrders.NotifyItemsChanged(highValueOrders);
+    }
+
+    private void MarkOldOrdersDelivered()
+    {
+        var cutoffDate = DateTime.Now.AddDays(-15);
+        var oldOrders = batchOrders
+            .Where(o => o.OrderDate < cutoffDate && o.Status != OrderStatus.Delivered)
+            .ToArray();
+
+        if (oldOrders.Length == 0) return;
+
+        foreach (var order in oldOrders)
+        {
+            order.Status = OrderStatus.Delivered;
+        }
+
+        batchOrders.NotifyItemsChanged(oldOrders);
+    }
+
+    private void ResetBatchOrders()
+    {
+        batchOrders.Clear();
+        var newOrders = GridDemoData.GenerateOrders(50);
+        foreach (var order in newOrders)
+        {
+            batchOrders.Add(order);
+        }
+    }
+}

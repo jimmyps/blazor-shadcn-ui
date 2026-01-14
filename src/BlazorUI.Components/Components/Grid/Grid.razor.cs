@@ -750,12 +750,24 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             observable.CollectionChanged += HandleCollectionChanged;
             _collectionSubscription = new CollectionChangedSubscription(observable, HandleCollectionChanged);
         }
+        
+        // ✅ NEW: Subscribe to ItemsChanged for TrackedObservableCollection
+        if (_currentItems is TrackedObservableCollection<TItem> tracked)
+        {
+            tracked.ItemsChanged += HandleItemsChanged;
+        }
     }
 
     private void UnsubscribeFromCollection()
     {
         _collectionSubscription?.Dispose();
         _collectionSubscription = null;
+        
+        // Unsubscribe from TrackedObservableCollection
+        if (_currentItems is TrackedObservableCollection<TItem> tracked)
+        {
+            tracked.ItemsChanged -= HandleItemsChanged;
+        }
         
         // Cancel any pending batch operations
         _batchCts?.Cancel();
@@ -799,6 +811,29 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
                 });
             }
         }, TaskScheduler.Default);
+    }
+    
+    /// <summary>
+    /// Handles ItemsChanged events from TrackedObservableCollection.
+    /// Applies update transactions to AG Grid for modified items.
+    /// </summary>
+    private async void HandleItemsChanged(object? sender, ItemsChangedEventArgs<TItem> e)
+    {
+        if (_gridRenderer == null || !_initialized)
+            return;
+        
+        if (e.ChangedItems == null || e.ChangedItems.Count == 0)
+            return;
+        
+        // Apply update transaction to AG Grid
+        await InvokeAsync(async () =>
+        {
+            await _gridRenderer.ApplyTransactionAsync(new GridTransaction<TItem>
+            {
+                Update = e.ChangedItems.ToList()
+            });
+            StateHasChanged();
+        });
     }
 
     private async Task ApplyBatchedChangesAsync()
