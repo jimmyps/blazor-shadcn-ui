@@ -1,0 +1,61 @@
+@page "/components/grid"
+@using BlazorUI.Components.Tabs
+@using BlazorUI.Demo.Shared.Pages.Components.Grid
+
+<PageTitle>Grid Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-7xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Grid Component</h1>
+            <p class="text-xl text-muted-foreground">
+                A powerful, renderer-agnostic data grid with support for sorting, filtering, pagination, and virtualization.
+            </p>
+        </div>
+    </div>
+
+    <Tabs DefaultValue="basic">
+        <TabsList Class="grid w-full m-0 grid-cols-7 lg:w-auto lg:grid-cols-7">
+            <TabsTrigger Value="basic">Basic</TabsTrigger>
+            <TabsTrigger Value="templating">Templating</TabsTrigger>
+            <TabsTrigger Value="selection">Selection</TabsTrigger>
+            <TabsTrigger Value="transactions">Transactions</TabsTrigger>
+            <TabsTrigger Value="sorting">Sorting & Filtering</TabsTrigger>
+            <TabsTrigger Value="state">State</TabsTrigger>
+            <TabsTrigger Value="advanced">Advanced</TabsTrigger>
+            <TabsTrigger Value="theming">Theming</TabsTrigger>
+        </TabsList>
+
+        <TabsContent Value="basic" Class="space-y-8">
+            <Basic />
+        </TabsContent>
+
+        <TabsContent Value="templating" Class="space-y-8">
+            <Templating />
+        </TabsContent>
+
+        <TabsContent Value="selection" Class="space-y-8">
+            <Selection />
+        </TabsContent>
+
+        <TabsContent Value="transactions" Class="space-y-8">
+            <Transactions />
+        </TabsContent>
+
+        <TabsContent Value="sorting" Class="space-y-8">
+            <SortingFiltering />
+        </TabsContent>
+
+        <TabsContent Value="state" Class="space-y-8">
+            <State />
+        </TabsContent>
+
+        <TabsContent Value="advanced" Class="space-y-8">
+            <Advanced />
+        </TabsContent>
+
+        <TabsContent Value="theming" Class="space-y-8">
+            <Theming />
+        </TabsContent>
+    </Tabs>
+</div>

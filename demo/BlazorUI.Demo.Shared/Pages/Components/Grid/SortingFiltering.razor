@@ -1,0 +1,328 @@
+@using BlazorUI.Components.Grid
+@using BlazorUI.Components.Button
+@using BlazorUI.Components.Select
+@using BlazorUI.Demo.Shared.Data
+
+<PageTitle>Grid Components - Sorting & Filtering Examples</PageTitle>
+
+<div class="space-y-8">
+    @* Demo 13: Column Sorting *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Column Sorting</h2>
+            <p class="text-muted-foreground">
+                Click column headers to sort ascending/descending/none.
+            </p>
+        </div>
+
+        <Grid Items="@sortingOrders">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" Sortable="true" />
+                <GridColumn Field="Status" Header="Status" Sortable="true" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
+                <GridColumn Field="OrderDate" Header="Order Date" Sortable="true" Width="140px" />
+            </Columns>
+        </Grid>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders"&gt;
+    &lt;Columns&gt;
+        &lt;GridColumn Field="Id" Header="Order ID" Sortable="true" /&gt;
+        &lt;GridColumn Field="Customer" Header="Customer" Sortable="true" /&gt;
+        &lt;GridColumn Field="Amount" Header="Amount" Sortable="true" /&gt;
+    &lt;/Columns&gt;
+&lt;/Grid&gt;</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 14: Controlled Sorting *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Controlled Sorting State</h2>
+            <p class="text-muted-foreground">
+                External sort controls with programmatic state management.
+            </p>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <Button Size="ButtonSize.Small" OnClick="@(() => SortByAmount())">Sort by Amount (High to Low)</Button>
+            <Button Size="ButtonSize.Small" OnClick="@(() => SortByDate())">Sort by Date (Newest First)</Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearSort">Clear Sort</Button>
+        </div>
+
+        <Grid Items="@controlledSortOrders" @bind-State="@sortState">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" Sortable="true" />
+                <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
+                <GridColumn Field="OrderDate" Header="Order Date" Sortable="true" Width="140px" />
+            </Columns>
+        </Grid>
+
+        @if (sortState.SortDescriptors.Any())
+        {
+            <div class="text-sm text-muted-foreground">
+                Current sort: @sortState.SortDescriptors[0].Field (@sortState.SortDescriptors[0].Direction)
+            </div>
+        }
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" @@bind-State="@@gridState"&gt;
+    &lt;Columns&gt;
+        &lt;GridColumn Field="Amount" Sortable="true" /&gt;
+    &lt;/Columns&gt;
+&lt;/Grid&gt;
+
+@@code {
+    private GridState gridState = new();
+    
+    private void SortByAmount()
+    {
+        // ✅ Natural object mutation - hash-based change detection
+        gridState.SortDescriptors.Clear();
+        gridState.SortDescriptors.Add(new GridSortDescriptor
+        {
+            Field = "Amount",
+            Direction = GridSortDirection.Descending
+        });
+    }
+}</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 15: Column Filtering *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Column Filtering</h2>
+            <p class="text-muted-foreground">
+                Text filter inputs in column headers for client-side filtering.
+            </p>
+        </div>
+
+        <Grid Items="@filteringOrders">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
+                <GridColumn Field="Status" Header="Status" Sortable="true" Filterable="true" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
+            </Columns>
+        </Grid>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders"&gt;
+    &lt;Columns&gt;
+        &lt;GridColumn Field="Customer" Sortable="true" Filterable="true" /&gt;
+    &lt;/Columns&gt;
+&lt;/Grid&gt;</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 16: Controlled Filtering *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Controlled Filtering State</h2>
+            <p class="text-muted-foreground">
+                External filter controls with custom dropdown and programmatic state.
+            </p>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <Select @bind-Value="@statusFilter" Class="w-[180px]">
+                <SelectTrigger>
+                    <SelectValue Placeholder="Filter by Status" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem Value="@(-1)" TValue="int" Text="All Statuses">All Statuses</SelectItem>
+                    <SelectItem Value="@((int)OrderStatus.Pending)" TValue="int" Text="Pending">Pending</SelectItem>
+                    <SelectItem Value="@((int)OrderStatus.Processing)" TValue="int" Text="Processing">Processing</SelectItem>
+                    <SelectItem Value="@((int)OrderStatus.Shipped)" TValue="int" Text="Shipped">Shipped</SelectItem>
+                    <SelectItem Value="@((int)OrderStatus.Delivered)" TValue="int" Text="Delivered">Delivered</SelectItem>
+                    <SelectItem Value="@((int)OrderStatus.Cancelled)" TValue="int" Text="Cancelled">Cancelled</SelectItem>
+                </SelectContent>
+            </Select>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearFilters">Clear Filters</Button>
+        </div>
+
+        <Grid Items="@controlledFilterOrders" @bind-State="@filterState" SuppressHeaderMenus="true">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="130px" Filterable="true">
+                    <CellTemplate Context="order">
+                        <Badge Variant="@GetStatusVariant(order.Status)">
+                            @order.Status
+                        </Badge>
+                    </CellTemplate>
+
+                </GridColumn>
+                <GridColumn Field="Amount" Header="Amount" Width="120px" />
+            </Columns>
+        </Grid>
+
+        @if (filterState.FilterDescriptors.Any())
+        {
+            <div class="text-sm text-muted-foreground">
+                Active filters: @filterState.FilterDescriptors.Count
+            </div>
+        }
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" @@bind-State="@@filterState" SuppressHeaderMenus="true"&gt;
+    &lt;Columns&gt;
+        &lt;GridColumn Field="Status" /&gt;
+    &lt;/Columns&gt;
+&lt;/Grid&gt;
+
+&lt;Select @@bind-Value="statusFilter"&gt;
+    &lt;SelectItem Value="@@(-1)" TValue="int"&gt;All Statuses&lt;/SelectItem&gt;
+    &lt;SelectItem Value="@@((int)OrderStatus.Pending)" TValue="int"&gt;Pending&lt;/SelectItem&gt;
+    &lt;!-- ... other status values ... --&gt;
+&lt;/Select&gt;
+
+@@code {
+    private GridState filterState = new();
+    private int _statusFilter = -1;  // -1 = all
+    private int statusFilter 
+    { 
+        get => _statusFilter;
+        set 
+        {
+            if (_statusFilter != value)
+            {
+                _statusFilter = value;
+                ApplyStatusFilter(value);
+            }
+        }
+    }
+    
+    private void ApplyStatusFilter(int value)
+    {
+        // ✅ Natural object mutation - hash-based change detection
+        filterState.FilterDescriptors.Clear();
+        if (value >= 0)  // -1 = all, 0+ = enum values
+        {
+            filterState.FilterDescriptors.Add(new GridFilterDescriptor
+            {
+                Field = "Status",
+                Operator = GridFilterOperator.Equals,
+                Value = value  // Pass enum value as int - JS will detect as number filter
+            });
+        }
+    }
+}</code></pre>
+            </div>
+        </details>
+    </section>
+</div>
+
+@code {
+    // Separate data sources for each grid to prevent conflicts
+    private List<Order> sortingOrders = new();
+    private List<Order> controlledSortOrders = new();
+    private List<Order> filteringOrders = new();
+    private List<Order> controlledFilterOrders = new();
+    
+    private GridState sortState = new();
+    private GridState filterState = new();
+    
+    private int _statusFilter = -1;  // -1 = all, others = enum values
+    private int statusFilter 
+    { 
+        get => _statusFilter;
+        set 
+        {
+            if (_statusFilter != value)
+            {
+                _statusFilter = value;
+                ApplyStatusFilter(value);
+            }
+        }
+    }
+
+    private BadgeVariant GetStatusVariant(OrderStatus status) => status switch
+    {
+        OrderStatus.Delivered => BadgeVariant.Default,
+        OrderStatus.Shipped => BadgeVariant.Secondary,
+        OrderStatus.Processing => BadgeVariant.Outline,
+        OrderStatus.Pending => BadgeVariant.Outline,
+        OrderStatus.Cancelled => BadgeVariant.Destructive,
+        _ => BadgeVariant.Default
+    };
+
+
+    protected override void OnInitialized()
+    {
+        // Initialize separate data for each grid
+        sortingOrders = GridDemoData.GenerateOrders(100);
+        controlledSortOrders = GridDemoData.GenerateOrders(100);
+        filteringOrders = GridDemoData.GenerateOrders(100);
+        controlledFilterOrders = GridDemoData.GenerateOrders(100);
+    }
+
+    private void SortByAmount()
+    {
+        sortState.SortDescriptors.Clear();
+        sortState.SortDescriptors.Add(new GridSortDescriptor
+        {
+            Field = "Amount",
+            Direction = GridSortDirection.Descending,
+            Order = 0
+        });
+    }
+
+    private void SortByDate()
+    {
+        sortState.SortDescriptors.Clear();
+        sortState.SortDescriptors.Add(new GridSortDescriptor
+        {
+            Field = "OrderDate",
+            Direction = GridSortDirection.Descending,
+            Order = 0
+        });
+    }
+
+    private void ClearSort()
+    {
+        sortState.SortDescriptors.Clear();
+    }
+
+    private void ApplyStatusFilter(int value)
+    {
+        filterState.FilterDescriptors.Clear();
+        if (value >= 0)  // -1 = all, 0+ = enum values
+        {
+            filterState.FilterDescriptors.Add(new GridFilterDescriptor
+            {
+                Field = "Status",
+                Operator = GridFilterOperator.Equals,
+                Value = value  // Pass the enum value as int
+            });
+        }
+    }
+
+    private void ClearFilters()
+    {
+        statusFilter = -1;
+        filterState.FilterDescriptors.Clear();
+    }
+}

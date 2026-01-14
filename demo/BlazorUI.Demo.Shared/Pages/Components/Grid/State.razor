@@ -1,0 +1,316 @@
+@using BlazorUI.Components.Grid
+@using BlazorUI.Components.Button
+@using BlazorUI.Demo.Shared.Data
+@using System.Text.Json
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+
+<PageTitle>Grid Components - State Management Examples</PageTitle>
+
+<div class="space-y-8">
+    @* Demo 17: State Persistence *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">State Persistence</h2>
+            <p class="text-muted-foreground">
+                Save grid state (sort, filter, column order/width) to localStorage and restore on page load.
+            </p>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <Button Size="ButtonSize.Small" OnClick="SaveState">Save State</Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ResetState">Reset to Default</Button>
+            @if (stateSaved)
+            {
+                <span class="text-sm text-green-600 dark:text-green-400 self-center">✓ State saved!</span>
+            }
+        </div>
+
+        <Grid Items="@stateOrders" @bind-State="@gridState" @ref="stateGridRef">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
+                <GridColumn Field="Status" Header="Status" Sortable="true" Filterable="true" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
+                <GridColumn Field="OrderDate" Header="Order Date" Sortable="true" Filterable="true" Width="140px" />
+            </Columns>
+        </Grid>
+
+        <div class="text-sm text-muted-foreground">
+            Try sorting, filtering, or resizing columns, then click "Save State". Refresh the page to see state restored.
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>private Grid&lt;Order&gt; gridRef = default!;
+
+[Inject] private IJSRuntime JS { get; set; }
+private GridState gridState = new();
+
+protected override async Task OnInitializedAsync()
+{
+    var json = await JS.InvokeAsync&lt;string&gt;("localStorage.getItem", "gridState");
+    if (!string.IsNullOrEmpty(json))
+    {
+        gridState = JsonSerializer.Deserialize&lt;GridState&gt;(json) ?? new();
+    }
+}
+
+private async Task SaveState()
+{
+    // ✅ Get actual state from AG Grid
+    gridState = await gridRef.GetStateAsync();
+    
+    var json = JsonSerializer.Serialize(gridState);
+    await JS.InvokeVoidAsync("localStorage.setItem", "gridState", json);
+}</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 18: State Export/Import *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">State Export/Import</h2>
+            <p class="text-muted-foreground">
+                Export grid state as JSON file and import from uploaded JSON.
+            </p>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <Button Size="ButtonSize.Small" OnClick="ExportState">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Export State
+            </Button>
+            <label class="inline-flex items-center gap-2">
+                <span class="cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    Import State
+                </span>
+                <input type="file" accept=".json" @onchange="ImportState" class="hidden" />
+            </label>
+        </div>
+
+        <Grid Items="@exportOrders" @bind-State="@exportState" @ref="exportGridRef">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
+                <GridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
+            </Columns>
+        </Grid>
+
+        <details class="mt-4 rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                Current State JSON
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-auto text-xs max-h-96">@stateJson</pre>
+            </div>
+        </details>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>private async Task ExportState()
+{
+    var json = JsonSerializer.Serialize(gridState, new JsonSerializerOptions { WriteIndented = true });
+    var bytes = Encoding.UTF8.GetBytes(json);
+    var base64 = Convert.ToBase64String(bytes);
+    await JS.InvokeVoidAsync("downloadFile", "grid-state.json", base64);
+}
+
+private async Task ImportState(ChangeEventArgs e)
+{
+    // Read file and deserialize to GridState
+    gridState = JsonSerializer.Deserialize&lt;GridState&gt;(json) ?? new();
+}</code></pre>
+            </div>
+        </details>
+    </section>
+</div>
+
+@code {
+    // Separate data sources for each grid to prevent conflicts
+    private List<Order> stateOrders = new();
+    private List<Order> exportOrders = new();
+
+    private GridState gridState = new();
+    private GridState exportState = new();
+    private string stateJson = "{}";
+    private bool stateSaved = false;
+
+    // Grid references for GetStateAsync()
+    private Grid<Order> stateGridRef;
+    private Grid<Order> exportGridRef;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Initialize separate data for each grid with different seeds for truly independent data
+        // This ensures each grid operates on its own dataset without shared references
+        stateOrders = GenerateOrdersWithSeed(50, seed: 100);
+        exportOrders = GenerateOrdersWithSeed(50, seed: 200);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadState();
+        }
+    }
+
+    /// <summary>
+    /// Generate orders with a custom seed to ensure different data for each grid.
+    /// This creates truly independent datasets to prevent cross-grid interference.
+    /// </summary>
+    private static List<Order> GenerateOrdersWithSeed(int count, int seed)
+    {
+        var statuses = new[] 
+        { 
+            OrderStatus.Pending, 
+            OrderStatus.Processing, 
+            OrderStatus.Shipped, 
+            OrderStatus.Delivered, 
+            OrderStatus.Cancelled 
+        };
+        
+        var customers = new[] 
+        { 
+            "Acme Corp", 
+            "TechStart Inc", 
+            "GlobalTrade LLC", 
+            "FastShip Co", 
+            "MegaMart",
+            "DataFlow Systems",
+            "CloudNine Solutions",
+            "Vertex Industries",
+            "PrimeLogistics",
+            "EcoGoods Market"
+        };
+        
+        var cities = new[] 
+        { 
+            "New York", 
+            "Los Angeles", 
+            "Chicago", 
+            "Houston", 
+            "Phoenix",
+            "Philadelphia",
+            "San Antonio",
+            "San Diego",
+            "Dallas",
+            "San Jose"
+        };
+        
+        var random = new Random(seed);
+        
+        return Enumerable.Range(1, count)
+            .Select(i => new Order
+            {
+                Id = i,
+                Customer = customers[random.Next(customers.Length)],
+                Status = statuses[random.Next(statuses.Length)],
+                Amount = Math.Round((decimal)(random.NextDouble() * 10000), 2),
+                OrderDate = DateTime.Now.AddDays(-random.Next(365)),
+                ShipTo = cities[random.Next(cities.Length)]
+            })
+            .ToList();
+    }
+
+    private async Task LoadState()
+    {
+        try
+        {
+            var json = await JS.InvokeAsync<string>("localStorage.getItem", "gridDemoState");
+            if (!string.IsNullOrEmpty(json))
+            {
+                gridState = JsonSerializer.Deserialize<GridState>(json) ?? new GridState();
+            }
+        }
+        catch
+        {
+            // localStorage not available or error deserializing
+        }
+    }
+
+    private async Task SaveState()
+    {
+        try
+        {
+            // ✅ Get actual state from AG Grid using GetStateAsync()
+            if (stateGridRef != null)
+            {
+                gridState = await stateGridRef.GetStateAsync();
+            }
+            
+            var json = JsonSerializer.Serialize(gridState);
+            await JS.InvokeVoidAsync("localStorage.setItem", "gridDemoState", json);
+            stateSaved = true;
+            StateHasChanged();
+            await Task.Delay(2000);
+            stateSaved = false;
+            StateHasChanged();
+        }
+        catch
+        {
+            // localStorage not available
+        }
+    }
+
+    private async Task ResetState()
+    {
+        gridState = new GridState();
+        try
+        {
+            await JS.InvokeVoidAsync("localStorage.removeItem", "gridDemoState");
+        }
+        catch
+        {
+            // localStorage not available
+        }
+    }
+
+    private async Task ExportState()
+    {
+        // ✅ Get actual state from AG Grid before exporting
+        if (exportGridRef != null)
+        {
+            try
+            {
+                exportState = await exportGridRef.GetStateAsync();
+            }
+            catch
+            {
+                // Grid might not be initialized yet
+            }
+        }
+        
+        var json = JsonSerializer.Serialize(exportState, new JsonSerializerOptions { WriteIndented = true });
+        var fileName = $"grid-state-{DateTime.Now:yyyyMMdd-HHmmss}.json";
+        var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+        var base64 = Convert.ToBase64String(bytes);
+        
+        // Simple download using data URL
+        await JS.InvokeVoidAsync("eval", $@"
+            const link = document.createElement('a');
+            link.href = 'data:application/json;base64,{base64}';
+            link.download = '{fileName}';
+            link.click();
+        ");
+    }
+
+    private async Task ImportState(ChangeEventArgs e)
+    {
+        // Note: File import requires InputFile component for full implementation
+        // This is a simplified demo
+    }
+}
