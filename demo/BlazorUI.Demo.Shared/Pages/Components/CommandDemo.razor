@@ -155,9 +155,10 @@
                 <!-- Backdrop -->
                 <div class="fixed inset-0 bg-black/50 backdrop-blur-sm"></div>
 
-                <!-- Command Palette -->
+                <!-- Command Palette Popup -->
+                <!-- This is just an example using a simple popup. Best practice is to use Dialog or Popover component, see Spotlight example above. -->
                 <div class="relative w-full max-w-lg mx-4" @onclick:stopPropagation="true">
-                    <div class="border rounded-lg shadow-2xl bg-background animate-in fade-in-0 zoom-in-95">
+                    <div class="border rounded-lg shadow-2xl bg-background animate-in animate-duration-300 fade-in-0 zoom-in-95">
                         <BlazorUI.Components.Command.Command OnSelect="@HandlePaletteSelect">
                             <CommandInput Placeholder="Type a command or search..." />
                             <CommandList>

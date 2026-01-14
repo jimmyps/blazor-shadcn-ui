@@ -140,7 +140,12 @@ public static class TailwindMerge
     private static readonly Regex DurationRegex = new(@"^duration-(\d+)$", RegexOptions.Compiled);
     private static readonly Regex DelayRegex = new(@"^delay-(\d+)$", RegexOptions.Compiled);
     private static readonly Regex EasingRegex = new(@"^ease-(.+)$", RegexOptions.Compiled);
-    private static readonly Regex AnimateRegex = new(@"^animate-(.+)$", RegexOptions.Compiled);
+    
+    // Animation-specific utilities (more specific patterns)
+    private static readonly Regex AnimateDurationRegex = new(@"^animate-duration-(\d+)$", RegexOptions.Compiled);
+    private static readonly Regex AnimateEaseRegex = new(@"^animate-ease-(.+)$", RegexOptions.Compiled);
+    private static readonly Regex AnimateNameRegex = new(@"^animate-([a-z]+)$", RegexOptions.Compiled); // Matches animate-{word} without additional hyphens
+    
     private static readonly Regex TranslateRegex = new(@"^-?(translate-x|translate-y|translate)-(.+)$", RegexOptions.Compiled);
     private static readonly Regex PositionRegex = new(@"^-?(top|right|bottom|left|inset|inset-x|inset-y)-(.+)$", RegexOptions.Compiled);
     private static readonly Regex ShadowRegex = new(@"^shadow(-(.+))?$", RegexOptions.Compiled);
@@ -263,13 +268,22 @@ public static class TailwindMerge
         if (DelayRegex.IsMatch(className))
             return "animation-delay";
 
+        // Check animation duration (both duration-* and animate-duration-*)
+        if (AnimateDurationRegex.IsMatch(className))
+            return "animate-duration";
+
+        // Check animation easing (animate-ease-*)
+        if (AnimateEaseRegex.IsMatch(className))
+            return "animate-ease";
+
         // Check animation timing function (ease-*)
         if (EasingRegex.IsMatch(className))
             return "animation-timing-function";
 
-        // Check named animations (animate-*)
-        if (AnimateRegex.IsMatch(className))
-            return "animation";
+        // Check named animations (animate-in, animate-out, animate-spin, etc.)
+        // This must come AFTER the more specific animate-duration and animate-ease checks
+        if (AnimateNameRegex.IsMatch(className))
+            return "animation-name";
 
         // Check translate utilities (translate-x, translate-y, translate)
         if (TranslateRegex.IsMatch(className))

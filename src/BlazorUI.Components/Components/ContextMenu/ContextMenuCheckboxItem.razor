@@ -3,7 +3,7 @@
 @* ContextMenuCheckboxItem - styled checkbox menu item *@
 <BlazorUI.Primitives.ContextMenu.ContextMenuCheckboxItem Disabled="@Disabled"
                                                          Checked="@Checked"
-                                                         CheckedChanged="@CheckedChanged"
+                                                         CheckedChanged="@OnCheckedChanged"
                                                          OnCheckedChange="@OnCheckedChange"
                                                          CloseOnSelect="@CloseOnSelect"
                                                          class="@GetClass()"
@@ -90,5 +90,15 @@
         }
 
         return string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
+    }
+
+    private void OnCheckedChanged(bool isChecked)
+    {
+        if (CheckedChanged.HasDelegate)
+            CheckedChanged.InvokeAsync(isChecked);
+
+        // Ensure internal state is updated
+        if (Checked != isChecked)
+            Checked = isChecked;
     }
 }

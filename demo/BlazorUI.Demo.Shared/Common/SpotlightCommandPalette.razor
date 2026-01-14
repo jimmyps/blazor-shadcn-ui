@@ -17,7 +17,7 @@
         <HeightAnimation Config="@_heightAnimationConfig" Enabled="@_isOpen">
             <BlazorUI.Components.Command.Command OnSelect="@HandleSelect">
                 <CommandInput 
-                    Placeholder="Type a command or search..." 
+                    Placeholder="Type a command or search..." SearchInterval="300"
                     Class="border-0 border-b border-border/40 rounded-none focus-visible:ring-0" />
                 
                 <CommandList Class="max-h-[350px] scrollbar-thin">
@@ -167,6 +167,7 @@
         new("Item", "components/item", "circle"),
         new("Kbd", "components/kbd", "keyboard"),
         new("Label", "components/label", "tag"),
+        new("Markdown Editor", "components/markdown-editor", "file-text"),
         new("Menubar", "components/menubar", "square-menu"),
         new("Motion", "components/motion", "zap"),
         new("Multi Select", "components/multiselect", "list-checks"),
@@ -177,6 +178,7 @@
         new("Progress", "components/progress", "loader"),
         new("Radio Group", "components/radio-group", "circle-dot"),
         new("Resizable", "components/resizable", "panel-left"),
+        new("Rich Text Editor", "components/rich-text-editor", "type"),
         new("Scroll Area", "components/scroll-area", "scroll-text"),
         new("Select", "components/select", "list"),
         new("Separator", "components/separator", "minus"),
