@@ -296,26 +296,50 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
 
     /// <summary>
     /// Called by JavaScript when server-side data is requested.
+    /// This method handles server-side row model data requests from AG Grid.
     /// </summary>
-    /// <param name="request">The data request parameters.</param>
-    /// <returns>The data response with items and counts.</returns>
-    [JSInvokable]
-    public async Task<GridDataResponse<object>> OnDataRequested(GridDataRequest<TItem> request)
+    /// <param name="requestJson">The data request parameters as a JSON element.</param>
+    /// <returns>The data response with items and row count.</returns>
+    [JSInvokable("OnDataRequested")]
+    public async Task<object> OnDataRequested(JsonElement requestJson)
     {
-        // TODO: Server-side data loading needs redesign. 
-        // EventCallback<T> doesn't return values - need Func<> or state update pattern
-        if (_currentDefinition?.OnDataRequest.HasDelegate == true)
+        if (_currentDefinition?.ServerDataRequestHandler == null)
         {
-            await _currentDefinition.OnDataRequest.InvokeAsync(request);
+            Console.WriteLine("[AgGridRenderer] No ServerDataRequestHandler configured for server-side row model");
+            // Return empty response
+            return new
+            {
+                items = Array.Empty<object>(),
+                totalCount = 0
+            };
         }
         
-        // Return empty response - proper implementation needs API redesign
-        return new GridDataResponse<object>
+        try
         {
-            Items = Array.Empty<object>(),
-            TotalCount = 0,
-            FilteredCount = 0
-        };
+            // Deserialize JS request to GridDataRequest
+            var request = JsonSerializer.Deserialize<GridDataRequest<TItem>>(
+                requestJson.GetRawText(),
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            );
+            
+            if (request == null)
+            {
+                throw new InvalidOperationException("Failed to deserialize GridDataRequest");
+            }
+            
+            Console.WriteLine($"[AgGridRenderer] Server data request: StartIndex={request.StartIndex}, Count={request.Count}");
+            
+            // Call the developer's callback
+            var response = await _currentDefinition.ServerDataRequestHandler(request);
+            
+            // Response should be GridDataResponse<TItem>
+            return response;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AgGridRenderer] Server data request failed: {ex.Message}");
+            throw;
+        }
     }
 
     /// <summary>

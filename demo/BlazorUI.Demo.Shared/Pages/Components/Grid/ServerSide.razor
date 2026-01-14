@@ -1,0 +1,542 @@
+@page "/components/grid/server-side"
+@using BlazorUI.Components.Grid
+@using BlazorUI.Components.Button
+@using BlazorUI.Components.Badge
+@using BlazorUI.Components.Spinner
+@using System.Net.Http.Json
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject HttpClient Http
+
+<PageTitle>Grid Components - Server-Side Row Model</PageTitle>
+
+<div class="space-y-8">
+    <div class="space-y-2">
+        <h1 class="text-3xl font-bold">Server-Side Row Model</h1>
+        <p class="text-lg text-muted-foreground">
+            Load data on-demand from a server with server-side sorting, filtering, and pagination.
+        </p>
+    </div>
+
+    @* Demo 1: Basic Server-Side Data Loading *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Real-Time API Data Loading</h2>
+            <p class="text-muted-foreground">
+                This grid fetches user data from the <a href="https://reqres.in" target="_blank" class="text-primary underline">ReqRes API</a> with real pagination.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-blue-50 dark:bg-blue-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-blue-600 dark:text-blue-400">🌐</div>
+                <div>
+                    <p class="font-semibold mb-2">Server-Side Row Model Benefits:</p>
+                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li>Load data on-demand - perfect for millions of rows</li>
+                        <li>Delegate sorting and filtering to the server/database</li>
+                        <li>Reduce initial page load time and bandwidth</li>
+                        <li>Keep sensitive data on the server</li>
+                        <li>Real-time data updates from APIs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4 mb-4">
+            <div class="text-sm text-muted-foreground">
+                <strong>API Endpoint:</strong> https://reqres.in/api/users
+            </div>
+            @if (isLoading)
+            {
+                <div class="flex items-center gap-2">
+                    <Spinner Size="SpinnerSize.Small" />
+                    <span class="text-sm text-muted-foreground">Loading from API...</span>
+                </div>
+            }
+        </div>
+
+        <Grid TItem="User"
+              @ref="serverGrid" 
+              RowModelType="GridRowModelType.ServerSide"
+              OnServerDataRequest="@HandleServerDataRequest"
+              SelectionMode="GridSelectionMode.None"
+              Height="500px"
+              PageSize="6">
+            <Columns>
+                <GridColumn Field="Id" Header="ID" Width="80px" />
+                <GridColumn Field="Email" Header="Email" Width="250px" />
+                <GridColumn Field="FirstName" Header="First Name" Width="150px" />
+                <GridColumn Field="LastName" Header="Last Name" Width="150px" />
+                <GridColumn Field="Avatar" Header="Avatar" Width="400px">
+                    <CellTemplate Context="user">
+                        <div class="flex items-center gap-2">
+                            <img src="@user.Avatar" alt="@user.FirstName" class="w-8 h-8 rounded-full" />
+                            <span class="text-xs text-muted-foreground">@user.Avatar</span>
+                        </div>
+                    </CellTemplate>
+                </GridColumn>
+            </Columns>
+        </Grid>
+
+        <div class="mt-4 space-y-2">
+            <div class="text-sm text-muted-foreground">
+                Total Users: @totalUsers | 
+                Last Request: @lastRequestTime | 
+                Requests Made: @requestCount
+            </div>
+            <div class="text-xs text-muted-foreground">
+                <strong>Note:</strong> Each page load makes an actual HTTP request to the ReqRes API. 
+                Watch the "Loading from API..." indicator when changing pages.
+            </div>
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid RowModelType="GridRowModelType.ServerSide"
+      OnServerDataRequest="@@HandleServerDataRequest"
+      PageSize="6"&gt;
+    &lt;Columns&gt;
+        &lt;GridColumn Field="Id" Header="ID" /&gt;
+        &lt;GridColumn Field="Email" Header="Email" /&gt;
+        &lt;GridColumn Field="FirstName" Header="First Name" /&gt;
+        &lt;GridColumn Field="LastName" Header="Last Name" /&gt;
+    &lt;/Columns&gt;
+&lt;/Grid&gt;
+
+@@code {
+    private async Task&lt;GridDataResponse&lt;User&gt;&gt; HandleServerDataRequest(
+        GridDataRequest&lt;User&gt; request)
+    {
+        isLoading = true;
+        StateHasChanged();
+        
+        try
+        {
+            // Calculate page number from request
+            int page = (request.StartIndex / request.Count) + 1;
+            
+            // Call real API
+            var apiResponse = await Http.GetFromJsonAsync&lt;ReqResResponse&gt;(
+                $"https://reqres.in/api/users?page={page}&per_page={request.Count}");
+            
+            requestCount++;
+            lastRequestTime = DateTime.Now.ToString("HH:mm:ss");
+            totalUsers = apiResponse?.Total ?? 0;
+            
+            // Convert API response to Grid response
+            return new GridDataResponse&lt;User&gt;
+            {
+                Items = apiResponse?.Data ?? Array.Empty&lt;User&gt;(),
+                TotalCount = apiResponse?.Total ?? 0
+            };
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+}</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 2: Simulated Server-Side Sorting and Filtering *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Server-Side Sorting & Filtering (Simulated)</h2>
+            <p class="text-muted-foreground">
+                Demonstrates how to implement server-side sorting and filtering with a mock dataset.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-purple-50 dark:bg-purple-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-purple-600 dark:text-purple-400">⚡</div>
+                <div>
+                    <p class="font-semibold mb-2">How It Works:</p>
+                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li>Grid sends sort/filter parameters to your callback</li>
+                        <li>Your callback applies sorting/filtering on server or database</li>
+                        <li>Return paginated results with total count</li>
+                        <li>Grid displays results and updates pagination UI</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4 mb-4">
+            <Button Size="ButtonSize.Small" OnClick="RefreshSimulatedGrid">
+                Refresh Data
+            </Button>
+            @if (isSimulatedLoading)
+            {
+                <div class="flex items-center gap-2">
+                    <Spinner Size="SpinnerSize.Small" />
+                    <span class="text-sm text-muted-foreground">Processing on server...</span>
+                </div>
+            }
+        </div>
+
+        <Grid TItem="Product"
+              @ref="simulatedGrid" 
+              RowModelType="GridRowModelType.ServerSide"
+              OnServerDataRequest="@HandleSimulatedServerDataRequest"
+              SelectionMode="GridSelectionMode.Multiple"
+              Height="500px"
+              PageSize="10">
+            <Columns>
+                <GridColumn Field="ProductId" Header="Product ID" Width="120px" Sortable="true" />
+                <GridColumn Field="ProductName" Header="Product Name" Sortable="true" />
+                <GridColumn Field="Category" Header="Category" Width="150px" Sortable="true" Filterable="true" />
+                <GridColumn Field="Price" Header="Price" Width="120px" DataFormatString="{0:C}" Sortable="true" />
+                <GridColumn Field="Stock" Header="Stock" Width="100px" Sortable="true" />
+                <GridColumn Field="Supplier" Header="Supplier" Sortable="true" />
+            </Columns>
+        </Grid>
+
+        <div class="mt-4 space-y-2">
+            <div class="text-sm text-muted-foreground">
+                Total Products: @totalProducts | 
+                Current Page Size: 10 | 
+                Server Requests: @simulatedRequestCount
+            </div>
+            <div class="text-xs">
+                <strong>Last Request Parameters:</strong>
+                <pre class="text-xs bg-muted p-2 rounded mt-1">@lastRequestParams</pre>
+            </div>
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Implementation Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>private async Task&lt;GridDataResponse&lt;Product&gt;&gt; HandleSimulatedServerDataRequest(
+    GridDataRequest&lt;Product&gt; request)
+{
+    // Simulate network delay
+    await Task.Delay(300);
+    
+    // Start with full dataset (simulate database query)
+    var query = allProducts.AsQueryable();
+    
+    // Apply server-side filtering
+    foreach (var filter in request.FilterDescriptors)
+    {
+        query = ApplyFilter(query, filter);
+    }
+    
+    // Get total count after filtering
+    var totalCount = query.Count();
+    
+    // Apply server-side sorting
+    if (request.SortDescriptors.Any())
+    {
+        var sort = request.SortDescriptors.First();
+        query = ApplySorting(query, sort);
+    }
+    
+    // Apply pagination
+    var pagedData = query
+        .Skip(request.StartIndex)
+        .Take(request.Count)
+        .ToList();
+    
+    return new GridDataResponse&lt;Product&gt;
+    {
+        Items = pagedData,
+        TotalCount = totalCount
+    };
+}</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Performance Comparison *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">When to Use Server-Side Row Model</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="rounded-lg border p-4">
+                <h3 class="font-semibold mb-2 text-green-600 dark:text-green-400">✅ Use Server-Side When:</h3>
+                <ul class="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                    <li>Dataset has 100,000+ rows</li>
+                    <li>Data changes frequently (real-time updates)</li>
+                    <li>Data must remain on server (security/privacy)</li>
+                    <li>Complex server-side filtering/aggregation needed</li>
+                    <li>Want to minimize initial page load time</li>
+                </ul>
+            </div>
+
+            <div class="rounded-lg border p-4">
+                <h3 class="font-semibold mb-2 text-blue-600 dark:text-blue-400">📊 Use Client-Side When:</h3>
+                <ul class="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                    <li>Dataset is under 10,000 rows</li>
+                    <li>Data is static or changes infrequently</li>
+                    <li>Instant filtering/sorting UX is critical</li>
+                    <li>Want to minimize server load</li>
+                    <li>Offline mode support needed</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="rounded-lg border bg-yellow-50 dark:bg-yellow-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-yellow-600 dark:text-yellow-400">💡</div>
+                <div>
+                    <p class="font-semibold mb-2">Best Practices:</p>
+                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li>Always return accurate <code>TotalCount</code> for proper pagination</li>
+                        <li>Implement server-side caching to improve performance</li>
+                        <li>Use database indexes on sortable/filterable columns</li>
+                        <li>Consider implementing debouncing for filter requests</li>
+                        <li>Show loading indicators during data fetch</li>
+                        <li>Handle errors gracefully and show user-friendly messages</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@code {
+    private Grid<User> serverGrid = null!;
+    private Grid<Product> simulatedGrid = null!;
+    
+    // Real API demo state
+    private bool isLoading = false;
+    private int totalUsers = 0;
+    private string lastRequestTime = "--:--:--";
+    private int requestCount = 0;
+
+    // Simulated server-side demo state
+    private bool isSimulatedLoading = false;
+    private int totalProducts = 0;
+    private int simulatedRequestCount = 0;
+    private string lastRequestParams = "No requests yet";
+    private List<Product> allProducts = new();
+
+    protected override void OnInitialized()
+    {
+        // Generate mock products for simulated demo
+        allProducts = GenerateMockProducts(500);
+        totalProducts = allProducts.Count;
+    }
+
+    // ==================== REAL API DEMO ====================
+
+    private async Task<GridDataResponse<User>> HandleServerDataRequest(GridDataRequest<User> request)
+    {
+        isLoading = true;
+        StateHasChanged();
+        
+        try
+        {
+            // Calculate page number (ReqRes API uses 1-based pages)
+            int page = (request.StartIndex / request.Count) + 1;
+            
+            // Call real API
+            var apiResponse = await Http.GetFromJsonAsync<ReqResResponse>(
+                $"https://reqres.in/api/users?page={page}&per_page={request.Count}");
+            
+            requestCount++;
+            lastRequestTime = DateTime.Now.ToString("HH:mm:ss");
+            totalUsers = apiResponse?.Total ?? 0;
+            
+            // Convert API response to Grid response
+            return new GridDataResponse<User>
+            {
+                Items = (IEnumerable<User>)(apiResponse?.Data ?? new List<User>()),
+                TotalCount = apiResponse?.Total ?? 0
+            };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching data: {ex.Message}");
+            return new GridDataResponse<User>
+            {
+                Items = Array.Empty<User>(),
+                TotalCount = 0
+            };
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    // ==================== SIMULATED SERVER-SIDE DEMO ====================
+
+    private async Task<GridDataResponse<Product>> HandleSimulatedServerDataRequest(GridDataRequest<Product> request)
+    {
+        isSimulatedLoading = true;
+        simulatedRequestCount++;
+        
+        // Log request parameters
+        lastRequestParams = $"StartIndex: {request.StartIndex}, Count: {request.Count}\n" +
+                           $"Sorts: {string.Join(", ", request.SortDescriptors.Select(s => $"{s.Field} {s.Direction}"))}\n" +
+                           $"Filters: {string.Join(", ", request.FilterDescriptors.Select(f => $"{f.Field} {f.Operator} {f.Value}"))}";
+        
+        StateHasChanged();
+        
+        try
+        {
+            // Simulate network delay (300ms)
+            await Task.Delay(300);
+            
+            // Start with full dataset (simulate database query)
+            var query = allProducts.AsQueryable();
+            
+            // Apply server-side filtering
+            foreach (var filter in request.FilterDescriptors)
+            {
+                query = ApplyFilter(query, filter);
+            }
+            
+            // Get total count after filtering
+            var totalCount = query.Count();
+            
+            // Apply server-side sorting
+            if (request.SortDescriptors.Any())
+            {
+                var sort = request.SortDescriptors.First();
+                query = ApplySorting(query, sort);
+            }
+            
+            // Apply pagination
+            var pagedData = query
+                .Skip(request.StartIndex)
+                .Take(request.Count)
+                .ToList();
+            
+            return new GridDataResponse<Product>
+            {
+                Items = pagedData,
+                TotalCount = totalCount
+            };
+        }
+        finally
+        {
+            isSimulatedLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private IQueryable<Product> ApplyFilter(IQueryable<Product> query, GridFilterDescriptor filter)
+    {
+        if (string.IsNullOrEmpty(filter.Field) || filter.Value == null)
+            return query;
+
+        var filterValue = filter.Value.ToString() ?? "";
+        
+        return filter.Field.ToLower() switch
+        {
+            "category" => query.Where(p => p.Category.Contains(filterValue, StringComparison.OrdinalIgnoreCase)),
+            "productname" => query.Where(p => p.ProductName.Contains(filterValue, StringComparison.OrdinalIgnoreCase)),
+            "supplier" => query.Where(p => p.Supplier.Contains(filterValue, StringComparison.OrdinalIgnoreCase)),
+            _ => query
+        };
+    }
+
+    private IQueryable<Product> ApplySorting(IQueryable<Product> query, GridSortDescriptor sort)
+    {
+        var isDescending = sort.Direction == GridSortDirection.Descending;
+        
+        return sort.Field.ToLower() switch
+        {
+            "productid" => isDescending ? query.OrderByDescending(p => p.ProductId) : query.OrderBy(p => p.ProductId),
+            "productname" => isDescending ? query.OrderByDescending(p => p.ProductName) : query.OrderBy(p => p.ProductName),
+            "category" => isDescending ? query.OrderByDescending(p => p.Category) : query.OrderBy(p => p.Category),
+            "price" => isDescending ? query.OrderByDescending(p => p.Price) : query.OrderBy(p => p.Price),
+            "stock" => isDescending ? query.OrderByDescending(p => p.Stock) : query.OrderBy(p => p.Stock),
+            "supplier" => isDescending ? query.OrderByDescending(p => p.Supplier) : query.OrderBy(p => p.Supplier),
+            _ => query
+        };
+    }
+
+    private async Task RefreshSimulatedGrid()
+    {
+        // Regenerate data
+        allProducts = GenerateMockProducts(500);
+        totalProducts = allProducts.Count;
+        
+        // Force grid refresh by calling StateHasChanged
+        StateHasChanged();
+    }
+
+    private List<Product> GenerateMockProducts(int count)
+    {
+        var categories = new[] { "Electronics", "Clothing", "Food", "Books", "Toys", "Sports", "Home", "Garden" };
+        var suppliers = new[] { "Acme Corp", "Global Supplies", "Tech World", "FastShip LLC", "MegaStore" };
+        var adjectives = new[] { "Premium", "Deluxe", "Standard", "Economy", "Professional", "Ultra", "Super", "Mega" };
+        var nouns = new[] { "Widget", "Gadget", "Device", "Tool", "Kit", "Set", "Pack", "Bundle" };
+        
+        return Enumerable.Range(1, count)
+            .Select(i => new Product
+            {
+                ProductId = i,
+                ProductName = $"{adjectives[i % adjectives.Length]} {nouns[i % nouns.Length]} {i}",
+                Category = categories[i % categories.Length],
+                Price = Math.Round((decimal)(Random.Shared.NextDouble() * 1000 + 10), 2),
+                Stock = Random.Shared.Next(0, 500),
+                Supplier = suppliers[i % suppliers.Length]
+            })
+            .ToList();
+    }
+
+    // ==================== MODELS ====================
+
+    public class User
+    {
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+        
+        [JsonPropertyName("email")]
+        public string Email { get; set; } = "";
+        
+        [JsonPropertyName("first_name")]
+        public string FirstName { get; set; } = "";
+        
+        [JsonPropertyName("last_name")]
+        public string LastName { get; set; } = "";
+        
+        [JsonPropertyName("avatar")]
+        public string Avatar { get; set; } = "";
+    }
+
+    public class ReqResResponse
+    {
+        [JsonPropertyName("page")]
+        public int Page { get; set; }
+        
+        [JsonPropertyName("per_page")]
+        public int PerPage { get; set; }
+        
+        [JsonPropertyName("total")]
+        public int Total { get; set; }
+        
+        [JsonPropertyName("total_pages")]
+        public int TotalPages { get; set; }
+        
+        [JsonPropertyName("data")]
+        public List<User> Data { get; set; } = new();
+    }
+
+    public class Product
+    {
+        public int ProductId { get; set; }
+        public string ProductName { get; set; } = "";
+        public string Category { get; set; } = "";
+        public decimal Price { get; set; }
+        public int Stock { get; set; }
+        public string Supplier { get; set; } = "";
+    }
+}

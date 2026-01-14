@@ -203,7 +203,7 @@ orders.NotifyItemsChanged(order1, order2, order3);</code></pre>
 
         <div class="mt-4 text-sm text-muted-foreground">
             Total Orders: @batchOrders.Count | 
-            High Value (>$5000): @batchOrders.Count(o => o.Amount > 5000)
+            High Value (&gt;$5000): @batchOrders.Count(o => o.Amount > 5000)
         </div>
 
         <details class="rounded-lg border">
@@ -235,7 +235,7 @@ orders.NotifyItemsChanged(order1, order2, order3);</code></pre>
     {
         var cutoffDate = DateTime.Now.AddDays(-15);
         var oldOrders = batchOrders
-            .Where(o => o.OrderDate < cutoffDate && o.Status != OrderStatus.Delivered)
+            .Where(o =&gt; o.OrderDate &lt; cutoffDate && o.Status != OrderStatus.Delivered)
             .ToArray();
         
         if (oldOrders.Length == 0) return;

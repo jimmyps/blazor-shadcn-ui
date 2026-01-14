@@ -193,7 +193,23 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public EventCallback<GridState> OnStateChanged { get; set; }
 
     /// <summary>
+    /// Gets or sets the row model type for the grid.
+    /// Default is ClientSide. Use ServerSide for server-side data fetching with sorting/filtering/pagination.
+    /// </summary>
+    [Parameter]
+    public GridRowModelType RowModelType { get; set; } = GridRowModelType.ClientSide;
+
+    /// <summary>
     /// Gets or sets the callback invoked when server-side data is requested.
+    /// Required when RowModelType is ServerSide or Infinite.
+    /// This callback receives a GridDataRequest and should return a GridDataResponse.
+    /// </summary>
+    [Parameter]
+    public Func<GridDataRequest<TItem>, Task<GridDataResponse<TItem>>>? OnServerDataRequest { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the callback invoked when server-side data is requested (legacy EventCallback version).
+    /// For new code, use OnServerDataRequest (Func) instead.
     /// </summary>
     [Parameter]
     public EventCallback<GridDataRequest<TItem>> OnDataRequest { get; set; }
@@ -664,6 +680,26 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
 
         // Use the helper method to merge theme parameters
         _gridDefinition.ThemeParams = GetMergedThemeParams();
+        
+        // ✅ Server-side row model configuration
+        if (RowModelType == GridRowModelType.ServerSide)
+        {
+            _gridDefinition.RowModelType = "serverSide";
+            _gridDefinition.ServerDataRequestHandler = OnServerDataRequest != null 
+                ? async (request) => await OnServerDataRequest((GridDataRequest<TItem>)request)
+                : null;
+        }
+        else if (RowModelType == GridRowModelType.Infinite)
+        {
+            _gridDefinition.RowModelType = "infinite";
+            _gridDefinition.ServerDataRequestHandler = OnServerDataRequest != null 
+                ? async (request) => await OnServerDataRequest((GridDataRequest<TItem>)request)
+                : null;
+        }
+        else
+        {
+            _gridDefinition.RowModelType = "clientSide";
+        }
         
         // ✅ Provide a callback for the renderer to resolve IDs back to original instances
         _gridDefinition.ResolveItemsByIds = (ids) => ResolveItemsByIds(ids);
