@@ -142,22 +142,85 @@ private async Task ImportState(ChangeEventArgs e)
     // Separate data sources for each grid to prevent conflicts
     private List<Order> stateOrders = new();
     private List<Order> exportOrders = new();
-    
+
     private GridState gridState = new();
     private GridState exportState = new();
     private string stateJson = "{}";
     private bool stateSaved = false;
-    
+
     // Grid references for GetStateAsync()
-    private Grid<Order> stateGridRef = default!;
-    private Grid<Order> exportGridRef = default!;
+    private Grid<Order> stateGridRef;
+    private Grid<Order> exportGridRef;
 
     protected override async Task OnInitializedAsync()
     {
-        // Initialize separate data for each grid
-        stateOrders = GridDemoData.GenerateOrders(50);
-        exportOrders = GridDemoData.GenerateOrders(50);
+        // Initialize separate data for each grid with different seeds for truly independent data
+        // This ensures each grid operates on its own dataset without shared references
+        stateOrders = GenerateOrdersWithSeed(50, seed: 100);
+        exportOrders = GenerateOrdersWithSeed(50, seed: 200);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
         await LoadState();
+    }
+
+    /// <summary>
+    /// Generate orders with a custom seed to ensure different data for each grid.
+    /// This creates truly independent datasets to prevent cross-grid interference.
+    /// </summary>
+    private static List<Order> GenerateOrdersWithSeed(int count, int seed)
+    {
+        var statuses = new[] 
+        { 
+            OrderStatus.Pending, 
+            OrderStatus.Processing, 
+            OrderStatus.Shipped, 
+            OrderStatus.Delivered, 
+            OrderStatus.Cancelled 
+        };
+        
+        var customers = new[] 
+        { 
+            "Acme Corp", 
+            "TechStart Inc", 
+            "GlobalTrade LLC", 
+            "FastShip Co", 
+            "MegaMart",
+            "DataFlow Systems",
+            "CloudNine Solutions",
+            "Vertex Industries",
+            "PrimeLogistics",
+            "EcoGoods Market"
+        };
+        
+        var cities = new[] 
+        { 
+            "New York", 
+            "Los Angeles", 
+            "Chicago", 
+            "Houston", 
+            "Phoenix",
+            "Philadelphia",
+            "San Antonio",
+            "San Diego",
+            "Dallas",
+            "San Jose"
+        };
+        
+        var random = new Random(seed);
+        
+        return Enumerable.Range(1, count)
+            .Select(i => new Order
+            {
+                Id = i,
+                Customer = customers[random.Next(customers.Length)],
+                Status = statuses[random.Next(statuses.Length)],
+                Amount = Math.Round((decimal)(random.NextDouble() * 10000), 2),
+                OrderDate = DateTime.Now.AddDays(-random.Next(365)),
+                ShipTo = cities[random.Next(cities.Length)]
+            })
+            .ToList();
     }
 
     private async Task LoadState()

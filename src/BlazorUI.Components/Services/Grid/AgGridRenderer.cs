@@ -593,7 +593,8 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             field = !string.IsNullOrEmpty(col.Field) ? ToCamelCase(col.Field) : (string?)null,
             headerName = col.Header,
             sortable = col.Sortable && !string.IsNullOrEmpty(col.Field), // Can't sort without a field
-            filter = col.Filterable && !string.IsNullOrEmpty(col.Field), // Can't filter without a field
+            filterable = col.Filterable && !string.IsNullOrEmpty(col.Field), // Can't filter without a field
+            filter = col.Filterable && !string.IsNullOrEmpty(col.Field) ? col.AgGridFilterType ?? "agTextColumnFilter" : (string?)null,
             width = ParseWidth(col.Width),
             minWidth = ParseWidth(col.MinWidth),
             maxWidth = ParseWidth(col.MaxWidth),
@@ -610,13 +611,20 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             // Value formatting - use simple formatter that reads {field}_formatted property
             valueFormatter = !string.IsNullOrEmpty(col.DataFormatString) && col.CellTemplate == null ? "formattedValueFormatter" : null,
             // ValueSelector mapped to valueGetter
-            valueGetter = col.ValueSelector != null ? "valueGetter" : null
+            valueGetter = col.ValueSelector != null ? "valueGetter" : null,
+            // ✅ Suppress header menus for controlled filtering scenarios
+            suppressMenu = definition.SuppressHeaderMenus,
+            suppressHeaderMenuButton = definition.SuppressHeaderMenus,
+            suppressHeaderFilterButton = definition.SuppressHeaderMenus,
+
+            // ? Store field type info for debugging
+            __fieldType = col.FieldType?.Name
         }).ToArray();
 
         Console.WriteLine($"[AgGridRenderer] Column defs built:");
         foreach (var col in columnDefs)
         {
-            Console.WriteLine($"  - colId: '{col.colId}', field: '{col.field ?? "(none)"}', headerName: '{col.headerName}', cellRenderer: '{col.cellRenderer ?? "(none)"}'");
+            Console.WriteLine($"  - colId: '{col.colId}', field: '{col.field ?? "(none)"}', headerName: '{col.headerName}', filter: '{col.filter ?? "(none)"}', fieldType: '{col.__fieldType ?? "(none)"}'");
         }
 
         return new
@@ -640,6 +648,40 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         };
     }
 
+    /// <summary>
+    /// Gets AG Grid filter parameters for better UX based on filter type.
+    /// </summary>
+    private object? GetFilterParams(string? filterType)
+    {
+        if (string.IsNullOrEmpty(filterType))
+            return null;
+
+        return filterType switch
+        {
+            "agNumberColumnFilter" => new
+            {
+                buttons = new[] { "reset", "apply" },
+                closeOnApply = true
+            },
+            "agDateColumnFilter" => new
+            {
+                buttons = new[] { "reset", "apply" },
+                closeOnApply = true,
+                // Comparator will be set in JavaScript if needed
+            },
+            "agTextColumnFilter" => new
+            {
+                buttons = new[] { "reset", "apply" },
+                closeOnApply = true
+            },
+            "agSetColumnFilter" => new
+            {
+                buttons = new[] { "reset", "apply" },
+                closeOnApply = true
+            },
+            _ => null
+        };
+    }
     private string? ToCamelCase(string? str)
     {
         if (string.IsNullOrEmpty(str) || str.Length == 0)

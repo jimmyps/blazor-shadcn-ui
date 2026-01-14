@@ -148,22 +148,29 @@
                     <SelectValue Placeholder="Filter by Status" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem Value="@("all")" TValue="string">All Statuses</SelectItem>
-                    <SelectItem Value="@("Pending")" TValue="string">Pending</SelectItem>
-                    <SelectItem Value="@("Processing")" TValue="string">Processing</SelectItem>
-                    <SelectItem Value="@("Shipped")" TValue="string">Shipped</SelectItem>
-                    <SelectItem Value="@("Delivered")" TValue="string">Delivered</SelectItem>
-                    <SelectItem Value="@("Cancelled")" TValue="string">Cancelled</SelectItem>
+                    <SelectItem Value="@(-1)" TValue="int" Text="All Statuses">All Statuses</SelectItem>
+                    <SelectItem Value="@((int)OrderStatus.Pending)" TValue="int" Text="Pending">Pending</SelectItem>
+                    <SelectItem Value="@((int)OrderStatus.Processing)" TValue="int" Text="Processing">Processing</SelectItem>
+                    <SelectItem Value="@((int)OrderStatus.Shipped)" TValue="int" Text="Shipped">Shipped</SelectItem>
+                    <SelectItem Value="@((int)OrderStatus.Delivered)" TValue="int" Text="Delivered">Delivered</SelectItem>
+                    <SelectItem Value="@((int)OrderStatus.Cancelled)" TValue="int" Text="Cancelled">Cancelled</SelectItem>
                 </SelectContent>
             </Select>
             <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearFilters">Clear Filters</Button>
         </div>
 
-        <Grid Items="@controlledFilterOrders" @bind-State="@filterState">
+        <Grid Items="@controlledFilterOrders" @bind-State="@filterState" SuppressHeaderMenus="true">
             <Columns>
                 <GridColumn Field="Id" Header="Order ID" Width="100px" />
                 <GridColumn Field="Customer" Header="Customer" />
-                <GridColumn Field="Status" Header="Status" Width="130px" />
+                <GridColumn Field="Status" Header="Status" Width="130px" Filterable="true">
+                    <CellTemplate Context="order">
+                        <Badge Variant="@GetStatusVariant(order.Status)">
+                            @order.Status
+                        </Badge>
+                    </CellTemplate>
+
+                </GridColumn>
                 <GridColumn Field="Amount" Header="Amount" Width="120px" />
             </Columns>
         </Grid>
@@ -180,18 +187,22 @@
                 View Code
             </summary>
             <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" @@bind-State="@@filterState"&gt;
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" @@bind-State="@@filterState" SuppressHeaderMenus="true"&gt;
     &lt;Columns&gt;
         &lt;GridColumn Field="Status" /&gt;
     &lt;/Columns&gt;
 &lt;/Grid&gt;
 
-&lt;Select @@bind-Value="statusFilter"&gt;...&lt;/Select&gt;
+&lt;Select @@bind-Value="statusFilter"&gt;
+    &lt;SelectItem Value="@@(-1)" TValue="int"&gt;All Statuses&lt;/SelectItem&gt;
+    &lt;SelectItem Value="@@((int)OrderStatus.Pending)" TValue="int"&gt;Pending&lt;/SelectItem&gt;
+    &lt;!-- ... other status values ... --&gt;
+&lt;/Select&gt;
 
 @@code {
     private GridState filterState = new();
-    private string _statusFilter = "all";
-    private string statusFilter 
+    private int _statusFilter = -1;  // -1 = all
+    private int statusFilter 
     { 
         get => _statusFilter;
         set 
@@ -204,17 +215,17 @@
         }
     }
     
-    private void ApplyStatusFilter(string? value)
+    private void ApplyStatusFilter(int value)
     {
         // ✅ Natural object mutation - hash-based change detection
         filterState.FilterDescriptors.Clear();
-        if (value != null && value != "all")
+        if (value >= 0)  // -1 = all, 0+ = enum values
         {
             filterState.FilterDescriptors.Add(new GridFilterDescriptor
             {
                 Field = "Status",
                 Operator = GridFilterOperator.Equals,
-                Value = value
+                Value = value  // Pass enum value as int - JS will detect as number filter
             });
         }
     }
@@ -234,8 +245,8 @@
     private GridState sortState = new();
     private GridState filterState = new();
     
-    private string _statusFilter = "all";
-    private string statusFilter 
+    private int _statusFilter = -1;  // -1 = all, others = enum values
+    private int statusFilter 
     { 
         get => _statusFilter;
         set 
@@ -247,6 +258,17 @@
             }
         }
     }
+
+    private BadgeVariant GetStatusVariant(OrderStatus status) => status switch
+    {
+        OrderStatus.Delivered => BadgeVariant.Default,
+        OrderStatus.Shipped => BadgeVariant.Secondary,
+        OrderStatus.Processing => BadgeVariant.Outline,
+        OrderStatus.Pending => BadgeVariant.Outline,
+        OrderStatus.Cancelled => BadgeVariant.Destructive,
+        _ => BadgeVariant.Default
+    };
+
 
     protected override void OnInitialized()
     {
@@ -284,23 +306,23 @@
         sortState.SortDescriptors.Clear();
     }
 
-    private void ApplyStatusFilter(string? value)
+    private void ApplyStatusFilter(int value)
     {
         filterState.FilterDescriptors.Clear();
-        if (value != null && value != "all")
+        if (value >= 0)  // -1 = all, 0+ = enum values
         {
             filterState.FilterDescriptors.Add(new GridFilterDescriptor
             {
                 Field = "Status",
                 Operator = GridFilterOperator.Equals,
-                Value = value
+                Value = value  // Pass the enum value as int
             });
         }
     }
 
     private void ClearFilters()
     {
-        statusFilter = "all";
+        statusFilter = -1;
         filterState.FilterDescriptors.Clear();
     }
 }

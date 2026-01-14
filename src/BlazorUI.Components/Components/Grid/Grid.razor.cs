@@ -112,6 +112,15 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public GridDensity Density { get; set; } = GridDensity.Comfortable;
 
     /// <summary>
+    /// Gets or sets whether to suppress the header menus (filter/column menu).
+    /// When true, columns will not show the menu icon even if filterable/sortable.
+    /// This is useful for controlled filtering scenarios where you provide external filter UI.
+    /// Default is false.
+    /// </summary>
+    [Parameter]
+    public bool SuppressHeaderMenus { get; set; } = false;
+
+    /// <summary>
     /// Gets or sets the current state of the grid.
     /// Supports two-way binding via @bind-State for automatic state synchronization.
     /// </summary>
@@ -647,6 +656,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         _gridDefinition.PageSize = PageSize;
         _gridDefinition.IdField = IdField;                  // Row ID field for selection persistence
         _gridDefinition.State = State;
+        _gridDefinition.SuppressHeaderMenus = SuppressHeaderMenus; // Hide filter/menu UI
         _gridDefinition.OnStateChanged = OnStateChanged;
         _gridDefinition.OnDataRequest = OnDataRequest;
         _gridDefinition.OnSelectionChanged = OnSelectionChanged;

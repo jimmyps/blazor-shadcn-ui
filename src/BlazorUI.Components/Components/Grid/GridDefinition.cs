@@ -45,6 +45,14 @@ public class GridDefinition<TItem>
     public GridDensity Density { get; set; } = GridDensity.Comfortable;
 
     /// <summary>
+    /// Gets or sets whether to suppress the header menus (filter/column menu).
+    /// When true, columns will not show the menu icon even if filterable/sortable.
+    /// This is useful for controlled filtering scenarios where you provide external filter UI.
+    /// Default is false.
+    /// </summary>
+    public bool SuppressHeaderMenus { get; set; } = false;
+
+    /// <summary>
     /// Gets or sets the number of items per page.
     /// </summary>
     public int PageSize { get; set; } = 25;

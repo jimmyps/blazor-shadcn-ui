@@ -424,11 +424,11 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
     
     // ✅ AG Grid v32.2+ Migration: rowSelection as object instead of string
     // Convert legacy string rowSelection to new object format
+    // "single" → { mode: 'singleRow' }
+    // "multiple" → { mode: 'multiRow' }
     let rowSelectionConfig = config.rowSelection;
     if (typeof config.rowSelection === 'string') {
         // Map legacy string values to new object format
-        // "single" → { mode: 'singleRow' }
-        // "multiple" → { mode: 'multiRow' }
         rowSelectionConfig = {
             mode: config.rowSelection === 'multiple' ? 'multiRow' : 'singleRow',
             enableClickSelection: true  // ✅ Replaces deprecated suppressRowClickSelection: false
@@ -495,6 +495,8 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
             sortable: true,
             filter: true,
             resizable: true,
+            // ✅ Suppress header menus if configured (for controlled filtering)
+            suppressHeaderMenuButton: config.suppressHeaderMenus || false,
         },
         
         // ✅ AG Grid v32.2+: Removed deprecated enableRangeSelection
@@ -743,26 +745,46 @@ function applyGridState(api, state, gridOptions) {
             api.applyColumnState({ state: columnState });
         }
         
-        // Apply sorting
-        if (state.sortDescriptors && state.sortDescriptors.length > 0) {
-            const sortModel = state.sortDescriptors.map(sort => ({
-                colId: sort.field,
-                sort: sort.direction === 1 ? 'asc' : 'desc',
-                sortIndex: sort.order
-            }));
-            api.applyColumnState({ state: sortModel });
+        // Apply sorting - ALWAYS apply if sortDescriptors exists (even if empty = clear)
+        if (state.sortDescriptors !== undefined && state.sortDescriptors !== null) {
+            if (state.sortDescriptors.length > 0) {
+                const sortModel = state.sortDescriptors.map(sort => ({
+                    colId: sort.field,
+                    sort: sort.direction === 1 ? 'asc' : 'desc',
+                    sortIndex: sort.order
+                }));
+                
+                // ✅ Use applyColumnState with defaultState to clear sorts on other columns
+                api.applyColumnState({ 
+                    state: sortModel,
+                    defaultState: { sort: null },  // Clear sorts on columns not in sortModel
+                    applyOrder: true                // Apply sort order
+                });
+            } else {
+                // Clear all sorting - empty array means remove all sorts
+                api.applyColumnState({ defaultState: { sort: null } });
+            }
         }
         
-        // Apply filtering
-        if (state.filterDescriptors && state.filterDescriptors.length > 0) {
-            const filterModel = {};
-            state.filterDescriptors.forEach(filter => {
-                filterModel[filter.field] = {
-                    type: reverseMapFilterOperator(filter.operator),
-                    filter: filter.value
-                };
-            });
-            api.setFilterModel(filterModel);
+        // Apply filtering - ALWAYS apply if filterDescriptors exists (even if empty = clear)
+        if (state.filterDescriptors !== undefined && state.filterDescriptors !== null) {
+            if (state.filterDescriptors.length > 0) {
+                const filterModel = {};
+                state.filterDescriptors.forEach(filter => {
+                    // ✅ No need to detect type - AG Grid already knows from column definition
+                    // The column def specifies the filter type (agNumberColumnFilter, agTextColumnFilter, etc.)
+                    filterModel[filter.field] = {
+                        type: reverseMapFilterOperator(filter.operator),
+                        filter: filter.value
+                    };
+                });
+                console.log('[AG Grid] Applying filter model:', filterModel);
+                api.setFilterModel(filterModel);
+            } else {
+                // Clear all filters - empty array means remove all filters
+                console.log('[AG Grid] Clearing all filters');
+                api.setFilterModel(null);
+            }
         }
         
         // Apply pagination
