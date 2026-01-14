@@ -26,7 +26,7 @@
             }
         </div>
 
-        <Grid Items="@stateOrders" InitialState="@gridState" OnStateChanged="HandleStateChanged">
+        <Grid Items="@stateOrders" @bind-State="@gridState" @ref="stateGridRef">
             <Columns>
                 <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
                 <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
@@ -45,7 +45,9 @@
                 View Code
             </summary>
             <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>[Inject] private IJSRuntime JS { get; set; }
+                <pre class="overflow-x-auto text-sm"><code>private Grid&lt;Order&gt; gridRef = default!;
+
+[Inject] private IJSRuntime JS { get; set; }
 private GridState gridState = new();
 
 protected override async Task OnInitializedAsync()
@@ -59,6 +61,9 @@ protected override async Task OnInitializedAsync()
 
 private async Task SaveState()
 {
+    // ✅ Get actual state from AG Grid
+    gridState = await gridRef.GetStateAsync();
+    
     var json = JsonSerializer.Serialize(gridState);
     await JS.InvokeVoidAsync("localStorage.setItem", "gridState", json);
 }</code></pre>
@@ -93,7 +98,7 @@ private async Task SaveState()
             </label>
         </div>
 
-        <Grid Items="@exportOrders" InitialState="@exportState" OnStateChanged="HandleExportStateChanged">
+        <Grid Items="@exportOrders" @bind-State="@exportState" @ref="exportGridRef">
             <Columns>
                 <GridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
                 <GridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
@@ -137,18 +142,88 @@ private async Task ImportState(ChangeEventArgs e)
     // Separate data sources for each grid to prevent conflicts
     private List<Order> stateOrders = new();
     private List<Order> exportOrders = new();
-    
+
     private GridState gridState = new();
     private GridState exportState = new();
     private string stateJson = "{}";
     private bool stateSaved = false;
 
+    // Grid references for GetStateAsync()
+    private Grid<Order> stateGridRef;
+    private Grid<Order> exportGridRef;
+
     protected override async Task OnInitializedAsync()
     {
-        // Initialize separate data for each grid
-        stateOrders = GridDemoData.GenerateOrders(50);
-        exportOrders = GridDemoData.GenerateOrders(50);
-        await LoadState();
+        // Initialize separate data for each grid with different seeds for truly independent data
+        // This ensures each grid operates on its own dataset without shared references
+        stateOrders = GenerateOrdersWithSeed(50, seed: 100);
+        exportOrders = GenerateOrdersWithSeed(50, seed: 200);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadState();
+        }
+    }
+
+    /// <summary>
+    /// Generate orders with a custom seed to ensure different data for each grid.
+    /// This creates truly independent datasets to prevent cross-grid interference.
+    /// </summary>
+    private static List<Order> GenerateOrdersWithSeed(int count, int seed)
+    {
+        var statuses = new[] 
+        { 
+            OrderStatus.Pending, 
+            OrderStatus.Processing, 
+            OrderStatus.Shipped, 
+            OrderStatus.Delivered, 
+            OrderStatus.Cancelled 
+        };
+        
+        var customers = new[] 
+        { 
+            "Acme Corp", 
+            "TechStart Inc", 
+            "GlobalTrade LLC", 
+            "FastShip Co", 
+            "MegaMart",
+            "DataFlow Systems",
+            "CloudNine Solutions",
+            "Vertex Industries",
+            "PrimeLogistics",
+            "EcoGoods Market"
+        };
+        
+        var cities = new[] 
+        { 
+            "New York", 
+            "Los Angeles", 
+            "Chicago", 
+            "Houston", 
+            "Phoenix",
+            "Philadelphia",
+            "San Antonio",
+            "San Diego",
+            "Dallas",
+            "San Jose"
+        };
+        
+        var random = new Random(seed);
+        
+        return Enumerable.Range(1, count)
+            .Select(i => new Order
+            {
+                Id = i,
+                Customer = customers[random.Next(customers.Length)],
+                Status = statuses[random.Next(statuses.Length)],
+                Amount = Math.Round((decimal)(random.NextDouble() * 10000), 2),
+                OrderDate = DateTime.Now.AddDays(-random.Next(365)),
+                ShipTo = cities[random.Next(cities.Length)]
+            })
+            .ToList();
     }
 
     private async Task LoadState()
@@ -171,6 +246,12 @@ private async Task ImportState(ChangeEventArgs e)
     {
         try
         {
+            // ✅ Get actual state from AG Grid using GetStateAsync()
+            if (stateGridRef != null)
+            {
+                gridState = await stateGridRef.GetStateAsync();
+            }
+            
             var json = JsonSerializer.Serialize(gridState);
             await JS.InvokeVoidAsync("localStorage.setItem", "gridDemoState", json);
             stateSaved = true;
@@ -198,19 +279,21 @@ private async Task ImportState(ChangeEventArgs e)
         }
     }
 
-    private void HandleStateChanged(GridState newState)
-    {
-        gridState = newState;
-    }
-
-    private void HandleExportStateChanged(GridState newState)
-    {
-        exportState = newState;
-        stateJson = JsonSerializer.Serialize(exportState, new JsonSerializerOptions { WriteIndented = true });
-    }
-
     private async Task ExportState()
     {
+        // ✅ Get actual state from AG Grid before exporting
+        if (exportGridRef != null)
+        {
+            try
+            {
+                exportState = await exportGridRef.GetStateAsync();
+            }
+            catch
+            {
+                // Grid might not be initialized yet
+            }
+        }
+        
         var json = JsonSerializer.Serialize(exportState, new JsonSerializerOptions { WriteIndented = true });
         var fileName = $"grid-state-{DateTime.Now:yyyyMMdd-HHmmss}.json";
         var bytes = System.Text.Encoding.UTF8.GetBytes(json);

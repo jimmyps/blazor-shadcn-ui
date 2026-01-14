@@ -159,12 +159,32 @@ public partial class GridColumn<TItem> : ComponentBase
     {
         // Generate ID from Field first, then Header as fallback
         // Use Guid suffix to ensure uniqueness if neither Field nor Header are suitable
-        var generatedId = !string.IsNullOrEmpty(Field) 
-            ? Field 
+        var generatedId = !string.IsNullOrEmpty(Field)
+            ? Field
             : !string.IsNullOrEmpty(Header)
                 ? $"{Header.ToLowerInvariant().Replace(" ", "-")}-{Guid.NewGuid().ToString("N")[..8]}"
                 : Guid.NewGuid().ToString("N")[..8];
-        
+
+        // Detect field type using reflection
+        Type? fieldType = null;
+        string? agGridFilterType = null;
+
+        if (!string.IsNullOrEmpty(Field))
+        {
+            var propertyInfo = typeof(TItem).GetProperty(
+                Field,
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.IgnoreCase
+            );
+
+            if (propertyInfo != null)
+            {
+                fieldType = propertyInfo.PropertyType;
+
+                // Auto-detect AG Grid filter type from .NET type
+                agGridFilterType = DetectAgGridFilterType(fieldType);
+            }
+        }
+
         return new GridColumnDefinition<TItem>
         {
             Id = Id ?? generatedId,
@@ -186,7 +206,52 @@ public partial class GridColumn<TItem> : ComponentBase
             ValueSelector = ValueSelector,
             CellClass = CellClass,
             HeaderClass = HeaderClass,
-            DataFormatString = DataFormatString
+            DataFormatString = DataFormatString,
+            FieldType = fieldType,
+            AgGridFilterType = agGridFilterType
         };
+    }
+
+    /// <summary>
+    /// Detects the appropriate AG Grid filter type from a .NET property type.
+    /// </summary>
+    private static string DetectAgGridFilterType(Type type)
+    {
+        // Handle nullable types - get underlying type
+        var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
+
+        // Numeric types (including enums) → agNumberColumnFilter
+        if (underlyingType.IsEnum ||
+            underlyingType == typeof(int) ||
+            underlyingType == typeof(long) ||
+            underlyingType == typeof(short) ||
+            underlyingType == typeof(byte) ||
+            underlyingType == typeof(decimal) ||
+            underlyingType == typeof(double) ||
+            underlyingType == typeof(float) ||
+            underlyingType == typeof(uint) ||
+            underlyingType == typeof(ulong) ||
+            underlyingType == typeof(ushort) ||
+            underlyingType == typeof(sbyte))
+        {
+            return "agNumberColumnFilter";
+        }
+
+        // Date/Time types → agDateColumnFilter
+        if (underlyingType == typeof(DateTime) ||
+            underlyingType == typeof(DateTimeOffset) ||
+            underlyingType == typeof(DateOnly))
+        {
+            return "agDateColumnFilter";
+        }
+
+        // Boolean → agSetColumnFilter (for true/false selection)
+        if (underlyingType == typeof(bool))
+        {
+            return "agSetColumnFilter";
+        }
+
+        // Default: text filter for strings and everything else
+        return "agTextColumnFilter";
     }
 }

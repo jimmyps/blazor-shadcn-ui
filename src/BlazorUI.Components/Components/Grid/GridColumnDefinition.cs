@@ -112,6 +112,19 @@ public class GridColumnDefinition<TItem>
     public string? DataFormatString { get; set; }
 
     /// <summary>
+    /// Gets or sets the detected .NET type of this column's field.
+    /// Used by renderers to automatically configure appropriate filters and editors.
+    /// </summary>
+    public Type? FieldType { get; set; }
+
+    /// <summary>
+    /// Gets or sets the AG Grid filter type to use for this column.
+    /// Auto-detected from FieldType if not explicitly set.
+    /// Possible values: agTextColumnFilter, agNumberColumnFilter, agDateColumnFilter, agSetColumnFilter.
+    /// </summary>
+    public string? AgGridFilterType { get; set; }
+
+    /// <summary>
     /// Gets or sets additional metadata for the renderer.
     /// </summary>
     public Dictionary<string, object?> Metadata { get; set; } = new();

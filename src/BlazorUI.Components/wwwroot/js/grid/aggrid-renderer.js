@@ -41,10 +41,6 @@ class BlazorTemplateCellRenderer {
         if (templateId && params.dotNetRef) {
             // Get row data - params.data should always be available for all columns
             const rowData = params.data || params.node?.data;
-            console.log('[AG Grid] Cell renderer init for template:', templateId);
-            console.log('[AG Grid] Has params.data:', !!params.data);
-            console.log('[AG Grid] Has params.node.data:', !!params.node?.data);
-            console.log('[AG Grid] Row data:', rowData);
             
             if (rowData) {
                 this.renderTemplate(templateId, rowData);
@@ -57,8 +53,6 @@ class BlazorTemplateCellRenderer {
     
     async renderTemplate(templateId, data) {
         try {
-            console.log('[AG Grid] Rendering template:', templateId, 'with data:', data);
-            
             // Request HTML from Blazor
             const html = await this.params.dotNetRef.invokeMethodAsync(
                 'RenderCellTemplate', 
@@ -67,20 +61,17 @@ class BlazorTemplateCellRenderer {
             );
             
             if (html) {
-                console.log('[AG Grid] Template rendered successfully, HTML length:', html.length);
                 this.eGui.innerHTML = html;
                 
                 // Add event delegation for data-action attributes
                 this.setupActionHandlers(data);
             } else {
-                console.warn('[AG Grid] Template renderer returned empty HTML for:', templateId);
                 // Fallback to field value
                 const field = this.params.colDef.field;
                 this.eGui.textContent = field ? this.params.data[field] : '';
             }
         } catch (error) {
-            console.error('[AG Grid] Template rendering failed:', error);
-            console.error('[AG Grid] Error details:', error.message, error.stack);
+            console.error('[AG Grid] Template rendering failed:', error.message);
             // Fallback to field value
             const field = this.params.colDef.field;
             this.eGui.textContent = field ? this.params.data[field] : '[Error]';
@@ -104,7 +95,6 @@ class BlazorTemplateCellRenderer {
             e.stopPropagation();
             
             const action = actionElement.dataset.action;
-            console.log('[AG Grid] Cell action triggered:', action);
             
             try {
                 await this.params.dotNetRef.invokeMethodAsync(
@@ -113,7 +103,7 @@ class BlazorTemplateCellRenderer {
                     rowData
                 );
             } catch (error) {
-                console.error('[AG Grid] Failed to invoke cell action:', error);
+                console.error('[AG Grid] Failed to invoke cell action:', error.message);
             }
         };
         
@@ -166,8 +156,6 @@ class BlazorTemplateHeaderRenderer {
     
     async renderTemplate(templateId) {
         try {
-            console.log('[AG Grid] Rendering header template:', templateId);
-            
             // Request HTML from Blazor
             const html = await this.params.dotNetRef.invokeMethodAsync(
                 'RenderHeaderTemplate', 
@@ -175,15 +163,13 @@ class BlazorTemplateHeaderRenderer {
             );
             
             if (html) {
-                console.log('[AG Grid] Header template rendered successfully');
                 this.eGui.innerHTML = html;
             } else {
-                console.warn('[AG Grid] Header template renderer returned empty HTML for:', templateId);
                 // Fallback to headerName
                 this.eGui.textContent = this.params.displayName || '';
             }
         } catch (error) {
-            console.error('[AG Grid] Header template rendering failed:', error);
+            console.error('[AG Grid] Header template rendering failed:', error.message);
             // Fallback to headerName
             this.eGui.textContent = this.params.displayName || '[Error]';
         }
@@ -210,45 +196,25 @@ class BlazorTemplateHeaderRenderer {
  */
 export async function createGrid(elementOrRef, config, dotNetRef) {
     try {
-        console.log('[AG Grid] createGrid called');
-        console.log('[AG Grid] elementOrRef type:', typeof elementOrRef);
-        console.log('[AG Grid] elementOrRef:', elementOrRef);
-        console.log('[AG Grid] elementOrRef constructor:', elementOrRef?.constructor?.name);
-        
         // Handle Blazor ElementReference
         // Blazor passes ElementReference as a plain object with __internalId
         let element = elementOrRef;
         
-        // If it's a Blazor ElementReference, we need to find the element by ID
-        // But Blazor SHOULD pass the actual element when using ElementReference in JS interop
-        // If we're getting __internalId, something is wrong with how we're passing it
-        
-        if (!element || typeof element !== 'object') {
-            throw new Error('[AG Grid] Invalid element reference - not an object');
-        }
-        
         // Check if it's already a DOM element
         if (element instanceof HTMLElement) {
-            console.log('[AG Grid] Received HTMLElement directly');
-            console.log('[AG Grid] Element tag:', element.tagName);
-            console.log('[AG Grid] Element id:', element.id);
-            console.log('[AG Grid] Element classes:', element.className);
+            // Valid DOM element
         } else if (element.__internalId !== undefined) {
             // This is a Blazor ElementReference that wasn't properly resolved
-            console.error('[AG Grid] Received Blazor ElementReference with __internalId:', element.__internalId);
-            console.error('[AG Grid] This means the DOM element is not ready or the ElementReference is invalid');
+            console.error('[AG Grid] ElementReference not resolved to DOM element');
             throw new Error('[AG Grid] ElementReference not resolved to DOM element. The element may not be rendered yet.');
         } else {
-            console.error('[AG Grid] Unknown element type');
-            console.error('[AG Grid] Element keys:', Object.keys(element));
+            console.error('[AG Grid] Invalid element type');
             throw new Error('[AG Grid] Invalid element type - not a DOM element and not a known ElementReference');
         }
         
         if (!(element instanceof Node)) {
             throw new Error(`[AG Grid] Element is not a valid DOM Node. Type: ${element?.constructor?.name}`);
         }
-        
-        console.log('[AG Grid] DOM element validated successfully');
         
         // Create theme with parameters
         let theme;
@@ -274,41 +240,16 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
         
         // Create AG Grid instance - returns the API directly
         const gridApi = agCreateGrid(element, gridOptions);
-        console.log('[AG Grid] Grid instance created successfully');
-        console.log('[AG Grid] Grid API:', gridApi);
         
         // Return wrapper object with API methods
         return {
             setRowData: (data) => {
-                console.log('[AG Grid] setRowData called');
-                console.log('[AG Grid] Data type:', typeof data);
-                console.log('[AG Grid] Data is array:', Array.isArray(data));
-                console.log('[AG Grid] Data length:', data?.length || 0);
-                if (data && data.length > 0) {
-                    console.log('[AG Grid] First row:', data[0]);
-                    console.log('[AG Grid] First row keys:', Object.keys(data[0]));
-                }
-                
                 gridApi.setGridOption('rowData', data);
-                console.log('[AG Grid] rowData set successfully');
             },
             
             applyTransaction: (transaction) => {
-                console.log('[AG Grid] applyTransaction called');
-                console.log('[AG Grid] Transaction:', {
-                    add: transaction.add?.length || 0,
-                    remove: transaction.remove?.length || 0,
-                    update: transaction.update?.length || 0
-                });
-                
                 // AG Grid's applyTransaction expects { add, remove, update }
-                const result = gridApi.applyTransaction(transaction);
-                
-                console.log('[AG Grid] Transaction result:', {
-                    added: result.add?.length || 0,
-                    removed: result.remove?.length || 0,
-                    updated: result.update?.length || 0
-                });
+                gridApi.applyTransaction(transaction);
             },
             
             applyState: (state) => {
@@ -320,16 +261,10 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
             },
             
             setGridOptions: (options) => {
-                console.log('[AG Grid] setGridOptions called');
-                console.log('[AG Grid] Options:', options);
-                
                 // Handle theme updates specially
                 if (options.theme || options.themeParams) {
                     const themeName = options.theme || config.theme;
                     let themeParams = options.themeParams || {};
-                    
-                    console.log('[AG Grid] Updating theme:', themeName);
-                    console.log('[AG Grid] Theme params:', themeParams);
                     
                     // For Shadcn theme, merge with dynamically read shadcn design tokens
                     if (themeName === 'Shadcn') {
@@ -343,7 +278,6 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
                     
                     // Apply the new theme using setGridOption
                     gridApi.setGridOption('theme', newTheme);
-                    console.log('[AG Grid] Theme updated successfully');
                 } else {
                     // For other options, apply them directly
                     Object.entries(options).forEach(([key, value]) => {
@@ -357,9 +291,7 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
             }
         };
     } catch (error) {
-        console.error('[AG Grid] Failed to create grid:', error);
-        console.error('[AG Grid] Error message:', error.message);
-        console.error('[AG Grid] Error stack:', error.stack);
+        console.error('[AG Grid] Failed to create grid:', error.message);
         throw error;
     }
 }
@@ -369,9 +301,6 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
  * Event handlers receive the API as a parameter from AG Grid events
  */
 function buildGridOptionsWithEvents(config, dotNetRef) {
-    console.log('[AG Grid] buildGridOptionsWithEvents called');
-    console.log('[AG Grid] config:', config);
-    
     // Flag to prevent selection event during programmatic sync
     let isSyncingSelection = false;
     
@@ -398,7 +327,6 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
     
     // Enhance column definitions with dotNetRef for templates
     const enhancedColumnDefs = config.columnDefs.map(col => {
-        console.log('[AG Grid] Column def:', col);
         const enhanced = {
             ...col,
             cellRendererParams: col.cellRenderer === 'templateRenderer' 
@@ -424,11 +352,11 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
     
     // ✅ AG Grid v32.2+ Migration: rowSelection as object instead of string
     // Convert legacy string rowSelection to new object format
+    // "single" → { mode: 'singleRow' }
+    // "multiple" → { mode: 'multiRow' }
     let rowSelectionConfig = config.rowSelection;
     if (typeof config.rowSelection === 'string') {
         // Map legacy string values to new object format
-        // "single" → { mode: 'singleRow' }
-        // "multiple" → { mode: 'multiRow' }
         rowSelectionConfig = {
             mode: config.rowSelection === 'multiple' ? 'multiRow' : 'singleRow',
             enableClickSelection: true  // ✅ Replaces deprecated suppressRowClickSelection: false
@@ -462,12 +390,12 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
             || params.node?.id;
             
         if (fallbackId !== undefined && fallbackId !== null) {
-            console.warn(`[AG Grid] IdField '${idField}' not found on row data, using fallback: ${fallbackId}`);
+            console.warn(`[AG Grid] IdField '${idField}' not found, using fallback`);
             return String(fallbackId);
         }
         
         // Last resort: use row index (not recommended for production)
-        console.error(`[AG Grid] No ID field found on row data. Specify config.idField or ensure data has 'Id' property.`);
+        console.error(`[AG Grid] No ID field found on row data`);
         return `row-${params.node?.rowIndex ?? 0}`;
     };
     
@@ -495,14 +423,9 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
             sortable: true,
             filter: true,
             resizable: true,
+            // ✅ Suppress header menus if configured (for controlled filtering)
+            suppressHeaderMenuButton: config.suppressHeaderMenus || false,
         },
-        
-        // ✅ AG Grid v32.2+: Removed deprecated enableRangeSelection
-        // Cell/range selection is now controlled via cellSelection property
-        // Only add cellSelection if explicitly needed (we don't need it for basic functionality)
-        
-        // ✅ AG Grid v32.2+: Removed deprecated suppressRowClickSelection
-        // Now controlled via rowSelection.enableClickSelection (set above)
         
         // Event handlers - these receive events with the API attached
         onSortChanged: (event) => notifyStateChanged(event.api, dotNetRef),
@@ -515,22 +438,18 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         onSelectionChanged: (event) => {
             // Skip event if we're currently syncing selection from parent
             if (isSyncingSelection) {
-                console.log('[AG Grid] Skipping onSelectionChanged - currently syncing from parent');
                 return;
             }
             
             const selectedRows = event.api.getSelectedRows();
             dotNetRef.invokeMethodAsync('OnSelectionChanged', selectedRows)
-                .catch(err => console.error('[AG Grid] Selection callback failed:', err));
+                .catch(err => console.error('[AG Grid] Selection callback failed:', err.message));
         },
         
         // Store the sync flag in grid options so applyGridState can access it
         __isSyncingSelection: () => isSyncingSelection,
         __setIsSyncingSelection: (value) => { isSyncingSelection = value; }
     };
-    
-    console.log('[AG Grid] Grid options built:', gridOptions);
-    console.log('[AG Grid] ID field configured:', idField);
     
     // Server-side datasource
     if (config.rowModelType === 'serverSide') {
@@ -672,9 +591,9 @@ function notifyStateChanged(api, dotNetRef) {
     try {
         const state = getGridState(api);
         dotNetRef.invokeMethodAsync('OnGridStateChanged', state)
-            .catch(err => console.error('[AG Grid] State change callback failed:', err));
+            .catch(err => console.error('[AG Grid] State change callback failed:', err.message));
     } catch (error) {
-        console.error('[AG Grid] Failed to get grid state:', error);
+        console.error('[AG Grid] Failed to get grid state:', error.message);
     }
 }
 
@@ -702,10 +621,7 @@ function getGridState(api) {
     
     // ✅ AG Grid v32.2+: Get selected row IDs using getRowId
     // AG Grid's getSelectedRows() returns the data objects with their IDs already resolved
-    // We just need to extract them using the same logic as getRowId
     const selectedRowIds = selectedRows.map(row => {
-        // Try to extract the ID that was used by getRowId
-        // The grid should have already validated these IDs exist
         return String(row.Id || row.id || row._id || 'unknown');
     });
     
@@ -743,26 +659,42 @@ function applyGridState(api, state, gridOptions) {
             api.applyColumnState({ state: columnState });
         }
         
-        // Apply sorting
-        if (state.sortDescriptors && state.sortDescriptors.length > 0) {
-            const sortModel = state.sortDescriptors.map(sort => ({
-                colId: sort.field,
-                sort: sort.direction === 1 ? 'asc' : 'desc',
-                sortIndex: sort.order
-            }));
-            api.applyColumnState({ state: sortModel });
+        // Apply sorting - ALWAYS apply if sortDescriptors exists (even if empty = clear)
+        if (state.sortDescriptors !== undefined && state.sortDescriptors !== null) {
+            if (state.sortDescriptors.length > 0) {
+                const sortModel = state.sortDescriptors.map(sort => ({
+                    colId: sort.field,
+                    sort: sort.direction === 1 ? 'asc' : 'desc',
+                    sortIndex: sort.order
+                }));
+                
+                // ✅ Use applyColumnState with defaultState to clear sorts on other columns
+                api.applyColumnState({ 
+                    state: sortModel,
+                    defaultState: { sort: null },  // Clear sorts on columns not in sortModel
+                    applyOrder: true                // Apply sort order
+                });
+            } else {
+                // Clear all sorting - empty array means remove all sorts
+                api.applyColumnState({ defaultState: { sort: null } });
+            }
         }
         
-        // Apply filtering
-        if (state.filterDescriptors && state.filterDescriptors.length > 0) {
-            const filterModel = {};
-            state.filterDescriptors.forEach(filter => {
-                filterModel[filter.field] = {
-                    type: reverseMapFilterOperator(filter.operator),
-                    filter: filter.value
-                };
-            });
-            api.setFilterModel(filterModel);
+        // Apply filtering - ALWAYS apply if filterDescriptors exists (even if empty = clear)
+        if (state.filterDescriptors !== undefined && state.filterDescriptors !== null) {
+            if (state.filterDescriptors.length > 0) {
+                const filterModel = {};
+                state.filterDescriptors.forEach(filter => {
+                    filterModel[filter.field] = {
+                        type: reverseMapFilterOperator(filter.operator),
+                        filter: filter.value
+                    };
+                });
+                api.setFilterModel(filterModel);
+            } else {
+                // Clear all filters - empty array means remove all filters
+                api.setFilterModel(null);
+            }
         }
         
         // Apply pagination
@@ -778,7 +710,6 @@ function applyGridState(api, state, gridOptions) {
             // Set flag before applying selection
             if (setIsSyncingSelection) {
                 setIsSyncingSelection(true);
-                console.log('[AG Grid] Setting isSyncingSelection = true');
             }
             
             try {
@@ -789,19 +720,13 @@ function applyGridState(api, state, gridOptions) {
                     // Convert to Set for O(1) lookup performance
                     const selectedRowIds = new Set(state.selectedRowIds.map(id => String(id)));
                     
-                    console.log('[AG Grid] Selecting rows with IDs:', Array.from(selectedRowIds));
-                    
                     // Iterate through all rows and select matching ones
                     // AG Grid's getRowId will be used internally to match row IDs
-                    let selectedCount = 0;
                     api.forEachNode((node) => {
                         if (node.data && node.id && selectedRowIds.has(String(node.id))) {
                             node.setSelected(true);
-                            selectedCount++;
                         }
                     });
-                    
-                    console.log('[AG Grid] Selected', selectedCount, 'rows');
                 }
             } finally {
                 // Always clear the flag after selection is applied
@@ -809,13 +734,12 @@ function applyGridState(api, state, gridOptions) {
                 if (setIsSyncingSelection) {
                     setTimeout(() => {
                         setIsSyncingSelection(false);
-                        console.log('[AG Grid] Setting isSyncingSelection = false');
                     }, 0);
                 }
             }
         }
     } catch (error) {
-        console.error('[AG Grid] Failed to apply state:', error);
+        console.error('[AG Grid] Failed to apply state:', error.message);
     }
 }
 
