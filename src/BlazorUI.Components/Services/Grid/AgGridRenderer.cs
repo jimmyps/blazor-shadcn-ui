@@ -593,7 +593,6 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             field = !string.IsNullOrEmpty(col.Field) ? ToCamelCase(col.Field) : (string?)null,
             headerName = col.Header,
             sortable = col.Sortable && !string.IsNullOrEmpty(col.Field), // Can't sort without a field
-            filterable = col.Filterable && !string.IsNullOrEmpty(col.Field), // Can't filter without a field
             filter = col.Filterable && !string.IsNullOrEmpty(col.Field) ? col.AgGridFilterType ?? "agTextColumnFilter" : (string?)null,
             width = ParseWidth(col.Width),
             minWidth = ParseWidth(col.MinWidth),

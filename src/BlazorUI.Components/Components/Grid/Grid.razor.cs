@@ -1053,6 +1053,14 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             hash.Add(col.Width);
             hash.Add(col.Pinned);
             hash.Add(col.Order);
+            hash.Add(col.Sort);
+            hash.Add(col.SortIndex);
+            hash.Add(col.AggFunc);
+            hash.Add(col.RowGroup);
+            hash.Add(col.RowGroupIndex);
+            hash.Add(col.Pivot);
+            hash.Add(col.PivotIndex);
+            hash.Add(col.Flex);
         }
         
         // Selected row IDs
@@ -1094,6 +1102,43 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             hash.Add(state.Scroll.Top);
             hash.Add(state.Scroll.Left);
         }
+        
+        // Expanded row groups
+        foreach (var group in state.ExpandedRowGroups)
+        {
+            hash.Add(group);
+        }
+        
+        // Pinned rows
+        foreach (var row in state.PinnedTopRows)
+        {
+            hash.Add(row);
+        }
+        
+        foreach (var row in state.PinnedBottomRows)
+        {
+            hash.Add(row);
+        }
+        
+        // Cell range selection
+        foreach (var range in state.CellRangeSelection)
+        {
+            hash.Add(range.StartRow);
+            hash.Add(range.EndRow);
+            foreach (var col in range.Columns)
+            {
+                hash.Add(col);
+            }
+        }
+        
+        // Advanced filter model
+        if (state.AdvancedFilterModel != null)
+        {
+            hash.Add(state.AdvancedFilterModel);
+        }
+        
+        // Version
+        hash.Add(state.Version);
         
         return hash.ToHashCode();
     }

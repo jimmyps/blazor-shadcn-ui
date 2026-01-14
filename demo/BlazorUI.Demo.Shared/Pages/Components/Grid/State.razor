@@ -162,7 +162,10 @@ private async Task ImportState(ChangeEventArgs e)
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await LoadState();
+        if (firstRender)
+        {
+            await LoadState();
+        }
     }
 
     /// <summary>
