@@ -90,7 +90,7 @@ public class GridDefinition<TItem>
     /// This is a Func that returns data based on the request parameters.
     /// Used for ServerSide and Infinite row models.
     /// </summary>
-    public Func<object, Task<object>>? ServerDataRequestHandler { get; set; }
+    public Func<GridDataRequest<TItem>, Task<GridDataResponse<TItem>>>? ServerDataRequestHandler { get; set; }
 
     /// <summary>
     /// Gets or sets the callback invoked when the selection changes.

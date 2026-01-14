@@ -353,7 +353,7 @@
             // Convert API response to Grid response
             return new GridDataResponse<User>
             {
-                Items = (IEnumerable<User>)(apiResponse?.Data ?? new List<User>()),
+                Items = apiResponse?.Data ?? new List<User>(),
                 TotalCount = apiResponse?.Total ?? 0
             };
         }

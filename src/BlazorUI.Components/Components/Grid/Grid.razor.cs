@@ -685,16 +685,12 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         if (RowModelType == GridRowModelType.ServerSide)
         {
             _gridDefinition.RowModelType = "serverSide";
-            _gridDefinition.ServerDataRequestHandler = OnServerDataRequest != null 
-                ? async (request) => await OnServerDataRequest((GridDataRequest<TItem>)request)
-                : null;
+            _gridDefinition.ServerDataRequestHandler = OnServerDataRequest;
         }
         else if (RowModelType == GridRowModelType.Infinite)
         {
             _gridDefinition.RowModelType = "infinite";
-            _gridDefinition.ServerDataRequestHandler = OnServerDataRequest != null 
-                ? async (request) => await OnServerDataRequest((GridDataRequest<TItem>)request)
-                : null;
+            _gridDefinition.ServerDataRequestHandler = OnServerDataRequest;
         }
         else
         {
