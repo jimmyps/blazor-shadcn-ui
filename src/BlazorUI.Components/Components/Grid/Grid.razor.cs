@@ -766,12 +766,23 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             _previousDensity = Density;
             _previousVisualStyle = VisualStyle;
             
-            // Set initial data, track count, and subscribe if observable
-            _currentItems = Items;
-            _previousItemsHash = Items?.Count() ?? 0;
-            SubscribeToCollection();
-            
-            await _gridRenderer.UpdateDataAsync(Items);
+            // ✅ Only set initial data for CLIENT-SIDE row models
+            // Server-side and infinite row models fetch data via datasource callbacks
+            if (_gridDefinition.RowModelType == "clientSide")
+            {
+                // Set initial data, track count, and subscribe if observable
+                _currentItems = Items;
+                _previousItemsHash = Items?.Count() ?? 0;
+                SubscribeToCollection();
+                
+                await _gridRenderer.UpdateDataAsync(Items);
+            }
+            else
+            {
+                // For server-side row models, don't provide Items or call UpdateDataAsync
+                // The grid will automatically call the datasource.getRows() callback
+                Console.WriteLine($"[Grid] Server-side row model initialized - awaiting datasource callback");
+            }
         }
     }
     
@@ -1060,13 +1071,34 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         if (_gridRenderer == null || !_initialized)
             throw new InvalidOperationException("Grid not initialized");
         
-        Console.WriteLine("[Grid] Manual refresh requested - reloading data");
-        
-        // Force full data reload by calling UpdateDataAsync
-        // This ensures all in-place changes are reflected in the grid
-        await _gridRenderer.UpdateDataAsync(Items);
+        // For server-side grids, refresh the cache to re-fetch data
+        if (RowModelType == GridRowModelType.ServerSide)
+        {
+            await _gridRenderer.RefreshServerSideCacheAsync();
+        }
+        else
+        {
+            // For client-side grids, update the data
+            await _gridRenderer.UpdateDataAsync(Items);
+        }
     }
+
+    /// <summary>
+    /// Refreshes the server-side cache, causing the grid to re-fetch data.
+    /// This is useful when you need to force a data refresh without changing grid state.
+    /// Only works with Server-Side Row Model.
+    /// </summary>
+    public async Task RefreshServerSideCacheAsync()
+    {
+        if (_gridRenderer == null || !_initialized)
+            throw new InvalidOperationException("Grid not initialized");
+            
+        if (RowModelType != GridRowModelType.ServerSide)
+            throw new InvalidOperationException("RefreshServerSideCacheAsync only works with Server-Side Row Model");
     
+        await _gridRenderer.RefreshServerSideCacheAsync();
+    }
+
     /// <summary>
     /// Gets the current state of the grid from AG Grid.
     /// This returns the actual grid state, not a cached copy.

@@ -282,6 +282,23 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
     }
 
     /// <summary>
+    /// Refreshes the server-side cache, causing AG Grid to re-fetch data with current filters/sorts.
+    /// Only applicable for server-side row models.
+    /// </summary>
+    public async Task RefreshServerSideCacheAsync()
+    {
+        if (_gridInstance == null)
+        {
+            Console.WriteLine("[AgGridRenderer] Cannot refresh server-side cache - grid instance is null");
+            return;
+        }
+        
+        Console.WriteLine("[AgGridRenderer] Refreshing server-side cache");
+        await _gridInstance.InvokeVoidAsync("refreshServerSideStore");
+        Console.WriteLine("[AgGridRenderer] Server-side cache refresh completed");
+    }
+
+    /// <summary>
     /// Called by JavaScript when grid state changes (sorting, filtering, selection).
     /// </summary>
     /// <param name="state">The new grid state.</param>
@@ -657,8 +674,9 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
                           definition.SelectionMode == GridSelectionMode.Single ? "single" : null,
             pagination = definition.PagingMode != GridPagingMode.None,
             paginationPageSize = definition.PageSize,
-            rowModelType = definition.PagingMode == GridPagingMode.Server ? "serverSide" :
-                          definition.PagingMode == GridPagingMode.InfiniteScroll ? "infinite" : "clientSide",
+            // ✅ FIX: Use RowModelType property instead of PagingMode
+            // RowModelType is explicitly set by Grid component for server-side data scenarios
+            rowModelType = definition.RowModelType ?? "clientSide",
             // Enable row selection checkbox for multiple selection
             rowMultiSelectWithClick = definition.SelectionMode == GridSelectionMode.Multiple,
             suppressRowClickSelection = definition.SelectionMode == GridSelectionMode.Multiple,
