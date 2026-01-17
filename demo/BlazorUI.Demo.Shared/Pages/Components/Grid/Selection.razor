@@ -293,12 +293,12 @@ public class Product
         </details>
     </section>
 
-    @* Demo: ObservableCollection with Automatic Delta Updates *@
+    @* Demo: TrackedObservableCollection with Automatic Delta Updates *@
     <section class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Observable Collection (Automatic Delta Updates)</h2>
+            <h2 class="text-2xl font-semibold">Tracked Observable Collection (Automatic Delta Updates)</h2>
             <p class="text-muted-foreground">
-                Grid automatically detects and applies delta changes when using ObservableCollection.
+                Grid automatically detects and applies delta changes when using TrackedObservableCollection.
                 Only changed rows are updated - no full grid refresh needed!
             </p>
         </div>
@@ -311,6 +311,7 @@ public class Product
                     <ul class="list-disc list-inside space-y-1 text-muted-foreground">
                         <li><strong>Delta Updates:</strong> Only modified rows are re-rendered (not entire grid)</li>
                         <li><strong>Selection Preserved:</strong> Row selection survives data changes automatically</li>
+                        <li><strong>Natural Mutations:</strong> Modify items directly, then call NotifyItemsChanged()</li>
                         <li><strong>Batching:</strong> Multiple rapid changes are batched together (100ms window)</li>
                         <li><strong>Efficient:</strong> Uses AG Grid's transaction API for minimal DOM updates</li>
                     </ul>
@@ -352,18 +353,18 @@ public class Product
                 View Code
             </summary>
             <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>@@using System.Collections.ObjectModel
+                <pre class="overflow-x-auto text-sm"><code>@@using BlazorUI.Components.Grid
 
 @@code {
-    // Use ObservableCollection for automatic delta updates
-    private ObservableCollection&lt;Order&gt; orders = new();
+    // Use TrackedObservableCollection for automatic delta updates
+    private TrackedObservableCollection&lt;Order&gt; orders = new();
     private IReadOnlyCollection&lt;Order&gt; selectedOrders = Array.Empty&lt;Order&gt;
 
     protected override void OnInitialized()
     {
         // Initialize with data
         var data = GridDemoData.GenerateOrders(50);
-        orders = new ObservableCollection&lt;Order&gt;(data);
+        orders = new TrackedObservableCollection&lt;Order&gt;(data);
     }
 
     private void DeleteSelected()
@@ -381,6 +382,19 @@ public class Product
         // Add item - Grid automatically applies transaction
         orders.Add(new Order { ... });  // ← Triggers CollectionChanged event
     }
+
+    private void UpdateOrder()
+    {
+        // Get a random order and modify it directly
+        var order = orders[Random.Shared.Next(orders.Count)];
+        
+        // Modify properties naturally
+        order.Amount = Random.Shared.Next(100, 10000);
+        order.Status = RandomStatus();
+        
+        // Notify grid that this item changed
+        orders.NotifyItemsChanged(order);  // ← Triggers ItemsChanged event → Grid.transaction
+    }
 }</code></pre>
             </div>
         </details>
@@ -391,8 +405,8 @@ public class Product
 
     private Grid<Product> _grid1;
 
-    // ObservableCollection demo - automatic delta updates
-    private ObservableCollection<Order> observableOrders = new();
+    // TrackedObservableCollection demo - automatic delta updates
+    private TrackedObservableCollection<Order> observableOrders = new();
     private IReadOnlyCollection<Order> selectedObservableOrders = Array.Empty<Order>();
     private int _nextOrderId = 1;  // ✅ Track next available ID to prevent duplicates
 
@@ -400,8 +414,8 @@ public class Product
     private List<Order> orders = new();
     private IReadOnlyCollection<Order> singleSelectedOrders = Array.Empty<Order>();
 
-    // Multiple selection demo - using ObservableCollection for automatic delta updates
-    private ObservableCollection<Order> multiSelectOrders = new();
+    // Multiple selection demo - using TrackedObservableCollection for automatic delta updates
+    private TrackedObservableCollection<Order> multiSelectOrders = new();
     private IReadOnlyCollection<Order> selectedOrders = Array.Empty<Order>();
 
     // Controlled selection demo
@@ -414,23 +428,33 @@ public class Product
 
     protected override void OnInitialized()
     {
-        // Initialize ObservableCollection for delta update demo
+        // Initialize TrackedObservableCollection for delta update demo
         var observableData = GridDemoData.GenerateOrders(50);
-        observableOrders = new ObservableCollection<Order>(observableData);
+        foreach (var order in observableData)
+        {
+            observableOrders.Add(order);
+        }
         
         // ✅ Initialize next ID tracker to avoid duplicates
         _nextOrderId = observableOrders.Any() ? observableOrders.Max(o => o.Id) + 1 : 1;
 
         // Initialize separate data sets for each demo
         orders = GridDemoData.GenerateOrders(50);
-        multiSelectOrders = new ObservableCollection<Order>(GridDemoData.GenerateOrders(50));
+        
+        // Initialize multi-select orders
+        var multiSelectData = GridDemoData.GenerateOrders(50);
+        foreach (var order in multiSelectData)
+        {
+            multiSelectOrders.Add(order);
+        }
+        
         controlledOrders = GridDemoData.GenerateOrders(50);
         products = GenerateProducts(20);
     }
 
     private void DeleteSelectedObservable()
     {
-        // ObservableCollection: Remove triggers automatic delta update
+        // TrackedObservableCollection: Remove triggers automatic delta update
         foreach (var order in selectedObservableOrders.ToList())
         {
             observableOrders.Remove(order);  // ← CollectionChanged event → Grid.transaction
@@ -461,15 +485,16 @@ public class Product
 
         var random = new Random();
         var statuses = new[] { OrderStatus.Pending, OrderStatus.Shipped, OrderStatus.Delivered };
-        var index = random.Next(observableOrders.Count);
-        var order = observableOrders[index];
+        
+        // Get a random order from the collection
+        var order = observableOrders[random.Next(observableOrders.Count)];
 
-        // Update properties
+        // Modify properties directly - natural mutation pattern
         order.Amount = Math.Round((decimal)(random.NextDouble() * 10000 + 100), 2);
         order.Status = statuses[random.Next(statuses.Length)];
 
-        // Replace to trigger update (ObservableCollection doesn't track property changes)
-        observableOrders[index] = order;  // ← CollectionChanged event → Grid.transaction
+        // Notify the grid that this item has changed
+        observableOrders.NotifyItemsChanged(order);  // ← ItemsChanged event → Grid.transaction
     }
 
     private void SelectHighValueOrders()
@@ -485,7 +510,7 @@ public class Product
 
     private void DeleteSelected()
     {
-        // ObservableCollection: Remove triggers automatic delta update
+        // TrackedObservableCollection: Remove triggers automatic delta update
         // Grid automatically matches items by ID, so this works even though
         // selectedOrders contains new instances from JavaScript serialization
         foreach (var order in selectedOrders.ToList())
