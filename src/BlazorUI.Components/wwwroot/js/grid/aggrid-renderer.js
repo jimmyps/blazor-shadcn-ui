@@ -1,13 +1,58 @@
 /**
  * AG Grid Renderer for BlazorUI
- * Uses AG Grid ES modules with Theming API (no manual CSS loading needed)
+ * Uses AG Grid Community with modular Enterprise features
+ * 
+ * Base: AG Grid Community (free, open source)
+ * Enterprise Modules (conditionally loaded):
+ * - Server-Side Row Model Module (only loaded when rowModelType === 'serverSide')
+ * 
+ * Architecture:
+ * - Dynamic imports - only load what you actually use
+ * - Smallest possible bundle size
+ * - Clear separation of free vs. licensed features
+ * - No license required if you only use client-side features
  */
 
-
-import { createGrid as agCreateGrid } from 'https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/package/main.esm.mjs';
-import { themeAlpine, themeBalham, themeQuartz } from 'https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/package/main.esm.mjs';
+// Import AG Grid Community (free base) - always loaded
+import { createGrid as agCreateGrid, ModuleRegistry } from 'ag-grid-community';
+import { themeAlpine, themeBalham, themeQuartz } from 'ag-grid-community';
 
 import { createShadcnTheme } from './theme-shadcn.js';
+
+// ModuleRegistry.registerModules([AllCommunityModule]);
+
+// Track if Server-Side Row Model has been loaded (only load once)
+let serverSideModuleLoaded = false;
+
+/**
+ * Dynamically loads and registers AG Grid Enterprise Server-Side Row Model module
+ * Only called when a grid uses rowModelType: 'serverSide'
+ * 
+ * Note: Relies on import map defined in App.razor for module resolution
+ */
+async function loadServerSideRowModelModule() {
+    if (serverSideModuleLoaded) {
+        console.log('[AG Grid] Server-Side Row Model already loaded, skipping...');
+        return true;
+    }
+    
+    console.log('[AG Grid] Loading Server-Side Row Model module (Enterprise)...');
+    
+    try {
+        // Dynamic import using import map reference from App.razor
+        const { ServerSideRowModelModule } = await import('@ag-grid-enterprise/server-side-row-model');
+        
+        // Register the module with AG Grid
+        ModuleRegistry.registerModules([ServerSideRowModelModule]);
+        
+        serverSideModuleLoaded = true;
+        console.log('[AG Grid] Server-Side Row Model module registered successfully');
+        return true;
+    } catch (error) {
+        console.error('[AG Grid] Failed to load Server-Side Row Model module:', error);
+        throw new Error('Server-Side Row Model requires AG Grid Enterprise. Please ensure the module is available.');
+    }
+}
 
 /**
  * Gets the base AG Grid theme object
@@ -216,6 +261,12 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
             throw new Error(`[AG Grid] Element is not a valid DOM Node. Type: ${element?.constructor?.name}`);
         }
         
+        // ✅ Conditionally load Enterprise modules based on row model type
+        if (config.rowModelType === 'serverSide') {
+            console.log('[AG Grid] Server-side row model detected - loading Enterprise module...');
+            await loadServerSideRowModelModule();
+        }
+        
         // Create theme with parameters
         let theme;
         let themeParams = config.themeParams || {};
@@ -283,6 +334,13 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
                     Object.entries(options).forEach(([key, value]) => {
                         gridApi.setGridOption(key, value);
                     });
+                }
+            },
+            
+            refreshServerSideStore: () => {
+                // Refresh server-side cache, causing AG Grid to re-fetch data
+                if (config.rowModelType === 'serverSide') {
+                    gridApi.refreshServerSide({ purge: true });
                 }
             },
             

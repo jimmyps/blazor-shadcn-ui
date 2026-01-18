@@ -62,4 +62,11 @@ public interface IGridRenderer<TItem> : IGridRenderer
     /// <param name="themeParams">Optional theme parameters to customize the theme.</param>
     /// <returns>A task that represents the asynchronous theme update operation.</returns>
     Task UpdateThemeAsync(GridTheme theme, Dictionary<string, object>? themeParams);
+
+    /// <summary>
+    /// Refreshes the server-side cache, causing AG Grid to re-fetch data.
+    /// Only applicable for server-side row models.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous refresh operation.</returns>
+    Task RefreshServerSideCacheAsync();
 }
