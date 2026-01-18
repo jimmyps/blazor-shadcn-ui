@@ -732,7 +732,7 @@
         var url = $"https://api.themoviedb.org/3/discover/movie?{string.Join("&", queryParams)}";
         
         // Call TMDb API with Bearer token
-        var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
+        using var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
         httpRequest.Headers.Add("Authorization", $"Bearer {apiKey}");
         httpRequest.Headers.Add("Accept", "application/json");
         
