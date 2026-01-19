@@ -244,7 +244,8 @@ module.exports = {
             addUtilities({
                 ".animate-in": {
                     animationName: "enter",
-                    animationDuration: theme("animationDuration.DEFAULT", "150ms"),
+                    animationDuration: "var(--tw-animate-duration, 150ms)",
+                    animationTimingFunction: "var(--tw-animate-ease, ease-out)",
                     "--tw-enter-opacity": "initial",
                     "--tw-enter-scale": "initial",
                     "--tw-enter-rotate": "initial",
@@ -253,7 +254,8 @@ module.exports = {
                 },
                 ".animate-out": {
                     animationName: "exit",
-                    animationDuration: theme("animationDuration.DEFAULT", "150ms"),
+                    animationDuration: "var(--tw-animate-duration, 150ms)",
+                    animationTimingFunction: "var(--tw-animate-ease, ease-in)",
                     "--tw-exit-opacity": "initial",
                     "--tw-exit-scale": "initial",
                     "--tw-exit-rotate": "initial",
@@ -261,6 +263,34 @@ module.exports = {
                     "--tw-exit-translate-y": "initial",
                 },
             });
+            
+            // Add animation-duration utilities that set the CSS variable
+            matchUtilities(
+                {
+                    "animate-duration": (value) => ({
+                        "--tw-animate-duration": value,
+                    }),
+                },
+                { values: theme("transitionDuration") }
+            );
+            
+            // Add animation-timing-function utilities that set the CSS variable
+            matchUtilities(
+                {
+                    "animate-ease": (value) => ({
+                        "--tw-animate-ease": value,
+                    }),
+                },
+                { 
+                    values: {
+                        ...theme("transitionTimingFunction"),
+                        // Add direct cubic-bezier values for convenience
+                        "smooth": "cubic-bezier(0.215, 0.61, 0.355, 1)", // cubic-out
+                        "modal": "cubic-bezier(0.32, 0.72, 0, 1)",
+                    }
+                }
+            );
+            
             matchUtilities(
                 {
                     "fade-in": (value) => ({ "--tw-enter-opacity": value }),
@@ -273,7 +303,11 @@ module.exports = {
                     "zoom-in": (value) => ({ "--tw-enter-scale": value }),
                     "zoom-out": (value) => ({ "--tw-exit-scale": value }),
                 },
-                { values: { ...theme("scale"), DEFAULT: "0" } }
+                { values: { 
+                    ...theme("scale"), 
+                    DEFAULT: "0",
+                    "97": "0.97"  // Add 97% scale for smoother animations
+                } }
             );
             matchUtilities(
                 {

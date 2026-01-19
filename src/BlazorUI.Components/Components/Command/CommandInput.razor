@@ -18,6 +18,7 @@
     <ComboboxInput placeholder="@Placeholder"
                    disabled="@Disabled"
                    AutoFocus="@AutoFocus"
+                   SearchInterval="@SearchInterval"
                    class="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 ml-2" />
 </div>
 
@@ -45,6 +46,13 @@
     /// </summary>
     [Parameter]
     public bool AutoFocus { get; set; }
+
+    /// <summary>
+    /// Gets or sets the debounce interval in milliseconds before triggering search.
+    /// Default is 0 (no debouncing). Set to 150-300ms for better performance with large datasets.
+    /// </summary>
+    [Parameter]
+    public int SearchInterval { get; set; } = 0;
 
     /// <summary>
     /// Gets the computed CSS classes for the input container.

@@ -1,5 +1,6 @@
 using BlazorUI.Primitives.Sheet;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 using System;
 
 namespace BlazorUI.Components.Sidebar;
@@ -8,6 +9,9 @@ public partial class Sidebar : IDisposable
 {
     [CascadingParameter]
     private SidebarContext? Context { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
 
     /// <summary>
     /// The content to render inside the sidebar.
@@ -29,10 +33,21 @@ public partial class Sidebar : IDisposable
     public bool Collapsible { get; set; } = true;
 
     /// <summary>
+    /// Whether menu items should automatically detect their active state based on current URL.
+    /// When enabled, all SidebarMenuButton and SidebarMenuSubButton components will automatically
+    /// highlight based on whether their Href matches the current route.
+    /// Default is false.
+    /// </summary>
+    [Parameter]
+    public bool AutoDetectActive { get; set; } = false;
+
+    /// <summary>
     /// Additional attributes to apply to the sidebar element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool _isNavigationListenerActive = false;
 
     private bool MobileOpen
     {
@@ -134,7 +149,50 @@ public partial class Sidebar : IDisposable
         {
             Context.StateChanged -= OnContextStateChanged;
             Context.StateChanged += OnContextStateChanged;
+
+            // Update the context with AutoDetectActive setting
+            Context.SetAutoDetectActive(AutoDetectActive);
+
+            // Set up or tear down navigation listener based on AutoDetectActive
+            SetupNavigationListener();
         }
+    }
+
+    private void SetupNavigationListener()
+    {
+        if (AutoDetectActive && !_isNavigationListenerActive)
+        {
+            // Enable navigation tracking
+            NavigationManager.LocationChanged += OnLocationChanged;
+            _isNavigationListenerActive = true;
+
+            // Set initial path
+            UpdateCurrentPath();
+        }
+        else if (!AutoDetectActive && _isNavigationListenerActive)
+        {
+            // Disable navigation tracking
+            NavigationManager.LocationChanged -= OnLocationChanged;
+            _isNavigationListenerActive = false;
+        }
+        else if (AutoDetectActive && _isNavigationListenerActive)
+        {
+            // Already listening, just update the current path
+            UpdateCurrentPath();
+        }
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        UpdateCurrentPath();
+    }
+
+    private void UpdateCurrentPath()
+    {
+        if (Context == null) return;
+
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        Context.SetCurrentPath(uri.AbsolutePath);
     }
 
     private void OnContextStateChanged(object? sender, EventArgs e)
@@ -148,6 +206,11 @@ public partial class Sidebar : IDisposable
         if (Context != null)
         {
             Context.StateChanged -= OnContextStateChanged;
+        }
+
+        if (_isNavigationListenerActive)
+        {
+            NavigationManager.LocationChanged -= OnLocationChanged;
         }
     }
 }

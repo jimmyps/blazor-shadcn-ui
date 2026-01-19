@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Components;
 using BlazorUI.Primitives.Contexts;
+using BlazorUI.Primitives.Services;
+using Microsoft.AspNetCore.Components;
 
 namespace BlazorUI.Primitives.Popover;
 
@@ -12,6 +13,12 @@ public class PopoverState
     /// Gets or sets whether the popover is currently open.
     /// </summary>
     public bool IsOpen { get; set; }
+
+    /// <summary>
+    /// Gets or sets the position result for the popover.
+    /// </summary>
+    public PositionResult? Position { get; set; }
+
 
     /// <summary>
     /// Gets or sets the element that triggered the popover opening.

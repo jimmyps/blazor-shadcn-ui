@@ -1,0 +1,40 @@
+@* 
+  GridImportMap Component
+  
+  Provides AG Grid Enterprise ES module imports via importmap.
+  This component should be placed in the <head> section of your app.
+  
+  Current Version: AG Grid 32.3.3
+  
+  To update AG Grid version:
+  1. Change the version number (32.3.3) in all four import URLs below
+  2. Ensure all packages use the same version
+  3. Test grid functionality after updating
+  
+  Usage:
+  <head>
+    <GridImportMap />
+    ...
+  </head>
+  
+  Included packages:
+  - ag-grid-community: Core grid functionality
+  - @ag-grid-community/core: Community core features
+  - @ag-grid-enterprise/core: Enterprise features
+  - @ag-grid-enterprise/server-side-row-model: Server-side row model for large datasets
+*@
+
+<script type="importmap">
+    @((MarkupString)@"{
+        ""imports"": {
+            ""ag-grid-community"": ""https://cdn.jsdelivr.net/npm/ag-grid-community@32.3.3/dist/package/main.esm.mjs"",
+            ""@ag-grid-community/core"": ""https://cdn.jsdelivr.net/npm/@ag-grid-community/core@32.3.3/dist/package/main.esm.mjs"",
+            ""@ag-grid-enterprise/core"": ""https://cdn.jsdelivr.net/npm/@ag-grid-enterprise/core@32.3.3/dist/package/main.esm.mjs"",
+            ""@ag-grid-enterprise/server-side-row-model"": ""https://cdn.jsdelivr.net/npm/@ag-grid-enterprise/server-side-row-model@32.3.3/dist/package/main.esm.mjs""
+        }
+    }")
+</script>
+
+@code {
+    // No parameters needed - this is a static import map definition
+}

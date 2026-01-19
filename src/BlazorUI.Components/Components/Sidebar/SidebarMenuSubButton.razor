@@ -1,6 +1,7 @@
 @namespace BlazorUI.Components.Sidebar
 @using BlazorUI.Components.Utilities
 @using Microsoft.AspNetCore.Components.Routing
+@inject NavigationManager NavigationManager
 
 @*
     SidebarMenuSubButton component for clickable submenu items.
@@ -9,23 +10,27 @@
 @{
     // Auto-detect: if Href is provided and AsChild wasn't explicitly set to Button, render as Anchor
     var shouldRenderAsAnchor = AsChild == SidebarMenuButtonElement.Anchor ||
-                               (!string.IsNullOrEmpty(Href) && AsChild == SidebarMenuButtonElement.Button);
+                               (Href != null && AsChild == SidebarMenuButtonElement.Button);
+    var effectiveActive = GetEffectiveActiveState();
 }
 
 @if (shouldRenderAsAnchor)
 {
-    <NavLink href="@Href" class="@GetClasses()" data-active="@IsActive" aria-current="@(IsActive ? "page" : null)" Match="@Match" ActiveClass="data-[active=true]:bg-sidebar-accent" @attributes="AdditionalAttributes">
+    <NavLink href="@Href" class="@GetClasses()" data-active="@(effectiveActive ? "true" : "false")" aria-current="@(effectiveActive ? "page" : null)" Match="@Match" ActiveClass="data-[active=true]:bg-sidebar-accent" @attributes="AdditionalAttributes">
         @ChildContent
     </NavLink>
 }
 else
 {
-    <button type="button" class="@GetClasses()" data-active="@IsActive" aria-current="@(IsActive ? "page" : null)" @attributes="AdditionalAttributes">
+    <button type="button" class="@GetClasses()" data-active="@(effectiveActive ? " true" : "false" )" aria-current="@(effectiveActive ? "page" : null)" @attributes="AdditionalAttributes">
         @ChildContent
     </button>
 }
 
 @code {
+    [CascadingParameter]
+    private SidebarContext? Context { get; set; }
+
     /// <summary>
     /// The button content.
     /// </summary>
@@ -52,9 +57,10 @@ else
 
     /// <summary>
     /// Whether this submenu item is active/selected.
+    /// If not set, active state will be auto-detected based on Href and Match if the Sidebar has AutoDetectActive enabled.
     /// </summary>
     [Parameter]
-    public bool IsActive { get; set; }
+    public bool? IsActive { get; set; }
 
     /// <summary>
     /// Button size variant.
@@ -73,6 +79,43 @@ else
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool GetEffectiveActiveState()
+    {
+        // If IsActive is explicitly set, use that value
+        if (IsActive.HasValue)
+        {
+            return IsActive.Value;
+        }
+
+        // Otherwise, use auto-detected state if enabled
+        if (Context?.AutoDetectActive == true && !string.IsNullOrEmpty(Href))
+        {
+            return IsPathActive(Href, Match);
+        }
+
+        return false;
+    }
+
+    private bool IsPathActive(string href, NavLinkMatch match)
+    {
+        if (Context == null || string.IsNullOrEmpty(href))
+        {
+            return false;
+        }
+
+        var currentPath = Context.CurrentPath;
+        var hrefUri = NavigationManager.ToAbsoluteUri(href);
+        var hrefPath = hrefUri.AbsolutePath;
+
+        if (match == NavLinkMatch.All)
+        {
+            return string.Equals(currentPath, hrefPath, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // NavLinkMatch.Prefix
+        return currentPath.StartsWith(hrefPath, StringComparison.OrdinalIgnoreCase);
+    }
 
     private string GetClasses()
     {
