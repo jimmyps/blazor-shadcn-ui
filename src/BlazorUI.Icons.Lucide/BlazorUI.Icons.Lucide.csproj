@@ -16,8 +16,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/blazorui-net/ui</PackageProjectUrl>
     <RepositoryUrl>https://github.com/blazorui-net/ui</RepositoryUrl>
-    <Authors>Mathew Taylor</Authors>
-    <Copyright>Copyright (c) 2025-present Mathew Taylor</Copyright>
+    <Authors>Jimmy Petrus</Authors>
+    <Copyright>Copyright (c) 2025-present Jimmy Petrus</Copyright>
 
     <!-- MinVer Configuration - Version from git tags -->
     <MinVerTagPrefix>icons-lucide/v</MinVerTagPrefix>

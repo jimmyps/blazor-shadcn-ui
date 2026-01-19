@@ -10,6 +10,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+// Add HttpClient services for server-side components
+builder.Services.AddHttpClient();
+
 // Add BlazorUI.Primitives services
 builder.Services.AddBlazorUIPrimitives();
 
