@@ -10,7 +10,7 @@
     <PackageId>Neo.BlazorUI.Components</PackageId>
     <AssemblyName>BlazorUI.Components</AssemblyName>
     <RootNamespace>BlazorUI.Components</RootNamespace>
-    <Description>Pre-styled Blazor components built with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.</Description>
+    <Description>Over 75+ pre-styled Blazor components built with shadcn/ui design and Tailwind CSS with full .NET 10 support. Beautiful defaults that you can customize to match your brand.</Description>
     <PackageTags>blazor;ui;components;shadcn;tailwind;styled;design-system</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <!-- <PackageIcon>icon.png</PackageIcon> -->
