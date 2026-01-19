@@ -1,0 +1,336 @@
+@using BlazorUI.Components.Grid
+@using BlazorUI.Components.Badge
+@using BlazorUI.Components.Button
+@using BlazorUI.Components.Toast
+@using BlazorUI.Components.Attributes
+@using BlazorUI.Icons.Lucide.Components
+@using BlazorUI.Demo.Shared.Data
+@inject IToastService Toasts
+
+<PageTitle>Grid Components - Templating Examples</PageTitle>
+
+<div class="space-y-8">
+    @* Demo 5: DataFormatString - Simple Formatting *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">DataFormatString - Simple Formatting</h2>
+            <p class="text-muted-foreground">
+                Use <code class="px-1.5 py-0.5 rounded bg-muted text-sm">DataFormatString</code> for simple formatting without templates.
+                Supports standard .NET format strings like "C" (currency), "N2" (number with 2 decimals), "P" (percentage), and "d" (short date).
+            </p>
+        </div>
+
+        <Grid Items="@orders.Take(15).ToList()">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" DataFormatString="N0" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Amount" Header="Amount" Width="140px" DataFormatString="C" />
+                <GridColumn Field="OrderDate" Header="Order Date" Width="140px" DataFormatString="d" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+            </Columns>
+        </Grid>
+
+        <div class="rounded-lg border bg-muted/20 p-4">
+            <p class="text-sm font-medium mb-2">Format Examples:</p>
+            <ul class="text-sm space-y-1 text-muted-foreground">
+                <li><code class="px-1.5 py-0.5 rounded bg-background">DataFormatString="C"</code> → Currency: $1,234.56</li>
+                <li><code class="px-1.5 py-0.5 rounded bg-background">DataFormatString="N0"</code> → Integer: 1,234</li>
+                <li><code class="px-1.5 py-0.5 rounded bg-background">DataFormatString="N2"</code> → Number: 1,234.56</li>
+                <li><code class="px-1.5 py-0.5 rounded bg-background">DataFormatString="P2"</code> → Percentage: 45.67%</li>
+                <li><code class="px-1.5 py-0.5 rounded bg-background">DataFormatString="d"</code> → Short date: 12/31/2024</li>
+                <li><code class="px-1.5 py-0.5 rounded bg-background">DataFormatString="D"</code> → Long date: Tuesday, December 31, 2024</li>
+            </ul>
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;GridColumn Field="Amount" Header="Amount" DataFormatString="C" /&gt;
+&lt;GridColumn Field="OrderDate" Header="Order Date" DataFormatString="d" /&gt;
+&lt;GridColumn Field="Id" Header="Order ID" DataFormatString="N0" /&gt;</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 6: Custom Cell Templates *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Cell Templates</h2>
+            <p class="text-muted-foreground">
+                Custom cell rendering using Badge for status and formatted currency for amounts.
+                For simple formatting, consider using <code class="px-1.5 py-0.5 rounded bg-muted text-sm">DataFormatString</code> instead (see Demo 5).
+            </p>
+        </div>
+
+        <Grid Items="@orders">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="130px">
+                    <CellTemplate Context="order">
+                        <Badge Variant="@GetStatusVariant(order.Status)">
+                            @order.Status
+                        </Badge>
+                    </CellTemplate>
+                </GridColumn>
+                <GridColumn Field="Amount" Header="Amount" Width="140px">
+                    <CellTemplate Context="order">
+                        <span class="font-mono font-medium">@order.Amount.ToString("C")</span>
+                    </CellTemplate>
+                </GridColumn>
+                <GridColumn Field="OrderDate" Header="Order Date" Width="140px">
+                    <CellTemplate Context="order">
+                        <span class="text-sm text-muted-foreground">@order.OrderDate.ToString("MMM dd, yyyy")</span>
+                    </CellTemplate>
+                </GridColumn>
+            </Columns>
+        </Grid>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;GridColumn Field="Status" Header="Status"&gt;
+    &lt;CellTemplate Context="order"&gt;
+        &lt;Badge Variant="@@GetStatusVariant(order.Status)"&gt;@@order.Status&lt;/Badge&gt;
+    &lt;/CellTemplate&gt;
+&lt;/GridColumn&gt;</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 7: Custom Header Templates *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Header Templates</h2>
+            <p class="text-muted-foreground">
+                Custom header rendering with icons for enhanced visual hierarchy.
+            </p>
+        </div>
+
+        <Grid Items="@orders.Take(10).ToList()">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer">
+                    <HeaderTemplate>
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="user" Size="16" />
+                            <span>Customer</span>
+                        </div>
+                    </HeaderTemplate>
+                </GridColumn>
+                <GridColumn Field="Amount" Header="Amount" Width="140px">
+                    <HeaderTemplate>
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="dollar-sign" Size="16" />
+                            <span>Amount</span>
+                        </div>
+                    </HeaderTemplate>
+                </GridColumn>
+                <GridColumn Field="Status" Header="Status" Width="130px">
+                    <HeaderTemplate>
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="package" Size="16" />
+                            <span>Status</span>
+                        </div>
+                    </HeaderTemplate>
+                </GridColumn>
+            </Columns>
+        </Grid>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;GridColumn Field="Customer"&gt;
+    &lt;HeaderTemplate&gt;
+        &lt;div class="flex items-center gap-2"&gt;
+            &lt;LucideIcon Name="user" Size="16" /&gt;
+            &lt;span&gt;Customer&lt;/span&gt;
+        &lt;/div&gt;
+    &lt;/HeaderTemplate&gt;
+&lt;/GridColumn&gt;</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 8: Row Actions *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Row Actions</h2>
+            <p class="text-muted-foreground">
+                Action buttons that trigger C# methods via data-action attributes. Uses Blazor components with automatic event binding.
+            </p>
+        </div>
+
+        <Grid Items="@orders.Take(10).ToList()" ActionHost="this">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="120px">
+                    <CellTemplate Context="order">
+                        <Badge Variant="@GetStatusVariant(order.Status)">
+                            @order.Status
+                        </Badge>
+                    </CellTemplate>
+                </GridColumn>
+                <GridColumn Field="Amount" Header="Amount" Width="120px">
+                    <CellTemplate Context="order">
+                        <span class="font-mono">@order.Amount.ToString("C")</span>
+                    </CellTemplate>
+                </GridColumn>
+                <GridColumn Id="actions" Header="Actions" Width="140px">
+                    <CellTemplate Context="order">
+                        <div class="flex items-center gap-1">
+                            <Button Variant="ButtonVariant.Ghost" 
+                                    Size="ButtonSize.Icon"
+                                    data-action="Edit"
+                                    title="@($"Edit order #{order.Id}")">
+                                <LucideIcon Name="pencil" Size="16" />
+                            </Button>
+                            <Button Variant="ButtonVariant.Ghost" 
+                                    Size="ButtonSize.Icon"
+                                    data-action="Delete"
+                                    title="@($"Delete order #{order.Id}")"
+                                    Class="text-destructive hover:text-destructive">
+                                <LucideIcon Name="trash-2" Size="16" />
+                            </Button>
+                        </div>
+                    </CellTemplate>
+                </GridColumn>
+            </Columns>
+        </Grid>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" ActionHost="this"&gt;
+    &lt;Columns&gt;
+        &lt;GridColumn Id="actions" Header="Actions"&gt;
+            &lt;CellTemplate Context="order"&gt;
+                &lt;!-- ✅ Use Blazor components with data-action attributes --&gt;
+                &lt;Button data-action="Edit"&gt;
+                    &lt;LucideIcon Name="pencil" /&gt;
+                &lt;/Button&gt;
+                &lt;Button data-action="Delete"&gt;
+                    &lt;LucideIcon Name="trash-2" /&gt;
+                &lt;/Button&gt;
+            &lt;/CellTemplate&gt;
+        &lt;/GridColumn&gt;
+    &lt;/Columns&gt;
+&lt;/Grid&gt;
+
+@@code {
+    // ✅ Auto-discovery: Just add [GridAction] attribute!
+    // Method names match data-action values
+    [GridAction]
+    private void Edit(Order order)
+    {
+        Toasts.Show($"Editing order #{order.Id}");
+    }
+    
+    [GridAction]
+    private void Delete(Order order)
+    {
+        Toasts.Error($"Deleting order #{order.Id}");
+    }
+}</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 9: Conditional Styling *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Conditional Styling</h2>
+            <p class="text-muted-foreground">
+                Dynamic CSS classes applied based on data values (high-value orders in green, cancelled in red).
+            </p>
+        </div>
+
+        <Grid Items="@orders.Take(15).ToList()">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Amount" Header="Amount" Width="140px">
+                    <CellTemplate Context="order">
+                        <span class="@GetAmountClass(order.Amount)">
+                            @order.Amount.ToString("C")
+                        </span>
+                    </CellTemplate>
+                </GridColumn>
+                <GridColumn Field="Status" Header="Status" Width="130px">
+                    <CellTemplate Context="order">
+                        <span class="@GetStatusClass(order.Status)">
+                            @order.Status
+                        </span>
+                    </CellTemplate>
+                </GridColumn>
+            </Columns>
+        </Grid>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>@@code {
+    private string GetAmountClass(decimal amount) 
+        =&gt; amount &gt; 5000 ? "font-bold text-green-600" : "";
+}</code></pre>
+            </div>
+        </details>
+    </section>
+</div>
+
+@code {
+    private List<Order> orders = new();
+
+    protected override void OnInitialized()
+    {
+        orders = GridDemoData.GenerateOrders(100);
+    }
+
+    private BadgeVariant GetStatusVariant(OrderStatus status) => status switch
+    {
+        OrderStatus.Delivered => BadgeVariant.Default,
+        OrderStatus.Shipped => BadgeVariant.Secondary,
+        OrderStatus.Processing => BadgeVariant.Outline,
+        OrderStatus.Pending => BadgeVariant.Outline,
+        OrderStatus.Cancelled => BadgeVariant.Destructive,
+        _ => BadgeVariant.Default
+    };
+
+    private string GetAmountClass(decimal amount)
+    {
+        return amount > 5000 ? "font-bold text-green-600 dark:text-green-400" : "font-mono";
+    }
+
+    private string GetStatusClass(OrderStatus status)
+    {
+        return status == OrderStatus.Cancelled 
+            ? "text-destructive font-medium" 
+            : status == OrderStatus.Delivered 
+                ? "text-green-600 dark:text-green-400 font-medium" 
+                : "";
+    }
+
+    // ✅ Auto-discovered actions - just add [GridAction]!
+    [GridAction]
+    private void Edit(Order order)
+    {
+        Toasts.Show($"Editing order #{order.Id}", $"Customer: {order.Customer}");
+    }
+
+    [GridAction]
+    private void Delete(Order order)
+    {
+        Toasts.Error("Delete Order", $"Order #{order.Id} from {order.Customer} would be deleted.");
+    }
+}

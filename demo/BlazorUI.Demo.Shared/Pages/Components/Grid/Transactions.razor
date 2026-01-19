@@ -1,0 +1,600 @@
+@page "/components/grid/transactions"
+@using BlazorUI.Components.Grid
+@using BlazorUI.Components.Button
+@using BlazorUI.Components.Badge
+@using BlazorUI.Demo.Shared.Data
+@using System.Collections.ObjectModel
+
+<PageTitle>Grid Components - Transaction API Examples</PageTitle>
+
+<div class="space-y-8">
+    <div class="space-y-2">
+        <h1 class="text-3xl font-bold">Grid Transaction API</h1>
+        <p class="text-lg text-muted-foreground">
+            Efficient delta updates using manual transaction APIs. Perfect for high-performance scenarios with millions of rows.
+        </p>
+    </div>
+
+    @* Demo 1: Manual Add Transaction *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Manual Add Transaction</h2>
+            <p class="text-muted-foreground">
+                Use <code class="px-1 py-0.5 rounded bg-muted">AddRowsAsync()</code> to add rows without refreshing the entire grid.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-green-50 dark:bg-green-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-green-600 dark:text-green-400">✨</div>
+                <div>
+                    <p class="font-semibold mb-2">When to use AddRowsAsync():</p>
+                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li>Adding new rows from API responses</li>
+                        <li>Real-time data feeds (WebSocket, SignalR)</li>
+                        <li>Optimistic UI updates after create operations</li>
+                        <li>When you control the data source manually (not ObservableCollection)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <Button Size="ButtonSize.Small" OnClick="AddSingleRow">
+                Add 1 Row
+            </Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="AddMultipleRows">
+                Add 5 Rows
+            </Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Secondary" OnClick="AddBulkRows">
+                Add 100 Rows (Bulk)
+            </Button>
+        </div>
+
+        <Grid @ref="addGrid" 
+              Items="@addOrders" 
+              SelectionMode="GridSelectionMode.Multiple">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+            </Columns>
+        </Grid>
+
+        <div class="mt-4 text-sm text-muted-foreground">
+            Total: @addOrders.Count rows (Added via transaction API - no full refresh)
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>@@code {
+    private Grid&lt;Order&gt; addGrid;
+    private List&lt;Order&gt; orders = new();
+
+    private async Task AddSingleRow()
+    {
+        var newOrder = new Order { /* ... */ };
+        
+        // Add to data source
+        orders.Add(newOrder);
+        
+        // Apply transaction - only new row is rendered!
+        await addGrid.AddRowsAsync(newOrder);
+    }
+
+    private async Task AddMultipleRows()
+    {
+        var newOrders = GenerateOrders(5);
+        orders.AddRange(newOrders);
+        
+        // Batch add - all 5 rows added in single transaction
+        await addGrid.AddRowsAsync(newOrders.ToArray());
+    }
+}</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 2: Manual Update Transaction *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Manual Update Transaction</h2>
+            <p class="text-muted-foreground">
+                Use <code class="px-1 py-0.5 rounded bg-muted">UpdateRowsAsync()</code> to update specific rows efficiently.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-blue-50 dark:bg-blue-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-blue-600 dark:text-blue-400">🔄</div>
+                <div>
+                    <p class="font-semibold mb-2">When to use UpdateRowsAsync():</p>
+                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li>Updating rows after API PATCH/PUT responses</li>
+                        <li>Real-time updates from WebSocket messages</li>
+                        <li>Optimistic UI updates after edit operations</li>
+                        <li>Batch status updates (e.g., mark as "Shipped")</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <Button Size="ButtonSize.Small" OnClick="UpdateRandomRow">
+                Update Random Row
+            </Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="UpdateMultipleRows">
+                Update 5 Random Rows
+            </Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Secondary" OnClick="UpdateAllPending">
+                Ship All Pending Orders
+            </Button>
+        </div>
+
+        <Grid @ref="updateGrid" 
+              Items="@updateOrders" 
+              SelectionMode="GridSelectionMode.None">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+            </Columns>
+        </Grid>
+
+        <div class="mt-4 text-sm text-muted-foreground">
+            @updateOrders.Count(o => o.Status == OrderStatus.Pending) pending orders
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>@@code {
+    private Grid&lt;Order&gt; updateGrid;
+    private List&lt;Order&gt; orders = new();
+
+    private async Task UpdateRandomRow()
+    {
+        if (updateOrders.Count == 0) return;
+        
+        var statuses = new[] { OrderStatus.Pending, OrderStatus.Shipped, OrderStatus.Delivered };
+        var order = updateOrders[Random.Shared.Next(updateOrders.Count)];
+        order.Amount = Math.Round((decimal)(Random.Shared.NextDouble() * 10000 + 100), 2);
+        order.Status = statuses[Random.Shared.Next(statuses.Length)];
+        
+        await updateGrid.UpdateRowsAsync(order);
+    }
+
+    private async Task UpdateMultipleRows()
+    {
+        var statuses = new[] { OrderStatus.Pending, OrderStatus.Shipped, OrderStatus.Delivered };
+        var ordersToUpdate = updateOrders.OrderBy(x => Random.Shared.Next()).Take(5).ToArray();
+        
+        foreach (var order in ordersToUpdate)
+        {
+            order.Amount = Math.Round((decimal)(Random.Shared.NextDouble() * 10000 + 100), 2);
+            order.Status = statuses[Random.Shared.Next(statuses.Length)];
+        }
+        
+        await updateGrid.UpdateRowsAsync(ordersToUpdate);
+    }
+
+    private async Task UpdateAllPending()
+    {
+        var pendingOrders = updateOrders.Where(o => o.Status == OrderStatus.Pending).ToArray();
+        
+        foreach (var order in pendingOrders)
+            order.Status = OrderStatus.Shipped;
+        
+        await updateGrid.UpdateRowsAsync(pendingOrders);
+    }
+}</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 3: Manual Remove Transaction *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Manual Remove Transaction</h2>
+            <p class="text-muted-foreground">
+                Use <code class="px-1 py-0.5 rounded bg-muted">RemoveRowsAsync()</code> to remove rows without full grid refresh.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-red-50 dark:bg-red-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-red-600 dark:text-red-400">🗑️</div>
+                <div>
+                    <p class="font-semibold mb-2">When to use RemoveRowsAsync():</p>
+                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li>After successful DELETE API calls</li>
+                        <li>Removing expired/invalid rows</li>
+                        <li>Bulk delete operations</li>
+                        <li>When you manually manage the data list (not ObservableCollection)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Destructive" OnClick="RemoveRandomRow">
+                Remove Random Row
+            </Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="RemoveSelected" Disabled="@(selectedRemoveOrders.Count == 0)">
+                Remove Selected (@selectedRemoveOrders.Count)
+            </Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Secondary" OnClick="RemoveDelivered">
+                Archive Delivered Orders
+            </Button>
+        </div>
+
+        <Grid @ref="removeGrid" 
+              Items="@removeOrders" 
+              SelectionMode="GridSelectionMode.Multiple"
+              @bind-SelectedItems="@selectedRemoveOrders">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+            </Columns>
+        </Grid>
+
+        <div class="mt-4 text-sm text-muted-foreground">
+            @removeOrders.Count rows remaining
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>@@code {
+    private Grid&lt;Order&gt; removeGrid;
+    private List&lt;Order&gt; orders = new();
+    private IReadOnlyCollection&lt;Order&gt; selectedOrders = Array.Empty&lt;Order&gt;();
+
+    private async Task RemoveSelected()
+    {
+        // Remove from data source
+        orders.RemoveAll(o =&gt; selectedOrders.Contains(o));
+        
+        // Apply transaction - only removed rows affected!
+        await removeGrid.RemoveRowsAsync(selectedOrders.ToArray());
+        
+        selectedOrders = Array.Empty&lt;Order&gt;();
+    }
+
+    private async Task RemoveDelivered()
+    {
+        var delivered = orders.Where(o =&gt; o.Status == "Delivered").ToArray();
+        
+        // Remove from list
+        orders.RemoveAll(o =&gt; delivered.Contains(o));
+        
+        // Batch remove - all removed in one transaction
+        await removeGrid.RemoveRowsAsync(delivered);
+    }
+}</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Demo 4: Combined Transaction (Add + Update + Remove) *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Combined Transaction Operations</h2>
+            <p class="text-muted-foreground">
+                Perform multiple operations (add, update, remove) simultaneously for complex scenarios.
+            </p>
+        </div>
+
+        <div class="rounded-lg border bg-purple-50 dark:bg-purple-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-purple-600 dark:text-purple-400">⚡</div>
+                <div>
+                    <p class="font-semibold mb-2">Real-world Combined Operations:</p>
+                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li><strong>Order Processing:</strong> Ship pending (update), archive delivered (remove), add new orders</li>
+                        <li><strong>Inventory Sync:</strong> Add new products, update prices, remove discontinued items</li>
+                        <li><strong>User Management:</strong> Activate new users, update roles, remove inactive accounts</li>
+                        <li><strong>All in one efficient operation</strong> - Single grid transaction, minimal DOM updates</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <Button Size="ButtonSize.Small" OnClick="ProcessOrders">
+                Process Orders (Combined Operation)
+            </Button>
+            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ResetCombined">
+                Reset Data
+            </Button>
+        </div>
+
+        <Grid @ref="combinedGrid" 
+              Items="@combinedOrders" 
+              SelectionMode="GridSelectionMode.None">
+            <Columns>
+                <GridColumn Field="Id" Header="Order ID" Width="100px" />
+                <GridColumn Field="Customer" Header="Customer" />
+                <GridColumn Field="Status" Header="Status" Width="130px" />
+                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+            </Columns>
+        </Grid>
+
+        <div class="mt-4 space-y-1 text-sm text-muted-foreground">
+            <p>Total: @combinedOrders.Count orders</p>
+            <p>Pending: @combinedOrders.Count(o => o.Status == OrderStatus.Pending) | Shipped: @combinedOrders.Count(o => o.Status == OrderStatus.Shipped) | Delivered: @combinedOrders.Count(o => o.Status == OrderStatus.Delivered)</p>
+        </div>
+
+        <details class="rounded-lg border">
+            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
+                View Code
+            </summary>
+            <div class="border-t bg-muted/20 p-4">
+                <pre class="overflow-x-auto text-sm"><code>@@code {
+    private Grid&lt;Order&gt; combinedGrid;
+    private List&lt;Order&gt; orders = new();
+
+    private async Task ProcessOrders()
+    {
+        // 1. Ship pending orders (UPDATE)
+        var toShip = orders.Where(o =&gt; o.Status == "Pending").ToArray();
+        foreach (var order in toShip)
+            order.Status = "Shipped";
+
+        // 2. Archive delivered orders (REMOVE)
+        var toArchive = orders.Where(o =&gt; o.Status == "Delivered").ToArray();
+        orders.RemoveAll(o =&gt; toArchive.Contains(o));
+
+        // 3. Add new incoming orders (ADD)
+        var newOrders = GenerateOrders(3);
+        orders.AddRange(newOrders);
+
+        // Execute all operations in optimal sequence
+        // Grid batches them into a single efficient transaction!
+        await combinedGrid.UpdateRowsAsync(toShip);
+        await combinedGrid.RemoveRowsAsync(toArchive);
+        await combinedGrid.AddRowsAsync(newOrders.ToArray());
+    }
+}</code></pre>
+            </div>
+        </details>
+    </section>
+
+    @* Performance Comparison *@
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Performance Comparison</h2>
+            <p class="text-muted-foreground">
+                Compare full refresh vs. transaction API performance
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="rounded-lg border p-4">
+                <h3 class="font-semibold mb-2">❌ Full Refresh (Slow)</h3>
+                <pre class="text-xs bg-muted p-2 rounded overflow-x-auto"><code>// Remove 1 item from 10,000 rows
+orders.Remove(order);
+orders = new List&lt;Order&gt;(orders);  // Trigger re-render
+// Result: ALL 9,999 rows re-rendered 🐌</code></pre>
+            </div>
+
+            <div class="rounded-lg border p-4">
+                <h3 class="font-semibold mb-2">✅ Transaction API (Fast)</h3>
+                <pre class="text-xs bg-muted p-2 rounded overflow-x-auto"><code>// Remove 1 item from 10,000 rows
+orders.Remove(order);
+await grid.RemoveRowsAsync(order);
+// Result: Only 1 row removed from DOM ⚡</code></pre>
+            </div>
+        </div>
+
+        <div class="rounded-lg border bg-yellow-50 dark:bg-yellow-950/20 p-4 text-sm">
+            <div class="flex gap-2">
+                <div class="text-yellow-600 dark:text-yellow-400">💡</div>
+                <div>
+                    <p class="font-semibold mb-2">Best Practices:</p>
+                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li><strong>Use ObservableCollection</strong> when you own the data source (simplest)</li>
+                        <li><strong>Use Transaction APIs</strong> when integrating with external data sources (APIs, SignalR)</li>
+                        <li><strong>Batch operations</strong> when possible (e.g., AddRowsAsync([...]) instead of multiple AddRowsAsync())</li>
+                        <li><strong>Avoid full refresh</strong> when only a few rows changed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@code {
+    // Add demo
+    private Grid<Order> addGrid = null!;
+    private List<Order> addOrders = new();
+
+    // Update demo
+    private Grid<Order> updateGrid = null!;
+    private List<Order> updateOrders = new();
+
+    // Remove demo
+    private Grid<Order> removeGrid = null!;
+    private List<Order> removeOrders = new();
+    private IReadOnlyCollection<Order> selectedRemoveOrders = Array.Empty<Order>();
+
+    // Combined demo
+    private Grid<Order> combinedGrid = null!;
+    private List<Order> combinedOrders = new();
+
+    private int nextId = 1000;
+
+    protected override void OnInitialized()
+    {
+        addOrders = GridDemoData.GenerateOrders(10).ToList();
+        updateOrders = GridDemoData.GenerateOrders(30).ToList();
+        removeOrders = GridDemoData.GenerateOrders(30).ToList();
+        combinedOrders = GridDemoData.GenerateOrders(20).ToList();
+        
+        // ✅ Track next ID across ALL datasets to prevent duplicates
+        nextId = Math.Max(
+            addOrders.DefaultIfEmpty().Max(o => o?.Id ?? 0),
+            Math.Max(
+                updateOrders.DefaultIfEmpty().Max(o => o?.Id ?? 0),
+                Math.Max(
+                    removeOrders.DefaultIfEmpty().Max(o => o?.Id ?? 0),
+                    combinedOrders.DefaultIfEmpty().Max(o => o?.Id ?? 0)
+                )
+            )
+        ) + 1;
+    }
+
+    // ==================== ADD DEMOS ====================
+    
+    private async Task AddSingleRow()
+    {
+        var newOrder = GenerateSingleOrder();
+        addOrders.Add(newOrder);
+        await addGrid.AddRowsAsync(newOrder);
+    }
+
+    private async Task AddMultipleRows()
+    {
+        var newOrders = GenerateOrders(5);
+        addOrders.AddRange(newOrders);
+        await addGrid.AddRowsAsync(newOrders.ToArray());
+    }
+
+    private async Task AddBulkRows()
+    {
+        var newOrders = GenerateOrders(100);
+        addOrders.AddRange(newOrders);
+        await addGrid.AddRowsAsync(newOrders.ToArray());
+    }
+
+    // ==================== UPDATE DEMOS ====================
+
+    private async Task UpdateRandomRow()
+    {
+        if (updateOrders.Count == 0) return;
+        
+        var statuses = new[] { OrderStatus.Pending, OrderStatus.Shipped, OrderStatus.Delivered };
+        var order = updateOrders[Random.Shared.Next(updateOrders.Count)];
+        order.Amount = Math.Round((decimal)(Random.Shared.NextDouble() * 10000 + 100), 2);
+        order.Status = statuses[Random.Shared.Next(statuses.Length)];
+        
+        await updateGrid.UpdateRowsAsync(order);
+    }
+
+    private async Task UpdateMultipleRows()
+    {
+        var statuses = new[] { OrderStatus.Pending, OrderStatus.Shipped, OrderStatus.Delivered };
+        var ordersToUpdate = updateOrders.OrderBy(x => Random.Shared.Next()).Take(5).ToArray();
+        
+        foreach (var order in ordersToUpdate)
+        {
+            order.Amount = Math.Round((decimal)(Random.Shared.NextDouble() * 10000 + 100), 2);
+            order.Status = statuses[Random.Shared.Next(statuses.Length)];
+        }
+        
+        await updateGrid.UpdateRowsAsync(ordersToUpdate);
+    }
+
+    private async Task UpdateAllPending()
+    {
+        var pendingOrders = updateOrders.Where(o => o.Status == OrderStatus.Pending).ToArray();
+        
+        foreach (var order in pendingOrders)
+            order.Status = OrderStatus.Shipped;
+        
+        await updateGrid.UpdateRowsAsync(pendingOrders);
+    }
+
+    // ==================== REMOVE DEMOS ====================
+
+    private async Task RemoveRandomRow()
+    {
+        if (removeOrders.Count == 0) return;
+        
+        var order = removeOrders[Random.Shared.Next(removeOrders.Count)];
+        removeOrders.Remove(order);
+        await removeGrid.RemoveRowsAsync(order);
+    }
+
+    private async Task RemoveSelected()
+    {
+        removeOrders.RemoveAll(o => selectedRemoveOrders.Contains(o));
+        await removeGrid.RemoveRowsAsync(selectedRemoveOrders.ToArray());
+        selectedRemoveOrders = Array.Empty<Order>();
+    }
+
+    private async Task RemoveDelivered()
+    {
+        var delivered = removeOrders.Where(o => o.Status == OrderStatus.Delivered).ToArray();
+        removeOrders.RemoveAll(o => delivered.Contains(o));
+        await removeGrid.RemoveRowsAsync(delivered);
+    }
+
+    // ==================== COMBINED DEMO ====================
+
+    private async Task ProcessOrders()
+    {
+        // 1. Ship pending orders (UPDATE)
+        var toShip = combinedOrders.Where(o => o.Status == OrderStatus.Pending).ToArray();
+        foreach (var order in toShip)
+            order.Status = OrderStatus.Shipped;
+
+        // 2. Archive delivered orders (REMOVE)
+        var toArchive = combinedOrders.Where(o => o.Status == OrderStatus.Delivered).ToArray();
+        combinedOrders.RemoveAll(o => toArchive.Contains(o));
+
+        // 3. Add new incoming orders (ADD)
+        var newOrders = GenerateOrders(3);
+        combinedOrders.AddRange(newOrders);
+
+        // Execute all operations
+        await combinedGrid.UpdateRowsAsync(toShip);
+        await combinedGrid.RemoveRowsAsync(toArchive);
+        await combinedGrid.AddRowsAsync(newOrders.ToArray());
+    }
+
+    private async Task ResetCombined()
+    {
+        combinedOrders.Clear();
+        var newOrders = GenerateOrders(20);
+        combinedOrders.AddRange(newOrders);
+        
+        // Full refresh needed after Clear()
+        StateHasChanged();
+    }
+
+    // ==================== HELPERS ====================
+
+    private Order GenerateSingleOrder()
+    {
+        var customers = new[] { "Acme Corp", "TechStart Inc", "Global Solutions", "FastShip LLC", "MegaStore" };
+        var statuses = new[] { OrderStatus.Pending, OrderStatus.Shipped, OrderStatus.Delivered };
+        
+        return new Order
+        {
+            Id = nextId++,
+            Customer = customers[Random.Shared.Next(customers.Length)],
+            Status = statuses[Random.Shared.Next(statuses.Length)],
+            Amount = Math.Round((decimal)(Random.Shared.NextDouble() * 10000 + 100), 2),
+            OrderDate = DateTime.Now.AddDays(-Random.Shared.Next(30))
+        };
+    }
+
+    private List<Order> GenerateOrders(int count)
+    {
+        return Enumerable.Range(0, count)
+            .Select(_ => GenerateSingleOrder())
+            .ToList();
+    }
+}

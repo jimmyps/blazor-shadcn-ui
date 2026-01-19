@@ -1,6 +1,7 @@
 using BlazorUI.Demo;
 using BlazorUI.Demo.Services;
 using BlazorUI.Primitives.Extensions;
+using BlazorUI.Components.Extensions;
 using BlazorUI.Components.Toast;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,9 @@ builder.Services.AddHttpClient();
 
 // Add BlazorUI.Primitives services
 builder.Services.AddBlazorUIPrimitives();
+
+// Add BlazorUI.Components services (includes Grid renderer)
+builder.Services.AddBlazorUIComponents();
 
 // Add theme service for dark mode management (scoped because it depends on IJSRuntime)
 builder.Services.AddScoped<ThemeService>();

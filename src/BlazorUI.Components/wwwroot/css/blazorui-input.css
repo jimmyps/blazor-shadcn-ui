@@ -148,10 +148,10 @@
     will-change: height;
   }
 
-  .height-animation-container [role="listbox"] {
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
+    .height-animation-container [role="listbox"] {
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
 
   /* ScrollArea Shadows */
   .scroll-shadow {
@@ -237,13 +237,13 @@
     @apply opacity-0;
   }
 
-  .dialog-item.is-visible {
-    @apply motion-safe:animate-dialog-item-in opacity-100;
-  }
+    .dialog-item.is-visible {
+      @apply motion-safe:animate-dialog-item-in opacity-100;
+    }
 
-  .dialog-item.is-hidden {
-    @apply motion-safe:animate-dialog-item-out;
-  }
+    .dialog-item.is-hidden {
+      @apply motion-safe:animate-dialog-item-out;
+    }
 
   /* Reduced motion fallbacks */
   @media (prefers-reduced-motion: reduce) {
