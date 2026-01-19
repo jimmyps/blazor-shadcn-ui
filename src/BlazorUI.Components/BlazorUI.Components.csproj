@@ -7,7 +7,7 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 
     <!-- NuGet Package Configuration -->
-    <PackageId>BlazorUI.Components</PackageId>
+    <PackageId>Neo.BlazorUI.Components</PackageId>
     <AssemblyName>BlazorUI.Components</AssemblyName>
     <RootNamespace>BlazorUI.Components</RootNamespace>
     <Description>Pre-styled Blazor components built with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.</Description>
@@ -15,8 +15,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <!-- <PackageIcon>icon.png</PackageIcon> -->
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/blazorui-net/ui</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/blazorui-net/ui</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/jimmyps/blazor-shadcn-ui</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jimmyps/blazor-shadcn-ui</RepositoryUrl>
     <Authors>Jimmy Petrus</Authors>
     <Copyright>Copyright (c) 2025-present Jimmy Petrus</Copyright>
 

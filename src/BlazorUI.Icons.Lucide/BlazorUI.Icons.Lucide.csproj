@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
 
     <!-- NuGet Package Configuration -->
-    <PackageId>BlazorUI.Icons.Lucide</PackageId>
+    <PackageId>Neo.BlazorUI.Icons.Lucide</PackageId>
     <RootNamespace>BlazorUI.Icons.Lucide</RootNamespace>
     <AssemblyName>BlazorUI.Icons.Lucide</AssemblyName>
     <Description>Lucide icon library for BlazorUI - 1,640+ beautiful, consistent SVG icons for Blazor applications.</Description>
@@ -14,8 +14,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <!-- <PackageIcon>icon.png</PackageIcon> -->
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/blazorui-net/ui</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/blazorui-net/ui</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/jimmyps/blazor-shadcn-ui</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jimmyps/blazor-shadcn-ui</RepositoryUrl>
     <Authors>Jimmy Petrus</Authors>
     <Copyright>Copyright (c) 2025-present Jimmy Petrus</Copyright>
 
