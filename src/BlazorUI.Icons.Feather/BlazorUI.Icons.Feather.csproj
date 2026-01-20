@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
 
     <!-- NuGet Package Configuration -->
-    <PackageId>Neo.BlazorUI.Icons.Feather</PackageId>
+    <PackageId>NeoBlazorUI.Icons.Feather</PackageId>
     <RootNamespace>BlazorUI.Icons.Feather</RootNamespace>
     <AssemblyName>BlazorUI.Icons.Feather</AssemblyName>
     <Description>Feather icon library for BlazorUI - 286 beautiful, minimalist SVG icons for Blazor applications.</Description>

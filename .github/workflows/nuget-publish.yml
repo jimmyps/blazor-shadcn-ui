@@ -80,23 +80,23 @@ jobs:
           case $PACKAGE in
             primitives)
               echo "project_path=src/BlazorUI.Primitives/BlazorUI.Primitives.csproj" >> $GITHUB_OUTPUT
-              echo "display_name=Neo.BlazorUI.Primitives" >> $GITHUB_OUTPUT
+              echo "display_name=NeoBlazorUI.Primitives" >> $GITHUB_OUTPUT
               ;;
             components)
               echo "project_path=src/BlazorUI.Components/BlazorUI.Components.csproj" >> $GITHUB_OUTPUT
-              echo "display_name=Neo.BlazorUI.Components" >> $GITHUB_OUTPUT
+              echo "display_name=NeoBlazorUI.Components" >> $GITHUB_OUTPUT
               ;;
             icons-lucide)
               echo "project_path=src/BlazorUI.Icons.Lucide/BlazorUI.Icons.Lucide.csproj" >> $GITHUB_OUTPUT
-              echo "display_name=Neo.BlazorUI.Icons.Lucide" >> $GITHUB_OUTPUT
+              echo "display_name=NeoBlazorUI.Icons.Lucide" >> $GITHUB_OUTPUT
               ;;
             icons-heroicons)
               echo "project_path=src/BlazorUI.Icons.Heroicons/BlazorUI.Icons.Heroicons.csproj" >> $GITHUB_OUTPUT
-              echo "display_name=Neo.BlazorUI.Icons.Heroicons" >> $GITHUB_OUTPUT
+              echo "display_name=NeoBlazorUI.Icons.Heroicons" >> $GITHUB_OUTPUT
               ;;
             icons-feather)
               echo "project_path=src/BlazorUI.Icons.Feather/BlazorUI.Icons.Feather.csproj" >> $GITHUB_OUTPUT
-              echo "display_name=Neo.BlazorUI.Icons.Feather" >> $GITHUB_OUTPUT
+              echo "display_name=NeoBlazorUI.Icons.Feather" >> $GITHUB_OUTPUT
               ;;
             *)
               echo "Unknown package: $PACKAGE"

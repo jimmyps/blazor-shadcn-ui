@@ -7,7 +7,7 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 
     <!-- NuGet Package Configuration -->
-    <PackageId>Neo.BlazorUI.Primitives</PackageId>
+    <PackageId>NeoBlazorUI.Primitives</PackageId>
     <RootNamespace>BlazorUI.Primitives</RootNamespace>
     <AssemblyName>BlazorUI.Primitives</AssemblyName>
     <Description>Headless, unstyled Blazor primitive components with full accessibility support. Build your own component library using these composable primitives.</Description>

@@ -7,7 +7,7 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 
     <!-- NuGet Package Configuration -->
-    <PackageId>Neo.BlazorUI.Components</PackageId>
+    <PackageId>NeoBlazorUI.Components</PackageId>
     <AssemblyName>BlazorUI.Components</AssemblyName>
     <RootNamespace>BlazorUI.Components</RootNamespace>
     <Description>Over 75+ pre-styled Blazor components built with shadcn/ui design and Tailwind CSS with full .NET 10 support. Beautiful defaults that you can customize to match your brand.</Description>
