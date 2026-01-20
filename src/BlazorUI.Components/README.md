@@ -188,27 +188,35 @@ That's it! No Tailwind installation, no build configuration needed.
 ## 🎯 Component Highlights
 
 ### Chart Component
-Create beautiful, responsive charts with 8 different types:
+Create beautiful, responsive charts with a declarative Recharts-inspired API:
 
 ```razor
-<Chart Config="@chartConfig" />
+<LineChart Data="@salesData">
+    <XAxis DataKey="Month" />
+    <YAxis />
+    <Grid />
+    <Tooltip />
+    <Legend />
+    <Line DataKey="Revenue" Fill="var(--chart-1)" />
+    <Line DataKey="Target" Fill="var(--chart-2)" />
+</LineChart>
 
 @code {
-    ChartConfig chartConfig = new()
+    private List<SalesData> salesData = new()
     {
-        Type = ChartType.Line,
-        Data = new ChartData
-        {
-            Labels = new[] { "Jan", "Feb", "Mar", "Apr", "May" },
-            Datasets = new List<ChartDataset>
-            {
-                new() {
-                    Label = "Revenue",
-                    Data = new[] { 65, 59, 80, 81, 56 }
-                }
-            }
-        }
+        new() { Month = "Jan", Revenue = 4000, Target = 3500 },
+        new() { Month = "Feb", Revenue = 3000, Target = 3200 },
+        new() { Month = "Mar", Revenue = 5000, Target = 4500 },
+        new() { Month = "Apr", Revenue = 4500, Target = 4000 },
+        new() { Month = "May", Revenue = 6000, Target = 5500 }
     };
+
+    public class SalesData
+    {
+        public string Month { get; set; } = "";
+        public int Revenue { get; set; }
+        public int Target { get; set; }
+    }
 }
 ```
 
@@ -221,6 +229,43 @@ Powerful data tables with built-in sorting, filtering, pagination, and selection
            Columns="@columns"
            ShowPagination="true"
            PageSize="10" />
+```
+
+### Grid Component
+Enterprise-grade data grid powered by AG Grid with Blazor template support and auto-discovery actions, designed with shadcn theme with real-time light/dark theme switching support:
+
+```razor
+<Grid Items="@orders" ActionHost="this">
+    <Columns>
+        <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+        <GridColumn Field="CustomerName" Header="Customer" Sortable="true" />
+        <GridColumn Field="OrderDate" Header="Date" DataFormatString="d" />
+        <GridColumn Field="Total" Header="Total" DataFormatString="C" />
+        <GridColumn Field="Status" Header="Status">
+            <CellTemplate Context="order">
+                <Badge Variant="@GetStatusVariant(order.Status)">
+                    @order.Status
+                </Badge>
+            </CellTemplate>
+        </GridColumn>
+        <GridColumn Field="Actions" Header="">
+            <CellTemplate Context="order">
+                <Button data-action="Edit" Variant="ButtonVariant.Ghost">
+                    Edit
+                </Button>
+            </CellTemplate>
+        </GridColumn>
+    </Columns>
+</Grid>
+
+@code {
+    [GridAction]
+    private async Task Edit(Order order)
+    {
+        // Action auto-wired via [GridAction] attribute
+        await ShowEditDialog(order);
+    }
+}
 ```
 
 ### Motion Component
