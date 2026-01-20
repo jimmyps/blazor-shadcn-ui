@@ -259,7 +259,7 @@
         try
         {
             _clickOutsideModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/BlazorUI.Primitives/js/primitives/click-outside.js");
+                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/click-outside.js");
 
             _dotNetRef = DotNetObjectReference.Create(this);
 

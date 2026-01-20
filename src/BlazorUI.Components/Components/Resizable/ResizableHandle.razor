@@ -71,7 +71,7 @@
         try
         {
             _resizableModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/BlazorUI.Components/js/resizable.js");
+                "import", "./_content/NeoBlazorUI.Components/js/resizable.js");
 
             _dotNetRef = DotNetObjectReference.Create(this);
 

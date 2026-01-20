@@ -27,7 +27,7 @@ public class EChartsRenderer : IChartRenderer
         Console.WriteLine("[EChartsRenderer] InitializeAsync called");
         
         _jsModule ??= await _jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/BlazorUI.Components/js/echarts-renderer.js");
+            "import", "./_content/NeoBlazorUI.Components/js/echarts-renderer.js");
         Console.WriteLine("[EChartsRenderer] JS module loaded");
         
         // Serialize config with camelCase to ensure JavaScript property names match ECharts expectations

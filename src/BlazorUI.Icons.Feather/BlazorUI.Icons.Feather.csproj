@@ -8,7 +8,7 @@
     <!-- NuGet Package Configuration -->
     <PackageId>NeoBlazorUI.Icons.Feather</PackageId>
     <RootNamespace>BlazorUI.Icons.Feather</RootNamespace>
-    <AssemblyName>BlazorUI.Icons.Feather</AssemblyName>
+    <AssemblyName>NeoBlazorUI.Icons.Feather</AssemblyName>
     <Description>Feather icon library for BlazorUI - 286 beautiful, minimalist SVG icons for Blazor applications.</Description>
     <PackageTags>blazor;icons;feather;shadcn;svg;ui;components;blazor-components;minimalist</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>

@@ -36,7 +36,7 @@ public class PositioningService : IPositioningService, IAsyncDisposable
             if (_module == null)
             {
                 _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Primitives/js/primitives/positioning.js");
+                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/positioning.js");
             }
             return _module;
         }

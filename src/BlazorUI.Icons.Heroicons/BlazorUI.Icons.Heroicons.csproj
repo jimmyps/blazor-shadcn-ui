@@ -8,7 +8,7 @@
     <!-- NuGet Package Configuration -->
     <PackageId>NeoBlazorUI.Icons.Heroicons</PackageId>
     <RootNamespace>BlazorUI.Icons.Heroicons</RootNamespace>
-    <AssemblyName>BlazorUI.Icons.Heroicons</AssemblyName>
+    <AssemblyName>NeoBlazorUI.Icons.Heroicons</AssemblyName>
     <Description>Heroicons icon library for BlazorUI - 1,288 beautiful icons across 4 variants (outline, solid, mini, micro) for Blazor applications.</Description>
     <PackageTags>blazor;icons;heroicons;shadcn;svg;ui;components;blazor-components;tailwind</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>

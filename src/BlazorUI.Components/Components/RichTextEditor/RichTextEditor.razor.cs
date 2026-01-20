@@ -205,7 +205,7 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
             {
                 _dotNetRef = DotNetObjectReference.Create(this);
                 _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Components/js/rich-text-editor.js");
+                    "import", "./_content/NeoBlazorUI.Components/js/rich-text-editor.js");
 
                 await _module.InvokeVoidAsync("initialize", _editorRef, _dotNetRef);
 

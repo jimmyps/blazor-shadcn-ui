@@ -9,7 +9,7 @@
     <!-- NuGet Package Configuration -->
     <PackageId>NeoBlazorUI.Primitives</PackageId>
     <RootNamespace>BlazorUI.Primitives</RootNamespace>
-    <AssemblyName>BlazorUI.Primitives</AssemblyName>
+    <AssemblyName>NeoBlazorUI.Primitives</AssemblyName>
     <Description>Headless, unstyled Blazor primitive components with full accessibility support. Build your own component library using these composable primitives.</Description>
     <PackageTags>blazor;primitives;headless;ui;components;accessibility;radix;unstyled;wcag</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>

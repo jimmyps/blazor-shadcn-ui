@@ -39,7 +39,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         Console.WriteLine("[AgGridRenderer] InitializeAsync called");
         
         _jsModule = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/BlazorUI.Components/js/grid/aggrid-renderer.js");
+            "import", "./_content/NeoBlazorUI.Components/js/grid/aggrid-renderer.js");
         Console.WriteLine("[AgGridRenderer] JS module imported");
 
         _dotNetRef = DotNetObjectReference.Create(this);

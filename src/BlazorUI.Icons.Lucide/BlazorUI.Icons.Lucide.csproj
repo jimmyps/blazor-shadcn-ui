@@ -8,7 +8,7 @@
     <!-- NuGet Package Configuration -->
     <PackageId>NeoBlazorUI.Icons.Lucide</PackageId>
     <RootNamespace>BlazorUI.Icons.Lucide</RootNamespace>
-    <AssemblyName>BlazorUI.Icons.Lucide</AssemblyName>
+    <AssemblyName>NeoBlazorUI.Icons.Lucide</AssemblyName>
     <Description>Lucide icon library for BlazorUI - 1,640+ beautiful, consistent SVG icons for Blazor applications.</Description>
     <PackageTags>blazor;icons;lucide;shadcn;svg;ui;components;blazor-components</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>

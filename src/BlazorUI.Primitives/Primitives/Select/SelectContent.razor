@@ -91,7 +91,7 @@
         if (firstRender && _jsModule == null)
         {
             _jsModule = await JS.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/BlazorUI.Primitives/js/primitives/select.js");
+                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/select.js");
         }
 
         if (_context != null && _context.IsOpen && !_isInitialized)
@@ -218,7 +218,7 @@
         try
         {
             _matchWidthModule = await JS.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/BlazorUI.Primitives/js/primitives/match-trigger-width.js");
+                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/match-trigger-width.js");
 
             _matchWidthCleanup = await _matchWidthModule.InvokeAsync<IJSObjectReference>(
                 "matchTriggerWidth", _context.State.TriggerElement, _portalContentRef);

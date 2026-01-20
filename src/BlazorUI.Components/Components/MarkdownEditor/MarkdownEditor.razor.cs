@@ -132,7 +132,7 @@ public partial class MarkdownEditor : ComponentBase, IAsyncDisposable
             {
                 _dotNetRef = DotNetObjectReference.Create(this);
                 _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Components/js/markdown-editor.js");
+                    "import", "./_content/NeoBlazorUI.Components/js/markdown-editor.js");
 
                 // Initialize list continuation behavior and undo/redo
                 await _module.InvokeVoidAsync("initializeListContinuation", _textareaRef, _dotNetRef);

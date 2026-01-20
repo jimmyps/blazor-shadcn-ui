@@ -106,7 +106,7 @@
             try
             {
                 _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Components/js/scroll-area.js");
+                    "import", "./_content/NeoBlazorUI.Components/js/scroll-area.js");
 
                 _scrollAreaInstance = await _module.InvokeAsync<IJSObjectReference>(
                     "initialize",
