@@ -1,12 +1,21 @@
 @namespace BlazorUI.Components.Sidebar
 @using BlazorUI.Components.Utilities
 @using BlazorUI.Icons.Lucide.Components
+@using Microsoft.AspNetCore.Components.Web
 
 @*
     SidebarTrigger component for toggling the sidebar open/closed.
+    Works in both SSR and interactive modes.
+    - SSR→Interactive: JS sets up click delegation
+    - Pure Interactive: C# handles clicks directly
 *@
 
-<button type="button" class="@GetClasses()" data-sidebar="trigger" @onclick="HandleClick" @attributes="AdditionalAttributes">
+<button type="button"
+        class="@GetClasses()"
+        data-sidebar="trigger"
+        @onclick="HandleClick"
+        @onclick:stopPropagation="true"
+        @attributes="AdditionalAttributes">
     @if (ChildContent != null)
     {
         @ChildContent
@@ -30,7 +39,7 @@
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Click handler for custom behavior.
+    /// Click handler for custom behavior.4
     /// </summary>
     [Parameter]
     public EventCallback<MouseEventArgs> OnClick { get; set; }
@@ -49,10 +58,18 @@
 
     private async Task HandleClick(MouseEventArgs e)
     {
+        // When StaticRendering is enabled, JShandles the click via interop
+        // Return early to avoid double-toggling
+        if (Context?.StaticRendering == true)
+        {
+            return;
+        }
+
+        // Normal C# handling...
         if (Context != null)
         {
             Context.ToggleSidebar();
-            StateHasChanged(); // Force re-render to update UI
+            StateHasChanged();
         }
 
         if (OnClick.HasDelegate)

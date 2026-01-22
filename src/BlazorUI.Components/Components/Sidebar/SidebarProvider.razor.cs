@@ -12,6 +12,12 @@ public partial class SidebarProvider
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
+    protected override void OnInitialized()
+    {
+        // Initialize context immediately for SSR - enables expand/collapse to work during prerendering
+        Context.Initialize(open: DefaultOpen, variant: Variant, side: Side, staticRendering: StaticRendering);
+    }
+
     protected override void OnParametersSet()
     {
         // Update context when parameters change
@@ -32,22 +38,18 @@ public partial class SidebarProvider
                 // Create a reference to this component for JS callbacks
                 _dotNetRef = DotNetObjectReference.Create(this);
 
-                // Initialize sidebar state from cookie if persistence is enabled
-                bool? savedOpen = null;
+                // Try to restore state from cookie if persistence is enabled
                 if (!string.IsNullOrEmpty(CookieKey))
                 {
-                    savedOpen = await _module.InvokeAsync<bool?>("getSidebarState", CookieKey);
+                    var savedOpen = await _module.InvokeAsync<bool?>("getSidebarState", CookieKey);
+                    if (savedOpen.HasValue)
+                    {
+                        Context.SetOpen(savedOpen.Value);
+                    }
                 }
 
-                // Initialize context with saved state or defaults
-                Context.Initialize(
-                    open: savedOpen ?? DefaultOpen,
-                    variant: Variant,
-                    side: Side
-                );
-
-                // Set up mobile detection and keyboard shortcuts
-                await _module.InvokeVoidAsync("initializeSidebar", _dotNetRef, CookieKey);
+                // Set up mobile detection, keyboard shortcuts, and optional static rendering support
+                await _module.InvokeVoidAsync("initializeSidebar", _dotNetRef, CookieKey, StaticRendering);
 
                 // Subscribe to state changes for persistence
                 Context.StateChanged += OnStateChanged;
@@ -56,9 +58,7 @@ public partial class SidebarProvider
             }
             catch (JSException)
             {
-                // JS module not available, continue without JS features
-                Context.Initialize(open: DefaultOpen, variant: Variant, side: Side);
-                StateHasChanged();
+                // JS module not available, continue without JS enhancements
             }
         }
     }
@@ -98,7 +98,17 @@ public partial class SidebarProvider
     public void OnToggleShortcut()
     {
         Context.ToggleSidebar();
-        StateHasChanged(); // Force re-render after toggle
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Toggle sidebar - called from JS interop when StaticRendering is enabled.
+    /// </summary>
+    [JSInvokable]
+    public void ToggleSidebar()
+    {
+        Context.ToggleSidebar();
+        StateHasChanged();
     }
 
     public async ValueTask DisposeAsync()

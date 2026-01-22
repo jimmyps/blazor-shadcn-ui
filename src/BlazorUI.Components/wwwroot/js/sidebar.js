@@ -1,6 +1,6 @@
 /**
  * Sidebar JavaScript module
- * Handles mobile detection, keyboard shortcuts, and state persistence
+ * Handles mobile detection, keyboard shortcuts, state persistence, and static rendering support
  */
 
 const MOBILE_BREAKPOINT = 768;
@@ -9,13 +9,15 @@ let dotNetRef = null;
 let cookieKey = null;
 let resizeObserver = null;
 let keyboardHandler = null;
+let clickHandlers = [];
 
 /**
- * Initialize sidebar with mobile detection and keyboard shortcuts
+ * Initialize sidebar with mobile detection, keyboard shortcuts, and static rendering support
  * @param {DotNetObject} componentRef - Reference to the SidebarProvider component
  * @param {string} key - Cookie key for state persistence
+ * @param {boolean} staticRendering - Whether to enable static rendering mode (SSR)
  */
-export function initializeSidebar(componentRef, key) {
+export function initializeSidebar(componentRef, key, staticRendering) {
     dotNetRef = componentRef;
     cookieKey = key;
 
@@ -24,6 +26,11 @@ export function initializeSidebar(componentRef, key) {
 
     // Set up keyboard shortcuts
     setupKeyboardShortcuts();
+
+    // Set up click delegation if static rendering is enabled
+    if (staticRendering) {
+        setupClickDelegation();
+    }
 }
 
 /**
@@ -87,6 +94,30 @@ function setupKeyboardShortcuts() {
 }
 
 /**
+ * Set up click delegation for static rendering mode
+ * Finds all sidebar trigger buttons and sets up click handlers that call C# via interop
+ */
+function setupClickDelegation() {
+    if (!dotNetRef) return;
+
+    // Find all sidebar trigger buttons
+    const triggers = document.querySelectorAll('[data-sidebar="trigger"]');
+    
+    triggers.forEach((trigger) => {
+        const clickHandler = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Call C# ToggleSidebar method via interop
+            dotNetRef.invokeMethodAsync('ToggleSidebar');
+        };
+
+        trigger.addEventListener('click', clickHandler);
+        clickHandlers.push({ element: trigger, handler: clickHandler });
+    });
+}
+
+/**
  * Get cookie value
  * @param {string} name - Cookie name
  * @returns {string|null} Cookie value or null
@@ -131,6 +162,12 @@ export function cleanup() {
         document.removeEventListener('keydown', keyboardHandler);
         keyboardHandler = null;
     }
+
+    // Clean up click handlers
+    clickHandlers.forEach(({ element, handler }) => {
+        element.removeEventListener('click', handler);
+    });
+    clickHandlers = [];
 
     dotNetRef = null;
     cookieKey = null;

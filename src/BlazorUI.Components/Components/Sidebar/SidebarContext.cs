@@ -133,6 +133,12 @@ public class SidebarContext
     public string CurrentPath => _state.CurrentPath;
 
     /// <summary>
+    /// Gets whether static rendering mode is enabled.
+    /// When true, click events are handled via JS interop instead of direct C# handlers.
+    /// </summary>
+    public bool StaticRendering { get; private set; }
+
+    /// <summary>
     /// Event raised when the sidebar state changes.
     /// </summary>
     public event EventHandler? StateChanged;
@@ -242,7 +248,7 @@ public class SidebarContext
     /// <summary>
     /// Initializes the state from values (typically from cookies or defaults).
     /// </summary>
-    public void Initialize(bool? open = null, SidebarVariant? variant = null, SidebarSide? side = null, bool? autoDetectActive = null, string? currentPath = null)
+    public void Initialize(bool? open = null, SidebarVariant? variant = null, SidebarSide? side = null, bool? autoDetectActive = null, string? currentPath = null, bool? staticRendering = null)
     {
         bool changed = false;
 
@@ -273,6 +279,12 @@ public class SidebarContext
         if (currentPath != null && _state.CurrentPath != currentPath)
         {
             _state.CurrentPath = currentPath;
+            changed = true;
+        }
+
+        if (staticRendering.HasValue && StaticRendering != staticRendering.Value)
+        {
+            StaticRendering = staticRendering.Value;
             changed = true;
         }
 

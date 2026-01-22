@@ -55,4 +55,12 @@
     /// </summary>
     [Parameter]
     public string HeightClass { get; set; } = "min-h-screen";
+
+    /// <summary>
+    /// Enable static rendering mode for SSR/prerendering scenarios.
+    /// When true, JS will set up click delegation to call C# toggle via interop.
+    /// Set to true when using rendermode="InteractiveServer" or "InteractiveAuto" in MainLayout.
+    /// </summary>
+    [Parameter]
+    public bool StaticRendering { get; set; } = false;
 }
