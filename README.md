@@ -1,30 +1,32 @@
-# BlazorUI
+# NeoBlazorUI
 
 A comprehensive UI component library for Blazor inspired by [shadcn/ui](https://ui.shadcn.com/).
 
-## Overview
+## 🌟 Overview
 
-BlazorUI brings the beautiful design system of shadcn/ui to Blazor applications. This library provides **zero-config, plug-and-play UI components** with full shadcn/ui compatibility, featuring pre-built CSS, styled components, and headless primitives that work across all Blazor hosting models (Server, WebAssembly, and Hybrid).
+NeoBlazorUI brings the beautiful design system of shadcn/ui to Blazor applications. This library provides **zero-config, plug-and-play UI components** with full shadcn/ui compatibility, featuring pre-built CSS, styled components, and headless primitives that work across all Blazor hosting models (Server, WebAssembly, and Hybrid).
 
 **No Tailwind CSS setup required** - just install the NuGet package and start building!
 
-## Getting Started
+**[🚀 Try the Live Demo](https://blazoruidemo20251223130817-bch0fhddfkh2bthv.indonesiacentral-01.azurewebsites.net)** - Explore all 75+ components with interactive examples
 
-### Installation
+## 🚀 Getting Started
 
-Install BlazorUI packages from NuGet:
+### 📦 Installation
+
+Install NeoBlazorUI packages from NuGet:
 
 ```bash
 # Headless primitives for custom styling
-dotnet add package BlazorUI.Primitives
+dotnet add package NeoBlazorUI.Primitives
 
 # Styled components with shadcn/ui design
-dotnet add package BlazorUI.Components
+dotnet add package NeoBlazorUI.Components
 
 # Icon libraries (choose one or more)
-dotnet add package BlazorUI.Icons.Lucide      # 1,640 icons - stroke-based, consistent
-dotnet add package BlazorUI.Icons.Heroicons   # 1,288 icons - 4 variants (outline, solid, mini, micro)
-dotnet add package BlazorUI.Icons.Feather     # 286 icons - minimalist, stroke-based
+dotnet add package NeoBlazorUI.Icons.Lucide      # 1,640 icons - stroke-based, consistent
+dotnet add package NeoBlazorUI.Icons.Heroicons   # 1,288 icons - 4 variants (outline, solid, mini, micro)
+dotnet add package NeoBlazorUI.Icons.Feather     # 286 icons - minimalist, stroke-based
 ```
 
 ### Quick Start
@@ -52,7 +54,7 @@ dotnet add package BlazorUI.Icons.Feather     # 286 icons - minimalist, stroke-b
 
 3. **Add CSS to your `App.razor`:**
 
-   BlazorUI Components come with pre-built CSS - no Tailwind setup required!
+   NeoBlazorUI Components come with pre-built CSS - no Tailwind setup required!
 
 ```razor
 <!DOCTYPE html>
@@ -63,8 +65,8 @@ dotnet add package BlazorUI.Icons.Feather     # 286 icons - minimalist, stroke-b
     <base href="/" />
     <!-- Your theme CSS variables -->
     <link rel="stylesheet" href="styles/theme.css" />
-    <!-- Pre-built BlazorUI styles -->
-    <link rel="stylesheet" href="_content/BlazorUI.Components/blazorui.css" />
+    <!-- Pre-built NeoBlazorUI styles -->
+    <link rel="stylesheet" href="_content/NeoBlazorUI.Components/blazorui.css" />
     <HeadOutlet @rendermode="InteractiveAuto" />
 </head>
 <body>
@@ -85,7 +87,7 @@ dotnet add package BlazorUI.Icons.Feather     # 286 icons - minimalist, stroke-b
     </DialogTrigger>
     <DialogContent>
         <DialogHeader>
-            <DialogTitle>Welcome to BlazorUI</DialogTitle>
+            <DialogTitle>Welcome to NeoBlazorUI</DialogTitle>
             <DialogDescription>
                 Beautiful Blazor components inspired by shadcn/ui
             </DialogDescription>
@@ -105,14 +107,14 @@ dotnet add package BlazorUI.Icons.Feather     # 286 icons - minimalist, stroke-b
 
 - **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines
 
-## Architecture
+## 🏗️ Architecture
 
-BlazorUI uses a **two-layer architecture** with modern .NET 10 features and Auto rendering mode:
+NeoBlazorUI uses a **two-layer architecture** with modern .NET 10 features and Auto rendering mode:
 
 ### Project Structure
 
-- **BlazorUI.Primitives** - Headless components (runs on both Server and WebAssembly)
-- **BlazorUI.Components** - Pre-styled components (runs on both Server and WebAssembly)
+- **NeoBlazorUI.Primitives** - Headless components (runs on both Server and WebAssembly)
+- **NeoBlazorUI.Components** - Pre-styled components (runs on both Server and WebAssembly)
 - **BlazorUI.Demo** - Demo application (.NET 10, Auto rendering mode)
 - **BlazorUI.Demo.Client** - WebAssembly-specific code (.NET 10, WASM)
 - **BlazorUI.Demo.Shared** - Shared code between Server and WASM (.NET 10)
@@ -133,14 +135,14 @@ This provides:
 - Seamless transition between modes
 - Optimal performance for all scenarios
 
-### Styled Components Layer (`BlazorUI.Components`)
+### Styled Components Layer (`NeoBlazorUI.Components`)
 - Pre-styled components matching shadcn/ui design system
 - **Pre-built CSS included** - no Tailwind configuration needed
 - Built on top of primitives for consistency
 - Ready to use out of the box
 - Full theme support via CSS variables
 
-### Primitives Layer (`BlazorUI.Primitives`)
+### Primitives Layer (`NeoBlazorUI.Primitives`)
 - Headless, unstyled components
 - Complete accessibility implementation
 - Keyboard navigation and ARIA support
@@ -154,9 +156,9 @@ This provides:
 - **Composition over inheritance** - Components designed to be composed together
 - **Progressive enhancement** - Works without JavaScript where possible
 
-## Theming
+## 🎨 Theming
 
-BlazorUI is **100% compatible with shadcn/ui themes**, making it easy to customize your application's appearance.
+NeoBlazorUI is **100% compatible with shadcn/ui themes**, making it easy to customize your application's appearance.
 
 ### Using Themes from shadcn/ui and tweakcn
 
@@ -192,18 +194,18 @@ Simply copy the CSS variables from these tools and paste them into your `wwwroot
 }
 ```
 
-3. **Reference it in your `App.razor`** before the BlazorUI CSS:
+3. **Reference it in your `App.razor`** before the NeoBlazorUI CSS:
 
 ```razor
 <link rel="stylesheet" href="styles/theme.css" />
-<link rel="stylesheet" href="_content/BlazorUI.Components/blazorui.css" />
+<link rel="stylesheet" href="_content/NeoBlazorUI.Components/blazorui.css" />
 ```
 
-That's it! BlazorUI will automatically use your theme variables.
+That's it! NeoBlazorUI will automatically use your theme variables.
 
 ### Available Theme Variables
 
-BlazorUI supports all standard shadcn/ui CSS variables:
+NeoBlazorUI supports all standard shadcn/ui CSS variables:
 - Colors: `--background`, `--foreground`, `--primary`, `--secondary`, `--accent`, `--destructive`, `--muted`, etc.
 - Typography: `--font-sans`, `--font-serif`, `--font-mono`
 - Layout: `--radius` (border radius), `--shadow-*` (shadows)
@@ -212,13 +214,13 @@ BlazorUI supports all standard shadcn/ui CSS variables:
 
 ### Dark Mode
 
-BlazorUI automatically supports dark mode by applying the `.dark` class to the `<html>` element. All components will automatically switch to dark mode colors when this class is present.
+NeoBlazorUI automatically supports dark mode by applying the `.dark` class to the `<html>` element. All components will automatically switch to dark mode colors when this class is present.
 
-## Styling
+## 💅 Styling
 
-### BlazorUI.Components (Pre-styled)
+### NeoBlazorUI.Components (Pre-styled)
 
-**No Tailwind CSS setup required!** BlazorUI Components include pre-built, production-ready CSS that ships with the NuGet package.
+**No Tailwind CSS setup required!** NeoBlazorUI Components include pre-built, production-ready CSS that ships with the NuGet package.
 
 Simply add two CSS files to your `App.razor`:
 
@@ -233,8 +235,8 @@ Simply add two CSS files to your `App.razor`:
     <!-- 1. Your custom theme (defines CSS variables) -->
     <link rel="stylesheet" href="styles/theme.css" />
 
-    <!-- 2. Pre-built BlazorUI styles (included in NuGet package) -->
-    <link rel="stylesheet" href="_content/BlazorUI.Components/blazorui.css" />
+    <!-- 2. Pre-built NeoBlazorUI styles (included in NuGet package) -->
+    <link rel="stylesheet" href="_content/NeoBlazorUI.Components/blazorui.css" />
 
     <HeadOutlet @rendermode="InteractiveAuto" />
 </head>
@@ -245,42 +247,42 @@ Simply add two CSS files to your `App.razor`:
 </html>
 ```
 
-**Important:** Load your theme CSS **before** `blazorui.css` so the CSS variables are defined when BlazorUI references them.
+**Important:** Load your theme CSS **before** `blazorui.css` so the CSS variables are defined when NeoBlazorUI references them.
 
 **Note:** The pre-built CSS is already minified and optimized. You don't need to install Tailwind CSS, configure build processes, or set up any additional tooling.
 
-### BlazorUI.Primitives (Headless)
+### NeoBlazorUI.Primitives (Headless)
 
 Primitives are completely **headless** - they provide behavior and accessibility without any styling. You have complete freedom to style them however you want:
 
 **Option 1: Tailwind CSS** (requires your own Tailwind setup)
 ```razor
-<BlazorUI.Primitives.Accordion.Accordion class="space-y-4">
-    <BlazorUI.Primitives.Accordion.AccordionItem class="border rounded-lg">
+<NeoBlazorUI.Primitives.Accordion.Accordion class="space-y-4">
+    <NeoBlazorUI.Primitives.Accordion.AccordionItem class="border rounded-lg">
         <!-- Your custom Tailwind classes -->
-    </BlazorUI.Primitives.Accordion.AccordionItem>
-</BlazorUI.Primitives.Accordion.Accordion>
+    </NeoBlazorUI.Primitives.Accordion.AccordionItem>
+</NeoBlazorUI.Primitives.Accordion.Accordion>
 ```
 
 **Option 2: CSS Modules / Vanilla CSS**
 ```razor
-<BlazorUI.Primitives.Accordion.Accordion class="my-accordion">
+<NeoBlazorUI.Primitives.Accordion.Accordion class="my-accordion">
     <!-- Style with your own CSS -->
-</BlazorUI.Primitives.Accordion.Accordion>
+</NeoBlazorUI.Primitives.Accordion.Accordion>
 ```
 
 **Option 3: Inline Styles**
 ```razor
-<BlazorUI.Primitives.Accordion.Accordion style="margin: 1rem;">
+<NeoBlazorUI.Primitives.Accordion.Accordion style="margin: 1rem;">
     <!-- Direct inline styling -->
-</BlazorUI.Primitives.Accordion.Accordion>
+</NeoBlazorUI.Primitives.Accordion.Accordion>
 ```
 
-Primitives give you complete control over styling while handling all the complex behavior, accessibility, and keyboard navigation for you. Unlike `BlazorUI.Components`, primitives don't include any CSS - you bring your own styling approach.
+Primitives give you complete control over styling while handling all the complex behavior, accessibility, and keyboard navigation for you. Unlike `NeoBlazorUI.Components`, primitives don't include any CSS - you bring your own styling approach.
 
-## Components
+## 📚 Components
 
-BlazorUI includes **60+ styled components** with full shadcn/ui design compatibility:
+NeoBlazorUI includes **75+ styled components** with full shadcn/ui design compatibility:
 
 ### Form Components
 - **Button** - Multiple variants (default, destructive, outline, secondary, ghost, link) with icon support
@@ -370,28 +372,28 @@ BlazorUI includes **60+ styled components** with full shadcn/ui design compatibi
 ### Animation
 - **Motion** - Declarative animation system powered by Motion.dev with 20+ presets including fade, scale, slide, shake, bounce, pulse, spring physics, scroll-triggered animations, and staggered list/grid animations
 
-### Icons
+### 🎭 Icons
 
-BlazorUI offers **three icon library packages** to suit different design preferences:
+NeoBlazorUI offers **three icon library packages** to suit different design preferences:
 
-- **Lucide Icons** (`BlazorUI.Icons.Lucide`) - 1,640 beautiful, consistent stroke-based icons
+- **Lucide Icons** (`NeoBlazorUI.Icons.Lucide`) - 1,640 beautiful, consistent stroke-based icons
   - ISC licensed
   - 24x24 viewBox, 2px stroke width
   - Perfect for: Modern, clean interfaces
 
-- **Heroicons** (`BlazorUI.Icons.Heroicons`) - 1,288 icons across 4 variants
+- **Heroicons** (`NeoBlazorUI.Icons.Heroicons`) - 1,288 icons across 4 variants
   - MIT licensed by Tailwind Labs
   - Variants: Outline (24x24), Solid (24x24), Mini (20x20), Micro (16x16)
   - Perfect for: Tailwind-based designs, flexible sizing needs
 
-- **Feather Icons** (`BlazorUI.Icons.Feather`) - 286 minimalist stroke-based icons
+- **Feather Icons** (`NeoBlazorUI.Icons.Feather`) - 286 minimalist stroke-based icons
   - MIT licensed
   - 24x24 viewBox, 2px stroke width
   - Perfect for: Simple, lightweight projects
 
-## Primitives
+## 🔧 Primitives
 
-BlazorUI also includes **17 headless primitive components** for building custom UI:
+NeoBlazorUI also includes **17 headless primitive components** for building custom UI:
 
 - Accordion Primitive
 - Checkbox Primitive
@@ -413,38 +415,57 @@ BlazorUI also includes **17 headless primitive components** for building custom 
 
 All primitives are fully accessible, keyboard-navigable, and provide complete control over styling.
 
-## Features
+## ✨ Features
 
 - **Full shadcn/ui Compatibility** - Drop-in Blazor equivalents of shadcn/ui components
 - **Zero Configuration** - Pre-built CSS included, no Tailwind setup required
-- **.NET 10 Support** - Built for the latest .NET platform with Auto rendering mode
+- **🎯 .NET 10 Ready** - Built for the latest .NET platform with Auto rendering mode
 - **Auto Rendering Mode** - Seamless transition between Server and WebAssembly rendering
-- **Dark Mode Support** - Built-in light/dark theme switching with CSS variables
-- **Responsive Design** - Mobile-first components that adapt to all screen sizes
-- **Accessibility First** - WCAG 2.1 AA compliant with keyboard navigation and ARIA attributes
-- **Keyboard Shortcuts** - Native keyboard navigation support (e.g., Ctrl/Cmd+B for sidebar toggle)
-- **State Persistence** - Cookie-based state management for user preferences
+- **🌙 Dark Mode Support** - Built-in light/dark theme switching with CSS variables
+- **📱 Responsive Design** - Mobile-first components that adapt to all screen sizes
+- **♿ Accessibility First** - WCAG 2.1 AA compliant with keyboard navigation and ARIA attributes
+- **⌨️ Keyboard Shortcuts** - Native keyboard navigation support (e.g., Ctrl/Cmd+B for sidebar toggle)
+- **🔄 State Persistence** - Cookie-based state management for user preferences
 - **TypeScript-Inspired API** - Familiar API design for developers coming from React/shadcn/ui
 - **Pure Blazor** - No JavaScript dependencies, no Node.js required
-- **Icon Library Options** - 3 separate icon packages (Lucide, Heroicons, Feather) with 3,200+ total icons
+- **🎨 Icon Library Options** - 3 separate icon packages (Lucide, Heroicons, Feather) with 3,200+ total icons
 - **Form Validation Ready** - Works seamlessly with Blazor's form validation
 
-## License
+## 📄 License
 
-BlazorUI is open source software licensed under the [MIT License](LICENSE).
+NeoBlazorUI is open source software licensed under the [MIT License](LICENSE).
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
-BlazorUI is inspired by [shadcn/ui](https://ui.shadcn.com/) and based on the design principles of [Radix UI](https://www.radix-ui.com/).
+NeoBlazorUI is inspired by [shadcn/ui](https://ui.shadcn.com/) and based on the design principles of [Radix UI](https://www.radix-ui.com/).
 
-While BlazorUI is a complete reimplementation for Blazor/C# and contains no code from these projects, we are grateful for their excellent work which inspired this library.
+While NeoBlazorUI is a complete reimplementation for Blazor/C# and contains no code from these projects, we are grateful for their excellent work which inspired this library.
 
 - shadcn/ui: MIT License - Copyright (c) 2023 shadcn
 - Radix UI: MIT License - Copyright (c) 2022-present WorkOS
 
-BlazorUI is an independent project and is not affiliated with or endorsed by shadcn or Radix UI.
+NeoBlazorUI is an independent project and is not affiliated with or endorsed by shadcn or Radix UI.
 
+**Additional Acknowledgments:**
+- Initial Blazor components inspiration by [Mathew Taylor](https://github.com/blazorui-net/ui)
 - [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
 - [Lucide Icons](https://lucide.dev/) - Beautiful stroke-based icon library (ISC License)
 - [Heroicons](https://heroicons.com/) - Icon library by Tailwind Labs (MIT License)
 - [Feather Icons](https://feathericons.com/) - Minimalist icon library (MIT License)
+- Built with ❤️ for the Blazor community
+
+## 📊 Version Information
+
+- **Current Version**: 1.0.8
+- **Target Framework**: .NET 10
+- **Package IDs**: 
+  - `NeoBlazorUI.Components`
+  - `NeoBlazorUI.Primitives`
+  - `NeoBlazorUI.Icons.Lucide`
+  - `NeoBlazorUI.Icons.Heroicons`
+  - `NeoBlazorUI.Icons.Feather`
+
+---
+
+**Note**: These packages were formerly known as `BlazorUI.*`. As of version 1.0.7, the assembly names have been updated to `NeoBlazorUI.*` to match the NuGet package IDs, ensuring consistent asset paths when consumed from NuGet.
+
