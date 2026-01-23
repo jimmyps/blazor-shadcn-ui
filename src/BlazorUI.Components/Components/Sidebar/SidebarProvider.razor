@@ -7,6 +7,13 @@
     Wraps the entire application or page layout to provide sidebar context.
 *@
 
+@if (StaticRendering)
+{
+    <HeadContent>
+        <script src="_content/NeoBlazorUI.Components/js/sidebar-static.js"></script>
+    </HeadContent>
+}
+
 <TooltipProvider>
     <CascadingValue Value="@Context" IsFixed="false">
         <div class="@($"flex w-full {HeightClass}")">

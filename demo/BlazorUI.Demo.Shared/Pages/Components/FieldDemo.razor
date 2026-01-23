@@ -89,7 +89,7 @@
                 <Field IsInvalid="true">
                     <FieldLabel For="username-error">Username</FieldLabel>
                     <FieldContent>
-                        <Input Id="username-error" Type="InputType.Text" Placeholder="Enter your username" Class="border-destructive" />
+                        <Input Id="username-error" Type="InputType.Text" Placeholder="Enter your username" AriaInvalid="true" />
                         <FieldError>
                             Username is already taken. Please choose another.
                         </FieldError>
@@ -102,7 +102,7 @@
                 <Field IsInvalid="true">
                     <FieldLabel For="password-errors">Password</FieldLabel>
                     <FieldContent>
-                        <Input Id="password-errors" Type="InputType.Password" Class="border-destructive" />
+                        <Input Id="password-errors" Type="InputType.Password" AriaInvalid="true" />
                         <FieldError Errors="passwordErrors" />
                     </FieldContent>
                 </Field>
@@ -113,7 +113,7 @@
                 <Field IsInvalid="true">
                     <FieldLabel For="email-invalid">Email Address</FieldLabel>
                     <FieldContent>
-                        <Input Id="email-invalid" Type="InputType.Email" Value="invalid-email" Class="border-destructive" />
+                        <Input Id="email-invalid" Type="InputType.Email" Value="invalid-email" AriaInvalid="true" />
                         <FieldError>
                             Please enter a valid email address.
                         </FieldError>

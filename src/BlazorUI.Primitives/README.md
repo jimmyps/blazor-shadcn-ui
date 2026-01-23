@@ -1,24 +1,30 @@
-# BlazorUI.Primitives
+# NeoBlazorUI.Primitives
 
 Headless, unstyled Blazor primitive components with full accessibility support. Build your own component library using these composable primitives.
 
-## Features
+## ✨ Features
 
-- **Headless & Unstyled**: Complete control over styling - primitives provide behavior, accessibility, and state management without imposing any visual design
-- **Accessibility First**: Built-in ARIA attributes, keyboard navigation, and screen reader support following WCAG 2.1 AA standards
-- **Composition-Based**: Flexible component composition patterns for building complex UIs
-- **Type-Safe**: Full C# type safety with IntelliSense support
-- **State Management**: Built-in controlled and uncontrolled state patterns
-- **Keyboard Navigation**: Full keyboard support for all interactive components
-- **.NET 8**: Built for the latest .NET platform
+- **🎭 Headless & Unstyled**: Complete control over styling - primitives provide behavior, accessibility, and state management without imposing any visual design
+- **♿ Accessibility First**: Built-in ARIA attributes, keyboard navigation, and screen reader support following WCAG 2.1 AA standards
+- **🧩 Composition-Based**: Flexible component composition patterns for building complex UIs
+- **🎯 .NET 10 Ready**: Built for the latest .NET platform with full WebAssembly and Server support
+- **🔒 Type-Safe**: Full C# type safety with IntelliSense support
+- **🔄 State Management**: Built-in controlled and uncontrolled state patterns
+- **⌨️ Keyboard Navigation**: Full keyboard support for all interactive components
+- **📦 Zero Dependencies**: No CSS or JavaScript required - bring your own styling
 
-## Installation
+## 📦 Installation
 
 ```bash
-dotnet add package BlazorUI.Primitives
+dotnet add package NeoBlazorUI.Primitives
 ```
 
-## Available Primitives
+## 🚀 Quick Start
+
+**[Try the Live Demo](https://blazoruidemo20251223130817-bch0fhddfkh2bthv.indonesiacentral-01.azurewebsites.net)** - Explore all primitives and styled components with interactive examples and full documentation.
+
+
+## 📚 Available Primitives
 
 - **Accordion**: Collapsible content sections with single or multiple item expansion
 - **Checkbox**: Binary selection control with indeterminate state
@@ -38,7 +44,42 @@ dotnet add package BlazorUI.Primitives
 - **Tabs**: Tabbed interface with keyboard navigation
 - **Tooltip**: Brief informational popups with hover/focus triggers
 
-## Primitive API Reference
+## 🎨 Pre-Styled Components (75+)
+
+Built on top of these primitives, **[NeoBlazorUI.Components](https://www.nuget.org/packages/NeoBlazorUI.Components)** provides production-ready components with beautiful shadcn/ui design:
+
+### Form & Input Components
+Button, Button Group, Checkbox, Combobox, Date Picker, Field, Input, Input Group, Input OTP, Label, Multi Select, Native Select, Radio Group, Select, Slider, Switch, Textarea, Time Picker
+
+### Data Display Components
+Avatar, Badge, Card, Data Table, Empty, Grid, Item, Kbd, Progress, Separator, Skeleton, Spinner, Typography
+
+### Navigation Components
+Accordion, Breadcrumb, Command, Context Menu, Dropdown Menu, Menubar, Navigation Menu, Pagination, Sidebar, Tabs
+
+### Overlay Components
+Alert Dialog, Dialog, Hover Card, Popover, Sheet, Toast, Tooltip
+
+### Feedback Components
+Alert
+
+### Layout & Display Components
+Aspect Ratio, Carousel, Collapsible, Resizable, Scroll Area
+
+### Advanced Components
+Chart (8 types), Grid, Markdown Editor, Motion (20+ animation presets), Rich Text Editor, Toggle, Toggle Group
+
+### Icon Libraries
+Lucide Icons (1,640+), Heroicons (1,288), Feather Icons (286)
+
+**Want beautiful defaults?** Check out the **[Components README](../BlazorUI.Components/README.md)** for full documentation.
+
+
+
+
+
+## 📖 Primitive API Reference
+
 
 ### Accordion
 
@@ -219,7 +260,8 @@ Select is generic (`TValue`). Supports both value and open state binding.
 |-----------|------|-------------|
 | `SelectAllState` | `SelectAllState` | `None`, `Indeterminate`, `All` |
 
-## Usage Example
+
+## 🚀 Usage Example
 
 ```razor
 @using BlazorUI.Primitives.Dialog
@@ -244,7 +286,10 @@ Select is generic (`TValue`). Supports both value and open state binding.
 </DialogPrimitive>
 ```
 
-## Controlled vs Uncontrolled
+
+
+## 🔄 Controlled vs Uncontrolled
+
 
 All stateful primitives support both controlled and uncontrolled modes:
 
@@ -274,7 +319,9 @@ All stateful primitives support both controlled and uncontrolled modes:
 }
 ```
 
-## Design Philosophy
+
+## 🏗️ Design Philosophy
+
 
 BlazorUI.Primitives follows the "headless component" pattern popularized by Radix UI and Headless UI:
 
@@ -283,29 +330,50 @@ BlazorUI.Primitives follows the "headless component" pattern popularized by Radi
 3. **No Style Opinions**: Zero CSS included - bring your own design system
 4. **Accessibility by Default**: ARIA attributes and keyboard navigation built-in
 
-## When to Use
 
-**Use BlazorUI.Primitives when:**
+## 🎯 When to Use
+
+**Use NeoBlazorUI.Primitives when:**
 - Building a custom design system from scratch
 - Need complete control over component styling
 - Want to match a specific brand or design language
 - Integrating with existing CSS frameworks or design tokens
 
-**Consider [BlazorUI.Components](https://www.nuget.org/packages/BlazorUI.Components) when:**
+**Consider [NeoBlazorUI.Components](https://www.nuget.org/packages/NeoBlazorUI.Components) when:**
 - Want beautiful defaults with shadcn/ui design
 - Prefer zero-configuration setup with pre-built CSS
 - Need to ship quickly without custom styling
 
-## Documentation
+
+
+## 📖 Documentation
 
 For full documentation, examples, and API reference, visit:
-- [Documentation Site](https://github.com/blazorui-net/ui)
-- [GitHub Repository](https://github.com/blazorui-net/ui)
+- **[Live Demo](https://blazoruidemo20251223130817-bch0fhddfkh2bthv.indonesiacentral-01.azurewebsites.net)** - Interactive examples and documentation
+- [GitHub Repository](https://github.com/jimmyps/blazor-shadcn-ui)
 
-## License
 
-MIT License - see [LICENSE](https://github.com/blazorui-net/ui/blob/main/LICENSE) for details.
 
-## Contributing
+## 📄 License
 
-Contributions are welcome! Please see our [Contributing Guide](https://github.com/blazorui-net/ui/blob/main/CONTRIBUTING.md).
+MIT License - see LICENSE file for details
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 🙏 Acknowledgments
+
+- Initial Blazor primitives inspiration by [Mathew Taylor](https://github.com/blazorui-net/ui)
+- Design patterns inspired by [Radix UI](https://www.radix-ui.com/) and [Headless UI](https://headlessui.com/)
+- Built with ❤️ for the Blazor community
+
+## 📊 Version Information
+
+- **Current Version**: 1.0.8
+- **Target Framework**: .NET 10
+- **Package ID**: NeoBlazorUI.Primitives
+- **Assembly Name**: NeoBlazorUI.Primitives
+
+---
+

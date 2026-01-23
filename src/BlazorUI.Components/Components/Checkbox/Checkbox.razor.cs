@@ -166,8 +166,9 @@ public partial class Checkbox : ComponentBase
         {
             var builder = new StringBuilder();
 
-            // Base checkbox styles (from shadcn/ui)
+            // Base checkbox styles (from shadcn/ui) with transitions
             builder.Append("peer h-4 w-4 shrink-0 rounded-sm border border-primary ");
+            builder.Append("transition-colors duration-150 ease-in-out ");
             builder.Append("ring-offset-background focus-visible:outline-none focus-visible:ring-2 ");
             builder.Append("focus-visible:ring-ring focus-visible:ring-offset-2 ");
             builder.Append("disabled:cursor-not-allowed disabled:opacity-50 ");

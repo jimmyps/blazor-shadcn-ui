@@ -169,7 +169,7 @@ public partial class Textarea : ComponentBase
         "bg-transparent dark:bg-input/30 px-3 py-2 text-base shadow-xs",
         "placeholder:text-muted-foreground",
         // Focus states
-        "outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+        "outline-none focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50",
         // Error states (aria-invalid)
         "aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive/20",
         "dark:aria-[invalid=true]:ring-destructive/40",

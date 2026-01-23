@@ -149,6 +149,17 @@ public partial class Input : ComponentBase
     public bool? AriaInvalid { get; set; }
 
     /// <summary>
+    /// Gets or sets additional attributes to be applied to the input element.
+    /// </summary>
+    /// <remarks>
+    /// Captures any HTML attributes not explicitly defined as parameters.
+    /// This allows for maximum flexibility while maintaining type safety for common attributes.
+    /// Examples: data-* attributes, autocomplete, name, maxlength, minlength, pattern, etc.
+    /// </remarks>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
     /// Gets the computed CSS classes for the input element.
     /// </summary>
     /// <remarks>
@@ -157,21 +168,24 @@ public partial class Input : ComponentBase
     /// - File input pseudo-selector styling for better file input appearance
     /// - aria-invalid pseudo-selector for error state styling with destructive colors
     /// - Smooth color transitions for state changes
+    /// - Disabled and required state styles
+    /// - Placeholder text styles
+    /// - RTL and dark mode adjustments
     /// - Custom classes from the Class parameter
     /// Uses the cn() utility for intelligent class merging and Tailwind conflict resolution.
     /// </remarks>
     private string CssClass => ClassNames.cn(
         // Base input styles (from shadcn/ui)
-        "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base",
-        "ring-offset-background",
+        "flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-base shadow-xs",
         "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
         "placeholder:text-muted-foreground",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "outline-none focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50",
         "disabled:cursor-not-allowed disabled:opacity-50",
         // aria-invalid state styling (destructive error colors)
         "aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive",
+        "aria-[invalid=true]:focus-visible:ring-destructive/30",
         // Smooth transitions for state changes
-        "transition-colors",
+        "transition-[color,box-shadow]",
         // Medium screens and up: smaller text
         "md:text-sm",
         // Custom classes (if provided)
