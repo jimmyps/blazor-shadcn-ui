@@ -456,7 +456,7 @@ NeoBlazorUI is an independent project and is not affiliated with or endorsed by 
 
 ## 📊 Version Information
 
-- **Current Version**: 1.0.8
+- **Current Version**: 1.0.12
 - **Target Framework**: .NET 10
 - **Package IDs**: 
   - `NeoBlazorUI.Components`

@@ -368,7 +368,7 @@ MIT License - see LICENSE file for details
 
 ## 📊 Version Information
 
-- **Current Version**: 1.0.8
+- **Current Version**: 1.0.12
 - **Target Framework**: .NET 10
 - **Package ID**: NeoBlazorUI.Components
 - **Assembly Name**: NeoBlazorUI.Components
