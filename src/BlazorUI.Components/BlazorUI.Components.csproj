@@ -55,7 +55,7 @@
 
   <!-- Build Tailwind CSS before packing (only on Windows, with local dev check) -->
   <!-- Pre-built CSS is committed to repo, this target only runs during local development on Windows -->
-  <Target Name="BuildBlazorUICSS" BeforeTargets="BeforeBuild2;BeforeRebuild2" Condition="'$(OS)' == 'Windows_NT' AND '$(CI)' != 'true'">
+  <Target Name="BuildBlazorUICSS" BeforeTargets="BeforeBuild;BeforeRebuild" Condition="'$(OS)' == 'Windows_NT' AND '$(CI)' != 'true'">
     <Message Text="Building BlazorUI Tailwind CSS..." Importance="high" />
     <Exec Command="$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe -i wwwroot/css/blazorui-input.css -o wwwroot/blazorui.css --minify" />
   </Target>
