@@ -1,6 +1,7 @@
 @typeparam TValue
 @namespace BlazorUI.Primitives.Select
 @using BlazorUI.Primitives.Services
+@using Microsoft.JSInterop
 @inject IPositioningService PositioningService
 @inject IPortalService PortalService
 @inject IJSRuntime JS
@@ -21,6 +22,7 @@
     private IJSObjectReference? _matchWidthModule;
     private IJSObjectReference? _matchWidthCleanup;
     private IAsyncDisposable? _positioningCleanup;
+    private DotNetObjectReference<SelectContent<TValue>>? _dotNetRef;
     private bool _isInitialized = false;
     private bool _isPositioned = false;
     private string _portalId = "";
@@ -110,11 +112,6 @@
             var timeoutTask = Task.Delay(500);
             var completedTask = await Task.WhenAny(_portalReadyTcs.Task, timeoutTask);
 
-            if (completedTask == timeoutTask)
-            {
-                Console.WriteLine($"Warning: Portal {_portalId} render timeout");
-            }
-
             // Yield to ensure any pending re-renders complete and _portalContentRef is up-to-date
             await Task.Yield();
 
@@ -124,11 +121,29 @@
                 return;
             }
 
-            // NOW _portalContentRef is guaranteed to be valid!
+            // Focus the selected item BEFORE positioning (so we can scroll before visible)
+            _context.FocusSelectedOrFirst();
+
+            // Scroll the focused item into view instantly BEFORE making visible
+            if (_jsModule != null && _context.FocusedIndex >= 0)
+            {
+                var itemId = $"{_context.ContentId}-item-{_context.FocusedIndex}";
+                await _jsModule.InvokeVoidAsync("scrollItemIntoView", itemId, true);
+            }
+
+            // NOW set up positioning and make visible
             await SetupPositioningAsync();
 
-            // Focus the first item when opened
-            _context.FocusFirst();
+            // Set up JavaScript-based keyboard navigation (more reliable than Blazor event handlers)
+            if (_jsModule != null)
+            {
+                _dotNetRef = DotNetObjectReference.Create(this);
+                await _jsModule.InvokeVoidAsync("setupKeyboardNavigation", _context.ContentId, _dotNetRef);
+
+                // Focus the initially selected option
+                var selectedValue = _context.State.Value?.ToString();
+                await _jsModule.InvokeVoidAsync("focusInitialOption", _context.ContentId, selectedValue);
+            }
         }
         else if (_context != null && !_context.IsOpen && _isInitialized)
         {
@@ -150,8 +165,8 @@
             contentBuilder.AddAttribute(3, "aria-labelledby", _context.TriggerId);
             contentBuilder.AddAttribute(4, "aria-activedescendant", GetActiveDescendantId());
             contentBuilder.AddAttribute(5, "data-state", "open");
-            contentBuilder.AddAttribute(6, "tabindex", "-1");
-            contentBuilder.AddAttribute(7, "onkeydown", EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleKeyDown));
+            contentBuilder.AddAttribute(6, "data-portal-content", "true");
+            contentBuilder.AddAttribute(7, "tabindex", "-1");
             contentBuilder.AddAttribute(8, "style", GetMergedStyle());
             contentBuilder.AddMultipleAttributes(9, GetAttributesWithoutStyle());
             contentBuilder.AddElementReferenceCapture(10, capturedRef => _portalContentRef = capturedRef);
@@ -177,7 +192,8 @@
             var options = new PositioningOptions
             {
                 Placement = placement,
-                Offset = Offset
+                Offset = Offset,
+                Strategy = "fixed"  // Use fixed positioning to avoid stacking context issues when nested in portals
             };
 
             // Compute and apply position using the portal content ref
@@ -249,8 +265,9 @@
             return "position: fixed; z-index: 50; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
         }
 
-        // After positioning, JS will apply the correct styles
-        return "position: absolute; z-index: 50;";
+        // After positioning, use fixed positioning to ensure it renders relative to viewport
+        // This avoids issues with stacking contexts and positioned ancestors
+        return "position: fixed; z-index: 9999;";
     }
 
     private string GetMergedStyle()
@@ -277,6 +294,23 @@
 
     private async Task CleanupAsync()
     {
+        // Clean up keyboard navigation
+        if (_jsModule != null && _context != null)
+        {
+            try
+            {
+                await _jsModule.InvokeVoidAsync("cleanupKeyboardNavigation", _context.ContentId);
+            }
+            catch
+            {
+                // JS module may be disposed
+            }
+        }
+
+        // Dispose DotNet reference
+        _dotNetRef?.Dispose();
+        _dotNetRef = null;
+
         if (_positioningCleanup != null)
         {
             await _positioningCleanup.DisposeAsync();
@@ -307,58 +341,22 @@
         _isPositioned = false;
     }
 
-    private async Task HandleKeyDown(KeyboardEventArgs args)
+    /// <summary>
+    /// Called from JavaScript when the Escape key is pressed.
+    /// </summary>
+    [JSInvokable]
+    public void HandleEscapeKey()
     {
-        if (_context == null) return;
+        _context?.Close();
+    }
 
-        bool shouldScrollIntoView = false;
-
-        switch (args.Key)
-        {
-            case "ArrowDown":
-                _context.MoveFocus(1);
-                shouldScrollIntoView = true;
-                break;
-
-            case "ArrowUp":
-                _context.MoveFocus(-1);
-                shouldScrollIntoView = true;
-                break;
-
-            case "Home":
-                _context.FocusFirst();
-                shouldScrollIntoView = true;
-                break;
-
-            case "End":
-                _context.FocusLast();
-                shouldScrollIntoView = true;
-                break;
-
-            case "Enter":
-            case " ": // Space
-                _context.SelectFocusedItem();
-                break;
-
-            case "Escape":
-                _context.Close();
-                break;
-
-            case "Tab":
-                // Close on tab to allow normal tab navigation
-                _context.Close();
-                break;
-        }
-
-        // Scroll the focused item into view
-        if (shouldScrollIntoView && _jsModule != null)
-        {
-            var itemId = GetActiveDescendantId();
-            if (itemId != null)
-            {
-                await _jsModule.InvokeVoidAsync("scrollItemIntoView", itemId);
-            }
-        }
+    /// <summary>
+    /// Called from JavaScript when the Tab key is pressed.
+    /// </summary>
+    [JSInvokable]
+    public void HandleTabKey()
+    {
+        _context?.Close();
     }
 
     public async ValueTask DisposeAsync()

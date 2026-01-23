@@ -1,37 +1,83 @@
+using System.Text.Json;
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
 namespace BlazorUI.Components.RichTextEditor;
 
 /// <summary>
-/// A WYSIWYG rich text editor component with toolbar and HTML output.
-/// Uses contenteditable for true rich text editing where formatting appears directly as user types.
+/// A rich text editor component built on Quill.js that follows the shadcn/ui design system.
 /// </summary>
 public partial class RichTextEditor : ComponentBase, IAsyncDisposable
 {
-    private IJSObjectReference? _module;
-    private DotNetObjectReference<RichTextEditor>? _dotNetRef;
+    // === Private Fields ===
     private ElementReference _editorRef;
-    private bool _shouldPreventKeydown;
-    private bool _isInitialized;
-    private bool _colorPickerOpen;
+    private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<RichTextEditor>? _dotNetRef;
+    private string _editorId = Guid.NewGuid().ToString("N");
+    private bool _jsInitialized;
+    private string? _lastKnownValue;
+    private bool _pendingValueUpdate;
 
-    [Inject]
-    private IJSRuntime JSRuntime { get; set; } = default!;
+    // === Format State Tracking ===
+    private bool _isBold;
+    private bool _isItalic;
+    private bool _isUnderline;
+    private bool _isStrike;
+    private bool _isBulletList;
+    private bool _isOrderedList;
+    private bool _isBlockquote;
+    private bool _isCodeBlock;
+    private string _headerLevel = "";
+
+    // === Link Dialog State ===
+    private bool _linkDialogOpen;
+    private string _linkUrl = "";
+    private string? _linkUrlError;
+    private bool _hasExistingLink;
+    private EditorRange? _savedSelection;
+
+    // === Parameters - Value Binding ===
 
     /// <summary>
-    /// Gets or sets the HTML content value.
+    /// Gets or sets the HTML content of the editor.
     /// </summary>
     [Parameter]
     public string? Value { get; set; }
 
     /// <summary>
-    /// Gets or sets the callback invoked when the value changes.
+    /// Gets or sets the callback invoked when the editor content changes.
     /// </summary>
     [Parameter]
     public EventCallback<string?> ValueChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Delta (JSON) representation of the editor content.
+    /// </summary>
+    [Parameter]
+    public string? DeltaValue { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the Delta content changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string?> DeltaValueChanged { get; set; }
+
+    // === Parameters - Toolbar ===
+
+    /// <summary>
+    /// Gets or sets the toolbar preset configuration.
+    /// </summary>
+    [Parameter]
+    public ToolbarPreset Toolbar { get; set; } = ToolbarPreset.Standard;
+
+    /// <summary>
+    /// Gets or sets custom toolbar content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ToolbarContent { get; set; }
+
+    // === Parameters - Appearance ===
 
     /// <summary>
     /// Gets or sets the placeholder text displayed when the editor is empty.
@@ -40,22 +86,50 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
     public string? Placeholder { get; set; }
 
     /// <summary>
+    /// Gets or sets the minimum height of the editor.
+    /// </summary>
+    [Parameter]
+    public string MinHeight { get; set; } = "150px";
+
+    /// <summary>
+    /// Gets or sets the maximum height of the editor. Content will scroll when exceeded.
+    /// </summary>
+    [Parameter]
+    public string? MaxHeight { get; set; }
+
+    /// <summary>
+    /// Gets or sets a fixed height for the editor.
+    /// </summary>
+    [Parameter]
+    public string? Height { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional CSS classes for the container.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Gets or sets the HTML id attribute for the editor container.
+    /// </summary>
+    [Parameter]
+    public string? Id { get; set; }
+
+    // === Parameters - State ===
+
+    /// <summary>
     /// Gets or sets whether the editor is disabled.
     /// </summary>
     [Parameter]
     public bool Disabled { get; set; }
 
     /// <summary>
-    /// Gets or sets additional CSS classes to apply to the editor container.
+    /// Gets or sets whether the editor is read-only.
     /// </summary>
     [Parameter]
-    public string? Class { get; set; }
+    public bool ReadOnly { get; set; }
 
-    /// <summary>
-    /// Gets or sets the HTML id attribute for the contenteditable element.
-    /// </summary>
-    [Parameter]
-    public string? Id { get; set; }
+    // === Parameters - Accessibility ===
 
     /// <summary>
     /// Gets or sets the ARIA label for the editor.
@@ -75,483 +149,537 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
     [Parameter]
     public bool? AriaInvalid { get; set; }
 
+    // === Parameters - Events ===
+
     /// <summary>
-    /// Gets or sets the minimum height of the editor content area.
+    /// Gets or sets the callback invoked when the editor content changes.
     /// </summary>
     [Parameter]
-    public string MinHeight { get; set; } = "150px";
+    public EventCallback<TextChangeEventArgs> OnTextChange { get; set; }
 
     /// <summary>
-    /// Gets or sets the maximum height of the editor content area.
-    /// When content exceeds this height, a scrollbar appears.
+    /// Gets or sets the callback invoked when the selection changes.
     /// </summary>
     [Parameter]
-    public string? MaxHeight { get; set; }
+    public EventCallback<SelectionChangeEventArgs> OnSelectionChange { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show the font size dropdown in the toolbar.
+    /// Gets or sets the callback invoked when the editor gains focus.
     /// </summary>
     [Parameter]
-    public bool ShowFontSize { get; set; } = true;
+    public EventCallback OnFocus { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show the text formatting buttons (Bold, Italic, Underline, Strikethrough).
+    /// Gets or sets the callback invoked when the editor loses focus.
     /// </summary>
     [Parameter]
-    public bool ShowFormatting { get; set; } = true;
+    public EventCallback OnBlur { get; set; }
 
-    /// <summary>
-    /// Gets or sets whether to show the list buttons (Ordered and Unordered lists).
-    /// </summary>
-    [Parameter]
-    public bool ShowLists { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets whether to show the text alignment buttons.
-    /// </summary>
-    [Parameter]
-    public bool ShowAlignment { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets whether to show the color picker.
-    /// </summary>
-    [Parameter]
-    public bool ShowColorPicker { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets a fixed height for the editor content area.
-    /// When set, the editor will not auto-expand and will show scrollbar when content overflows.
-    /// Takes precedence over MinHeight/MaxHeight when set.
-    /// </summary>
-    [Parameter]
-    public string? Height { get; set; }
-
-    /// <summary>
-    /// Color palette for the font color picker.
-    /// </summary>
-    private static readonly (string Name, string Value)[] ColorPalette = new[]
-    {
-        ("Black", "#000000"),
-        ("Dark Gray", "#4B5563"),
-        ("Gray", "#9CA3AF"),
-        ("Light Gray", "#D1D5DB"),
-        ("Red", "#EF4444"),
-        ("Orange", "#F97316"),
-        ("Yellow", "#EAB308"),
-        ("Green", "#22C55E"),
-        ("Blue", "#3B82F6"),
-        ("Indigo", "#6366F1"),
-        ("Purple", "#A855F7"),
-        ("Pink", "#EC4899")
-    };
-
-    /// <summary>
-    /// Font size options for the dropdown.
-    /// </summary>
-    private static readonly (string Name, string Size)[] FontSizes = new[]
-    {
-        ("Small", "12px"),
-        ("Normal", "14px"),
-        ("Medium", "18px"),
-        ("Large", "24px"),
-        ("Extra Large", "32px")
-    };
-
-    /// <summary>
-    /// Gets the CSS classes for the editor container.
-    /// </summary>
-    private string ContainerCssClass => ClassNames.cn(
-        "flex flex-col rounded-md border border-input bg-background",
-        "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
-        ClassNames.when(AriaInvalid == true, "border-destructive ring-destructive/20"),
-        ClassNames.when(Disabled, "opacity-50 cursor-not-allowed"),
-        Class
-    );
-
-    /// <summary>
-    /// Gets the CSS classes for the toolbar.
-    /// </summary>
-    private string ToolbarCssClass => ClassNames.cn(
-        "flex flex-wrap items-center gap-1 px-3 py-2 bg-muted/40"
-    );
-
-    /// <summary>
-    /// Gets the CSS classes for the contenteditable area.
-    /// </summary>
-    private string ContentCssClass => ClassNames.cn(
-        "w-full px-3 py-2 text-sm",
-        // Only use flex-1 when not using fixed height
-        ClassNames.when(string.IsNullOrEmpty(Height), "flex-1"),
-        "focus:outline-none",
-        "overflow-auto",
-        "[&:empty]:before:content-[attr(data-placeholder)]",
-        "[&:empty]:before:text-muted-foreground",
-        "[&:empty]:before:pointer-events-none",
-        // Prose-like styling for content
-        "[&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4",
-        "[&_li]:mb-1",
-        ClassNames.when(Disabled, "cursor-not-allowed pointer-events-none")
-    );
-
-    /// <summary>
-    /// Gets the CSS classes for color swatches.
-    /// </summary>
-    private string ColorSwatchCssClass => ClassNames.cn(
-        "w-6 h-6 rounded border border-input cursor-pointer",
-        "hover:scale-110 transition-transform",
-        "focus:outline-none focus:ring-2 focus:ring-ring"
-    );
-
-    /// <summary>
-    /// Gets the inline style for the content area based on height properties.
-    /// </summary>
-    private string ContentStyle
-    {
-        get
-        {
-            if (!string.IsNullOrEmpty(Height))
-            {
-                // Fixed height mode - no auto-expand
-                return $"height: {Height}";
-            }
-
-            var styles = new List<string>();
-            styles.Add($"min-height: {MinHeight}");
-
-            if (!string.IsNullOrEmpty(MaxHeight))
-            {
-                styles.Add($"max-height: {MaxHeight}");
-            }
-
-            return string.Join("; ", styles);
-        }
-    }
+    // === Lifecycle Methods ===
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            try
-            {
-                _dotNetRef = DotNetObjectReference.Create(this);
-                _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Components/js/rich-text-editor.js");
-
-                await _module.InvokeVoidAsync("initialize", _editorRef, _dotNetRef);
-
-                // Set initial content if provided
-                if (!string.IsNullOrEmpty(Value))
-                {
-                    await _module.InvokeVoidAsync("setContent", _editorRef, Value);
-                }
-
-                _isInitialized = true;
-            }
-            catch (JSException)
-            {
-                // JS module not available, continue without JS features
-            }
+            await InitializeJsAsync();
         }
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        // Sync external Value changes to the editor
-        if (_isInitialized && _module != null)
+        // If Value changed externally, update the editor
+        if (_jsInitialized && Value != _lastKnownValue && !_pendingValueUpdate)
         {
+            _pendingValueUpdate = true;
             try
             {
-                var currentContent = await _module.InvokeAsync<string>("getContent", _editorRef);
-                if (currentContent != Value)
-                {
-                    await _module.InvokeVoidAsync("setContent", _editorRef, Value ?? "");
-                }
+                await SetHtmlAsync(Value);
+                _lastKnownValue = Value;
             }
-            catch (JSException)
+            finally
             {
-                // Ignore JS errors
+                _pendingValueUpdate = false;
             }
         }
     }
 
-    /// <summary>
-    /// Called from JavaScript when the content changes.
-    /// </summary>
+    private async Task InitializeJsAsync()
+    {
+        if (_jsInitialized) return;
+
+        try
+        {
+            _jsModule = await JS.InvokeAsync<IJSObjectReference>("import",
+                "./_content/BlazorUI.Components/js/quill-interop.js");
+            _dotNetRef = DotNetObjectReference.Create(this);
+
+            var options = BuildEditorOptions();
+            await _jsModule.InvokeVoidAsync("initializeEditor",
+                _editorRef, _dotNetRef, _editorId, options);
+            _jsInitialized = true;
+
+            // Set initial content
+            if (!string.IsNullOrEmpty(Value))
+            {
+                await _jsModule.InvokeVoidAsync("setHtml", _editorId, Value);
+                _lastKnownValue = Value;
+            }
+
+            // Apply disabled state
+            if (Disabled)
+            {
+                await _jsModule.InvokeVoidAsync("disable", _editorId);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Failed to initialize RichTextEditor JS: {ex.Message}");
+        }
+    }
+
+    // === JSInvokable Callbacks ===
+
     [JSInvokable]
-    public async Task OnContentChanged(string html)
+    public async Task OnTextChangeCallback(TextChangeEventArgs args)
     {
-        Value = html;
+        _lastKnownValue = args.Html;
+        Value = args.Html;
+        await ValueChanged.InvokeAsync(args.Html);
 
-        if (ValueChanged.HasDelegate)
-        {
-            await ValueChanged.InvokeAsync(html);
-        }
+        DeltaValue = args.Delta;
+        await DeltaValueChanged.InvokeAsync(args.Delta);
+
+        await OnTextChange.InvokeAsync(args);
     }
 
-    /// <summary>
-    /// Handles keyboard shortcuts.
-    /// Note: Ctrl+Z/Y for undo/redo are handled in JavaScript to prevent browser's native undo race condition.
-    /// </summary>
-    private async Task HandleKeyDown(KeyboardEventArgs e)
+    [JSInvokable]
+    public async Task OnSelectionChangeCallback(SelectionChangeEventArgs args)
     {
-        _shouldPreventKeydown = false;
-
-        if (e.CtrlKey || e.MetaKey)
+        // Update format state from selection
+        if (args.Format != null)
         {
-            switch (e.Key.ToLowerInvariant())
+            UpdateFormatState(args.Format);
+        }
+
+        // Detect focus/blur from selection (null range = lost focus)
+        if (args.Range == null && args.OldRange != null)
+        {
+            await OnBlur.InvokeAsync();
+        }
+        else if (args.Range != null && args.OldRange == null)
+        {
+            await OnFocus.InvokeAsync();
+        }
+
+        await OnSelectionChange.InvokeAsync(args);
+    }
+
+    private static bool GetFormatBool(Dictionary<string, object?> format, string key)
+    {
+        if (!format.TryGetValue(key, out var value) || value == null)
+            return false;
+
+        if (value is bool b)
+            return b;
+
+        if (value is JsonElement je && je.ValueKind == JsonValueKind.True)
+            return true;
+
+        return false;
+    }
+
+    private static string GetFormatString(Dictionary<string, object?> format, string key)
+    {
+        if (!format.TryGetValue(key, out var value) || value == null)
+            return "";
+
+        if (value is string s)
+            return s;
+
+        if (value is JsonElement je)
+        {
+            if (je.ValueKind == JsonValueKind.String)
+                return je.GetString() ?? "";
+            if (je.ValueKind == JsonValueKind.Number)
+                return je.GetInt32().ToString();
+        }
+
+        return value.ToString() ?? "";
+    }
+
+    // === Toolbar Actions ===
+
+    private async Task ToggleFormatAsync(string format, object? value = null)
+    {
+        if (_jsModule == null || !_jsInitialized || Disabled) return;
+
+        // Toggle: if already active, remove; otherwise apply
+        bool isActive = format switch
+        {
+            "bold" => _isBold,
+            "italic" => _isItalic,
+            "underline" => _isUnderline,
+            "strike" => _isStrike,
+            "blockquote" => _isBlockquote,
+            "code-block" => _isCodeBlock,
+            "list" when value?.ToString() == "bullet" => _isBulletList,
+            "list" when value?.ToString() == "ordered" => _isOrderedList,
+            _ => false
+        };
+
+        var newValue = isActive ? false : (value ?? true);
+
+        // Use formatAndGetState for all formats to ensure immediate state sync
+        var formatState = await _jsModule.InvokeAsync<Dictionary<string, object?>>(
+            "formatAndGetState", _editorId, format, newValue);
+        UpdateFormatState(formatState);
+
+        // Refocus the editor after toolbar button click
+        await _jsModule.InvokeVoidAsync("focus", _editorId);
+    }
+
+    private void UpdateFormatState(Dictionary<string, object?> format)
+    {
+        if (format == null) return;
+
+        _isBold = GetFormatBool(format, "bold");
+        _isItalic = GetFormatBool(format, "italic");
+        _isUnderline = GetFormatBool(format, "underline");
+        _isStrike = GetFormatBool(format, "strike");
+        _isBlockquote = GetFormatBool(format, "blockquote");
+        _isCodeBlock = GetFormatBool(format, "code-block");
+
+        var listValue = GetFormatString(format, "list");
+        _isBulletList = listValue == "bullet";
+        _isOrderedList = listValue == "ordered";
+
+        _headerLevel = GetFormatString(format, "header");
+
+        StateHasChanged();
+    }
+
+    private async Task HandleHeaderChangeAsync(string? value)
+    {
+        if (_jsModule == null || !_jsInitialized || Disabled) return;
+
+        _headerLevel = value ?? "";
+
+        if (string.IsNullOrEmpty(value))
+        {
+            await _jsModule.InvokeVoidAsync("format", _editorId, "header", false);
+        }
+        else
+        {
+            await _jsModule.InvokeVoidAsync("format", _editorId, "header", int.Parse(value));
+        }
+
+        // Refocus the editor after dropdown change
+        await _jsModule.InvokeVoidAsync("focus", _editorId);
+    }
+
+    private async Task InsertLinkAsync()
+    {
+        if (_jsModule == null || !_jsInitialized || Disabled) return;
+
+        // Save the current selection before opening dialog
+        _savedSelection = await GetSelectionAsync();
+
+        // Check if there's already a link at the selection
+        var format = await _jsModule.InvokeAsync<Dictionary<string, object?>>("getFormat", _editorId);
+        object? linkValue = null;
+        _hasExistingLink = format != null && format.TryGetValue("link", out linkValue) && linkValue != null;
+
+        if (_hasExistingLink)
+        {
+            if (linkValue is string existingUrl)
             {
-                case "b":
-                    _shouldPreventKeydown = true;
-                    await ApplyBold();
-                    break;
-                case "i":
-                    _shouldPreventKeydown = true;
-                    await ApplyItalic();
-                    break;
-                case "u":
-                    _shouldPreventKeydown = true;
-                    await ApplyUnderline();
-                    break;
-                // Note: z/y (undo/redo) are handled in JavaScript (rich-text-editor.js)
-                // to prevent race condition with browser's native undo
+                _linkUrl = existingUrl;
+            }
+            else if (linkValue is System.Text.Json.JsonElement je && je.ValueKind == System.Text.Json.JsonValueKind.String)
+            {
+                _linkUrl = je.GetString() ?? "https://";
+            }
+            else
+            {
+                _linkUrl = "https://";
             }
         }
+        else
+        {
+            _linkUrl = "https://";
+        }
+
+        _linkUrlError = null;
+        _linkDialogOpen = true;
     }
 
-    /// <summary>
-    /// Applies bold formatting to selected text.
-    /// </summary>
-    private async Task ApplyBold()
+    private void CloseLinkDialog()
     {
-        if (_module == null || Disabled) return;
-
-        try
-        {
-            await _module.InvokeVoidAsync("toggleFormat", _editorRef, "strong");
-        }
-        catch (JSException)
-        {
-            // Ignore JS errors
-        }
+        _linkDialogOpen = false;
+        _linkUrl = "";
+        _linkUrlError = null;
+        _savedSelection = null;
     }
 
-    /// <summary>
-    /// Applies italic formatting to selected text.
-    /// </summary>
-    private async Task ApplyItalic()
+    private void ValidateLinkUrl()
     {
-        if (_module == null || Disabled) return;
-
-        try
+        if (string.IsNullOrWhiteSpace(_linkUrl) || _linkUrl == "https://")
         {
-            await _module.InvokeVoidAsync("toggleFormat", _editorRef, "em");
+            _linkUrlError = null;
         }
-        catch (JSException)
+        else if (!IsValidUrl(_linkUrl))
         {
-            // Ignore JS errors
+            _linkUrlError = "Please enter a valid URL";
+        }
+        else
+        {
+            _linkUrlError = null;
         }
     }
 
-    /// <summary>
-    /// Applies underline formatting to selected text.
-    /// </summary>
-    private async Task ApplyUnderline()
+    private static bool IsValidUrl(string? url)
     {
-        if (_module == null || Disabled) return;
+        if (string.IsNullOrWhiteSpace(url) || url == "https://")
+            return false;
 
-        try
-        {
-            await _module.InvokeVoidAsync("toggleFormat", _editorRef, "u");
-        }
-        catch (JSException)
-        {
-            // Ignore JS errors
-        }
+        return Uri.TryCreate(url, UriKind.Absolute, out var uri)
+               && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
     }
 
-    /// <summary>
-    /// Applies strikethrough formatting to selected text.
-    /// </summary>
-    private async Task ApplyStrikethrough()
+    private async Task ApplyLinkAsync()
     {
-        if (_module == null || Disabled) return;
+        if (_jsModule == null || !_jsInitialized || !IsValidUrl(_linkUrl)) return;
 
-        try
+        // Restore selection before applying link
+        if (_savedSelection != null)
         {
-            await _module.InvokeVoidAsync("toggleFormat", _editorRef, "s");
+            await SetSelectionAsync(_savedSelection.Index, _savedSelection.Length);
         }
-        catch (JSException)
-        {
-            // Ignore JS errors
-        }
+
+        await _jsModule.InvokeVoidAsync("format", _editorId, "link", _linkUrl);
+
+        CloseLinkDialog();
+        await _jsModule.InvokeVoidAsync("focus", _editorId);
     }
 
-    /// <summary>
-    /// Inserts an unordered (bullet) list.
-    /// </summary>
-    private async Task InsertUnorderedList()
+    private async Task RemoveLinkAsync()
     {
-        if (_module == null || Disabled) return;
+        if (_jsModule == null || !_jsInitialized) return;
 
-        try
+        // Restore selection before removing link
+        if (_savedSelection != null)
         {
-            await _module.InvokeVoidAsync("insertList", _editorRef, false);
+            await SetSelectionAsync(_savedSelection.Index, _savedSelection.Length);
         }
-        catch (JSException)
-        {
-            // Ignore JS errors
-        }
+
+        await _jsModule.InvokeVoidAsync("format", _editorId, "link", false);
+
+        CloseLinkDialog();
+        await _jsModule.InvokeVoidAsync("focus", _editorId);
     }
 
-    /// <summary>
-    /// Inserts an ordered (numbered) list.
-    /// </summary>
-    private async Task InsertOrderedList()
-    {
-        if (_module == null || Disabled) return;
-
-        try
-        {
-            await _module.InvokeVoidAsync("insertList", _editorRef, true);
-        }
-        catch (JSException)
-        {
-            // Ignore JS errors
-        }
-    }
-
-    /// <summary>
-    /// Sets the font size of selected text.
-    /// </summary>
-    private async Task SetFontSize(string size)
-    {
-        if (_module == null || Disabled) return;
-
-        try
-        {
-            await _module.InvokeVoidAsync("setFontSize", _editorRef, size);
-        }
-        catch (JSException)
-        {
-            // Ignore JS errors
-        }
-    }
-
-    /// <summary>
-    /// Sets the font color of selected text.
-    /// </summary>
-    private async Task SetFontColor(string color)
-    {
-        if (_module == null || Disabled) return;
-
-        try
-        {
-            await _module.InvokeVoidAsync("setFontColor", _editorRef, color);
-        }
-        catch (JSException)
-        {
-            // Ignore JS errors
-        }
-    }
-
-    /// <summary>
-    /// Selects a font color and closes the color picker dropdown.
-    /// </summary>
-    private async Task SelectFontColor(string color)
-    {
-        _colorPickerOpen = false;
-        await SetFontColor(color);
-    }
-
-    /// <summary>
-    /// Sets the text alignment.
-    /// </summary>
-    private async Task SetAlignment(string alignment)
-    {
-        if (_module == null || Disabled) return;
-
-        try
-        {
-            await _module.InvokeVoidAsync("setAlignment", _editorRef, alignment);
-        }
-        catch (JSException)
-        {
-            // Ignore JS errors
-        }
-    }
-
-    /// <summary>
-    /// Undoes the last action.
-    /// </summary>
-    private async Task Undo()
-    {
-        if (_module == null || Disabled) return;
-
-        try
-        {
-            await _module.InvokeVoidAsync("undo", _editorRef);
-        }
-        catch (JSException)
-        {
-            // Ignore JS errors
-        }
-    }
-
-    /// <summary>
-    /// Redoes the last undone action.
-    /// </summary>
-    private async Task Redo()
-    {
-        if (_module == null || Disabled) return;
-
-        try
-        {
-            await _module.InvokeVoidAsync("redo", _editorRef);
-        }
-        catch (JSException)
-        {
-            // Ignore JS errors
-        }
-    }
+    // === Public API Methods ===
 
     /// <summary>
     /// Focuses the editor.
     /// </summary>
     public async Task FocusAsync()
     {
-        if (_module != null)
+        if (_jsModule != null && _jsInitialized)
         {
-            try
+            await _jsModule.InvokeVoidAsync("focus", _editorId);
+        }
+    }
+
+    /// <summary>
+    /// Removes focus from the editor.
+    /// </summary>
+    public async Task BlurAsync()
+    {
+        if (_jsModule != null && _jsInitialized)
+        {
+            await _jsModule.InvokeVoidAsync("blur", _editorId);
+        }
+    }
+
+    /// <summary>
+    /// Gets the current selection range.
+    /// </summary>
+    public async Task<EditorRange?> GetSelectionAsync()
+    {
+        if (_jsModule != null && _jsInitialized)
+        {
+            return await _jsModule.InvokeAsync<EditorRange?>("getSelection", _editorId);
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Sets the selection range.
+    /// </summary>
+    public async Task SetSelectionAsync(int index, int length = 0)
+    {
+        if (_jsModule != null && _jsInitialized)
+        {
+            await _jsModule.InvokeVoidAsync("setSelection", _editorId, index, length);
+        }
+    }
+
+    /// <summary>
+    /// Applies formatting to the current selection.
+    /// </summary>
+    public async Task FormatAsync(string formatName, object? value = null)
+    {
+        if (_jsModule != null && _jsInitialized)
+        {
+            await _jsModule.InvokeVoidAsync("format", _editorId, formatName, value ?? true);
+        }
+    }
+
+    /// <summary>
+    /// Gets the plain text content of the editor.
+    /// </summary>
+    public async Task<string> GetTextAsync()
+    {
+        if (_jsModule != null && _jsInitialized)
+        {
+            return await _jsModule.InvokeAsync<string>("getText", _editorId) ?? "";
+        }
+        return "";
+    }
+
+    /// <summary>
+    /// Gets the length of the editor content.
+    /// </summary>
+    public async Task<int> GetLengthAsync()
+    {
+        if (_jsModule != null && _jsInitialized)
+        {
+            return await _jsModule.InvokeAsync<int>("getLength", _editorId);
+        }
+        return 0;
+    }
+
+    /// <summary>
+    /// Gets the HTML content of the editor.
+    /// </summary>
+    public async Task<string> GetHtmlAsync()
+    {
+        if (_jsModule != null && _jsInitialized)
+        {
+            return await _jsModule.InvokeAsync<string>("getHtml", _editorId) ?? "";
+        }
+        return "";
+    }
+
+    /// <summary>
+    /// Sets the HTML content of the editor.
+    /// </summary>
+    public async Task SetHtmlAsync(string? html)
+    {
+        if (_jsModule != null && _jsInitialized)
+        {
+            await _jsModule.InvokeVoidAsync("setHtml", _editorId, html ?? "");
+        }
+    }
+
+    /// <summary>
+    /// Gets the Delta (JSON) content of the editor.
+    /// Delta is Quill's native document format that preserves all formatting information.
+    /// </summary>
+    public async Task<string> GetDeltaAsync()
+    {
+        if (_jsModule != null && _jsInitialized)
+        {
+            return await _jsModule.InvokeAsync<string>("getContents", _editorId) ?? "{}";
+        }
+        return "{}";
+    }
+
+    /// <summary>
+    /// Sets the editor content using a Delta (JSON) object.
+    /// This is the preferred method when working with Quill's native format.
+    /// </summary>
+    public async Task SetDeltaAsync(string? deltaJson)
+    {
+        if (_jsModule != null && _jsInitialized)
+        {
+            if (string.IsNullOrEmpty(deltaJson))
             {
-                await _module.InvokeVoidAsync("focus", _editorRef);
+                await _jsModule.InvokeVoidAsync("setContents", _editorId, "{\"ops\":[{\"insert\":\"\\n\"}]}");
             }
-            catch (JSException)
+            else
             {
-                // Ignore JS errors
+                await _jsModule.InvokeVoidAsync("setContents", _editorId, deltaJson);
             }
         }
     }
 
+    // === Private Helper Methods ===
+
+    private object BuildEditorOptions() => new
+    {
+        placeholder = Placeholder ?? "",
+        readOnly = Disabled || ReadOnly
+    };
+
+    // === CSS Classes ===
+
+    private string ContainerCssClass => ClassNames.cn(
+        "flex flex-col rounded-md border border-input bg-background",
+        "focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50",
+        ClassNames.when(AriaInvalid == true, "border-destructive ring-destructive/20"),
+        ClassNames.when(Disabled, "opacity-50 cursor-not-allowed"),
+        Class
+    );
+
+    private string ToolbarCssClass => ClassNames.cn(
+        "flex flex-wrap items-center gap-1 px-3 py-2 border-b border-input bg-muted/40"
+    );
+
+    private string EditorCssClass => ClassNames.cn(
+        "text-base md:text-sm",
+        ClassNames.when(Disabled, "cursor-not-allowed")
+    );
+
+    private string EditorStyle
+    {
+        get
+        {
+            var styles = new List<string>();
+
+            if (!string.IsNullOrEmpty(Height))
+            {
+                styles.Add($"height: {Height}");
+                styles.Add("overflow-y: auto");
+            }
+            else
+            {
+                styles.Add($"min-height: {MinHeight}");
+                if (!string.IsNullOrEmpty(MaxHeight))
+                {
+                    styles.Add($"max-height: {MaxHeight}");
+                    styles.Add("overflow-y: auto");
+                }
+            }
+
+            return string.Join("; ", styles);
+        }
+    }
+
+    // === Dispose ===
+
     public async ValueTask DisposeAsync()
     {
-        if (_module != null)
+        if (_jsModule != null && _jsInitialized)
         {
             try
             {
-                await _module.InvokeVoidAsync("dispose", _editorRef);
-                await _module.DisposeAsync();
+                await _jsModule.InvokeVoidAsync("disposeEditor", _editorId);
+                await _jsModule.DisposeAsync();
             }
-            catch (JSDisconnectedException)
-            {
-                // Circuit disconnected, ignore
-            }
-            catch (JSException)
-            {
-                // JS error during cleanup, ignore
-            }
+            catch { }
         }
-
         _dotNetRef?.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

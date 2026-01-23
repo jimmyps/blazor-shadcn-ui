@@ -1,6 +1,7 @@
 @namespace BlazorUI.Components.Calendar
 @using BlazorUI.Components.Utilities
 @using BlazorUI.Components.Button
+@using BlazorUI.Components.Select
 @using BlazorUI.Icons.Lucide.Components
 
 @*
@@ -11,7 +12,7 @@
     @* Calendar Header with Navigation *@
     <div class="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
         <div class="space-y-4">
-            @* Month Navigation *@
+            @* Month/Year Navigation *@
             <div class="flex items-center justify-between pt-1">
                 <Button Variant="ButtonVariant.Outline"
                         Size="ButtonSize.Icon"
@@ -20,8 +21,31 @@
                         AriaLabel="Go to previous month">
                     <LucideIcon Name="chevron-left" Class="h-4 w-4" />
                 </Button>
-                <div class="text-sm font-medium">
-                    @DisplayDate.ToString("MMMM yyyy")
+                <div class="flex items-center gap-1">
+                    @* Month Select *@
+                    <Select TValue="int" Value="@DisplayDate.Month" ValueChanged="@OnMonthChanged" Class="w-[120px]">
+                        <SelectTrigger Class="h-8 border-0 bg-transparent px-2 text-sm font-medium hover:bg-accent focus:ring-0 focus:ring-offset-0">
+                            <span>@GetMonthName(DisplayDate.Month)</span>
+                        </SelectTrigger>
+                        <SelectContent>
+                            @foreach (var month in GetMonths())
+                            {
+                                <SelectItem TValue="int" Value="@month.Number" Text="@month.Name">@month.Name</SelectItem>
+                            }
+                        </SelectContent>
+                    </Select>
+                    @* Year Select *@
+                    <Select TValue="int" Value="@DisplayDate.Year" ValueChanged="@OnYearChanged" Class="w-[80px]">
+                        <SelectTrigger Class="h-8 border-0 bg-transparent px-2 text-sm font-medium hover:bg-accent focus:ring-0 focus:ring-offset-0">
+                            <span>@DisplayDate.Year</span>
+                        </SelectTrigger>
+                        <SelectContent>
+                            @foreach (var year in GetYears())
+                            {
+                                <SelectItem TValue="int" Value="@year" Text="@year.ToString()">@year</SelectItem>
+                            }
+                        </SelectContent>
+                    </Select>
                 </div>
                 <Button Variant="ButtonVariant.Outline"
                         Size="ButtonSize.Icon"
@@ -57,7 +81,7 @@
                                     {
                                         <button type="button"
                                                 class="@GetDayClasses(day.Value)"
-                                                disabled="@IsDisabled(day.Value)"
+                                                disabled="@(IsDisabled(day.Value) || IsOutsideMonth(day.Value))"
                                                 @onclick="@(() => SelectDate(day.Value))">
                                             @day.Value.Day
                                         </button>
@@ -74,6 +98,7 @@
 
 @code {
     private DateTime _displayDate;
+    private DateTime? _previousSelected;
 
     /// <summary>
     /// The currently displayed month.
@@ -131,6 +156,12 @@
     public DayOfWeek FirstDayOfWeek { get; set; } = DayOfWeek.Sunday;
 
     /// <summary>
+    /// Whether to show days from previous and next months.
+    /// </summary>
+    [Parameter]
+    public bool ShowOutsideDays { get; set; } = true;
+
+    /// <summary>
     /// Additional CSS classes to apply to the calendar.
     /// </summary>
     [Parameter]
@@ -151,13 +182,20 @@
     protected override void OnInitialized()
     {
         _displayDate = Selected ?? DateTime.Today;
+        _previousSelected = Selected;
     }
 
     protected override void OnParametersSet()
     {
-        if (Selected.HasValue && (Selected.Value.Year != _displayDate.Year || Selected.Value.Month != _displayDate.Month))
+        // Only sync display date when Selected actually changes from external source
+        // This prevents overwriting user's month/year navigation
+        if (Selected != _previousSelected)
         {
-            _displayDate = Selected.Value;
+            _previousSelected = Selected;
+            if (Selected.HasValue)
+            {
+                _displayDate = Selected.Value;
+            }
         }
     }
 
@@ -176,6 +214,8 @@
         }
     }
 
+    #region Navigation
+
     private void PreviousMonth()
     {
         DisplayDate = DisplayDate.AddMonths(-1);
@@ -185,6 +225,47 @@
     {
         DisplayDate = DisplayDate.AddMonths(1);
     }
+
+    private void OnMonthChanged(int month)
+    {
+        DisplayDate = new DateTime(DisplayDate.Year, month, 1);
+    }
+
+    private void OnYearChanged(int year)
+    {
+        DisplayDate = new DateTime(year, DisplayDate.Month, 1);
+    }
+
+    #endregion
+
+    #region Month/Year Data
+
+    private static readonly string[] MonthNames = { "January", "February", "March", "April", "May", "June",
+                                                     "July", "August", "September", "October", "November", "December" };
+
+    private string GetMonthName(int month) => MonthNames[month - 1];
+
+    private IEnumerable<(int Number, string Name)> GetMonths()
+    {
+        for (int i = 1; i <= 12; i++)
+        {
+            yield return (i, MonthNames[i - 1]);
+        }
+    }
+
+    private IEnumerable<int> GetYears()
+    {
+        var currentYear = DateTime.Today.Year;
+        // Show 100 years range: 50 years back and 50 years forward
+        for (int year = currentYear - 50; year <= currentYear + 50; year++)
+        {
+            yield return year;
+        }
+    }
+
+    #endregion
+
+    #region Date Selection
 
     private async Task SelectDate(DateTime date)
     {
@@ -238,7 +319,8 @@
                 }
                 else
                 {
-                    week.Add(null); // Days outside the month shown as empty
+                    // Show outside days if enabled, otherwise null (empty cell)
+                    week.Add(ShowOutsideDays ? currentDate : null);
                 }
                 currentDate = currentDate.AddDays(1);
             }
@@ -268,6 +350,7 @@
         var isSelectedDate = Selected.HasValue && date.Date == Selected.Value.Date;
         var isTodayDate = IsToday(date);
         var isDisabledDate = IsDisabled(date);
+        var isOutsideDate = IsOutsideMonth(date);
 
         return ClassNames.cn(
             "inline-flex h-9 w-9 items-center justify-center rounded-md text-sm font-normal",
@@ -277,9 +360,12 @@
             "hover:bg-accent hover:text-accent-foreground",
             isSelectedDate ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground" : null,
             isTodayDate && !isSelectedDate ? "bg-accent text-accent-foreground" : null,
-            isDisabledDate ? "text-muted-foreground opacity-50" : null
+            isDisabledDate ? "text-muted-foreground opacity-50" : null,
+            isOutsideDate ? "text-muted-foreground opacity-50" : null
         );
     }
+
+    #endregion
 
     /// <summary>
     /// Gets the computed CSS classes for the calendar container.
