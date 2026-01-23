@@ -2,15 +2,28 @@
 
 <input
 id="@Id"
+name="@EffectiveName"
 type="@HtmlType"
 class="@CssClass"
 value="@Value"
 placeholder="@Placeholder"
 disabled="@Disabled"
 required="@Required"
+readonly="@Readonly"
+autocomplete="@Autocomplete"
+maxlength="@MaxLength"
+minlength="@MinLength"
+min="@Min"
+max="@Max"
+step="@Step"
+pattern="@Pattern"
+inputmode="@InputMode"
+autofocus="@Autofocus"
+spellcheck="@(Spellcheck?.ToString().ToLower())"
 aria-label="@AriaLabel"
 aria-describedby="@AriaDescribedBy"
 aria-invalid="@(AriaInvalid?.ToString().ToLower())"
 @attributes="AdditionalAttributes"
 @oninput="HandleInput"
 @onchange="HandleChange" />
+

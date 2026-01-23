@@ -80,6 +80,24 @@ public partial class RadioGroup<TValue> : ComponentBase
     public string? AriaLabel { get; set; }
 
     /// <summary>
+    /// Gets or sets the name for all radio items in this group.
+    /// </summary>
+    /// <remarks>
+    /// This name is shared by all radio items in the group for form submission.
+    /// </remarks>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether a selection is required in this radio group.
+    /// </summary>
+    /// <remarks>
+    /// When true, one of the radio items must be selected for form submission.
+    /// </remarks>
+    [Parameter]
+    public bool Required { get; set; }
+
+    /// <summary>
     /// Gets or sets the content to be rendered inside the radio group.
     /// </summary>
     /// <remarks>
@@ -194,6 +212,8 @@ public partial class RadioGroup<TValue> : ComponentBase
         // Update context with current state
         context.Value = Value;
         context.Disabled = Disabled;
+        context.Name = Name;
+        context.Required = Required;
         context.SelectValue = SelectValueAsync;
     }
 }

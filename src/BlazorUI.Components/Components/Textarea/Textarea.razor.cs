@@ -15,9 +15,17 @@ namespace BlazorUI.Components.Textarea;
 /// </para>
 /// <para>
 /// Features:
-/// - Multi-line text input with automatic content sizing
+/// - Multi-line text input with automatic content sizing (field-sizing-content)
+/// - Form submission support via name attribute
+/// - Browser autocomplete integration
+/// - Read-only state support
+/// - Character limit support via MaxLength and MinLength parameters
+/// - Configurable rows and columns
+/// - Text wrapping control (soft, hard, off)
+/// - Mobile keyboard hints via inputmode
+/// - Auto-focus capability
+/// - Spell check control
 /// - Two-way data binding with Value/ValueChanged
-/// - Character limit support via MaxLength parameter
 /// - Error state visualization via aria-invalid attribute
 /// - Smooth color and shadow transitions for state changes
 /// - Disabled and required states
@@ -29,9 +37,9 @@ namespace BlazorUI.Components.Textarea;
 /// </remarks>
 /// <example>
 /// <code>
-/// &lt;Textarea @bind-Value="description" Placeholder="Enter your description" /&gt;
+/// &lt;Textarea @bind-Value="description" Name="description" Placeholder="Enter your description" /&gt;
 ///
-/// &lt;Textarea Value="@comment" ValueChanged="HandleCommentChange" MaxLength="500" Required="true" AriaInvalid="@hasError" /&gt;
+/// &lt;Textarea Value="@comment" ValueChanged="HandleCommentChange" Name="comment" MaxLength="500" MinLength="10" Required="true" AriaInvalid="@hasError" /&gt;
 /// </code>
 /// </example>
 public partial class Textarea : ComponentBase
@@ -98,6 +106,106 @@ public partial class Textarea : ComponentBase
     public int? MaxLength { get; set; }
 
     /// <summary>
+    /// Gets or sets the minimum number of characters required.
+    /// </summary>
+    /// <remarks>
+    /// Works with form validation.
+    /// Browser validates that at least this many characters are present.
+    /// </remarks>
+    [Parameter]
+    public int? MinLength { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the textarea for form submission.
+    /// </summary>
+    /// <remarks>
+    /// This is critical for form submission. The name/value pair is submitted to the server.
+    /// Should be unique within the form.
+    /// </remarks>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the autocomplete hint for the browser.
+    /// </summary>
+    /// <remarks>
+    /// Examples: "on", "off", "name", "street-address".
+    /// Helps browsers provide appropriate autofill suggestions.
+    /// </remarks>
+    [Parameter]
+    public string? Autocomplete { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the textarea is read-only.
+    /// </summary>
+    /// <remarks>
+    /// When true, the user cannot modify the value, but it's still focusable and submitted with forms.
+    /// Different from Disabled - readonly textareas are still submitted with forms.
+    /// </remarks>
+    [Parameter]
+    public bool Readonly { get; set; }
+
+    /// <summary>
+    /// Gets or sets the visible number of text rows.
+    /// </summary>
+    /// <remarks>
+    /// Specifies the height of the textarea in rows of text.
+    /// If not specified, the component uses field-sizing-content for automatic sizing.
+    /// </remarks>
+    [Parameter]
+    public int? Rows { get; set; }
+
+    /// <summary>
+    /// Gets or sets the visible width in characters.
+    /// </summary>
+    /// <remarks>
+    /// Specifies the width of the textarea in average character widths.
+    /// Usually controlled by CSS width instead.
+    /// </remarks>
+    [Parameter]
+    public int? Cols { get; set; }
+
+    /// <summary>
+    /// Gets or sets how text wraps when submitted in a form.
+    /// </summary>
+    /// <remarks>
+    /// Values: "soft" (default - newlines not submitted), "hard" (newlines submitted), "off" (no wrapping).
+    /// When "hard", the cols attribute must be specified.
+    /// </remarks>
+    [Parameter]
+    public string? Wrap { get; set; }
+
+    /// <summary>
+    /// Gets or sets the input mode hint for mobile keyboards.
+    /// </summary>
+    /// <remarks>
+    /// Examples: "none", "text", "decimal", "numeric", "tel", "search", "email", "url".
+    /// Helps mobile devices show the appropriate keyboard.
+    /// </remarks>
+    [Parameter]
+    public string? InputMode { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the textarea should be auto-focused when the page loads.
+    /// </summary>
+    /// <remarks>
+    /// Only one element per page should have autofocus.
+    /// Improves accessibility when used appropriately.
+    /// </remarks>
+    [Parameter]
+    public bool Autofocus { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether spell checking is enabled.
+    /// </summary>
+    /// <remarks>
+    /// Can be true, false, or null (browser default).
+    /// Useful for controlling spell checking on technical content, code, etc.
+    /// </remarks>
+    [Parameter]
+    public bool? Spellcheck { get; set; }
+
+    /// <summary>
     /// Gets or sets additional CSS classes to apply to the textarea.
     /// </summary>
     /// <remarks>
@@ -147,6 +255,14 @@ public partial class Textarea : ComponentBase
     /// </remarks>
     [Parameter]
     public bool? AriaInvalid { get; set; }
+
+    /// <summary>
+    /// Gets the effective name attribute, falling back to Id if Name is not specified.
+    /// </summary>
+    /// <remarks>
+    /// This ensures form submission works even when Name is not explicitly set.
+    /// </remarks>
+    private string? EffectiveName => Name ?? Id;
 
     /// <summary>
     /// Gets the computed CSS classes for the textarea element.

@@ -11,3 +11,15 @@
     class="@CssClass">
     <span class="@CircleIndicatorClass"></span>
 </BlazorUI.Primitives.RadioGroup.RadioGroupItem>
+
+@* Hidden native radio input for form submission *@
+@if (Context != null && !string.IsNullOrEmpty(Context.Name))
+{
+    <input type="radio" 
+           name="@Context.Name" 
+           value="@Value?.ToString()" 
+           checked="@IsChecked"
+           required="@Context.Required"
+           disabled="@IsDisabled"
+           style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0;" />
+}

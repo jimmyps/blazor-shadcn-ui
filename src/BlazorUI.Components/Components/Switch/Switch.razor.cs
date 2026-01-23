@@ -139,6 +139,26 @@ public partial class Switch : ComponentBase
     public string? Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of the switch for form submission.
+    /// </summary>
+    /// <remarks>
+    /// This is critical for form submission. The name/value pair is submitted to the server.
+    /// If not specified, falls back to the Id value.
+    /// </remarks>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the switch is required.
+    /// </summary>
+    /// <remarks>
+    /// When true, the switch must be checked for form submission.
+    /// Works with form validation.
+    /// </remarks>
+    [Parameter]
+    public bool Required { get; set; }
+
+    /// <summary>
     /// Gets or sets an expression that identifies the bound value.
     /// </summary>
     /// <remarks>
@@ -147,6 +167,14 @@ public partial class Switch : ComponentBase
     /// </remarks>
     [Parameter]
     public Expression<Func<bool>>? CheckedExpression { get; set; }
+
+    /// <summary>
+    /// Gets the effective name attribute, falling back to Id if Name is not specified.
+    /// </summary>
+    /// <remarks>
+    /// This ensures form submission works even when Name is not explicitly set.
+    /// </remarks>
+    private string? EffectiveName => Name ?? Id;
 
     /// <summary>
     /// Gets whether the switch is in an invalid state (for validation).

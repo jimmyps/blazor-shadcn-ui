@@ -16,6 +16,14 @@ namespace BlazorUI.Components.Input;
 /// <para>
 /// Features:
 /// - Multiple input types (text, email, password, number, tel, url, file, search, date, time)
+/// - Form submission support via name attribute
+/// - Browser autocomplete integration
+/// - Read-only state support
+/// - Input validation (required, pattern, min, max, minlength, maxlength)
+/// - Number input controls (min, max, step)
+/// - Mobile keyboard hints via inputmode
+/// - Auto-focus capability
+/// - Spell check control
 /// - File input styling with custom pseudo-selectors
 /// - Error state visualization via aria-invalid attribute
 /// - Smooth color transitions for state changes
@@ -29,9 +37,11 @@ namespace BlazorUI.Components.Input;
 /// </remarks>
 /// <example>
 /// <code>
-/// &lt;Input Type="InputType.Text" @bind-Value="userName" Placeholder="Enter your name" /&gt;
+/// &lt;Input Type="InputType.Text" @bind-Value="userName" Name="username" Placeholder="Enter your name" /&gt;
 ///
-/// &lt;Input Type="InputType.Email" Value="@email" ValueChanged="HandleEmailChange" Required="true" AriaInvalid="@hasError" /&gt;
+/// &lt;Input Type="InputType.Email" Value="@email" ValueChanged="HandleEmailChange" Name="email" Required="true" Autocomplete="email" AriaInvalid="@hasError" /&gt;
+///
+/// &lt;Input Type="InputType.Number" @bind-Value="age" Name="age" Min="0" Max="120" Step="1" /&gt;
 /// </code>
 /// </example>
 public partial class Input : ComponentBase
@@ -97,6 +107,126 @@ public partial class Input : ComponentBase
     [Parameter]
     public bool Required { get; set; }
 
+    /// <summary>
+    /// Gets or sets the name of the input for form submission.
+    /// </summary>
+    /// <remarks>
+    /// This is critical for form submission. The name/value pair is submitted to the server.
+    /// Should be unique within the form.
+    /// </remarks>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the autocomplete hint for the browser.
+    /// </summary>
+    /// <remarks>
+    /// Examples: "email", "username", "current-password", "new-password", "name", "tel", "off".
+    /// Helps browsers provide appropriate autofill suggestions.
+    /// </remarks>
+    [Parameter]
+    public string? Autocomplete { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the input is read-only.
+    /// </summary>
+    /// <remarks>
+    /// When true, the user cannot modify the value, but it's still focusable and submitted with forms.
+    /// Different from Disabled - readonly inputs are still submitted with forms.
+    /// </remarks>
+    [Parameter]
+    public bool Readonly { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum number of characters allowed.
+    /// </summary>
+    /// <remarks>
+    /// When set, the browser will prevent users from entering more characters.
+    /// Applies to text, email, password, tel, url, and search types.
+    /// </remarks>
+    [Parameter]
+    public int? MaxLength { get; set; }
+
+    /// <summary>
+    /// Gets or sets the minimum number of characters required.
+    /// </summary>
+    /// <remarks>
+    /// Works with form validation.
+    /// Applies to text, email, password, tel, url, and search types.
+    /// </remarks>
+    [Parameter]
+    public int? MinLength { get; set; }
+
+    /// <summary>
+    /// Gets or sets the minimum value for number, date, or time inputs.
+    /// </summary>
+    /// <remarks>
+    /// Applies to number, date, time inputs.
+    /// Works with form validation and :invalid pseudo-class.
+    /// </remarks>
+    [Parameter]
+    public string? Min { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum value for number, date, or time inputs.
+    /// </summary>
+    /// <remarks>
+    /// Applies to number, date, time inputs.
+    /// Works with form validation and :invalid pseudo-class.
+    /// </remarks>
+    [Parameter]
+    public string? Max { get; set; }
+
+    /// <summary>
+    /// Gets or sets the step interval for number inputs.
+    /// </summary>
+    /// <remarks>
+    /// Defines the granularity of values (e.g., "0.01" for currency, "1" for integers).
+    /// Applies to number, date, time inputs.
+    /// </remarks>
+    [Parameter]
+    public string? Step { get; set; }
+
+    /// <summary>
+    /// Gets or sets the regex pattern for validation.
+    /// </summary>
+    /// <remarks>
+    /// Validates input against the specified regular expression.
+    /// Works with form validation and :invalid pseudo-class.
+    /// </remarks>
+    [Parameter]
+    public string? Pattern { get; set; }
+
+    /// <summary>
+    /// Gets or sets the input mode hint for mobile keyboards.
+    /// </summary>
+    /// <remarks>
+    /// Examples: "none", "text", "decimal", "numeric", "tel", "search", "email", "url".
+    /// Helps mobile devices show the appropriate keyboard.
+    /// </remarks>
+    [Parameter]
+    public string? InputMode { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the input should be auto-focused when the page loads.
+    /// </summary>
+    /// <remarks>
+    /// Only one element per page should have autofocus.
+    /// Improves accessibility when used appropriately.
+    /// </remarks>
+    [Parameter]
+    public bool Autofocus { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether spell checking is enabled.
+    /// </summary>
+    /// <remarks>
+    /// Can be true, false, or null (browser default).
+    /// Useful for controlling spell checking on email addresses, usernames, etc.
+    /// </remarks>
+    [Parameter]
+    public bool? Spellcheck { get; set; }
+
 
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the input.
@@ -154,7 +284,7 @@ public partial class Input : ComponentBase
     /// <remarks>
     /// Captures any HTML attributes not explicitly defined as parameters.
     /// This allows for maximum flexibility while maintaining type safety for common attributes.
-    /// Examples: data-* attributes, autocomplete, name, maxlength, minlength, pattern, etc.
+    /// Examples: data-* attributes, form, list, size, title, tabindex, etc.
     /// </remarks>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
@@ -191,6 +321,14 @@ public partial class Input : ComponentBase
         // Custom classes (if provided)
         Class
     );
+
+    /// <summary>
+    /// Gets the effective name attribute, falling back to Id if Name is not specified.
+    /// </summary>
+    /// <remarks>
+    /// This ensures form submission works even when Name is not explicitly set.
+    /// </remarks>
+    private string? EffectiveName => Name ?? Id;
 
     /// <summary>
     /// Gets the HTML input type attribute value.
