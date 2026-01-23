@@ -370,7 +370,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📊 Version Information
 
-- **Current Version**: 1.0.12
+- **Current Version**: 1.0.14
 - **Target Framework**: .NET 10
 - **Package ID**: NeoBlazorUI.Primitives
 - **Assembly Name**: NeoBlazorUI.Primitives
