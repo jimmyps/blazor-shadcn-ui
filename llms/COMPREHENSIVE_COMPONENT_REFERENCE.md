@@ -11,6 +11,7 @@ Last Updated: 2026-01-26
 ## 📋 Table of Contents
 
 ### Styled Components (62)
+
 - [Accordion](#accordion)
 - [Alert](#alert)
 - [AlertDialog](#alertdialog)
@@ -74,106 +75,6 @@ Last Updated: 2026-01-26
 - [Tooltip](#tooltip)
 - [Typography](#typography)
 
-### Primitives (21)
-- [Accordion](#accordion-primitive)
-- [Checkbox](#checkbox-primitive)
-- [Collapsible](#collapsible-primitive)
-- [Combobox](#combobox-primitive)
-- [ContextMenu](#contextmenu-primitive)
-- [Dialog](#dialog-primitive)
-- [DropdownMenu](#dropdownmenu-primitive)
-- [HoverCard](#hovercard-primitive)
-- [InputOtp](#inputotp-primitive)
-- [Label](#label-primitive)
-- [Menubar](#menubar-primitive)
-- [MultiSelect](#multiselect-primitive)
-- [NavigationMenu](#navigationmenu-primitive)
-- [Popover](#popover-primitive)
-- [RadioGroup](#radiogroup-primitive)
-- [Select](#select-primitive)
-- [Sheet](#sheet-primitive)
-- [Switch](#switch-primitive)
-- [Table](#table-primitive)
-- [Tabs](#tabs-primitive)
-- [Tooltip](#tooltip-primitive)
-
-### Enums Reference (75)
-- [AccordionType](#accordiontype-enum)
-- [AlertVariant](#alertvariant-enum)
-- [AnimationEasing](#animationeasing-enum)
-- [AnimationType](#animationtype-enum)
-- [AvatarSize](#avatarsize-enum)
-- [AxisScale](#axisscale-enum)
-- [BadgeVariant](#badgevariant-enum)
-- [BarLayout](#barlayout-enum)
-- [ButtonSize](#buttonsize-enum)
-- [ButtonType](#buttontype-enum)
-- [ButtonVariant](#buttonvariant-enum)
-- [CalendarCaptionLayout](#calendarcaptionlayout-enum)
-- [CarouselOrientation](#carouselorientation-enum)
-- [ChartEngine](#chartengine-enum)
-- [ChartType](#charttype-enum)
-- [DataTableSelectionMode](#datatableselectionmode-enum)
-- [Focus](#focus-enum)
-- [GradientDirection](#gradientdirection-enum)
-- [GridColumnPinPosition](#gridcolumnpinposition-enum)
-- [GridDensity](#griddensity-enum)
-- [GridFilterOperator](#gridfilteroperator-enum)
-- [GridPagingMode](#gridpagingmode-enum)
-- [GridRowModelType](#gridrowmodeltype-enum)
-- [GridSelectionMode](#gridselectionmode-enum)
-- [GridSortDirection](#gridsortdirection-enum)
-- [GridStyle](#gridstyle-enum)
-- [GridTheme](#gridtheme-enum)
-- [GridVirtualizationMode](#gridvirtualizationmode-enum)
-- [IconPosition](#iconposition-enum)
-- [ImageFormat](#imageformat-enum)
-- [InputGroupAlign](#inputgroupalign-enum)
-- [InputType](#inputtype-enum)
-- [InterpolationType](#interpolationtype-enum)
-- [ItemMediaVariant](#itemmediavariant-enum)
-- [ItemSize](#itemsize-enum)
-- [ItemVariant](#itemvariant-enum)
-- [LabelPosition](#labelposition-enum)
-- [LegendAlign](#legendalign-enum)
-- [LegendIcon](#legendicon-enum)
-- [LegendLayout](#legendlayout-enum)
-- [LegendVerticalAlign](#legendverticalalign-enum)
-- [LineStyleType](#linestyletype-enum)
-- [NavigationMenuOrientation](#navigationmenuorientation-enum)
-- [Orientation](#orientation-enum)
-- [PolarGridType](#polargridtype-enum)
-- [RadarShape](#radarshape-enum)
-- [ResizableDirection](#resizabledirection-enum)
-- [ScrollAreaType](#scrollareatype-enum)
-- [SelectAllState](#selectallstate-enum)
-- [SelectionMode](#selectionmode-enum)
-- [SeparatorOrientation](#separatororientation-enum)
-- [SheetSide](#sheetside-enum)
-- [SidebarGroupLabelElement](#sidebargrouplabelelement-enum)
-- [SidebarMenuButtonElement](#sidebarmenubuttonelement-enum)
-- [SidebarMenuButtonSize](#sidebarmenubuttonsize-enum)
-- [SidebarMenuButtonVariant](#sidebarmenubuttonvariant-enum)
-- [SidebarMenuSubButtonSize](#sidebarmenusubbuttonsize-enum)
-- [SidebarSide](#sidebarside-enum)
-- [SidebarVariant](#sidebarvariant-enum)
-- [SkeletonShape](#skeletonshape-enum)
-- [SortDirection](#sortdirection-enum)
-- [SpinnerSize](#spinnersize-enum)
-- [StackOffset](#stackoffset-enum)
-- [SymbolShape](#symbolshape-enum)
-- [TabsActivationMode](#tabsactivationmode-enum)
-- [TabsOrientation](#tabsorientation-enum)
-- [ToastPosition](#toastposition-enum)
-- [ToastVariant](#toastvariant-enum)
-- [ToggleGroupType](#togglegrouptype-enum)
-- [ToggleSize](#togglesize-enum)
-- [ToggleVariant](#togglevariant-enum)
-- [TooltipCursor](#tooltipcursor-enum)
-- [TooltipMode](#tooltipmode-enum)
-- [TypographyVariant](#typographyvariant-enum)
-- [YAxisPosition](#yaxisposition-enum)
-
 ---
 
 ## 🎨 Styled Components
@@ -195,24 +96,43 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Accordion
 ```
 
-**Basic Usage:**
-```razor
-<Accordion>
-    <AccordionItem Value="item-1">
-        <AccordionTrigger>Is it accessible?</AccordionTrigger>
-        <AccordionContent>
-            Yes. It adheres to WCAG 2.1 AA standards.
-        </AccordionContent>
-    </AccordionItem>
+**Components & Parameters:**
 
-    <AccordionItem Value="item-2">
-        <AccordionTrigger>Is it styled?</AccordionTrigger>
-        <AccordionContent>
-            Yes. It comes with default shadcn/ui styles.
-        </AccordionContent>
-    </AccordionItem>
-</Accordion>
-```
+#### `Accordion`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the accordion. Should include AccordionItem components. |
+| `Value` | `HashSet<string>?` |  | Controls which items are open (controlled mode). |
+| `ValueChanged` | `EventCallback<HashSet<string>>` |  | Event callback invoked when the open items change. |
+| `DefaultValue` | `HashSet<string>?` |  | Default open items when in uncontrolled mode. |
+| `OnValueChange` | `EventCallback<HashSet<string>>` |  | Event callback invoked when the open items change. |
+| `Type` | `AccordionType` | `AccordionType.Single` | Type of accordion (single or multiple). |
+| `Collapsible` | `bool` | `false` | Whether items can be collapsed when in single mode. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the accordion. |
+
+#### `AccordionContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ForceMount` | `bool` | `true` | Whether to force mount the content even when closed. When true (default), enables smooth CSS animations. When false, content unmounts when closed (no animation, lower memory). |
+| `ChildContent` | `RenderFragment?` |  | The child content to render when the item is open. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the content. |
+
+#### `AccordionItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Disabled` | `bool` |  | Whether this accordion item is disabled. |
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the accordion item. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the accordion item. |
+
+#### `AccordionTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the trigger. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the trigger. |
 
 ---
 
@@ -235,29 +155,25 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Alert`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Variant` | `AlertVariant` | `AlertVariant.Default` |  | Gets or sets the visual style variant of the alert. <remarks> Controls the color scheme and visual appearance using CSS custom properties. Default value is <see cref="AlertVariant.Default"/>. </rem... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the alert. <remarks> Custom classes are appended after the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the alert. <remarks> Typically contains AlertTitle, AlertDescription, and optionally an icon. For accessibility, ensure meaningful content is provided... |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Variant` | `AlertVariant` | `AlertVariant.Default` | Gets or sets the visual style variant of the alert. Controls the color scheme and visual appearance using CSS custom properties. Default value is . |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the alert. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the alert. Typically contains AlertTitle, AlertDescription, and optionally an icon. For accessibility, ensure meaningful content is provided. |
 
 #### `AlertDescription`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the alert description. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the alert description. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the alert description. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the alert description. |
 
 #### `AlertTitle`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the alert title. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the alert title. |
-
-**Related Enums:**
-
-- [`AlertVariant`](#alertvariant-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the alert title. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the alert title. |
 
 ---
 
@@ -276,6 +192,72 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.AlertDialog
 ```
 
+**Components & Parameters:**
+
+#### `AlertDialog`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the alert dialog. |
+| `Open` | `bool?` |  | Controls whether the alert dialog is open (controlled mode). When null, the dialog manages its own state (uncontrolled mode). |
+| `OpenChanged` | `EventCallback<bool>` |  | Event callback invoked when the open state changes. Use with @bind-Open for two-way binding. |
+| `DefaultOpen` | `bool` | `false` | Default open state when in uncontrolled mode. |
+| `OnOpenChange` | `EventCallback<bool>` |  | Event callback invoked when the dialog open state changes. |
+
+#### `AlertDialogAction`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render as the action button. |
+
+#### `AlertDialogCancel`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render as the cancel button. |
+
+#### `AlertDialogContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the alert dialog. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the alert dialog content. |
+| `CloseOnEscape` | `bool` | `true` | Whether the alert dialog can be closed with the Escape key. Default is true for accessibility. |
+
+#### `AlertDialogDescription`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
+
+#### `AlertDialogFooter`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
+
+#### `AlertDialogHeader`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
+
+#### `AlertDialogTitle`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
+
+#### `AlertDialogTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render as the trigger. |
+
 ---
 
 ### AspectRatio
@@ -292,6 +274,16 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.AspectRatio
 ```
+
+**Components & Parameters:**
+
+#### `AspectRatio`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render within the aspect ratio container. |
+| `Ratio` | `double` | `1.0` | The desired aspect ratio (width / height). Default is 1 (square). Common values: 16/9 = 1.778, 4/3 = 1.333, 1/1 = 1. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the container. |
 
 ---
 
@@ -314,38 +306,26 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Avatar`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to render inside the avatar. <remarks> Typically contains AvatarImage and AvatarFallback components. The first successfully loaded content will be displayed. </remarks> |
-| `Size` | `AvatarSize` | `AvatarSize.Default` |  | Gets or sets the size variant of the avatar. <remarks> Controls the dimensions and font-size of the avatar. Default value is <see cref="AvatarSize.Default"/>. </remarks> |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the avatar container. <remarks> Custom classes are appended after the component's base classes, allowing for style overrides and extensions. </remarks> |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to render inside the avatar. Typically contains AvatarImage and AvatarFallback components. The first successfully loaded content will be displayed. |
+| `Size` | `AvatarSize` | `AvatarSize.Default` | Gets or sets the size variant of the avatar. Controls the dimensions and font-size of the avatar. Default value is . |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the avatar container. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
 
 #### `AvatarFallback`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to render as fallback. <remarks> Typically contains: - User initials (e.g., "JD" for John Doe) - An icon component (e.g., LucideIcon with "user") - Custom markup or compone... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the fallback container. <remarks> Custom classes are appended after the component's base classes, allowing for style overrides such as custom backgro... |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to render as fallback. Typically contains: - User initials (e.g., "JD" for John Doe) - An icon component (e.g., LucideIcon with "user") - Custom markup or components Content is automatically centered within the avatar. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the fallback container. Custom classes are appended after the component's base classes, allowing for style overrides such as custom background colors. |
 
 #### `AvatarImage`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Source` | `string?` | `` |  | Gets or sets the URL of the image to display. <remarks> Should be a valid image URL. If the image fails to load, the component will hide and defer to AvatarFallback. </remarks> |
-| `Alt` | `string?` | `` |  | Gets or sets the alternative text for the image. <remarks> Essential for accessibility. Screen readers use this to describe the image to visually impaired users. Should describe who the avatar repr... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the image. <remarks> Custom classes are appended after the component's base classes. </remarks> |
-
-**Basic Usage:**
-```razor
-<Avatar>
-    <AvatarImage Src="/avatar.jpg" Alt="User Avatar" />
-    <AvatarFallback>JD</AvatarFallback>
-</Avatar>
-```
-
-**Related Enums:**
-
-- [`AvatarSize`](#avatarsize-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Source` | `string?` |  | Gets or sets the URL of the image to display. Should be a valid image URL. If the image fails to load, the component will hide and defer to AvatarFallback. |
+| `Alt` | `string?` |  | Gets or sets the alternative text for the image. Essential for accessibility. Screen readers use this to describe the image to visually impaired users. Should describe who the avatar represents (e.g., "John Doe", "User avatar"). |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the image. Custom classes are appended after the component's base classes. |
 
 ---
 
@@ -368,23 +348,11 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Badge`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Variant` | `BadgeVariant` | `BadgeVariant.Default` |  | Gets or sets the visual style variant of the badge. <remarks> Controls the color scheme and visual appearance using CSS custom properties. Default value is <see cref="BadgeVariant.Default"/>. </rem... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the badge. <remarks> Custom classes are appended after the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the badge. <remarks> Typically contains short text (1-2 words) or a small number. For accessibility, ensure the content is meaningful. </remarks> |
-
-**Basic Usage:**
-```razor
-<Badge>Default</Badge>
-<Badge Variant="BadgeVariant.Secondary">Secondary</Badge>
-<Badge Variant="BadgeVariant.Destructive">Destructive</Badge>
-<Badge Variant="BadgeVariant.Outline">Outline</Badge>
-```
-
-**Related Enums:**
-
-- [`BadgeVariant`](#badgevariant-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Variant` | `BadgeVariant` | `BadgeVariant.Default` | Gets or sets the visual style variant of the badge. Controls the color scheme and visual appearance using CSS custom properties. Default value is . |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the badge. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the badge. Typically contains short text (1-2 words) or a small number. For accessibility, ensure the content is meaningful. |
 
 ---
 
@@ -407,53 +375,53 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Breadcrumb`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `AriaLabel` | `string` | `"breadcrumb"` |  | Gets or sets the aria-label for the breadcrumb navigation. <remarks> Provides accessible label for screen readers. Default value is "breadcrumb". </remarks> |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the breadcrumb. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the breadcrumb. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `AriaLabel` | `string` | `"breadcrumb"` | Gets or sets the aria-label for the breadcrumb navigation. Provides accessible label for screen readers. Default value is "breadcrumb". |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the breadcrumb. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the breadcrumb. |
 
 #### `BreadcrumbEllipsis`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the breadcrumb ellipsis. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the breadcrumb ellipsis. |
 
 #### `BreadcrumbItem`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the breadcrumb item. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the breadcrumb item. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the breadcrumb item. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the breadcrumb item. |
 
 #### `BreadcrumbLink`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Href` | `string?` | `` |  | Gets or sets the href attribute for the link. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the breadcrumb link. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the breadcrumb link. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Href` | `string?` |  | Gets or sets the href attribute for the link. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the breadcrumb link. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the breadcrumb link. |
 
 #### `BreadcrumbList`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the breadcrumb list. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the breadcrumb list. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the breadcrumb list. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the breadcrumb list. |
 
 #### `BreadcrumbPage`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the breadcrumb page. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the breadcrumb page. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the breadcrumb page. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the breadcrumb page. |
 
 #### `BreadcrumbSeparator`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the breadcrumb separator. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets custom content for the separator. If not provided, a default chevron icon is used. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the breadcrumb separator. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets custom content for the separator. If not provided, a default chevron icon is used. |
 
 ---
 
@@ -476,30 +444,18 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Button`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Variant` | `ButtonVariant` | `ButtonVariant.Default` |  | Gets or sets the visual style variant of the button. <remarks> Controls the color scheme and visual appearance using CSS custom properties. Default value is <see cref="ButtonVariant.Default"/>. </r... |
-| `Size` | `ButtonSize` | `ButtonSize.Default` |  | Gets or sets the size of the button. <remarks> Controls padding, font size, and overall dimensions. Default value is <see cref="ButtonSize.Default"/>. All sizes maintain minimum touch target sizes ... |
-| `Type` | `ButtonType` | `ButtonType.Button` |  | Gets or sets the HTML button type attribute. <remarks> Controls form submission behavior when button is inside a form. Default value is <see cref="ButtonType.Button"/> to prevent accidental form su... |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the button is disabled. <remarks> When disabled: - Button cannot be clicked or focused - Opacity is reduced (via disabled:opacity-50 Tailwind class) - Pointer events are disabl... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the button. <remarks> Custom classes are appended after the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `OnClick` | `EventCallback<MouseEventArgs>` | `` |  | Gets or sets the callback invoked when the button is clicked. <remarks> The event handler receives a <see cref="MouseEventArgs"/> parameter with click details. If the button is disabled, this callb... |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the button. <remarks> Can contain text, icons, or any other Blazor markup. For icon-only buttons, use <see cref="ButtonSize.Icon"/> and provide an ari... |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for the button. <remarks> Required for icon-only buttons to provide accessible text for screen readers. Optional for buttons with text content. </remarks> |
-| `Icon` | `RenderFragment?` | `` |  | Gets or sets the icon to display in the button. <remarks> Can be any RenderFragment (SVG, icon font, image). Position is controlled by <see cref="IconPosition"/>. Automatically adds RTL-aware spaci... |
-| `IconPosition` | `IconPosition` | `IconPosition.Start` |  | Gets or sets the position of the icon relative to the button text. <remarks> Default value is <see cref="IconPosition.Start"/> (before text in LTR). Automatically adapts to RTL layouts using Tailwi... |
-
-**Basic Usage:**
-```razor
-<Button>Click me</Button>
-```
-
-**Related Enums:**
-
-- [`ButtonVariant`](#buttonvariant-enum)
-- [`IconPosition`](#iconposition-enum)
-- [`ButtonSize`](#buttonsize-enum)
-- [`ButtonType`](#buttontype-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Variant` | `ButtonVariant` | `ButtonVariant.Default` | Gets or sets the visual style variant of the button. Controls the color scheme and visual appearance using CSS custom properties. Default value is . |
+| `Size` | `ButtonSize` | `ButtonSize.Default` | Gets or sets the size of the button. Controls padding, font size, and overall dimensions. Default value is . All sizes maintain minimum touch target sizes (44x44px) for accessibility. |
+| `Type` | `ButtonType` | `ButtonType.Button` | Gets or sets the HTML button type attribute. Controls form submission behavior when button is inside a form. Default value is  to prevent accidental form submissions. |
+| `Disabled` | `bool` |  | Gets or sets whether the button is disabled. When disabled: - Button cannot be clicked or focused - Opacity is reduced (via disabled:opacity-50 Tailwind class) - Pointer events are disabled (via disabled:pointer-events-none) - aria-disabled attribute is set to true |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the button. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
+| `OnClick` | `EventCallback<MouseEventArgs>` |  | Gets or sets the callback invoked when the button is clicked. The event handler receives a  parameter with click details. If the button is disabled, this callback will not be invoked. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the button. Can contain text, icons, or any other Blazor markup. For icon-only buttons, use  and provide an aria-label. |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label for the button. Required for icon-only buttons to provide accessible text for screen readers. Optional for buttons with text content. |
+| `Icon` | `RenderFragment?` |  | Gets or sets the icon to display in the button. Can be any RenderFragment (SVG, icon font, image). Position is controlled by . Automatically adds RTL-aware spacing between icon and text. |
+| `IconPosition` | `IconPosition` | `IconPosition.Start` | Gets or sets the position of the icon relative to the button text. Default value is  (before text in LTR). Automatically adapts to RTL layouts using Tailwind directional utilities. |
 
 ---
 
@@ -522,36 +478,27 @@ dotnet add package NeoBlazorUI.Components
 
 #### `ButtonGroup`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Orientation` | `ButtonGroupOrientation` | `ButtonGroupOrientation.Horizontal` |  | Gets or sets the orientation of the button group. <remarks> Controls whether buttons are arranged horizontally (default) or vertically. Default value is <see cref="ButtonGroupOrientation.Horizontal... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the button group. <remarks> Custom classes are appended after the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for the button group. <remarks> Provides an accessible name for the group when role="group" is used. Important for screen reader users to understand the group's purpose.... |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the button group. <remarks> Typically contains Button components, but can also contain nested ButtonGroup components for creating complex layouts. </r... |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Orientation` | `ButtonGroupOrientation` | `ButtonGroupOrientation.Horizontal` | Gets or sets the orientation of the button group. Controls whether buttons are arranged horizontally (default) or vertically. Default value is . |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the button group. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label for the button group. Provides an accessible name for the group when role="group" is used. Important for screen reader users to understand the group's purpose. Recommended for button groups that perform a specific function (e.g., "Text formatting", "Email actions"). |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the button group. Typically contains Button components, but can also contain nested ButtonGroup components for creating complex layouts. |
 
 #### `ButtonGroupSeparator`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Orientation` | `SeparatorOrientation` | `SeparatorOrientation.Vertical` |  | Gets or sets the orientation of the separator. <remarks> Should match the parent ButtonGroup's orientation. Default value is <see cref="SeparatorOrientation.Vertical"/> (for horizontal button group... |
-| `Decorative` | `bool` | `true` |  | Gets or sets whether the separator is purely decorative. <remarks> When true (default), the separator is treated as decorative and hidden from assistive technologies. </remarks> |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the separator. <remarks> Custom classes are appended after the component's base classes, allowing for style overrides and extensions. </remarks> |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Orientation` | `SeparatorOrientation` | `SeparatorOrientation.Vertical` | Gets or sets the orientation of the separator. Should match the parent ButtonGroup's orientation. Default value is  (for horizontal button groups). |
+| `Decorative` | `bool` | `true` | Gets or sets whether the separator is purely decorative. When true (default), the separator is treated as decorative and hidden from assistive technologies. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the separator. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
 
 #### `ButtonGroupText`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the text container. <remarks> Custom classes are appended after the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the text container. <remarks> Can contain text, icons, or any other markup. Icons will automatically be sized to match the button group's icon size. <... |
-
-**Basic Usage:**
-```razor
-<ButtonGroup>
-    <Button Variant="ButtonVariant.Outline">Left</Button>
-    <Button Variant="ButtonVariant.Outline">Center</Button>
-    <Button Variant="ButtonVariant.Outline">Right</Button>
-</ButtonGroup>
-```
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the text container. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the text container. Can contain text, icons, or any other markup. Icons will automatically be sized to match the button group's icon size. |
 
 ---
 
@@ -570,9 +517,26 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Calendar
 ```
 
-**Related Enums:**
+**Components & Parameters:**
 
-- [`CalendarCaptionLayout`](#calendarcaptionlayout-enum)
+#### `Calendar`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `SelectedDate` | `DateOnly?` |  | The currently selected date. |
+| `SelectedDateChanged` | `EventCallback<DateOnly?>` |  | Event callback invoked when the selected date changes. |
+| `MinDate` | `DateOnly?` |  | The minimum selectable date. |
+| `MaxDate` | `DateOnly?` |  | The maximum selectable date. |
+| `Culture` | `CultureInfo` | `CultureInfo.CurrentCulture` | The culture to use for formatting. Default is the current culture. |
+| `InitialMonth` | `DateOnly?` |  | The initial month to display. Defaults to the selected date's month or current month. |
+| `IsDateDisabled` | `Func<DateOnly, bool>?` |  | Function to determine if a specific date is disabled. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the calendar. |
+| `RowClass` | `string?` |  | Additional CSS classes to apply to each week row in the day grid. |
+| `CaptionLayout` | `CalendarCaptionLayout` | `CalendarCaptionLayout.Label` | The caption layout mode for month/year display. Default is Label (static text). Dropdown allows quick month/year selection. |
+| `YearRange` | `int` | `20` | The number of years to show before and after the current year in dropdown mode. Default is 20 years in each direction. |
+| `RangeStart` | `DateOnly?` |  | The start date of a range selection (for visual styling). |
+| `RangeEnd` | `DateOnly?` |  | The end date of a range selection (for visual styling). |
+| `DisplayedMonthChanged` | `EventCallback<DateOnly>` |  | Event callback invoked when the displayed month changes. This fires whenever the user navigates to a different month via buttons, keyboard, or dropdown. |
 
 ---
 
@@ -595,68 +559,52 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Card`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the card. <remarks> Typically contains CardHeader, CardContent, and CardFooter components. Can contain any Blazor markup. </remarks> |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the card. <remarks> Custom classes are appended after the component's base classes, allowing for style overrides and extensions. </remarks> |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the card. Typically contains CardHeader, CardContent, and CardFooter components. Can contain any Blazor markup. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the card. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
 
 #### `CardAction`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered in the card action area. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the card action area. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered in the card action area. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the card action area. |
 
 #### `CardContent`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the card content area. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the card content. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the card content area. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the card content. |
 
 #### `CardDescription`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered as the card description. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the card description. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered as the card description. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the card description. |
 
 #### `CardFooter`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the card footer. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the card footer. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the card footer. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the card footer. |
 
 #### `CardHeader`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the card header. <remarks> Typically contains CardTitle, CardDescription, and optionally CardAction. </remarks> |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the card header. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the card header. Typically contains CardTitle, CardDescription, and optionally CardAction. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the card header. |
 
 #### `CardTitle`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered as the card title. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the card title. |
-
-**Basic Usage:**
-```razor
-<Card>
-    <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card description goes here</CardDescription>
-    </CardHeader>
-    <CardContent>
-        Main content
-    </CardContent>
-    <CardFooter>
-        Footer content
-    </CardFooter>
-</Card>
-```
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered as the card title. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the card title. |
 
 ---
 
@@ -675,9 +623,32 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Carousel
 ```
 
-**Related Enums:**
+**Components & Parameters:**
 
-- [`CarouselOrientation`](#carouselorientation-enum)
+#### `Carousel`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content containing CarouselItem components. |
+| `Orientation` | `CarouselOrientation` | `CarouselOrientation.Horizontal` | Orientation of the carousel. Default is Horizontal. |
+| `ShowNavigation` | `bool` | `true` | Whether to show navigation arrows. Default is true. |
+| `ShowIndicators` | `bool` | `false` | Whether to show dot indicators. Default is false. |
+| `AutoPlay` | `bool` | `false` | Whether to enable auto-play. Default is false. |
+| `AutoPlayInterval` | `int` | `3000` | Auto-play interval in milliseconds. Default is 3000. |
+| `Loop` | `bool` | `false` | Whether to enable loop (infinite scroll). Default is false. |
+| `SlidesPerView` | `int` | `1` | Number of slides to show at once. Default is 1. |
+| `Gap` | `int` | `0` | Gap between slides in pixels. Default is 0. |
+| `EnableDrag` | `bool` | `false` | Whether to enable drag gestures. Default is false. |
+| `Class` | `string?` |  | Additional CSS classes for the carousel container. |
+| `ContentClass` | `string?` |  | Additional CSS classes for the inner content container that holds the slides. |
+| `OnSlideChange` | `EventCallback<int>` |  | Event callback invoked when the current slide index changes. |
+
+#### `CarouselItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content of the carousel item. |
+| `Class` | `string?` |  | Additional CSS classes for the item. |
 
 ---
 
@@ -696,31 +667,388 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Chart
 ```
 
-**Related Enums:**
+**Components & Parameters:**
 
-- [`ImageFormat`](#imageformat-enum)
-- [`ChartEngine`](#chartengine-enum)
-- [`AxisScale`](#axisscale-enum)
-- [`TooltipMode`](#tooltipmode-enum)
-- [`TooltipCursor`](#tooltipcursor-enum)
-- [`LegendLayout`](#legendlayout-enum)
-- [`LegendAlign`](#legendalign-enum)
-- [`LegendVerticalAlign`](#legendverticalalign-enum)
-- [`LegendIcon`](#legendicon-enum)
-- [`Focus`](#focus-enum)
-- [`BarLayout`](#barlayout-enum)
-- [`GradientDirection`](#gradientdirection-enum)
-- [`LabelPosition`](#labelposition-enum)
-- [`InterpolationType`](#interpolationtype-enum)
-- [`StackOffset`](#stackoffset-enum)
-- [`PolarGridType`](#polargridtype-enum)
-- [`YAxisPosition`](#yaxisposition-enum)
-- [`LineStyleType`](#linestyletype-enum)
-- [`SymbolShape`](#symbolshape-enum)
-- [`RadarShape`](#radarshape-enum)
-- [`AnimationType`](#animationtype-enum)
-- [`AnimationEasing`](#animationeasing-enum)
-- [`ChartType`](#charttype-enum)
+#### `Area`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Color` | `string?` |  | Gets or sets the area color (legacy, use Fill instead). |
+| `Emphasis` | `bool` | `false` | Gets or sets whether emphasis is enabled. |
+| `Focus` | `Focus` | `Focus.None` | Gets or sets the focus behavior. |
+| `ShowDots` | `bool` | `false` | Gets or sets whether to show dots at data points. |
+| `LineWidth` | `int` | `1` | Gets or sets the line width in pixels. |
+| `Opacity` | `double?` |  | Gets or sets the opacity for the area fill (0.0 to 1.0). Maps to series.areaStyle.opacity. If Fill.Opacity is also set, Fill.Opacity takes precedence. |
+| `StackId` | `string?` |  | Gets or sets the stack group ID for stacked areas. |
+| `Interpolation` | `InterpolationType` | `InterpolationType.Natural` | Gets or sets the interpolation type for the area. |
+
+#### `AreaChart`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `StackOffset` | `StackOffset` | `StackOffset.None` | Gets or sets the stack offset mode for percentage stacking. |
+
+#### `AxisLabel`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Show` | `bool?` |  | Gets or sets whether to show axis labels. |
+| `Rotate` | `int?` |  | Gets or sets the rotation angle in degrees (clockwise). Common value: -45. |
+| `Formatter` | `string?` |  | Gets or sets the formatter string. Can be an ECharts template string or JavaScript function. Examples: "{value}", "function(value) { return value + '%'; }" |
+| `Interval` | `int?` |  | Gets or sets the interval for showing labels. Shows every Nth label. |
+| `Inside` | `bool?` |  | Gets or sets whether to render labels inside the chart area. |
+| `Margin` | `int?` |  | Gets or sets the distance to the axis line in pixels. |
+| `HideOverlap` | `bool?` |  | Gets or sets whether to hide overlapping labels. |
+| `Color` | `string?` |  | Gets or sets the label color. CSS variable or hex color. |
+| `FontSize` | `int?` |  | Gets or sets the font size in pixels. |
+| `FontFamily` | `string?` |  | Gets or sets the font family. |
+| `FontWeight` | `string?` |  | Gets or sets the font weight. E.g., "normal", "bold", "600". |
+| `LineHeight` | `int?` |  | Gets or sets the line height in pixels. |
+| `Align` | `string?` |  | Gets or sets the horizontal text alignment. E.g., "left", "center", "right". |
+| `VerticalAlign` | `string?` |  | Gets or sets the vertical text alignment. E.g., "top", "middle", "bottom". |
+| `Overflow` | `string?` |  | Gets or sets the overflow behavior. E.g., "truncate", "break", "breakAll". |
+| `Width` | `int?` |  | Gets or sets the maximum width for label text. |
+| `Ellipsis` | `string?` |  | Gets or sets the ellipsis character for truncated text. |
+
+#### `Bar`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Color` | `string?` |  | Gets or sets the bar color (legacy, use Fill instead). |
+| `Emphasis` | `bool` | `false` | Gets or sets whether emphasis is enabled. |
+| `Focus` | `Focus` | `Focus.None` | Gets or sets the focus behavior. |
+| `StackId` | `string?` |  | Gets or sets the stack group ID for stacked bars. |
+| `Radius` | `int?` |  | Gets or sets the border radius for bar corners. |
+| `Opacity` | `double?` |  | Gets or sets the opacity for the bars (0.0 to 1.0). Maps to series.itemStyle.opacity. |
+
+#### `BarChart`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Layout` | `BarLayout` | `BarLayout.Vertical` | Gets or sets the bar chart layout (vertical or horizontal). |
+| `StackOffset` | `StackOffset` | `StackOffset.None` | Gets or sets the stack offset mode for percentage stacking. |
+
+#### `CenterLabel`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Text` | `string?` |  | Gets or sets the text to display in the center. |
+| `FontSize` | `double?` |  | Gets or sets the font size. |
+| `Color` | `string?` |  | Gets or sets the text color. |
+| `FontWeight` | `string?` |  | Gets or sets the font weight. |
+
+#### `ChartContainer`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content. |
+
+#### `ChartDescription`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content. |
+
+#### `ChartEmptyState`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Height` | `int` | `350` | Gets or sets the height of the empty state in pixels. |
+| `Title` | `string` | `"No data available"` | Gets or sets the title text to display. |
+| `Description` | `string?` |  | Gets or sets the description text to display. |
+| `ShowIcon` | `bool` | `true` | Gets or sets whether to show the chart icon. |
+| `Content` | `RenderFragment?` |  | Gets or sets custom content to display instead of the default message. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes. |
+
+#### `ChartHeader`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content. |
+
+#### `ChartSkeleton`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Height` | `int` | `350` | Gets or sets the height of the skeleton in pixels. |
+| `BarCount` | `int` | `8` | Gets or sets the number of skeleton bars to display. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes. |
+
+#### `ChartTitle`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content. |
+
+#### `ComposedChart`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| *(No parameters)* | | | |
+
+#### `Fill`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Color` | `string?` |  | Gets or sets the fill color. |
+| `Opacity` | `double?` |  | Gets or sets the fill opacity. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content (for LinearGradient). |
+
+#### `Grid`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Show` | `bool` | `true` | Gets or sets whether to show grid lines. |
+| `Horizontal` | `bool` | `true` | Gets or sets whether to show horizontal grid lines. |
+| `Vertical` | `bool` | `true` | Gets or sets whether to show vertical grid lines. |
+| `Stroke` | `string?` |  | Gets or sets the stroke color for grid lines. |
+| `StrokeWidth` | `int?` |  | Gets or sets the stroke width for grid lines in pixels. Maps to grid line lineStyle.width. |
+| `StrokeType` | `LineStyleType` | `LineStyleType.Solid` | Gets or sets the stroke/line type for grid lines. Maps to grid line lineStyle.type. |
+| `Opacity` | `double?` |  | Gets or sets the opacity for grid lines (0.0 to 1.0). Maps to grid line lineStyle.opacity. |
+
+#### `LabelLine`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Show` | `bool` | `true` | Whether to show the label line. |
+| `Length` | `double?` |  | Length of the first segment (in pixels). |
+| `Length2` | `double?` |  | Length of the second segment (in pixels). |
+| `Smooth` | `bool?` |  | Whether to use smooth curved lines. When true, label lines will be smoothly curved. When false or null, label lines will be straight. |
+
+#### `LabelList`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Position` | `LabelPosition` | `LabelPosition.Top` | Label position. |
+| `Formatter` | `string?` |  | Label formatter (template string or JS function string). |
+| `Color` | `string?` |  | Label text color. |
+| `FontSize` | `double?` |  | Label font size. |
+| `Offset` | `double?` |  | Label offset from data point. |
+| `Show` | `bool` | `true` | Whether to show labels. |
+
+#### `Legend`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Show` | `bool` | `true` | Gets or sets whether to show the legend. |
+| `Layout` | `LegendLayout` | `LegendLayout.Horizontal` | Gets or sets the legend layout orientation. |
+| `Align` | `LegendAlign` | `LegendAlign.Center` | Gets or sets the horizontal alignment of the legend. |
+| `VerticalAlign` | `LegendVerticalAlign` | `LegendVerticalAlign.Top` | Gets or sets the vertical alignment of the legend. |
+| `MarginTop` | `int` | `0` | Gets or sets the top margin in pixels (applies only when VerticalAlign is Top). |
+| `Icon` | `LegendIcon` | `LegendIcon.Circle` | Gets or sets the icon type for legend items. Maps to ECharts legend.icon property. |
+| `TextColor` | `string?` |  | Gets or sets the text color for legend labels. Supports CSS variables like 'var(--foreground)'. |
+
+#### `Line`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Color` | `string?` |  | Gets or sets the line color (legacy, use Fill instead). |
+| `Emphasis` | `bool` | `false` | Gets or sets whether emphasis is enabled. |
+| `Focus` | `Focus` | `Focus.None` | Gets or sets the focus behavior. |
+| `ShowDots` | `bool` | `false` | Gets or sets whether to show dots at data points. |
+| `DotSize` | `int` | `4` | Gets or sets the size of dots/symbols at data points in pixels. Maps to series.symbolSize. |
+| `DotShape` | `SymbolShape` | `SymbolShape.EmptyCircle` | Gets or sets the shape of dots/symbols at data points. Maps to series.symbol. |
+| `LineWidth` | `int` | `1` | Gets or sets the line width in pixels. |
+| `Opacity` | `double?` |  | Gets or sets the opacity for the line (0.0 to 1.0). Maps to series.lineStyle.opacity or itemStyle.opacity. |
+| `Dashed` | `bool` | `false` | Gets or sets whether the line should be dashed. |
+| `Interpolation` | `InterpolationType` | `InterpolationType.Natural` | Gets or sets the interpolation type for the line. |
+
+#### `LineChart`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| *(No parameters)* | | | |
+
+#### `LinearGradient`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Direction` | `GradientDirection` | `GradientDirection.Vertical` | Gets or sets the gradient direction. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content (for Stop components). |
+
+#### `Pie`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `InnerRadius` | `string?` |  | Gets or sets the inner radius for donut charts (e.g., "60" or "60%"). |
+| `OuterRadius` | `string` | `"75%"` | Gets or sets the outer radius (e.g., "75%", "80%", "200"). Controls the overall size of the pie chart. |
+| `StartAngle` | `int` | `90` | Gets or sets the start angle in degrees (0-360). 90 = top, 0 = right, 180 = bottom, 270 = left. |
+| `EndAngle` | `int` | `450` | Gets or sets the end angle in degrees. For full circle: StartAngle + 360. For semi-circle gauge: StartAngle + 180. |
+| `RoseType` | `string?` |  | Gets or sets the rose chart type. "radius" - radius represents value (Nightingale rose chart). "area" - area represents value. null - normal pie chart. |
+| `PadAngle` | `int` | `0` | Gets or sets the padding angle between slices in degrees. |
+| `Center` | `string[]?` |  | Gets or sets the center position as [x, y] (e.g., ["50%", "50%"]). |
+| `SelectedMode` | `string?` |  | Gets or sets the selection mode. "single" - single slice selection. "multiple" - multiple slice selection. null/false - no selection. |
+| `SelectedOffset` | `int` | `10` | Gets or sets the offset distance when slice is selected (pixels). |
+| `MinAngle` | `int` | `0` | Gets or sets the minimum angle for a slice to be visible (degrees). Small value slices below this threshold will be hidden. |
+| `Color` | `string?` |  | Gets or sets the default color (for auto palette override, legacy). |
+| `ShowLabelLine` | `bool` | `true` | Gets or sets whether to show label lines. |
+| `EmphasisScale` | `bool?` |  | Gets or sets whether to enable emphasis (hover) scaling. |
+| `EmphasisScaleSize` | `int?` |  | Gets or sets the emphasis scale size in pixels (default 5-10). |
+| `EmphasisFocus` | `string?` |  | Gets or sets the emphasis focus mode ("self", "series", "none"). |
+| `EmphasisShowLabel` | `bool?` |  | Gets or sets whether to show labels on hover (emphasis). |
+| `EmphasisLabelFormatter` | `string?` |  | Gets or sets the label formatter for emphasis state. |
+
+#### `PieChart`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| *(No parameters)* | | | |
+
+#### `PolarGrid`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Type` | `PolarGridType` | `PolarGridType.Circle` | Gets or sets the grid type (Circle or Polygon). |
+| `Show` | `bool` | `true` | Gets or sets whether to show the grid. |
+| `Stroke` | `string?` |  | Gets or sets the grid line color. |
+| `StrokeWidth` | `int?` |  | Gets or sets the grid line width. |
+| `SplitNumber` | `int` | `5` | Gets or sets the number of split levels (concentric rings). |
+| `ShowAxisLine` | `bool` | `true` | Gets or sets whether to show the angle axis line. |
+| `ShowSplitLine` | `bool` | `true` | Gets or sets whether to show split lines. |
+
+#### `Radar`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Color` | `string?` |  | Gets or sets the series color (legacy, use Fill instead). |
+| `Emphasis` | `bool` | `false` | Gets or sets whether emphasis is enabled. |
+| `Focus` | `Focus` | `Focus.None` | Gets or sets the focus behavior. |
+| `FillArea` | `bool` | `false` | Gets or sets whether to fill the radar area. |
+| `AreaOpacity` | `double?` |  | Gets or sets the area fill opacity (0.0 to 1.0). Only applies when FillArea is true. |
+| `LineWidth` | `int` | `2` | Gets or sets the line width in pixels. |
+
+#### `RadarChart`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| *(No parameters)* | | | |
+
+#### `RadarGrid`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Shape` | `RadarShape` | `RadarShape.Polygon` | Gets or sets the radar grid shape. |
+| `SplitNumber` | `int` | `5` | Gets or sets the number of split levels (concentric grid lines). |
+| `Radius` | `string` | `"75%"` | Gets or sets the radar radius relative to container (e.g., "75%", "200"). |
+| `Center` | `string[]?` |  | Gets or sets the center position [x, y] (e.g., ["50%", "50%"]). |
+| `ShowAxisLine` | `bool` | `true` | Gets or sets whether to show axis lines (spokes). |
+| `ShowSplitLine` | `bool` | `true` | Gets or sets whether to show split lines (rings). |
+| `AxisLineColor` | `string?` |  | Gets or sets the axis line color. |
+| `AxisLineWidth` | `int?` |  | Gets or sets the axis line width. |
+| `SplitLineColor` | `string?` |  | Gets or sets the split line color. |
+| `SplitLineWidth` | `int?` |  | Gets or sets the split line width. |
+| `ShowIndicatorLabels` | `bool` | `true` | Gets or sets whether to show radar indicator labels (axis names like "Coding", "Design", etc.). |
+| `IndicatorColor` | `string?` |  | Gets or sets the text color for radar indicator labels. Supports CSS variables like 'var(--foreground)'. |
+| `IndicatorFontSize` | `int?` |  | Gets or sets the font size for radar indicator labels. |
+| `IndicatorFontWeight` | `string?` |  | Gets or sets the font weight for radar indicator labels (e.g., "normal", "bold"). |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content. |
+
+#### `RadialBar`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Color` | `string?` |  | Gets or sets the series color (legacy, use Fill instead). |
+| `InnerRadius` | `string?` |  | Gets or sets the inner radius (e.g., "60%" or "60"). |
+| `OuterRadius` | `string?` |  | Gets or sets the outer radius (e.g., "80%" or "80"). |
+| `CornerRadius` | `int?` |  | Gets or sets the corner radius for rounded bars. |
+| `StackId` | `string?` |  | Gets or sets the stack group ID for stacked radial bars. |
+| `ShowBackground` | `bool` | `false` | Gets or sets whether to show a background track. |
+| `BackgroundColor` | `string?` |  | Gets or sets the background track color. |
+| `BackgroundOpacity` | `double?` | `0.1` | Gets or sets the background track opacity (0.0 to 1.0). |
+
+#### `RadialBarChart`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `StartAngle` | `int` | `90` | Gets or sets the start angle in degrees (0-360). 90 = top, 0 = right, 180 = bottom, 270 = left. |
+| `EndAngle` | `int` | `450` | Gets or sets the end angle in degrees. For full circle: 450 (90 + 360). For semi-circle gauge: 270 (90 + 180). |
+| `Clockwise` | `bool` | `true` | Gets or sets whether angle axis runs clockwise. |
+| `RadiusMin` | `double?` | `0` | Gets or sets the minimum value for the radius axis. |
+| `RadiusMax` | `double?` |  | Gets or sets the maximum value for the radius axis. |
+
+#### `Scatter`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Color` | `string?` |  | Gets or sets the marker color (legacy, use Fill instead). Note: Scatter uses XAxis.DataKey and YAxis.DataKey for X/Y coordinates. |
+| `SymbolSize` | `int` | `10` | Gets or sets the size of scatter symbols in pixels. Maps to series.symbolSize. |
+| `Symbol` | `SymbolShape` | `SymbolShape.Circle` | Gets or sets the shape of scatter symbols. Maps to series.symbol. |
+| `Emphasis` | `bool` | `false` | Gets or sets whether emphasis is enabled. |
+| `Focus` | `Focus` | `Focus.None` | Gets or sets the focus behavior. |
+| `SymbolSizeFunction` | `string?` |  | Gets or sets a JavaScript function string to dynamically calculate symbol size. Example: "function(data) { return data[2] / 100; }" for bubble charts. If set, overrides SymbolSize parameter. |
+| `SymbolRotate` | `int?` |  | Gets or sets the symbol rotation in degrees. |
+| `BorderColor` | `string?` |  | Gets or sets the border color for scatter symbols. |
+| `BorderWidth` | `int?` |  | Gets or sets the border width for scatter symbols in pixels. |
+| `Large` | `bool` | `false` | Gets or sets whether to enable large dataset optimization (10K+ points). |
+| `LargeThreshold` | `int?` | `2000` | Gets or sets the threshold for enabling large mode automatically. |
+| `Progressive` | `int?` |  | Gets or sets the progressive rendering chunk size for huge datasets. |
+| `Clip` | `bool` | `true` | Gets or sets whether to clip points outside axis range. |
+
+#### `ScatterChart`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| *(No parameters)* | | | |
+
+#### `Stop`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Opacity` | `double?` |  | Gets or sets the opacity at this stop. |
+
+#### `Tooltip`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Show` | `bool` | `true` | Gets or sets whether to show the tooltip. |
+| `Mode` | `TooltipMode?` |  | Gets or sets the tooltip trigger mode. Default depends on chart type (see spec section 4.4). |
+| `Cursor` | `TooltipCursor` | `TooltipCursor.None` | Gets or sets the cursor/axis pointer type. |
+| `Formatter` | `string?` |  | Gets or sets the formatter string. Can be either an ECharts template string or a JavaScript function as a string. Examples: - Template: "{b}: {c}" - Function: "function(params) { return params.name + ': ' + params.value; }" |
+| `BackgroundColor` | `string?` |  | Gets or sets the background color for the tooltip. Maps to tooltip.backgroundColor. |
+| `BorderColor` | `string?` |  | Gets or sets the border color for the tooltip. Maps to tooltip.borderColor. |
+| `BorderWidth` | `int?` |  | Gets or sets the border width for the tooltip in pixels. Maps to tooltip.borderWidth. |
+| `TextColor` | `string?` |  | Gets or sets the text color for the tooltip. Maps to tooltip.textStyle.color. |
+
+#### `XAxis`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Show` | `bool` | `true` | Gets or sets whether to show the X axis. |
+| `DataKey` | `string?` |  | Gets or sets the data key for X axis values. |
+| `Scale` | `AxisScale` | `AxisScale.Auto` | Gets or sets the scale type for the axis. |
+| `Min` | `double?` |  | Gets or sets the minimum value for the axis. Maps to xAxis.min. |
+| `Max` | `double?` |  | Gets or sets the maximum value for the axis. Maps to xAxis.max. |
+| `Interval` | `double?` |  | Gets or sets the interval of axis ticks. Maps to xAxis.interval. |
+| `AxisLine` | `bool` | `true` | Gets or sets whether to show the axis line. |
+| `TickLine` | `bool` | `true` | Gets or sets whether to show tick lines. |
+| `Color` | `string?` |  | Gets or sets the color of the axis line. Maps to axisLine.lineStyle.color. |
+| `Width` | `int?` |  | Gets or sets the width of the axis line in pixels. Maps to axisLine.lineStyle.width. |
+| `TickColor` | `string?` |  | Gets or sets the color of the tick lines. Maps to axisTick.lineStyle.color. |
+| `TickWidth` | `int?` |  | Gets or sets the width of the tick lines in pixels. Maps to axisTick.lineStyle.width. |
+| `BoundaryGap` | `bool?` |  | Gets or sets whether there is a gap on both sides of the axis. Default is null (auto). For bar charts, this leaves space on both sides. For line charts, this is typically set to false to have data points at the edges. Maps to xAxis.boundaryGap. |
+| `IndicatorMin` | `double?` |  | Gets or sets the minimum value for this radar indicator. Only applies to RadarChart. |
+| `IndicatorMax` | `double?` |  | Gets or sets the maximum value for this radar indicator. Only applies to RadarChart. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content for nested components (e.g., AxisLabel). |
+
+#### `YAxis`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Show` | `bool` | `true` | Gets or sets whether to show the Y axis. |
+| `DataKey` | `string?` |  | Gets or sets the data key for Y axis values. |
+| `Scale` | `AxisScale` | `AxisScale.Auto` | Gets or sets the scale type for the axis. |
+| `Position` | `YAxisPosition` | `YAxisPosition.Left` | Gets or sets the position of the Y axis (left or right). Maps to yAxis.position. |
+| `Min` | `double?` |  | Gets or sets the minimum value for the axis. Maps to yAxis.min. |
+| `Max` | `double?` |  | Gets or sets the maximum value for the axis. Maps to yAxis.max. |
+| `Interval` | `double?` |  | Gets or sets the interval of axis ticks. Maps to yAxis.interval. |
+| `AxisLine` | `bool` | `true` | Gets or sets whether to show the axis line. |
+| `TickLine` | `bool` | `true` | Gets or sets whether to show tick lines. |
+| `Color` | `string?` |  | Gets or sets the color of the axis line. Maps to axisLine.lineStyle.color. |
+| `Width` | `int?` |  | Gets or sets the width of the axis line in pixels. Maps to axisLine.lineStyle.width. |
+| `TickColor` | `string?` |  | Gets or sets the color of the tick lines. Maps to axisTick.lineStyle.color. |
+| `TickWidth` | `int?` |  | Gets or sets the width of the tick lines in pixels. Maps to axisTick.lineStyle.width. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content for nested components (e.g., AxisLabel). |
 
 ---
 
@@ -743,28 +1071,19 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Checkbox`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Checked` | `bool` | `` |  | Gets or sets whether the checkbox is checked. <remarks> This property supports two-way binding using the @bind-Checked directive. Changes to this property trigger the CheckedChanged event callback.... |
-| `CheckedChanged` | `EventCallback<bool>` | `` |  | Gets or sets the callback invoked when the checked state changes. <remarks> This event callback enables two-way binding with @bind-Checked. It is invoked whenever the user toggles the checkbox stat... |
-| `Indeterminate` | `bool` | `` |  | Gets or sets whether the checkbox is in an indeterminate state. <remarks> The indeterminate state is typically used for "select all" checkboxes when only some child items are selected. When indeter... |
-| `IndeterminateChanged` | `EventCallback<bool>` | `` |  | Gets or sets the callback invoked when the indeterminate state changes. |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the checkbox is disabled. <remarks> When disabled: - Checkbox cannot be clicked or focused - Opacity is reduced - Pointer events are disabled - aria-disabled attribute is set t... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the checkbox. <remarks> Custom classes are appended after the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for the checkbox. <remarks> Provides accessible text for screen readers when the checkbox doesn't have associated label text. </remarks> |
-| `Id` | `string?` | `` |  | Gets or sets the ID attribute for the checkbox element. <remarks> Used for associating the checkbox with label elements via htmlFor attribute. </remarks> |
-| `Name` | `string?` | `` |  | Gets or sets the name of the checkbox for form submission. <remarks> This is critical for form submission. The name/value pair is submitted to the server. If not specified, falls back to the Id val... |
-| `Required` | `bool` | `` |  | Gets or sets whether the checkbox is required. <remarks> When true, the checkbox must be checked for form submission. Works with form validation. </remarks> |
-| `CheckedExpression` | `Expression<Func<bool>>?` | `` |  | Gets or sets an expression that identifies the bound value. <remarks> Used for form validation integration. When provided, the checkbox registers with the EditContext and participates in form valid... |
-
-**Basic Usage:**
-```razor
-<Checkbox @bind-Checked="isAccepted" />
-
-@code {
-    private bool isAccepted = false;
-}
-```
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Checked` | `bool` |  | Gets or sets whether the checkbox is checked. This property supports two-way binding using the @bind-Checked directive. Changes to this property trigger the CheckedChanged event callback. |
+| `CheckedChanged` | `EventCallback<bool>` |  | Gets or sets the callback invoked when the checked state changes. This event callback enables two-way binding with @bind-Checked. It is invoked whenever the user toggles the checkbox state. Also notifies EditContext for form validation. |
+| `Indeterminate` | `bool` |  | Gets or sets whether the checkbox is in an indeterminate state. The indeterminate state is typically used for "select all" checkboxes when only some child items are selected. When indeterminate is true, a dash icon is displayed instead of a checkmark. |
+| `IndeterminateChanged` | `EventCallback<bool>` |  | Gets or sets the callback invoked when the indeterminate state changes. |
+| `Disabled` | `bool` |  | Gets or sets whether the checkbox is disabled. When disabled: - Checkbox cannot be clicked or focused - Opacity is reduced - Pointer events are disabled - aria-disabled attribute is set to true |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the checkbox. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label for the checkbox. Provides accessible text for screen readers when the checkbox doesn't have associated label text. |
+| `Id` | `string?` |  | Gets or sets the ID attribute for the checkbox element. Used for associating the checkbox with label elements via htmlFor attribute. |
+| `Name` | `string?` |  | Gets or sets the name of the checkbox for form submission. This is critical for form submission. The name/value pair is submitted to the server. If not specified, falls back to the Id value. |
+| `Required` | `bool` |  | Gets or sets whether the checkbox is required. When true, the checkbox must be checked for form submission. Works with form validation. |
+| `CheckedExpression` | `Expression<Func<bool>>?` |  | Gets or sets an expression that identifies the bound value. Used for form validation integration. When provided, the checkbox registers with the EditContext and participates in form validation. |
 
 ---
 
@@ -787,44 +1106,28 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Collapsible`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Open` | `bool` | `` |  | Gets or sets a value indicating whether the collapsible is currently expanded. <value> <c>true</c> if the collapsible is open (content visible); otherwise, <c>false</c>. Default is <c>false</c>. </... |
-| `OpenChanged` | `EventCallback<bool>` | `` |  | Gets or sets the callback invoked when the open state changes. <value> An <see cref="EventCallback{Boolean}"/> that receives the new open state, or <c>null</c> if no callback is provided. </value> |
-| `Disabled` | `bool` | `` |  | Gets or sets a value indicating whether the collapsible is disabled. <value> <c>true</c> if the collapsible is disabled and cannot be toggled; otherwise, <c>false</c>. Default is <c>false</c>. </va... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the container element. <value> A string containing one or more CSS class names, or <c>null</c>. </value> <remarks> Use this parameter to customize th... |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the child content to be rendered inside the collapsible container. <value> A <see cref="RenderFragment"/> containing the child components, or <c>null</c>. </value> <remarks> Typically ... |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Open` | `bool` |  | Gets or sets a value indicating whether the collapsible is currently expanded. true if the collapsible is open (content visible); otherwise, false. Default is false. Supports two-way binding via @bind-Open syntax. |
+| `OpenChanged` | `EventCallback<bool>` |  | Gets or sets the callback invoked when the open state changes. An  that receives the new open state, or null if no callback is provided. |
+| `Disabled` | `bool` |  | Gets or sets a value indicating whether the collapsible is disabled. true if the collapsible is disabled and cannot be toggled; otherwise, false. Default is false. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the container element. A string containing one or more CSS class names, or null. Use this parameter to customize the container's appearance and layout. Common Tailwind utilities include: Borders: border rounded-lg Padding: p-4, px-6 Background: bg-muted, bg-card Spacing: space-y-2, mb-4 |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content to be rendered inside the collapsible container. A  containing the child components, or null. Typically contains:  - The button/trigger element  - The expandable content area |
 
 #### `CollapsibleContent`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the content container element. <value> A string containing one or more CSS class names, or <c>null</c>. </value> <remarks> Use this parameter to styl... |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered when the collapsible is expanded. <value> A <see cref="RenderFragment"/> containing the collapsible content, or <c>null</c>. </value> |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the content container element. A string containing one or more CSS class names, or null. Use this parameter to style the content area and add animations. Common Tailwind utilities include: Padding: p-4, px-6 py-4 Borders: border-t, border-x Background: bg-muted, bg-card Transitions: transition-all duration-300 Animation: animate-in slide-in-from-top Overflow: overflow-hidden (for smooth height transitions) |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered when the collapsible is expanded. A  containing the collapsible content, or null. |
 
 #### `CollapsibleTrigger`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the trigger button element. <value> A string containing one or more CSS class names, or <c>null</c>. </value> <remarks> Common Tailwind utilities for... |
-| `AsChild` | `bool` | `false` |  | When true, the trigger does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components. Use this when you want a custom component (like Button) to... |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the trigger. <value> A <see cref="RenderFragment"/> containing the trigger content, or <c>null</c>. </value> |
-
-**Basic Usage:**
-```razor
-<Collapsible>
-    <CollapsibleTrigger AsChild>
-        <Button Variant="ButtonVariant.Outline">
-            Toggle
-        </Button>
-    </CollapsibleTrigger>
-    <CollapsibleContent>
-        <div class="p-4">
-            This content can be collapsed
-        </div>
-    </CollapsibleContent>
-</Collapsible>
-```
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the trigger button element. A string containing one or more CSS class names, or null. Common Tailwind utilities for styling triggers: Flex layout: flex items-center gap-2 Padding: px-4 py-2 Hover states: hover:bg-accent Transitions: transition-all duration-200 |
+| `AsChild` | `bool` | `false` | When true, the trigger does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components. Use this when you want a custom component (like Button) to act as the trigger. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the trigger. A  containing the trigger content, or null. |
 
 ---
 
@@ -847,49 +1150,16 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Combobox`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Value` | `string?` | `` |  | Gets or sets the currently selected value. |
-| `ValueChanged` | `EventCallback<string?>` | `` |  | Gets or sets the callback that is invoked when the selected value changes. |
-| `Placeholder` | `string` | `"Select an option..."` |  | Gets or sets the placeholder text shown in the button when no item is selected. |
-| `SearchPlaceholder` | `string` | `"Search..."` |  | Gets or sets the placeholder text shown in the search input. |
-| `EmptyMessage` | `string` | `"No results found."` |  | Gets or sets the message displayed when no items match the search. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the combobox container. |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the combobox is disabled. |
-| `PopoverWidth` | `string` | `"w-[200px]"` |  | Gets or sets the width of the popover content. <remarks> Defaults to "w-[200px]". Can be overridden with Tailwind classes. </remarks> |
-
-**Basic Usage:**
-```razor
-<Combobox @bind-Value="selectedValue" Items="@items">
-    <ComboboxTrigger>
-        <ComboboxValue Placeholder="Select item..." />
-    </ComboboxTrigger>
-    <ComboboxContent>
-        <ComboboxInput Placeholder="Search..." />
-        <ComboboxList>
-            <ComboboxEmpty>No results found.</ComboboxEmpty>
-            @foreach (var item in items)
-            {
-                <ComboboxItem Value="@item.Value">
-                    @item.Label
-                </ComboboxItem>
-            }
-        </ComboboxList>
-    </ComboboxContent>
-</Combobox>
-
-@code {
-    private string selectedValue = "";
-    private List<SelectItem> items = new()
-    {
-        new("apple", "Apple"),
-        new("banana", "Banana"),
-        new("orange", "Orange")
-    };
-
-    record SelectItem(string Value, string Label);
-}
-```
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `string?` |  | Gets or sets the currently selected value. |
+| `ValueChanged` | `EventCallback<string?>` |  | Gets or sets the callback that is invoked when the selected value changes. |
+| `Placeholder` | `string` | `"Select an option..."` | Gets or sets the placeholder text shown in the button when no item is selected. |
+| `SearchPlaceholder` | `string` | `"Search..."` | Gets or sets the placeholder text shown in the search input. |
+| `EmptyMessage` | `string` | `"No results found."` | Gets or sets the message displayed when no items match the search. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the combobox container. |
+| `Disabled` | `bool` |  | Gets or sets whether the combobox is disabled. |
+| `PopoverWidth` | `string` | `"w-[200px]"` | Gets or sets the width of the popover content. Defaults to "w-[200px]". Can be overridden with Tailwind classes. |
 
 ---
 
@@ -908,32 +1178,71 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Command
 ```
 
-**Basic Usage:**
-```razor
-<Command>
-    <CommandInput Placeholder="Type a command..." />
-    <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup Heading="Suggestions">
-            <CommandItem OnSelect="@(() => Navigate("/"))">
-                <LucideIcon Name="house" Size="16" />
-                <span>Dashboard</span>
-            </CommandItem>
-            <CommandItem OnSelect="@(() => Navigate("/settings"))">
-                <LucideIcon Name="settings" Size="16" />
-                <span>Settings</span>
-            </CommandItem>
-        </CommandGroup>
-    </CommandList>
-</Command>
+**Components & Parameters:**
 
-@code {
-    private void Navigate(string url)
-    {
-        NavigationManager.NavigateTo(url);
-    }
-}
-```
+#### `Command`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the command container. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the command. |
+| `OnSelect` | `EventCallback<string>` |  | Event callback invoked when a command item is selected. Receives the selected value as a parameter. |
+
+#### `CommandEmpty`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the empty state container. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered when there are no results. |
+
+#### `CommandGroup`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the group container. |
+| `Heading` | `string?` |  | Gets or sets the heading text for this group (optional). |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the group. |
+
+#### `CommandInput`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the input container. |
+| `Placeholder` | `string` | `"Type a command or search..."` | Gets or sets the placeholder text for the input. |
+| `Disabled` | `bool` |  | Gets or sets whether the input is disabled. |
+| `AutoFocus` | `bool` |  | Gets or sets whether the input should auto-focus when rendered. |
+| `SearchInterval` | `int` | `0` | Gets or sets the debounce interval in milliseconds before triggering search. Default is 0 (no debouncing). Set to 150-300ms for better performance with large datasets. |
+
+#### `CommandItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the item. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the item. |
+| `Value` | `string?` |  | Gets or sets the value associated with this item. |
+| `Disabled` | `bool` |  | Gets or sets whether this item is disabled. |
+| `OnSelect` | `EventCallback` |  | Gets or sets the callback invoked when this item is selected. |
+| `SearchText` | `string?` |  | Gets or sets the text used for search filtering. If not provided, uses Value. |
+
+#### `CommandList`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the list container. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the list. |
+
+#### `CommandSeparator`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the separator. |
+
+#### `CommandShortcut`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the shortcut. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the shortcut (e.g., "⌘K", "Ctrl+S"). |
 
 ---
 
@@ -951,6 +1260,134 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.ContextMenu
 ```
+
+**Components & Parameters:**
+
+#### `ContextMenu`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render. |
+| `Open` | `bool?` |  | Controls whether the context menu is open. |
+| `OpenChanged` | `EventCallback<bool>` |  | Event callback invoked when the open state changes. |
+| `OnOpen` | `EventCallback<(double X, double Y)>` |  | Event callback invoked when the context menu opens. |
+| `OnClose` | `EventCallback` |  | Event callback invoked when the context menu closes. |
+
+#### `ContextMenuCheckboxItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the checkbox item. |
+| `Disabled` | `bool` | `false` | Whether the checkbox item is disabled. |
+| `Checked` | `bool` | `false` | Whether the checkbox is checked. |
+| `CheckedChanged` | `EventCallback<bool>` |  | Event callback invoked when the checked state changes (for two-way binding). |
+| `OnCheckedChange` | `EventCallback<bool>` |  | Event callback invoked when the checkbox state changes. |
+| `CloseOnSelect` | `bool` | `false` | Whether to close the context menu when this item is selected. Default is false for checkbox items. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `ContextMenuContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the menu. |
+| `CloseOnEscape` | `bool` | `true` | Whether pressing Escape should close the menu. |
+| `CloseOnClickOutside` | `bool` | `true` | Whether clicking outside should close the menu. |
+| `ZIndex` | `int` | `50` | Z-index value for the menu content. |
+| `LockScroll` | `bool` | `true` | Whether to lock body scroll when menu is open. Default is true. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `ContextMenuGroup`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the group. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the group. |
+
+#### `ContextMenuItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the item. |
+| `Disabled` | `bool` | `false` | Whether the item is disabled. |
+| `OnClick` | `EventCallback` |  | Event callback invoked when the item is clicked. |
+| `Inset` | `bool` | `false` | Whether to show the item with inset padding. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `ContextMenuLabel`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The label content. |
+| `Inset` | `bool` | `false` | Whether to show the label with inset padding. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `ContextMenuRadioGroup`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the radio group. Typically contains ContextMenuRadioItem components. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the radio group. |
+| `Value` | `TValue?` |  | The currently selected value. |
+| `ValueChanged` | `EventCallback<TValue?>` |  | Event callback invoked when the selected value changes (for two-way binding). |
+| `OnValueChange` | `EventCallback<TValue?>` |  | Event callback invoked when the selection changes. |
+
+#### `ContextMenuRadioItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the radio item. |
+| `Disabled` | `bool` | `false` | Whether the radio item is disabled. |
+| `Value` | `TValue?` |  | The value associated with this radio item. |
+| `CloseOnSelect` | `bool` | `true` | Whether to close the context menu when this item is selected. Default is true for radio items. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `ContextMenuSeparator`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `ContextMenuShortcut`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The shortcut text (e.g., "⌘C" or "Ctrl+C"). |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `ContextMenuSub`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the submenu. Typically contains ContextMenuSubTrigger and ContextMenuSubContent. |
+| `Open` | `bool?` |  | Controls whether the submenu is open (controlled mode). |
+| `OpenChanged` | `EventCallback<bool>` |  | Event callback invoked when the open state changes (for two-way binding). |
+| `OnOpenChange` | `EventCallback<bool>` |  | Event callback invoked when the submenu open state changes. |
+
+#### `ContextMenuSubContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the submenu. |
+| `CloseOnEscape` | `bool` | `true` | Whether pressing Escape should close the submenu. |
+| `Offset` | `int` | `-4` | Offset distance from the trigger in pixels. |
+| `ZIndex` | `int` | `50` | Z-index for the submenu content. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `ContextMenuSubTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the trigger. |
+| `Disabled` | `bool` | `false` | Whether the trigger is disabled. |
+| `Inset` | `bool` | `false` | Whether to show the item with inset padding. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `ContextMenuTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content that triggers the context menu. |
+| `Disabled` | `bool` | `false` | Whether the trigger is disabled. |
 
 ---
 
@@ -973,60 +1410,58 @@ dotnet add package NeoBlazorUI.Components
 
 #### `DataTable`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Columns` | `RenderFragment?` | `` |  | Gets or sets the column definitions as child content. Use DataTableColumn components to define columns declaratively. |
-| `SelectionMode` | `DataTableSelectionMode` | `DataTableSelectionMode.None` |  | Gets or sets the row selection mode. Default is None (no selection). |
-| `ShowToolbar` | `bool` | `true` |  | Gets or sets whether to show the toolbar with global search and column visibility. Default is true. |
-| `ShowPagination` | `bool` | `true` |  | Gets or sets whether to show pagination controls. Default is true. |
-| `IsLoading` | `bool` | `` |  | Gets or sets whether the table is in a loading state. Default is false. |
-| `PageSizes` | `int[]` | `{ 10, 20, 50, 100 }` |  | Gets or sets the available page size options. Default is [10, 20, 50, 100]. |
-| `InitialPageSize` | `int` | `10` |  | Gets or sets the initial page size. Default is 10. |
-| `ToolbarActions` | `RenderFragment?` | `` |  | Gets or sets custom toolbar actions (buttons, etc.). |
-| `EmptyTemplate` | `RenderFragment?` | `` |  | Gets or sets a custom template for the empty state. If null, displays default "No results found" message. |
-| `LoadingTemplate` | `RenderFragment?` | `` |  | Gets or sets a custom template for the loading state. If null, displays default "Loading..." message. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes for the container div. |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for the table. |
-| `SelectedItems` | `IReadOnlyCollection<TData>` | `Array.Empty<TData>()` |  | Gets or sets the selected items. Use @bind-SelectedItems for two-way binding. |
-| `SelectedItemsChanged` | `EventCallback<IReadOnlyCollection<TData>>` | `` |  | Event callback invoked when the selected items change. |
-| `OnSort` | `EventCallback<(string ColumnId, SortDirection Direction)>` | `` |  | Event callback invoked when sorting changes. Use for custom sorting logic (hybrid mode). |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Columns` | `RenderFragment?` |  | Gets or sets the column definitions as child content. Use DataTableColumn components to define columns declaratively. |
+| `SelectionMode` | `DataTableSelectionMode` | `DataTableSelectionMode.None` | Gets or sets the row selection mode. Default is None (no selection). |
+| `ShowToolbar` | `bool` | `true` | Gets or sets whether to show the toolbar with global search and column visibility. Default is true. |
+| `ShowPagination` | `bool` | `true` | Gets or sets whether to show pagination controls. Default is true. |
+| `IsLoading` | `bool` |  | Gets or sets whether the table is in a loading state. Default is false. |
+| `PageSizes` | `int[]` | `{ 10, 20, 50, 100 }` | Gets or sets the available page size options. Default is [10, 20, 50, 100]. |
+| `InitialPageSize` | `int` | `10` | Gets or sets the initial page size. Default is 10. |
+| `ToolbarActions` | `RenderFragment?` |  | Gets or sets custom toolbar actions (buttons, etc.). |
+| `EmptyTemplate` | `RenderFragment?` |  | Gets or sets a custom template for the empty state. If null, displays default "No results found" message. |
+| `LoadingTemplate` | `RenderFragment?` |  | Gets or sets a custom template for the loading state. If null, displays default "Loading..." message. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes for the container div. |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label for the table. |
+| `SelectedItems` | `IReadOnlyCollection<TData>` | `Array.Empty<TData>()` | Gets or sets the selected items. Use @bind-SelectedItems for two-way binding. |
+| `SelectedItemsChanged` | `EventCallback<IReadOnlyCollection<TData>>` |  | Event callback invoked when the selected items change. |
+| `OnSort` | `EventCallback<(string ColumnId, SortDirection Direction)>` |  | Event callback invoked when sorting changes. Use for custom sorting logic (hybrid mode). |
+| `OnFilter` | `EventCallback<(string? GlobalSearch, Dictionary<string, string> ColumnFilters)>` |  | Event callback invoked when filtering changes. Use for custom filtering logic (hybrid mode). |
+| `PreprocessData` | `Func<IEnumerable<TData>, Task<IEnumerable<TData>>>?` |  | Gets or sets a function to preprocess data before automatic processing. Use for custom transformations or server-side data fetching. |
 
 #### `DataTableColumn`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Id` | `string?` | `` |  | Gets or sets the unique identifier for this column. If not provided, it will be auto-generated from the Header. |
-| `Sortable` | `bool` | `` |  | Gets or sets whether this column can be sorted. Default is false. |
-| `Filterable` | `bool` | `` |  | Gets or sets whether this column can be filtered. Default is false. |
-| `Visible` | `bool` | `true` |  | Gets or sets whether this column is currently visible. Default is true. |
-| `Width` | `string?` | `` |  | Gets or sets the width of the column (e.g., "200px", "20%", "auto"). Null means the column will size automatically. |
-| `MinWidth` | `string?` | `` |  | Gets or sets the minimum width of the column (e.g., "100px"). Useful for responsive layouts. |
-| `MaxWidth` | `string?` | `` |  | Gets or sets the maximum width of the column (e.g., "400px"). Useful for preventing excessively wide columns. |
-| `CellTemplate` | `RenderFragment<TData>?` | `` |  | Gets or sets a custom template for rendering cell values. If null, the value is rendered using ToString(). <remarks> The context parameter provides the data item (TData) for the row. </remarks> <ex... |
-| `CellClass` | `string?` | `` |  | Gets or sets additional CSS classes to apply to cells in this column. |
-| `HeaderClass` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the header cell. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Id` | `string?` |  | Gets or sets the unique identifier for this column. If not provided, it will be auto-generated from the Header. |
+| `Sortable` | `bool` |  | Gets or sets whether this column can be sorted. Default is false. |
+| `Filterable` | `bool` |  | Gets or sets whether this column can be filtered. Default is false. |
+| `Visible` | `bool` | `true` | Gets or sets whether this column is currently visible. Default is true. |
+| `Width` | `string?` |  | Gets or sets the width of the column (e.g., "200px", "20%", "auto"). Null means the column will size automatically. |
+| `MinWidth` | `string?` |  | Gets or sets the minimum width of the column (e.g., "100px"). Useful for responsive layouts. |
+| `MaxWidth` | `string?` |  | Gets or sets the maximum width of the column (e.g., "400px"). Useful for preventing excessively wide columns. |
+| `CellTemplate` | `RenderFragment<TData>?` |  | Gets or sets a custom template for rendering cell values. If null, the value is rendered using ToString(). The context parameter provides the data item (TData) for the row. &lt;DataTableColumn Property="@(p => p.Status)" Header="Status"&gt; &lt;CellTemplate Context="person"&gt; &lt;Badge Variant="@(person.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Destructive)"&gt; @person.Status &lt;/Badge&gt; &lt;/CellTemplate&gt; &lt;/DataTableColumn&gt; |
+| `CellClass` | `string?` |  | Gets or sets additional CSS classes to apply to cells in this column. |
+| `HeaderClass` | `string?` |  | Gets or sets additional CSS classes to apply to the header cell. |
 
-**Basic Usage:**
-```razor
-<DataTable Data="@users" @bind-State="tableState">
-    <DataTableColumn TData="User" Property="u => u.Name" Title="Name" Sortable="true" />
-    <DataTableColumn TData="User" Property="u => u.Email" Title="Email" />
-    <DataTableColumn TData="User" Property="u => u.Role" Title="Role" />
-</DataTable>
+#### `DataTablePagination`
 
-<TablePagination State="@tableState" />
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `PageSizes` | `int[]` | `{ 10, 20, 50, 100 }` |  |
+| `OnPageChanged` | `EventCallback<int>` |  |  |
+| `OnPageSizeChanged` | `EventCallback<int>` |  |  |
 
-@code {
-    private List<User> users = new();
-    private TableState tableState = new();
+#### `DataTableToolbar`
 
-    record User(string Name, string Email, string Role);
-}
-```
-
-**Related Enums:**
-
-- [`DataTableSelectionMode`](#datatableselectionmode-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `GlobalSearchValue` | `string` | `string.Empty` |  |
+| `OnGlobalSearchChanged` | `EventCallback<string>` |  |  |
+| `Columns` | `List<DataTable<TData>.ColumnData>` | `new()` |  |
+| `OnColumnVisibilityChanged` | `Action<string, bool>` | `null!` |  |
+| `ChildContent` | `RenderFragment?` |  |  |
 
 ---
 
@@ -1045,6 +1480,55 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.DatePicker
 ```
 
+**Components & Parameters:**
+
+#### `DatePicker`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `SelectedDateChanged` | `EventCallback<DateOnly?>` |  | Event callback invoked when the selected date changes. Use with @bind-SelectedDate for two-way binding. |
+| `MinDate` | `DateOnly?` |  | Minimum selectable date. |
+| `MaxDate` | `DateOnly?` |  | Maximum selectable date. |
+| `IsDateDisabled` | `Func<DateOnly, bool>?` |  | Function to determine if a specific date should be disabled. |
+| `Culture` | `System.Globalization.CultureInfo?` |  | Culture for date formatting. |
+| `CaptionLayout` | `CalendarCaptionLayout` | `CalendarCaptionLayout.Label` | Calendar caption layout (label or dropdown). |
+| `ButtonVariant` | `ButtonVariant` | `ButtonVariant.Outline` | Button variant for the trigger button. |
+| `ButtonSize` | `ButtonSize` | `ButtonSize.Default` | Button size for the trigger button. |
+| `ShowIcon` | `bool` | `true` | Whether to show the calendar icon in the button. |
+| `ShowDropdownIcon` | `bool` | `false` | Whether to show the chevron-down icon on the right side of the button. |
+| `Placeholder` | `string` | `"Pick a date"` | Placeholder text when no date is selected. |
+| `DateFormat` | `string?` |  | Date format string for displaying the selected date. |
+| `Disabled` | `bool` |  | Whether the date picker is disabled. |
+| `Align` | `PopoverAlign` | `PopoverAlign.Start` | Alignment of the popover content. |
+| `Class` | `string?` |  | Additional CSS classes for the button. |
+| `CalendarClass` | `string?` |  | Additional CSS classes for the calendar. |
+| `AriaLabel` | `string?` |  | ARIA label for the button. |
+
+#### `DateRangePicker`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `StartDateChanged` | `EventCallback<DateOnly?>` |  | Event callback invoked when the start date changes. |
+| `EndDateChanged` | `EventCallback<DateOnly?>` |  | Event callback invoked when the end date changes. |
+| `MinDate` | `DateOnly?` |  | Minimum selectable date. |
+| `MaxDate` | `DateOnly?` |  | Maximum selectable date. |
+| `IsDateDisabled` | `Func<DateOnly, bool>?` |  | Function to determine if a specific date should be disabled. |
+| `Culture` | `System.Globalization.CultureInfo?` |  | Culture for date formatting. |
+| `CaptionLayout` | `CalendarCaptionLayout` | `CalendarCaptionLayout.Label` | Calendar caption layout (label or dropdown). |
+| `ButtonVariant` | `ButtonVariant` | `ButtonVariant.Outline` | Button variant for the trigger button. |
+| `ButtonSize` | `ButtonSize` | `ButtonSize.Default` | Button size for the trigger button. |
+| `ShowIcon` | `bool` | `true` | Whether to show the calendar icon in the button. |
+| `ShowDropdownIcon` | `bool` | `false` | Whether to show the chevron-down icon on the right side of the button. |
+| `Placeholder` | `string` | `"Pick a date range"` | Placeholder text when no date range is selected. |
+| `DateFormat` | `string?` |  | Date format string for displaying dates. |
+| `Disabled` | `bool` |  | Whether the date range picker is disabled. |
+| `Align` | `PopoverAlign` | `PopoverAlign.Start` | Alignment of the popover content. |
+| `StartDateLabel` | `string?` |  | Label for the start date calendar. |
+| `EndDateLabel` | `string?` |  | Label for the end date calendar. |
+| `Class` | `string?` |  | Additional CSS classes for the button. |
+| `CalendarClass` | `string?` |  | Additional CSS classes for the calendars. |
+| `AriaLabel` | `string?` |  | ARIA label for the button. |
+
 ---
 
 ### Dialog
@@ -1062,23 +1546,76 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Dialog
 ```
 
-**Basic Usage:**
-```razor
-<Dialog>
-    <DialogTrigger>Open Dialog</DialogTrigger>
-    <DialogContent>
-        <DialogHeader>
-            <DialogTitle>Dialog Title</DialogTitle>
-            <DialogDescription>Dialog description</DialogDescription>
-        </DialogHeader>
-        <p>Dialog content goes here</p>
-        <DialogFooter>
-            <DialogClose>Cancel</DialogClose>
-            <Button>Confirm</Button>
-        </DialogFooter>
-    </DialogContent>
-</Dialog>
-```
+**Components & Parameters:**
+
+#### `Dialog`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the dialog. |
+| `Open` | `bool?` |  | Controls whether the dialog is open (controlled mode). When null, the dialog manages its own state (uncontrolled mode). |
+| `OpenChanged` | `EventCallback<bool>` |  | Event callback invoked when the open state changes. Use with @bind-Open for two-way binding. |
+| `DefaultOpen` | `bool` | `false` | Default open state when in uncontrolled mode. |
+| `OnOpenChange` | `EventCallback<bool>` |  | Event callback invoked when the dialog open state changes. |
+| `Modal` | `bool` | `true` | Whether the dialog can be dismissed by clicking outside or pressing Escape. Default is true. |
+
+#### `DialogClose`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the close button. |
+| `AsChild` | `bool` | `false` | When true, the close does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components. Use this when you want a custom component (like Button) to act as the close button. |
+| `OnClick` | `EventCallback<MouseEventArgs>` |  | Custom click handler. Called after the dialog is closed. |
+| `PreventClose` | `bool` | `false` | Whether to prevent the default close behavior. When true, only the OnClick handler is invoked. Default is false (dialog closes on click). |
+
+#### `DialogContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the dialog. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the dialog content. |
+| `OverlayClass` | `string?` |  | Additional CSS classes to apply to the dialog overlay/backdrop. Merged with built-in defaults using ClassNames.cn. |
+| `UseCustomAnimations` | `bool` | `false` | When true, do not include default animation-related classes so consumers can provide completely custom animations. |
+| `ShowClose` | `bool` | `true` | Whether to show the close button (X icon). Default is true. |
+| `CloseOnEscape` | `bool` | `true` | Whether pressing Escape should close the dialog. Default is true. |
+| `TrapFocus` | `bool` | `true` | Whether to trap focus within the dialog. Default is true for modal dialogs. |
+| `LockScroll` | `bool` | `true` | Whether to lock body scroll when dialog is open. Default is true for modal dialogs. |
+| `OnEscapeKeyDown` | `EventCallback<KeyboardEventArgs>` |  | Event callback invoked when Escape key is pressed. |
+
+#### `DialogDescription`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The description content to display. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the description. |
+
+#### `DialogFooter`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display in the dialog footer (typically action buttons). |
+| `Class` | `string?` |  | Additional CSS classes to apply to the footer container. |
+
+#### `DialogHeader`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display in the dialog header (typically DialogTitle and DialogDescription). |
+| `Class` | `string?` |  | Additional CSS classes to apply to the header container. |
+
+#### `DialogTitle`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The title content to display. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the title. |
+
+#### `DialogTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the trigger button. |
+| `AsChild` | `bool` | `false` | When true, the trigger does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components. Use this when you want a custom component (like Button) to act as the trigger. |
 
 ---
 
@@ -1097,31 +1634,146 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.DropdownMenu
 ```
 
-**Basic Usage:**
-```razor
-<DropdownMenu>
-    <DropdownMenuTrigger AsChild>
-        <Button Variant="ButtonVariant.Outline">
-            Open Menu
-        </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent>
-        <DropdownMenuItem>
-            <LucideIcon Name="edit" Size="16" />
-            Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-            <LucideIcon Name="copy" Size="16" />
-            Duplicate
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-            <LucideIcon Name="trash" Size="16" />
-            Delete
-        </DropdownMenuItem>
-    </DropdownMenuContent>
-</DropdownMenu>
-```
+**Components & Parameters:**
+
+#### `DropdownMenu`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the dropdown menu. Typically includes DropdownMenuTrigger and DropdownMenuContent. |
+| `Open` | `bool?` |  | Controls whether the dropdown menu is open (controlled mode). When null, the dropdown menu manages its own state (uncontrolled mode). |
+| `OpenChanged` | `EventCallback<bool>` |  | Event callback invoked when the open state changes. Use with @bind-Open for two-way binding. |
+| `DefaultOpen` | `bool` | `false` | Default open state when in uncontrolled mode. |
+| `OnOpenChange` | `EventCallback<bool>` |  | Event callback invoked when the dropdown menu open state changes. |
+| `Modal` | `bool` | `true` | Whether the dropdown menu can be dismissed by clicking outside or pressing Escape. Default is true. |
+| `Dir` | `string` | `"ltr"` | Direction for the menu content layout ("ltr" or "rtl"). Default is "ltr". |
+
+#### `DropdownMenuCheckboxItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the checkbox item. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the checkbox item. |
+| `Disabled` | `bool` | `false` | Whether the checkbox item is disabled. |
+| `Checked` | `bool` | `false` | Whether the checkbox is checked. |
+| `CheckedChanged` | `EventCallback<bool>` |  | Event callback invoked when the checked state changes (for two-way binding). |
+| `OnCheckedChange` | `EventCallback<bool>` |  | Event callback invoked when the checkbox state changes. |
+| `CloseOnSelect` | `bool` | `false` | Whether to close the dropdown menu when this item is selected. Default is false for checkbox items. |
+
+#### `DropdownMenuContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the dropdown menu. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the content container. |
+| `CloseOnEscape` | `bool` | `true` | Whether pressing Escape should close the dropdown menu. |
+| `CloseOnClickOutside` | `bool` | `true` | Whether clicking outside should close the dropdown menu. |
+| `Side` | `PopoverSide` | `PopoverSide.Bottom` | Preferred side for positioning. |
+| `Align` | `PopoverAlign` | `PopoverAlign.Start` | Alignment relative to trigger. |
+| `Offset` | `int` | `4` | Offset distance from the trigger in pixels. |
+| `OnEscapeKeyDown` | `EventCallback<KeyboardEventArgs>` |  | Event callback invoked when Escape key is pressed. |
+| `OnClickOutside` | `EventCallback` |  | Event callback invoked when clicking outside. |
+| `Loop` | `bool` | `true` | Whether to enable keyboard loop navigation. |
+| `Strategy` | `PositioningStrategy` | `PositioningStrategy.Absolute` | Positioning strategy: "absolute" or "fixed". Use "fixed" when dropdown needs to escape stacking contexts (e.g., in sidebars). Default is "absolute". |
+| `MatchTriggerWidth` | `bool` | `false` | Whether to match the trigger element's width. Default is false. |
+| `ZIndex` | `int` | `50` | Z-index for the dropdown content. Default is 50. |
+| `Style` | `string?` |  | Inline styles to apply to the dropdown content. |
+
+#### `DropdownMenuGroup`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the group. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the group. |
+
+#### `DropdownMenuItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the menu item. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the menu item. |
+| `Disabled` | `bool` | `false` | Whether the menu item is disabled. |
+| `OnClick` | `EventCallback<MouseEventArgs>` |  | Custom click handler. |
+| `CloseOnSelect` | `bool` | `true` | Whether to close the dropdown menu when this item is selected. |
+
+#### `DropdownMenuLabel`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the label. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the label. |
+
+#### `DropdownMenuRadioGroup`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the radio group. Typically contains DropdownMenuRadioItem components. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the radio group. |
+| `Value` | `TValue?` |  | The currently selected value. |
+| `ValueChanged` | `EventCallback<TValue?>` |  | Event callback invoked when the selected value changes (for two-way binding). |
+| `OnValueChange` | `EventCallback<TValue?>` |  | Event callback invoked when the selection changes. |
+
+#### `DropdownMenuRadioItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the radio item. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the radio item. |
+| `Disabled` | `bool` | `false` | Whether the radio item is disabled. |
+| `Value` | `TValue?` |  | The value associated with this radio item. |
+| `CloseOnSelect` | `bool` | `true` | Whether to close the dropdown menu when this item is selected. Default is true for radio items. |
+
+#### `DropdownMenuSeparator`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the separator. |
+
+#### `DropdownMenuShortcut`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the shortcut. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the shortcut (e.g., "⌘K", "Ctrl+S"). |
+
+#### `DropdownMenuSub`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the submenu. Typically contains DropdownMenuSubTrigger and DropdownMenuSubContent. |
+| `Open` | `bool?` |  | Controls whether the submenu is open (controlled mode). |
+| `OpenChanged` | `EventCallback<bool>` |  | Event callback invoked when the open state changes (for two-way binding). |
+| `OnOpenChange` | `EventCallback<bool>` |  | Event callback invoked when the submenu open state changes. |
+
+#### `DropdownMenuSubContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the submenu. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the content container. |
+| `CloseOnEscape` | `bool` | `true` | Whether pressing Escape should close the submenu. |
+| `Offset` | `int` | `-4` | Offset distance from the trigger in pixels. |
+| `ZIndex` | `int` | `50` | Z-index for the submenu content. |
+
+#### `DropdownMenuSubTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the trigger. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the trigger. |
+| `Disabled` | `bool` | `false` | Whether the trigger is disabled. |
+| `Inset` | `bool` | `false` | Whether this trigger is an inset item (has additional left padding). |
+
+#### `DropdownMenuTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the trigger button. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the wrapper. |
+| `AsChild` | `bool` | `false` | When true, the trigger does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components. Use this when you want a custom component (like Button) to act as the trigger. |
+| `Disabled` | `bool` | `false` | Whether the trigger is disabled. |
+| `OnClick` | `EventCallback<MouseEventArgs>` |  | Custom click handler. |
+| `CustomClickHandling` | `bool` | `false` | Whether to use custom click handling only. |
 
 ---
 
@@ -1144,38 +1796,38 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Empty`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the empty state. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the empty state. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the empty state. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the empty state. |
 
 #### `EmptyActions`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  |  |
-| `ChildContent` | `RenderFragment?` | `` |  |  |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
 
 #### `EmptyDescription`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  |  |
-| `ChildContent` | `RenderFragment?` | `` |  |  |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
 
 #### `EmptyIcon`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  |  |
-| `ChildContent` | `RenderFragment?` | `` |  |  |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
 
 #### `EmptyTitle`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  |  |
-| `ChildContent` | `RenderFragment?` | `` |  |  |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
 
 ---
 
@@ -1198,97 +1850,82 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Field`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Orientation` | `FieldOrientation` | `FieldOrientation.Vertical` |  | Gets or sets the orientation of the field layout. <remarks> Controls the layout direction and behavior: - Vertical: Stacks label above control (default, mobile-first) - Horizontal: Places label bes... |
-| `IsInvalid` | `bool` | `` |  | Gets or sets whether the field is in an invalid/error state. <remarks> When true, applies error styling via the data-invalid attribute. This enables conditional styling for validation errors. Defau... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the field. <remarks> Custom classes are merged with the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the field. <remarks> Typically contains FieldLabel, FieldContent, FieldDescription, and FieldError components for a complete form field. </remarks> |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Orientation` | `FieldOrientation` | `FieldOrientation.Vertical` | Gets or sets the orientation of the field layout. Controls the layout direction and behavior: - Vertical: Stacks label above control (default, mobile-first) - Horizontal: Places label beside control with aligned items - Responsive: Automatically switches from vertical to horizontal at medium breakpoint Default value is . |
+| `IsInvalid` | `bool` |  | Gets or sets whether the field is in an invalid/error state. When true, applies error styling via the data-invalid attribute. This enables conditional styling for validation errors. Default value is false. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the field. Custom classes are merged with the component's base classes, allowing for style overrides and extensions. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the field. Typically contains FieldLabel, FieldContent, FieldDescription, and FieldError components for a complete form field. |
 
 #### `FieldContent`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the field content container. <remarks> Custom classes are merged with the component's base classes, allowing for style overrides and extensions. </re... |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the field content container. <remarks> Typically contains an input control, followed by optional FieldDescription and FieldError components. </remarks> |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the field content container. Custom classes are merged with the component's base classes, allowing for style overrides and extensions. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the field content container. Typically contains an input control, followed by optional FieldDescription and FieldError components. |
 
 #### `FieldDescription`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Id` | `string?` | `` |  | Gets or sets the ID for aria-describedby association. <remarks> When set, this ID should be referenced by the associated input's aria-describedby attribute for proper accessibility. </remarks> |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the description. <remarks> Custom classes are merged with the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the description. <remarks> Typically contains helpful text explaining the purpose or format of the associated form field. </remarks> |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Id` | `string?` |  | Gets or sets the ID for aria-describedby association. When set, this ID should be referenced by the associated input's aria-describedby attribute for proper accessibility. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the description. Custom classes are merged with the component's base classes, allowing for style overrides and extensions. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the description. Typically contains helpful text explaining the purpose or format of the associated form field. |
 
 #### `FieldError`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Errors` | `IEnumerable<string>?` | `` |  | Gets or sets the array of error messages to display. <remarks> When provided, each error is rendered as a bulleted list item. If both Errors and ChildContent are provided, Errors takes precedence. ... |
-| `Id` | `string?` | `` |  | Gets or sets the ID for aria-describedby association. <remarks> When set, this ID should be referenced by the associated input's aria-describedby attribute for proper accessibility. </remarks> |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the error container. <remarks> Custom classes are merged with the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets custom error content to be rendered. <remarks> Used when you need custom error rendering beyond simple text messages. If both Errors and ChildContent are provided, Errors takes precede... |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Errors` | `IEnumerable<string>?` |  | Gets or sets the array of error messages to display. When provided, each error is rendered as a bulleted list item. If both Errors and ChildContent are provided, Errors takes precedence. Component only renders when errors are present or ChildContent is not null. |
+| `Id` | `string?` |  | Gets or sets the ID for aria-describedby association. When set, this ID should be referenced by the associated input's aria-describedby attribute for proper accessibility. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the error container. Custom classes are merged with the component's base classes, allowing for style overrides and extensions. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets custom error content to be rendered. Used when you need custom error rendering beyond simple text messages. If both Errors and ChildContent are provided, Errors takes precedence. |
 
 #### `FieldGroup`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Orientation` | `FieldGroupOrientation` | `FieldGroupOrientation.Vertical` |  | Gets or sets the orientation of the field group layout. <remarks> Controls the layout direction: - Vertical: Stacks fields vertically (default) - Horizontal: Places fields horizontally with wrap su... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the field group. <remarks> Custom classes are merged with the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the field group. <remarks> Typically contains multiple Field components. </remarks> |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Orientation` | `FieldGroupOrientation` | `FieldGroupOrientation.Vertical` | Gets or sets the orientation of the field group layout. Controls the layout direction: - Vertical: Stacks fields vertically (default) - Horizontal: Places fields horizontally with wrap support - Responsive: Uses container queries to adapt layout based on available space Default value is . |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the field group. Custom classes are merged with the component's base classes, allowing for style overrides and extensions. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the field group. Typically contains multiple Field components. |
 
 #### `FieldLabel`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `For` | `string?` | `` |  | Gets or sets the ID of the form control this label is associated with. <remarks> Should match the ID of the input element for proper accessibility. Enables clicking the label to focus the associate... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the label. <remarks> Custom classes are merged with the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the label. <remarks> Typically contains text describing the associated form control. Can also include required indicators, tooltips, etc. </remarks> |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `For` | `string?` |  | Gets or sets the ID of the form control this label is associated with. Should match the ID of the input element for proper accessibility. Enables clicking the label to focus the associated input. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the label. Custom classes are merged with the component's base classes, allowing for style overrides and extensions. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the label. Typically contains text describing the associated form control. Can also include required indicators, tooltips, etc. |
 
 #### `FieldLegend`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Variant` | `FieldLegendVariant` | `FieldLegendVariant.Legend` |  | Gets or sets the variant of the legend element. <remarks> Controls the HTML element used: - Legend: Renders a semantic legend element (use with FieldSet) - Label: Renders a div with role="group" (u... |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label when using Label variant. <remarks> Provides an accessible name for the group when variant is Label. Only applicable when Variant is FieldLegendVariant.Label. </remarks> |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the legend. <remarks> Custom classes are merged with the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the legend. <remarks> Typically contains text describing the grouped form fields. </remarks> |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Variant` | `FieldLegendVariant` | `FieldLegendVariant.Legend` | Gets or sets the variant of the legend element. Controls the HTML element used: - Legend: Renders a semantic legend element (use with FieldSet) - Label: Renders a div with role="group" (use with FieldGroup) Default value is . |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label when using Label variant. Provides an accessible name for the group when variant is Label. Only applicable when Variant is FieldLegendVariant.Label. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the legend. Custom classes are merged with the component's base classes, allowing for style overrides and extensions. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the legend. Typically contains text describing the grouped form fields. |
 
 #### `FieldSeparator`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the separator. <remarks> Custom classes are merged with the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to display in the center of the separator. <remarks> When provided, the content appears centered on top of the separator line with background color to create a visual break... |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the separator. Custom classes are merged with the component's base classes, allowing for style overrides and extensions. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to display in the center of the separator. When provided, the content appears centered on top of the separator line with background color to create a visual break in the line. Typically used for text like "Or" or "Or continue with". |
 
 #### `FieldSet`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the fieldset. <remarks> Custom classes are merged with the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the fieldset. <remarks> Typically contains a FieldLegend followed by multiple Field components for grouped form controls. </remarks> |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the fieldset. Custom classes are merged with the component's base classes, allowing for style overrides and extensions. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the fieldset. Typically contains a FieldLegend followed by multiple Field components for grouped form controls. |
 
 #### `FieldTitle`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the title. <remarks> Custom classes are merged with the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the title. <remarks> Typically contains text describing the field or group of controls. </remarks> |
-
-**Basic Usage:**
-```razor
-<Field>
-    <FieldLabel>Email</FieldLabel>
-    <FieldContent>
-        <Input Type="InputType.Email" @bind-Value="email" />
-    </FieldContent>
-    <FieldDescription>We'll never share your email.</FieldDescription>
-</Field>
-
-@code {
-    private string email = "";
-}
-```
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the title. Custom classes are merged with the component's base classes, allowing for style overrides and extensions. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the title. Typically contains text describing the field or group of controls. |
 
 ---
 
@@ -1311,107 +1948,102 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Grid`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ActionHost` | `object?` | `` |  | Gets or sets the host component that contains grid action methods. Set this to 'this' to enable auto-discovery of methods marked with [GridAction]. |
-| `Items` | `IEnumerable<TItem>` | `Array.Empty<TItem>()` |  | Gets or sets the collection of items to display in the grid. |
-| `SelectionMode` | `GridSelectionMode` | `GridSelectionMode.None` |  | Gets or sets the selection mode for the grid. |
-| `PagingMode` | `GridPagingMode` | `GridPagingMode.None` |  | Gets or sets the paging mode for the grid. |
-| `PageSize` | `int` | `25` |  | Gets or sets the number of items per page. Must be greater than 0. Default is 25. |
-| `IdField` | `string` | `"Id"` |  | Gets or sets the property name to use as the unique row identifier. This is critical for row selection persistence across data updates and pagination. Examples: "Id" (C# convention), "ProductId", "... |
-| `VirtualizationMode` | `GridVirtualizationMode` | `GridVirtualizationMode.Auto` |  | Gets or sets the virtualization mode for the grid. |
-| `Theme` | `GridTheme` | `GridTheme.Shadcn` |  | Gets or sets the AG Grid theme to use (Shadcn, Alpine, Balham, Material, Quartz). Default is Shadcn. |
-| `VisualStyle` | `GridStyle` | `GridStyle.Default` |  | Gets or sets the visual style modifiers for the grid (Default, Striped, Bordered, Minimal). These modifiers work with any AG Grid theme. |
-| `Density` | `GridDensity` | `GridDensity.Comfortable` |  | Gets or sets the spacing density for the grid. |
-| `SuppressHeaderMenus` | `bool` | `false` |  | Gets or sets whether to suppress the header menus (filter/column menu). When true, columns will not show the menu icon even if filterable/sortable. This is useful for controlled filtering scenarios... |
-| `State` | `GridState?` | `` |  | Gets or sets the current state of the grid. Supports two-way binding via @bind-State for automatic state synchronization. |
-| `StateChanged` | `EventCallback<GridState>` | `` |  | Gets or sets the callback invoked when the grid state changes. Used for two-way binding support (@bind-State). |
-| `IsLoading` | `bool` | `` |  | Gets or sets whether the grid is in a loading state. |
-| `Columns` | `RenderFragment?` | `` |  | Gets or sets the child content containing GridColumn definitions. |
-| `LoadingTemplate` | `RenderFragment?` | `` |  | Gets or sets the template to display while the grid is loading. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the grid container. |
-| `Height` | `string?` | `` |  | Gets or sets the height of the grid. Can be a fixed value (e.g., "500px") or a percentage (e.g., "100%"). If not specified, defaults to "300px". |
-| `Width` | `string?` | `` |  | Gets or sets the width of the grid. Can be a fixed value (e.g., "800px") or a percentage (e.g., "100%"). Defaults to "100%". |
-| `InlineStyle` | `string?` | `` |  | Gets or sets inline styles to apply to the grid container. |
-| `LocalizationKeyPrefix` | `string?` | `` |  | Gets or sets the localization key prefix for grid text resources. |
-| `OnStateChanged` | `EventCallback<GridState>` | `` |  | Gets or sets the callback invoked when the grid state changes. |
-| `RowModelType` | `GridRowModelType` | `GridRowModelType.ClientSide` |  | Gets or sets the row model type for the grid. Default is ClientSide. Use ServerSide for server-side data fetching with sorting/filtering/pagination. |
-| `OnDataRequest` | `EventCallback<GridDataRequest<TItem>>` | `` |  | Gets or sets the callback invoked when server-side data is requested (legacy EventCallback version). For new code, use OnServerDataRequest (Func) instead. |
-| `OnSelectionChanged` | `EventCallback<IReadOnlyCollection<TItem>>` | `` |  | Gets or sets the callback invoked when the selection changes. |
-| `SelectedItems` | `IReadOnlyCollection<TItem>` | `Array.Empty<TItem>()` |  | Gets or sets the selected items in the grid. |
-| `SelectedItemsChanged` | `EventCallback<IReadOnlyCollection<TItem>>` | `` |  | Gets or sets the callback invoked when the selected items change (for two-way binding). |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ActionHost` | `object?` |  | Gets or sets the host component that contains grid action methods. Set this to 'this' to enable auto-discovery of methods marked with [GridAction]. |
+| `Items` | `IEnumerable<TItem>` | `Array.Empty<TItem>()` | Gets or sets the collection of items to display in the grid. |
+| `SelectionMode` | `GridSelectionMode` | `GridSelectionMode.None` | Gets or sets the selection mode for the grid. |
+| `PagingMode` | `GridPagingMode` | `GridPagingMode.None` | Gets or sets the paging mode for the grid. |
+| `PageSize` | `int` | `25` | Gets or sets the number of items per page. Must be greater than 0. Default is 25. |
+| `IdField` | `string` | `"Id"` | Gets or sets the property name to use as the unique row identifier. This is critical for row selection persistence across data updates and pagination. Examples: "Id" (C# convention), "ProductId", "OrderId", "id" (JavaScript convention), "_id" (MongoDB). Default is "Id". |
+| `VirtualizationMode` | `GridVirtualizationMode` | `GridVirtualizationMode.Auto` | Gets or sets the virtualization mode for the grid. |
+| `Theme` | `GridTheme` | `GridTheme.Shadcn` | Gets or sets the AG Grid theme to use (Shadcn, Alpine, Balham, Material, Quartz). Default is Shadcn. |
+| `VisualStyle` | `GridStyle` | `GridStyle.Default` | Gets or sets the visual style modifiers for the grid (Default, Striped, Bordered, Minimal). These modifiers work with any AG Grid theme. |
+| `Density` | `GridDensity` | `GridDensity.Comfortable` | Gets or sets the spacing density for the grid. |
+| `SuppressHeaderMenus` | `bool` | `false` | Gets or sets whether to suppress the header menus (filter/column menu). When true, columns will not show the menu icon even if filterable/sortable. This is useful for controlled filtering scenarios where you provide external filter UI. Default is false. |
+| `State` | `GridState?` |  | Gets or sets the current state of the grid. Supports two-way binding via @bind-State for automatic state synchronization. |
+| `StateChanged` | `EventCallback<GridState>` |  | Gets or sets the callback invoked when the grid state changes. Used for two-way binding support (@bind-State). |
+| `IsLoading` | `bool` |  | Gets or sets whether the grid is in a loading state. |
+| `Columns` | `RenderFragment?` |  | Gets or sets the child content containing GridColumn definitions. |
+| `LoadingTemplate` | `RenderFragment?` |  | Gets or sets the template to display while the grid is loading. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the grid container. |
+| `Height` | `string?` |  | Gets or sets the height of the grid. Can be a fixed value (e.g., "500px") or a percentage (e.g., "100%"). If not specified, defaults to "300px". |
+| `Width` | `string?` |  | Gets or sets the width of the grid. Can be a fixed value (e.g., "800px") or a percentage (e.g., "100%"). Defaults to "100%". |
+| `InlineStyle` | `string?` |  | Gets or sets inline styles to apply to the grid container. |
+| `LocalizationKeyPrefix` | `string?` |  | Gets or sets the localization key prefix for grid text resources. |
+| `OnStateChanged` | `EventCallback<GridState>` |  | Gets or sets the callback invoked when the grid state changes. |
+| `RowModelType` | `GridRowModelType` | `GridRowModelType.ClientSide` | Gets or sets the row model type for the grid. Default is ClientSide. Use ServerSide for server-side data fetching with sorting/filtering/pagination. |
+| `OnServerDataRequest` | `Func<GridDataRequest<TItem>, Task<GridDataResponse<TItem>>>?` |  | Gets or sets the callback invoked when server-side data is requested. Required when RowModelType is ServerSide or Infinite. This callback receives a GridDataRequest and should return a GridDataResponse. |
+| `OnDataRequest` | `EventCallback<GridDataRequest<TItem>>` |  | Gets or sets the callback invoked when server-side data is requested (legacy EventCallback version). For new code, use OnServerDataRequest (Func) instead. |
+| `OnSelectionChanged` | `EventCallback<IReadOnlyCollection<TItem>>` |  | Gets or sets the callback invoked when the selection changes. |
+| `SelectedItems` | `IReadOnlyCollection<TItem>` | `Array.Empty<TItem>()` | Gets or sets the selected items in the grid. |
+| `SelectedItemsChanged` | `EventCallback<IReadOnlyCollection<TItem>>` |  | Gets or sets the callback invoked when the selected items change (for two-way binding). |
 
 #### `GridColumn`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Id` | `string?` | `` |  | Gets or sets the unique identifier for this column. If not specified, it will be generated from Field or Header. |
-| `Field` | `string?` | `` |  | Gets or sets the field name for data binding (e.g., "CustomerName"). This is a string field name, NOT a lambda expression. |
-| `Sortable` | `bool` | `` |  | Gets or sets whether the column is sortable. |
-| `Filterable` | `bool` | `` |  | Gets or sets whether the column is filterable. |
-| `Width` | `string?` | `` |  | Gets or sets the column width (e.g., "100px", "20%"). |
-| `MinWidth` | `string?` | `` |  | Gets or sets the minimum column width. |
-| `MaxWidth` | `string?` | `` |  | Gets or sets the maximum column width. |
-| `Pinned` | `GridColumnPinPosition` | `GridColumnPinPosition.None` |  | Gets or sets the column pinning position. |
-| `AllowResize` | `bool` | `true` |  | Gets or sets whether the column can be resized. |
-| `AllowReorder` | `bool` | `true` |  | Gets or sets whether the column can be reordered. |
-| `IsVisible` | `bool` | `true` |  | Gets or sets whether the column is visible. |
-| `CellTemplate` | `RenderFragment<TItem>?` | `` |  | Gets or sets the cell template for rendering cell content. |
-| `HeaderTemplate` | `RenderFragment?` | `` |  | Gets or sets the header template for custom header rendering. |
-| `FilterTemplate` | `RenderFragment?` | `` |  | Gets or sets the filter template for custom filter UI. |
-| `CellEditTemplate` | `RenderFragment<TItem>?` | `` |  | Gets or sets the cell edit template for inline editing. |
-| `CellClass` | `string?` | `` |  | Gets or sets the CSS class to apply to cells in this column. |
-| `HeaderClass` | `string?` | `` |  | Gets or sets the CSS class to apply to the column header. |
-| `DataFormatString` | `string?` | `` |  | Gets or sets the format string for displaying cell values. Supports standard .NET format strings (e.g., "C" for currency, "N2" for numbers with 2 decimals, "d" for dates). Can also use composite fo... |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Id` | `string?` |  | Gets or sets the unique identifier for this column. If not specified, it will be generated from Field or Header. |
+| `Field` | `string?` |  | Gets or sets the field name for data binding (e.g., "CustomerName"). This is a string field name, NOT a lambda expression. |
+| `Sortable` | `bool` |  | Gets or sets whether the column is sortable. |
+| `Filterable` | `bool` |  | Gets or sets whether the column is filterable. |
+| `Width` | `string?` |  | Gets or sets the column width (e.g., "100px", "20%"). |
+| `MinWidth` | `string?` |  | Gets or sets the minimum column width. |
+| `MaxWidth` | `string?` |  | Gets or sets the maximum column width. |
+| `Pinned` | `GridColumnPinPosition` | `GridColumnPinPosition.None` | Gets or sets the column pinning position. |
+| `AllowResize` | `bool` | `true` | Gets or sets whether the column can be resized. |
+| `AllowReorder` | `bool` | `true` | Gets or sets whether the column can be reordered. |
+| `IsVisible` | `bool` | `true` | Gets or sets whether the column is visible. |
+| `CellTemplate` | `RenderFragment<TItem>?` |  | Gets or sets the cell template for rendering cell content. |
+| `HeaderTemplate` | `RenderFragment?` |  | Gets or sets the header template for custom header rendering. |
+| `FilterTemplate` | `RenderFragment?` |  | Gets or sets the filter template for custom filter UI. |
+| `CellEditTemplate` | `RenderFragment<TItem>?` |  | Gets or sets the cell edit template for inline editing. |
+| `ValueSelector` | `Func<TItem, object?>?` |  | Gets or sets the value selector function for extracting cell values. |
+| `CellClass` | `string?` |  | Gets or sets the CSS class to apply to cells in this column. |
+| `HeaderClass` | `string?` |  | Gets or sets the CSS class to apply to the column header. |
+| `DataFormatString` | `string?` |  | Gets or sets the format string for displaying cell values. Supports standard .NET format strings (e.g., "C" for currency, "N2" for numbers with 2 decimals, "d" for dates). Can also use composite format strings (e.g., "{0:C}", "{0:N2}"). This is a simpler alternative to CellTemplate for basic formatting scenarios. &lt;GridColumn Field="Price" Header="Price" DataFormatString="C" /&gt;  // $1,234.56 &lt;GridColumn Field="Quantity" Header="Quantity" DataFormatString="N0" /&gt;  // 1,234 &lt;GridColumn Field="Date" Header="Date" DataFormatString="d" /&gt;  // 12/31/2024 &lt;GridColumn Field="Percentage" Header="%" DataFormatString="P2" /&gt;  // 45.67% |
+
+#### `GridImportMap`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| *(No parameters)* | | | |
 
 #### `GridThemeParameters`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Spacing` | `int?` | `` |  | Gets or sets the base spacing unit in pixels. Controls padding and margins throughout the grid. Default varies by density: Compact=3, Comfortable=4, Spacious=6 <example>4</example> |
-| `RowHeight` | `int?` | `` |  | Gets or sets the row height in pixels. Default varies by density: Compact=28, Comfortable=42, Spacious=56 <example>42</example> |
-| `HeaderHeight` | `int?` | `` |  | Gets or sets the header height in pixels. Default varies by density: Compact=32, Comfortable=48, Spacious=64 <example>48</example> |
-| `IconSize` | `int?` | `` |  | Gets or sets the size of icons in pixels. Default varies by density: Compact=14, Comfortable=16, Spacious=20 <example>16</example> |
-| `InputHeight` | `int?` | `` |  | Gets or sets the height of input elements (filters, editors) in pixels. Default varies by density: Compact=28, Comfortable=32, Spacious=40 <example>32</example> |
-| `ToggleButtonWidth` | `int?` | `` |  | Gets or sets the width of toggle buttons in pixels. <example>28</example> |
-| `ToggleButtonHeight` | `int?` | `` |  | Gets or sets the height of toggle buttons in pixels. <example>28</example> |
-| `AccentColor` | `string?` | `` |  | Gets or sets the primary accent color used for active states, selections, and focus indicators. Accepts CSS color values (hex, rgb, hsl, oklch, etc.) or CSS variables. Default for Shadcn theme: var... |
-| `BackgroundColor` | `string?` | `` |  | Gets or sets the background color for cells and the grid body. Default for Shadcn theme: var(--background) <example>"#ffffff" or "var(--background)"</example> |
-| `ForegroundColor` | `string?` | `` |  | Gets or sets the default text color for grid content. Default for Shadcn theme: var(--foreground) <example>"#000000" or "var(--foreground)"</example> |
-| `BorderColor` | `string?` | `` |  | Gets or sets the color of borders and dividing lines. Default for Shadcn theme: var(--border) <example>"#e5e7eb" or "var(--border)"</example> |
-| `HeaderBackgroundColor` | `string?` | `` |  | Gets or sets the background color for column headers. Default for Shadcn theme: var(--muted) <example>"#f9fafb" or "var(--muted)"</example> |
-| `HeaderForegroundColor` | `string?` | `` |  | Gets or sets the text color for column headers. Default for Shadcn theme: var(--foreground) <example>"#000000" or "var(--foreground)"</example> |
-| `RowHoverColor` | `string?` | `` |  | Gets or sets the background color when hovering over a row. Default for Shadcn theme: color-mix(in srgb, var(--accent) 10%, transparent) <example>"rgba(37, 99, 235, 0.1)" or "color-mix(in srgb, var... |
-| `OddRowBackgroundColor` | `string?` | `` |  | Gets or sets the background color for odd rows (used with Striped style). Default for Shadcn theme with Striped style: color-mix(in srgb, var(--muted) 30%, transparent) <example>"#f9fafb" or "color... |
-| `SelectedRowBackgroundColor` | `string?` | `` |  | Gets or sets the background color for selected rows. Default for Shadcn theme: color-mix(in srgb, var(--primary) 20%, transparent) <example>"rgba(37, 99, 235, 0.2)" or "color-mix(in srgb, var(--pri... |
-| `RangeSelectionBorderColor` | `string?` | `` |  | Gets or sets the border color for range selections. <example>"#2563eb"</example> |
-| `CellTextColor` | `string?` | `` |  | Gets or sets the text color for cell content. <example>"#000000"</example> |
-| `InvalidColor` | `string?` | `` |  | Gets or sets the color used to indicate validation errors. Default for Shadcn theme: var(--destructive) <example>"#dc2626" or "var(--destructive)"</example> |
-| `ModalOverlayBackgroundColor` | `string?` | `` |  | Gets or sets the background color for modal overlays. <example>"rgba(0, 0, 0, 0.5)"</example> |
-| `ChromeBackgroundColor` | `string?` | `` |  | Gets or sets the background color for UI chrome elements (panels, toolbars). <example>"#f9fafb"</example> |
-| `TooltipBackgroundColor` | `string?` | `` |  | Gets or sets the background color for tooltips. Default for Shadcn theme: var(--popover) <example>"#ffffff" or "var(--popover)"</example> |
-| `TooltipTextColor` | `string?` | `` |  | Gets or sets the text color for tooltips. Default for Shadcn theme: var(--popover-foreground) <example>"#000000" or "var(--popover-foreground)"</example> |
-| `FontFamily` | `string?` | `` |  | Gets or sets the font family for the grid. Default for Shadcn theme: var(--font-sans) <example>"Inter, system-ui, sans-serif" or "var(--font-sans)"</example> |
-| `FontSize` | `int?` | `` |  | Gets or sets the base font size in pixels. Default varies by density: Compact=12, Comfortable=14, Spacious=16 <example>14</example> |
-| `HeaderFontSize` | `int?` | `` |  | Gets or sets the font size for column headers in pixels. <example>14</example> |
-| `HeaderFontWeight` | `object?` | `` |  | Gets or sets the font weight for column headers. <example>600 or "bold"</example> |
-| `Borders` | `bool?` | `` |  | Gets or sets whether to show borders between cells and rows. Default varies by style: Default=true, Striped=true, Bordered=true, Minimal=false <example>true</example> |
-| `BorderRadius` | `int?` | `` |  | Gets or sets the border radius in pixels for UI elements. Default for Shadcn theme: 4 <example>4</example> |
-| `WrapperBorder` | `bool?` | `` |  | Gets or sets whether to show a border around the entire grid wrapper. Default varies by style: Default=false, Striped=false, Bordered=true, Minimal=false <example>false</example> |
-| `WrapperBorderRadius` | `int?` | `` |  | Gets or sets the border radius in pixels for the grid wrapper. <example>8</example> |
-
-**Related Enums:**
-
-- [`GridDensity`](#griddensity-enum)
-- [`GridTheme`](#gridtheme-enum)
-- [`GridStyle`](#gridstyle-enum)
-- [`GridRowModelType`](#gridrowmodeltype-enum)
-- [`GridSortDirection`](#gridsortdirection-enum)
-- [`GridFilterOperator`](#gridfilteroperator-enum)
-- [`GridPagingMode`](#gridpagingmode-enum)
-- [`GridSelectionMode`](#gridselectionmode-enum)
-- [`GridColumnPinPosition`](#gridcolumnpinposition-enum)
-- [`GridVirtualizationMode`](#gridvirtualizationmode-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Spacing` | `int?` |  | Gets or sets the base spacing unit in pixels. Controls padding and margins throughout the grid. Default varies by density: Compact=3, Comfortable=4, Spacious=6 4 |
+| `RowHeight` | `int?` |  | Gets or sets the row height in pixels. Default varies by density: Compact=28, Comfortable=42, Spacious=56 42 |
+| `HeaderHeight` | `int?` |  | Gets or sets the header height in pixels. Default varies by density: Compact=32, Comfortable=48, Spacious=64 48 |
+| `IconSize` | `int?` |  | Gets or sets the size of icons in pixels. Default varies by density: Compact=14, Comfortable=16, Spacious=20 16 |
+| `InputHeight` | `int?` |  | Gets or sets the height of input elements (filters, editors) in pixels. Default varies by density: Compact=28, Comfortable=32, Spacious=40 32 |
+| `ToggleButtonWidth` | `int?` |  | Gets or sets the width of toggle buttons in pixels. 28 |
+| `ToggleButtonHeight` | `int?` |  | Gets or sets the height of toggle buttons in pixels. 28 |
+| `AccentColor` | `string?` |  | Gets or sets the primary accent color used for active states, selections, and focus indicators. Accepts CSS color values (hex, rgb, hsl, oklch, etc.) or CSS variables. Default for Shadcn theme: var(--primary) "#2563eb" or "var(--primary)" |
+| `BackgroundColor` | `string?` |  | Gets or sets the background color for cells and the grid body. Default for Shadcn theme: var(--background) "#ffffff" or "var(--background)" |
+| `ForegroundColor` | `string?` |  | Gets or sets the default text color for grid content. Default for Shadcn theme: var(--foreground) "#000000" or "var(--foreground)" |
+| `BorderColor` | `string?` |  | Gets or sets the color of borders and dividing lines. Default for Shadcn theme: var(--border) "#e5e7eb" or "var(--border)" |
+| `HeaderBackgroundColor` | `string?` |  | Gets or sets the background color for column headers. Default for Shadcn theme: var(--muted) "#f9fafb" or "var(--muted)" |
+| `HeaderForegroundColor` | `string?` |  | Gets or sets the text color for column headers. Default for Shadcn theme: var(--foreground) "#000000" or "var(--foreground)" |
+| `RowHoverColor` | `string?` |  | Gets or sets the background color when hovering over a row. Default for Shadcn theme: color-mix(in srgb, var(--accent) 10%, transparent) "rgba(37, 99, 235, 0.1)" or "color-mix(in srgb, var(--accent) 10%, transparent)" |
+| `OddRowBackgroundColor` | `string?` |  | Gets or sets the background color for odd rows (used with Striped style). Default for Shadcn theme with Striped style: color-mix(in srgb, var(--muted) 30%, transparent) "#f9fafb" or "color-mix(in srgb, var(--muted) 30%, transparent)" |
+| `SelectedRowBackgroundColor` | `string?` |  | Gets or sets the background color for selected rows. Default for Shadcn theme: color-mix(in srgb, var(--primary) 20%, transparent) "rgba(37, 99, 235, 0.2)" or "color-mix(in srgb, var(--primary) 20%, transparent)" |
+| `RangeSelectionBorderColor` | `string?` |  | Gets or sets the border color for range selections. "#2563eb" |
+| `CellTextColor` | `string?` |  | Gets or sets the text color for cell content. "#000000" |
+| `InvalidColor` | `string?` |  | Gets or sets the color used to indicate validation errors. Default for Shadcn theme: var(--destructive) "#dc2626" or "var(--destructive)" |
+| `ModalOverlayBackgroundColor` | `string?` |  | Gets or sets the background color for modal overlays. "rgba(0, 0, 0, 0.5)" |
+| `ChromeBackgroundColor` | `string?` |  | Gets or sets the background color for UI chrome elements (panels, toolbars). "#f9fafb" |
+| `TooltipBackgroundColor` | `string?` |  | Gets or sets the background color for tooltips. Default for Shadcn theme: var(--popover) "#ffffff" or "var(--popover)" |
+| `TooltipTextColor` | `string?` |  | Gets or sets the text color for tooltips. Default for Shadcn theme: var(--popover-foreground) "#000000" or "var(--popover-foreground)" |
+| `FontFamily` | `string?` |  | Gets or sets the font family for the grid. Default for Shadcn theme: var(--font-sans) "Inter, system-ui, sans-serif" or "var(--font-sans)" |
+| `FontSize` | `int?` |  | Gets or sets the base font size in pixels. Default varies by density: Compact=12, Comfortable=14, Spacious=16 14 |
+| `HeaderFontSize` | `int?` |  | Gets or sets the font size for column headers in pixels. 14 |
+| `HeaderFontWeight` | `object?` |  | Gets or sets the font weight for column headers. 600 or "bold" |
+| `Borders` | `bool?` |  | Gets or sets whether to show borders between cells and rows. Default varies by style: Default=true, Striped=true, Bordered=true, Minimal=false true |
+| `BorderRadius` | `int?` |  | Gets or sets the border radius in pixels for UI elements. Default for Shadcn theme: 4 4 |
+| `WrapperBorder` | `bool?` |  | Gets or sets whether to show a border around the entire grid wrapper. Default varies by style: Default=false, Striped=false, Bordered=true, Minimal=false false |
+| `WrapperBorderRadius` | `int?` |  | Gets or sets the border radius in pixels for the grid wrapper. 8 |
 
 ---
 
@@ -1430,6 +2062,18 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.HeightAnimation
 ```
 
+**Components & Parameters:**
+
+#### `HeightAnimation`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to be rendered inside the animated container. |
+| `Config` | `HeightAnimationConfig?` |  | Configuration for the height animation behavior. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the container element. |
+| `Style` | `string?` |  | Additional inline styles to apply to the container element. |
+| `Enabled` | `bool` | `true` | Whether the animation is currently enabled. When false, no animation setup will occur. |
+
 ---
 
 ### HoverCard
@@ -1447,27 +2091,37 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.HoverCard
 ```
 
-**Basic Usage:**
-```razor
-<HoverCard>
-    <HoverCardTrigger AsChild>
-        <a href="#" class="underline">@@username</a>
-    </HoverCardTrigger>
-    <HoverCardContent>
-        <div class="flex gap-4">
-            <Avatar>
-                <AvatarImage Src="/avatar.jpg" />
-                <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
-            <div>
-                <h4 class="text-sm font-semibold">John Doe</h4>
-                <p class="text-sm text-muted-foreground">@@johndoe</p>
-                <p class="text-xs mt-2">Software developer and open source contributor</p>
-            </div>
-        </div>
-    </HoverCardContent>
-</HoverCard>
-```
+**Components & Parameters:**
+
+#### `HoverCard`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the hover card. Should include HoverCardTrigger and HoverCardContent components. |
+| `Open` | `bool?` |  | Controls whether the hover card is open (controlled mode). |
+| `OpenChanged` | `EventCallback<bool>` |  | Event callback invoked when the open state changes. |
+| `DefaultOpen` | `bool` | `false` | Default open state when in uncontrolled mode. |
+| `OnOpenChange` | `EventCallback<bool>` |  | Event callback invoked when the hover card open state changes. |
+| `OpenDelay` | `int` | `700` | Delay in milliseconds before opening the hover card. Default is 700ms. |
+| `CloseDelay` | `int` | `300` | Delay in milliseconds before closing the hover card. Default is 300ms. |
+
+#### `HoverCardContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render inside the hover card. |
+| `Side` | `PopoverSide` | `PopoverSide.Bottom` | Preferred side for positioning. |
+| `Align` | `PopoverAlign` | `PopoverAlign.Center` | Alignment relative to trigger. |
+| `Offset` | `int` | `4` | Offset distance from trigger in pixels. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the content. |
+
+#### `HoverCardTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the trigger. |
+| `AsChild` | `bool` | `false` | When true, the trigger does not render its own div element. Instead, it passes trigger behavior via TriggerContext to child components. Use this when you want a custom component to act as the trigger. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the trigger. |
 
 ---
 
@@ -1490,44 +2144,31 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Input`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Type` | `InputType` | `InputType.Text` |  | Gets or sets the type of input. <remarks> Determines the HTML input type attribute. Default value is <see cref="InputType.Text"/>. </remarks> |
-| `Value` | `string?` | `` |  | Gets or sets the current value of the input. <remarks> Supports two-way binding via @bind-Value syntax. </remarks> |
-| `ValueChanged` | `EventCallback<string?>` | `` |  | Gets or sets the callback invoked when the input value changes. <remarks> This event is fired on every keystroke (oninput event). Use with Value parameter for two-way binding. </remarks> |
-| `Placeholder` | `string?` | `` |  | Gets or sets the placeholder text displayed when the input is empty. <remarks> Provides a hint to the user about what to enter. Should not be used as a replacement for a label. </remarks> |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the input is disabled. <remarks> When disabled: - Input cannot be focused or edited - Cursor is set to not-allowed - Opacity is reduced for visual feedback </remarks> |
-| `Required` | `bool` | `` |  | Gets or sets whether the input is required. <remarks> When true, the HTML5 required attribute is set. Works with form validation and :invalid CSS pseudo-class. </remarks> |
-| `Name` | `string?` | `` |  | Gets or sets the name of the input for form submission. <remarks> This is critical for form submission. The name/value pair is submitted to the server. Should be unique within the form. </remarks> |
-| `Autocomplete` | `string?` | `` |  | Gets or sets the autocomplete hint for the browser. <remarks> Examples: "email", "username", "current-password", "new-password", "name", "tel", "off". Helps browsers provide appropriate autofill su... |
-| `Readonly` | `bool` | `` |  | Gets or sets whether the input is read-only. <remarks> When true, the user cannot modify the value, but it's still focusable and submitted with forms. Different from Disabled - readonly inputs are ... |
-| `MaxLength` | `int?` | `` |  | Gets or sets the maximum number of characters allowed. <remarks> When set, the browser will prevent users from entering more characters. Applies to text, email, password, tel, url, and search types... |
-| `MinLength` | `int?` | `` |  | Gets or sets the minimum number of characters required. <remarks> Works with form validation. Applies to text, email, password, tel, url, and search types. </remarks> |
-| `Min` | `string?` | `` |  | Gets or sets the minimum value for number, date, or time inputs. <remarks> Applies to number, date, time inputs. Works with form validation and :invalid pseudo-class. </remarks> |
-| `Max` | `string?` | `` |  | Gets or sets the maximum value for number, date, or time inputs. <remarks> Applies to number, date, time inputs. Works with form validation and :invalid pseudo-class. </remarks> |
-| `Step` | `string?` | `` |  | Gets or sets the step interval for number inputs. <remarks> Defines the granularity of values (e.g., "0.01" for currency, "1" for integers). Applies to number, date, time inputs. </remarks> |
-| `Pattern` | `string?` | `` |  | Gets or sets the regex pattern for validation. <remarks> Validates input against the specified regular expression. Works with form validation and :invalid pseudo-class. </remarks> |
-| `InputMode` | `string?` | `` |  | Gets or sets the input mode hint for mobile keyboards. <remarks> Examples: "none", "text", "decimal", "numeric", "tel", "search", "email", "url". Helps mobile devices show the appropriate keyboard.... |
-| `Autofocus` | `bool` | `` |  | Gets or sets whether the input should be auto-focused when the page loads. <remarks> Only one element per page should have autofocus. Improves accessibility when used appropriately. </remarks> |
-| `Spellcheck` | `bool?` | `` |  | Gets or sets whether spell checking is enabled. <remarks> Can be true, false, or null (browser default). Useful for controlling spell checking on email addresses, usernames, etc. </remarks> |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the input. <remarks> Custom classes are appended after the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `Id` | `string?` | `` |  | Gets or sets the HTML id attribute for the input element. <remarks> Used to associate the input with a label element via the label's 'for' attribute. This is essential for accessibility and allows ... |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for the input. <remarks> Provides an accessible name for screen readers. Use when there is no visible label element. </remarks> |
-| `AriaDescribedBy` | `string?` | `` |  | Gets or sets the ID of the element that describes the input. <remarks> References the id of an element containing help text or error messages. Improves screen reader experience by associating descr... |
-| `AriaInvalid` | `bool?` | `` |  | Gets or sets whether the input value is invalid. <remarks> When true, aria-invalid="true" is set. Should be set based on validation state. </remarks> |
-
-**Basic Usage:**
-```razor
-<Input @bind-Value="username" Placeholder="Enter your username" />
-
-@code {
-    private string username = "";
-}
-```
-
-**Related Enums:**
-
-- [`InputType`](#inputtype-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Type` | `InputType` | `InputType.Text` | Gets or sets the type of input. Determines the HTML input type attribute. Default value is . |
+| `Value` | `string?` |  | Gets or sets the current value of the input. Supports two-way binding via @bind-Value syntax. |
+| `ValueChanged` | `EventCallback<string?>` |  | Gets or sets the callback invoked when the input value changes. This event is fired on every keystroke (oninput event). Use with Value parameter for two-way binding. |
+| `Placeholder` | `string?` |  | Gets or sets the placeholder text displayed when the input is empty. Provides a hint to the user about what to enter. Should not be used as a replacement for a label. |
+| `Disabled` | `bool` |  | Gets or sets whether the input is disabled. When disabled: - Input cannot be focused or edited - Cursor is set to not-allowed - Opacity is reduced for visual feedback |
+| `Required` | `bool` |  | Gets or sets whether the input is required. When true, the HTML5 required attribute is set. Works with form validation and :invalid CSS pseudo-class. |
+| `Name` | `string?` |  | Gets or sets the name of the input for form submission. This is critical for form submission. The name/value pair is submitted to the server. Should be unique within the form. |
+| `Autocomplete` | `string?` |  | Gets or sets the autocomplete hint for the browser. Examples: "email", "username", "current-password", "new-password", "name", "tel", "off". Helps browsers provide appropriate autofill suggestions. |
+| `Readonly` | `bool` |  | Gets or sets whether the input is read-only. When true, the user cannot modify the value, but it's still focusable and submitted with forms. Different from Disabled - readonly inputs are still submitted with forms. |
+| `MaxLength` | `int?` |  | Gets or sets the maximum number of characters allowed. When set, the browser will prevent users from entering more characters. Applies to text, email, password, tel, url, and search types. |
+| `MinLength` | `int?` |  | Gets or sets the minimum number of characters required. Works with form validation. Applies to text, email, password, tel, url, and search types. |
+| `Min` | `string?` |  | Gets or sets the minimum value for number, date, or time inputs. Applies to number, date, time inputs. Works with form validation and :invalid pseudo-class. |
+| `Max` | `string?` |  | Gets or sets the maximum value for number, date, or time inputs. Applies to number, date, time inputs. Works with form validation and :invalid pseudo-class. |
+| `Step` | `string?` |  | Gets or sets the step interval for number inputs. Defines the granularity of values (e.g., "0.01" for currency, "1" for integers). Applies to number, date, time inputs. |
+| `Pattern` | `string?` |  | Gets or sets the regex pattern for validation. Validates input against the specified regular expression. Works with form validation and :invalid pseudo-class. |
+| `InputMode` | `string?` |  | Gets or sets the input mode hint for mobile keyboards. Examples: "none", "text", "decimal", "numeric", "tel", "search", "email", "url". Helps mobile devices show the appropriate keyboard. |
+| `Autofocus` | `bool` |  | Gets or sets whether the input should be auto-focused when the page loads. Only one element per page should have autofocus. Improves accessibility when used appropriately. |
+| `Spellcheck` | `bool?` |  | Gets or sets whether spell checking is enabled. Can be true, false, or null (browser default). Useful for controlling spell checking on email addresses, usernames, etc. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the input. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
+| `Id` | `string?` |  | Gets or sets the HTML id attribute for the input element. Used to associate the input with a label element via the label's 'for' attribute. This is essential for accessibility and allows clicking the label to focus the input. |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label for the input. Provides an accessible name for screen readers. Use when there is no visible label element. |
+| `AriaDescribedBy` | `string?` |  | Gets or sets the ID of the element that describes the input. References the id of an element containing help text or error messages. Improves screen reader experience by associating descriptive text. |
+| `AriaInvalid` | `bool?` |  | Gets or sets whether the input value is invalid. When true, aria-invalid="true" is set. Should be set based on validation state. |
 
 ---
 
@@ -1550,88 +2191,72 @@ dotnet add package NeoBlazorUI.Components
 
 #### `InputGroup`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the child content to be rendered inside the input group. <remarks> Typically contains InputGroupInput/InputGroupTextarea and InputGroupAddon components. The order of child components a... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the input group container. <remarks> Custom classes are merged with the component's base classes using TailwindMerge, allowing for intelligent confli... |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content to be rendered inside the input group. Typically contains InputGroupInput/InputGroupTextarea and InputGroupAddon components. The order of child components affects the visual layout and keyboard navigation. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the input group container. Custom classes are merged with the component's base classes using TailwindMerge, allowing for intelligent conflict resolution. |
 
 #### `InputGroupAddon`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Align` | `InputGroupAlign` | `InputGroupAlign.InlineStart` |  | Gets or sets the alignment position of the addon. <remarks> Determines where the addon content appears relative to the input: - InlineStart: Left side (or right in RTL) - InlineEnd: Right side (or ... |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the child content to be rendered inside the addon. <remarks> Can contain icons, buttons, text, or any other content. The component automatically adjusts padding based on content type. ... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the addon container. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Align` | `InputGroupAlign` | `InputGroupAlign.InlineStart` | Gets or sets the alignment position of the addon. Determines where the addon content appears relative to the input: - InlineStart: Left side (or right in RTL) - InlineEnd: Right side (or left in RTL) - BlockStart: Above the input - BlockEnd: Below the input |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content to be rendered inside the addon. Can contain icons, buttons, text, or any other content. The component automatically adjusts padding based on content type. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the addon container. |
 
 #### `InputGroupButton`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Type` | `ButtonType` | `ButtonType.Button` |  | Gets or sets the button type (submit, button, reset). |
-| `Variant` | `ButtonVariant` | `ButtonVariant.Default` |  | Gets or sets the button visual variant. |
-| `Size` | `ButtonSize` | `ButtonSize.Small` |  | Gets or sets the button size. <remarks> Default is Small for better proportions within input groups. </remarks> |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the button is disabled. |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for accessibility. |
-| `OnClick` | `EventCallback` | `` |  | Gets or sets the click event handler. |
-| `Icon` | `RenderFragment?` | `` |  | Gets or sets the icon to display in the button. |
-| `IconPosition` | `IconPosition` | `IconPosition.Start` |  | Gets or sets the position of the icon relative to button text. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the child content (button text). |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Type` | `ButtonType` | `ButtonType.Button` | Gets or sets the button type (submit, button, reset). |
+| `Variant` | `ButtonVariant` | `ButtonVariant.Default` | Gets or sets the button visual variant. |
+| `Size` | `ButtonSize` | `ButtonSize.Small` | Gets or sets the button size. Default is Small for better proportions within input groups. |
+| `Disabled` | `bool` |  | Gets or sets whether the button is disabled. |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label for accessibility. |
+| `OnClick` | `EventCallback` |  | Gets or sets the click event handler. |
+| `Icon` | `RenderFragment?` |  | Gets or sets the icon to display in the button. |
+| `IconPosition` | `IconPosition` | `IconPosition.Start` | Gets or sets the position of the icon relative to button text. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content (button text). |
+| `Class` | `string?` |  | Gets or sets additional CSS classes. |
 
 #### `InputGroupInput`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Type` | `InputType` | `InputType.Text` |  | Gets or sets the type of input. |
-| `Value` | `string?` | `` |  | Gets or sets the current value of the input. |
-| `ValueChanged` | `EventCallback<string?>` | `` |  | Gets or sets the callback invoked when the input value changes. |
-| `Placeholder` | `string?` | `` |  | Gets or sets the placeholder text. |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the input is disabled. |
-| `Required` | `bool` | `` |  | Gets or sets whether the input is required. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes. |
-| `Id` | `string?` | `` |  | Gets or sets the HTML id attribute. |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label. |
-| `AriaDescribedBy` | `string?` | `` |  | Gets or sets the ARIA described-by attribute. |
-| `AriaInvalid` | `bool?` | `` |  | Gets or sets whether the input value is invalid. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Type` | `InputType` | `InputType.Text` | Gets or sets the type of input. |
+| `Value` | `string?` |  | Gets or sets the current value of the input. |
+| `ValueChanged` | `EventCallback<string?>` |  | Gets or sets the callback invoked when the input value changes. |
+| `Placeholder` | `string?` |  | Gets or sets the placeholder text. |
+| `Disabled` | `bool` |  | Gets or sets whether the input is disabled. |
+| `Required` | `bool` |  | Gets or sets whether the input is required. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes. |
+| `Id` | `string?` |  | Gets or sets the HTML id attribute. |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label. |
+| `AriaDescribedBy` | `string?` |  | Gets or sets the ARIA described-by attribute. |
+| `AriaInvalid` | `bool?` |  | Gets or sets whether the input value is invalid. |
 
 #### `InputGroupText`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the child content (text or icons). |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content (text or icons). |
+| `Class` | `string?` |  | Gets or sets additional CSS classes. |
 
 #### `InputGroupTextarea`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Value` | `string?` | `` |  | Gets or sets the current value of the textarea. |
-| `ValueChanged` | `EventCallback<string?>` | `` |  | Gets or sets the callback invoked when the textarea value changes. |
-| `Rows` | `int` | `3` |  | Gets or sets the number of visible text rows. <remarks> Default is 3 rows. The textarea can grow beyond this if resize is enabled. </remarks> |
-| `Placeholder` | `string?` | `` |  | Gets or sets the placeholder text. |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the textarea is disabled. |
-| `Required` | `bool` | `` |  | Gets or sets whether the textarea is required. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes. |
-| `Id` | `string?` | `` |  | Gets or sets the HTML id attribute. |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label. |
-| `AriaDescribedBy` | `string?` | `` |  | Gets or sets the ARIA described-by attribute. |
-| `AriaInvalid` | `bool?` | `` |  | Gets or sets whether the textarea value is invalid. |
-
-**Basic Usage:**
-```razor
-@using BlazorUI.Components.InputGroup
-
-<InputGroup>
-    <InputGroupAddon Align="InputGroupAlign.InlineStart">
-        <LucideIcon Name="search" Size="16" />
-    </InputGroupAddon>
-    <InputGroupInput Placeholder="Search..." />
-</InputGroup>
-```
-
-**Related Enums:**
-
-- [`InputGroupAlign`](#inputgroupalign-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `string?` |  | Gets or sets the current value of the textarea. |
+| `ValueChanged` | `EventCallback<string?>` |  | Gets or sets the callback invoked when the textarea value changes. |
+| `Rows` | `int` | `3` | Gets or sets the number of visible text rows. Default is 3 rows. The textarea can grow beyond this if resize is enabled. |
+| `Placeholder` | `string?` |  | Gets or sets the placeholder text. |
+| `Disabled` | `bool` |  | Gets or sets whether the textarea is disabled. |
+| `Required` | `bool` |  | Gets or sets whether the textarea is required. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes. |
+| `Id` | `string?` |  | Gets or sets the HTML id attribute. |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label. |
+| `AriaDescribedBy` | `string?` |  | Gets or sets the ARIA described-by attribute. |
+| `AriaInvalid` | `bool?` |  | Gets or sets whether the textarea value is invalid. |
 
 ---
 
@@ -1649,6 +2274,46 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.InputOtp
 ```
+
+**Components & Parameters:**
+
+#### `InputOtp`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the OTP input. Typically includes InputOtpSlot components or InputOtpGroup with slots. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the container. |
+| `Length` | `int` | `6` | The number of OTP slots. Default is 6. |
+| `Value` | `string?` |  | Controls the OTP value (controlled mode). |
+| `ValueChanged` | `EventCallback<string>` |  | Event callback invoked when the OTP value changes. Use with @bind-Value for two-way binding. |
+| `DefaultValue` | `string` | `""` | Default value when in uncontrolled mode. |
+| `OnValueChange` | `EventCallback<string>` |  | Event callback invoked when the OTP value changes. |
+| `OnComplete` | `EventCallback<string>` |  | Event callback invoked when the OTP is complete. |
+| `Pattern` | `string` | `"[0-9]"` | Pattern for input validation (e.g., "[0-9]" for digits only). Default is digits only. |
+| `Disabled` | `bool` | `false` | Whether the OTP input is disabled. |
+| `AriaLabel` | `string` | `"One-time password"` | ARIA label for the OTP input group. |
+| `AriaInvalid` | `bool` | `false` | Whether the OTP input is in an invalid/error state. When true, aria-invalid="true" is set on the slots, applying error styling. |
+
+#### `InputOtpGroup`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content, typically InputOtpSlot components. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the group. |
+
+#### `InputOtpSeparator`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Optional custom content for the separator. If not provided, displays a minus/dash icon. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the separator. |
+
+#### `InputOtpSlot`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Index` | `int` |  | The index of this slot (0-based). |
+| `Class` | `string?` |  | Additional CSS classes to apply to the slot. |
 
 ---
 
@@ -1671,110 +2336,84 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Item`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Variant` | `ItemVariant` | `ItemVariant.Default` |  | Gets or sets the visual style variant of the item. |
-| `Size` | `ItemSize` | `ItemSize.Default` |  | Gets or sets the size of the item. |
-| `AsChild` | `string?` | `` |  | Gets or sets the element type to render as (e.g., "a", "button"). When set, the component renders as that element instead of a div. |
-| `Href` | `string?` | `` |  | Gets or sets the href attribute when rendering as an anchor. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the item. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the item. |
-| `DataSlot` | `string?` | `` |  |  |
-| `ChildContent` | `RenderFragment?` | `` |  |  |
-| `DataSlot` | `string?` | `` |  |  |
-| `href` | `string?` | `` |  |  |
-| `ChildContent` | `RenderFragment?` | `` |  |  |
-| `DataSlot` | `string?` | `` |  |  |
-| `ChildContent` | `RenderFragment?` | `` |  |  |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Variant` | `ItemVariant` | `ItemVariant.Default` | Gets or sets the visual style variant of the item. |
+| `Size` | `ItemSize` | `ItemSize.Default` | Gets or sets the size of the item. |
+| `AsChild` | `string?` |  | Gets or sets the element type to render as (e.g., "a", "button"). When set, the component renders as that element instead of a div. |
+| `Href` | `string?` |  | Gets or sets the href attribute when rendering as an anchor. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the item. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the item. |
+| `DataSlot` | `string?` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
+| `DataSlot` | `string?` |  |  |
+| `href` | `string?` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
+| `DataSlot` | `string?` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
 
 #### `ItemActions`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the actions container. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the actions container. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the actions container. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the actions container. |
 
 #### `ItemContent`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the content container. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the container. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the content container. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the container. |
 
 #### `ItemDescription`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the description. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered as the description. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the description. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered as the description. |
 
 #### `ItemFooter`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the footer. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered in the footer. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the footer. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered in the footer. |
 
 #### `ItemGroup`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the container. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the group. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the container. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the group. |
 
 #### `ItemHeader`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the header. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered in the header. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the header. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered in the header. |
 
 #### `ItemMedia`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Variant` | `ItemMediaVariant` | `ItemMediaVariant.Default` |  | Gets or sets the visual style variant of the media. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the media container. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the media container. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Variant` | `ItemMediaVariant` | `ItemMediaVariant.Default` | Gets or sets the visual style variant of the media. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the media container. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the media container. |
 
 #### `ItemSeparator`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the separator. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the separator. |
 
 #### `ItemTitle`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the title. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered as the title. |
-
-**Basic Usage:**
-```razor
-<Item>
-    <ItemMedia>
-        <Avatar>
-            <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
-    </ItemMedia>
-    <ItemContent>
-        <ItemTitle>John Doe</ItemTitle>
-        <ItemDescription>john@example.com</ItemDescription>
-    </ItemContent>
-    <ItemAction>
-        <Button Size="ButtonSize.Icon" Variant="ButtonVariant.Ghost">
-            <LucideIcon Name="more-horizontal" Size="16" />
-        </Button>
-    </ItemAction>
-</Item>
-```
-
-**Related Enums:**
-
-- [`ItemMediaVariant`](#itemmediavariant-enum)
-- [`ItemVariant`](#itemvariant-enum)
-- [`ItemSize`](#itemsize-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the title. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered as the title. |
 
 ---
 
@@ -1797,10 +2436,10 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Kbd`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the kbd element. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the kbd element. <remarks> Typically contains a single key name (e.g., "Ctrl", "Shift", "Enter") or a key symbol (e.g., "⌘", "⌥", "⇧"). </remarks> |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the kbd element. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the kbd element. Typically contains a single key name (e.g., "Ctrl", "Shift", "Enter") or a key symbol (e.g., "⌘", "⌥", "⇧"). |
 
 ---
 
@@ -1823,17 +2462,11 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Label`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `For` | `string?` | `` |  | Gets or sets the ID of the form element this label is associated with. <value> A string containing the ID of the target form control, or <c>null</c>. </value> <remarks> This parameter maps to the H... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the label element. <value> A string containing one or more CSS class names, or <c>null</c>. </value> <remarks> Use this parameter to customize the la... |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the label element. <value> A <see cref="RenderFragment"/> containing the label's content, or <c>null</c>. </value> <remarks> Typically contains the la... |
-
-**Basic Usage:**
-```razor
-<Label For="email">Email Address</Label>
-<Input Id="email" Type="InputType.Email" />
-```
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `For` | `string?` |  | Gets or sets the ID of the form element this label is associated with. A string containing the ID of the target form control, or null. This parameter maps to the HTML for attribute (htmlFor in JSX). When set, clicking the label will focus or activate the associated form control. Best practices: Always provide a For value for explicit label-control association Ensure the For value matches the Id of the target form control Use meaningful IDs that describe the field's purpose |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the label element. A string containing one or more CSS class names, or null. Use this parameter to customize the label's appearance beyond default styling. Common Tailwind utilities include: Text size: text-lg, text-sm Font weight: font-bold, font-normal Color: text-muted-foreground, text-destructive Spacing: mb-2, mr-2 |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the label element. A  containing the label's content, or null. Typically contains the label text, but can include additional elements such as: Required field indicators (asterisks, badges) Help text or tooltips Icons or visual indicators Nested spans for styling portions of text |
 
 ---
 
@@ -1856,28 +2489,17 @@ dotnet add package NeoBlazorUI.Components
 
 #### `MarkdownEditor`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Value` | `string?` | `` |  | Gets or sets the markdown content value. |
-| `ValueChanged` | `EventCallback<string?>` | `` |  | Gets or sets the callback invoked when the value changes. |
-| `Placeholder` | `string?` | `` |  | Gets or sets the placeholder text displayed when the editor is empty. |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the editor is disabled. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the editor container. |
-| `Id` | `string?` | `` |  | Gets or sets the HTML id attribute for the textarea element. |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for the textarea. |
-| `AriaDescribedBy` | `string?` | `` |  | Gets or sets the ID of the element that describes the textarea. |
-| `AriaInvalid` | `bool?` | `` |  | Gets or sets whether the textarea value is invalid. |
-
-**Basic Usage:**
-```razor
-@using BlazorUI.Components.MarkdownEditor
-
-<MarkdownEditor @bind-Value="markdown" Placeholder="Write something..." />
-
-@code {
-    private string? markdown;
-}
-```
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `string?` |  | Gets or sets the markdown content value. |
+| `ValueChanged` | `EventCallback<string?>` |  | Gets or sets the callback invoked when the value changes. |
+| `Placeholder` | `string?` |  | Gets or sets the placeholder text displayed when the editor is empty. |
+| `Disabled` | `bool` |  | Gets or sets whether the editor is disabled. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the editor container. |
+| `Id` | `string?` |  | Gets or sets the HTML id attribute for the textarea element. |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label for the textarea. |
+| `AriaDescribedBy` | `string?` |  | Gets or sets the ID of the element that describes the textarea. |
+| `AriaInvalid` | `bool?` |  | Gets or sets whether the textarea value is invalid. |
 
 ---
 
@@ -1896,6 +2518,147 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Menubar
 ```
 
+**Components & Parameters:**
+
+#### `Menubar`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the menubar. Typically includes MenubarMenu components. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the menubar. |
+| `ActiveIndex` | `int?` |  | Controls which menu is active/open (controlled mode). When null, the menubar manages its own state. |
+| `ActiveIndexChanged` | `EventCallback<int>` |  | Event callback invoked when the active index changes. Use with @bind-ActiveIndex for two-way binding. |
+| `DefaultActiveIndex` | `int` | `-1` | Default active index when in uncontrolled mode. |
+| `OnActiveIndexChange` | `EventCallback<int>` |  | Event callback invoked when the active menu changes. |
+| `Loop` | `bool` | `true` | Whether keyboard loop navigation is enabled. Default is true. |
+
+#### `MenubarCheckboxItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the checkbox item. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the checkbox item. |
+| `Disabled` | `bool` | `false` | Whether the checkbox item is disabled. |
+| `Checked` | `bool` | `false` | Whether the checkbox is checked. |
+| `CheckedChanged` | `EventCallback<bool>` |  | Event callback invoked when the checked state changes (for two-way binding). |
+| `OnCheckedChange` | `EventCallback<bool>` |  | Event callback invoked when the checkbox state changes. |
+| `CloseOnSelect` | `bool` | `false` | Whether to close the menu when this item is selected. Default is false for checkbox items. |
+
+#### `MenubarContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the menu. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the content container. |
+| `CloseOnEscape` | `bool` | `true` | Whether pressing Escape should close the menu. |
+| `CloseOnClickOutside` | `bool` | `true` | Whether clicking outside should close the menu. |
+| `Side` | `PopoverSide` | `PopoverSide.Bottom` | Preferred side for positioning. |
+| `Align` | `PopoverAlign` | `PopoverAlign.Start` | Alignment relative to trigger. |
+| `Offset` | `int` | `4` | Offset distance from the trigger in pixels. |
+| `Loop` | `bool` | `true` | Whether to enable keyboard loop navigation. |
+| `ZIndex` | `int` | `50` | Z-index for the menu content. |
+
+#### `MenubarGroup`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the group. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the group. |
+
+#### `MenubarItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the menu item. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the menu item. |
+| `Disabled` | `bool` | `false` | Whether the menu item is disabled. |
+| `OnClick` | `EventCallback<MouseEventArgs>` |  | Custom click handler. |
+| `CloseOnSelect` | `bool` | `true` | Whether to close the menu when this item is selected. |
+| `Inset` | `bool` | `false` | Whether this menu item represents an inset item (has additional left padding). |
+
+#### `MenubarLabel`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the label. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the label. |
+| `Inset` | `bool` | `false` | Whether to show the label with inset padding to align with items that have icons. |
+
+#### `MenubarMenu`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content, typically MenubarTrigger and MenubarContent. |
+
+#### `MenubarRadioGroup`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the radio group. Typically contains MenubarRadioItem components. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the radio group. |
+| `Value` | `TValue?` |  | The currently selected value. |
+| `ValueChanged` | `EventCallback<TValue?>` |  | Event callback invoked when the selected value changes (for two-way binding). |
+| `OnValueChange` | `EventCallback<TValue?>` |  | Event callback invoked when the selection changes. |
+
+#### `MenubarRadioItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the radio item. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the radio item. |
+| `Disabled` | `bool` | `false` | Whether the radio item is disabled. |
+| `Value` | `TValue?` |  | The value associated with this radio item. |
+| `CloseOnSelect` | `bool` | `true` | Whether to close the menu when this item is selected. Default is true for radio items. |
+
+#### `MenubarSeparator`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Additional CSS classes to apply to the separator. |
+
+#### `MenubarShortcut`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Additional CSS classes to apply to the shortcut. |
+| `ChildContent` | `RenderFragment?` |  | The content to be rendered inside the shortcut (e.g., "⌘K", "Ctrl+S"). |
+
+#### `MenubarSub`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the submenu. Typically contains MenubarSubTrigger and MenubarSubContent. |
+| `Open` | `bool?` |  | Controls whether the submenu is open (controlled mode). |
+| `OpenChanged` | `EventCallback<bool>` |  | Event callback invoked when the open state changes (for two-way binding). |
+| `OnOpenChange` | `EventCallback<bool>` |  | Event callback invoked when the submenu open state changes. |
+
+#### `MenubarSubContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the submenu. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the content container. |
+| `CloseOnEscape` | `bool` | `true` | Whether pressing Escape should close the submenu. |
+| `Offset` | `int` | `-4` | Offset distance from the trigger in pixels. |
+| `ZIndex` | `int` | `50` | Z-index for the submenu content. |
+
+#### `MenubarSubTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the trigger. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the trigger. |
+| `Disabled` | `bool` | `false` | Whether the trigger is disabled. |
+| `Inset` | `bool` | `false` | Whether this trigger is an inset item (has additional left padding). |
+
+#### `MenubarTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the trigger button. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the trigger. |
+| `Disabled` | `bool` | `false` | Whether the trigger is disabled. |
+
 ---
 
 ### Motion
@@ -1912,6 +2675,170 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Motion
 ```
+
+**Components & Parameters:**
+
+#### `BounceOnce`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Height` | `string` | `"-30px"` | Bounce height (pixels or percentage). Default: "-30px" |
+| `Duration` | `double` | `0.6` | Duration in seconds. Default: 0.6 |
+
+#### `ExpandOnScroll`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `From` | `double` | `0.8` | Starting scale (0-1). Default: 0.8 |
+| `To` | `double` | `1` | Ending scale (0-1+). Default: 1 |
+| `Duration` | `double` | `0.6` | Duration in seconds. Default: 0.6 |
+
+#### `FadeIn`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `From` | `double` | `0` | Starting opacity (0-1). Default: 0 |
+| `To` | `double` | `1` | Ending opacity (0-1). Default: 1 |
+| `Duration` | `double` | `0.3` | Duration in seconds. Default: 0.3 |
+
+#### `FadeInOnScroll`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `From` | `double` | `0` | Starting opacity (0-1). Default: 0 |
+| `To` | `double` | `1` | Ending opacity (0-1). Default: 1 |
+| `Duration` | `double` | `0.6` | Duration in seconds. Default: 0.6 |
+
+#### `FadeOut`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `From` | `double` | `1` | Starting opacity (0-1). Default: 1 |
+| `To` | `double` | `0` | Ending opacity (0-1). Default: 0 |
+| `Duration` | `double` | `0.2` | Duration in seconds. Default: 0.2 |
+
+#### `GridItemEnter`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Duration` | `double` | `0.4` | Duration in seconds. Default: 0.4 |
+
+#### `ListItemEnter`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Duration` | `double` | `0.3` | Duration in seconds. Default: 0.3 |
+
+#### `ListItemExit`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Duration` | `double` | `0.2` | Duration in seconds. Default: 0.2 |
+
+#### `Motion`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render and animate. |
+| `Presets` | `RenderFragment?` |  | Preset animations to apply (FadeIn, ScaleIn, Spring, etc.). |
+| `Trigger` | `MotionTrigger` | `MotionTrigger.OnAppear` | When the animation should trigger. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+| `Style` | `string?` |  | Additional inline styles to apply. |
+| `InViewOptions` | `InViewOptions?` |  | Options for IntersectionObserver when Trigger is OnInView. |
+| `StaggerChildren` | `double?` |  | Stagger delay for child animations in seconds. |
+| `RespectReducedMotion` | `bool` | `true` | Whether to respect user's reduced motion preference. Default: true |
+| `Keyframes` | `List<MotionKeyframe>?` |  | Custom keyframes to animate (alternative to using presets). |
+| `Options` | `MotionOptions?` |  | Animation options (duration, delay, easing, etc.). |
+| `Spring` | `SpringOptions?` |  | Spring physics options (overrides standard easing). |
+
+#### `Presets`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Preset components to apply (FadeIn, ScaleIn, Spring, etc.). |
+
+#### `Pulse`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Scale` | `double` | `1.05` | Scale amplitude. Default: 1.05 |
+| `Duration` | `double` | `0.6` | Duration in seconds. Default: 0.6 |
+| `Repeat` | `double` | `-1` | Number of pulses. Default: infinite |
+
+#### `ScaleIn`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `From` | `double` | `0.8` | Starting scale (0-1+). Default: 0.8 |
+| `To` | `double` | `1` | Ending scale (0-1+). Default: 1 |
+| `Duration` | `double` | `0.3` | Duration in seconds. Default: 0.3 |
+
+#### `ScaleOut`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `From` | `double` | `1` | Starting scale (0-1+). Default: 1 |
+| `To` | `double` | `0.8` | Ending scale (0-1+). Default: 0.8 |
+| `Duration` | `double` | `0.2` | Duration in seconds. Default: 0.2 |
+
+#### `ShakeX`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Intensity` | `int` | `10` | Shake intensity (pixels). Default: 10 |
+| `Duration` | `double` | `0.4` | Duration in seconds. Default: 0.4 |
+
+#### `ShakeY`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Intensity` | `int` | `10` | Shake intensity (pixels). Default: 10 |
+| `Duration` | `double` | `0.4` | Duration in seconds. Default: 0.4 |
+
+#### `SlideInFromBottom`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `From` | `double` | `100` | Distance to slide from in pixels. Default: 100 |
+| `Duration` | `double` | `0.3` | Duration in seconds. Default: 0.3 |
+
+#### `SlideInFromLeft`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `From` | `double` | `-100` | Distance to slide from in pixels (negative value). Default: -100 |
+| `Duration` | `double` | `0.3` | Duration in seconds. Default: 0.3 |
+
+#### `SlideInFromRight`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `From` | `double` | `100` | Distance to slide from in pixels. Default: 100 |
+| `Duration` | `double` | `0.3` | Duration in seconds. Default: 0.3 |
+
+#### `SlideInFromTop`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `From` | `double` | `-100` | Distance to slide from in pixels (negative value). Default: -100 |
+| `Duration` | `double` | `0.3` | Duration in seconds. Default: 0.3 |
+
+#### `SlideInOnScroll`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `From` | `double` | `50` | Starting Y position in pixels. Default: 50 |
+| `Duration` | `double` | `0.6` | Duration in seconds. Default: 0.6 |
+
+#### `Spring`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Mass` | `double` | `1.0` | Mass of the spring. Higher = slower. Default: 1.0 |
+| `Stiffness` | `double` | `100` | Stiffness of the spring. Higher = snappier. Default: 100 |
+| `Damping` | `double` | `10` | Damping ratio. Higher = less oscillation. Default: 10 |
+| `Velocity` | `double` | `0` | Initial velocity. Default: 0 |
+| `Bounce` | `double?` |  | Bounce amount (0-1). Alternative to stiffness/damping. |
 
 ---
 
@@ -1934,22 +2861,22 @@ dotnet add package NeoBlazorUI.Components
 
 #### `MultiSelect`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Values` | `IEnumerable<string>?` | `` |  | Gets or sets the currently selected values. |
-| `ValuesChanged` | `EventCallback<IEnumerable<string>?>` | `` |  | Gets or sets the callback that is invoked when the selected values change. |
-| `Placeholder` | `string` | `"Select items..."` |  | Gets or sets the placeholder text shown when no items are selected. |
-| `SearchPlaceholder` | `string` | `"Search..."` |  | Gets or sets the placeholder text shown in the search input. |
-| `EmptyMessage` | `string` | `"No results found."` |  | Gets or sets the message displayed when no items match the search. |
-| `SelectAllLabel` | `string` | `"Select All"` |  | Gets or sets the label for the Select All option. |
-| `ShowSelectAll` | `bool` | `true` |  | Gets or sets whether to show the Select All option. |
-| `ClearLabel` | `string` | `"Clear"` |  | Gets or sets the label for the Clear button. |
-| `CloseLabel` | `string` | `"Close"` |  | Gets or sets the label for the Close button. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the multiselect container. |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the multiselect is disabled. |
-| `MaxDisplayTags` | `int` | `3` |  | Gets or sets the maximum number of tags to display before showing "+N more". |
-| `PopoverWidth` | `string` | `"w-[300px]"` |  | Gets or sets the width of the popover content. |
-| `ValuesExpression` | `Expression<Func<IEnumerable<string>?>>?` | `` |  | Gets or sets an expression that identifies the bound values. Used for form validation integration. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Values` | `IEnumerable<string>?` |  | Gets or sets the currently selected values. |
+| `ValuesChanged` | `EventCallback<IEnumerable<string>?>` |  | Gets or sets the callback that is invoked when the selected values change. |
+| `Placeholder` | `string` | `"Select items..."` | Gets or sets the placeholder text shown when no items are selected. |
+| `SearchPlaceholder` | `string` | `"Search..."` | Gets or sets the placeholder text shown in the search input. |
+| `EmptyMessage` | `string` | `"No results found."` | Gets or sets the message displayed when no items match the search. |
+| `SelectAllLabel` | `string` | `"Select All"` | Gets or sets the label for the Select All option. |
+| `ShowSelectAll` | `bool` | `true` | Gets or sets whether to show the Select All option. |
+| `ClearLabel` | `string` | `"Clear"` | Gets or sets the label for the Clear button. |
+| `CloseLabel` | `string` | `"Close"` | Gets or sets the label for the Close button. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the multiselect container. |
+| `Disabled` | `bool` |  | Gets or sets whether the multiselect is disabled. |
+| `MaxDisplayTags` | `int` | `3` | Gets or sets the maximum number of tags to display before showing "+N more". |
+| `PopoverWidth` | `string` | `"w-[300px]"` | Gets or sets the width of the popover content. |
+| `ValuesExpression` | `Expression<Func<IEnumerable<string>?>>?` |  | Gets or sets an expression that identifies the bound values. Used for form validation integration. |
 
 ---
 
@@ -1972,17 +2899,25 @@ dotnet add package NeoBlazorUI.Components
 
 #### `NativeSelect`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Value` | `string?` | `` |  | Gets or sets the selected value. |
-| `ValueChanged` | `EventCallback<string?>` | `` |  | Gets or sets the callback that is invoked when the value changes. |
-| `Id` | `string?` | `` |  | Gets or sets the id attribute for the select element. |
-| `Name` | `string?` | `` |  | Gets or sets the name attribute for the select element. |
-| `Placeholder` | `string?` | `` |  | Gets or sets the placeholder text when no option is selected. |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the select is disabled. |
-| `Required` | `bool` | `` |  | Gets or sets whether the select is required. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the select. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the select (options). |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `string?` |  | Gets or sets the selected value. |
+| `ValueChanged` | `EventCallback<string?>` |  | Gets or sets the callback that is invoked when the value changes. |
+| `Id` | `string?` |  | Gets or sets the id attribute for the select element. |
+| `Name` | `string?` |  | Gets or sets the name attribute for the select element. |
+| `Placeholder` | `string?` |  | Gets or sets the placeholder text when no option is selected. |
+| `Disabled` | `bool` |  | Gets or sets whether the select is disabled. |
+| `Required` | `bool` |  | Gets or sets whether the select is required. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the select. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the select (options). |
+
+#### `NativeSelectOption`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `string?` |  |  |
+| `Disabled` | `bool` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
 
 ---
 
@@ -2000,6 +2935,73 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.NavigationMenu
 ```
+
+**Components & Parameters:**
+
+#### `NavigationMenu`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the navigation menu. |
+| `Value` | `string?` |  | Controls which item is active/open. |
+| `ValueChanged` | `EventCallback<string>` |  | Event callback invoked when the active item changes. |
+| `Orientation` | `NavigationMenuOrientation` | `NavigationMenuOrientation.Horizontal` | The orientation of the navigation menu. |
+| `AriaLabel` | `string` | `"Main"` | The accessible label for the navigation. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `NavigationMenuContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the content panel. |
+| `ForceMount` | `bool` | `true` | When true, the content is always mounted in the DOM (for animations). Default is true for proper animation support. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `NavigationMenuIndicator`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `NavigationMenuItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `string` | `string.Empty` | The unique value for this item. |
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the item. |
+
+#### `NavigationMenuLink`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Href` | `string` | `"#"` | The href for the link. |
+| `Active` | `bool?` |  | Whether the link is currently active. If not set, active state will be auto-detected based on the current URL when AutoActive is true. |
+| `AutoActive` | `bool` | `false` | Whether to automatically detect active state based on the current URL. Similar to NavLink behavior. Default is false. |
+| `Match` | `NavLinkMatch` | `NavLinkMatch.Prefix` | How to match the URL when AutoActive is true. NavLinkMatch.All requires an exact match, NavLinkMatch.Prefix requires the URL to start with Href. Default is NavLinkMatch.Prefix. |
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the link. |
+| `OnClick` | `EventCallback` |  | Event callback invoked when the link is clicked. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `NavigationMenuList`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the list. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `NavigationMenuTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the trigger. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `NavigationMenuViewport`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the viewport. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
 
 ---
 
@@ -2022,54 +3024,54 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Pagination`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `AriaLabel` | `string` | `"pagination"` |  | Gets or sets the aria-label for the pagination navigation. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the pagination. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the pagination. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `AriaLabel` | `string` | `"pagination"` | Gets or sets the aria-label for the pagination navigation. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the pagination. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the pagination. |
 
 #### `PaginationContent`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  |  |
-| `ChildContent` | `RenderFragment?` | `` |  |  |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
 
 #### `PaginationEllipsis`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  |  |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  |  |
 
 #### `PaginationItem`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Class` | `string?` | `` |  |  |
-| `ChildContent` | `RenderFragment?` | `` |  |  |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
 
 #### `PaginationLink`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Href` | `string?` | `` |  |  |
-| `IsActive` | `bool` | `` |  |  |
-| `Class` | `string?` | `` |  |  |
-| `ChildContent` | `RenderFragment?` | `` |  |  |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Href` | `string?` |  |  |
+| `IsActive` | `bool` |  |  |
+| `Class` | `string?` |  |  |
+| `ChildContent` | `RenderFragment?` |  |  |
 
 #### `PaginationNext`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Href` | `string?` | `` |  |  |
-| `Class` | `string?` | `` |  |  |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Href` | `string?` |  |  |
+| `Class` | `string?` |  |  |
 
 #### `PaginationPrevious`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Href` | `string?` | `` |  |  |
-| `Class` | `string?` | `` |  |  |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Href` | `string?` |  |  |
+| `Class` | `string?` |  |  |
 
 ---
 
@@ -2088,17 +3090,41 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Popover
 ```
 
-**Basic Usage:**
-```razor
-<Popover>
-    <PopoverTrigger AsChild>
-        <Button Variant="ButtonVariant.Outline">Open Popover</Button>
-    </PopoverTrigger>
-    <PopoverContent>
-        <p>Popover content goes here</p>
-    </PopoverContent>
-</Popover>
-```
+**Components & Parameters:**
+
+#### `Popover`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the popover. Should include PopoverTrigger and PopoverContent. |
+| `Open` | `bool?` |  | Controls whether the popover is open (controlled mode). When null, the popover manages its own state (uncontrolled mode). |
+| `OpenChanged` | `EventCallback<bool>` |  | Event callback invoked when the open state changes. Use with @bind-Open for two-way binding. |
+| `DefaultOpen` | `bool` | `false` | Default open state when in uncontrolled mode. |
+| `OnOpenChange` | `EventCallback<bool>` |  | Event callback invoked when the popover open state changes. |
+| `Modal` | `bool` | `true` | Whether the popover can be dismissed by clicking outside or pressing Escape. Default is true. |
+
+#### `PopoverContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  |  |
+| `CloseOnEscape` | `bool` | `true` |  |
+| `CloseOnClickOutside` | `bool` | `true` |  |
+| `Side` | `PopoverSide` | `PopoverSide.Bottom` |  |
+| `Align` | `PopoverAlign` | `PopoverAlign.Center` |  |
+| `Offset` | `int` | `4` |  |
+| `OnEscapeKeyDown` | `EventCallback<KeyboardEventArgs>` |  |  |
+| `OnClickOutside` | `EventCallback` |  |  |
+| `Class` | `string?` |  |  |
+
+#### `PopoverTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  |  |
+| `AsChild` | `bool` | `false` | When true, the trigger does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components. Use this when you want a custom component (like Button) to act as the trigger. |
+| `OnClick` | `EventCallback<MouseEventArgs>` |  |  |
+| `CustomClickHandling` | `bool` | `false` |  |
 
 ---
 
@@ -2121,11 +3147,11 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Progress`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Value` | `double` | `` |  | Gets or sets the current progress value. |
-| `Max` | `double` | `100` |  | Gets or sets the maximum value for the progress bar. <remarks> Default value is 100. </remarks> |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the progress bar. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `double` |  | Gets or sets the current progress value. |
+| `Max` | `double` | `100` | Gets or sets the maximum value for the progress bar. Default value is 100. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the progress bar. |
 
 ---
 
@@ -2148,39 +3174,26 @@ dotnet add package NeoBlazorUI.Components
 
 #### `RadioGroup`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Value` | `TValue` | `default!` |  | Gets or sets the currently selected value. <remarks> This property supports two-way binding using the @bind-Value directive. Changes to this property trigger the ValueChanged event callback. </rema... |
-| `ValueChanged` | `EventCallback<TValue>` | `` |  | Gets or sets the callback invoked when the selected value changes. <remarks> This event callback enables two-way binding with @bind-Value. It is invoked whenever a radio button is selected. </remarks> |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the entire radio group is disabled. <remarks> When disabled, all radio items in the group cannot be selected. </remarks> |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the radio group container. |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for the radio group. <remarks> Provides accessible text for screen readers to describe the purpose of the radio group. </remarks> |
-| `Name` | `string?` | `` |  | Gets or sets the name for all radio items in this group. <remarks> This name is shared by all radio items in the group, making them mutually exclusive. Critical for form submission - the selected v... |
-| `Required` | `bool` | `` |  | Gets or sets whether a selection is required in this radio group. <remarks> When true, the user must select one of the radio items for form submission. Works with form validation. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the radio group. <remarks> Should contain RadioGroupItem components. </remarks> |
-| `ValueExpression` | `Expression<Func<TValue>>?` | `` |  | Gets or sets an expression that identifies the bound value. <remarks> Used for form validation integration. When provided, the radio group registers with the EditContext and participates in form va... |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `TValue` |  | Gets or sets the currently selected value. This property supports two-way binding using the @bind-Value directive. Changes to this property trigger the ValueChanged event callback. |
+| `ValueChanged` | `EventCallback<TValue>` |  | Gets or sets the callback invoked when the selected value changes. This event callback enables two-way binding with @bind-Value. It is invoked whenever a radio button is selected. |
+| `Disabled` | `bool` |  | Gets or sets whether the entire radio group is disabled. When disabled, all radio items in the group cannot be selected. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the radio group container. |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label for the radio group. Provides accessible text for screen readers to describe the purpose of the radio group. |
+| `Name` | `string?` |  | Gets or sets the name for all radio items in this group. This name is shared by all radio items in the group, making them mutually exclusive. Critical for form submission - the selected value will be submitted with this name. |
+| `Required` | `bool` |  | Gets or sets whether a selection is required in this radio group. When true, the user must select one of the radio items for form submission. Works with form validation. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the radio group. Should contain RadioGroupItem components. |
+| `ValueExpression` | `Expression<Func<TValue>>?` |  | Gets or sets an expression that identifies the bound value. Used for form validation integration. When provided, the radio group registers with the EditContext and participates in form validation. |
 
 #### `RadioGroupItem`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Disabled` | `bool` | `` |  | Gets or sets whether this individual radio item is disabled. <remarks> When disabled, the item cannot be selected and appears with reduced opacity. </remarks> |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the radio item. |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for the radio item. <remarks> Provides accessible text for screen readers when the radio item doesn't have an associated label element. </remarks> |
-| `Id` | `string?` | `` |  | Gets or sets the ID attribute for the radio item element. <remarks> Used for associating the radio item with label elements via htmlFor attribute. </remarks> |
-
-**Basic Usage:**
-```razor
-<RadioGroup @bind-Value="selectedOption">
-    <RadioGroupItem Value="option1" Id="opt1" />
-    <RadioGroupItem Value="option2" Id="opt2" />
-    <RadioGroupItem Value="option3" Id="opt3" />
-</RadioGroup>
-
-@code {
-    private string selectedOption = "option1";
-}
-```
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Disabled` | `bool` |  | Gets or sets whether this individual radio item is disabled. When disabled, the item cannot be selected and appears with reduced opacity. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the radio item. |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label for the radio item. Provides accessible text for screen readers when the radio item doesn't have an associated label element. |
+| `Id` | `string?` |  | Gets or sets the ID attribute for the radio item element. Used for associating the radio item with label elements via htmlFor attribute. |
 
 ---
 
@@ -2199,9 +3212,36 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Resizable
 ```
 
-**Related Enums:**
+**Components & Parameters:**
 
-- [`ResizableDirection`](#resizabledirection-enum)
+#### `ResizableHandle`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Index` | `int` |  | The index of the handle (zero-based, between panels). |
+| `WithHandle` | `bool` | `false` | Whether to show a visual grip handle. Default is false. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the handle. |
+
+#### `ResizablePanel`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render within the panel. |
+| `DefaultSize` | `double?` |  | The default size of the panel as a percentage. |
+| `MinSize` | `double?` |  | The minimum size of the panel as a percentage. |
+| `MaxSize` | `double?` |  | The maximum size of the panel as a percentage. |
+| `Collapsible` | `bool` | `false` | Whether the panel is collapsible. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the panel. |
+
+#### `ResizablePanelGroup`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render within the panel group. Should contain ResizablePanel and ResizableHandle components. |
+| `Direction` | `ResizableDirection` | `ResizableDirection.Horizontal` | The direction of the panel layout. Default is Horizontal. |
+| `DefaultSizes` | `double[]?` |  | The initial sizes of the panels as percentages (must sum to 100). If not provided, panels will be sized equally. |
+| `OnLayoutChange` | `EventCallback<double[]>` |  | Event callback invoked when panel sizes change. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the container. |
 
 ---
 
@@ -2224,31 +3264,20 @@ dotnet add package NeoBlazorUI.Components
 
 #### `RichTextEditor`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Value` | `string?` | `` |  | Gets or sets the HTML content value. |
-| `ValueChanged` | `EventCallback<string?>` | `` |  | Gets or sets the callback invoked when the value changes. |
-| `Placeholder` | `string?` | `` |  | Gets or sets the placeholder text displayed when the editor is empty. |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the editor is disabled. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the editor container. |
-| `Id` | `string?` | `` |  | Gets or sets the HTML id attribute for the contenteditable element. |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for the editor. |
-| `AriaDescribedBy` | `string?` | `` |  | Gets or sets the ID of the element that describes the editor. |
-| `AriaInvalid` | `bool?` | `` |  | Gets or sets whether the editor value is invalid. |
-| `MinHeight` | `string` | `"150px"` |  | Gets or sets the minimum height of the editor content area. |
-| `MaxHeight` | `string?` | `` |  | Gets or sets the maximum height of the editor content area. When content exceeds this height, a scrollbar appears. |
-| `Height` | `string?` | `` |  | Gets or sets a fixed height for the editor content area. When set, the editor will not auto-expand and will show scrollbar when content overflows. Takes precedence over MinHeight/MaxHeight when set. |
-
-**Basic Usage:**
-```razor
-@using BlazorUI.Components.RichTextEditor
-
-<RichTextEditor @bind-Value="content" Placeholder="Start typing..." />
-
-@code {
-    private string? content;
-}
-```
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `string?` |  | Gets or sets the HTML content value. |
+| `ValueChanged` | `EventCallback<string?>` |  | Gets or sets the callback invoked when the value changes. |
+| `Placeholder` | `string?` |  | Gets or sets the placeholder text displayed when the editor is empty. |
+| `Disabled` | `bool` |  | Gets or sets whether the editor is disabled. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the editor container. |
+| `Id` | `string?` |  | Gets or sets the HTML id attribute for the contenteditable element. |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label for the editor. |
+| `AriaDescribedBy` | `string?` |  | Gets or sets the ID of the element that describes the editor. |
+| `AriaInvalid` | `bool?` |  | Gets or sets whether the editor value is invalid. |
+| `MinHeight` | `string` | `"150px"` | Gets or sets the minimum height of the editor content area. |
+| `MaxHeight` | `string?` |  | Gets or sets the maximum height of the editor content area. When content exceeds this height, a scrollbar appears. |
+| `Height` | `string?` |  | Gets or sets a fixed height for the editor content area. When set, the editor will not auto-expand and will show scrollbar when content overflows. Takes precedence over MinHeight/MaxHeight when set. |
 
 ---
 
@@ -2267,10 +3296,26 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.ScrollArea
 ```
 
-**Related Enums:**
+**Components & Parameters:**
 
-- [`ScrollAreaType`](#scrollareatype-enum)
-- [`Orientation`](#orientation-enum)
+#### `ScrollArea`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render within the scrollable area. |
+| `Type` | `ScrollAreaType` | `ScrollAreaType.Auto` | The type of scrollbar to show. Default is Auto (scrollbars visible when content overflows). |
+| `ScrollHideDelay` | `int` | `600` | Controls the visibility delay of scrollbars in milliseconds. Only applies when Type is Scroll or Hover. Default is 600ms. |
+| `ShowVerticalScrollbar` | `bool` | `true` | Whether to show the vertical scrollbar. Default is true. |
+| `ShowHorizontalScrollbar` | `bool` | `false` | Whether to show the horizontal scrollbar. Default is false. |
+| `EnableScrollShadows` | `bool` | `false` | Whether to enable scroll shadows that indicate more content is available. Default is false. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the root element. |
+
+#### `ScrollBar`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Orientation` | `Orientation` | `Orientation.Vertical` | The orientation of the scrollbar. Default is Vertical. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the scrollbar. |
 
 ---
 
@@ -2289,23 +3334,62 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Select
 ```
 
-**Basic Usage:**
-```razor
-<Select @bind-Value="selectedFruit">
-    <SelectTrigger>
-        <SelectValue Placeholder="Select a fruit..." />
-    </SelectTrigger>
-    <SelectContent>
-        <SelectItem Value="apple">Apple</SelectItem>
-        <SelectItem Value="banana">Banana</SelectItem>
-        <SelectItem Value="orange">Orange</SelectItem>
-    </SelectContent>
-</Select>
+**Components & Parameters:**
 
-@code {
-    private string selectedFruit = "";
-}
-```
+#### `Select`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `TValue?` |  | Gets or sets the currently selected value. |
+| `ValueChanged` | `EventCallback<TValue?>` |  | Gets or sets the callback invoked when the selected value changes. |
+| `Disabled` | `bool` |  | Gets or sets whether the select is disabled. |
+| `Open` | `bool?` |  | Gets or sets whether the dropdown is open (controlled mode). |
+| `OpenChanged` | `EventCallback<bool>` |  | Gets or sets the callback invoked when the open state changes. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the select container. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the select component. Should contain SelectTrigger and SelectContent components. |
+
+#### `SelectContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the content container. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the dropdown. |
+
+#### `SelectGroup`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the group. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the group. |
+
+#### `SelectItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Text` | `string?` |  | Gets or sets the display text for this item. If not provided, will use ChildContent text or Value.ToString(). |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the item. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered as the item's display text. |
+| `Disabled` | `bool` |  | Gets or sets whether this item is disabled. |
+
+#### `SelectLabel`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the label. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the label. |
+
+#### `SelectTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the trigger button. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the trigger button. |
+
+#### `SelectValue`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Placeholder` | `string?` |  | Gets or sets the placeholder text to display when no value is selected. |
 
 ---
 
@@ -2328,20 +3412,11 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Separator`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Orientation` | `SeparatorOrientation` | `SeparatorOrientation.Horizontal` |  | Gets or sets the orientation of the separator. <remarks> Determines whether the separator is displayed horizontally or vertically. Default value is <see cref="SeparatorOrientation.Horizontal"/>. </... |
-| `Decorative` | `bool` | `true` |  | Gets or sets whether the separator is purely decorative. <remarks> <para> When true (default), the separator is treated as decorative (role="none") and hidden from assistive technologies. </para> <... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the separator. <remarks> Custom classes are appended after the component's base classes, allowing for style overrides and extensions. </remarks> |
-
-**Basic Usage:**
-```razor
-<Separator />
-```
-
-**Related Enums:**
-
-- [`SeparatorOrientation`](#separatororientation-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Orientation` | `SeparatorOrientation` | `SeparatorOrientation.Horizontal` | Gets or sets the orientation of the separator. Determines whether the separator is displayed horizontally or vertically. Default value is . |
+| `Decorative` | `bool` | `true` | Gets or sets whether the separator is purely decorative. When true (default), the separator is treated as decorative (role="none") and hidden from assistive technologies. When false, the separator is semantic (role="separator") and will be announced to screen readers, with the orientation specified via aria-orientation. Set to false when the separator provides meaningful structural information about content hierarchy. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the separator. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
 
 ---
 
@@ -2360,26 +3435,76 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Sheet
 ```
 
-**Basic Usage:**
-```razor
-<Sheet>
-    <SheetTrigger AsChild>
-        <Button>Open Sheet</Button>
-    </SheetTrigger>
-    <SheetContent>
-        <SheetHeader>
-            <SheetTitle>Sheet Title</SheetTitle>
-            <SheetDescription>Sheet description</SheetDescription>
-        </SheetHeader>
-        <p>Sheet content</p>
-        <SheetFooter>
-            <SheetClose AsChild>
-                <Button>Close</Button>
-            </SheetClose>
-        </SheetFooter>
-    </SheetContent>
-</Sheet>
-```
+**Components & Parameters:**
+
+#### `Sheet`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the sheet. |
+| `Open` | `bool?` |  | Controls whether the sheet is open (controlled mode). When null, the sheet manages its own state (uncontrolled mode). |
+| `OpenChanged` | `EventCallback<bool>` |  | Event callback invoked when the open state changes. Use with @bind-Open for two-way binding. |
+| `DefaultOpen` | `bool` | `false` | Default open state when in uncontrolled mode. |
+| `OnOpenChange` | `EventCallback<bool>` |  | Event callback invoked when the sheet open state changes. |
+| `Side` | `SheetSide` | `SheetSide.Right` | The side from which the sheet slides in. Default is Right. |
+| `Modal` | `bool` | `true` | Whether the sheet can be dismissed by clicking the overlay or pressing Escape. Default is true. |
+
+#### `SheetClose`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the close button. |
+| `AsChild` | `bool` | `false` | When true, the close does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components. Use this when you want a custom component (like Button) to act as the close button. |
+| `OnClick` | `EventCallback<MouseEventArgs>` |  | Custom click handler. Called after the sheet is closed. |
+| `PreventClose` | `bool` | `false` | Whether to prevent the default close behavior. When true, only the OnClick handler is invoked. Default is false (sheet closes on click). |
+
+#### `SheetContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the sheet. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the sheet content. |
+| `Side` | `SheetSide?` |  | The side from which the sheet slides in. When null, uses the side from the parent Sheet component. |
+| `ShowClose` | `bool` | `true` | Whether to show the close button (X icon). Default is true. |
+| `CloseOnEscape` | `bool` | `true` | Whether pressing Escape should close the sheet. Default is true. |
+| `TrapFocus` | `bool` | `true` | Whether to trap focus within the sheet. Default is true for modal sheets. |
+| `LockScroll` | `bool` | `true` | Whether to lock body scroll when sheet is open. Default is true for modal sheets. |
+| `OnEscapeKeyDown` | `EventCallback<KeyboardEventArgs>` |  | Event callback invoked when Escape key is pressed. |
+
+#### `SheetDescription`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The description text or content. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the description. |
+
+#### `SheetFooter`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display in the sheet footer (typically action buttons). |
+| `Class` | `string?` |  | Additional CSS classes to apply to the footer container. |
+
+#### `SheetHeader`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display in the sheet header (typically SheetTitle and SheetDescription). |
+| `Class` | `string?` |  | Additional CSS classes to apply to the header container. |
+
+#### `SheetTitle`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The title text or content. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the title. |
+
+#### `SheetTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the trigger button. |
+| `AsChild` | `bool` | `false` | When true, the trigger does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components. Use this when you want a custom component (like Button) to act as the trigger. |
 
 ---
 
@@ -2402,57 +3527,202 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Sidebar`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ChildContent` | `RenderFragment?` | `` |  | The content to render inside the sidebar. |
-| `Class` | `string?` | `` |  | Additional CSS classes to apply to the sidebar. |
-| `Collapsible` | `bool` | `true` |  | Collapsible behavior: icon-only when collapsed, full width when expanded. Default is true. |
-| `AutoDetectActive` | `bool` | `false` |  | Whether menu items should automatically detect their active state based on current URL. When enabled, all SidebarMenuButton and SidebarMenuSubButton components will automatically highlight based on... |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the sidebar. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the sidebar. |
+| `Collapsible` | `bool` | `true` | Collapsible behavior: icon-only when collapsed, full width when expanded. Default is true. |
+| `AutoDetectActive` | `bool` | `false` | Whether menu items should automatically detect their active state based on current URL. When enabled, all SidebarMenuButton and SidebarMenuSubButton components will automatically highlight based on whether their Href matches the current route. Default is false. |
 
-**Basic Usage:**
-```razor
-<SidebarProvider>
-    <Sidebar>
-        <SidebarHeader>
-            <SidebarHeaderContent>App Name</SidebarHeaderContent>
-        </SidebarHeader>
+#### `SidebarContent`
 
-        <SidebarContent>
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton Href="/" Match="NavLinkMatch.All">
-                        <LucideIcon Name="house" Size="16" />
-                        <span>Home</span>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render. |
+| `Class` | `string?` |  | Additional CSS classes. |
 
-                <SidebarMenuItem>
-                    <SidebarMenuButton Href="/settings" Match="NavLinkMatch.All">
-                        <LucideIcon Name="settings" Size="16" />
-                        <span>Settings</span>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarContent>
-    </Sidebar>
+#### `SidebarFooter`
 
-    <SidebarInset>
-        <main>
-            @Body
-        </main>
-    </SidebarInset>
-</SidebarProvider>
-```
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render in the footer. |
+| `Class` | `string?` |  | Additional CSS classes. |
 
-**Related Enums:**
+#### `SidebarGroup`
 
-- [`SidebarMenuButtonElement`](#sidebarmenubuttonelement-enum)
-- [`SidebarMenuButtonVariant`](#sidebarmenubuttonvariant-enum)
-- [`SidebarMenuSubButtonSize`](#sidebarmenusubbuttonsize-enum)
-- [`SidebarMenuButtonSize`](#sidebarmenubuttonsize-enum)
-- [`SidebarGroupLabelElement`](#sidebargrouplabelelement-enum)
-- [`SidebarVariant`](#sidebarvariant-enum)
-- [`SidebarSide`](#sidebarside-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The group content (typically SidebarGroupLabel, SidebarGroupAction, SidebarGroupContent). |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarGroupAction`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The button content (typically an icon). |
+| `Tooltip` | `string?` |  | Tooltip text for the action. |
+| `AsChild` | `SidebarMenuButtonElement` | `SidebarMenuButtonElement.Button` | The element tag to render (button or a). |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarGroupContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The group content. |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarGroupLabel`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The label content. |
+| `AsChild` | `SidebarGroupLabelElement` | `SidebarGroupLabelElement.Div` | The element tag to render (div or button for collapsible). |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarHeader`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render in the header. |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarHeaderContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render (typically SidebarHeaderIcon and SidebarHeaderInfo). |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarHeaderInfo`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The text content to render (typically title and subtitle spans). |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarInset`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The main content to render. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the inset. |
+
+#### `SidebarMenu`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The menu items to render. |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarMenuAction`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The button content (typically an icon). |
+| `Tooltip` | `string?` |  | Tooltip text for the action. |
+| `ShowOnHover` | `bool` |  | Whether to show the action only on hover. |
+| `AsChild` | `SidebarMenuButtonElement` | `SidebarMenuButtonElement.Button` | The element tag to render (button or a). |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarMenuBadge`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The badge content (typically a number or text). |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarMenuButton`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The button content. |
+| `Tooltip` | `string?` |  | Tooltip text to show when sidebar is collapsed (icon-only mode). |
+| `Size` | `SidebarMenuButtonSize` | `SidebarMenuButtonSize.Default` | Size variant for the button. |
+| `Variant` | `SidebarMenuButtonVariant` | `SidebarMenuButtonVariant.Default` | Style variant for the button. |
+| `IsActive` | `bool?` |  | Whether this menu item is active/selected. If not set, active state will be auto-detected based on Href and Match if the Sidebar has AutoDetectActive enabled. |
+| `AsChild` | `SidebarMenuButtonElement` | `SidebarMenuButtonElement.Button` | The element type to render. Defaults to Button, but automatically switches to Anchor if Href is provided. |
+| `Href` | `string?` |  | The URL to navigate to. When provided, the button automatically renders as a NavLink (unless AsChild is explicitly set to Button). |
+| `Match` | `NavLinkMatch` | `NavLinkMatch.Prefix` | How the link should match the current URL. Default is NavLinkMatch.Prefix. |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarMenuChevron`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The chevron icon content (typically a LucideIcon). |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarMenuItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The menu item content (typically SidebarMenuButton). |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarMenuSkeleton`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ShowIcon` | `bool` |  | Whether to show an icon skeleton. |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarMenuSub`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The submenu items to render. |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarMenuSubButton`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The button content. |
+| `AsChild` | `SidebarMenuButtonElement` | `SidebarMenuButtonElement.Button` | The element tag to render. Defaults to Button, but automatically switches to Anchor if Href is provided. |
+| `Href` | `string?` |  | The URL to navigate to. When provided, the button automatically renders as a NavLink (unless AsChild is explicitly set to Button). |
+| `Match` | `NavLinkMatch` | `NavLinkMatch.Prefix` | How the link should match the current URL. Default is NavLinkMatch.Prefix. |
+| `IsActive` | `bool?` |  | Whether this submenu item is active/selected. If not set, active state will be auto-detected based on Href and Match if the Sidebar has AutoDetectActive enabled. |
+| `Size` | `SidebarMenuSubButtonSize` | `SidebarMenuSubButtonSize.Medium` | Button size variant. |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarMenuSubItem`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The submenu item content (typically SidebarMenuSubButton). |
+
+#### `SidebarProvider`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the sidebar provider. Should typically contain SidebarLayout with Sidebar and SidebarInset. |
+| `DefaultOpen` | `bool` | `true` | Default open state for the sidebar on desktop. |
+| `Variant` | `SidebarVariant` | `SidebarVariant.Sidebar` | The sidebar variant/style. |
+| `Side` | `SidebarSide` | `SidebarSide.Left` | Which side the sidebar appears on. |
+| `CookieKey` | `string?` | `"sidebar:state"` | Cookie key for persisting sidebar state. Set to null to disable persistence. |
+| `HeightClass` | `string` | `"min-h-screen"` | CSS class for controlling the container height. Defaults to "min-h-screen" to fill viewport and grow with content. Can be set to "h-screen" for fixed viewport height or "h-full" for contained layouts. |
+| `StaticRendering` | `bool` | `false` | Enable static rendering mode for SSR/prerendering scenarios. When true, JS will set up click delegation to call C# toggle via interop. Set to true when using rendermode="InteractiveServer" or "InteractiveAuto" in MainLayout. |
+
+#### `SidebarRail`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `OnClick` | `EventCallback<MouseEventArgs>` |  | Click handler for custom behavior. |
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarSeparator`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Class` | `string?` |  | Additional CSS classes. |
+
+#### `SidebarTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | Custom content for the trigger button. If not provided, defaults to a panel-left icon. |
+| `OnClick` | `EventCallback<MouseEventArgs>` |  | Click handler for custom behavior.4 |
+| `Class` | `string?` |  | Additional CSS classes. |
 
 ---
 
@@ -2475,21 +3745,10 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Skeleton`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Shape` | `SkeletonShape` | `SkeletonShape.Rectangular` |  | Gets or sets the shape variant of the skeleton. <value> A <see cref="SkeletonShape"/> value. Default is <see cref="SkeletonShape.Rectangular"/>. </value> <remarks> <list type="bullet"> <item><see c... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the skeleton element. <value> A string containing one or more CSS class names, or <c>null</c>. </value> <remarks> Use this parameter to customize the... |
-
-**Basic Usage:**
-```razor
-<Skeleton Class="h-12 w-12 rounded-full" />
-<Skeleton Class="h-4 w-[250px]" />
-<Skeleton Class="h-4 w-[200px]" />
-```
-
-**Related Enums:**
-
-- [`SkeletonShape`](#skeletonshape-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Shape` | `SkeletonShape` | `SkeletonShape.Rectangular` | Gets or sets the shape variant of the skeleton. A  value. Default is . : Default rectangular shape with rounded corners : Circular shape, ideal for avatar placeholders |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the skeleton element. A string containing one or more CSS class names, or null. Use this parameter to customize the skeleton's dimensions and spacing. Common Tailwind utilities include: Height: h-4, h-12, h-[200px] Width: w-full, w-[250px], w-1/2 Margin: mb-2, mt-4 |
 
 ---
 
@@ -2512,15 +3771,15 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Slider`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Value` | `double` | `` |  | Gets or sets the current value of the slider. |
-| `ValueChanged` | `EventCallback<double>` | `` |  | Gets or sets the callback that is invoked when the value changes. |
-| `Min` | `double` | `0` |  | Gets or sets the minimum value. |
-| `Max` | `double` | `100` |  | Gets or sets the maximum value. |
-| `Step` | `double` | `1` |  | Gets or sets the step increment. |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the slider is disabled. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the slider. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `double` |  | Gets or sets the current value of the slider. |
+| `ValueChanged` | `EventCallback<double>` |  | Gets or sets the callback that is invoked when the value changes. |
+| `Min` | `double` | `0` | Gets or sets the minimum value. |
+| `Max` | `double` | `100` | Gets or sets the maximum value. |
+| `Step` | `double` | `1` | Gets or sets the step increment. |
+| `Disabled` | `bool` |  | Gets or sets whether the slider is disabled. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the slider. |
 
 ---
 
@@ -2543,14 +3802,10 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Spinner`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Size` | `SpinnerSize` | `SpinnerSize.Medium` |  | Gets or sets the size of the spinner. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the spinner. |
-
-**Related Enums:**
-
-- [`SpinnerSize`](#spinnersize-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Size` | `SpinnerSize` | `SpinnerSize.Medium` | Gets or sets the size of the spinner. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the spinner. |
 
 ---
 
@@ -2573,27 +3828,18 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Switch`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Checked` | `bool` | `` |  | Gets or sets whether the switch is checked (on). <remarks> This property supports two-way binding using the @bind-Checked directive. Changes to this property trigger the CheckedChanged event callba... |
-| `CheckedChanged` | `EventCallback<bool>` | `` |  | Gets or sets the callback invoked when the checked state changes. <remarks> This event callback enables two-way binding with @bind-Checked. It is invoked whenever the user toggles the switch state.... |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the switch is disabled. <remarks> When disabled: - Switch cannot be clicked or focused - Opacity is reduced - Pointer events are disabled - aria-disabled attribute is set to tr... |
-| `Size` | `SwitchSize` | `SwitchSize.Medium` |  | Gets or sets the size variant of the switch. <remarks> Available sizes: - Small: Compact switch for dense layouts - Medium: Default size (recommended) - Large: Prominent switch for primary actions ... |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the switch. <remarks> Custom classes are appended after the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for the switch. <remarks> Provides accessible text for screen readers when the switch doesn't have associated label text. </remarks> |
-| `Id` | `string?` | `` |  | Gets or sets the ID attribute for the switch element. <remarks> Used for associating the switch with label elements via htmlFor attribute. </remarks> |
-| `Name` | `string?` | `` |  | Gets or sets the name of the switch for form submission. <remarks> This is critical for form submission. The name/value pair is submitted to the server. If not specified, falls back to the Id value... |
-| `Required` | `bool` | `` |  | Gets or sets whether the switch is required. <remarks> When true, the switch must be checked for form submission. Works with form validation. </remarks> |
-| `CheckedExpression` | `Expression<Func<bool>>?` | `` |  | Gets or sets an expression that identifies the bound value. <remarks> Used for form validation integration. When provided, the switch registers with the EditContext and participates in form validat... |
-
-**Basic Usage:**
-```razor
-<Switch @bind-Checked="isEnabled" />
-
-@code {
-    private bool isEnabled = false;
-}
-```
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Checked` | `bool` |  | Gets or sets whether the switch is checked (on). This property supports two-way binding using the @bind-Checked directive. Changes to this property trigger the CheckedChanged event callback. |
+| `CheckedChanged` | `EventCallback<bool>` |  | Gets or sets the callback invoked when the checked state changes. This event callback enables two-way binding with @bind-Checked. It is invoked whenever the user toggles the switch state. |
+| `Disabled` | `bool` |  | Gets or sets whether the switch is disabled. When disabled: - Switch cannot be clicked or focused - Opacity is reduced - Pointer events are disabled - aria-disabled attribute is set to true |
+| `Size` | `SwitchSize` | `SwitchSize.Medium` | Gets or sets the size variant of the switch. Available sizes: - Small: Compact switch for dense layouts - Medium: Default size (recommended) - Large: Prominent switch for primary actions |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the switch. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label for the switch. Provides accessible text for screen readers when the switch doesn't have associated label text. |
+| `Id` | `string?` |  | Gets or sets the ID attribute for the switch element. Used for associating the switch with label elements via htmlFor attribute. |
+| `Name` | `string?` |  | Gets or sets the name of the switch for form submission. This is critical for form submission. The name/value pair is submitted to the server. If not specified, falls back to the Id value. |
+| `Required` | `bool` |  | Gets or sets whether the switch is required. When true, the switch must be checked for form submission. Works with form validation. |
+| `CheckedExpression` | `Expression<Func<bool>>?` |  | Gets or sets an expression that identifies the bound value. Used for form validation integration. When provided, the switch registers with the EditContext and participates in form validation. |
 
 ---
 
@@ -2612,28 +3858,42 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Tabs
 ```
 
-**Basic Usage:**
-```razor
-<Tabs DefaultValue="tab1">
-    <TabsList>
-        <TabsTrigger Value="tab1">Tab 1</TabsTrigger>
-        <TabsTrigger Value="tab2">Tab 2</TabsTrigger>
-        <TabsTrigger Value="tab3">Tab 3</TabsTrigger>
-    </TabsList>
+**Components & Parameters:**
 
-    <TabsContent Value="tab1">
-        <p>Content for Tab 1</p>
-    </TabsContent>
+#### `Tabs`
 
-    <TabsContent Value="tab2">
-        <p>Content for Tab 2</p>
-    </TabsContent>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the tabs. Should include TabsList and TabsContent components. |
+| `Value` | `string?` |  | Controls which tab is active (controlled mode). When null, the tabs manage their own state (uncontrolled mode). |
+| `ValueChanged` | `EventCallback<string?>` |  | Event callback invoked when the active tab changes. Use with @bind-Value for two-way binding. |
+| `DefaultValue` | `string?` |  | Default active tab value when in uncontrolled mode. |
+| `OnValueChange` | `EventCallback<string?>` |  | Event callback invoked when the active tab changes. |
+| `Orientation` | `TabsOrientation` | `TabsOrientation.Horizontal` | Orientation of the tabs (horizontal or vertical). Default is horizontal. |
+| `ActivationMode` | `TabsActivationMode` | `TabsActivationMode.Automatic` | Activation mode for tabs (automatic on focus or manual on click). Default is automatic. |
 
-    <TabsContent Value="tab3">
-        <p>Content for Tab 3</p>
-    </TabsContent>
-</Tabs>
-```
+#### `TabsContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ForceMount` | `bool` | `false` | Whether to force mount the content even when inactive. |
+| `ChildContent` | `RenderFragment?` |  | The child content to render when this tab is active. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the tab content. |
+
+#### `TabsList`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the tabs list. Should contain TabsTrigger components. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the tabs list. |
+
+#### `TabsTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Disabled` | `bool` |  | Whether this tab trigger is disabled. |
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the tab trigger. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the tab trigger. |
 
 ---
 
@@ -2656,38 +3916,29 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Textarea`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Value` | `string?` | `` |  | Gets or sets the current value of the textarea. <remarks> Supports two-way binding via @bind-Value syntax. </remarks> |
-| `ValueChanged` | `EventCallback<string?>` | `` |  | Gets or sets the callback invoked when the textarea value changes. <remarks> This event is fired on every keystroke (oninput event). Use with Value parameter for two-way binding. </remarks> |
-| `Placeholder` | `string?` | `` |  | Gets or sets the placeholder text displayed when the textarea is empty. <remarks> Provides a hint to the user about what to enter. Should not be used as a replacement for a label. </remarks> |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the textarea is disabled. <remarks> When disabled: - Textarea cannot be focused or edited - Cursor is set to not-allowed - Opacity is reduced for visual feedback </remarks> |
-| `Required` | `bool` | `` |  | Gets or sets whether the textarea is required. <remarks> When true, the HTML5 required attribute is set. Works with form validation and :invalid CSS pseudo-class. </remarks> |
-| `MaxLength` | `int?` | `` |  | Gets or sets the maximum number of characters allowed in the textarea. <remarks> When set, the HTML5 maxlength attribute is applied. Browser will prevent users from entering more than this many cha... |
-| `MinLength` | `int?` | `` |  | Gets or sets the minimum number of characters required. <remarks> Works with form validation. Browser validates that at least this many characters are present. </remarks> |
-| `Name` | `string?` | `` |  | Gets or sets the name of the textarea for form submission. <remarks> This is critical for form submission. The name/value pair is submitted to the server. Should be unique within the form. </remarks> |
-| `Autocomplete` | `string?` | `` |  | Gets or sets the autocomplete hint for the browser. <remarks> Examples: "on", "off", "name", "street-address". Helps browsers provide appropriate autofill suggestions. </remarks> |
-| `Readonly` | `bool` | `` |  | Gets or sets whether the textarea is read-only. <remarks> When true, the user cannot modify the value, but it's still focusable and submitted with forms. Different from Disabled - readonly textarea... |
-| `Rows` | `int?` | `` |  | Gets or sets the visible number of text rows. <remarks> Specifies the height of the textarea in rows of text. If not specified, the component uses field-sizing-content for automatic sizing. </remarks> |
-| `Cols` | `int?` | `` |  | Gets or sets the visible width in characters. <remarks> Specifies the width of the textarea in average character widths. Usually controlled by CSS width instead. </remarks> |
-| `Wrap` | `string?` | `` |  | Gets or sets how text wraps when submitted in a form. <remarks> Values: "soft" (default - newlines not submitted), "hard" (newlines submitted), "off" (no wrapping). When "hard", the cols attribute ... |
-| `InputMode` | `string?` | `` |  | Gets or sets the input mode hint for mobile keyboards. <remarks> Examples: "none", "text", "decimal", "numeric", "tel", "search", "email", "url". Helps mobile devices show the appropriate keyboard.... |
-| `Autofocus` | `bool` | `` |  | Gets or sets whether the textarea should be auto-focused when the page loads. <remarks> Only one element per page should have autofocus. Improves accessibility when used appropriately. </remarks> |
-| `Spellcheck` | `bool?` | `` |  | Gets or sets whether spell checking is enabled. <remarks> Can be true, false, or null (browser default). Useful for controlling spell checking on technical content, code, etc. </remarks> |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the textarea. <remarks> Custom classes are appended after the component's base classes, allowing for style overrides and extensions. </remarks> |
-| `Id` | `string?` | `` |  | Gets or sets the HTML id attribute for the textarea element. <remarks> Used to associate the textarea with a label element via the label's 'for' attribute. This is essential for accessibility and a... |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for the textarea. <remarks> Provides an accessible name for screen readers. Use when there is no visible label element. </remarks> |
-| `AriaDescribedBy` | `string?` | `` |  | Gets or sets the ID of the element that describes the textarea. <remarks> References the id of an element containing help text or error messages. Improves screen reader experience by associating de... |
-| `AriaInvalid` | `bool?` | `` |  | Gets or sets whether the textarea value is invalid. <remarks> When true, aria-invalid="true" is set. Should be set based on validation state. Triggers destructive color styling for error states. </... |
-
-**Basic Usage:**
-```razor
-<Textarea @bind-Value="description" Placeholder="Enter description..." />
-
-@code {
-    private string description = "";
-}
-```
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `string?` |  | Gets or sets the current value of the textarea. Supports two-way binding via @bind-Value syntax. |
+| `ValueChanged` | `EventCallback<string?>` |  | Gets or sets the callback invoked when the textarea value changes. This event is fired on every keystroke (oninput event). Use with Value parameter for two-way binding. |
+| `Placeholder` | `string?` |  | Gets or sets the placeholder text displayed when the textarea is empty. Provides a hint to the user about what to enter. Should not be used as a replacement for a label. |
+| `Disabled` | `bool` |  | Gets or sets whether the textarea is disabled. When disabled: - Textarea cannot be focused or edited - Cursor is set to not-allowed - Opacity is reduced for visual feedback |
+| `Required` | `bool` |  | Gets or sets whether the textarea is required. When true, the HTML5 required attribute is set. Works with form validation and :invalid CSS pseudo-class. |
+| `MaxLength` | `int?` |  | Gets or sets the maximum number of characters allowed in the textarea. When set, the HTML5 maxlength attribute is applied. Browser will prevent users from entering more than this many characters. |
+| `MinLength` | `int?` |  | Gets or sets the minimum number of characters required. Works with form validation. Browser validates that at least this many characters are present. |
+| `Name` | `string?` |  | Gets or sets the name of the textarea for form submission. This is critical for form submission. The name/value pair is submitted to the server. Should be unique within the form. |
+| `Autocomplete` | `string?` |  | Gets or sets the autocomplete hint for the browser. Examples: "on", "off", "name", "street-address". Helps browsers provide appropriate autofill suggestions. |
+| `Readonly` | `bool` |  | Gets or sets whether the textarea is read-only. When true, the user cannot modify the value, but it's still focusable and submitted with forms. Different from Disabled - readonly textareas are still submitted with forms. |
+| `Rows` | `int?` |  | Gets or sets the visible number of text rows. Specifies the height of the textarea in rows of text. If not specified, the component uses field-sizing-content for automatic sizing. |
+| `Cols` | `int?` |  | Gets or sets the visible width in characters. Specifies the width of the textarea in average character widths. Usually controlled by CSS width instead. |
+| `Wrap` | `string?` |  | Gets or sets how text wraps when submitted in a form. Values: "soft" (default - newlines not submitted), "hard" (newlines submitted), "off" (no wrapping). When "hard", the cols attribute must be specified. |
+| `InputMode` | `string?` |  | Gets or sets the input mode hint for mobile keyboards. Examples: "none", "text", "decimal", "numeric", "tel", "search", "email", "url". Helps mobile devices show the appropriate keyboard. |
+| `Autofocus` | `bool` |  | Gets or sets whether the textarea should be auto-focused when the page loads. Only one element per page should have autofocus. Improves accessibility when used appropriately. |
+| `Spellcheck` | `bool?` |  | Gets or sets whether spell checking is enabled. Can be true, false, or null (browser default). Useful for controlling spell checking on technical content, code, etc. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the textarea. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
+| `Id` | `string?` |  | Gets or sets the HTML id attribute for the textarea element. Used to associate the textarea with a label element via the label's 'for' attribute. This is essential for accessibility and allows clicking the label to focus the textarea. |
+| `AriaLabel` | `string?` |  | Gets or sets the ARIA label for the textarea. Provides an accessible name for screen readers. Use when there is no visible label element. |
+| `AriaDescribedBy` | `string?` |  | Gets or sets the ID of the element that describes the textarea. References the id of an element containing help text or error messages. Improves screen reader experience by associating descriptive text. |
+| `AriaInvalid` | `bool?` |  | Gets or sets whether the textarea value is invalid. When true, aria-invalid="true" is set. Should be set based on validation state. Triggers destructive color styling for error states. |
 
 ---
 
@@ -2706,6 +3957,26 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.TimePicker
 ```
 
+**Components & Parameters:**
+
+#### `TimePicker`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `SelectedTime` | `TimeOnly?` |  | The selected time. |
+| `SelectedTimeChanged` | `EventCallback<TimeOnly?>` |  | Event callback invoked when the selected time changes. Use with @bind-SelectedTime for two-way binding. |
+| `Use24HourFormat` | `bool` | `false` | Whether to use 24-hour format. Default is false (12-hour with AM/PM). |
+| `MinuteStep` | `int` | `1` | Minute step interval. Default is 1. |
+| `ButtonVariant` | `ButtonVariant` | `ButtonVariant.Outline` | Button variant for the trigger button. |
+| `ButtonSize` | `ButtonSize` | `ButtonSize.Default` | Button size for the trigger button. |
+| `ShowIcon` | `bool` | `true` | Whether to show the clock icon in the button. |
+| `Placeholder` | `string` | `"Pick a time"` | Placeholder text when no time is selected. |
+| `TimeFormat` | `string?` |  | Time format string for displaying the selected time. If not specified, uses "hh:mm tt" for 12-hour or "HH:mm" for 24-hour. |
+| `Disabled` | `bool` |  | Whether the time picker is disabled. |
+| `Align` | `PopoverAlign` | `PopoverAlign.Start` | Alignment of the popover content. |
+| `Class` | `string?` |  | Additional CSS classes for the button. |
+| `AriaLabel` | `string?` |  | ARIA label for the button. |
+
 ---
 
 ### Toast
@@ -2723,10 +3994,65 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Toast
 ```
 
-**Related Enums:**
+**Components & Parameters:**
 
-- [`ToastVariant`](#toastvariant-enum)
-- [`ToastPosition`](#toastposition-enum)
+#### `Toast`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Id` | `string?` |  | The unique identifier for this toast. |
+| `Title` | `string?` |  | The title of the toast. |
+| `Description` | `string?` |  | The description of the toast. |
+| `Variant` | `ToastVariant` | `ToastVariant.Default` | The variant/style of the toast. |
+| `ActionLabel` | `string?` |  | The label for the action button. |
+| `OnAction` | `Action?` |  | Callback when action button is clicked. |
+| `OnDismiss` | `Action?` |  | Callback when the toast is dismissed. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the toast. |
+
+#### `ToastAction`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Label` | `string?` |  | The button label. |
+| `OnClick` | `EventCallback` |  | Callback when the button is clicked. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `ToastClose`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `OnClick` | `EventCallback` |  | Callback when the button is clicked. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `ToastDescription`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The description content. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `ToastProvider`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render within the provider. |
+| `Position` | `ToastPosition` | `ToastPosition.BottomRight` | The position of the toast viewport. Default is BottomRight. |
+| `MaxToasts` | `int` | `5` | Maximum number of toasts to display at once. Default is 5. |
+
+#### `ToastTitle`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The title content. |
+| `Class` | `string?` |  | Additional CSS classes to apply. |
+
+#### `ToastViewport`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Position` | `ToastPosition` | `ToastPosition.BottomRight` | The position of the viewport. Default is BottomRight. |
+| `MaxToasts` | `int` | `5` | Maximum number of toasts to display at once. Default is 5. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the viewport. |
 
 ---
 
@@ -2749,20 +4075,15 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Toggle`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Pressed` | `bool` | `` |  | Gets or sets whether the toggle is pressed. |
-| `PressedChanged` | `EventCallback<bool>` | `` |  | Gets or sets the callback that is invoked when the pressed state changes. |
-| `Variant` | `ToggleVariant` | `ToggleVariant.Default` |  | Gets or sets the visual variant of the toggle. |
-| `Size` | `ToggleSize` | `ToggleSize.Default` |  | Gets or sets the size of the toggle. |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the toggle is disabled. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the toggle. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the toggle. |
-
-**Related Enums:**
-
-- [`ToggleVariant`](#togglevariant-enum)
-- [`ToggleSize`](#togglesize-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Pressed` | `bool` |  | Gets or sets whether the toggle is pressed. |
+| `PressedChanged` | `EventCallback<bool>` |  | Gets or sets the callback that is invoked when the pressed state changes. |
+| `Variant` | `ToggleVariant` | `ToggleVariant.Default` | Gets or sets the visual variant of the toggle. |
+| `Size` | `ToggleSize` | `ToggleSize.Default` | Gets or sets the size of the toggle. |
+| `Disabled` | `bool` |  | Gets or sets whether the toggle is disabled. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the toggle. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the toggle. |
 
 ---
 
@@ -2785,29 +4106,25 @@ dotnet add package NeoBlazorUI.Components
 
 #### `ToggleGroup`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Type` | `ToggleGroupType` | `ToggleGroupType.Single` |  | Gets or sets the type of toggle group (single or multiple selection). |
-| `Value` | `string?` | `` |  | Gets or sets the currently selected value (for single selection mode). |
-| `ValueChanged` | `EventCallback<string?>` | `` |  | Gets or sets the callback that is invoked when the value changes. |
-| `Values` | `List<string>?` | `` |  | Gets or sets the currently selected values (for multiple selection mode). |
-| `ValuesChanged` | `EventCallback<List<string>?>` | `` |  | Gets or sets the callback that is invoked when the values change. |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the toggle group is disabled. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the toggle group. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the toggle group. |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Type` | `ToggleGroupType` | `ToggleGroupType.Single` | Gets or sets the type of toggle group (single or multiple selection). |
+| `Value` | `string?` |  | Gets or sets the currently selected value (for single selection mode). |
+| `ValueChanged` | `EventCallback<string?>` |  | Gets or sets the callback that is invoked when the value changes. |
+| `Values` | `List<string>?` |  | Gets or sets the currently selected values (for multiple selection mode). |
+| `ValuesChanged` | `EventCallback<List<string>?>` |  | Gets or sets the callback that is invoked when the values change. |
+| `Disabled` | `bool` |  | Gets or sets whether the toggle group is disabled. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the toggle group. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the toggle group. |
 
 #### `ToggleGroupItem`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Value` | `string` | `string.Empty` |  | Gets or sets the value of this toggle item. |
-| `Disabled` | `bool` | `` |  | Gets or sets whether this item is disabled. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the toggle item. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the toggle item. |
-
-**Related Enums:**
-
-- [`ToggleGroupType`](#togglegrouptype-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `string` | `string.Empty` | Gets or sets the value of this toggle item. |
+| `Disabled` | `bool` |  | Gets or sets whether this item is disabled. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the toggle item. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the toggle item. |
 
 ---
 
@@ -2828,27 +4145,46 @@ dotnet add package NeoBlazorUI.Components
 
 **Components & Parameters:**
 
+#### `Tooltip`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The child content to render within the tooltip. Typically includes TooltipTrigger and TooltipContent. |
+| `Open` | `bool?` |  | Controls whether the tooltip is open (controlled mode). When null, the tooltip manages its own state (uncontrolled mode). |
+| `OpenChanged` | `EventCallback<bool>` |  | Event callback invoked when the open state changes. Use with @bind-Open for two-way binding. |
+| `DefaultOpen` | `bool` | `false` | Default open state when in uncontrolled mode. |
+| `DelayDuration` | `int` | `300` | The delay in milliseconds before showing the tooltip. Default is 300ms. |
+| `HideDelay` | `int` | `0` | The delay in milliseconds before hiding the tooltip after mouse leaves. Default is 0ms (immediate). |
+| `Placement` | `PopoverPlacement` | `PopoverPlacement.Top` | The placement position for the tooltip. Default is PopoverPlacement.Top. |
+
+#### `TooltipContent`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to render inside the tooltip. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the content container. |
+| `Side` | `PopoverSide` | `PopoverSide.Top` | Preferred side for positioning: PopoverSide.Top, PopoverSide.Bottom, PopoverSide.Left, PopoverSide.Right. Default is PopoverSide.Top. |
+| `Align` | `PopoverAlign` | `PopoverAlign.Center` | Alignment relative to trigger: "@PopoverAlign.Start", "@PopoverAlign.Center", "@PopoverAlign.End". Default is "@PopoverAlign.Center". |
+| `Offset` | `int` | `8` | Offset distance from the trigger in pixels. Default is 8. |
+
 #### `TooltipProvider`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `DelayDuration` | `int` | `700` |  | Gets or sets the duration in milliseconds to wait before showing a tooltip. <value> The delay duration in milliseconds. Default is 700ms. </value> <remarks> <para> This delay applies to all child <... |
-| `SkipDelayDuration` | `int` | `300` |  | Gets or sets the duration in milliseconds during which the delay is skipped for subsequent tooltips. <value> The skip delay duration in milliseconds. Default is 300ms. </value> <remarks> <para> Aft... |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the child content to be rendered within the provider. <value> A <see cref="RenderFragment"/> containing child components, or <c>null</c>. </value> <remarks> All child <see cref="Toolti... |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `DelayDuration` | `int` | `700` | Gets or sets the duration in milliseconds to wait before showing a tooltip. The delay duration in milliseconds. Default is 700ms. This delay applies to all child  components. When a user hovers over or focuses a tooltip trigger, the tooltip will wait this duration before appearing. Recommended values: 0-200ms: Very fast (toolbars, frequently accessed UI) 300-500ms: Fast (interactive elements) 600-800ms: Standard (balanced, default) 900-1200ms: Slow (detailed information) Individual tooltips cannot override this value - they inherit it from their nearest TooltipProvider ancestor. |
+| `SkipDelayDuration` | `int` | `300` | Gets or sets the duration in milliseconds during which the delay is skipped for subsequent tooltips. The skip delay duration in milliseconds. Default is 300ms. After a user sees one tooltip, subsequent tooltips within this time window appear immediately without delay. This creates a fluid "tooltip discovery mode" experience. Recommended values: 0ms: Disable skip behavior 200-400ms: Short window (closely grouped elements) 500-1000ms: Standard window (comfortable exploration) 1500-3000ms: Long window (very forgiving) Set to 0 to disable the skip delay feature entirely. All tooltips will always wait the full . |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the child content to be rendered within the provider. A  containing child components, or null. All child  components will receive the tooltip configuration from this provider via Blazor's CascadingValue mechanism. |
 
-**Basic Usage:**
-```razor
-<Tooltip>
-    <TooltipTrigger AsChild>
-        <Button Size="ButtonSize.Icon">
-            <LucideIcon Name="help-circle" Size="16" />
-        </Button>
-    </TooltipTrigger>
-    <TooltipContent>
-        <p>Help information</p>
-    </TooltipContent>
-</Tooltip>
-```
+#### `TooltipTrigger`
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment?` |  | The content to display inside the trigger. |
+| `Class` | `string?` |  | Additional CSS classes to apply to the wrapper. |
+| `AsChild` | `bool` | `false` | When true, the trigger does not render its own span element. Instead, it passes trigger behavior via TriggerContext to child components. Use this when you want a custom component to act as the trigger. |
+| `Focusable` | `bool` | `true` | Whether the trigger should be keyboard focusable. Default is true. Set to false if child content is already focusable. |
+| `OnMouseEnter` | `EventCallback<MouseEventArgs>` |  | Custom mouse enter handler. |
+| `OnMouseLeave` | `EventCallback<MouseEventArgs>` |  | Custom mouse leave handler. |
 
 ---
 
@@ -2871,1860 +4207,10 @@ dotnet add package NeoBlazorUI.Components
 
 #### `Typography`
 
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Variant` | `TypographyVariant` | `TypographyVariant.P` |  | Gets or sets the typography variant. |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the typography element. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the typography element. |
-
-**Related Enums:**
-
-- [`TypographyVariant`](#typographyvariant-enum)
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Variant` | `TypographyVariant` | `TypographyVariant.P` | Gets or sets the typography variant. |
+| `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the typography element. |
+| `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the typography element. |
 
 ---
-
-
----
-
-## 🔧 Primitives
-
-Headless, unstyled components with complete accessibility implementation.
-
-### Accordion (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.Accordion`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.Accordion
-```
-
-**Basic Usage:**
-```razor
-<Accordion>
-    <AccordionItem Value="item-1">
-        <AccordionTrigger>Is it accessible?</AccordionTrigger>
-        <AccordionContent>
-            Yes. It adheres to WCAG 2.1 AA standards.
-        </AccordionContent>
-    </AccordionItem>
-
-    <AccordionItem Value="item-2">
-        <AccordionTrigger>Is it styled?</AccordionTrigger>
-        <AccordionContent>
-            Yes. It comes with default shadcn/ui styles.
-        </AccordionContent>
-    </AccordionItem>
-</Accordion>
-```
-
-**Related Enums:**
-
-- [`AccordionType`](#accordiontype-enum)
-
----
-
-### Checkbox (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.Checkbox`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.Checkbox
-```
-
-**Components & Parameters:**
-
-#### `Checkbox`
-
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Checked` | `bool` | `` |  | Gets or sets whether the checkbox is checked. <remarks> This property supports two-way binding using the @bind-Checked directive. Changes to this property trigger the CheckedChanged event callback.... |
-| `CheckedChanged` | `EventCallback<bool>` | `` |  | Gets or sets the callback invoked when the checked state changes. <remarks> This event callback enables two-way binding with @bind-Checked. It is invoked whenever the user toggles the checkbox stat... |
-| `Indeterminate` | `bool` | `` |  | Gets or sets whether the checkbox is in an indeterminate state. <remarks> The indeterminate state is typically used for "select all" checkboxes when only some child items are selected. When indeter... |
-| `IndeterminateChanged` | `EventCallback<bool>` | `` |  | Gets or sets the callback invoked when the indeterminate state changes. |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the checkbox is disabled. <remarks> When disabled: - Checkbox cannot be clicked or focused - aria-disabled attribute is set to true - Keyboard events are ignored </remarks> |
-| `Id` | `string?` | `` |  | Gets or sets the ID attribute for the checkbox element. <remarks> Used for associating the checkbox with label elements via htmlFor attribute. </remarks> |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for the checkbox. <remarks> Provides accessible text for screen readers when the checkbox doesn't have associated label text. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the checkbox. <value> A <see cref="RenderFragment"/> containing the checkbox content (e.g., checkmark icon), or <c>null</c>. </value> |
-
-**Basic Usage:**
-```razor
-<Checkbox @bind-Checked="isAccepted" />
-
-@code {
-    private bool isAccepted = false;
-}
-```
-
----
-
-### Collapsible (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.Collapsible`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.Collapsible
-```
-
-**Components & Parameters:**
-
-#### `Collapsible`
-
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Open` | `bool` | `` |  | Gets or sets a value indicating whether the collapsible is currently expanded. <value> <c>true</c> if the collapsible is open (content visible); otherwise, <c>false</c>. Default is <c>false</c>. </... |
-| `OpenChanged` | `EventCallback<bool>` | `` |  | Gets or sets the callback invoked when the open state changes. <value> An <see cref="EventCallback{Boolean}"/> that receives the new open state. </value> |
-| `Disabled` | `bool` | `` |  | Gets or sets a value indicating whether the collapsible is disabled. <value> <c>true</c> if the collapsible is disabled and cannot be toggled; otherwise, <c>false</c>. Default is <c>false</c>. </va... |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the child content to be rendered inside the collapsible container. <value> A <see cref="RenderFragment"/> containing the child components. </value> |
-
-#### `CollapsibleContent`
-
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered when the collapsible is expanded. <value> A <see cref="RenderFragment"/> containing the collapsible content, or <c>null</c>. </value> |
-| `ForceMount` | `bool` | `false` |  | Whether to force mount the content even when the collapsible is closed. When true, content remains mounted (useful for CSS animations when styled). When false (default), content is unmounted when c... |
-
-#### `CollapsibleTrigger`
-
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the trigger. <value> A <see cref="RenderFragment"/> containing the trigger content, or <c>null</c>. </value> |
-| `AsChild` | `bool` | `false` |  | When true, the trigger does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components. The child component must consume TriggerContext and apply ... |
-
-**Basic Usage:**
-```razor
-<Collapsible>
-    <CollapsibleTrigger AsChild>
-        <Button Variant="ButtonVariant.Outline">
-            Toggle
-        </Button>
-    </CollapsibleTrigger>
-    <CollapsibleContent>
-        <div class="p-4">
-            This content can be collapsed
-        </div>
-    </CollapsibleContent>
-</Collapsible>
-```
-
----
-
-### Combobox (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.Combobox`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.Combobox
-```
-
-**Basic Usage:**
-```razor
-<Combobox @bind-Value="selectedValue" Items="@items">
-    <ComboboxTrigger>
-        <ComboboxValue Placeholder="Select item..." />
-    </ComboboxTrigger>
-    <ComboboxContent>
-        <ComboboxInput Placeholder="Search..." />
-        <ComboboxList>
-            <ComboboxEmpty>No results found.</ComboboxEmpty>
-            @foreach (var item in items)
-            {
-                <ComboboxItem Value="@item.Value">
-                    @item.Label
-                </ComboboxItem>
-            }
-        </ComboboxList>
-    </ComboboxContent>
-</Combobox>
-
-@code {
-    private string selectedValue = "";
-    private List<SelectItem> items = new()
-    {
-        new("apple", "Apple"),
-        new("banana", "Banana"),
-        new("orange", "Orange")
-    };
-
-    record SelectItem(string Value, string Label);
-}
-```
-
----
-
-### ContextMenu (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.ContextMenu`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.ContextMenu
-```
-
----
-
-### Dialog (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.Dialog`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.Dialog
-```
-
-**Basic Usage:**
-```razor
-<Dialog>
-    <DialogTrigger>Open Dialog</DialogTrigger>
-    <DialogContent>
-        <DialogHeader>
-            <DialogTitle>Dialog Title</DialogTitle>
-            <DialogDescription>Dialog description</DialogDescription>
-        </DialogHeader>
-        <p>Dialog content goes here</p>
-        <DialogFooter>
-            <DialogClose>Cancel</DialogClose>
-            <Button>Confirm</Button>
-        </DialogFooter>
-    </DialogContent>
-</Dialog>
-```
-
----
-
-### DropdownMenu (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.DropdownMenu`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.DropdownMenu
-```
-
-**Basic Usage:**
-```razor
-<DropdownMenu>
-    <DropdownMenuTrigger AsChild>
-        <Button Variant="ButtonVariant.Outline">
-            Open Menu
-        </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent>
-        <DropdownMenuItem>
-            <LucideIcon Name="edit" Size="16" />
-            Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-            <LucideIcon Name="copy" Size="16" />
-            Duplicate
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-            <LucideIcon Name="trash" Size="16" />
-            Delete
-        </DropdownMenuItem>
-    </DropdownMenuContent>
-</DropdownMenu>
-```
-
----
-
-### HoverCard (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.HoverCard`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.HoverCard
-```
-
-**Basic Usage:**
-```razor
-<HoverCard>
-    <HoverCardTrigger AsChild>
-        <a href="#" class="underline">@@username</a>
-    </HoverCardTrigger>
-    <HoverCardContent>
-        <div class="flex gap-4">
-            <Avatar>
-                <AvatarImage Src="/avatar.jpg" />
-                <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
-            <div>
-                <h4 class="text-sm font-semibold">John Doe</h4>
-                <p class="text-sm text-muted-foreground">@@johndoe</p>
-                <p class="text-xs mt-2">Software developer and open source contributor</p>
-            </div>
-        </div>
-    </HoverCardContent>
-</HoverCard>
-```
-
----
-
-### InputOtp (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.InputOtp`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.InputOtp
-```
-
----
-
-### Label (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.Label`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.Label
-```
-
-**Basic Usage:**
-```razor
-<Label For="email">Email Address</Label>
-<Input Id="email" Type="InputType.Email" />
-```
-
----
-
-### Menubar (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.Menubar`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.Menubar
-```
-
----
-
-### MultiSelect (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.MultiSelect`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.MultiSelect
-```
-
-**Related Enums:**
-
-- [`SelectAllState`](#selectallstate-enum)
-
----
-
-### NavigationMenu (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.NavigationMenu`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.NavigationMenu
-```
-
-**Related Enums:**
-
-- [`NavigationMenuOrientation`](#navigationmenuorientation-enum)
-
----
-
-### Popover (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.Popover`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.Popover
-```
-
-**Basic Usage:**
-```razor
-<Popover>
-    <PopoverTrigger AsChild>
-        <Button Variant="ButtonVariant.Outline">Open Popover</Button>
-    </PopoverTrigger>
-    <PopoverContent>
-        <p>Popover content goes here</p>
-    </PopoverContent>
-</Popover>
-```
-
----
-
-### RadioGroup (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.RadioGroup`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.RadioGroup
-```
-
-**Components & Parameters:**
-
-#### `RadioGroup`
-
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Value` | `TValue?` | `` |  | Gets or sets the currently selected value. <remarks> This property supports two-way binding using the @bind-Value directive. Changes to this property trigger the ValueChanged event callback. </rema... |
-| `ValueChanged` | `EventCallback<TValue>` | `` |  | Gets or sets the callback invoked when the selected value changes. <remarks> This event callback enables two-way binding with @bind-Value. It is invoked whenever a radio button is selected. </remarks> |
-| `Disabled` | `bool` | `` |  | Gets or sets whether the entire radio group is disabled. <remarks> When disabled, all radio items in the group cannot be selected. </remarks> |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for the radio group. <remarks> Provides accessible text for screen readers to describe the purpose of the radio group. </remarks> |
-| `Name` | `string?` | `` |  | Gets or sets the name for all radio items in this group. <remarks> This name is shared by all radio items in the group for form submission. </remarks> |
-| `Required` | `bool` | `` |  | Gets or sets whether a selection is required in this radio group. <remarks> When true, one of the radio items must be selected for form submission. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the radio group. <remarks> Should contain RadioGroupItem components. </remarks> |
-
-#### `RadioGroupItem`
-
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `Disabled` | `bool` | `` |  | Gets or sets whether this individual radio item is disabled. <remarks> When disabled, the item cannot be selected and appears with reduced opacity. </remarks> |
-| `Id` | `string?` | `` |  | Gets or sets the ID attribute for the radio item element. <remarks> Used for associating the radio item with label elements via htmlFor attribute. Auto-generated if not provided. </remarks> |
-| `AriaLabel` | `string?` | `` |  | Gets or sets the ARIA label for the radio item. <remarks> Provides accessible text for screen readers when the radio item doesn't have an associated label element. </remarks> |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the content to be rendered inside the radio item. |
-
-**Basic Usage:**
-```razor
-<RadioGroup @bind-Value="selectedOption">
-    <RadioGroupItem Value="option1" Id="opt1" />
-    <RadioGroupItem Value="option2" Id="opt2" />
-    <RadioGroupItem Value="option3" Id="opt3" />
-</RadioGroup>
-
-@code {
-    private string selectedOption = "option1";
-}
-```
-
----
-
-### Select (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.Select`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.Select
-```
-
-**Basic Usage:**
-```razor
-<Select @bind-Value="selectedFruit">
-    <SelectTrigger>
-        <SelectValue Placeholder="Select a fruit..." />
-    </SelectTrigger>
-    <SelectContent>
-        <SelectItem Value="apple">Apple</SelectItem>
-        <SelectItem Value="banana">Banana</SelectItem>
-        <SelectItem Value="orange">Orange</SelectItem>
-    </SelectContent>
-</Select>
-
-@code {
-    private string selectedFruit = "";
-}
-```
-
----
-
-### Sheet (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.Sheet`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.Sheet
-```
-
-**Basic Usage:**
-```razor
-<Sheet>
-    <SheetTrigger AsChild>
-        <Button>Open Sheet</Button>
-    </SheetTrigger>
-    <SheetContent>
-        <SheetHeader>
-            <SheetTitle>Sheet Title</SheetTitle>
-            <SheetDescription>Sheet description</SheetDescription>
-        </SheetHeader>
-        <p>Sheet content</p>
-        <SheetFooter>
-            <SheetClose AsChild>
-                <Button>Close</Button>
-            </SheetClose>
-        </SheetFooter>
-    </SheetContent>
-</Sheet>
-```
-
-**Related Enums:**
-
-- [`SheetSide`](#sheetside-enum)
-
----
-
-### Switch (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.Switch`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.Switch
-```
-
-**Basic Usage:**
-```razor
-<Switch @bind-Checked="isEnabled" />
-
-@code {
-    private bool isEnabled = false;
-}
-```
-
----
-
-### Table (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.Table`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.Table
-```
-
-**Components & Parameters:**
-
-#### `Table`
-
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `State` | `TableState<TData>?` | `` |  | The table state (controlled mode). When provided, the table uses external state management. |
-| `StateChanged` | `EventCallback<TableState<TData>>` | `` |  | Event callback invoked when the table state changes (for controlled mode). Use with @bind-State for two-way binding. |
-| `SelectionMode` | `SelectionMode` | `SelectionMode.None` |  | The selection mode for the table. |
-| `OnSortChange` | `EventCallback<(string ColumnId, SortDirection Direction)>` | `` |  | Event callback invoked when sorting changes. |
-| `OnRowSelect` | `EventCallback<TData>` | `` |  | Event callback invoked when a row is selected. |
-| `OnPageChange` | `EventCallback<int>` | `` |  | Event callback invoked when the current page changes. |
-| `OnPageSizeChange` | `EventCallback<int>` | `` |  | Event callback invoked when the page size changes. |
-| `OnSelectionChange` | `EventCallback<IReadOnlyCollection<TData>>` | `` |  | Event callback invoked when the selection changes. |
-| `ChildContent` | `RenderFragment?` | `` |  | Child content for the table (TableHeader, TableBody, etc.). |
-| `AriaLabel` | `string?` | `` |  | ARIA label for the table. |
-| `Class` | `string?` | `` |  | Additional CSS classes to apply to the table element. |
-| `ManualPagination` | `bool` | `false` |  | When true, the table will not automatically set TotalItems based on data count. Use this when the parent component handles pagination and passes pre-paginated data. |
-
-#### `TablePagination`
-
-| Parameter | Type | Default | Required | Description |
-|-----------|------|---------|----------|-------------|
-| `State` | `PaginationState` | `default!` |  | Gets or sets the pagination state to control and display. |
-| `OnPageChange` | `EventCallback<int>` | `` |  | Gets or sets the callback invoked when the page changes. |
-| `OnPageSizeChange` | `EventCallback<int>` | `` |  | Gets or sets the callback invoked when the page size changes. |
-| `PageSizeOptions` | `int[]` | `[10, 25, 50, 100]` |  | Gets or sets the available page sizes for the selector. Default: [10, 25, 50, 100] |
-| `ShowPageSizeSelector` | `bool` | `true` |  | Gets or sets whether to show the page size selector. Default: true |
-| `ShowPageInfo` | `bool` | `true` |  | Gets or sets whether to show page info (e.g., "1-10 of 100 items"). Default: true |
-| `PaginationTemplate` | `RenderFragment<PaginationContext>?` | `` |  | Gets or sets the custom pagination template. Provides full control over pagination markup. |
-| `ChildContent` | `RenderFragment?` | `` |  | Gets or sets the child content (used when PaginationTemplate is not provided). |
-| `Class` | `string?` | `` |  | Gets or sets additional CSS classes to apply to the container. |
-
-**Related Enums:**
-
-- [`SelectionMode`](#selectionmode-enum)
-- [`SortDirection`](#sortdirection-enum)
-
----
-
-### Tabs (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.Tabs`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.Tabs
-```
-
-**Basic Usage:**
-```razor
-<Tabs DefaultValue="tab1">
-    <TabsList>
-        <TabsTrigger Value="tab1">Tab 1</TabsTrigger>
-        <TabsTrigger Value="tab2">Tab 2</TabsTrigger>
-        <TabsTrigger Value="tab3">Tab 3</TabsTrigger>
-    </TabsList>
-
-    <TabsContent Value="tab1">
-        <p>Content for Tab 1</p>
-    </TabsContent>
-
-    <TabsContent Value="tab2">
-        <p>Content for Tab 2</p>
-    </TabsContent>
-
-    <TabsContent Value="tab3">
-        <p>Content for Tab 3</p>
-    </TabsContent>
-</Tabs>
-```
-
-**Related Enums:**
-
-- [`TabsOrientation`](#tabsorientation-enum)
-- [`TabsActivationMode`](#tabsactivationmode-enum)
-
----
-
-### Tooltip (Primitive)
-
-**Package:** `NeoBlazorUI.Primitives`  
-**Namespace:** `BlazorUI.Primitives.Tooltip`
-
-**Installation:**
-```bash
-dotnet add package NeoBlazorUI.Primitives
-```
-
-**Import:**
-```razor
-@using BlazorUI.Primitives.Tooltip
-```
-
-**Basic Usage:**
-```razor
-<Tooltip>
-    <TooltipTrigger AsChild>
-        <Button Size="ButtonSize.Icon">
-            <LucideIcon Name="help-circle" Size="16" />
-        </Button>
-    </TooltipTrigger>
-    <TooltipContent>
-        <p>Help information</p>
-    </TooltipContent>
-</Tooltip>
-```
-
----
-
-
----
-
-## 📚 Enums Reference
-
-### AccordionType Enum
-
-**Used by:** Accordion
-
-| Value | Description |
-|-------|-------------|
-| `Single` | Only one item can be open at a time. |
-| `Multiple` | Multiple items can be open simultaneously. |
-
-### AlertVariant Enum
-
-**Used by:** Alert
-
-| Value | Description |
-|-------|-------------|
-| `Default` | Default informational alert style. Uses standard --foreground and --background CSS variables. Suitable for general notifications and informational messages. |
-| `Destructive` | Destructive alert style for errors and critical warnings. Uses --destructive and --destructive-foreground CSS variables. Indicates errors, failures, or requires immediate user attention. |
-
-### AnimationEasing Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Linear` | Linear animation with constant speed |
-| `QuadIn` | Ease in using quadratic function |
-| `QuadOut` | Ease out using quadratic function |
-| `QuadInOut` | Ease in and out using quadratic function |
-| `CubicIn` | Ease in using cubic function |
-| `CubicOut` | Ease out using cubic function (default) |
-| `CubicInOut` | Ease in and out using cubic function |
-| `QuartIn` | Ease in using quartic function |
-| `QuartOut` | Ease out using quartic function |
-| `QuartInOut` | Ease in and out using quartic function |
-| `QuintIn` | Ease in using quintic function |
-| `QuintOut` | Ease out using quintic function |
-| `QuintInOut` | Ease in and out using quintic function |
-| `SineIn` | Ease in using sinusoidal function |
-| `SineOut` | Ease out using sinusoidal function |
-| `SineInOut` | Ease in and out using sinusoidal function |
-| `ExpoIn` | Ease in using exponential function |
-| `ExpoOut` | Ease out using exponential function |
-| `ExpoInOut` | Ease in and out using exponential function |
-| `CircIn` | Ease in using circular function |
-| `CircOut` | Ease out using circular function |
-| `CircInOut` | Ease in and out using circular function |
-| `ElasticIn` | Elastic ease in (spring effect) |
-| `ElasticOut` | Elastic ease out (spring effect) |
-| `ElasticInOut` | Elastic ease in and out (spring effect) |
-| `BackIn` | Ease in using back function (overshoots) |
-| `BackOut` | Ease out using back function (overshoots) |
-| `BackInOut` | Ease in and out using back function (overshoots) |
-| `BounceIn` | Bounce ease in |
-| `BounceOut` | Bounce ease out |
-| `BounceInOut` | Bounce ease in and out |
-
-### AnimationType Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Default` | Default animation for the chart type |
-| `FadeIn` | Fade in animation |
-| `ScaleIn` | Scale in animation (grow from center) |
-| `SlideInLeft` | Slide in from left animation |
-| `SlideInRight` | Slide in from right animation |
-| `SlideInTop` | Slide in from top animation |
-| `SlideInBottom` | Slide in from bottom animation |
-| `Wave` | Wave animation (sequential reveal) |
-| `Expand` | Expand animation (bars grow from baseline) |
-| `Draw` | Draw animation (lines/paths draw progressively) |
-
-### AvatarSize Enum
-
-**Used by:** Avatar
-
-| Value | Description |
-|-------|-------------|
-| `Small` | Small avatar (32px). <remarks> Suitable for compact layouts, user lists, or inline mentions. </remarks> |
-| `Default` | Default avatar size (40px). <remarks> Standard size for most use cases including navigation bars and comment sections. </remarks> |
-| `Large` | Large avatar (48px). <remarks> Used for prominent user displays or profile headers. </remarks> |
-| `ExtraLarge` | Extra large avatar (64px). <remarks> Reserved for profile pages or settings where user identity is focal. </remarks> |
-
-### AxisScale Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Auto` | Automatic scale detection. |
-| `Category` | Category scale for discrete values. |
-| `Value` | Value scale for numeric data. |
-| `Time` | Time scale for temporal data. |
-| `Log` | Logarithmic scale. |
-
-### BadgeVariant Enum
-
-**Used by:** Badge
-
-| Value | Description |
-|-------|-------------|
-| `Default` | Default primary badge style with solid background. Uses --primary and --primary-foreground CSS variables. Suitable for highlighting important items or new content. |
-| `Secondary` | Secondary badge style with muted background. Uses --secondary and --secondary-foreground CSS variables. For alternative or less prominent labels. |
-| `Destructive` | Destructive badge style for warnings or errors. Uses --destructive and --destructive-foreground CSS variables. Indicates critical status or requires user attention. |
-| `Outline` | Outlined badge style with transparent background and border. Uses --foreground CSS variable for text. Minimal style for subtle categorization or tags. |
-
-### BarLayout Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Vertical` | Vertical bars (default). |
-| `Horizontal` | Horizontal bars. |
-
-### ButtonSize Enum
-
-**Used by:** Button
-
-| Value | Description |
-|-------|-------------|
-| `Small` | Small button size (sm). Height: ~36px, Padding: 0.5rem horizontal. Suitable for compact UIs, toolbars, or inline actions. |
-| `Default` | Default/medium button size (md). Height: ~40px, Padding: 1rem horizontal. Recommended default size for most use cases. |
-| `Large` | Large button size (lg). Height: ~44px, Padding: 1.5rem horizontal. Best for primary CTAs or prominent actions. |
-| `Icon` | Icon-only button size (icon). Square dimensions: 40x40px (h-10 w-10). Designed for buttons containing only an icon without text. Maintains accessibility with proper aria-label required. |
-| `IconSmall` | Small icon-only button size (icon-sm). Square dimensions: 36x36px (h-9 w-9). Compact icon button for toolbars or tight layouts. Requires aria-label for accessibility. |
-| `IconLarge` | Large icon-only button size (icon-lg). Square dimensions: 44x44px (h-11 w-11). Prominent icon button for primary icon actions. Requires aria-label for accessibility. |
-
-### ButtonType Enum
-
-**Used by:** Button
-
-| Value | Description |
-|-------|-------------|
-| `Submit` | Submit button (type="submit"). Submits the form data to the server when clicked. This is the default behavior for buttons inside forms. |
-| `Reset` | Reset button (type="reset"). Resets all form controls to their initial values when clicked. Use sparingly as this can be confusing to users. |
-| `Button` | Regular button (type="button"). Does not submit or reset the form. Default for buttons outside forms or with custom click handlers. Prevents accidental form submission. |
-
-### ButtonVariant Enum
-
-**Used by:** Button
-
-| Value | Description |
-|-------|-------------|
-| `Default` | Default primary button style with solid background. Uses --primary and --primary-foreground CSS variables. Recommended for primary actions (submit, save, confirm). |
-| `Destructive` | Destructive action button style (delete, remove, cancel). Uses --destructive and --destructive-foreground CSS variables. Indicates potentially dangerous or irreversible actions. |
-| `Outline` | Outlined button style with transparent background and border. Uses --border and --input CSS variables. Suitable for secondary actions or form controls. |
-| `Secondary` | Secondary button style with muted background. Uses --secondary and --secondary-foreground CSS variables. For alternative actions or less prominent CTAs. |
-| `Ghost` | Ghost button style with no background or border (minimal). Only shows background on hover using --accent CSS variable. Ideal for tertiary actions, toolbars, or navigation. |
-| `Link` | Link-styled button that appears as underlined text. Uses --primary CSS variable for text color. Suitable for inline actions or navigation that should look like links. |
-
-### CalendarCaptionLayout Enum
-
-**Used by:** Calendar
-
-| Value | Description |
-|-------|-------------|
-| `Label` | Displays the month and year as a static label. |
-| `Dropdown` | Displays dropdown selects for quick month and year selection. |
-
-### CarouselOrientation Enum
-
-**Used by:** Carousel
-
-| Value | Description |
-|-------|-------------|
-| `Horizontal` | Horizontal carousel (left to right). |
-| `Vertical` | Vertical carousel (top to bottom). |
-
-### ChartEngine Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `ChartJs` | Chart.js engine - Canvas-based rendering with excellent performance. Best for interactive dashboards and large datasets. |
-| `ECharts` | ECharts engine - SVG-based rendering with rich features. Best for print-quality charts and complex visualizations. |
-
-### ChartType Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Line` | Line chart for showing trends over time or continuous data. |
-| `Bar` | Bar chart for comparing discrete categories. |
-| `Pie` | Pie chart for showing composition of a whole. |
-| `Donut` | Donut chart, a variant of pie chart with a hole in the center. |
-| `Radar` | Radar chart for multivariate data. |
-| `Scatter` | Scatter chart for showing correlation between two variables. |
-| `Bubble` | Bubble chart for showing three dimensions of data. |
-| `Area` | Area chart, a filled line chart. |
-
-### DataTableSelectionMode Enum
-
-**Used by:** DataTable
-
-| Value | Description |
-|-------|-------------|
-| `None` | No row selection is allowed. |
-| `Single` | Only a single row can be selected at a time. Selecting a new row deselects the previously selected row. |
-| `Multiple` | Multiple rows can be selected simultaneously using checkboxes. Includes a select-all checkbox in the header. |
-
-### Focus Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `None` | No focus effect (emphasis disabled). |
-| `Self` | Focus on self only. |
-
-### GradientDirection Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Vertical` | Top to bottom gradient. |
-| `Horizontal` | Left to right gradient. |
-
-### GridColumnPinPosition Enum
-
-**Used by:** Grid
-
-| Value | Description |
-|-------|-------------|
-| `None` | Not pinned. |
-| `Left` | Pinned to left side. |
-| `Right` | Pinned to right side. |
-
-### GridDensity Enum
-
-**Used by:** Grid
-
-| Value | Description |
-|-------|-------------|
-| `Comfortable` | Standard padding (default). |
-| `Compact` | Reduced padding for more rows. |
-| `Spacious` | Increased padding for readability. |
-
-### GridFilterOperator Enum
-
-**Used by:** Grid
-
-| Value | Description |
-|-------|-------------|
-| `Equals` | Equals comparison. |
-| `NotEquals` | Not equals comparison. |
-| `Contains` | Contains substring. |
-| `NotContains` | Does not contain substring. |
-| `StartsWith` | Starts with substring. |
-| `EndsWith` | Ends with substring. |
-| `LessThan` | Less than comparison. |
-| `LessThanOrEqual` | Less than or equal comparison. |
-| `GreaterThan` | Greater than comparison. |
-| `GreaterThanOrEqual` | Greater than or equal comparison. |
-| `IsEmpty` | Value is empty or null. |
-| `IsNotEmpty` | Value is not empty or null. |
-
-### GridPagingMode Enum
-
-**Used by:** Grid
-
-| Value | Description |
-|-------|-------------|
-| `None` | All data displayed, no pagination. |
-| `Client` | All data loaded, paginated client-side. |
-| `Server` | Data fetched page-by-page from server. |
-| `InfiniteScroll` | Incremental loading as user scrolls. |
-
-### GridRowModelType Enum
-
-**Used by:** Grid
-
-| Value | Description |
-|-------|-------------|
-| `ClientSide` | Client-side row model. All data is loaded into the grid at once. Best for datasets under 10,000 rows. |
-| `ServerSide` | Server-side row model. Data is fetched on-demand from the server. Supports server-side sorting, filtering, and pagination. Best for large datasets (100,000+ rows) or when data must remain on the server. |
-| `Infinite` | Infinite scroll row model. Data is fetched in blocks as the user scrolls. Best for medium-sized datasets (10,000-100,000 rows) with simple requirements. |
-
-### GridSelectionMode Enum
-
-**Used by:** Grid
-
-| Value | Description |
-|-------|-------------|
-| `None` | No row selection allowed. |
-| `Single` | Only one row can be selected at a time. |
-| `Multiple` | Multiple rows can be selected simultaneously. |
-
-### GridSortDirection Enum
-
-**Used by:** Grid
-
-| Value | Description |
-|-------|-------------|
-| `None` | No sorting applied. |
-| `Ascending` | Sort in ascending order. |
-| `Descending` | Sort in descending order. |
-
-### GridStyle Enum
-
-**Used by:** Grid
-
-| Value | Description |
-|-------|-------------|
-| `Default` | Standard appearance with default borders and hover states. |
-| `Striped` | Alternating row background colors for easier readability. |
-| `Bordered` | Bordered cells with visible vertical dividers between columns. |
-| `Minimal` | Minimal borders with subtle, clean styling. |
-
-### GridTheme Enum
-
-**Used by:** Grid
-
-| Value | Description |
-|-------|-------------|
-| `Shadcn` | Shadcn theme integrated with shadcn/ui design tokens (default). Automatically adapts to your app's color scheme and supports dark mode. |
-| `Alpine` | AG Grid's Alpine theme (clean, modern look). |
-| `Balham` | AG Grid's Balham theme (professional business theme). |
-| `Material` | AG Grid's Material theme (Google Material Design styled). |
-| `Quartz` | AG Grid's Quartz theme (modern, polished appearance). |
-
-### GridVirtualizationMode Enum
-
-**Used by:** Grid
-
-| Value | Description |
-|-------|-------------|
-| `Auto` | Renderer decides based on data size. |
-| `None` | No virtualization. |
-| `RowOnly` | Row virtualization only. |
-| `RowAndColumn` | Both row and column virtualization. |
-
-### IconPosition Enum
-
-**Used by:** Button
-
-| Value | Description |
-|-------|-------------|
-| `Start` | Icon appears before the text (left in LTR, right in RTL). Uses margin-end for RTL-aware spacing. |
-| `End` | Icon appears after the text (right in LTR, left in RTL). Uses margin-start for RTL-aware spacing. |
-
-### ImageFormat Enum
-
-**Used by:** Chart
-
-**Values:**
-- `Png`
-- `Svg`
-
-### InputGroupAlign Enum
-
-**Used by:** InputGroup
-
-| Value | Description |
-|-------|-------------|
-| `InlineStart` | Position addon at the inline start (left in LTR, right in RTL). <remarks> Common use cases: search icons, currency symbols, URL protocols. </remarks> |
-| `InlineEnd` | Position addon at the inline end (right in LTR, left in RTL). <remarks> Common use cases: action buttons, validation icons, clear buttons. </remarks> |
-| `BlockStart` | Position addon above the input (block start). <remarks> Common use cases: labels, descriptions, field titles. </remarks> |
-| `BlockEnd` | Position addon below the input (block end). <remarks> Common use cases: character counters, help text, validation messages. </remarks> |
-
-### InputType Enum
-
-**Used by:** Input
-
-| Value | Description |
-|-------|-------------|
-| `Text` | Single-line text input (default). Accepts any text characters. |
-| `Email` | Email address input. Provides email validation and @ key on mobile keyboards. |
-| `Password` | Password input with obscured characters. Text is hidden for security (displayed as dots or asterisks). |
-| `Number` | Numeric input. Shows numeric keyboard on mobile and allows spinner controls. |
-| `Tel` | Telephone number input. Optimized for phone number entry with tel: keyboard layout. |
-| `Url` | URL input. Provides URL validation and .com key on mobile keyboards. |
-| `Search` | Search query input. Displays search icon and may show recent searches. |
-| `Date` | Date picker input. Shows native date picker on supported browsers. |
-| `Time` | Time picker input. Shows native time picker on supported browsers. |
-| `File` | File upload input. Allows users to select files from their device. |
-
-### InterpolationType Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Natural` | Natural/smooth curve interpolation (default). |
-| `Linear` | Linear interpolation (straight lines). |
-| `Step` | Step interpolation (middle). |
-| `StepBefore` | Step interpolation before the point. |
-| `StepAfter` | Step interpolation after the point. |
-| `Monotone` | Monotone curve interpolation. |
-
-### ItemMediaVariant Enum
-
-**Used by:** Item
-
-| Value | Description |
-|-------|-------------|
-| `Default` | Default variant with no specific styling. |
-| `Icon` | Icon variant with square border container (8px). |
-| `Image` | Image variant with rounded container (10px). |
-
-### ItemSize Enum
-
-**Used by:** Item
-
-| Value | Description |
-|-------|-------------|
-| `Default` | Default size with standard padding. |
-| `Sm` | Small size with reduced padding. |
-
-### ItemVariant Enum
-
-**Used by:** Item
-
-| Value | Description |
-|-------|-------------|
-| `Default` | Default variant with no border or background. |
-| `Outline` | Outlined variant with border. |
-| `Muted` | Muted variant with subtle background color. |
-
-### LabelPosition Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Top` | Position label at top. |
-| `Bottom` | Position label at bottom. |
-| `Left` | Position label at left. |
-| `Right` | Position label at right. |
-| `Inside` | Position label inside the data element. |
-| `InsideTop` | Position label inside at top. |
-| `InsideBottom` | Position label inside at bottom. |
-| `InsideLeft` | Position label inside at left. |
-| `InsideRight` | Position label inside at right. |
-| `Center` | Position label at center. |
-| `Outside` | Position label outside the data element. |
-
-### LegendAlign Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Left` | Align to the left. |
-| `Center` | Align to the center. |
-| `Right` | Align to the right. |
-
-### LegendIcon Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Default` |  |
-| `Circle` | Circle icon. |
-| `Rect` | Rectangle icon. |
-| `RoundRect` | Rounded rectangle icon. |
-| `Triangle` | Triangle icon. |
-| `Diamond` | Diamond icon. |
-| `Pin` | Pin icon (droplet shape). |
-| `Arrow` | Arrow icon. |
-| `None` | No icon (empty space). |
-
-### LegendLayout Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Horizontal` | Horizontal layout. |
-| `Vertical` | Vertical layout. |
-
-### LegendVerticalAlign Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Top` | Align to the top. |
-| `Middle` | Align to the middle. |
-| `Bottom` | Align to the bottom. |
-
-### LineStyleType Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Solid` | Solid line (default). |
-| `Dashed` | Dashed line. |
-| `Dotted` | Dotted line. |
-
-### NavigationMenuOrientation Enum
-
-**Used by:** NavigationMenu
-
-| Value | Description |
-|-------|-------------|
-| `Horizontal` | Horizontal navigation menu. |
-| `Vertical` | Vertical navigation menu. |
-
-### Orientation Enum
-
-**Used by:** ScrollArea
-
-| Value | Description |
-|-------|-------------|
-| `Vertical` | Vertical scrollbar. |
-| `Horizontal` | Horizontal scrollbar. |
-
-### PolarGridType Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Circle` | Circular grid lines. |
-| `Polygon` | Polygon grid lines. |
-
-### RadarShape Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Polygon` | Polygon shape (angular). |
-| `Circle` | Circle shape (smooth). |
-
-### ResizableDirection Enum
-
-**Used by:** Resizable
-
-| Value | Description |
-|-------|-------------|
-| `Horizontal` | Panels are arranged horizontally (side by side). |
-| `Vertical` | Panels are arranged vertically (stacked). |
-
-### ScrollAreaType Enum
-
-**Used by:** ScrollArea
-
-| Value | Description |
-|-------|-------------|
-| `Auto` | Scrollbars are visible when content overflows. |
-| `Always` | Scrollbars are always visible. |
-| `Scroll` | Scrollbars appear only when scrolling. |
-| `Hover` | Scrollbars appear only on hover. |
-
-### SelectAllState Enum
-
-**Used by:** MultiSelect
-
-| Value | Description |
-|-------|-------------|
-| `None` | No items are selected. |
-| `Indeterminate` | Some items are selected (indeterminate state). |
-| `All` | All items are selected. |
-
-### SelectionMode Enum
-
-**Used by:** Table
-
-| Value | Description |
-|-------|-------------|
-| `None` | No row selection allowed. |
-| `Single` | Only one row can be selected at a time. |
-| `Multiple` | Multiple rows can be selected simultaneously. |
-
-### SeparatorOrientation Enum
-
-**Used by:** Separator
-
-| Value | Description |
-|-------|-------------|
-| `Horizontal` | Horizontal separator that spans the full width. Creates a horizontal line divider between vertically stacked content. CSS: h-[1px] w-full |
-| `Vertical` | Vertical separator that spans the full height. Creates a vertical line divider between horizontally arranged content. CSS: h-full w-[1px] |
-
-### SheetSide Enum
-
-**Used by:** Sheet
-
-| Value | Description |
-|-------|-------------|
-| `Top` | Sheet slides in from the top edge. |
-| `Right` | Sheet slides in from the right edge (default). |
-| `Bottom` | Sheet slides in from the bottom edge. |
-| `Left` | Sheet slides in from the left edge. |
-
-### SidebarGroupLabelElement Enum
-
-**Used by:** Sidebar
-
-| Value | Description |
-|-------|-------------|
-| `Div` | Render as a div element. |
-| `Button` | Render as a button element (for collapsible groups). |
-
-### SidebarMenuButtonElement Enum
-
-**Used by:** Sidebar
-
-| Value | Description |
-|-------|-------------|
-| `Button` | Render as a button element for actions and toggles. |
-| `Anchor` | Render as an anchor element for navigation links. |
-
-### SidebarMenuButtonSize Enum
-
-**Used by:** Sidebar
-
-| Value | Description |
-|-------|-------------|
-| `Small` | Small size with reduced padding and text (text-xs). |
-| `Default` | Default size with standard padding and text. |
-| `Large` | Large size with increased padding and text (text-base). |
-
-### SidebarMenuButtonVariant Enum
-
-**Used by:** Sidebar
-
-| Value | Description |
-|-------|-------------|
-| `Default` | Default style with no outline or border. |
-| `Outline` | Outlined style with a visible border. |
-
-### SidebarMenuSubButtonSize Enum
-
-**Used by:** Sidebar
-
-| Value | Description |
-|-------|-------------|
-| `Small` | Small size variant. |
-| `Medium` | Medium/default size variant. |
-
-### SidebarSide Enum
-
-**Used by:** Sidebar
-
-| Value | Description |
-|-------|-------------|
-| `Left` | Sidebar appears on the left side. |
-| `Right` | Sidebar appears on the right side. |
-
-### SidebarVariant Enum
-
-**Used by:** Sidebar
-
-| Value | Description |
-|-------|-------------|
-| `Sidebar` | Default sidebar that pushes content. |
-| `Floating` | Floating sidebar that overlays content. |
-| `Inset` | Inset sidebar with padding. |
-
-### SkeletonShape Enum
-
-**Used by:** Skeleton
-
-| Value | Description |
-|-------|-------------|
-| `Rectangular` | Rectangular skeleton with rounded corners (rounded-md). <remarks> Default shape suitable for most loading placeholders including: <list type="bullet"> <item>Text lines and paragraphs</item> <item>Images and thumbnails</item> <item>Cards and panels</item> <item>Buttons and form fields</item> </list> Uses Tailwind's <c>rounded-md</c> class for subtle rounded corners. </remarks> |
-| `Circular` | Circular skeleton with fully rounded borders (rounded-full). <remarks> Ideal for avatar and icon placeholders including: <list type="bullet"> <item>User profile pictures</item> <item>Circular badges or indicators</item> <item>Icon placeholders</item> </list> Uses Tailwind's <c>rounded-full</c> class for perfectly circular shape. Ensure equal width and height (e.g., <c>h-12 w-12</c>) for proper circles. </remarks> |
-
-### SortDirection Enum
-
-**Used by:** Table
-
-| Value | Description |
-|-------|-------------|
-| `None` | No sorting applied. |
-| `Ascending` | Sort in ascending order (A to Z, 0 to 9, oldest to newest). |
-| `Descending` | Sort in descending order (Z to A, 9 to 0, newest to oldest). |
-
-### SpinnerSize Enum
-
-**Used by:** Spinner
-
-| Value | Description |
-|-------|-------------|
-| `Small` | Small spinner (16x16 pixels). |
-| `Medium` | Medium spinner (32x32 pixels). Default size. |
-| `Large` | Large spinner (48x48 pixels). |
-
-### StackOffset Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `None` | No normalization (default stacking). |
-| `Expand` | Expand/normalize to 100% per X bucket. |
-
-### SymbolShape Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `EmptyCircle` | Circle marker (default). |
-| `Circle` | Circle marker. |
-| `Rect` | Rectangle/square marker. |
-| `RoundRect` | Rounded rectangle marker. |
-| `Triangle` | Triangle marker. |
-| `Diamond` | Diamond marker. |
-| `Pin` | Pin/droplet marker. |
-| `Arrow` | Arrow marker. |
-| `None` | No marker/symbol. |
-
-### TabsActivationMode Enum
-
-**Used by:** Tabs
-
-| Value | Description |
-|-------|-------------|
-| `Automatic` | Tabs activate automatically when focused with arrow keys. |
-| `Manual` | Tabs must be clicked or Enter/Space pressed to activate. |
-
-### TabsOrientation Enum
-
-**Used by:** Tabs
-
-| Value | Description |
-|-------|-------------|
-| `Horizontal` | Tabs are arranged horizontally. |
-| `Vertical` | Tabs are arranged vertically. |
-
-### ToastPosition Enum
-
-**Used by:** Toast
-
-| Value | Description |
-|-------|-------------|
-| `TopLeft` | Top left corner. |
-| `TopCenter` | Top center. |
-| `TopRight` | Top right corner. |
-| `BottomLeft` | Bottom left corner. |
-| `BottomCenter` | Bottom center. |
-| `BottomRight` | Bottom right corner. |
-
-### ToastVariant Enum
-
-**Used by:** Toast
-
-| Value | Description |
-|-------|-------------|
-| `Default` | Default/neutral toast. |
-| `Success` | Success toast (green). |
-| `Warning` | Warning toast (yellow/orange). |
-| `Destructive` | Error/destructive toast (red). |
-| `Info` | Info toast (blue). |
-
-### ToggleGroupType Enum
-
-**Used by:** ToggleGroup
-
-| Value | Description |
-|-------|-------------|
-| `Single` | Single selection mode (radio behavior). Only one item can be selected at a time. |
-| `Multiple` | Multiple selection mode (checkbox behavior). Multiple items can be selected simultaneously. |
-
-### ToggleSize Enum
-
-**Used by:** Toggle
-
-| Value | Description |
-|-------|-------------|
-| `Default` | Default size toggle. |
-| `Small` | Small toggle. |
-| `Large` | Large toggle. |
-
-### ToggleVariant Enum
-
-**Used by:** Toggle
-
-| Value | Description |
-|-------|-------------|
-| `Default` | Default toggle style with transparent background. |
-| `Outline` | Outlined toggle style with border. |
-
-### TooltipCursor Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `None` | No cursor/pointer. |
-| `Line` | Single line cursor. |
-| `Cross` | Cross cursor (both horizontal and vertical lines). |
-| `Shadow` | Shadow/highlight region. |
-
-### TooltipMode Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Axis` | Tooltip triggered by axis (shows all series at that position). |
-| `Item` | Tooltip triggered by individual data points. |
-
-### TypographyVariant Enum
-
-**Used by:** Typography
-
-| Value | Description |
-|-------|-------------|
-| `H1` | Heading level 1 - largest heading. |
-| `H2` | Heading level 2. |
-| `H3` | Heading level 3. |
-| `H4` | Heading level 4. |
-| `P` | Paragraph text - default body text. |
-| `Blockquote` | Blockquote - quoted text. |
-| `InlineCode` | Inline code text. |
-| `Lead` | Lead paragraph - larger emphasized text. |
-| `Large` | Large text. |
-| `Small` | Small text. |
-| `Muted` | Muted text - de-emphasized. |
-
-### YAxisPosition Enum
-
-**Used by:** Chart
-
-| Value | Description |
-|-------|-------------|
-| `Left` | Position axis on the left side (default). |
-| `Right` | Position axis on the right side. |
-
-
----
-
-## 🏗️ Architecture Overview
-
-### Two-Tier System
-
-**Primitives (NeoBlazorUI.Primitives):**
-- Headless, unstyled components
-- Complete accessibility implementation (ARIA attributes, keyboard navigation)
-- Full control over styling
-- Foundation for custom designs
-
-**Components (NeoBlazorUI.Components):**
-- Pre-styled with shadcn/ui design
-- Built on top of primitives
-- Ready to use out of the box
-- Customizable through CSS variables
-
----
-
-## 🎨 Theming
-
-All components use CSS variables for theming, making them fully customizable.
-
-**Core Variables:**
-```css
---background: Page background
---foreground: Text color
---card: Card background
---card-foreground: Card text
---popover: Popover background
---popover-foreground: Popover text
---primary: Primary brand color
---primary-foreground: Text on primary
---secondary: Secondary brand color
---secondary-foreground: Text on secondary
---muted: Muted background
---muted-foreground: Muted text
---accent: Accent background
---accent-foreground: Accent text
---destructive: Destructive action color
---destructive-foreground: Text on destructive
---border: Border color
---input: Input border color
---ring: Focus ring color
---radius: Border radius
-```
-
-**Using Themes:**
-
-NeoBlazorUI is compatible with shadcn/ui themes from:
-- https://ui.shadcn.com/themes
-- https://tweakcn.com
-
-Simply copy the CSS variables and paste them into your `theme.css` file.
-
----
-
-## 📦 Icon Libraries
-
-### Lucide Icons
-- **Package:** `NeoBlazorUI.Icons.Lucide`
-- **Icon Count:** 1,640+
-- **Style:** Stroke-based, 24x24 viewBox
-- **Usage:** `<LucideIcon Name="LucideIconName.Home" />`
-
-### Heroicons
-- **Package:** `NeoBlazorUI.Icons.Heroicons`
-- **Icon Count:** 1,288+
-- **Variants:** Outline, Solid, Mini, Micro
-- **Usage:** `<HeroIcon Name="HeroIconName.Home" Variant="HeroIconVariant.Outline" />`
-
-### Feather Icons
-- **Package:** `NeoBlazorUI.Icons.Feather`
-- **Icon Count:** 286+
-- **Style:** Minimalist, stroke-based
-- **Usage:** `<FeatherIcon Name="FeatherIconName.Home" />`
-
----
-
-## 🔍 Common Patterns
-
-### AsChild Pattern
-
-The `AsChild` pattern allows you to use a component's behavior without its default rendering:
-
-```razor
-<DialogTrigger AsChild>
-    <Button>Open Dialog</Button>
-</DialogTrigger>
-```
-
-When `AsChild="true"`, the component passes its functionality to its child element instead of rendering its own wrapper.
-
-### Form Validation
-
-Use the `Field` component with `EditForm` for integrated validation:
-
-```razor
-<EditForm Model="model" OnValidSubmit="HandleSubmit">
-    <DataAnnotationsValidator />
-    
-    <Field>
-        <FieldLabel>Username</FieldLabel>
-        <FieldControl>
-            <Input @bind-Value="model.Username" />
-        </FieldControl>
-        <FieldDescription>Choose a unique username</FieldDescription>
-        <FieldMessage />
-    </Field>
-    
-    <Button Type="ButtonType.Submit">Submit</Button>
-</EditForm>
-```
-
----
-
-## 📖 Additional Resources
-
-- **Live Demo:** https://blazoruidemo20251223130817-bch0fhddfkh2bthv.indonesiacentral-01.azurewebsites.net
-- **GitHub:** https://github.com/blazorui-net/ui
-- **NuGet:** https://www.nuget.org/packages?q=NeoBlazorUI
-
----
-
-## 📚 Quick Reference
-
-### Component Categories
-
-**Layout & Structure:**
-- AspectRatio - Responsive aspect ratio container
-- Card - Content container with header, body, footer
-- Grid - Responsive grid layout
-- Resizable - Resizable panel layout
-- ScrollArea - Custom styled scrollbar
-- Separator - Visual divider
-
-**Navigation:**
-- Breadcrumb - Navigation breadcrumb trail
-- NavigationMenu - Primary navigation menu
-- Menubar - Desktop application-style menu
-- Pagination - Page navigation controls
-- Tabs - Tab-based content organization
-
-**Forms & Inputs:**
-- Button - Interactive button
-- Checkbox - Checkbox input
-- Input - Text input field
-- InputOtp - One-time password input
-- Label - Form label
-- NativeSelect - Native HTML select
-- RadioGroup - Radio button group
-- Select - Custom select dropdown
-- Slider - Range slider input
-- Switch - Toggle switch
-- Textarea - Multi-line text input
-- DatePicker - Date selection
-- TimePicker - Time selection
-- Calendar - Calendar date picker
-- MultiSelect - Multiple selection dropdown
-- Combobox - Autocomplete combo box
-- Field - Form field wrapper with validation
-
-**Data Display:**
-- Avatar - User avatar with fallback
-- Badge - Status or label badge
-- DataTable - Advanced data table
-- Empty - Empty state placeholder
-- Kbd - Keyboard shortcut display
-- Progress - Progress indicator
-- Skeleton - Loading skeleton
-- Spinner - Loading spinner
-- Toast - Toast notification
-- Typography - Text styling
-
-**Overlays & Popups:**
-- Dialog - Modal dialog
-- AlertDialog - Confirmation dialog
-- Sheet - Side sheet/drawer
-- Popover - Floating content popover
-- HoverCard - Hover triggered card
-- Tooltip - Informative tooltip
-- ContextMenu - Right-click context menu
-- DropdownMenu - Dropdown menu
-- Command - Command palette
-
-**Disclosure:**
-- Accordion - Expandable accordion
-- Collapsible - Collapsible content
-- Toggle - Toggle button
-- ToggleGroup - Toggle button group
-
-**Rich Content:**
-- MarkdownEditor - Markdown editor
-- RichTextEditor - WYSIWYG editor
-- Chart - Chart components
-
-**Animation & Effects:**
-- HeightAnimation - Animated height transitions
-- Motion - Motion animations
-
-**Sidebar:**
-- Sidebar - Application sidebar
-
-**Other:**
-- Alert - Alert message
-- ButtonGroup - Button group
-- Carousel - Image/content carousel
-- Item - Generic item component
-
----
-
-## 🔍 Search Index
-
-### By Use Case
-
-**Need a button?** → Button, Toggle, ToggleGroup
-**Need a form?** → Field, Input, Checkbox, Switch, RadioGroup, Select, Textarea, DatePicker, TimePicker
-**Need validation?** → Field (with FieldMessage)
-**Need a popup/modal?** → Dialog, AlertDialog, Sheet, Popover, Tooltip
-**Need a menu?** → DropdownMenu, ContextMenu, NavigationMenu, Menubar
-**Need navigation?** → Breadcrumb, Pagination, Tabs, NavigationMenu
-**Need to display data?** → DataTable, Card, Badge, Avatar
-**Need loading state?** → Spinner, Skeleton, Progress
-**Need notifications?** → Toast, Alert
-**Need expandable content?** → Accordion, Collapsible
-**Need a layout?** → Grid, Card, Resizable, Separator
-**Need date/time selection?** → DatePicker, TimePicker, Calendar
-**Need rich text editing?** → RichTextEditor, MarkdownEditor
-**Need icons?** → Lucide, Heroicons, Feather packages
-
-### Alphabetical Index
-
-A: Accordion, Alert, AlertDialog, AspectRatio, Avatar  
-B: Badge, Breadcrumb, Button, ButtonGroup  
-C: Calendar, Card, Carousel, Chart, Checkbox, Collapsible, Combobox, Command, ContextMenu  
-D: DataTable, DatePicker, Dialog, DropdownMenu  
-E: Empty  
-F: Field  
-G: Grid  
-H: HeightAnimation, HoverCard  
-I: Input, InputGroup, InputOtp, Item  
-K: Kbd  
-L: Label  
-M: MarkdownEditor, Menubar, Motion, MultiSelect  
-N: NativeSelect, NavigationMenu  
-P: Pagination, Popover, Progress  
-R: RadioGroup, Resizable, RichTextEditor  
-S: ScrollArea, Select, Separator, Sheet, Sidebar, Skeleton, Slider, Spinner, Switch  
-T: Table, Tabs, Textarea, TimePicker, Toast, Toggle, ToggleGroup, Tooltip, Typography
-
----
-
-## 📄 License
-
-MIT License - Copyright (c) 2025 BlazorUI Contributors
-
----
-
-**Document Statistics:**
-- Styled Components: 62
-- Primitives: 21
-- Total Enums: 75
-- Total Sections: 158
-- Generated: 2026-01-26
