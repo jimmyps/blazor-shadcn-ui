@@ -352,9 +352,15 @@ public partial class NumericInput<TValue> : ComponentBase
                     return (TValue)(object)result;
             }
         }
-        catch
+        catch (OverflowException)
         {
-            // Return default if parsing fails
+            // Value is too large or too small for the target type
+            // Return default value
+        }
+        catch (FormatException)
+        {
+            // Value is not in a valid format
+            // Return default value
         }
 
         return default;
