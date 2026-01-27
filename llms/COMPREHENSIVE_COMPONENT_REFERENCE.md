@@ -2769,11 +2769,11 @@ Rich hover previews with delay support. Displays detailed information on hover w
 ```razor
 <HoverCard>
     <HoverCardTrigger AsChild>
-        <Button Variant="ButtonVariant.Link">@johndoe</Button>
+        <Button Variant="ButtonVariant.Link">johndoe</Button>
     </HoverCardTrigger>
     <HoverCardContent>
         <div class="space-y-2">
-            <h4 class="font-semibold">@johndoe</h4>
+            <h4 class="font-semibold">John Doe</h4>
             <p class="text-sm">Full stack developer</p>
             <div class="flex gap-2 text-sm text-muted-foreground">
                 <span>Joined March 2024</span>
