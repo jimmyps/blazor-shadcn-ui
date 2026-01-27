@@ -1,0 +1,196 @@
+@page "/components/rating"
+@using BlazorUI.Components.Rating
+
+<PageTitle>Rating Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Rating Component</h1>
+            <p class="text-xl text-muted-foreground">
+                A rating component for selecting a value with interactive icons.
+            </p>
+        </div>
+    </div>
+
+    <!-- Basic Rating -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic</h2>
+            <p class="text-sm text-muted-foreground">
+                A simple star rating with default settings.
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Rating @bind-Value="basicValue" />
+            <p class="text-sm text-muted-foreground">Value: @basicValue</p>
+        </div>
+    </div>
+
+    <!-- Half Ratings -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Half Ratings</h2>
+            <p class="text-sm text-muted-foreground">
+                Allow half-star ratings for more granular control.
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Rating @bind-Value="halfValue" AllowHalf="true" />
+            <p class="text-sm text-muted-foreground">Value: @halfValue</p>
+        </div>
+    </div>
+
+    <!-- Icon Types -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Icon Types</h2>
+            <p class="text-sm text-muted-foreground">
+                Different icon types: Star, Heart, and Circle.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <p class="text-sm font-medium">Star:</p>
+                <Rating @bind-Value="starValue" IconType="RatingIconType.Star" />
+                <p class="text-sm text-muted-foreground">Value: @starValue</p>
+            </div>
+            <div class="space-y-2">
+                <p class="text-sm font-medium">Heart:</p>
+                <Rating @bind-Value="heartValue" IconType="RatingIconType.Heart" />
+                <p class="text-sm text-muted-foreground">Value: @heartValue</p>
+            </div>
+            <div class="space-y-2">
+                <p class="text-sm font-medium">Circle:</p>
+                <Rating @bind-Value="circleValue" IconType="RatingIconType.Circle" />
+                <p class="text-sm text-muted-foreground">Value: @circleValue</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sizes -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Sizes</h2>
+            <p class="text-sm text-muted-foreground">
+                Small, Medium, and Large sizes.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <p class="text-sm font-medium">Small:</p>
+                <Rating @bind-Value="sizeValue" Size="RatingSize.Small" />
+            </div>
+            <div class="space-y-2">
+                <p class="text-sm font-medium">Medium:</p>
+                <Rating @bind-Value="sizeValue" Size="RatingSize.Medium" />
+            </div>
+            <div class="space-y-2">
+                <p class="text-sm font-medium">Large:</p>
+                <Rating @bind-Value="sizeValue" Size="RatingSize.Large" />
+            </div>
+            <p class="text-sm text-muted-foreground">Value: @sizeValue</p>
+        </div>
+    </div>
+
+    <!-- Max Rating -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Max Rating</h2>
+            <p class="text-sm text-muted-foreground">
+                Set a custom maximum rating (default is 5).
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Rating @bind-Value="maxValue" MaxRating="10" Size="RatingSize.Small" />
+            <p class="text-sm text-muted-foreground">Value: @maxValue / 10</p>
+        </div>
+    </div>
+
+    <!-- Disabled -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Disabled</h2>
+            <p class="text-sm text-muted-foreground">
+                Disabled state prevents interaction.
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Rating Value="3.5" Disabled="true" AllowHalf="true" />
+        </div>
+    </div>
+
+    <!-- Read-Only -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Read-Only</h2>
+            <p class="text-sm text-muted-foreground">
+                Read-only state displays the rating without allowing changes.
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Rating Value="4" ReadOnly="true" />
+        </div>
+    </div>
+
+    <!-- Allow Clear -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Allow Clear</h2>
+            <p class="text-sm text-muted-foreground">
+                Click the same rating again to clear it (AllowClear is true by default).
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Rating @bind-Value="clearValue" AllowClear="true" />
+            <p class="text-sm text-muted-foreground">Value: @clearValue (Click the same star twice to clear)</p>
+        </div>
+    </div>
+
+    <!-- No Clear -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">No Clear</h2>
+            <p class="text-sm text-muted-foreground">
+                Prevent clearing by setting AllowClear to false.
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Rating @bind-Value="noClearValue" AllowClear="false" />
+            <p class="text-sm text-muted-foreground">Value: @noClearValue</p>
+        </div>
+    </div>
+
+    <!-- Keyboard Support -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Keyboard Support</h2>
+            <p class="text-sm text-muted-foreground">
+                Use arrow keys to adjust, number keys (1-5) to set directly, or 0 to clear.
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Rating @bind-Value="keyboardValue" />
+            <p class="text-sm text-muted-foreground">Value: @keyboardValue</p>
+            <ul class="text-sm text-muted-foreground list-disc list-inside">
+                <li>Arrow Left/Down: Decrease rating</li>
+                <li>Arrow Right/Up: Increase rating</li>
+                <li>Number keys 1-5: Set rating directly</li>
+                <li>0: Clear rating</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+@code {
+    private double basicValue = 0;
+    private double halfValue = 2.5;
+    private double starValue = 3;
+    private double heartValue = 4;
+    private double circleValue = 2;
+    private double sizeValue = 3;
+    private double maxValue = 5;
+    private double clearValue = 3;
+    private double noClearValue = 3;
+    private double keyboardValue = 2;
+}
