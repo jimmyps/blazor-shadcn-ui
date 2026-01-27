@@ -159,22 +159,18 @@ public partial class Rating : ComponentBase, IDisposable
         {
             EditContext.NotifyFieldChanged(_fieldIdentifier);
         }
-
-        StateHasChanged();
     }
 
     private void OnIconMouseEnter(int iconIndex, bool isHalf)
     {
         if (Disabled || ReadOnly) return;
         _hoverValue = isHalf && AllowHalf ? iconIndex - 0.5 : iconIndex;
-        StateHasChanged();
     }
 
     private void OnMouseLeave()
     {
         if (Disabled || ReadOnly) return;
         _hoverValue = null;
-        StateHasChanged();
     }
 
     private async Task OnKeyDown(KeyboardEventArgs e)
@@ -227,8 +223,6 @@ public partial class Rating : ComponentBase, IDisposable
             {
                 EditContext.NotifyFieldChanged(_fieldIdentifier);
             }
-
-            StateHasChanged();
         }
     }
 

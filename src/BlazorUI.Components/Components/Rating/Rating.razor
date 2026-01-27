@@ -8,18 +8,19 @@
     @for (int i = 1; i <= MaxRating; i++)
     {
         var iconIndex = i; // Capture for closure
+        var hoverZIndex = "z-10";
         
         @if (AllowHalf)
         {
             <div class="relative inline-flex">
                 <!-- Half icon (left side) -->
-                <div class="absolute inset-0 w-1/2 overflow-hidden cursor-pointer z-10"
+                <div class="@($"absolute inset-0 w-1/2 overflow-hidden cursor-pointer {hoverZIndex}")"
                      @onclick="() => OnIconClick(iconIndex, true)"
                      @onmouseenter="() => OnIconMouseEnter(iconIndex, true)">
                 </div>
                 
                 <!-- Full icon (right side) -->
-                <div class="absolute inset-0 left-1/2 w-1/2 overflow-hidden cursor-pointer z-10"
+                <div class="@($"absolute inset-0 left-1/2 w-1/2 overflow-hidden cursor-pointer {hoverZIndex}")"
                      @onclick="() => OnIconClick(iconIndex, false)"
                      @onmouseenter="() => OnIconMouseEnter(iconIndex, false)">
                 </div>
