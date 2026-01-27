@@ -74,8 +74,9 @@ export function calculateArrowPosition(contentId, triggerElement, arrowId, optio
         alignOffset = triggerCenterY - contentRect.top;
 
         // Calculate min/max bounds with edge padding
-        const minOffset = options.edgePadding + (options.width / 2);
-        const maxOffset = contentRect.height - options.edgePadding - (options.width / 2);
+        // For vertical sides, use height since arrow is rotated 90 degrees
+        const minOffset = options.edgePadding + (options.height / 2);
+        const maxOffset = contentRect.height - options.edgePadding - (options.height / 2);
 
         // Handle case where popover is too small for edge padding
         if (maxOffset <= minOffset) {
