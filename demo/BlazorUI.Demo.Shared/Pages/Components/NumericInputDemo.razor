@@ -1,0 +1,198 @@
+@page "/components/numericinput"
+@using BlazorUI.Components.NumericInput
+
+<PageTitle>NumericInput Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+        <h1 class="text-4xl font-bold tracking-tight">NumericInput Component</h1>
+        <p class="text-xl text-muted-foreground">
+            A type-safe numeric input component with support for various numeric types.
+        </p>
+        </div>
+    </div>
+
+    <div class="space-y-6">
+    </div>
+
+    <!-- Default Integer Input -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Integer Input</h2>
+            <p class="text-sm text-muted-foreground">
+                A simple integer input with placeholder.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <NumericInput TValue="int" @bind-Value="quantity" Placeholder="Enter quantity..." />
+            <p class="text-xs text-muted-foreground mt-2">Current value: @quantity</p>
+        </div>
+    </div>
+
+    <!-- Decimal Input -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Decimal Input</h2>
+            <p class="text-sm text-muted-foreground">
+                Decimal input for precise values like currency.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Price</label>
+                <NumericInput TValue="decimal" @bind-Value="price" Placeholder="0.00" Step="0.01" Min="0" Max="10000" />
+                <p class="text-xs text-muted-foreground">Current value: @price.ToString("C")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Double Input -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Double Input</h2>
+            <p class="text-sm text-muted-foreground">
+                Double precision floating point input.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Percentage</label>
+                <NumericInput TValue="double" @bind-Value="percentage" Placeholder="0.0" Step="0.1" Min="0" Max="100" />
+                <p class="text-xs text-muted-foreground">Current value: @percentage%</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Float Input -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Float Input</h2>
+            <p class="text-sm text-muted-foreground">
+                Single precision floating point input.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Rating</label>
+                <NumericInput TValue="float" @bind-Value="rating" Placeholder="0.0" Step="0.1" Min="0" Max="5" />
+                <p class="text-xs text-muted-foreground">Current value: @rating</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- With Min/Max Constraints -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Min/Max Constraints</h2>
+            <p class="text-sm text-muted-foreground">
+                Input with minimum and maximum value validation.
+            </p>
+        </div>
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Age (18-120)</label>
+                <NumericInput TValue="int" @bind-Value="age" Min="18" Max="120" Step="1" Placeholder="Enter age" />
+                <p class="text-xs text-muted-foreground">Current value: @age</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disabled State -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Disabled</h2>
+            <p class="text-sm text-muted-foreground">
+                Input with disabled state.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <NumericInput TValue="int" Placeholder="Disabled input" Disabled="true" Value="42" />
+        </div>
+    </div>
+
+    <!-- Required State -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Required</h2>
+            <p class="text-sm text-muted-foreground">
+                Input with HTML5 required validation.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <form class="space-y-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Quantity (required)</label>
+                    <NumericInput TValue="int" @bind-Value="requiredQuantity" Placeholder="Enter quantity" Required="true" Min="1" />
+                </div>
+                <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90">
+                    Submit
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- With Label and Description -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">With Label</h2>
+            <p class="text-sm text-muted-foreground">
+                Inputs with labels and helper text.
+            </p>
+        </div>
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label for="amount-input" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Amount
+                </label>
+                <NumericInput TValue="decimal" @bind-Value="amount" Id="amount-input" Placeholder="0.00" Step="0.01" AriaLabel="Amount" />
+                <p class="text-sm text-muted-foreground">
+                    Current value: @amount.ToString("C")
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Error State</h2>
+            <p class="text-sm text-muted-foreground">
+                Input with error visualization using aria-invalid.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Invalid value</label>
+                <NumericInput TValue="int" @bind-Value="errorValue" AriaInvalid="true" Placeholder="This field has an error" />
+                <p class="text-sm text-destructive">
+                    Please enter a valid number. Current: @errorValue
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Readonly State -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Readonly</h2>
+            <p class="text-sm text-muted-foreground">
+                Input in readonly mode - focusable but not editable.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <NumericInput TValue="decimal" Value="99.99m" Readonly="true" Placeholder="Readonly value" />
+        </div>
+    </div>
+</div>
+
+@code {
+    private int quantity = 10;
+    private decimal price = 29.99m;
+    private double percentage = 75.5;
+    private float rating = 4.5f;
+    private int age = 25;
+    private int requiredQuantity;
+    private decimal amount = 100.00m;
+    private int errorValue = -1;
+}
