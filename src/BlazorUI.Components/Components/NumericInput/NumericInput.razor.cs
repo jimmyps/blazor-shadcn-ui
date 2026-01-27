@@ -1,7 +1,9 @@
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace BlazorUI.Components.NumericInput;
 
@@ -44,6 +46,15 @@ namespace BlazorUI.Components.NumericInput;
 /// </example>
 public partial class NumericInput<TValue> : ComponentBase
 {
+    private FieldIdentifier _fieldIdentifier;
+    private EditContext? _editContext;
+
+    /// <summary>
+    /// Gets or sets the cascaded EditContext from a parent EditForm.
+    /// </summary>
+    [CascadingParameter]
+    private EditContext? CascadedEditContext { get; set; }
+
     /// <summary>
     /// Gets or sets the current value of the input.
     /// </summary>
@@ -214,6 +225,16 @@ public partial class NumericInput<TValue> : ComponentBase
     public bool? AriaInvalid { get; set; }
 
     /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    /// <remarks>
+    /// Used for form validation integration. When provided, the input
+    /// registers with the EditContext and participates in form validation.
+    /// </remarks>
+    [Parameter]
+    public Expression<Func<TValue?>>? ValueExpression { get; set; }
+
+    /// <summary>
     /// Gets or sets additional attributes to be applied to the input element.
     /// </summary>
     /// <remarks>
@@ -223,6 +244,21 @@ public partial class NumericInput<TValue> : ComponentBase
     /// </remarks>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Gets whether the input is in an invalid state (for validation).
+    /// </summary>
+    private bool IsInvalid
+    {
+        get
+        {
+            if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
+            {
+                return _editContext.GetValidationMessages(_fieldIdentifier).Any();
+            }
+            return AriaInvalid ?? false;
+        }
+    }
 
     /// <summary>
     /// Gets the computed CSS classes for the input element.
@@ -245,6 +281,7 @@ public partial class NumericInput<TValue> : ComponentBase
         "outline-none focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50",
         "disabled:cursor-not-allowed disabled:opacity-50",
         // aria-invalid state styling (destructive error colors)
+        IsInvalid ? "border-destructive ring-destructive focus-visible:ring-destructive/30" : "",
         "aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive",
         "aria-[invalid=true]:focus-visible:ring-destructive/30",
         // Smooth transitions for state changes
@@ -292,6 +329,12 @@ public partial class NumericInput<TValue> : ComponentBase
         if (ValueChanged.HasDelegate)
         {
             await ValueChanged.InvokeAsync(parsedValue);
+        }
+
+        // Notify EditContext of field change for validation
+        if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
+        {
+            _editContext.NotifyFieldChanged(_fieldIdentifier);
         }
     }
 
@@ -364,5 +407,18 @@ public partial class NumericInput<TValue> : ComponentBase
         }
 
         return default;
+    }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        // Initialize EditContext integration if available
+        if (CascadedEditContext != null && ValueExpression != null)
+        {
+            _editContext = CascadedEditContext;
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+        }
     }
 }

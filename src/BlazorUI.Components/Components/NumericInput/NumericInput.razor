@@ -18,7 +18,7 @@
     autofocus="@Autofocus"
     aria-label="@AriaLabel"
     aria-describedby="@AriaDescribedBy"
-    aria-invalid="@(AriaInvalid?.ToString().ToLower())"
+    aria-invalid="@(IsInvalid.ToString().ToLower())"
     @attributes="AdditionalAttributes"
     @oninput="HandleInput"
     @onchange="HandleChange" />
