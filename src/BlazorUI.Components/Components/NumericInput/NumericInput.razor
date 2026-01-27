@@ -1,0 +1,24 @@
+@namespace BlazorUI.Components.NumericInput
+@typeparam TValue
+
+<input
+    id="@Id"
+    name="@EffectiveName"
+    type="number"
+    class="@CssClass"
+    value="@CurrentValueAsString"
+    placeholder="@Placeholder"
+    disabled="@Disabled"
+    required="@Required"
+    readonly="@Readonly"
+    min="@Min"
+    max="@Max"
+    step="@Step"
+    inputmode="@InputMode"
+    autofocus="@Autofocus"
+    aria-label="@AriaLabel"
+    aria-describedby="@AriaDescribedBy"
+    aria-invalid="@(AriaInvalid?.ToString().ToLower())"
+    @attributes="AdditionalAttributes"
+    @oninput="HandleInput"
+    @onchange="HandleChange" />
