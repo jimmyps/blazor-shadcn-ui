@@ -50,12 +50,12 @@ public partial class PopoverArrow : IAsyncDisposable
     [CascadingParameter]
     private PopoverContext Context { get; set; } = null!;
 
-    private ElementReference _arrowRef;
-    private string _arrowId = string.Empty;
+    protected ElementReference _arrowRef;
+    protected string _arrowId = string.Empty;
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<PopoverArrow>? _dotNetRef;
     private bool _isInitialized = false;
-    private string _positionStyle = "visibility: hidden;";
+    protected string _positionStyle = "visibility: hidden;";
 
     /// <inheritdoc />
     protected override void OnInitialized()

@@ -20,7 +20,8 @@
 @code {
     private string GetCssClasses()
     {
-        var classes = "absolute z-10 pointer-events-none";
+        // Base styling with shadcn/ui design
+        var classes = "absolute z-10 pointer-events-none text-popover [&_svg]:drop-shadow-sm";
         if (!string.IsNullOrWhiteSpace(Class))
         {
             classes += $" {Class}";
@@ -28,7 +29,7 @@
         return classes;
     }
 
-    private string GetPolygonPoints()
+    protected string GetPolygonPoints()
     {
         // Triangle pointing down (base at top)
         // When rotated, it will point in the correct direction
