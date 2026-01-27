@@ -96,6 +96,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Accordion
 ```
 
+**Description:**
+Vertically stacked collapsible content sections with smooth animations. Supports single or multiple panel expansion with keyboard navigation.
+
 **Components & Parameters:**
 
 #### `Accordion`
@@ -134,6 +137,25 @@ dotnet add package NeoBlazorUI.Components
 | `ChildContent` | `RenderFragment?` |  | The child content to render within the trigger. |
 | `Class` | `string?` |  | Additional CSS classes to apply to the trigger. |
 
+**Basic Usage:**
+```razor
+<Accordion>
+    <AccordionItem Value="item-1">
+        <AccordionTrigger>Is it accessible?</AccordionTrigger>
+        <AccordionContent>
+            Yes. It adheres to WCAG 2.1 AA standards.
+        </AccordionContent>
+    </AccordionItem>
+    
+    <AccordionItem Value="item-2">
+        <AccordionTrigger>Is it styled?</AccordionTrigger>
+        <AccordionContent>
+            Yes. It comes with default shadcn/ui styles.
+        </AccordionContent>
+    </AccordionItem>
+</Accordion>
+```
+
 ---
 
 ### Alert
@@ -150,6 +172,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Alert
 ```
+
+**Description:**
+Status messages and callouts with multiple variants (default, destructive). Used to display important information to users.
 
 **Components & Parameters:**
 
@@ -175,6 +200,28 @@ dotnet add package NeoBlazorUI.Components
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the alert title. |
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the alert title. |
 
+**Basic Usage:**
+```razor
+@* Default alert *@
+<Alert>
+    <AlertTitle>Note</AlertTitle>
+    <AlertDescription>This is an informational message.</AlertDescription>
+</Alert>
+
+@* Destructive alert *@
+<Alert Variant="AlertVariant.Destructive">
+    <AlertTitle>Error</AlertTitle>
+    <AlertDescription>Something went wrong. Please try again.</AlertDescription>
+</Alert>
+
+@* With icon *@
+<Alert>
+    <LucideIcon Name="info" Size="16" />
+    <AlertTitle>Information</AlertTitle>
+    <AlertDescription>Check your email for confirmation.</AlertDescription>
+</Alert>
+```
+
 ---
 
 ### AlertDialog
@@ -191,6 +238,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.AlertDialog
 ```
+
+**Description:**
+Modal dialog for critical confirmations requiring user action. Prevents accidental destructive actions with explicit confirm/cancel buttons.
 
 **Components & Parameters:**
 
@@ -258,6 +308,31 @@ dotnet add package NeoBlazorUI.Components
 |-----------|------|---------|-------------|
 | `ChildContent` | `RenderFragment?` |  | The content to render as the trigger. |
 
+**Basic Usage:**
+```razor
+<AlertDialog>
+    <AlertDialogTrigger AsChild>
+        <Button Variant="ButtonVariant.Destructive">Delete Account</Button>
+    </AlertDialogTrigger>
+    <AlertDialogContent>
+        <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your account.
+            </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+            <AlertDialogCancel AsChild>
+                <Button Variant="ButtonVariant.Outline">Cancel</Button>
+            </AlertDialogCancel>
+            <AlertDialogAction AsChild>
+                <Button Variant="ButtonVariant.Destructive">Delete</Button>
+            </AlertDialogAction>
+        </AlertDialogFooter>
+    </AlertDialogContent>
+</AlertDialog>
+```
+
 ---
 
 ### AspectRatio
@@ -275,6 +350,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.AspectRatio
 ```
 
+**Description:**
+Display content within a desired width/height ratio. Maintains consistent proportions across different screen sizes.
+
 **Components & Parameters:**
 
 #### `AspectRatio`
@@ -284,6 +362,24 @@ dotnet add package NeoBlazorUI.Components
 | `ChildContent` | `RenderFragment?` |  | The content to render within the aspect ratio container. |
 | `Ratio` | `double` | `1.0` | The desired aspect ratio (width / height). Default is 1 (square). Common values: 16/9 = 1.778, 4/3 = 1.333, 1/1 = 1. |
 | `Class` | `string?` |  | Additional CSS classes to apply to the container. |
+
+**Basic Usage:**
+```razor
+@* 16:9 video container *@
+<AspectRatio Ratio="16.0 / 9.0">
+    <img src="/images/placeholder.jpg" alt="Photo" class="rounded-md object-cover" />
+</AspectRatio>
+
+@* Square 1:1 *@
+<AspectRatio Ratio="1">
+    <img src="/images/avatar.jpg" alt="Avatar" class="rounded-md object-cover" />
+</AspectRatio>
+
+@* 4:3 classic *@
+<AspectRatio Ratio="4.0 / 3.0">
+    <iframe src="https://example.com" class="w-full h-full"></iframe>
+</AspectRatio>
+```
 
 ---
 
@@ -301,6 +397,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Avatar
 ```
+
+**Description:**
+User avatars with image fallback support. Displays user profile pictures with automatic fallback to initials or placeholder.
 
 **Components & Parameters:**
 
@@ -327,6 +426,32 @@ dotnet add package NeoBlazorUI.Components
 | `Alt` | `string?` |  | Gets or sets the alternative text for the image. Essential for accessibility. Screen readers use this to describe the image to visually impaired users. Should describe who the avatar represents (e.g., "John Doe", "User avatar"). |
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the image. Custom classes are appended after the component's base classes. |
 
+**Basic Usage:**
+```razor
+@* Avatar with image *@
+<Avatar>
+    <AvatarImage Src="/images/avatar.jpg" Alt="User Name" />
+    <AvatarFallback>UN</AvatarFallback>
+</Avatar>
+
+@* Avatar with fallback initials *@
+<Avatar>
+    <AvatarFallback>JD</AvatarFallback>
+</Avatar>
+
+@* Avatar group *@
+<div class="flex -space-x-4">
+    <Avatar>
+        <AvatarImage Src="/images/user1.jpg" Alt="User 1" />
+        <AvatarFallback>U1</AvatarFallback>
+    </Avatar>
+    <Avatar>
+        <AvatarImage Src="/images/user2.jpg" Alt="User 2" />
+        <AvatarFallback>U2</AvatarFallback>
+    </Avatar>
+</div>
+```
+
 ---
 
 ### Badge
@@ -344,6 +469,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Badge
 ```
 
+**Description:**
+Status badges and labels with multiple variants. Used to highlight status, categories, or counts.
+
 **Components & Parameters:**
 
 #### `Badge`
@@ -353,6 +481,23 @@ dotnet add package NeoBlazorUI.Components
 | `Variant` | `BadgeVariant` | `BadgeVariant.Default` | Gets or sets the visual style variant of the badge. Controls the color scheme and visual appearance using CSS custom properties. Default value is . |
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the badge. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the badge. Typically contains short text (1-2 words) or a small number. For accessibility, ensure the content is meaningful. |
+
+**Basic Usage:**
+```razor
+@* Default badge *@
+<Badge>Default</Badge>
+
+@* Variant badges *@
+<Badge Variant="BadgeVariant.Secondary">Secondary</Badge>
+<Badge Variant="BadgeVariant.Destructive">Destructive</Badge>
+<Badge Variant="BadgeVariant.Outline">Outline</Badge>
+
+@* With icon *@
+<Badge>
+    <LucideIcon Name="check" Size="12" />
+    Verified
+</Badge>
+```
 
 ---
 
@@ -370,6 +515,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Breadcrumb
 ```
+
+**Description:**
+Hierarchical navigation with customizable separators. Shows current location within site hierarchy.
 
 **Components & Parameters:**
 
@@ -423,6 +571,25 @@ dotnet add package NeoBlazorUI.Components
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the breadcrumb separator. |
 | `ChildContent` | `RenderFragment?` |  | Gets or sets custom content for the separator. If not provided, a default chevron icon is used. |
 
+**Basic Usage:**
+```razor
+<Breadcrumb>
+    <BreadcrumbList>
+        <BreadcrumbItem>
+            <BreadcrumbLink Href="/">Home</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+            <BreadcrumbLink Href="/products">Products</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+            <BreadcrumbPage>Product Details</BreadcrumbPage>
+        </BreadcrumbItem>
+    </BreadcrumbList>
+</Breadcrumb>
+```
+
 ---
 
 ### Button
@@ -439,6 +606,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Button
 ```
+
+**Description:**
+Interactive button component with multiple variants (default, destructive, outline, secondary, ghost, link) and sizes. Supports icons, disabled states, and full keyboard navigation.
 
 **Components & Parameters:**
 
@@ -457,6 +627,28 @@ dotnet add package NeoBlazorUI.Components
 | `Icon` | `RenderFragment?` |  | Gets or sets the icon to display in the button. Can be any RenderFragment (SVG, icon font, image). Position is controlled by . Automatically adds RTL-aware spacing between icon and text. |
 | `IconPosition` | `IconPosition` | `IconPosition.Start` | Gets or sets the position of the icon relative to the button text. Default value is  (before text in LTR). Automatically adapts to RTL layouts using Tailwind directional utilities. |
 
+**Basic Usage:**
+```razor
+@* Simple button *@
+<Button>Click me</Button>
+
+@* With variant and size *@
+<Button Variant="ButtonVariant.Destructive" Size="ButtonSize.Large">
+    Delete
+</Button>
+
+@* With icon *@
+<Button>
+    <LucideIcon Name="download" Size="16" />
+    Download
+</Button>
+
+@* Icon-only button *@
+<Button Size="ButtonSize.Icon" AriaLabel="Settings">
+    <LucideIcon Name="settings" Size="20" />
+</Button>
+```
+
 ---
 
 ### ButtonGroup
@@ -473,6 +665,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.ButtonGroup
 ```
+
+**Description:**
+Visually grouped related buttons with connected styling. Groups multiple buttons as a cohesive unit with shared borders.
 
 **Components & Parameters:**
 
@@ -500,6 +695,22 @@ dotnet add package NeoBlazorUI.Components
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the text container. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the text container. Can contain text, icons, or any other markup. Icons will automatically be sized to match the button group's icon size. |
 
+**Basic Usage:**
+```razor
+<ButtonGroup>
+    <Button Variant="ButtonVariant.Outline">Left</Button>
+    <Button Variant="ButtonVariant.Outline">Center</Button>
+    <Button Variant="ButtonVariant.Outline">Right</Button>
+</ButtonGroup>
+
+@* With active state *@
+<ButtonGroup>
+    <Button Variant="ButtonVariant.Default">Bold</Button>
+    <Button Variant="ButtonVariant.Outline">Italic</Button>
+    <Button Variant="ButtonVariant.Outline">Underline</Button>
+</ButtonGroup>
+```
+
 ---
 
 ### Calendar
@@ -516,6 +727,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Calendar
 ```
+
+**Description:**
+Date selection grid with month navigation. Interactive calendar for selecting single dates or date ranges.
 
 **Components & Parameters:**
 
@@ -538,6 +752,25 @@ dotnet add package NeoBlazorUI.Components
 | `RangeEnd` | `DateOnly?` |  | The end date of a range selection (for visual styling). |
 | `DisplayedMonthChanged` | `EventCallback<DateOnly>` |  | Event callback invoked when the displayed month changes. This fires whenever the user navigates to a different month via buttons, keyboard, or dropdown. |
 
+**Basic Usage:**
+```razor
+@* Simple calendar *@
+<Calendar @bind-Value="selectedDate" />
+
+@* Date range calendar *@
+<Calendar @bind-Value="dateRange" Mode="CalendarMode.Range" />
+
+@* With disabled dates *@
+<Calendar @bind-Value="selectedDate" 
+          DisabledDates="@disabledDates" />
+
+@code {
+    private DateTime? selectedDate = DateTime.Today;
+    private DateRange? dateRange;
+    private HashSet<DateTime> disabledDates = new() { DateTime.Today.AddDays(1) };
+}
+```
+
 ---
 
 ### Card
@@ -554,6 +787,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Card
 ```
+
+**Description:**
+Container for grouped content with header, body, and footer sections. Flexible component for displaying information, forms, or actions.
 
 **Components & Parameters:**
 
@@ -606,6 +842,23 @@ dotnet add package NeoBlazorUI.Components
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered as the card title. |
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the card title. |
 
+**Basic Usage:**
+```razor
+<Card>
+    <CardHeader>
+        <CardTitle>Card Title</CardTitle>
+        <CardDescription>Card description goes here</CardDescription>
+    </CardHeader>
+    <CardContent>
+        <p>Main content of the card.</p>
+    </CardContent>
+    <CardFooter Class="flex justify-between">
+        <Button Variant="ButtonVariant.Outline">Cancel</Button>
+        <Button>Save</Button>
+    </CardFooter>
+</Card>
+```
+
 ---
 
 ### Carousel
@@ -622,6 +875,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Carousel
 ```
+
+**Description:**
+Slideshow component with touch gestures and animations. Displays content in a rotating carousel with navigation controls.
 
 **Components & Parameters:**
 
@@ -650,6 +906,30 @@ dotnet add package NeoBlazorUI.Components
 | `ChildContent` | `RenderFragment?` |  | The content of the carousel item. |
 | `Class` | `string?` |  | Additional CSS classes for the item. |
 
+**Basic Usage:**
+```razor
+<Carousel>
+    <CarouselContent>
+        <CarouselItem>
+            <Card>
+                <CardContent Class="p-6">
+                    <h3>Slide 1</h3>
+                </CardContent>
+            </Card>
+        </CarouselItem>
+        <CarouselItem>
+            <Card>
+                <CardContent Class="p-6">
+                    <h3>Slide 2</h3>
+                </CardContent>
+            </Card>
+        </CarouselItem>
+    </CarouselContent>
+    <CarouselPrevious />
+    <CarouselNext />
+</Carousel>
+```
+
 ---
 
 ### Chart
@@ -666,6 +946,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Chart
 ```
+
+**Description:**
+Beautiful data visualizations with multiple chart types including Area, Bar, Composed, Line, Pie, Radar, Radial Bar, and Scatter charts.
 
 **Components & Parameters:**
 
@@ -1050,6 +1333,39 @@ dotnet add package NeoBlazorUI.Components
 | `TickWidth` | `int?` |  | Gets or sets the width of the tick lines in pixels. Maps to axisTick.lineStyle.width. |
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the child content for nested components (e.g., AxisLabel). |
 
+**Basic Usage:**
+```razor
+@* Line Chart *@
+<ChartContainer Config="chartConfig">
+    <LineChart Data="chartData">
+        <CartesianGrid StrokeDasharray="3 3" />
+        <XAxis DataKey="name" />
+        <YAxis />
+        <ChartTooltip />
+        <Line DataKey="value" Stroke="#8884d8" />
+    </LineChart>
+</ChartContainer>
+
+@* Bar Chart *@
+<ChartContainer Config="chartConfig">
+    <BarChart Data="chartData">
+        <CartesianGrid StrokeDasharray="3 3" />
+        <XAxis DataKey="name" />
+        <YAxis />
+        <ChartTooltip />
+        <Bar DataKey="value" Fill="#8884d8" />
+    </BarChart>
+</ChartContainer>
+
+@code {
+    private List<ChartDataItem> chartData = new()
+    {
+        new() { Name = "Jan", Value = 100 },
+        new() { Name = "Feb", Value = 200 }
+    };
+}
+```
+
 ---
 
 ### Checkbox
@@ -1066,6 +1382,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Checkbox
 ```
+
+**Description:**
+Accessible checkbox with indeterminate state support. Binary selection control with support for partial selections.
 
 **Components & Parameters:**
 
@@ -1085,6 +1404,26 @@ dotnet add package NeoBlazorUI.Components
 | `Required` | `bool` |  | Gets or sets whether the checkbox is required. When true, the checkbox must be checked for form submission. Works with form validation. |
 | `CheckedExpression` | `Expression<Func<bool>>?` |  | Gets or sets an expression that identifies the bound value. Used for form validation integration. When provided, the checkbox registers with the EditContext and participates in form validation. |
 
+**Basic Usage:**
+```razor
+@* Simple checkbox *@
+<Checkbox @bind-Checked="isAccepted" />
+
+@* With label *@
+<div class="flex items-center space-x-2">
+    <Checkbox Id="terms" @bind-Checked="acceptTerms" />
+    <Label For="terms">I accept the terms and conditions</Label>
+</div>
+
+@* Indeterminate state *@
+<Checkbox Checked="false" Indeterminate="true" />
+
+@code {
+    private bool isAccepted = false;
+    private bool acceptTerms = false;
+}
+```
+
 ---
 
 ### Collapsible
@@ -1101,6 +1440,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Collapsible
 ```
+
+**Description:**
+Expandable/collapsible content panels. Shows or hides content with smooth animations.
 
 **Components & Parameters:**
 
@@ -1129,6 +1471,35 @@ dotnet add package NeoBlazorUI.Components
 | `AsChild` | `bool` | `false` | When true, the trigger does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components. Use this when you want a custom component (like Button) to act as the trigger. |
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the trigger. A  containing the trigger content, or null. |
 
+**Basic Usage:**
+```razor
+<Collapsible>
+    <CollapsibleTrigger AsChild>
+        <Button Variant="ButtonVariant.Ghost">
+            <LucideIcon Name="chevron-down" Size="16" />
+            Toggle Content
+        </Button>
+    </CollapsibleTrigger>
+    <CollapsibleContent>
+        <p>This content can be shown or hidden.</p>
+    </CollapsibleContent>
+</Collapsible>
+
+@* Controlled mode *@
+<Collapsible @bind-Open="isOpen">
+    <CollapsibleTrigger AsChild>
+        <Button>@(isOpen ? "Hide" : "Show") Details</Button>
+    </CollapsibleTrigger>
+    <CollapsibleContent>
+        <p>Detailed information here.</p>
+    </CollapsibleContent>
+</Collapsible>
+
+@code {
+    private bool isOpen = false;
+}
+```
+
 ---
 
 ### Combobox
@@ -1146,6 +1517,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Combobox
 ```
 
+**Description:**
+Searchable autocomplete dropdown with keyboard navigation. Combines text input with dropdown selection.
+
 **Components & Parameters:**
 
 #### `Combobox`
@@ -1160,6 +1534,20 @@ dotnet add package NeoBlazorUI.Components
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the combobox container. |
 | `Disabled` | `bool` |  | Gets or sets whether the combobox is disabled. |
 | `PopoverWidth` | `string` | `"w-[200px]"` | Gets or sets the width of the popover content. Defaults to "w-[200px]". Can be overridden with Tailwind classes. |
+
+**Basic Usage:**
+```razor
+<Combobox @bind-Value="selectedValue" 
+          Placeholder="Select item...">
+    <ComboboxItem Value="item1">Item 1</ComboboxItem>
+    <ComboboxItem Value="item2">Item 2</ComboboxItem>
+    <ComboboxItem Value="item3">Item 3</ComboboxItem>
+</Combobox>
+
+@code {
+    private string? selectedValue;
+}
+```
 
 ---
 
@@ -1177,6 +1565,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Command
 ```
+
+**Description:**
+Command palette with keyboard navigation and search. Quick access to actions and navigation via keyboard shortcuts.
 
 **Components & Parameters:**
 
@@ -1244,6 +1635,26 @@ dotnet add package NeoBlazorUI.Components
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the shortcut. |
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the shortcut (e.g., "⌘K", "Ctrl+S"). |
 
+**Basic Usage:**
+```razor
+<Command>
+    <CommandInput Placeholder="Type a command..." />
+    <CommandList>
+        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandGroup Heading="Suggestions">
+            <CommandItem>Calendar</CommandItem>
+            <CommandItem>Search Emoji</CommandItem>
+            <CommandItem>Calculator</CommandItem>
+        </CommandGroup>
+        <CommandSeparator />
+        <CommandGroup Heading="Settings">
+            <CommandItem>Profile</CommandItem>
+            <CommandItem>Settings</CommandItem>
+        </CommandGroup>
+    </CommandList>
+</Command>
+```
+
 ---
 
 ### ContextMenu
@@ -1260,6 +1671,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.ContextMenu
 ```
+
+**Description:**
+Right-click context menus with actions and keyboard shortcuts. Displays contextual actions on right-click.
 
 **Components & Parameters:**
 
@@ -1389,6 +1803,23 @@ dotnet add package NeoBlazorUI.Components
 | `ChildContent` | `RenderFragment?` |  | The child content that triggers the context menu. |
 | `Disabled` | `bool` | `false` | Whether the trigger is disabled. |
 
+**Basic Usage:**
+```razor
+<ContextMenu>
+    <ContextMenuTrigger>
+        <div class="border rounded p-4">
+            Right-click me
+        </div>
+    </ContextMenuTrigger>
+    <ContextMenuContent>
+        <ContextMenuItem>Edit</ContextMenuItem>
+        <ContextMenuItem>Copy</ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem>Delete</ContextMenuItem>
+    </ContextMenuContent>
+</ContextMenu>
+```
+
 ---
 
 ### DataTable
@@ -1405,6 +1836,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.DataTable
 ```
+
+**Description:**
+Powerful tables with sorting, filtering, pagination, and row selection. Enterprise-grade data table component.
 
 **Components & Parameters:**
 
@@ -1463,6 +1897,32 @@ dotnet add package NeoBlazorUI.Components
 | `OnColumnVisibilityChanged` | `Action<string, bool>` | `null!` |  |
 | `ChildContent` | `RenderFragment?` |  |  |
 
+**Basic Usage:**
+```razor
+<DataTable Items="users" TItem="User">
+    <Columns>
+        <DataTableColumn TItem="User" Property="u => u.Name" Title="Name" />
+        <DataTableColumn TItem="User" Property="u => u.Email" Title="Email" />
+        <DataTableColumn TItem="User" Property="u => u.Role" Title="Role" />
+    </Columns>
+</DataTable>
+
+@code {
+    private List<User> users = new()
+    {
+        new User { Name = "John", Email = "john@example.com", Role = "Admin" },
+        new User { Name = "Jane", Email = "jane@example.com", Role = "User" }
+    };
+    
+    public class User
+    {
+        public string Name { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Role { get; set; } = "";
+    }
+}
+```
+
 ---
 
 ### DatePicker
@@ -1479,6 +1939,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.DatePicker
 ```
+
+**Description:**
+Date selection with calendar in popover. Includes support for single dates and date ranges.
 
 **Components & Parameters:**
 
@@ -1529,6 +1992,24 @@ dotnet add package NeoBlazorUI.Components
 | `CalendarClass` | `string?` |  | Additional CSS classes for the calendars. |
 | `AriaLabel` | `string?` |  | ARIA label for the button. |
 
+**Basic Usage:**
+```razor
+@* Simple date picker *@
+<DatePicker @bind-Value="selectedDate" />
+
+@* Date range picker *@
+<DateRangePicker @bind-Value="dateRange" />
+
+@* With placeholder *@
+<DatePicker @bind-Value="selectedDate" 
+            Placeholder="Pick a date" />
+
+@code {
+    private DateTime? selectedDate;
+    private DateRange? dateRange;
+}
+```
+
 ---
 
 ### Dialog
@@ -1545,6 +2026,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Dialog
 ```
+
+**Description:**
+Modal dialogs for focused interactions. Displays content in an overlay that requires user interaction.
 
 **Components & Parameters:**
 
@@ -1617,6 +2101,36 @@ dotnet add package NeoBlazorUI.Components
 | `ChildContent` | `RenderFragment?` |  | The content to display inside the trigger button. |
 | `AsChild` | `bool` | `false` | When true, the trigger does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components. Use this when you want a custom component (like Button) to act as the trigger. |
 
+**Basic Usage:**
+```razor
+<Dialog>
+    <DialogTrigger AsChild>
+        <Button>Open Dialog</Button>
+    </DialogTrigger>
+    <DialogContent>
+        <DialogHeader>
+            <DialogTitle>Edit Profile</DialogTitle>
+            <DialogDescription>
+                Make changes to your profile here.
+            </DialogDescription>
+        </DialogHeader>
+        <div class="space-y-4">
+            <Field>
+                <FieldLabel>Name</FieldLabel>
+                <Input @bind-Value="name" />
+            </Field>
+        </div>
+        <DialogFooter>
+            <Button>Save Changes</Button>
+        </DialogFooter>
+    </DialogContent>
+</Dialog>
+
+@code {
+    private string name = "";
+}
+```
+
 ---
 
 ### DropdownMenu
@@ -1633,6 +2147,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.DropdownMenu
 ```
+
+**Description:**
+Context menus with nested submenus and keyboard navigation. Displays a menu of actions triggered by a button.
 
 **Components & Parameters:**
 
@@ -1775,6 +2292,26 @@ dotnet add package NeoBlazorUI.Components
 | `OnClick` | `EventCallback<MouseEventArgs>` |  | Custom click handler. |
 | `CustomClickHandling` | `bool` | `false` | Whether to use custom click handling only. |
 
+**Basic Usage:**
+```razor
+<DropdownMenu>
+    <DropdownMenuTrigger AsChild>
+        <Button Variant="ButtonVariant.Outline">
+            Options
+            <LucideIcon Name="chevron-down" Size="16" />
+        </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent>
+        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>Profile</DropdownMenuItem>
+        <DropdownMenuItem>Settings</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>Logout</DropdownMenuItem>
+    </DropdownMenuContent>
+</DropdownMenu>
+```
+
 ---
 
 ### Empty
@@ -1791,6 +2328,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Empty
 ```
+
+**Description:**
+Empty state displays with customizable icons and messages. Shows when there's no data or content to display.
 
 **Components & Parameters:**
 
@@ -1829,6 +2369,24 @@ dotnet add package NeoBlazorUI.Components
 | `Class` | `string?` |  |  |
 | `ChildContent` | `RenderFragment?` |  |  |
 
+**Basic Usage:**
+```razor
+@* Simple empty state *@
+<Empty />
+
+@* Custom empty state *@
+<Empty>
+    <EmptyIcon>
+        <LucideIcon Name="inbox" Size="48" />
+    </EmptyIcon>
+    <EmptyTitle>No messages</EmptyTitle>
+    <EmptyDescription>You don't have any messages yet.</EmptyDescription>
+    <EmptyAction>
+        <Button>Create Message</Button>
+    </EmptyAction>
+</Empty>
+```
+
 ---
 
 ### Field
@@ -1845,6 +2403,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Field
 ```
+
+**Description:**
+Combine labels, controls, help text, and validation messages for accessible forms. Complete form field wrapper with proper ARIA attributes.
 
 **Components & Parameters:**
 
@@ -1927,6 +2488,40 @@ dotnet add package NeoBlazorUI.Components
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the title. Custom classes are merged with the component's base classes, allowing for style overrides and extensions. |
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the title. Typically contains text describing the field or group of controls. |
 
+**Basic Usage:**
+```razor
+<Field>
+    <FieldLabel>Email</FieldLabel>
+    <FieldContent>
+        <Input Type="InputType.Email" @bind-Value="email" />
+    </FieldContent>
+    <FieldHelpText>We'll never share your email.</FieldHelpText>
+</Field>
+
+@* With validation *@
+<EditForm Model="model">
+    <DataAnnotationsValidator />
+    <Field>
+        <FieldLabel>Username</FieldLabel>
+        <FieldContent>
+            <Input @bind-Value="model.Username" />
+        </FieldContent>
+        <FieldValidationMessage For="() => model.Username" />
+    </Field>
+</EditForm>
+
+@code {
+    private string email = "";
+    private FormModel model = new();
+    
+    public class FormModel 
+    {
+        [Required]
+        public string Username { get; set; } = "";
+    }
+}
+```
+
 ---
 
 ### Grid
@@ -1943,6 +2538,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Grid
 ```
+
+**Description:**
+Responsive grid layout system with customizable columns and gaps. CSS Grid-based layout component.
 
 **Components & Parameters:**
 
@@ -2045,6 +2643,23 @@ dotnet add package NeoBlazorUI.Components
 | `WrapperBorder` | `bool?` |  | Gets or sets whether to show a border around the entire grid wrapper. Default varies by style: Default=false, Striped=false, Bordered=true, Minimal=false false |
 | `WrapperBorderRadius` | `int?` |  | Gets or sets the border radius in pixels for the grid wrapper. 8 |
 
+**Basic Usage:**
+```razor
+@* 2-column grid *@
+<Grid Columns="2" Gap="4">
+    <div>Column 1</div>
+    <div>Column 2</div>
+</Grid>
+
+@* Responsive grid *@
+<Grid Columns="1" Sm="2" Md="3" Lg="4" Gap="4">
+    <Card>Item 1</Card>
+    <Card>Item 2</Card>
+    <Card>Item 3</Card>
+    <Card>Item 4</Card>
+</Grid>
+```
+
 ---
 
 ### HeightAnimation
@@ -2062,6 +2677,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.HeightAnimation
 ```
 
+**Description:**
+Smooth height transition animation component. Animates content height changes for expand/collapse effects.
+
 **Components & Parameters:**
 
 #### `HeightAnimation`
@@ -2073,6 +2691,27 @@ dotnet add package NeoBlazorUI.Components
 | `Class` | `string?` |  | Additional CSS classes to apply to the container element. |
 | `Style` | `string?` |  | Additional inline styles to apply to the container element. |
 | `Enabled` | `bool` | `true` | Whether the animation is currently enabled. When false, no animation setup will occur. |
+
+**Basic Usage:**
+```razor
+<HeightAnimation>
+    @if (isExpanded)
+    {
+        <div>
+            <p>This content animates when shown/hidden.</p>
+            <p>Height transitions smoothly.</p>
+        </div>
+    }
+</HeightAnimation>
+
+<Button OnClick="() => isExpanded = !isExpanded">
+    Toggle
+</Button>
+
+@code {
+    private bool isExpanded = false;
+}
+```
 
 ---
 
@@ -2090,6 +2729,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.HoverCard
 ```
+
+**Description:**
+Rich hover previews with delay support. Displays detailed information on hover with smooth transitions.
 
 **Components & Parameters:**
 
@@ -2123,6 +2765,24 @@ dotnet add package NeoBlazorUI.Components
 | `AsChild` | `bool` | `false` | When true, the trigger does not render its own div element. Instead, it passes trigger behavior via TriggerContext to child components. Use this when you want a custom component to act as the trigger. |
 | `Class` | `string?` |  | Additional CSS classes to apply to the trigger. |
 
+**Basic Usage:**
+```razor
+<HoverCard>
+    <HoverCardTrigger AsChild>
+        <Button Variant="ButtonVariant.Link">@@username</Button>
+    </HoverCardTrigger>
+    <HoverCardContent>
+        <div class="space-y-2">
+            <h4 class="font-semibold">@@username</h4>
+            <p class="text-sm">Full stack developer</p>
+            <div class="flex gap-2 text-sm text-muted-foreground">
+                <span>Joined March 2024</span>
+            </div>
+        </div>
+    </HoverCardContent>
+</HoverCard>
+```
+
 ---
 
 ### Input
@@ -2139,6 +2799,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Input
 ```
+
+**Description:**
+Text input with multiple types (text, email, password, number, etc.) and validation support. Full-featured form input component.
 
 **Components & Parameters:**
 
@@ -2170,6 +2833,27 @@ dotnet add package NeoBlazorUI.Components
 | `AriaDescribedBy` | `string?` |  | Gets or sets the ID of the element that describes the input. References the id of an element containing help text or error messages. Improves screen reader experience by associating descriptive text. |
 | `AriaInvalid` | `bool?` |  | Gets or sets whether the input value is invalid. When true, aria-invalid="true" is set. Should be set based on validation state. |
 
+**Basic Usage:**
+```razor
+@* Text input *@
+<Input @bind-Value="name" Placeholder="Enter name" />
+
+@* Email input *@
+<Input Type="InputType.Email" @bind-Value="email" />
+
+@* Password input *@
+<Input Type="InputType.Password" @bind-Value="password" />
+
+@* Disabled input *@
+<Input Value="Disabled" Disabled="true" />
+
+@code {
+    private string name = "";
+    private string email = "";
+    private string password = "";
+}
+```
+
 ---
 
 ### InputGroup
@@ -2186,6 +2870,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.InputGroup
 ```
+
+**Description:**
+Enhanced inputs with icons, buttons, and addons. Combines input with prefix/suffix elements.
 
 **Components & Parameters:**
 
@@ -2258,6 +2945,30 @@ dotnet add package NeoBlazorUI.Components
 | `AriaDescribedBy` | `string?` |  | Gets or sets the ARIA described-by attribute. |
 | `AriaInvalid` | `bool?` |  | Gets or sets whether the textarea value is invalid. |
 
+**Basic Usage:**
+```razor
+@* With prefix icon *@
+<InputGroup>
+    <InputGroupPrefix>
+        <LucideIcon Name="search" Size="16" />
+    </InputGroupPrefix>
+    <Input @bind-Value="searchTerm" Placeholder="Search..." />
+</InputGroup>
+
+@* With suffix button *@
+<InputGroup>
+    <Input @bind-Value="email" Type="InputType.Email" />
+    <InputGroupSuffix>
+        <Button Size="ButtonSize.Small">Subscribe</Button>
+    </InputGroupSuffix>
+</InputGroup>
+
+@code {
+    private string searchTerm = "";
+    private string email = "";
+}
+```
+
 ---
 
 ### InputOtp
@@ -2274,6 +2985,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.InputOtp
 ```
+
+**Description:**
+One-time password input with individual character slots. Specialized input for OTP/PIN entry with auto-focus.
 
 **Components & Parameters:**
 
@@ -2315,6 +3029,20 @@ dotnet add package NeoBlazorUI.Components
 | `Index` | `int` |  | The index of this slot (0-based). |
 | `Class` | `string?` |  | Additional CSS classes to apply to the slot. |
 
+**Basic Usage:**
+```razor
+<InputOtp @bind-Value="otpCode" Length="6" />
+
+@* With custom pattern *@
+<InputOtp @bind-Value="otpCode" 
+          Length="6" 
+          Pattern="[0-9]*" />
+
+@code {
+    private string otpCode = "";
+}
+```
+
 ---
 
 ### Item
@@ -2331,6 +3059,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Item
 ```
+
+**Description:**
+Flexible list items with media, content, and action slots. Reusable component for building lists and menus.
 
 **Components & Parameters:**
 
@@ -2415,6 +3146,26 @@ dotnet add package NeoBlazorUI.Components
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the title. |
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered as the title. |
 
+**Basic Usage:**
+```razor
+<Item>
+    <ItemMedia>
+        <Avatar>
+            <AvatarFallback>JD</AvatarFallback>
+        </Avatar>
+    </ItemMedia>
+    <ItemContent>
+        <ItemTitle>John Doe</ItemTitle>
+        <ItemDescription>john@example.com</ItemDescription>
+    </ItemContent>
+    <ItemAction>
+        <Button Size="ButtonSize.Icon" Variant="ButtonVariant.Ghost">
+            <LucideIcon Name="more-vertical" Size="16" />
+        </Button>
+    </ItemAction>
+</Item>
+```
+
 ---
 
 ### Kbd
@@ -2432,6 +3183,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Kbd
 ```
 
+**Description:**
+Keyboard shortcut badges for displaying key combinations. Shows keyboard shortcuts in styled format.
+
 **Components & Parameters:**
 
 #### `Kbd`
@@ -2440,6 +3194,22 @@ dotnet add package NeoBlazorUI.Components
 |-----------|------|---------|-------------|
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the kbd element. |
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the kbd element. Typically contains a single key name (e.g., "Ctrl", "Shift", "Enter") or a key symbol (e.g., "⌘", "⌥", "⇧"). |
+
+**Basic Usage:**
+```razor
+@* Single key *@
+<Kbd>Ctrl</Kbd>
+
+@* Key combination *@
+<div class="flex gap-1">
+    <Kbd>Ctrl</Kbd>
+    <span>+</span>
+    <Kbd>C</Kbd>
+</div>
+
+@* In text *@
+<p>Press <Kbd>Enter</Kbd> to submit</p>
+```
 
 ---
 
@@ -2458,6 +3228,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Label
 ```
 
+**Description:**
+Accessible form labels with proper for/id association. Connects labels to form controls for accessibility.
+
 **Components & Parameters:**
 
 #### `Label`
@@ -2467,6 +3240,16 @@ dotnet add package NeoBlazorUI.Components
 | `For` | `string?` |  | Gets or sets the ID of the form element this label is associated with. A string containing the ID of the target form control, or null. This parameter maps to the HTML for attribute (htmlFor in JSX). When set, clicking the label will focus or activate the associated form control. Best practices: Always provide a For value for explicit label-control association Ensure the For value matches the Id of the target form control Use meaningful IDs that describe the field's purpose |
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the label element. A string containing one or more CSS class names, or null. Use this parameter to customize the label's appearance beyond default styling. Common Tailwind utilities include: Text size: text-lg, text-sm Font weight: font-bold, font-normal Color: text-muted-foreground, text-destructive Spacing: mb-2, mr-2 |
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the label element. A  containing the label's content, or null. Typically contains the label text, but can include additional elements such as: Required field indicators (asterisks, badges) Help text or tooltips Icons or visual indicators Nested spans for styling portions of text |
+
+**Basic Usage:**
+```razor
+<Label For="email">Email Address</Label>
+<Input Id="email" Type="InputType.Email" @bind-Value="email" />
+
+@code {
+    private string email = "";
+}
+```
 
 ---
 
@@ -2485,6 +3268,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.MarkdownEditor
 ```
 
+**Description:**
+Rich text editor with toolbar formatting and live preview. Full-featured markdown editing with syntax highlighting.
+
 **Components & Parameters:**
 
 #### `MarkdownEditor`
@@ -2500,6 +3286,20 @@ dotnet add package NeoBlazorUI.Components
 | `AriaLabel` | `string?` |  | Gets or sets the ARIA label for the textarea. |
 | `AriaDescribedBy` | `string?` |  | Gets or sets the ID of the element that describes the textarea. |
 | `AriaInvalid` | `bool?` |  | Gets or sets whether the textarea value is invalid. |
+
+**Basic Usage:**
+```razor
+<MarkdownEditor @bind-Value="markdownContent" 
+                Placeholder="Write your markdown here..." />
+
+@* With preview *@
+<MarkdownEditor @bind-Value="markdownContent" 
+                ShowPreview="true" />
+
+@code {
+    private string markdownContent = "# Hello World";
+}
+```
 
 ---
 
@@ -2517,6 +3317,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Menubar
 ```
+
+**Description:**
+Desktop application-style horizontal menu bar with dropdown menus. Top-level navigation with nested submenus.
 
 **Components & Parameters:**
 
@@ -2659,6 +3462,30 @@ dotnet add package NeoBlazorUI.Components
 | `Class` | `string?` |  | Additional CSS classes to apply to the trigger. |
 | `Disabled` | `bool` | `false` | Whether the trigger is disabled. |
 
+**Basic Usage:**
+```razor
+<Menubar>
+    <MenubarMenu>
+        <MenubarTrigger>File</MenubarTrigger>
+        <MenubarContent>
+            <MenubarItem>New File</MenubarItem>
+            <MenubarItem>Open</MenubarItem>
+            <MenubarSeparator />
+            <MenubarItem>Save</MenubarItem>
+        </MenubarContent>
+    </MenubarMenu>
+    
+    <MenubarMenu>
+        <MenubarTrigger>Edit</MenubarTrigger>
+        <MenubarContent>
+            <MenubarItem>Cut</MenubarItem>
+            <MenubarItem>Copy</MenubarItem>
+            <MenubarItem>Paste</MenubarItem>
+        </MenubarContent>
+    </MenubarMenu>
+</Menubar>
+```
+
 ---
 
 ### Motion
@@ -2675,6 +3502,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Motion
 ```
+
+**Description:**
+Declarative animation system powered by Motion.dev with 20+ presets including fade, scale, slide, shake, bounce, pulse, spring physics, scroll-triggered animations, and staggered list/grid animations.
 
 **Components & Parameters:**
 
@@ -2840,6 +3670,26 @@ dotnet add package NeoBlazorUI.Components
 | `Velocity` | `double` | `0` | Initial velocity. Default: 0 |
 | `Bounce` | `double?` |  | Bounce amount (0-1). Alternative to stiffness/damping. |
 
+**Basic Usage:**
+```razor
+@* Fade in animation *@
+<Motion Preset="MotionPreset.Fade">
+    <div>This content fades in</div>
+</Motion>
+
+@* Slide up animation *@
+<Motion Preset="MotionPreset.SlideUp" Duration="0.5">
+    <Card>Slides up on mount</Card>
+</Motion>
+
+@* Stagger children *@
+<Motion Preset="MotionPreset.StaggerList">
+    <div>Item 1</div>
+    <div>Item 2</div>
+    <div>Item 3</div>
+</Motion>
+```
+
 ---
 
 ### MultiSelect
@@ -2856,6 +3706,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.MultiSelect
 ```
+
+**Description:**
+Searchable multi-selection with tags and checkboxes. Select multiple options from a dropdown list.
 
 **Components & Parameters:**
 
@@ -2878,6 +3731,20 @@ dotnet add package NeoBlazorUI.Components
 | `PopoverWidth` | `string` | `"w-[300px]"` | Gets or sets the width of the popover content. |
 | `ValuesExpression` | `Expression<Func<IEnumerable<string>?>>?` |  | Gets or sets an expression that identifies the bound values. Used for form validation integration. |
 
+**Basic Usage:**
+```razor
+<MultiSelect @bind-Values="selectedItems" 
+             Placeholder="Select items...">
+    <MultiSelectItem Value="option1">Option 1</MultiSelectItem>
+    <MultiSelectItem Value="option2">Option 2</MultiSelectItem>
+    <MultiSelectItem Value="option3">Option 3</MultiSelectItem>
+</MultiSelect>
+
+@code {
+    private HashSet<string> selectedItems = new();
+}
+```
+
 ---
 
 ### NativeSelect
@@ -2894,6 +3761,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.NativeSelect
 ```
+
+**Description:**
+Styled native HTML select dropdown. Enhanced styling for standard select element.
 
 **Components & Parameters:**
 
@@ -2919,6 +3789,20 @@ dotnet add package NeoBlazorUI.Components
 | `Disabled` | `bool` |  |  |
 | `ChildContent` | `RenderFragment?` |  |  |
 
+**Basic Usage:**
+```razor
+<NativeSelect @bind-Value="selectedValue">
+    <option value="">Select an option</option>
+    <option value="option1">Option 1</option>
+    <option value="option2">Option 2</option>
+    <option value="option3">Option 3</option>
+</NativeSelect>
+
+@code {
+    private string selectedValue = "";
+}
+```
+
 ---
 
 ### NavigationMenu
@@ -2935,6 +3819,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.NavigationMenu
 ```
+
+**Description:**
+Horizontal navigation with dropdown panels. Main site navigation with mega menu support.
 
 **Components & Parameters:**
 
@@ -3003,6 +3890,25 @@ dotnet add package NeoBlazorUI.Components
 | `ChildContent` | `RenderFragment?` |  | The child content to render within the viewport. |
 | `Class` | `string?` |  | Additional CSS classes to apply. |
 
+**Basic Usage:**
+```razor
+<NavigationMenu>
+    <NavigationMenuList>
+        <NavigationMenuItem>
+            <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+            <NavigationMenuContent>
+                <NavigationMenuLink Href="/products/all">All Products</NavigationMenuLink>
+                <NavigationMenuLink Href="/products/new">New Arrivals</NavigationMenuLink>
+            </NavigationMenuContent>
+        </NavigationMenuItem>
+        
+        <NavigationMenuItem>
+            <NavigationMenuLink Href="/about">About</NavigationMenuLink>
+        </NavigationMenuItem>
+    </NavigationMenuList>
+</NavigationMenu>
+```
+
 ---
 
 ### Pagination
@@ -3019,6 +3925,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Pagination
 ```
+
+**Description:**
+Page navigation with Previous/Next/Ellipsis support. Navigate through paginated content.
 
 **Components & Parameters:**
 
@@ -3073,6 +3982,32 @@ dotnet add package NeoBlazorUI.Components
 | `Href` | `string?` |  |  |
 | `Class` | `string?` |  |  |
 
+**Basic Usage:**
+```razor
+<Pagination CurrentPage="currentPage" 
+            TotalPages="10" 
+            OnPageChanged="HandlePageChange">
+    <PaginationContent>
+        <PaginationPrevious />
+        <PaginationItem PageNumber="1" />
+        <PaginationEllipsis />
+        <PaginationItem PageNumber="currentPage" />
+        <PaginationEllipsis />
+        <PaginationItem PageNumber="10" />
+        <PaginationNext />
+    </PaginationContent>
+</Pagination>
+
+@code {
+    private int currentPage = 1;
+    
+    private void HandlePageChange(int page)
+    {
+        currentPage = page;
+    }
+}
+```
+
 ---
 
 ### Popover
@@ -3089,6 +4024,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Popover
 ```
+
+**Description:**
+Floating content containers triggered by user interaction. Displays rich content in an overlay.
 
 **Components & Parameters:**
 
@@ -3126,6 +4064,21 @@ dotnet add package NeoBlazorUI.Components
 | `OnClick` | `EventCallback<MouseEventArgs>` |  |  |
 | `CustomClickHandling` | `bool` | `false` |  |
 
+**Basic Usage:**
+```razor
+<Popover>
+    <PopoverTrigger AsChild>
+        <Button Variant="ButtonVariant.Outline">Open Popover</Button>
+    </PopoverTrigger>
+    <PopoverContent>
+        <div class="space-y-2">
+            <h4 class="font-medium">Dimensions</h4>
+            <p class="text-sm">Set the dimensions for the layer.</p>
+        </div>
+    </PopoverContent>
+</Popover>
+```
+
 ---
 
 ### Progress
@@ -3143,6 +4096,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Progress
 ```
 
+**Description:**
+Progress bars with animations and indeterminate state. Visual indicator for task completion.
+
 **Components & Parameters:**
 
 #### `Progress`
@@ -3152,6 +4108,22 @@ dotnet add package NeoBlazorUI.Components
 | `Value` | `double` |  | Gets or sets the current progress value. |
 | `Max` | `double` | `100` | Gets or sets the maximum value for the progress bar. Default value is 100. |
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the progress bar. |
+
+**Basic Usage:**
+```razor
+@* Determinate progress *@
+<Progress Value="progressValue" />
+
+@* Indeterminate progress *@
+<Progress Indeterminate="true" />
+
+@* With custom color *@
+<Progress Value="75" Class="[&>div]:bg-green-500" />
+
+@code {
+    private int progressValue = 60;
+}
+```
 
 ---
 
@@ -3169,6 +4141,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.RadioGroup
 ```
+
+**Description:**
+Radio button groups with keyboard navigation. Mutually exclusive selection from multiple options.
 
 **Components & Parameters:**
 
@@ -3195,6 +4170,28 @@ dotnet add package NeoBlazorUI.Components
 | `AriaLabel` | `string?` |  | Gets or sets the ARIA label for the radio item. Provides accessible text for screen readers when the radio item doesn't have an associated label element. |
 | `Id` | `string?` |  | Gets or sets the ID attribute for the radio item element. Used for associating the radio item with label elements via htmlFor attribute. |
 
+**Basic Usage:**
+```razor
+<RadioGroup @bind-Value="selectedOption">
+    <div class="flex items-center space-x-2">
+        <RadioGroupItem Value="option1" Id="option1" />
+        <Label For="option1">Option 1</Label>
+    </div>
+    <div class="flex items-center space-x-2">
+        <RadioGroupItem Value="option2" Id="option2" />
+        <Label For="option2">Option 2</Label>
+    </div>
+    <div class="flex items-center space-x-2">
+        <RadioGroupItem Value="option3" Id="option3" />
+        <Label For="option3">Option 3</Label>
+    </div>
+</RadioGroup>
+
+@code {
+    private string selectedOption = "option1";
+}
+```
+
 ---
 
 ### Resizable
@@ -3211,6 +4208,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Resizable
 ```
+
+**Description:**
+Split layouts with draggable handles. Create resizable split panes.
 
 **Components & Parameters:**
 
@@ -3243,6 +4243,19 @@ dotnet add package NeoBlazorUI.Components
 | `OnLayoutChange` | `EventCallback<double[]>` |  | Event callback invoked when panel sizes change. |
 | `Class` | `string?` |  | Additional CSS classes to apply to the container. |
 
+**Basic Usage:**
+```razor
+<ResizablePanelGroup Direction="ResizableDirection.Horizontal">
+    <ResizablePanel DefaultSize="50">
+        <div class="p-4">Left Panel</div>
+    </ResizablePanel>
+    <ResizableHandle />
+    <ResizablePanel DefaultSize="50">
+        <div class="p-4">Right Panel</div>
+    </ResizablePanel>
+</ResizablePanelGroup>
+```
+
 ---
 
 ### RichTextEditor
@@ -3259,6 +4272,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.RichTextEditor
 ```
+
+**Description:**
+WYSIWYG editor with formatting toolbar and HTML output. Full-featured rich text editing.
 
 **Components & Parameters:**
 
@@ -3279,6 +4295,24 @@ dotnet add package NeoBlazorUI.Components
 | `MaxHeight` | `string?` |  | Gets or sets the maximum height of the editor content area. When content exceeds this height, a scrollbar appears. |
 | `Height` | `string?` |  | Gets or sets a fixed height for the editor content area. When set, the editor will not auto-expand and will show scrollbar when content overflows. Takes precedence over MinHeight/MaxHeight when set. |
 
+**Basic Usage:**
+```razor
+<RichTextEditor @bind-Value="htmlContent" 
+                Placeholder="Start typing..." />
+
+@* With custom toolbar *@
+<RichTextEditor @bind-Value="htmlContent">
+    <ToolbarContent>
+        <ToolbarButton Command="bold">Bold</ToolbarButton>
+        <ToolbarButton Command="italic">Italic</ToolbarButton>
+    </ToolbarContent>
+</RichTextEditor>
+
+@code {
+    private string htmlContent = "<p>Hello World</p>";
+}
+```
+
 ---
 
 ### ScrollArea
@@ -3295,6 +4329,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.ScrollArea
 ```
+
+**Description:**
+Custom scrollbars for styled scroll regions. Enhanced scrolling with custom styled scrollbars.
 
 **Components & Parameters:**
 
@@ -3317,6 +4354,28 @@ dotnet add package NeoBlazorUI.Components
 | `Orientation` | `Orientation` | `Orientation.Vertical` | The orientation of the scrollbar. Default is Vertical. |
 | `Class` | `string?` |  | Additional CSS classes to apply to the scrollbar. |
 
+**Basic Usage:**
+```razor
+<ScrollArea Class="h-72 w-48">
+    <div class="p-4 space-y-4">
+        @for (int i = 1; i <= 50; i++)
+        {
+            <div>Item @i</div>
+        }
+    </div>
+</ScrollArea>
+
+@* Horizontal scroll *@
+<ScrollArea Orientation="ScrollOrientation.Horizontal">
+    <div class="flex gap-4 p-4">
+        @for (int i = 1; i <= 20; i++)
+        {
+            <Card Class="w-48">Item @i</Card>
+        }
+    </div>
+</ScrollArea>
+```
+
 ---
 
 ### Select
@@ -3333,6 +4392,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Select
 ```
+
+**Description:**
+Dropdown select with search and keyboard navigation. Enhanced select component with filtering.
 
 **Components & Parameters:**
 
@@ -3391,6 +4453,24 @@ dotnet add package NeoBlazorUI.Components
 |-----------|------|---------|-------------|
 | `Placeholder` | `string?` |  | Gets or sets the placeholder text to display when no value is selected. |
 
+**Basic Usage:**
+```razor
+<Select @bind-Value="selectedValue" Placeholder="Select an option">
+    <SelectTrigger>
+        <SelectValue />
+    </SelectTrigger>
+    <SelectContent>
+        <SelectItem Value="option1">Option 1</SelectItem>
+        <SelectItem Value="option2">Option 2</SelectItem>
+        <SelectItem Value="option3">Option 3</SelectItem>
+    </SelectContent>
+</Select>
+
+@code {
+    private string? selectedValue;
+}
+```
+
 ---
 
 ### Separator
@@ -3408,6 +4488,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Separator
 ```
 
+**Description:**
+Visual dividers for separating content. Horizontal or vertical line separator.
+
 **Components & Parameters:**
 
 #### `Separator`
@@ -3417,6 +4500,21 @@ dotnet add package NeoBlazorUI.Components
 | `Orientation` | `SeparatorOrientation` | `SeparatorOrientation.Horizontal` | Gets or sets the orientation of the separator. Determines whether the separator is displayed horizontally or vertically. Default value is . |
 | `Decorative` | `bool` | `true` | Gets or sets whether the separator is purely decorative. When true (default), the separator is treated as decorative (role="none") and hidden from assistive technologies. When false, the separator is semantic (role="separator") and will be announced to screen readers, with the orientation specified via aria-orientation. Set to false when the separator provides meaningful structural information about content hierarchy. |
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the separator. Custom classes are appended after the component's base classes, allowing for style overrides and extensions. |
+
+**Basic Usage:**
+```razor
+@* Horizontal separator *@
+<div>Content above</div>
+<Separator />
+<div>Content below</div>
+
+@* Vertical separator *@
+<div class="flex gap-4 items-center">
+    <span>Left</span>
+    <Separator Orientation="SeparatorOrientation.Vertical" Class="h-4" />
+    <span>Right</span>
+</div>
+```
 
 ---
 
@@ -3434,6 +4532,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Sheet
 ```
+
+**Description:**
+Slide-out panels from any edge (top, right, bottom, left). Drawer component for mobile and desktop.
 
 **Components & Parameters:**
 
@@ -3506,6 +4607,31 @@ dotnet add package NeoBlazorUI.Components
 | `ChildContent` | `RenderFragment?` |  | The content to display inside the trigger button. |
 | `AsChild` | `bool` | `false` | When true, the trigger does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components. Use this when you want a custom component (like Button) to act as the trigger. |
 
+**Basic Usage:**
+```razor
+<Sheet>
+    <SheetTrigger AsChild>
+        <Button>Open Sheet</Button>
+    </SheetTrigger>
+    <SheetContent>
+        <SheetHeader>
+            <SheetTitle>Sheet Title</SheetTitle>
+            <SheetDescription>Sheet description goes here.</SheetDescription>
+        </SheetHeader>
+        <div class="py-4">
+            <p>Sheet content</p>
+        </div>
+        <SheetFooter>
+            <Button>Save</Button>
+        </SheetFooter>
+    </SheetContent>
+</Sheet>
+
+@* From different sides *@
+<Sheet Side="SheetSide.Left">...</Sheet>
+<Sheet Side="SheetSide.Top">...</Sheet>
+```
+
 ---
 
 ### Sidebar
@@ -3522,6 +4648,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Sidebar
 ```
+
+**Description:**
+Responsive sidebar with collapsible icon mode, multiple variants (default, floating, inset), and mobile sheet integration.
 
 **Components & Parameters:**
 
@@ -3724,6 +4853,42 @@ dotnet add package NeoBlazorUI.Components
 | `OnClick` | `EventCallback<MouseEventArgs>` |  | Click handler for custom behavior.4 |
 | `Class` | `string?` |  | Additional CSS classes. |
 
+**Basic Usage:**
+```razor
+<SidebarProvider>
+    <Sidebar>
+        <SidebarHeader>
+            <h2 class="text-lg font-semibold">App Name</h2>
+        </SidebarHeader>
+        <SidebarContent>
+            <SidebarGroup>
+                <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+                <SidebarGroupContent>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton Href="/">
+                            <LucideIcon Name="home" Size="16" />
+                            Home
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton Href="/settings">
+                            <LucideIcon Name="settings" Size="16" />
+                            Settings
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarGroupContent>
+            </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter>
+            <SidebarMenuItem>User Menu</SidebarMenuItem>
+        </SidebarFooter>
+    </Sidebar>
+    <SidebarInset>
+        <main>@Body</main>
+    </SidebarInset>
+</SidebarProvider>
+```
+
 ---
 
 ### Skeleton
@@ -3741,6 +4906,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Skeleton
 ```
 
+**Description:**
+Loading placeholders with shimmer animation. Shows content structure while loading.
+
 **Components & Parameters:**
 
 #### `Skeleton`
@@ -3749,6 +4917,23 @@ dotnet add package NeoBlazorUI.Components
 |-----------|------|---------|-------------|
 | `Shape` | `SkeletonShape` | `SkeletonShape.Rectangular` | Gets or sets the shape variant of the skeleton. A  value. Default is . : Default rectangular shape with rounded corners : Circular shape, ideal for avatar placeholders |
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the skeleton element. A string containing one or more CSS class names, or null. Use this parameter to customize the skeleton's dimensions and spacing. Common Tailwind utilities include: Height: h-4, h-12, h-[200px] Width: w-full, w-[250px], w-1/2 Margin: mb-2, mt-4 |
+
+**Basic Usage:**
+```razor
+@* Simple skeleton *@
+<Skeleton Class="h-12 w-12 rounded-full" />
+
+@* Card skeleton *@
+<Card>
+    <CardHeader>
+        <Skeleton Class="h-4 w-1/2" />
+        <Skeleton Class="h-3 w-3/4 mt-2" />
+    </CardHeader>
+    <CardContent>
+        <Skeleton Class="h-32 w-full" />
+    </CardContent>
+</Card>
+```
 
 ---
 
@@ -3767,6 +4952,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Slider
 ```
 
+**Description:**
+Range input for numeric value selection with single or multiple handles. Interactive slider for selecting values.
+
 **Components & Parameters:**
 
 #### `Slider`
@@ -3780,6 +4968,21 @@ dotnet add package NeoBlazorUI.Components
 | `Step` | `double` | `1` | Gets or sets the step increment. |
 | `Disabled` | `bool` |  | Gets or sets whether the slider is disabled. |
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the slider. |
+
+**Basic Usage:**
+```razor
+@* Single value slider *@
+<Slider @bind-Value="sliderValue" Min="0" Max="100" Step="1" />
+<p>Value: @sliderValue</p>
+
+@* Range slider *@
+<Slider @bind-Value="rangeValues" Min="0" Max="100" />
+
+@code {
+    private double sliderValue = 50;
+    private double[] rangeValues = new[] { 25.0, 75.0 };
+}
+```
 
 ---
 
@@ -3798,6 +5001,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Spinner
 ```
 
+**Description:**
+Loading indicators with multiple sizes. Animated spinner for loading states.
+
 **Components & Parameters:**
 
 #### `Spinner`
@@ -3806,6 +5012,22 @@ dotnet add package NeoBlazorUI.Components
 |-----------|------|---------|-------------|
 | `Size` | `SpinnerSize` | `SpinnerSize.Medium` | Gets or sets the size of the spinner. |
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the spinner. |
+
+**Basic Usage:**
+```razor
+@* Default spinner *@
+<Spinner />
+
+@* Different sizes *@
+<Spinner Size="SpinnerSize.Small" />
+<Spinner Size="SpinnerSize.Large" />
+
+@* With text *@
+<div class="flex items-center gap-2">
+    <Spinner />
+    <span>Loading...</span>
+</div>
+```
 
 ---
 
@@ -3824,6 +5046,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Switch
 ```
 
+**Description:**
+Toggle switch component for boolean settings. Alternative to checkbox with toggle UI.
+
 **Components & Parameters:**
 
 #### `Switch`
@@ -3841,6 +5066,26 @@ dotnet add package NeoBlazorUI.Components
 | `Required` | `bool` |  | Gets or sets whether the switch is required. When true, the switch must be checked for form submission. Works with form validation. |
 | `CheckedExpression` | `Expression<Func<bool>>?` |  | Gets or sets an expression that identifies the bound value. Used for form validation integration. When provided, the switch registers with the EditContext and participates in form validation. |
 
+**Basic Usage:**
+```razor
+@* Simple switch *@
+<Switch @bind-Checked="isEnabled" />
+
+@* With label *@
+<div class="flex items-center space-x-2">
+    <Switch Id="airplane-mode" @bind-Checked="airplaneMode" />
+    <Label For="airplane-mode">Airplane Mode</Label>
+</div>
+
+@* Disabled *@
+<Switch Disabled="true" />
+
+@code {
+    private bool isEnabled = false;
+    private bool airplaneMode = false;
+}
+```
+
 ---
 
 ### Tabs
@@ -3857,6 +5102,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Tabs
 ```
+
+**Description:**
+Tabbed interfaces with controlled/uncontrolled modes. Organize content into switchable tabs.
 
 **Components & Parameters:**
 
@@ -3895,6 +5143,32 @@ dotnet add package NeoBlazorUI.Components
 | `ChildContent` | `RenderFragment?` |  | The child content to render within the tab trigger. |
 | `Class` | `string?` |  | Additional CSS classes to apply to the tab trigger. |
 
+**Basic Usage:**
+```razor
+<Tabs DefaultValue="tab1">
+    <TabsList>
+        <TabsTrigger Value="tab1">Account</TabsTrigger>
+        <TabsTrigger Value="tab2">Password</TabsTrigger>
+    </TabsList>
+    <TabsContent Value="tab1">
+        <Card>
+            <CardHeader>
+                <CardTitle>Account</CardTitle>
+            </CardHeader>
+            <CardContent>Account settings content</CardContent>
+        </Card>
+    </TabsContent>
+    <TabsContent Value="tab2">
+        <Card>
+            <CardHeader>
+                <CardTitle>Password</CardTitle>
+            </CardHeader>
+            <CardContent>Password settings content</CardContent>
+        </Card>
+    </TabsContent>
+</Tabs>
+```
+
 ---
 
 ### Textarea
@@ -3911,6 +5185,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Textarea
 ```
+
+**Description:**
+Multi-line text input with automatic content sizing. Resizable textarea for long text input.
 
 **Components & Parameters:**
 
@@ -3940,6 +5217,26 @@ dotnet add package NeoBlazorUI.Components
 | `AriaDescribedBy` | `string?` |  | Gets or sets the ID of the element that describes the textarea. References the id of an element containing help text or error messages. Improves screen reader experience by associating descriptive text. |
 | `AriaInvalid` | `bool?` |  | Gets or sets whether the textarea value is invalid. When true, aria-invalid="true" is set. Should be set based on validation state. Triggers destructive color styling for error states. |
 
+**Basic Usage:**
+```razor
+@* Simple textarea *@
+<Textarea @bind-Value="description" 
+          Placeholder="Enter description..." />
+
+@* With rows *@
+<Textarea @bind-Value="comments" 
+          Rows="5" 
+          Placeholder="Your comments..." />
+
+@* Disabled *@
+<Textarea Value="Read only text" Disabled="true" />
+
+@code {
+    private string description = "";
+    private string comments = "";
+}
+```
+
 ---
 
 ### TimePicker
@@ -3956,6 +5253,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.TimePicker
 ```
+
+**Description:**
+Time selection with 12/24-hour format support. Interactive time input with dropdown selection.
 
 **Components & Parameters:**
 
@@ -3977,6 +5277,20 @@ dotnet add package NeoBlazorUI.Components
 | `Class` | `string?` |  | Additional CSS classes for the button. |
 | `AriaLabel` | `string?` |  | ARIA label for the button. |
 
+**Basic Usage:**
+```razor
+@* 12-hour format *@
+<TimePicker @bind-Value="selectedTime" />
+
+@* 24-hour format *@
+<TimePicker @bind-Value="selectedTime" 
+            Format="TimeFormat.Hour24" />
+
+@code {
+    private TimeSpan? selectedTime;
+}
+```
+
 ---
 
 ### Toast
@@ -3993,6 +5307,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Toast
 ```
+
+**Description:**
+Temporary notifications with variants and actions. Shows brief messages and alerts.
 
 **Components & Parameters:**
 
@@ -4054,6 +5371,29 @@ dotnet add package NeoBlazorUI.Components
 | `MaxToasts` | `int` | `5` | Maximum number of toasts to display at once. Default is 5. |
 | `Class` | `string?` |  | Additional CSS classes to apply to the viewport. |
 
+**Basic Usage:**
+```razor
+@inject IToastService ToastService
+
+<Button OnClick="ShowToast">Show Toast</Button>
+
+@code {
+    private void ShowToast()
+    {
+        ToastService.Show("Event created successfully!");
+    }
+    
+    private void ShowDestructiveToast()
+    {
+        ToastService.Show(
+            "Error occurred",
+            "There was a problem with your request.",
+            ToastVariant.Destructive
+        );
+    }
+}
+```
+
 ---
 
 ### Toggle
@@ -4071,6 +5411,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Toggle
 ```
 
+**Description:**
+Pressable toggle buttons for boolean states. Button that toggles between pressed and unpressed.
+
 **Components & Parameters:**
 
 #### `Toggle`
@@ -4084,6 +5427,30 @@ dotnet add package NeoBlazorUI.Components
 | `Disabled` | `bool` |  | Gets or sets whether the toggle is disabled. |
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the toggle. |
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the toggle. |
+
+**Basic Usage:**
+```razor
+@* Simple toggle *@
+<Toggle @bind-Pressed="isPressed">
+    <LucideIcon Name="bold" Size="16" />
+</Toggle>
+
+@* Toggle group *@
+<div class="flex gap-1">
+    <Toggle @bind-Pressed="isBold">
+        <LucideIcon Name="bold" Size="16" />
+    </Toggle>
+    <Toggle @bind-Pressed="isItalic">
+        <LucideIcon Name="italic" Size="16" />
+    </Toggle>
+</div>
+
+@code {
+    private bool isPressed = false;
+    private bool isBold = false;
+    private bool isItalic = false;
+}
+```
 
 ---
 
@@ -4101,6 +5468,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.ToggleGroup
 ```
+
+**Description:**
+Single or multiple selection toggle groups. Group of toggle buttons with exclusive or multi-select.
 
 **Components & Parameters:**
 
@@ -4126,6 +5496,34 @@ dotnet add package NeoBlazorUI.Components
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the toggle item. |
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the toggle item. |
 
+**Basic Usage:**
+```razor
+@* Single selection *@
+<ToggleGroup @bind-Value="selectedValue" Type="ToggleGroupType.Single">
+    <ToggleGroupItem Value="left">
+        <LucideIcon Name="align-left" Size="16" />
+    </ToggleGroupItem>
+    <ToggleGroupItem Value="center">
+        <LucideIcon Name="align-center" Size="16" />
+    </ToggleGroupItem>
+    <ToggleGroupItem Value="right">
+        <LucideIcon Name="align-right" Size="16" />
+    </ToggleGroupItem>
+</ToggleGroup>
+
+@* Multiple selection *@
+<ToggleGroup @bind-Values="selectedValues" Type="ToggleGroupType.Multiple">
+    <ToggleGroupItem Value="bold">B</ToggleGroupItem>
+    <ToggleGroupItem Value="italic">I</ToggleGroupItem>
+    <ToggleGroupItem Value="underline">U</ToggleGroupItem>
+</ToggleGroup>
+
+@code {
+    private string? selectedValue;
+    private HashSet<string> selectedValues = new();
+}
+```
+
 ---
 
 ### Tooltip
@@ -4142,6 +5540,9 @@ dotnet add package NeoBlazorUI.Components
 ```razor
 @using BlazorUI.Components.Tooltip
 ```
+
+**Description:**
+Contextual hover tooltips with delay and positioning. Shows helpful text on hover.
 
 **Components & Parameters:**
 
@@ -4186,6 +5587,28 @@ dotnet add package NeoBlazorUI.Components
 | `OnMouseEnter` | `EventCallback<MouseEventArgs>` |  | Custom mouse enter handler. |
 | `OnMouseLeave` | `EventCallback<MouseEventArgs>` |  | Custom mouse leave handler. |
 
+**Basic Usage:**
+```razor
+<Tooltip>
+    <TooltipTrigger AsChild>
+        <Button Size="ButtonSize.Icon" Variant="ButtonVariant.Outline">
+            <LucideIcon Name="info" Size="16" />
+        </Button>
+    </TooltipTrigger>
+    <TooltipContent>
+        <p>Additional information</p>
+    </TooltipContent>
+</Tooltip>
+
+@* With delay *@
+<Tooltip DelayDuration="500">
+    <TooltipTrigger AsChild>
+        <span>Hover me</span>
+    </TooltipTrigger>
+    <TooltipContent>Tooltip text</TooltipContent>
+</Tooltip>
+```
+
 ---
 
 ### Typography
@@ -4203,6 +5626,9 @@ dotnet add package NeoBlazorUI.Components
 @using BlazorUI.Components.Typography
 ```
 
+**Description:**
+Semantic text styling components for headings, paragraphs, lists, and more. Consistent text styles across the application.
+
 **Components & Parameters:**
 
 #### `Typography`
@@ -4214,3 +5640,32 @@ dotnet add package NeoBlazorUI.Components
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the typography element. |
 
 ---
+
+**Basic Usage:**
+```razor
+@* Headings *@
+<TypographyH1>Heading 1</TypographyH1>
+<TypographyH2>Heading 2</TypographyH2>
+<TypographyH3>Heading 3</TypographyH3>
+
+@* Paragraph *@
+<TypographyP>
+    This is a paragraph with proper styling and spacing.
+</TypographyP>
+
+@* Other elements *@
+<TypographyBlockquote>
+    A meaningful quote
+</TypographyBlockquote>
+
+<TypographyList>
+    <li>List item 1</li>
+    <li>List item 2</li>
+</TypographyList>
+
+<TypographyInlineCode>const code = true;</TypographyInlineCode>
+
+<TypographyLead>
+    Lead text that stands out
+</TypographyLead>
+```
