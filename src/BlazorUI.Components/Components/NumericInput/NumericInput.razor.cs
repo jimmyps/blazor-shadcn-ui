@@ -225,6 +225,16 @@ public partial class NumericInput<TValue> : ComponentBase
     public bool? AriaInvalid { get; set; }
 
     /// <summary>
+    /// Gets or sets whether to show validation errors.
+    /// </summary>
+    /// <remarks>
+    /// When true and the field is invalid, validation error styling is applied.
+    /// Default is true. Set to false to disable automatic error styling.
+    /// </remarks>
+    [Parameter]
+    public bool ShowValidationError { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets an expression that identifies the bound value.
     /// </summary>
     /// <remarks>
@@ -252,6 +262,9 @@ public partial class NumericInput<TValue> : ComponentBase
     {
         get
         {
+            if (!ShowValidationError)
+                return AriaInvalid ?? false;
+
             if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
             {
                 return _editContext.GetValidationMessages(_fieldIdentifier).Any();
