@@ -5648,8 +5648,6 @@ Semantic text styling components for headings, paragraphs, lists, and more. Cons
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the typography element. |
 | `ChildContent` | `RenderFragment?` |  | Gets or sets the content to be rendered inside the typography element. |
 
----
-
 **Basic Usage:**
 ```razor
 @* Headings *@
