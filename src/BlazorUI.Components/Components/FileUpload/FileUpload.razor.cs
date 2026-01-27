@@ -42,6 +42,11 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
 {
     private static string? _firstInvalidInputId = null;
     
+    // Constants for preview and progress simulation
+    private const long MaxPreviewSize = 512000; // 500KB
+    private const int ProgressIncrement = 10;
+    private const int ProgressDelayMs = 50;
+    
     private IJSObjectReference? _module;
     private IJSObjectReference? _validationModule;
     private EditContext? _previousEditContext;
@@ -423,9 +428,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         StateHasChanged();
 
         // Simulate progress
-        for (int progress = 0; progress <= 100; progress += 10)
+        for (int progress = 0; progress <= 100; progress += ProgressIncrement)
         {
-            await Task.Delay(50);
+            await Task.Delay(ProgressDelayMs);
             
             for (int i = 0; i < Files.Count; i++)
             {
@@ -446,11 +451,11 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
             {
                 try
                 {
-                    var buffer = new byte[Math.Min(file.Size, 512000)]; // Limit preview to 500KB
-                    using var stream = file.OpenReadStream(maxAllowedSize: 512000);
-                    await stream.ReadAsync(buffer);
+                    var buffer = new byte[Math.Min(file.Size, MaxPreviewSize)];
+                    using var stream = file.OpenReadStream(maxAllowedSize: MaxPreviewSize);
+                    var bytesRead = await stream.ReadAsync(buffer.AsMemory());
                     
-                    var base64 = Convert.ToBase64String(buffer);
+                    var base64 = Convert.ToBase64String(buffer, 0, bytesRead);
                     _previewUrls[file] = $"data:{file.ContentType};base64,{base64}";
                 }
                 catch
