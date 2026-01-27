@@ -1,0 +1,21 @@
+@namespace BlazorUI.Components.CurrencyInput
+@typeparam TValue
+
+<input
+    id="@Id"
+    name="@EffectiveName"
+    type="text"
+    class="@CssClass"
+    value="@CurrentValueAsString"
+    placeholder="@Placeholder"
+    disabled="@Disabled"
+    required="@Required"
+    readonly="@Readonly"
+    inputmode="decimal"
+    autofocus="@Autofocus"
+    aria-label="@AriaLabel"
+    aria-describedby="@AriaDescribedBy"
+    aria-invalid="@(EffectiveAriaInvalid?.ToString().ToLower())"
+    @attributes="AdditionalAttributes"
+    @oninput="HandleInput"
+    @onchange="HandleChange" />
