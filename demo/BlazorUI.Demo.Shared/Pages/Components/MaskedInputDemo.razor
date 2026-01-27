@@ -1,0 +1,456 @@
+@page "/components/maskedinput"
+@using BlazorUI.Components.MaskedInput
+@using BlazorUI.Components.Label
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>MaskedInput Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">MaskedInput Component</h1>
+            <p class="text-xl text-muted-foreground">
+                A structured input component with automatic masking and formatting.
+            </p>
+        </div>
+    </div>
+
+    <!-- Phone Number -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Phone Number (US Format)</h2>
+            <p class="text-sm text-muted-foreground">
+                Automatically formats phone numbers with (000) 000-0000 pattern.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="phone-input">Phone Number</Label>
+                <MaskedInput 
+                    @bind-Value="phoneNumber" 
+                    Id="phone-input"
+                    Mask="@MaskedInput.Masks.PhoneUS" 
+                    Placeholder="Enter phone number"
+                    ShowMask="true" />
+                <p class="text-xs text-muted-foreground">Raw value: @(phoneNumber ?? "(empty)")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- International Phone -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">International Phone Number</h2>
+            <p class="text-sm text-muted-foreground">
+                International format with country code.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="intl-phone-input">International Phone</Label>
+                <MaskedInput 
+                    @bind-Value="intlPhone" 
+                    Id="intl-phone-input"
+                    Mask="@MaskedInput.Masks.PhoneInternational" 
+                    ShowMask="true" />
+                <p class="text-xs text-muted-foreground">Raw value: @(intlPhone ?? "(empty)")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SSN -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Social Security Number</h2>
+            <p class="text-sm text-muted-foreground">
+                SSN with 000-00-0000 format.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="ssn-input">SSN</Label>
+                <MaskedInput 
+                    @bind-Value="ssn" 
+                    Id="ssn-input"
+                    Mask="@MaskedInput.Masks.SSN" 
+                    Placeholder="Enter SSN"
+                    ShowMask="true" />
+                <p class="text-xs text-muted-foreground">Raw value: @(ssn ?? "(empty)")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credit Card -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Credit Card Number</h2>
+            <p class="text-sm text-muted-foreground">
+                16-digit credit card with spacing.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="cc-input">Card Number</Label>
+                <MaskedInput 
+                    @bind-Value="creditCard" 
+                    Id="cc-input"
+                    Mask="@MaskedInput.Masks.CreditCard" 
+                    Placeholder="Enter card number"
+                    ShowMask="false" />
+                <p class="text-xs text-muted-foreground">Raw value: @(creditCard ?? "(empty)")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Date Input</h2>
+            <p class="text-sm text-muted-foreground">
+                Date in MM/DD/YYYY format.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="date-input">Date</Label>
+                <MaskedInput 
+                    @bind-Value="dateValue" 
+                    Id="date-input"
+                    Mask="@MaskedInput.Masks.Date" 
+                    Placeholder="MM/DD/YYYY"
+                    ShowMask="true" />
+                <p class="text-xs text-muted-foreground">Raw value: @(dateValue ?? "(empty)")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Time Input</h2>
+            <p class="text-sm text-muted-foreground">
+                Time in HH:MM format.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="time-input">Time</Label>
+                <MaskedInput 
+                    @bind-Value="timeValue" 
+                    Id="time-input"
+                    Mask="@MaskedInput.Masks.Time" 
+                    Placeholder="HH:MM"
+                    ShowMask="true" />
+                <p class="text-xs text-muted-foreground">Raw value: @(timeValue ?? "(empty)")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ZIP Code -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">ZIP Code</h2>
+            <p class="text-sm text-muted-foreground">
+                Standard 5-digit ZIP code.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="zip-input">ZIP Code</Label>
+                <MaskedInput 
+                    @bind-Value="zipCode" 
+                    Id="zip-input"
+                    Mask="@MaskedInput.Masks.ZIP" 
+                    Placeholder="Enter ZIP"
+                    ShowMask="false" />
+                <p class="text-xs text-muted-foreground">Raw value: @(zipCode ?? "(empty)")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ZIP+4 -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">ZIP+4 Code</h2>
+            <p class="text-sm text-muted-foreground">
+                Extended ZIP code with 4-digit extension.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="zip4-input">ZIP+4</Label>
+                <MaskedInput 
+                    @bind-Value="zip4Code" 
+                    Id="zip4-input"
+                    Mask="@MaskedInput.Masks.ZIP4" 
+                    ShowMask="true" />
+                <p class="text-xs text-muted-foreground">Raw value: @(zip4Code ?? "(empty)")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Mask - Product Code -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Mask - Product Code</h2>
+            <p class="text-sm text-muted-foreground">
+                Custom pattern: AA-0000 (two letters, dash, four digits).
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="product-input">Product Code</Label>
+                <MaskedInput 
+                    @bind-Value="productCode" 
+                    Id="product-input"
+                    Mask="AA-0000" 
+                    Placeholder="Enter product code"
+                    ShowMask="true" />
+                <p class="text-xs text-muted-foreground">Raw value: @(productCode ?? "(empty)")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Mask - License Plate -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Mask - License Plate</h2>
+            <p class="text-sm text-muted-foreground">
+                Custom pattern: 000-AAA (three digits, dash, three letters).
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="plate-input">License Plate</Label>
+                <MaskedInput 
+                    @bind-Value="licensePlate" 
+                    Id="plate-input"
+                    Mask="000-AAA" 
+                    ShowMask="true" />
+                <p class="text-xs text-muted-foreground">Raw value: @(licensePlate ?? "(empty)")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disabled State -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Disabled State</h2>
+            <p class="text-sm text-muted-foreground">
+                Input with disabled state.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="disabled-input">Disabled Phone</Label>
+                <MaskedInput 
+                    Id="disabled-input"
+                    Mask="@MaskedInput.Masks.PhoneUS" 
+                    Value="5551234567"
+                    Disabled="true"
+                    ShowMask="true" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Readonly State -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Readonly State</h2>
+            <p class="text-sm text-muted-foreground">
+                Input in readonly mode - focusable but not editable.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="readonly-input">Readonly SSN</Label>
+                <MaskedInput 
+                    Id="readonly-input"
+                    Mask="@MaskedInput.Masks.SSN" 
+                    Value="123456789"
+                    Readonly="true"
+                    ShowMask="true" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Without Mask Display -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Without Mask Display</h2>
+            <p class="text-sm text-muted-foreground">
+                ShowMask set to false - only shows characters as you type.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="nomask-input">Phone (no mask display)</Label>
+                <MaskedInput 
+                    @bind-Value="phoneNoMask" 
+                    Id="nomask-input"
+                    Mask="@MaskedInput.Masks.PhoneUS" 
+                    Placeholder="(000) 000-0000"
+                    ShowMask="false" />
+                <p class="text-xs text-muted-foreground">Raw value: @(phoneNoMask ?? "(empty)")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Validation -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Form Validation</h2>
+            <p class="text-sm text-muted-foreground">
+                Integration with EditForm and data annotations.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <Label For="form-phone">Phone Number (Required)</Label>
+                        <MaskedInput 
+                            @bind-Value="formModel.Phone" 
+                            Id="form-phone"
+                            Mask="@MaskedInput.Masks.PhoneUS" 
+                            ShowMask="true"
+                            ShowValidationError="true" />
+                        <ValidationMessage For="@(() => formModel.Phone)" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <Label For="form-ssn">SSN (Required)</Label>
+                        <MaskedInput 
+                            @bind-Value="formModel.SSN" 
+                            Id="form-ssn"
+                            Mask="@MaskedInput.Masks.SSN" 
+                            ShowMask="true"
+                            ShowValidationError="true" />
+                        <ValidationMessage For="@(() => formModel.SSN)" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <Label For="form-zip">ZIP Code (Required)</Label>
+                        <MaskedInput 
+                            @bind-Value="formModel.ZipCode" 
+                            Id="form-zip"
+                            Mask="@MaskedInput.Masks.ZIP" 
+                            ShowMask="true"
+                            ShowValidationError="true" />
+                        <ValidationMessage For="@(() => formModel.ZipCode)" />
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        class="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90">
+                        Submit
+                    </button>
+
+                    @if (submitSuccess)
+                    {
+                        <p class="text-sm text-green-600 dark:text-green-400">Form submitted successfully!</p>
+                    }
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Error State</h2>
+            <p class="text-sm text-muted-foreground">
+                Input with error visualization using aria-invalid.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="error-input">Invalid Phone</Label>
+                <MaskedInput 
+                    @bind-Value="errorPhone" 
+                    Id="error-input"
+                    Mask="@MaskedInput.Masks.PhoneUS" 
+                    AriaInvalid="true"
+                    ShowMask="true" />
+                <p class="text-sm text-destructive">
+                    This phone number is invalid
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Required State -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Required State</h2>
+            <p class="text-sm text-muted-foreground">
+                Input with HTML5 required validation.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <form class="space-y-4">
+                <div class="space-y-2">
+                    <Label For="required-input">Phone (Required)</Label>
+                    <MaskedInput 
+                        @bind-Value="requiredPhone" 
+                        Id="required-input"
+                        Mask="@MaskedInput.Masks.PhoneUS" 
+                        Required="true"
+                        ShowMask="true" />
+                </div>
+                <button 
+                    type="submit" 
+                    class="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90">
+                    Submit
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? phoneNumber;
+    private string? intlPhone;
+    private string? ssn;
+    private string? creditCard;
+    private string? dateValue;
+    private string? timeValue;
+    private string? zipCode;
+    private string? zip4Code;
+    private string? productCode;
+    private string? licensePlate;
+    private string? phoneNoMask;
+    private string? errorPhone = "5551234";
+    private string? requiredPhone;
+    private bool submitSuccess = false;
+
+    private FormModel formModel = new();
+
+    private async Task HandleValidSubmit()
+    {
+        submitSuccess = true;
+        StateHasChanged();
+        
+        // Reset success message after 3 seconds
+        await Task.Delay(3000);
+        submitSuccess = false;
+        StateHasChanged();
+    }
+
+    public class FormModel
+    {
+        [Required(ErrorMessage = "Phone number is required")]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Phone number must be 10 digits")]
+        public string? Phone { get; set; }
+
+        [Required(ErrorMessage = "SSN is required")]
+        [StringLength(9, MinimumLength = 9, ErrorMessage = "SSN must be 9 digits")]
+        public string? SSN { get; set; }
+
+        [Required(ErrorMessage = "ZIP code is required")]
+        [StringLength(5, MinimumLength = 5, ErrorMessage = "ZIP code must be 5 digits")]
+        public string? ZipCode { get; set; }
+    }
+}

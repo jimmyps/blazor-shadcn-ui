@@ -1,0 +1,24 @@
+// Input validation tooltip handler
+// Displays validation errors in native browser tooltips and manages focus
+
+export function showValidationError(elementId, message) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    // Set custom validity for native browser tooltip
+    element.setCustomValidity(message);
+    
+    // Report validity to show the tooltip
+    element.reportValidity();
+    
+    // Focus the element to ensure visibility
+    element.focus();
+}
+
+export function clearValidationError(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    // Clear custom validity
+    element.setCustomValidity('');
+}
