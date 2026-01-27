@@ -1,0 +1,37 @@
+@namespace BlazorUI.Primitives.Popover
+@implements IAsyncDisposable
+
+@*
+    PopoverArrow - Auto-positioned arrow component for Popover, Tooltip, and HoverCard.
+    Automatically calculates position to point at trigger element's center.
+*@
+
+<span @ref="_arrowRef"
+      id="@_arrowId"
+      data-arrow
+      class="@GetCssClasses()"
+      style="@_positionStyle"
+      @attributes="AdditionalAttributes">
+    <svg width="@Width" height="@Height" viewBox="0 0 @Width @Height" fill="currentColor">
+        <polygon points="@GetPolygonPoints()" />
+    </svg>
+</span>
+
+@code {
+    private string GetCssClasses()
+    {
+        var classes = "absolute z-10 pointer-events-none";
+        if (!string.IsNullOrWhiteSpace(Class))
+        {
+            classes += $" {Class}";
+        }
+        return classes;
+    }
+
+    private string GetPolygonPoints()
+    {
+        // Triangle pointing down (base at top)
+        // When rotated, it will point in the correct direction
+        return $"0,0 {Width},0 {Width / 2},{Height}";
+    }
+}
