@@ -80,6 +80,47 @@ See **llms/patterns.txt** - Multi-Select with Popover for complete example.
 
 ---
 
+## With Arrow
+
+```razor
+<Popover>
+    <PopoverTrigger AsChild>
+        <Button>Click Me</Button>
+    </PopoverTrigger>
+    <PopoverContent Side="@PopoverSide.Top">
+        <PopoverArrow />
+        <div class="space-y-2">
+            <h4 class="font-medium">Title</h4>
+            <p class="text-sm text-muted-foreground">Content with arrow</p>
+        </div>
+    </PopoverContent>
+</Popover>
+```
+
+**Features:**
+- Automatically positions to point at trigger center
+- Adjusts when popover flips sides due to viewport constraints
+- Stays within popover bounds (respects EdgePadding)
+- Works on all 4 sides (top, bottom, left, right)
+
+**Custom Arrow Size:**
+```razor
+<PopoverContent>
+    <PopoverArrow Width="20" Height="10" />
+    <p>Content with larger arrow</p>
+</PopoverContent>
+```
+
+**Custom Arrow Color:**
+```razor
+<PopoverContent>
+    <PopoverArrow Class="text-blue-500" />
+    <p>Content with blue arrow</p>
+</PopoverContent>
+```
+
+---
+
 ## Related Components
 
 - **Dialog** - llms/components/dialog.txt

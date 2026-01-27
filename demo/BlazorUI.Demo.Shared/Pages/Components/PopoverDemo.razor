@@ -154,6 +154,96 @@
             </Button>
         </div>
     </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">With Arrow (Auto-Positioned)</h2>
+        <p class="text-sm text-muted-foreground">
+            Arrow automatically points to the trigger center, adjusting based on popover placement.
+        </p>
+        
+        <div class="flex flex-wrap gap-4">
+            @* Top placement *@
+            <Popover>
+                <PopoverTrigger AsChild>
+                    <Button Variant="ButtonVariant.Secondary">Top</Button>
+                </PopoverTrigger>
+                <PopoverContent Side="@PopoverSide.Top">
+                    <PopoverArrow />
+                    <div class="space-y-2">
+                        <h4 class="font-medium">Top Placement</h4>
+                        <p class="text-sm text-muted-foreground">Arrow points down to button</p>
+                    </div>
+                </PopoverContent>
+            </Popover>
+
+            @* Bottom placement *@
+            <Popover>
+                <PopoverTrigger AsChild>
+                    <Button Variant="ButtonVariant.Secondary">Bottom</Button>
+                </PopoverTrigger>
+                <PopoverContent Side="@PopoverSide.Bottom">
+                    <PopoverArrow />
+                    <div class="space-y-2">
+                        <h4 class="font-medium">Bottom Placement</h4>
+                        <p class="text-sm text-muted-foreground">Arrow points up to button</p>
+                    </div>
+                </PopoverContent>
+            </Popover>
+
+            @* Left placement *@
+            <Popover>
+                <PopoverTrigger AsChild>
+                    <Button Variant="ButtonVariant.Secondary">Left</Button>
+                </PopoverTrigger>
+                <PopoverContent Side="@PopoverSide.Left">
+                    <PopoverArrow />
+                    <div class="space-y-2">
+                        <h4 class="font-medium">Left Placement</h4>
+                        <p class="text-sm text-muted-foreground">Arrow points right to button</p>
+                    </div>
+                </PopoverContent>
+            </Popover>
+
+            @* Right placement *@
+            <Popover>
+                <PopoverTrigger AsChild>
+                    <Button Variant="ButtonVariant.Secondary">Right</Button>
+                </PopoverTrigger>
+                <PopoverContent Side="@PopoverSide.Right">
+                    <PopoverArrow />
+                    <div class="space-y-2">
+                        <h4 class="font-medium">Right Placement</h4>
+                        <p class="text-sm text-muted-foreground">Arrow points left to button</p>
+                    </div>
+                </PopoverContent>
+            </Popover>
+        </div>
+    </section>
+
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">Custom Arrow Sizes</h2>
+        <div class="flex gap-4">
+            <Popover>
+                <PopoverTrigger AsChild>
+                    <Button>Small Arrow</Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                    <PopoverArrow Width="12" Height="6" />
+                    <p class="text-sm">Smaller arrow</p>
+                </PopoverContent>
+            </Popover>
+
+            <Popover>
+                <PopoverTrigger AsChild>
+                    <Button>Large Arrow</Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                    <PopoverArrow Width="20" Height="10" />
+                    <p class="text-sm">Larger arrow</p>
+                </PopoverContent>
+            </Popover>
+        </div>
+    </section>
 </div>
 
 @code {
