@@ -1,6 +1,9 @@
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
+using System.Linq.Expressions;
 
 namespace BlazorUI.Components.Input;
 
@@ -44,8 +47,25 @@ namespace BlazorUI.Components.Input;
 /// &lt;Input Type="InputType.Number" @bind-Value="age" Name="age" Min="0" Max="120" Step="1" /&gt;
 /// </code>
 /// </example>
-public partial class Input : ComponentBase
+public partial class Input : ComponentBase, IAsyncDisposable
 {
+    private static string? _firstInvalidInputId = null;
+    
+    private IJSObjectReference? _validationModule;
+    private EditContext? _previousEditContext;
+    private FieldIdentifier _fieldIdentifier;
+    private string? _currentErrorMessage;
+    private bool _hasShownTooltip = false;
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
+
+    /// <summary>
+    /// Gets the cascaded EditContext from an EditForm.
+    /// </summary>
+    [CascadingParameter]
+    private EditContext? EditContext { get; set; }
+
     /// <summary>
     /// Gets or sets the type of input.
     /// </summary>
@@ -279,6 +299,46 @@ public partial class Input : ComponentBase
     public bool? AriaInvalid { get; set; }
 
     /// <summary>
+    /// Gets or sets whether to automatically show validation errors from EditContext.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When true and used within an EditForm, automatically:
+    /// - Displays validation errors in a native browser tooltip
+    /// - Focuses the first invalid input
+    /// - Sets AriaInvalid to true for error styling (red border/ring)
+    /// </para>
+    /// <para>
+    /// Only the FIRST invalid input will show the tooltip and receive focus.
+    /// All invalid inputs will get the destructive border/ring styling via aria-invalid.
+    /// </para>
+    /// <para>
+    /// Requires ValueExpression to be set (automatically set when using @bind-Value).
+    /// Best used together with ValidationMessage for persistent error display.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// &lt;Input Id="email"
+    ///        @bind-Value="model.Email"
+    ///        ShowValidationError="true" /&gt;
+    /// &lt;ValidationMessage For="@(() => model.Email)" /&gt;
+    /// </code>
+    /// </example>
+    [Parameter]
+    public bool ShowValidationError { get; set; }
+
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    /// <remarks>
+    /// This is automatically set when using @bind-Value syntax.
+    /// Required for ShowValidationError to work with EditContext validation.
+    /// </remarks>
+    [Parameter]
+    public Expression<Func<string?>>? ValueExpression { get; set; }
+
+    /// <summary>
     /// Gets or sets additional attributes to be applied to the input element.
     /// </summary>
     /// <remarks>
@@ -349,6 +409,145 @@ public partial class Input : ComponentBase
     };
 
     /// <summary>
+    /// Gets the effective AriaInvalid value.
+    /// When ShowValidationError is true, this is automatically set based on validation state.
+    /// Otherwise, uses the manually set AriaInvalid parameter.
+    /// </summary>
+    private bool? EffectiveAriaInvalid => ShowValidationError && EditContext != null
+        ? !string.IsNullOrEmpty(_currentErrorMessage)
+        : AriaInvalid;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        // Set up field identifier for validation
+        if (ShowValidationError && ValueExpression != null)
+        {
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+
+            // Subscribe to EditContext if it changed
+            if (EditContext != _previousEditContext)
+            {
+                DetachValidationStateChangedListener();
+                EditContext?.OnValidationStateChanged += OnValidationStateChanged;
+                _previousEditContext = EditContext;
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                if (ShowValidationError)
+                {
+                    _validationModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                        "import", "./_content/NeoBlazorUI.Components/js/input-validation.js");
+                }
+            }
+            catch (JSException)
+            {
+                // JS module not available, validation will still work via HTML5
+            }
+        }
+
+        // Apply validation errors after render
+        if (ShowValidationError && _validationModule != null)
+        {
+            await UpdateValidationDisplayAsync();
+        }
+    }
+
+    private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
+    {
+        // Reset first invalid input tracking on new validation cycle
+        _firstInvalidInputId = null;
+        _hasShownTooltip = false;
+
+        InvokeAsync(async () =>
+        {
+            await UpdateValidationDisplayAsync();
+            StateHasChanged(); // Re-render to update aria-invalid attribute
+        });
+    }
+
+    private async Task UpdateValidationDisplayAsync()
+    {
+        if (EditContext == null || _validationModule == null || string.IsNullOrEmpty(Id))
+            return;
+
+        try
+        {
+            // Get validation messages for this field
+            var messages = EditContext.GetValidationMessages(_fieldIdentifier).ToList();
+            var errorMessage = messages.FirstOrDefault();
+
+            // Only update if the error message changed
+            if (errorMessage != _currentErrorMessage)
+            {
+                _currentErrorMessage = errorMessage;
+
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    // Determine if this is the first invalid input
+                    var isFirstInvalid = _firstInvalidInputId == null;
+                    
+                    if (isFirstInvalid)
+                    {
+                        _firstInvalidInputId = Id;
+                    }
+
+                    if (isFirstInvalid && !_hasShownTooltip)
+                    {
+                        // Only the FIRST invalid input shows tooltip and gets focus
+                        await _validationModule.InvokeVoidAsync(
+                            "setValidationError",
+                            Id,
+                            errorMessage
+                        );
+                        _hasShownTooltip = true;
+                    }
+                    else
+                    {
+                        // Other invalid inputs just get the custom validity set
+                        // (no tooltip, no focus)
+                        await _validationModule.InvokeVoidAsync(
+                            "setValidationErrorSilent",
+                            Id,
+                            errorMessage
+                        );
+                    }
+                }
+                else
+                {
+                    // Clear validation error
+                    await _validationModule.InvokeVoidAsync(
+                        "clearValidationError",
+                        Id
+                    );
+                    
+                    _hasShownTooltip = false;
+                }
+            }
+        }
+        catch (JSException)
+        {
+            // Ignore JS errors
+        }
+    }
+
+    private void DetachValidationStateChangedListener()
+    {
+        if (_previousEditContext != null)
+        {
+            _previousEditContext.OnValidationStateChanged -= OnValidationStateChanged;
+        }
+    }
+
+    /// <summary>
     /// Handles the input event (fired on every keystroke).
     /// </summary>
     /// <param name="args">The change event arguments.</param>
@@ -361,6 +560,12 @@ public partial class Input : ComponentBase
         {
             await ValueChanged.InvokeAsync(newValue);
         }
+
+        // Notify EditContext of field change to trigger validation
+        if (ShowValidationError && EditContext != null && ValueExpression != null)
+        {
+            EditContext.NotifyFieldChanged(_fieldIdentifier);
+        }
     }
 
     /// <summary>
@@ -372,5 +577,22 @@ public partial class Input : ComponentBase
         // Change event is already handled by HandleInput for immediate updates
         // This is here for compatibility and potential future use
         await Task.CompletedTask;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        DetachValidationStateChangedListener();
+
+        if (_validationModule is not null)
+        {
+            try
+            {
+                await _validationModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // The JS runtime is already disposed
+            }
+        }
     }
 }

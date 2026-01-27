@@ -1,7 +1,11 @@
 @page "/components/input"
 @using BlazorUI.Components.Input
+@using BlazorUI.Components.Field
+@using BlazorUI.Components.Button
+@using System.ComponentModel.DataAnnotations
 
 <PageTitle>Input Component - BlazorUI</PageTitle>
+
 
 <div class="space-y-8 max-w-4xl">
     <div>
@@ -240,8 +244,91 @@
         </div>
     </div>
 
+    <!-- Validation with EditContext -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Validation with EditContext</h2>
+            <p class="text-sm text-muted-foreground">
+                Automatic validation error display using EditContext and Data Annotations.
+                Shows native browser tooltips, error styling, and inline messages.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <EditForm Model="@validationModel" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+
+                <div class="space-y-4">
+                    <Field>
+                        <FieldLabel For="val-username">Username</FieldLabel>
+                        <FieldContent>
+                            <Input Id="val-username"
+                                   Type="InputType.Text"
+                                   @bind-Value="validationModel.Username"
+                                   ShowValidationError="true"
+                                   Placeholder="Enter username" />
+                            <FieldDescription>At least 3 characters, letters, numbers, and underscores only</FieldDescription>
+                            <ValidationMessage For="@(() => validationModel.Username)" class="text-destructive text-sm" />
+                        </FieldContent>
+                    </Field>
+
+                    <Field>
+                        <FieldLabel For="val-email">Email</FieldLabel>
+                        <FieldContent>
+                            <Input Id="val-email"
+                                   Type="InputType.Email"
+                                   @bind-Value="validationModel.Email"
+                                   ShowValidationError="true"
+                                   Placeholder="your@email.com" />
+                            <ValidationMessage For="@(() => validationModel.Email)" class="text-destructive text-sm" />
+                        </FieldContent>
+                    </Field>
+
+                    <Field>
+                        <FieldLabel For="val-age">Age</FieldLabel>
+                        <FieldContent>
+                            <Input Id="val-age"
+                                   Type="InputType.Number"
+                                   @bind-Value="validationModel.Age"
+                                   ShowValidationError="true" />
+                            <FieldDescription>Must be between 18 and 120</FieldDescription>
+                            <ValidationMessage For="@(() => validationModel.Age)" class="text-destructive text-sm" />
+                        </FieldContent>
+                    </Field>
+
+                    <div class="flex gap-2">
+                        <Button Type="ButtonType.Submit">Validate & Submit</Button>
+                        <Button Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</Button>
+                    </div>
+                </div>
+            </EditForm>
+
+            @if (submitSuccess)
+            {
+                <div class="mt-4 rounded-md bg-green-50 dark:bg-green-950 p-4 text-sm text-green-800 dark:text-green-200">
+                    ✓ Form submitted successfully!
+                </div>
+            }
+
+            <div class="mt-6 rounded-md bg-muted p-4 text-sm">
+                <h3 class="font-semibold mb-2">What happens when you submit with errors:</h3>
+                <ol class="list-decimal list-inside space-y-1 text-muted-foreground">
+                    <li><strong>All invalid fields</strong> get red border/ring styling and inline error messages</li>
+                    <li><strong>First invalid field</strong> (Username) also gets:
+                        <ul class="list-disc list-inside ml-6 mt-1">
+                            <li>Native browser tooltip with error message</li>
+                            <li>Auto-focus (cursor ready to type)</li>
+                        </ul>
+                    </li>
+                    <li>Fix the first error and submit again → Next error gets tooltip and focus</li>
+                    <li>This prevents overwhelming users with multiple tooltips at once</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
     <!-- API Reference -->
     <div class="space-y-4">
+
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
         </div>
@@ -310,4 +397,42 @@
 
 @code {
     private string? boundValue = "";
+    
+    private ValidationModel validationModel = new();
+    private bool submitSuccess = false;
+
+    private void HandleValidSubmit()
+    {
+        submitSuccess = true;
+        StateHasChanged();
+
+        Task.Delay(3000).ContinueWith(_ => InvokeAsync(() =>
+        {
+            submitSuccess = false;
+            StateHasChanged();
+        }));
+    }
+
+    private void ResetForm()
+    {
+        validationModel = new ValidationModel();
+        submitSuccess = false;
+    }
+
+    public class ValidationModel
+    {
+        [Required(ErrorMessage = "Username is required")]
+        [MinLength(3, ErrorMessage = "Username must be at least 3 characters")]
+        [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "Only letters, numbers, and underscores allowed")]
+        public string? Username { get; set; }
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+        public string? Email { get; set; }
+
+        [Required(ErrorMessage = "Age is required")]
+        [RegularExpression(@"^\d+$", ErrorMessage = "Age must be a number")]
+        [Range(18, 120, ErrorMessage = "Age must be between 18 and 120")]
+        public string? Age { get; set; }
+    }
 }

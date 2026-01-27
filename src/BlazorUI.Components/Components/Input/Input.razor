@@ -20,10 +20,10 @@ pattern="@Pattern"
 inputmode="@InputMode"
 autofocus="@Autofocus"
 spellcheck="@(Spellcheck?.ToString().ToLower())"
-aria-label="@AriaLabel"
-aria-describedby="@AriaDescribedBy"
-aria-invalid="@(AriaInvalid?.ToString().ToLower())"
-@attributes="AdditionalAttributes"
-@oninput="HandleInput"
-@onchange="HandleChange" />
+    aria-label="@AriaLabel"
+    aria-describedby="@AriaDescribedBy"
+    aria-invalid="@(EffectiveAriaInvalid?.ToString().ToLower())"
+    @attributes="AdditionalAttributes"
+    @oninput="HandleInput"
+    @onchange="HandleChange" />
 
