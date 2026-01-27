@@ -1916,8 +1916,13 @@ Powerful tables with sorting, filtering, pagination, and row selection. Enterpri
     
     public class User
     {
+        [Required]
         public string Name { get; set; } = "";
+        
+        [Required, EmailAddress]
         public string Email { get; set; } = "";
+        
+        [Required]
         public string Role { get; set; } = "";
     }
 }
@@ -4357,22 +4362,26 @@ Custom scrollbars for styled scroll regions. Enhanced scrolling with custom styl
 **Basic Usage:**
 ```razor
 <ScrollArea Class="h-72 w-48">
-    <div class="p-4 space-y-4">
-        @for (int i = 1; i <= 50; i++)
-        {
-            <div>Item @i</div>
-        }
+    <div class="p-4">
+        <ul class="space-y-4">
+            @for (int i = 1; i <= 50; i++)
+            {
+                <li>Item @i</li>
+            }
+        </ul>
     </div>
 </ScrollArea>
 
 @* Horizontal scroll *@
 <ScrollArea Orientation="ScrollOrientation.Horizontal">
-    <div class="flex gap-4 p-4">
+    <ul class="flex gap-4 p-4">
         @for (int i = 1; i <= 20; i++)
         {
-            <Card Class="w-48">Item @i</Card>
+            <li class="w-48">
+                <Card>Item @i</Card>
+            </li>
         }
-    </div>
+    </ul>
 </ScrollArea>
 ```
 
