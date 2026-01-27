@@ -2,6 +2,7 @@ using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using System.Globalization;
 using System.Linq.Expressions;
 
@@ -44,16 +45,24 @@ namespace BlazorUI.Components.NumericInput;
 /// &lt;NumericInput TValue="double" @bind-Value="percentage" Name="percentage" Min="0" Max="100" Step="0.1" /&gt;
 /// </code>
 /// </example>
-public partial class NumericInput<TValue> : ComponentBase
+public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
 {
+    private static string? _firstInvalidInputId = null;
+    
+    private IJSObjectReference? _validationModule;
+    private EditContext? _previousEditContext;
     private FieldIdentifier _fieldIdentifier;
-    private EditContext? _editContext;
+    private string? _currentErrorMessage;
+    private bool _hasShownTooltip = false;
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the cascaded EditContext from a parent EditForm.
+    /// Gets the cascaded EditContext from an EditForm.
     /// </summary>
     [CascadingParameter]
-    private EditContext? CascadedEditContext { get; set; }
+    private EditContext? EditContext { get; set; }
 
     /// <summary>
     /// Gets or sets the current value of the input.
@@ -225,21 +234,41 @@ public partial class NumericInput<TValue> : ComponentBase
     public bool? AriaInvalid { get; set; }
 
     /// <summary>
-    /// Gets or sets whether to show validation errors.
+    /// Gets or sets whether to automatically show validation errors from EditContext.
     /// </summary>
     /// <remarks>
-    /// When true and the field is invalid, validation error styling is applied.
-    /// Default is true. Set to false to disable automatic error styling.
+    /// <para>
+    /// When true and used within an EditForm, automatically:
+    /// - Displays validation errors in a native browser tooltip
+    /// - Focuses the first invalid input
+    /// - Sets AriaInvalid to true for error styling (red border/ring)
+    /// </para>
+    /// <para>
+    /// Only the FIRST invalid input will show the tooltip and receive focus.
+    /// All invalid inputs will get the destructive border/ring styling via aria-invalid.
+    /// </para>
+    /// <para>
+    /// Requires ValueExpression to be set (automatically set when using @bind-Value).
+    /// Best used together with ValidationMessage for persistent error display.
+    /// </para>
     /// </remarks>
+    /// <example>
+    /// <code>
+    /// &lt;NumericInput TValue="int" Id="age"
+    ///        @bind-Value="model.Age"
+    ///        ShowValidationError="true" /&gt;
+    /// &lt;ValidationMessage For="@(() => model.Age)" /&gt;
+    /// </code>
+    /// </example>
     [Parameter]
-    public bool ShowValidationError { get; set; } = true;
+    public bool ShowValidationError { get; set; }
 
     /// <summary>
     /// Gets or sets an expression that identifies the bound value.
     /// </summary>
     /// <remarks>
-    /// Used for form validation integration. When provided, the input
-    /// registers with the EditContext and participates in form validation.
+    /// This is automatically set when using @bind-Value syntax.
+    /// Required for ShowValidationError to work with EditContext validation.
     /// </remarks>
     [Parameter]
     public Expression<Func<TValue?>>? ValueExpression { get; set; }
@@ -258,20 +287,13 @@ public partial class NumericInput<TValue> : ComponentBase
     /// <summary>
     /// Gets whether the input is in an invalid state (for validation).
     /// </summary>
-    private bool IsInvalid
-    {
-        get
-        {
-            if (!ShowValidationError)
-                return AriaInvalid ?? false;
-
-            if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
-            {
-                return _editContext.GetValidationMessages(_fieldIdentifier).Any();
-            }
-            return AriaInvalid ?? false;
-        }
-    }
+    /// <remarks>
+    /// When ShowValidationError is true, this is automatically set based on validation state.
+    /// Otherwise, uses the manually set AriaInvalid parameter.
+    /// </remarks>
+    private bool? EffectiveAriaInvalid => ShowValidationError && EditContext != null
+        ? !string.IsNullOrEmpty(_currentErrorMessage)
+        : AriaInvalid;
 
     /// <summary>
     /// Gets the computed CSS classes for the input element.
@@ -294,7 +316,6 @@ public partial class NumericInput<TValue> : ComponentBase
         "outline-none focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50",
         "disabled:cursor-not-allowed disabled:opacity-50",
         // aria-invalid state styling (destructive error colors)
-        IsInvalid ? "border-destructive ring-destructive focus-visible:ring-destructive/30" : "",
         "aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive",
         "aria-[invalid=true]:focus-visible:ring-destructive/30",
         // Smooth transitions for state changes
@@ -344,10 +365,10 @@ public partial class NumericInput<TValue> : ComponentBase
             await ValueChanged.InvokeAsync(parsedValue);
         }
 
-        // Notify EditContext of field change for validation
-        if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
+        // Notify EditContext of field change to trigger validation
+        if (ShowValidationError && EditContext != null && ValueExpression != null)
         {
-            _editContext.NotifyFieldChanged(_fieldIdentifier);
+            EditContext.NotifyFieldChanged(_fieldIdentifier);
         }
     }
 
@@ -422,16 +443,137 @@ public partial class NumericInput<TValue> : ComponentBase
         return default;
     }
 
-    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
 
-        // Initialize EditContext integration if available
-        if (CascadedEditContext != null && ValueExpression != null)
+        // Set up field identifier for validation
+        if (ShowValidationError && ValueExpression != null)
         {
-            _editContext = CascadedEditContext;
             _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+
+            // Subscribe to EditContext if it changed
+            if (EditContext != _previousEditContext)
+            {
+                DetachValidationStateChangedListener();
+                EditContext?.OnValidationStateChanged += OnValidationStateChanged;
+                _previousEditContext = EditContext;
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                if (ShowValidationError)
+                {
+                    _validationModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                        "import", "./_content/NeoBlazorUI.Components/js/input-validation.js");
+                }
+            }
+            catch (JSException)
+            {
+                // JS module not available, validation will still work via HTML5
+            }
+        }
+
+        // Apply validation errors after render
+        if (ShowValidationError && _validationModule != null)
+        {
+            await UpdateValidationDisplayAsync();
+        }
+    }
+
+    private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
+    {
+        // Reset first invalid input tracking on new validation cycle
+        _firstInvalidInputId = null;
+        _hasShownTooltip = false;
+
+        InvokeAsync(async () =>
+        {
+            await UpdateValidationDisplayAsync();
+            StateHasChanged(); // Re-render to update aria-invalid attribute
+        });
+    }
+
+    private async Task UpdateValidationDisplayAsync()
+    {
+        if (EditContext == null || _validationModule == null || string.IsNullOrEmpty(Id))
+            return;
+
+        try
+        {
+            // Get validation messages for this field
+            var messages = EditContext.GetValidationMessages(_fieldIdentifier).ToList();
+            var errorMessage = messages.FirstOrDefault();
+
+            // Only update if the error message changed
+            if (errorMessage != _currentErrorMessage)
+            {
+                _currentErrorMessage = errorMessage;
+
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    // Determine if this is the first invalid input
+                    var isFirstInvalid = _firstInvalidInputId == null;
+                    
+                    if (isFirstInvalid)
+                    {
+                        _firstInvalidInputId = Id;
+                    }
+
+                    // Show tooltip and focus only for the first invalid input
+                    if (isFirstInvalid && !_hasShownTooltip)
+                    {
+                        await _validationModule.InvokeVoidAsync("showValidationError", Id, errorMessage);
+                        _hasShownTooltip = true;
+                    }
+                }
+                else
+                {
+                    // Clear validation error
+                    await _validationModule.InvokeVoidAsync("clearValidationError", Id);
+                    
+                    // Reset first invalid tracking if this was the first invalid input
+                    if (_firstInvalidInputId == Id)
+                    {
+                        _firstInvalidInputId = null;
+                    }
+                }
+            }
+        }
+        catch (JSException)
+        {
+            // Ignore JS errors, validation will still work via aria-invalid
+        }
+    }
+
+    private void DetachValidationStateChangedListener()
+    {
+        if (_previousEditContext != null)
+        {
+            _previousEditContext.OnValidationStateChanged -= OnValidationStateChanged;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        DetachValidationStateChangedListener();
+        
+        if (_validationModule != null)
+        {
+            try
+            {
+                await _validationModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Ignore - this happens during hot reload or when navigating away
+            }
         }
     }
 }
