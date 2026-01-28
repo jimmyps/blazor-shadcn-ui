@@ -532,7 +532,7 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     {
         var stringValue = args.Value?.ToString();
         
-        // Always update value on change (blur)
+        // Update value on blur if UpdateOn is set to Change
         if (UpdateOn == InputUpdateMode.Change)
         {
             var parsedValue = TryParseValue(stringValue);
@@ -580,16 +580,10 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Handles the blur event.
     /// </summary>
-    private async Task HandleBlur()
+    private void HandleBlur()
     {
         _isFocused = false;
         _editingValue = null;
-        
-        // Trigger change event handling if needed
-        if (UpdateOn == InputUpdateMode.Change)
-        {
-            await HandleChange(new ChangeEventArgs { Value = _editingValue });
-        }
     }
 
     /// <summary>

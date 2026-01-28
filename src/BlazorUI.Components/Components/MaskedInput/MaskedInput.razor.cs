@@ -61,6 +61,10 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Gets or sets when the input should update its bound value.
     /// </summary>
+    /// <remarks>
+    /// - Input: Updates value immediately on every keystroke (default)
+    /// - Change: Updates value only when input loses focus
+    /// </remarks>
     [Parameter]
     public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Input;
 

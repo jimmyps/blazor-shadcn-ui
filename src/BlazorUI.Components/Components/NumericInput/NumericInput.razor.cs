@@ -368,23 +368,23 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
     /// <param name="args">The change event arguments.</param>
     private async Task HandleInput(ChangeEventArgs args)
     {
-        // Save cursor position before update
-        int? cursorPosition = null;
-        if (_cursorModule != null)
-        {
-            try
-            {
-                cursorPosition = await _cursorModule.InvokeAsync<int?>("getCursorPosition", _inputElement);
-            }
-            catch { }
-        }
-
-        var stringValue = args.Value?.ToString();
-        var parsedValue = TryParseValue(stringValue);
-        
         // Only update value if UpdateOn is set to Input
         if (UpdateOn == InputUpdateMode.Input)
         {
+            // Save cursor position before update
+            int? cursorPosition = null;
+            if (_cursorModule != null)
+            {
+                try
+                {
+                    cursorPosition = await _cursorModule.InvokeAsync<int?>("getCursorPosition", _inputElement);
+                }
+                catch { }
+            }
+
+            var stringValue = args.Value?.ToString();
+            var parsedValue = TryParseValue(stringValue);
+            
             Value = parsedValue;
 
             if (ValueChanged.HasDelegate)
@@ -397,16 +397,16 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
             {
                 EditContext.NotifyFieldChanged(_fieldIdentifier);
             }
-        }
 
-        // Restore cursor position after state has changed
-        if (cursorPosition.HasValue && _cursorModule != null)
-        {
-            try
+            // Restore cursor position after state has changed
+            if (cursorPosition.HasValue && _cursorModule != null)
             {
-                await _cursorModule.InvokeVoidAsync("setCursorPosition", _inputElement, cursorPosition.Value);
+                try
+                {
+                    await _cursorModule.InvokeVoidAsync("setCursorPosition", _inputElement, cursorPosition.Value);
+                }
+                catch { }
             }
-            catch { }
         }
     }
 
