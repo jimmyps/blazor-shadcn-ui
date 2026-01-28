@@ -20,8 +20,8 @@
 @code {
     private string GetCssClasses()
     {
-        // Base styling with shadcn/ui design
-        var classes = "absolute z-10 pointer-events-none text-popover [&_svg]:drop-shadow-sm";
+        // Base functional classes only - styling applied by styled wrapper
+        var classes = "absolute z-10 pointer-events-none";
         if (!string.IsNullOrWhiteSpace(Class))
         {
             classes += $" {Class}";
