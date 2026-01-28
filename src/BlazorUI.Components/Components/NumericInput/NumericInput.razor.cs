@@ -1,3 +1,4 @@
+using BlazorUI.Components.Common;
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -50,10 +51,12 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
     private static string? _firstInvalidInputId = null;
     
     private IJSObjectReference? _validationModule;
+    private IJSObjectReference? _cursorModule;
     private EditContext? _previousEditContext;
     private FieldIdentifier _fieldIdentifier;
     private string? _currentErrorMessage;
     private bool _hasShownTooltip = false;
+    private ElementReference _inputElement;
 
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
@@ -63,6 +66,16 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
     /// </summary>
     [CascadingParameter]
     private EditContext? EditContext { get; set; }
+
+    /// <summary>
+    /// Gets or sets when the input should update its bound value.
+    /// </summary>
+    /// <remarks>
+    /// - Input: Updates value immediately on every keystroke (default)
+    /// - Change: Updates value only when input loses focus
+    /// </remarks>
+    [Parameter]
+    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Input;
 
     /// <summary>
     /// Gets or sets the current value of the input.
@@ -355,20 +368,45 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
     /// <param name="args">The change event arguments.</param>
     private async Task HandleInput(ChangeEventArgs args)
     {
+        // Save cursor position before update
+        int? cursorPosition = null;
+        if (_cursorModule != null)
+        {
+            try
+            {
+                cursorPosition = await _cursorModule.InvokeAsync<int?>("getCursorPosition", _inputElement);
+            }
+            catch { }
+        }
+
         var stringValue = args.Value?.ToString();
         var parsedValue = TryParseValue(stringValue);
         
-        Value = parsedValue;
-
-        if (ValueChanged.HasDelegate)
+        // Only update value if UpdateOn is set to Input
+        if (UpdateOn == InputUpdateMode.Input)
         {
-            await ValueChanged.InvokeAsync(parsedValue);
+            Value = parsedValue;
+
+            if (ValueChanged.HasDelegate)
+            {
+                await ValueChanged.InvokeAsync(parsedValue);
+            }
+
+            // Notify EditContext of field change to trigger validation
+            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            {
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
+            }
         }
 
-        // Notify EditContext of field change to trigger validation
-        if (ShowValidationError && EditContext != null && ValueExpression != null)
+        // Restore cursor position after state has changed
+        if (cursorPosition.HasValue && _cursorModule != null)
         {
-            EditContext.NotifyFieldChanged(_fieldIdentifier);
+            try
+            {
+                await _cursorModule.InvokeVoidAsync("setCursorPosition", _inputElement, cursorPosition.Value);
+            }
+            catch { }
         }
     }
 
@@ -378,9 +416,25 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
     /// <param name="args">The change event arguments.</param>
     private async Task HandleChange(ChangeEventArgs args)
     {
-        // Change event is already handled by HandleInput for immediate updates
-        // This is here for compatibility and potential future use
-        await Task.CompletedTask;
+        // Update value on change if UpdateOn is set to Change
+        if (UpdateOn == InputUpdateMode.Change)
+        {
+            var stringValue = args.Value?.ToString();
+            var parsedValue = TryParseValue(stringValue);
+            
+            Value = parsedValue;
+
+            if (ValueChanged.HasDelegate)
+            {
+                await ValueChanged.InvokeAsync(parsedValue);
+            }
+
+            // Notify EditContext of field change to trigger validation
+            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            {
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
+            }
+        }
     }
 
     /// <summary>
@@ -473,6 +527,10 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
                     _validationModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
                         "import", "./_content/NeoBlazorUI.Components/js/input-validation.js");
                 }
+                
+                // Load cursor position module
+                _cursorModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoBlazorUI.Components/js/cursor-position.js");
             }
             catch (JSException)
             {
@@ -569,6 +627,18 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
             try
             {
                 await _validationModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Ignore - this happens during hot reload or when navigating away
+            }
+        }
+        
+        if (_cursorModule != null)
+        {
+            try
+            {
+                await _cursorModule.DisposeAsync();
             }
             catch (JSDisconnectedException)
             {

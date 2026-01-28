@@ -1,7 +1,7 @@
 @namespace BlazorUI.Components.CurrencyInput
 @typeparam TValue
 
-<input
+<input @ref="_inputElement"
     id="@Id"
     name="@EffectiveName"
     type="text"
@@ -18,4 +18,6 @@
     aria-invalid="@(EffectiveAriaInvalid?.ToString().ToLower())"
     @attributes="AdditionalAttributes"
     @oninput="HandleInput"
-    @onchange="HandleChange" />
+    @onchange="HandleChange"
+    @onfocus="HandleFocus"
+    @onblur="HandleBlur" />

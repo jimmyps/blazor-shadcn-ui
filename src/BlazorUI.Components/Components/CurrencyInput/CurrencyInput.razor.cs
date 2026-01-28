@@ -1,3 +1,4 @@
+using BlazorUI.Components.Common;
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -82,6 +83,9 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     private FieldIdentifier _fieldIdentifier;
     private string? _currentErrorMessage;
     private bool _hasShownTooltip = false;
+    private ElementReference _inputElement;
+    private string? _editingValue;
+    private bool _isFocused;
 
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
@@ -91,6 +95,16 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     /// </summary>
     [CascadingParameter]
     private EditContext? EditContext { get; set; }
+
+    /// <summary>
+    /// Gets or sets when the input should update its bound value.
+    /// </summary>
+    /// <remarks>
+    /// - Input: Updates value immediately on every keystroke (default)
+    /// - Change: Updates value only when input loses focus
+    /// </remarks>
+    [Parameter]
+    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Input;
 
     /// <summary>
     /// Gets or sets the current value of the input.
@@ -390,6 +404,10 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     {
         get
         {
+            // When focused, show the raw editing value
+            if (_isFocused && _editingValue != null)
+                return _editingValue;
+
             if (Value == null)
                 return null;
 
@@ -484,19 +502,26 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     private async Task HandleInput(ChangeEventArgs args)
     {
         var stringValue = args.Value?.ToString();
-        var parsedValue = TryParseValue(stringValue);
         
-        Value = parsedValue;
-
-        if (ValueChanged.HasDelegate)
+        // Store raw input value while editing
+        _editingValue = stringValue;
+        
+        // Only update value if UpdateOn is set to Input
+        if (UpdateOn == InputUpdateMode.Input)
         {
-            await ValueChanged.InvokeAsync(parsedValue);
-        }
+            var parsedValue = TryParseValue(stringValue);
+            Value = parsedValue;
 
-        // Notify EditContext of field change to trigger validation
-        if (ShowValidationError && EditContext != null && ValueExpression != null)
-        {
-            EditContext.NotifyFieldChanged(_fieldIdentifier);
+            if (ValueChanged.HasDelegate)
+            {
+                await ValueChanged.InvokeAsync(parsedValue);
+            }
+
+            // Notify EditContext of field change to trigger validation
+            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            {
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
+            }
         }
     }
 
@@ -505,9 +530,66 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     /// </summary>
     private async Task HandleChange(ChangeEventArgs args)
     {
-        // Change event is already handled by HandleInput for immediate updates
-        // This is here for compatibility and potential future use
-        await Task.CompletedTask;
+        var stringValue = args.Value?.ToString();
+        
+        // Always update value on change (blur)
+        if (UpdateOn == InputUpdateMode.Change)
+        {
+            var parsedValue = TryParseValue(stringValue);
+            Value = parsedValue;
+
+            if (ValueChanged.HasDelegate)
+            {
+                await ValueChanged.InvokeAsync(parsedValue);
+            }
+
+            // Notify EditContext of field change to trigger validation
+            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            {
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Handles the focus event.
+    /// </summary>
+    private void HandleFocus()
+    {
+        _isFocused = true;
+        
+        // Initialize editing value with current unformatted value
+        if (Value != null)
+        {
+            try
+            {
+                var numericValue = Convert.ToDecimal(Value);
+                _editingValue = numericValue.ToString(CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                _editingValue = null;
+            }
+        }
+        else
+        {
+            _editingValue = null;
+        }
+    }
+
+    /// <summary>
+    /// Handles the blur event.
+    /// </summary>
+    private async Task HandleBlur()
+    {
+        _isFocused = false;
+        _editingValue = null;
+        
+        // Trigger change event handling if needed
+        if (UpdateOn == InputUpdateMode.Change)
+        {
+            await HandleChange(new ChangeEventArgs { Value = _editingValue });
+        }
     }
 
     /// <summary>

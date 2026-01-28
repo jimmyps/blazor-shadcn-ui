@@ -1,3 +1,4 @@
+using BlazorUI.Components.Common;
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -56,6 +57,12 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     /// </summary>
     [CascadingParameter]
     private EditContext? EditContext { get; set; }
+
+    /// <summary>
+    /// Gets or sets when the input should update its bound value.
+    /// </summary>
+    [Parameter]
+    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Input;
 
     /// <summary>
     /// Gets or sets the current value of the input (unmasked).
@@ -363,7 +370,7 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         var maskedValue = args.Value?.ToString() ?? string.Empty;
         var rawValue = ExtractRawValue(maskedValue);
 
-        if (rawValue != _lastRawValue)
+        if (rawValue != _lastRawValue && UpdateOn == InputUpdateMode.Input)
         {
             _lastRawValue = rawValue;
             Value = string.IsNullOrEmpty(rawValue) ? null : rawValue;
@@ -391,6 +398,28 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
                 {
                     // Ignore cursor positioning errors
                 }
+            }
+        }
+    }
+
+    private async Task HandleChange(ChangeEventArgs args)
+    {
+        if (UpdateOn == InputUpdateMode.Change)
+        {
+            var maskedValue = args.Value?.ToString() ?? string.Empty;
+            var rawValue = ExtractRawValue(maskedValue);
+
+            _lastRawValue = rawValue;
+            Value = string.IsNullOrEmpty(rawValue) ? null : rawValue;
+
+            if (ValueChanged.HasDelegate)
+            {
+                await ValueChanged.InvokeAsync(Value);
+            }
+
+            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            {
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
             }
         }
     }
