@@ -56,6 +56,7 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         public RenderFragment<TData>? CellTemplate { get; set; }
         public string? CellClass { get; set; }
         public string? HeaderClass { get; set; }
+        public ColumnAlignment Alignment { get; set; } = ColumnAlignment.Left;
     }
 
     private List<ColumnData> _columns = new();
@@ -243,7 +244,8 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             MaxWidth = column.MaxWidth,
             CellTemplate = column.CellTemplate,
             CellClass = column.CellClass,
-            HeaderClass = column.HeaderClass
+            HeaderClass = column.HeaderClass,
+            Alignment = column.Alignment
         };
 
         _columns.Add(columnData);

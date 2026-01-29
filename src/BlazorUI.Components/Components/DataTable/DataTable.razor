@@ -70,12 +70,26 @@
                                 var ariaSortValue = column.Sortable && _tableState.Sorting.SortedColumn == column.Id
                                     ? (_tableState.Sorting.Direction == SortDirection.Ascending ? "ascending" : "descending")
                                     : (column.Sortable ? "none" : null);
+                                
+                                var alignmentClass = column.Alignment switch
+                                {
+                                    ColumnAlignment.Center => "text-center",
+                                    ColumnAlignment.Right => "text-right",
+                                    _ => "text-left"
+                                };
+                                
+                                var flexJustify = column.Alignment switch
+                                {
+                                    ColumnAlignment.Center => "justify-center",
+                                    ColumnAlignment.Right => "justify-end",
+                                    _ => ""
+                                };
 
                                 <TableHeaderCell TData="TData" ColumnId="@(column.Sortable ? column.Id : null)"
-                                                 Class="@ClassNames.cn("h-12 px-4 text-left align-middle font-medium text-muted-foreground", column.Sortable ? "cursor-pointer select-none" : "", column.HeaderClass)"
+                                                 Class="@ClassNames.cn("h-12 px-4 align-middle font-medium text-muted-foreground", alignmentClass, column.Sortable ? "cursor-pointer select-none" : "", column.HeaderClass)"
                                                  style="@GetColumnWidthStyle(column)"
                                                  aria-sort="@ariaSortValue">
-                                    <div class="flex items-center gap-2">
+                                    <div class="@ClassNames.cn("flex items-center gap-2", flexJustify)">
                                         <span>@column.Header</span>
                                         @if (column.Sortable && _tableState.Sorting.SortedColumn == column.Id)
                                         {
@@ -118,7 +132,14 @@
                                 }
                                 @foreach (var column in _columns.Where(c => c.Visible))
                                 {
-                                    <TableCell Class="@ClassNames.cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", column.CellClass)">
+                                    var cellAlignmentClass = column.Alignment switch
+                                    {
+                                        ColumnAlignment.Center => "text-center",
+                                        ColumnAlignment.Right => "text-right",
+                                        _ => "text-left"
+                                    };
+                                    
+                                    <TableCell Class="@ClassNames.cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", cellAlignmentClass, column.CellClass)">
                                         @if (column.CellTemplate != null)
                                         {
                                             @column.CellTemplate(item)

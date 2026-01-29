@@ -27,10 +27,10 @@
         </div>
         <DataTable TData="Person" Data="@people" InitialPageSize="5">
             <Columns>
-                <DataTableColumn TData="Person" TValue="int" Property="@(p => p.Id)" Header="ID" Sortable />
+                <DataTableColumn TData="Person" TValue="int" Property="@(p => p.Id)" Header="ID" Sortable Alignment="ColumnAlignment.Right" />
                 <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
                 <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Email)" Header="Email" Sortable />
-                <DataTableColumn TData="Person" TValue="int" Property="@(p => p.Age)" Header="Age" Sortable />
+                <DataTableColumn TData="Person" TValue="int" Property="@(p => p.Age)" Header="Age" Sortable Alignment="ColumnAlignment.Right" />
             </Columns>
         </DataTable>
     </div>
