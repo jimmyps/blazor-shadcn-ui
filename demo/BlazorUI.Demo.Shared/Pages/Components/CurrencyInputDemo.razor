@@ -97,6 +97,48 @@
         </div>
     </div>
 
+    <!-- High Precision Values -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">High Precision Values</h2>
+            <p class="text-sm text-muted-foreground">
+                Demonstrates native value precision during editing. Click to focus and see the exact stored value.
+            </p>
+        </div>
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Price with decimals (100.2378)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="precisionValue1" Currency="USD" />
+                <p class="text-xs text-muted-foreground">
+                    <strong>Display:</strong> @precisionValue1.ToString("C") | 
+                    <strong>Native value:</strong> @precisionValue1.ToString("G")
+                </p>
+                <p class="text-xs text-blue-600 dark:text-blue-400">
+                    💡 When focused, shows full precision: <code>100.2378</code><br/>
+                    When blurred, shows formatted: <code>$100.24</code>
+                </p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Scientific value (0.000123456)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="precisionValue2" Currency="USD" />
+                <p class="text-xs text-muted-foreground">
+                    <strong>Display:</strong> @precisionValue2.ToString("C") | 
+                    <strong>Native value:</strong> @precisionValue2.ToString("G")
+                </p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Many decimals (1234.56789012)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="precisionValue3" Currency="USD" />
+                <p class="text-xs text-muted-foreground">
+                    <strong>Display:</strong> @precisionValue3.ToString("C") | 
+                    <strong>Native value:</strong> @precisionValue3.ToString("G")
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- Without Currency Symbol -->
     <div class="space-y-4">
         <div class="space-y-2">
@@ -362,6 +404,11 @@
     private decimal requiredAmount;
     private decimal errorValue = -10m;
     private decimal donation = 25.00m;
+    
+    // High precision values to demonstrate native value editing
+    private decimal precisionValue1 = 100.2378m;
+    private decimal precisionValue2 = 0.000123456m;
+    private decimal precisionValue3 = 1234.56789012m;
     
     // International currencies
     private decimal cad = 120.00m;

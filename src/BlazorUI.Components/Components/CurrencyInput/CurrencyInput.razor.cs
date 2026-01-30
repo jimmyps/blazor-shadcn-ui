@@ -558,13 +558,14 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     {
         _isFocused = true;
         
-        // Initialize editing value with current unformatted value
+        // Initialize editing value with current unformatted value (full precision)
         if (Value != null)
         {
             try
             {
                 var numericValue = Convert.ToDecimal(Value);
-                _editingValue = numericValue.ToString(CultureInfo.InvariantCulture);
+                // Use "G" format to preserve all significant digits (e.g., 100.2378 stays as 100.2378)
+                _editingValue = numericValue.ToString("G", CultureInfo.InvariantCulture);
             }
             catch
             {
