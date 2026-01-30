@@ -8,7 +8,7 @@
 
 @if (_isOpen)
 {
-    <AlertDialog @bind:Open="_isOpen">
+    <AlertDialog Open="_isOpen" OpenChanged="OnOpenChanged">
         <AlertDialogContent>
             <AlertDialogHeader>
                 <div class="flex items-center gap-3">
@@ -61,6 +61,16 @@
         _options = options;
         _isOpen = true;
         StateHasChanged();
+    }
+
+    private void OnOpenChanged(bool isOpen)
+    {
+        if (!isOpen && _isOpen)
+        {
+            // Dialog was closed externally (e.g., ESC key)
+            _isOpen = false;
+            DialogService.NotifyResult(DialogResult.Cancelled);
+        }
     }
 
     private void HandleConfirm()
