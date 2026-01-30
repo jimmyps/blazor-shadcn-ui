@@ -1,0 +1,245 @@
+@page "/components/dialog-service"
+@using BlazorUI.Components.Alert
+@using BlazorUI.Components.Card
+@using BlazorUI.Components.Services
+@using BlazorUI.Icons.Lucide.Components
+@inject DialogService Dialog
+
+<PageTitle>Dialog Service - BlazorUI</PageTitle>
+
+<div class="space-y-6 max-w-4xl">
+    <div>
+        <h1 class="text-3xl font-bold">Dialog Service</h1>
+        <p class="text-muted-foreground">Programmatic dialogs, alerts, and confirmations with async/await API</p>
+    </div>
+
+    @if (!string.IsNullOrEmpty(_lastResult))
+    {
+        <Alert Variant="AlertVariant.Default" Class="bg-blue-50 border-blue-200">
+            <AlertDescription class="text-blue-800">@_lastResult</AlertDescription>
+        </Alert>
+    }
+
+    <Card>
+        <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Common dialog patterns with one-liner API</CardDescription>
+        </CardHeader>
+        <CardContent class="space-y-4">
+            <div class="flex flex-wrap gap-2">
+                <Button Variant="ButtonVariant.Destructive" OnClick="ShowDeleteConfirmation">
+                    <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
+                    Delete Item
+                </Button>
+                <Button Variant="ButtonVariant.Destructive" OnClick="ShowRemoveConfirmation">
+                    <LucideIcon Name="unlink" Size="16" Class="mr-2" />
+                    Remove Item
+                </Button>
+                <Button Variant="ButtonVariant.Outline" OnClick="ShowWarning">
+                    <LucideIcon Name="alert-triangle" Size="16" Class="mr-2" />
+                    Warning
+                </Button>
+                <Button Variant="ButtonVariant.Default" OnClick="ShowInfo">
+                    <LucideIcon Name="info" Size="16" Class="mr-2" />
+                    Info
+                </Button>
+                <Button Variant="ButtonVariant.Default" OnClick="ShowSuccess">
+                    <LucideIcon Name="check-circle" Size="16" Class="mr-2" />
+                    Success
+                </Button>
+                <Button Variant="ButtonVariant.Destructive" OnClick="ShowError">
+                    <LucideIcon Name="alert-circle" Size="16" Class="mr-2" />
+                    Error
+                </Button>
+            </div>
+        </CardContent>
+    </Card>
+
+    <Card>
+        <CardHeader>
+            <CardTitle>Custom Dialogs</CardTitle>
+            <CardDescription>Advanced configurations with DialogOptions</CardDescription>
+        </CardHeader>
+        <CardContent class="space-y-4">
+            <div class="flex flex-wrap gap-2">
+                <Button Variant="ButtonVariant.Outline" OnClick="ShowYesNo">
+                    Yes/No Dialog
+                </Button>
+                <Button Variant="ButtonVariant.Outline" OnClick="ShowThreeWay">
+                    Three-Way Choice
+                </Button>
+                <Button Variant="ButtonVariant.Outline" OnClick="ShowCustom">
+                    Custom Dialog
+                </Button>
+            </div>
+        </CardContent>
+    </Card>
+
+    <Card>
+        <CardHeader>
+            <CardTitle>Usage Examples</CardTitle>
+        </CardHeader>
+        <CardContent>
+            <div class="space-y-4">
+                <div>
+                    <h4 class="font-semibold mb-2">Delete Confirmation (One-liner)</h4>
+                    <pre class="bg-muted p-4 rounded-md text-sm overflow-x-auto"><code>if (await Dialog.ConfirmDeleteAsync("User Account"))
+{
+    // User confirmed - delete the item
+    await DeleteUser();
+}</code></pre>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold mb-2">Custom Dialog</h4>
+                    <pre class="bg-muted p-4 rounded-md text-sm overflow-x-auto"><code>var result = await Dialog.ShowAsync(new DialogOptions
+{
+    Title = "Save Changes?",
+    Message = "Do you want to save your changes?",
+    Icon = "save",
+    Variant = DialogVariant.Warning,
+    Buttons = DialogButtons.YesNoCancel,
+    ConfirmText = "Save",
+    CancelText = "Don't Save",
+    AlternateText = "Cancel"
+});
+
+if (result == DialogResult.Confirmed)
+{
+    await SaveChanges();
+}</code></pre>
+                </div>
+            </div>
+        </CardContent>
+    </Card>
+</div>
+
+@code {
+    private string? _lastResult;
+
+    private async Task ShowDeleteConfirmation()
+    {
+        var confirmed = await Dialog.ConfirmDeleteAsync(
+            "User Account",
+            "This will permanently delete the user and all associated data. This action cannot be undone."
+        );
+        
+        _lastResult = confirmed 
+            ? "✅ User confirmed deletion" 
+            : "❌ User cancelled deletion";
+    }
+
+    private async Task ShowRemoveConfirmation()
+    {
+        var confirmed = await Dialog.ConfirmRemoveAsync(
+            "External Login",
+            "You will need to re-link it if you want to use it again for authentication."
+        );
+        
+        _lastResult = confirmed 
+            ? "✅ User confirmed removal" 
+            : "❌ User cancelled removal";
+    }
+
+    private async Task ShowWarning()
+    {
+        var confirmed = await Dialog.WarnAsync(
+            "Unsaved Changes",
+            "You have unsaved changes. Are you sure you want to leave this page?"
+        );
+        
+        _lastResult = confirmed 
+            ? "✅ User chose to continue" 
+            : "❌ User stayed on page";
+    }
+
+    private async Task ShowInfo()
+    {
+        await Dialog.AlertAsync(
+            "Information",
+            "Your session will expire in 5 minutes. Please save your work.",
+            icon: "info"
+        );
+        
+        _lastResult = "ℹ️ Info alert shown";
+    }
+
+    private async Task ShowSuccess()
+    {
+        await Dialog.SuccessAsync(
+            "Changes Saved",
+            "Your changes have been saved successfully!"
+        );
+        
+        _lastResult = "✅ Success message shown";
+    }
+
+    private async Task ShowError()
+    {
+        await Dialog.ErrorAsync(
+            "Error Occurred",
+            "Failed to save changes. Please try again or contact support."
+        );
+        
+        _lastResult = "❌ Error message shown";
+    }
+
+    private async Task ShowYesNo()
+    {
+        var result = await Dialog.ShowAsync(new DialogOptions
+        {
+            Title = "Confirm Action",
+            Message = "Do you want to proceed with this action?",
+            Icon = "help-circle",
+            Variant = DialogVariant.Default,
+            Buttons = DialogButtons.YesNo,
+            ConfirmText = "Yes",
+            CancelText = "No"
+        });
+        
+        _lastResult = result == DialogResult.Confirmed 
+            ? "✅ User selected Yes" 
+            : "❌ User selected No";
+    }
+
+    private async Task ShowThreeWay()
+    {
+        var result = await Dialog.ShowAsync(new DialogOptions
+        {
+            Title = "Save Changes?",
+            Message = "Do you want to save your changes before closing?",
+            Icon = "save",
+            Variant = DialogVariant.Warning,
+            Buttons = DialogButtons.YesNoCancel,
+            ConfirmText = "Save",
+            CancelText = "Don't Save",
+            AlternateText = "Cancel"
+        });
+        
+        _lastResult = result switch
+        {
+            DialogResult.Confirmed => "💾 User chose to Save",
+            DialogResult.Cancelled => "🗑️ User chose Don't Save",
+            DialogResult.Alternate => "❌ User chose Cancel",
+            _ => "Unknown"
+        };
+    }
+
+    private async Task ShowCustom()
+    {
+        var result = await Dialog.ShowAsync(new DialogOptions
+        {
+            Title = "Custom Dialog",
+            Message = "This is a custom dialog with specific styling and buttons.",
+            Icon = "star",
+            Variant = DialogVariant.Success,
+            Buttons = DialogButtons.OkCancel,
+            ConfirmText = "Awesome!",
+            CancelText = "Maybe Later"
+        });
+        
+        _lastResult = result == DialogResult.Confirmed 
+            ? "🌟 User clicked Awesome!" 
+            : "⏰ User clicked Maybe Later";
+    }
+}
