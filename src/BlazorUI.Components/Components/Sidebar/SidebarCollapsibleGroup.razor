@@ -1,15 +1,18 @@
 @namespace BlazorUI.Components.Sidebar
 @using BlazorUI.Components.Collapsible
 @using BlazorUI.Components.Services
+@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Http
 @inject CollapsibleStateService StateService
 @inject IHttpContextAccessor? HttpContextAccessor
+@inject PersistentComponentState PersistentState
+@implements IDisposable
 
 @*
     SidebarCollapsibleGroup - A wrapper component that manages collapsible state persistence.
     
-    Automatically persists open/closed state to both localStorage (client-side) and cookies (SSR).
-    During server-side rendering, reads initial state from cookies to prevent visual flash.
+    Automatically persists open/closed state using PersistentComponentState for seamless SSR→Client handover,
+    localStorage (client-side) and cookies (SSR fallback).
     
     Usage:
     <SidebarCollapsibleGroup StateKey="sidebar-menu-name" DefaultOpen="false">
@@ -43,50 +46,76 @@
     public RenderFragment? ChildContent { get; set; }
 
     private bool _isOpen = false;
-    private bool _hasInitialized = false;
+    private PersistingComponentStateSubscription _persistingSubscription;
 
     protected override void OnInitialized()
     {
-        // Try to read from cookie during server-side rendering
-        if (HttpContextAccessor?.HttpContext != null)
+        // Try to restore state from persistent component state (client-side after prerender)
+        var persistenceKey = $"SidebarCollapsible_{StateKey}";
+        if (PersistentState.TryTakeFromJson<bool>(persistenceKey, out var persistedOpen))
+        {
+            _isOpen = persistedOpen;
+        }
+        // Otherwise try to read from cookie during server-side rendering
+        else if (HttpContextAccessor?.HttpContext != null)
         {
             var cookieKey = CollapsibleStateService.KeyPrefix + StateKey;
-            var cookieValue = HttpContextAccessor.HttpContext.Request.Cookies[cookieKey];
             
-            if (bool.TryParse(cookieValue, out var savedOpen))
+            // URL-encode the cookie key to match how JavaScript sets it
+            var encodedCookieKey = Uri.EscapeDataString(cookieKey);
+            
+            var cookies = HttpContextAccessor.HttpContext.Request.Cookies;
+            string? cookieValue = null;
+            
+            if (cookies.TryGetValue(encodedCookieKey, out var encodedValue))
+            {
+                cookieValue = Uri.UnescapeDataString(encodedValue);
+            }
+            else if (cookies.TryGetValue(cookieKey, out var plainValue))
+            {
+                cookieValue = plainValue;
+            }
+            
+            if (cookieValue != null && bool.TryParse(cookieValue, out var savedOpen))
             {
                 _isOpen = savedOpen;
-                _hasInitialized = true;
-                return;
+            }
+            else
+            {
+                _isOpen = DefaultOpen;
             }
         }
+        else
+        {
+            _isOpen = DefaultOpen;
+        }
 
-        _isOpen = DefaultOpen;
+        // Register a callback to persist the state during prerendering
+        _persistingSubscription = PersistentState.RegisterOnPersisting(PersistState);
+    }
+
+    private Task PersistState()
+    {
+        var persistenceKey = $"SidebarCollapsible_{StateKey}";
+        PersistentState.PersistAsJson(persistenceKey, _isOpen);
+        return Task.CompletedTask;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && !_hasInitialized)
-        {
-            try
-            {
-                var savedState = await StateService.GetStateAsync(StateKey, DefaultOpen);
-                if (savedState != _isOpen)
-                {
-                    _isOpen = savedState;
-                    StateHasChanged();
-                }
-            }
-            catch
-            {
-                // Silently fail, use default state
-            }
-        }
+        // No longer needed - state is seamlessly handed over via PersistentComponentState
+        // Keeping this empty for potential future client-side only scenarios
+        await Task.CompletedTask;
     }
 
     private async Task OnIsOpenChanged(bool newValue)
     {
         _isOpen = newValue;
         await StateService.SetStateAsync(StateKey, newValue);
+    }
+
+    public void Dispose()
+    {
+        _persistingSubscription.Dispose();
     }
 }

@@ -10,7 +10,6 @@ namespace BlazorUI.Components.Services;
 public class CollapsibleStateService : IAsyncDisposable
 {
     private readonly IJSRuntime _jsRuntime;
-    private readonly IHttpContextAccessor? _httpContextAccessor;
     private const string StoragePrefix = "blazorui:collapsible:";
     
     /// <summary>
@@ -23,12 +22,24 @@ public class CollapsibleStateService : IAsyncDisposable
     /// </summary>
     public static string KeyPrefix => StoragePrefix;
     
-    private IJSObjectReference? _storageModule;
+    private IJSObjectReference? _collapsibleModule;
 
-    public CollapsibleStateService(IJSRuntime jsRuntime, IHttpContextAccessor? httpContextAccessor = null)
+    public CollapsibleStateService(IJSRuntime jsRuntime)
     {
         _jsRuntime = jsRuntime;
-        _httpContextAccessor = httpContextAccessor;
+    }
+
+    /// <summary>
+    /// Ensures the JavaScript module is loaded.
+    /// </summary>
+    private async Task<IJSObjectReference> EnsureModuleAsync()
+    {
+        if (_collapsibleModule == null)
+        {
+            _collapsibleModule = await _jsRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/NeoBlazorUI.Components/js/collapsible-state.js");
+        }
+        return _collapsibleModule;
     }
 
     /// <summary>
@@ -42,27 +53,9 @@ public class CollapsibleStateService : IAsyncDisposable
     {
         try
         {
-            var storageKey = StoragePrefix + key;
-            
-            // Try to read from cookie first (available during SSR)
-            if (_httpContextAccessor?.HttpContext != null)
-            {
-                var cookieValue = _httpContextAccessor.HttpContext.Request.Cookies[storageKey];
-                if (bool.TryParse(cookieValue, out var cookieResult))
-                {
-                    return cookieResult;
-                }
-            }
-            
-            // Fallback to localStorage (client-side only)
-            var value = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", storageKey);
-
-            if (string.IsNullOrEmpty(value))
-            {
-                return defaultValue;
-            }
-
-            return bool.TryParse(value, out var result) && result;
+            var module = await EnsureModuleAsync();
+            var savedState = await module.InvokeAsync<bool?>("getCollapsibleState", key);
+            return savedState ?? defaultValue;
         }
         catch
         {
@@ -72,7 +65,7 @@ public class CollapsibleStateService : IAsyncDisposable
 
     /// <summary>
     /// Save the state for a collapsible menu.
-    /// Writes to both localStorage (for client-side persistence) and cookies (for SSR).
+    /// Writes to both localStorage (for client-side persistence) and cookies (for SSR) via JavaScript.
     /// </summary>
     /// <param name="key">Unique identifier for the collapsible</param>
     /// <param name="isOpen">Whether the menu is open</param>
@@ -80,28 +73,8 @@ public class CollapsibleStateService : IAsyncDisposable
     {
         try
         {
-            var storageKey = StoragePrefix + key;
-            
-            // Save to localStorage for client-side persistence
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", storageKey, isOpen.ToString());
-
-            // Also save to cookie for server-side reads
-            if (_httpContextAccessor?.HttpContext != null)
-            {
-                var cookieOptions = new CookieOptions
-                {
-                    Expires = DateTimeOffset.UtcNow.AddDays(CookieExpirationDays),
-                    Path = "/",
-                    SameSite = SameSiteMode.Lax,
-                    Secure = true,
-                    HttpOnly = false // Must be false to allow JavaScript access via localStorage
-                };
-                _httpContextAccessor.HttpContext.Response.Cookies.Append(
-                    storageKey,
-                    isOpen.ToString(),
-                    cookieOptions
-                );
-            }
+            var module = await EnsureModuleAsync();
+            await module.InvokeVoidAsync("setCollapsibleState", key, isOpen);
         }
         catch
         {
@@ -117,14 +90,8 @@ public class CollapsibleStateService : IAsyncDisposable
     {
         try
         {
-            var storageKey = StoragePrefix + key;
-            await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", storageKey);
-            
-            // Also remove cookie if available
-            if (_httpContextAccessor?.HttpContext != null)
-            {
-                _httpContextAccessor.HttpContext.Response.Cookies.Delete(storageKey);
-            }
+            var module = await EnsureModuleAsync();
+            await module.InvokeVoidAsync("clearCollapsibleState", key);
         }
         catch
         {
@@ -139,21 +106,8 @@ public class CollapsibleStateService : IAsyncDisposable
     {
         try
         {
-            // Load the storage helper module if not already loaded
-            if (_storageModule == null)
-            {
-                _storageModule = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/storage-helpers.js");
-            }
-
-            // Get all localStorage keys that match our prefix using the JS helper
-            var allKeys = await _storageModule.InvokeAsync<string[]>("getLocalStorageKeysByPrefix", StoragePrefix);
-
-            // Remove each matching key
-            foreach (var key in allKeys)
-            {
-                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", key);
-            }
+            var module = await EnsureModuleAsync();
+            await module.InvokeVoidAsync("clearAllCollapsibleStates");
         }
         catch
         {
@@ -166,11 +120,11 @@ public class CollapsibleStateService : IAsyncDisposable
     /// </summary>
     public async ValueTask DisposeAsync()
     {
-        if (_storageModule != null)
+        if (_collapsibleModule != null)
         {
             try
             {
-                await _storageModule.DisposeAsync();
+                await _collapsibleModule.DisposeAsync();
             }
             catch (JSDisconnectedException)
             {

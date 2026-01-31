@@ -123,12 +123,17 @@ function setupClickDelegation() {
  * @returns {string|null} Cookie value or null
  */
 function getCookie(name) {
-    const nameEQ = name + "=";
+    // URL-encode the name to match how it was set
+    const encodedName = encodeURIComponent(name);
+    const nameEQ = encodedName + "=";
     const ca = document.cookie.split(';');
     for (let i = 0; i < ca.length; i++) {
         let c = ca[i];
         while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        if (c.indexOf(nameEQ) === 0) {
+            // URL-decode the value when returning
+            return decodeURIComponent(c.substring(nameEQ.length, c.length));
+        }
     }
     return null;
 }
@@ -146,7 +151,15 @@ function setCookie(name, value, days) {
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         expires = "; expires=" + date.toUTCString();
     }
-    document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
+    
+    // Add Secure flag for HTTPS to ensure cookie is sent to server during pre-rendering
+    const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+    
+    // URL-encode the name and value to handle special characters like colons
+    const encodedName = encodeURIComponent(name);
+    const encodedValue = encodeURIComponent(value || "");
+    
+    document.cookie = encodedName + "=" + encodedValue + expires + "; path=/; SameSite=Lax" + secure;
 }
 
 /**
