@@ -1,0 +1,184 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                UPSTREAM MERGE CONFLICT RESOLUTION SUMMARY                     ║
+║                    PR #89 → jimmyps/blazor-shadcn-ui                         ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+📊 MERGE STATISTICS
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ Total Files Changed:      1,317 files                                         │
+│ Total Lines Added:        219,530 lines                                       │
+│ Conflicts Resolved:       188 files                                           │
+│ Merge Strategy:           Selective (3-tier approach)                         │
+│ Build Status:             ✅ SUCCESS (0 errors, 249 doc warnings)             │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+🎯 CONFLICT RESOLUTION BREAKDOWN
+┌─────────────────────────┬────────────┬──────────────────────────────────────┐
+│ Category                │ Files      │ Resolution Strategy                  │
+├─────────────────────────┼────────────┼──────────────────────────────────────┤
+│ ✅ Components           │ 150+       │ ACCEPT UPSTREAM                      │
+│ ✅ Primitives           │ 30+        │ ACCEPT UPSTREAM                      │
+│ ✅ JavaScript           │ 13         │ ACCEPT UPSTREAM                      │
+│ ✅ Services             │ 10+        │ ACCEPT UPSTREAM                      │
+│ ✅ Demo Application     │ 50+        │ ACCEPT UPSTREAM                      │
+│ ✅ Build Scripts        │ 5          │ ACCEPT UPSTREAM                      │
+│ ✅ GitHub Workflows     │ 4          │ ACCEPT UPSTREAM (NEW)                │
+│ ⚠️  .csproj Files       │ 5          │ CUSTOMIZED (versions+URLs)           │
+│ ⚠️  Package READMEs     │ 5          │ CUSTOMIZED (content+URLs)            │
+│ 🔒 LICENSE              │ 1          │ KEEP OURS (MIT not Apache-2.0)       │
+│ 🔒 Documentation        │ 3          │ KEEP OURS (README, CONTRIBUTING)     │
+│ 🔒 .devflow/            │ 100+       │ KEEP OURS (no conflict)              │
+│ 🔒 .claude/             │ 30+        │ KEEP OURS (no conflict)              │
+│ ✅ Configuration        │ 5          │ ACCEPT UPSTREAM / MERGE              │
+└─────────────────────────┴────────────┴──────────────────────────────────────┘
+
+🔐 SECURITY IMPROVEMENTS INTEGRATED
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ ✅ Added HtmlSanitizer (Ganss.Xss 8.0.865) - XSS Protection                  │
+│ ✅ Removed eval() from all JavaScript files - Code Injection Prevention      │
+│ ✅ Added element-utils.js - Safe DOM Manipulation                            │
+│ ✅ Updated to .NET 10.0 - Latest Security Patches                            │
+│ ✅ Updated ASP.NET Core to 10.0.0 - Latest Framework Security                │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+⚡ TECHNOLOGY UPGRADES
+┌────────────────────────────────┬──────────────┬──────────────┬──────────────┐
+│ Component                      │ Before       │ After        │ Impact       │
+├────────────────────────────────┼──────────────┼──────────────┼──────────────┤
+│ .NET Target Framework          │ net8.0       │ net10.0      │ Major        │
+│ ASP.NET Core Components        │ 8.0.0        │ 10.0.0       │ Major        │
+│ BlazorUI.Primitives (ref)      │ 1.3.0        │ 1.9.2        │ High         │
+│ HtmlSanitizer (NEW)            │ -            │ 8.0.865      │ Critical     │
+└────────────────────────────────┴──────────────┴──────────────┴──────────────┘
+
+📦 COMPONENTS UPDATED (50+ Components)
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ Form & Input: Button, Checkbox, Input, Textarea, Switch, RadioGroup,         │
+│               Select, MultiSelect, Combobox, NativeSelect, InputOTP,          │
+│               Field, Label, Slider, RangeSlider, ColorPicker,                 │
+│               CurrencyInput, FileUpload                                       │
+│                                                                               │
+│ Layout & Nav: Accordion, Tabs, NavigationMenu, Menubar, Breadcrumb,          │
+│               Pagination, Sidebar, ResizablePanel, Separator, Drawer,         │
+│               Sheet                                                           │
+│                                                                               │
+│ Feedback:     Dialog, AlertDialog, Popover, HoverCard, Tooltip,              │
+│               ContextMenu, DropdownMenu, Toast, Sonner, Alert,                │
+│               Progress, Skeleton                                              │
+│                                                                               │
+│ Data Display: Table, DataTable, Card, Avatar, Badge, Empty, Kbd, Item        │
+│                                                                               │
+│ Date & Time:  Calendar, DatePicker, DateRangePicker, RangeCalendar           │
+│                                                                               │
+│ Content:      AspectRatio, Carousel, ScrollArea, Collapsible                 │
+│                                                                               │
+│ Rich Content: RichTextEditor, MarkdownEditor                                  │
+│                                                                               │
+│ Charts (NEW): Chart, LineChart, BarChart, PieChart, AreaChart, etc.          │
+│                                                                               │
+│ Groups:       ButtonGroup, InputGroup, ToggleGroup                           │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+🛠️ NEW INFRASTRUCTURE ADDITIONS
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ JavaScript:                                                                   │
+│   • element-utils.js (NEW) - Safe element manipulation                       │
+│   • table-row-nav.js (NEW) - Table keyboard navigation                       │
+│                                                                               │
+│ Services:                                                                     │
+│   • IKeyboardShortcutService (NEW) - Global keyboard shortcuts               │
+│                                                                               │
+│ Website:                                                                      │
+│   • Complete documentation website                                           │
+│   • Hero image and branding assets                                           │
+│                                                                               │
+│ CI/CD:                                                                        │
+│   • NuGet publishing workflow                                                │
+│   • Demo deployment workflows (preview, staging)                             │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+🔒 CRITICAL PRESERVATIONS
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ LICENSE:                                                                      │
+│   ✅ Kept MIT License (upstream had Apache-2.0)                              │
+│   ✅ Copyright: Mathew Taylor                                                │
+│                                                                               │
+│ Repository Attribution:                                                       │
+│   ✅ All .csproj URLs: https://github.com/jimmyps/blazor-shadcn-ui           │
+│   ✅ All README URLs: https://github.com/jimmyps/blazor-shadcn-ui            │
+│   ✅ Package metadata correct                                                │
+│                                                                               │
+│ Custom Workflows (CRITICAL):                                                 │
+│   ✅ .devflow/ directory intact (~10,000 lines)                              │
+│      - Architecture documentation                                            │
+│      - Feature specifications                                                │
+│      - Implementation tracking                                               │
+│      - CLI tools and state management                                        │
+│   ✅ .claude/ directory intact (~5,000 lines)                                │
+│      - AI agent configurations                                               │
+│      - DevFlow command integrations                                          │
+│      - Custom agent definitions                                              │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+✅ VERIFICATION CHECKLIST
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ ✅ Build successful (dotnet build)                                           │
+│ ✅ All .csproj files have correct repository URLs                            │
+│ ✅ LICENSE is MIT (not Apache-2.0)                                           │
+│ ✅ README.md has our branding                                                │
+│ ✅ .devflow/ directory complete (100+ files)                                 │
+│ ✅ .claude/ directory complete (30+ files)                                   │
+│ ✅ HtmlSanitizer package present in Components.csproj                        │
+│ ✅ No eval() in JavaScript files                                             │
+│ ✅ All components compile                                                    │
+│ ✅ Target framework is net10.0                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+📋 KEY DECISIONS DOCUMENTED
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ 1. License: Kept MIT instead of upstream's Apache-2.0                        │
+│    Rationale: MIT is more permissive, packages already published as MIT      │
+│                                                                               │
+│ 2. Repository URLs: Restored to jimmyps/blazor-shadcn-ui in all files        │
+│    Rationale: Maintain fork identity, correct package attribution            │
+│                                                                               │
+│ 3. Custom Workflows: Fully preserved .devflow/ and .claude/                  │
+│    Rationale: Significant investment in tooling, not in upstream             │
+│                                                                               │
+│ 4. Documentation: Kept our README, CONTRIBUTING, RELEASE                     │
+│    Rationale: Fork-specific branding and guidelines                          │
+│                                                                               │
+│ 5. Components: Accepted all upstream changes                                 │
+│    Rationale: These are the improvements we wanted to integrate              │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+🎯 FINAL STATE
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ The repository now has:                                                      │
+│   ✨ Latest component features and bug fixes from upstream                   │
+│   🔒 Enhanced security (HtmlSanitizer + safer JavaScript)                    │
+│   ⚡ .NET 10.0 with latest Blazor features                                   │
+│   🛠️ Custom DevFlow workflow system intact                                   │
+│   🤖 Claude AI agent configurations preserved                                │
+│   📝 Correct licensing (MIT) and attribution                                 │
+│   🎨 Our brand identity maintained                                           │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+📄 DOCUMENTATION
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ Detailed analysis available in: MERGE_ANALYSIS.md (30,702 characters)        │
+│                                                                               │
+│ Sections include:                                                            │
+│   1. Files Replaced with Upstream (Components, JS, Services)                 │
+│   2. Files Customized (.csproj, Package READMEs)                             │
+│   3. Files Preserved (LICENSE, docs, workflows)                              │
+│   4. New Additions (Security, utilities, website)                            │
+│   5. Technology Upgrades (Framework versions)                                │
+│   6. Conflict Resolution Methodology                                         │
+│   7. Statistics & Metrics                                                    │
+│   8. Verification & Quality Assurance                                        │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+Status: ✅ MERGE COMPLETED SUCCESSFULLY
+Date: January 31, 2026
+Commits: 2f687a6 (merge), 61fd8aa (refinement), 4a6cfea (documentation)
