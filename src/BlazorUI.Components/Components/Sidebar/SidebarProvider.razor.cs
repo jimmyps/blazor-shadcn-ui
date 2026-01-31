@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.JSInterop;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BlazorUI.Components.Sidebar;
 
@@ -10,18 +11,22 @@ public partial class SidebarProvider : IDisposable
     private IJSObjectReference? _module;
     private DotNetObjectReference<SidebarProvider>? _dotNetRef;
     private PersistingComponentStateSubscription _persistingSubscription;
+    private IHttpContextAccessor? _httpContextAccessor;
 
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
     [Inject]
-    private IHttpContextAccessor? HttpContextAccessor { get; set; }
+    private IServiceProvider ServiceProvider { get; set; } = default!;
 
     [Inject]
     private PersistentComponentState PersistentState { get; set; } = default!;
 
     protected override void OnInitialized()
     {
+        // Try to get IHttpContextAccessor - it's only available in Server/SSR, not in WebAssembly
+        _httpContextAccessor = ServiceProvider.GetService<IHttpContextAccessor>();
+        
         bool initialOpen = DefaultOpen;
         
         // Try to restore state from persistent component state (client-side after prerender)
@@ -29,10 +34,10 @@ public partial class SidebarProvider : IDisposable
         {
             initialOpen = persistedOpen;
         }
-        // Otherwise try to read cookie server-side during prerendering
-        else if (HttpContextAccessor?.HttpContext != null && !string.IsNullOrEmpty(CookieKey))
+        // Otherwise try to read cookie server-side during prerendering (only available in Server/SSR)
+        else if (_httpContextAccessor?.HttpContext != null && !string.IsNullOrEmpty(CookieKey))
         {
-            var cookies = HttpContextAccessor.HttpContext.Request.Cookies;
+            var cookies = _httpContextAccessor.HttpContext.Request.Cookies;
             
             // URL-encode the cookie key to match how JavaScript sets it (e.g., "sidebar:state" -> "sidebar%3Astate")
             var encodedCookieKey = Uri.EscapeDataString(CookieKey);

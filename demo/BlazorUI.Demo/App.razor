@@ -14,10 +14,19 @@
     <ImportMap />
     <!-- AG Grid Enterprise imports -->
     <GridImportMap />
-
     <link rel="icon" type="image/png" href="@Assets["favicon.png"]" />
-    
     <HeadOutlet />
+
+    <script>
+        // Initialize theme before Blazor loads to prevent FOUC
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
 </head>
 <body>
     <Routes @rendermode="InteractiveAuto" />

@@ -3,8 +3,9 @@
 @using BlazorUI.Components.Services
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.DependencyInjection
 @inject CollapsibleStateService StateService
-@inject IHttpContextAccessor? HttpContextAccessor
+@inject IServiceProvider ServiceProvider
 @inject PersistentComponentState PersistentState
 @implements IDisposable
 
@@ -50,21 +51,24 @@
 
     protected override void OnInitialized()
     {
+        // Try to get IHttpContextAccessor - it's only available in Server/SSR, not in WebAssembly
+        var httpContextAccessor = ServiceProvider.GetService<IHttpContextAccessor>();
+        
         // Try to restore state from persistent component state (client-side after prerender)
         var persistenceKey = $"SidebarCollapsible_{StateKey}";
         if (PersistentState.TryTakeFromJson<bool>(persistenceKey, out var persistedOpen))
         {
             _isOpen = persistedOpen;
         }
-        // Otherwise try to read from cookie during server-side rendering
-        else if (HttpContextAccessor?.HttpContext != null)
+        // Otherwise try to read from cookie during server-side rendering (only available in Server/SSR)
+        else if (httpContextAccessor?.HttpContext != null)
         {
             var cookieKey = CollapsibleStateService.KeyPrefix + StateKey;
             
             // URL-encode the cookie key to match how JavaScript sets it
             var encodedCookieKey = Uri.EscapeDataString(cookieKey);
             
-            var cookies = HttpContextAccessor.HttpContext.Request.Cookies;
+            var cookies = httpContextAccessor.HttpContext.Request.Cookies;
             string? cookieValue = null;
             
             if (cookies.TryGetValue(encodedCookieKey, out var encodedValue))
