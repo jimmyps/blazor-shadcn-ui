@@ -17,6 +17,12 @@ public class CollapsibleStateService
     /// Cookie expiration period in days. Cookies will persist for 365 days.
     /// </summary>
     private const int CookieExpirationDays = 365;
+    
+    /// <summary>
+    /// Maximum number of localStorage items to check when clearing all states.
+    /// localStorage typically has a 5-10MB limit, so 10,000 keys is more than sufficient.
+    /// </summary>
+    private const int MaxLocalStorageItems = 10000;
 
     /// <summary>
     /// Gets the storage key prefix used for collapsible state storage.
@@ -137,10 +143,10 @@ public class CollapsibleStateService
     {
         try
         {
-            // Use a safer approach: iterate through all keys and filter client-side
-            // This avoids using eval() which is a security risk
+            // Iterate through localStorage keys with a reasonable limit
+            // localStorage.key() returns null when index is out of bounds
             var allKeys = new List<string>();
-            for (var i = 0; i < int.MaxValue; i++)
+            for (var i = 0; i < MaxLocalStorageItems; i++)
             {
                 try
                 {
