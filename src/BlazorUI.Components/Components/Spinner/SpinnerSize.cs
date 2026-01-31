@@ -7,17 +7,19 @@ public enum SpinnerSize
 {
     /// <summary>
     /// Small spinner (16x16 pixels).
+    /// Suitable for inline indicators within buttons or text.
     /// </summary>
     Small,
 
     /// <summary>
-    /// Medium spinner (32x32 pixels).
-    /// Default size.
+    /// Default medium spinner (24x24 pixels).
+    /// Standard size for most loading states.
     /// </summary>
-    Medium,
+    Default,
 
     /// <summary>
-    /// Large spinner (48x48 pixels).
+    /// Large spinner (40x40 pixels).
+    /// For prominent loading states or full-page loaders.
     /// </summary>
     Large
 }

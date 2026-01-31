@@ -15,6 +15,11 @@
     private SelectContext<TValue> _context = new();
     private UseControllableState<TValue?> _state = null!;
     private IJSObjectReference? _jsModule;
+<<<<<<< HEAD
+=======
+    private IJSObjectReference? _clickOutsideModule;
+    private IJSObjectReference? _clickOutsideCleanup;
+>>>>>>> pr-89
     private DotNetObjectReference<Select<TValue>>? _dotNetRef;
 
     /// <summary>
@@ -83,6 +88,18 @@
     [Parameter]
     public bool DefaultOpen { get; set; } = false;
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Optional function to derive display text from the selected value.
+    /// Use this when you have a pre-selected value and want to show its display text
+    /// without waiting for the dropdown items to render and register.
+    /// This keeps display text in sync automatically when the value changes.
+    /// </summary>
+    [Parameter]
+    public Func<TValue, string>? DisplayTextSelector { get; set; }
+
+>>>>>>> pr-89
     protected override void OnInitialized()
     {
         // Initialize controllable state for value
@@ -96,6 +113,12 @@
         // Sync initial value to context
         _context.State.Value = _state.Value;
         _context.State.Disabled = Disabled;
+<<<<<<< HEAD
+=======
+        // Set initial DisplayText - use DisplayTextSelector if provided, otherwise fall back to Value.ToString()
+        // (will be updated when items register with correct display text if dropdown is opened)
+        _context.State.DisplayText = GetDisplayText(_state.Value);
+>>>>>>> pr-89
 
         // Subscribe to context value changes
         _context.OnValueChange = async (newValue) =>
@@ -127,6 +150,7 @@
         {
             _state.ControlledValue = Value;
             _context.State.Value = Value;
+<<<<<<< HEAD
 
             if (Value is not null)
             {
@@ -137,6 +161,11 @@
             {
                 _context.State.DisplayText = string.Empty;
             }
+=======
+            // Update DisplayText - try to look up from registered items first,
+            // then use DisplayTextSelector if provided, finally fall back to Value.ToString()
+            _context.State.DisplayText = _context.GetDisplayTextForValue(Value) ?? GetDisplayText(Value);
+>>>>>>> pr-89
         }
 
         // Handle controlled open state
@@ -161,6 +190,7 @@
                 "import", "./_content/BlazorUI.Primitives/js/primitives/select.js");
         }
 
+<<<<<<< HEAD
         // Set up click-outside when dropdown opens
         if (_context.IsOpen && _dotNetRef == null)
         {
@@ -170,6 +200,43 @@
         else if (!_context.IsOpen && _dotNetRef != null)
         {
             await _jsModule.InvokeVoidAsync("removeClickOutside", _context.ContentId);
+=======
+        // Set up click-outside when dropdown opens using the unified click-outside.js
+        // This uses pointerdown/pointerup events for better coordination with nested portals
+        if (_context.IsOpen && _dotNetRef == null)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+
+            // Import click-outside module if not already imported
+            if (_clickOutsideModule == null)
+            {
+                _clickOutsideModule = await JS.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorUI.Primitives/js/primitives/click-outside.js");
+            }
+
+            // Use onClickOutsideByIds for unified detection with nested portal awareness
+            _clickOutsideCleanup = await _clickOutsideModule.InvokeAsync<IJSObjectReference>(
+                "onClickOutsideByIds",
+                _context.ContentId,
+                _dotNetRef,
+                "HandleClickOutside",
+                _context.TriggerId);
+        }
+        else if (!_context.IsOpen && _dotNetRef != null)
+        {
+            // Clean up click-outside detection
+            if (_clickOutsideCleanup != null)
+            {
+                try
+                {
+                    await _clickOutsideCleanup.InvokeVoidAsync("dispose");
+                    await _clickOutsideCleanup.DisposeAsync();
+                }
+                catch { }
+                _clickOutsideCleanup = null;
+            }
+
+>>>>>>> pr-89
             _dotNetRef?.Dispose();
             _dotNetRef = null;
         }
@@ -220,6 +287,20 @@
         StateHasChanged();
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Gets the display text for a value using the DisplayTextSelector if available,
+    /// otherwise falls back to Value.ToString().
+    /// </summary>
+    private string? GetDisplayText(TValue? value)
+    {
+        if (value == null) return null;
+        if (DisplayTextSelector != null) return DisplayTextSelector(value);
+        return value.ToString();
+    }
+
+>>>>>>> pr-89
     public async ValueTask DisposeAsync()
     {
         _context.OnStateChanged -= HandleContextStateChanged;
@@ -230,6 +311,7 @@
             DropdownManager.Unregister(_context.ContentId);
         }
 
+<<<<<<< HEAD
         if (_jsModule != null && _context != null)
         {
             try
@@ -239,6 +321,38 @@
             catch { }
 
             await _jsModule.DisposeAsync();
+=======
+        // Clean up click-outside detection
+        if (_clickOutsideCleanup != null)
+        {
+            try
+            {
+                await _clickOutsideCleanup.InvokeVoidAsync("dispose");
+                await _clickOutsideCleanup.DisposeAsync();
+            }
+            catch { }
+            _clickOutsideCleanup = null;
+        }
+
+        if (_clickOutsideModule != null)
+        {
+            try
+            {
+                await _clickOutsideModule.DisposeAsync();
+            }
+            catch { }
+            _clickOutsideModule = null;
+        }
+
+        if (_jsModule != null)
+        {
+            try
+            {
+                await _jsModule.DisposeAsync();
+            }
+            catch { }
+            _jsModule = null;
+>>>>>>> pr-89
         }
 
         _dotNetRef?.Dispose();

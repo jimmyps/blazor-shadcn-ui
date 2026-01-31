@@ -1,32 +1,32 @@
 @namespace BlazorUI.Components.NavigationMenu
+@using BlazorUI.Components.Utilities
 
-@* NavigationMenuList - styled list container *@
-<BlazorUI.Primitives.NavigationMenu.NavigationMenuList class="@GetClass()" @attributes="AdditionalAttributes">
+@*
+    Navigation Menu List - contains navigation menu items.
+*@
+
+<ul class="@CssClass">
     @ChildContent
-</BlazorUI.Primitives.NavigationMenu.NavigationMenuList>
+</ul>
 
 @code {
     /// <summary>
-    /// The child content to render within the list.
+    /// The navigation menu items.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Additional CSS classes to apply.
+    /// Additional CSS classes to apply to the list.
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
     /// <summary>
-    /// Additional attributes to apply.
+    /// Gets the computed CSS classes for the list.
     /// </summary>
-    [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object>? AdditionalAttributes { get; set; }
-
-    private string GetClass()
-    {
-        var baseClass = "group flex flex-1 list-none items-center justify-center space-x-1";
-        return string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
-    }
+    private string CssClass => ClassNames.cn(
+        "group flex flex-1 list-none items-center justify-center space-x-1",
+        Class
+    );
 }

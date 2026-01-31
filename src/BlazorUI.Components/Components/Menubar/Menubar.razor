@@ -1,69 +1,82 @@
 @namespace BlazorUI.Components.Menubar
-@using BlazorUI.Primitives.Menubar
 
-@* Styled Menubar component - thin wrapper around Menubar primitive *@
-<BlazorUI.Primitives.Menubar.MenubarRoot class="@CssClass"
-                                          ActiveIndex="@ActiveIndex"
-                                          ActiveIndexChanged="@ActiveIndexChanged"
-                                          DefaultActiveIndex="@DefaultActiveIndex"
-                                          OnActiveIndexChange="@OnActiveIndexChange"
-                                          Loop="@Loop">
-    @ChildContent
-</BlazorUI.Primitives.Menubar.MenubarRoot>
+<div role="menubar" class="@CssClass" @onkeydown="HandleKeyDown">
+    <CascadingValue Value="this" IsFixed="false">
+        @ChildContent
+    </CascadingValue>
+</div>
 
 @code {
-    /// <summary>
-    /// The child content to render within the menubar.
-    /// Typically includes MenubarMenu components.
-    /// </summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-
-    /// <summary>
-    /// Additional CSS classes to apply to the menubar.
-    /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
-    /// <summary>
-    /// Controls which menu is active/open (controlled mode).
-    /// When null, the menubar manages its own state.
-    /// </summary>
     [Parameter]
-    public int? ActiveIndex { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>
-    /// Event callback invoked when the active index changes.
-    /// Use with @bind-ActiveIndex for two-way binding.
-    /// </summary>
-    [Parameter]
-    public EventCallback<int> ActiveIndexChanged { get; set; }
+    internal string? ActiveMenu { get; private set; }
 
-    /// <summary>
-    /// Default active index when in uncontrolled mode.
-    /// </summary>
-    [Parameter]
-    public int DefaultActiveIndex { get; set; } = -1;
+    private List<MenubarMenu> _menus = new();
 
-    /// <summary>
-    /// Event callback invoked when the active menu changes.
-    /// </summary>
-    [Parameter]
-    public EventCallback<int> OnActiveIndexChange { get; set; }
-
-    /// <summary>
-    /// Whether keyboard loop navigation is enabled.
-    /// Default is true.
-    /// </summary>
-    [Parameter]
-    public bool Loop { get; set; } = true;
-
-    private string CssClass
+    internal void RegisterMenu(MenubarMenu menu)
     {
-        get
+        if (!_menus.Contains(menu))
         {
-            var baseClasses = "flex h-10 items-center space-x-1 rounded-md border bg-background p-1";
-            return string.IsNullOrWhiteSpace(Class) ? baseClasses : $"{baseClasses} {Class}";
+            _menus.Add(menu);
         }
     }
+
+    internal void UnregisterMenu(MenubarMenu menu)
+    {
+        _menus.Remove(menu);
+    }
+
+    internal List<MenubarMenu> GetMenus() => _menus;
+
+    internal void SetActiveMenu(string? menuId)
+    {
+        ActiveMenu = menuId;
+        StateHasChanged();
+    }
+
+    internal void NavigateToNextMenu()
+    {
+        if (_menus.Count == 0 || ActiveMenu == null) return;
+
+        var currentIndex = _menus.FindIndex(m => m.MenuId == ActiveMenu);
+        if (currentIndex == -1) return;
+
+        var nextIndex = (currentIndex + 1) % _menus.Count;
+        _menus[nextIndex].Open();
+    }
+
+    internal void NavigateToPreviousMenu()
+    {
+        if (_menus.Count == 0 || ActiveMenu == null) return;
+
+        var currentIndex = _menus.FindIndex(m => m.MenuId == ActiveMenu);
+        if (currentIndex == -1) return;
+
+        var prevIndex = currentIndex == 0 ? _menus.Count - 1 : currentIndex - 1;
+        _menus[prevIndex].Open();
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (ActiveMenu == null) return;
+
+        switch (e.Key)
+        {
+            case "ArrowRight":
+                NavigateToNextMenu();
+                break;
+            case "ArrowLeft":
+                NavigateToPreviousMenu();
+                break;
+        }
+    }
+
+    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "relative z-50 flex h-10 items-center space-x-1 rounded-md border bg-background p-1",
+        Class
+    );
 }

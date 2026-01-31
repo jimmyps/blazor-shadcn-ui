@@ -1,26 +1,33 @@
 @namespace BlazorUI.Components.ContextMenu
 
-@* ContextMenuTrigger - styled trigger wrapper *@
-<BlazorUI.Primitives.ContextMenu.ContextMenuTrigger Disabled="@Disabled" @attributes="AdditionalAttributes">
+<div class="@CssClass" style="@TriggerStyle" @oncontextmenu="HandleContextMenu" @oncontextmenu:preventDefault>
     @ChildContent
-</BlazorUI.Primitives.ContextMenu.ContextMenuTrigger>
+</div>
 
 @code {
-    /// <summary>
-    /// The child content that triggers the context menu.
-    /// </summary>
+    [CascadingParameter]
+    public ContextMenu? Context { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>
-    /// Whether the trigger is disabled.
-    /// </summary>
-    [Parameter]
-    public bool Disabled { get; set; } = false;
+    private async Task HandleContextMenu(MouseEventArgs e)
+    {
+        if (Context != null)
+        {
+            await Context.OpenAt(e.ClientX, e.ClientY);
+        }
+    }
 
-    /// <summary>
-    /// Additional attributes to apply.
-    /// </summary>
-    [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "w-fit",
+        Class
+    );
+
+    private string? TriggerStyle => Context?.IsOpen == true
+        ? "position: relative; z-index: 41;"
+        : null;
 }

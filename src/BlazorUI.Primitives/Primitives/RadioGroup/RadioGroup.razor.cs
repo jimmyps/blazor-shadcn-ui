@@ -40,6 +40,11 @@ namespace BlazorUI.Primitives.RadioGroup;
 public partial class RadioGroup<TValue> : ComponentBase
 {
     private RadioGroupContext<TValue> context = new();
+<<<<<<< HEAD
+=======
+    private List<RadioGroupItem<TValue>>? _cachedEnabledItems;
+    private int _lastItemsVersion;
+>>>>>>> pr-89
 
     /// <summary>
     /// Gets or sets the currently selected value.
@@ -133,7 +138,11 @@ public partial class RadioGroup<TValue> : ComponentBase
     {
         if (Disabled) return;
 
+<<<<<<< HEAD
         var enabledItems = context.Items.Where(i => !i.Disabled).ToList();
+=======
+        var enabledItems = GetEnabledItems();
+>>>>>>> pr-89
         if (enabledItems.Count == 0) return;
 
         switch (args.Key)
@@ -151,6 +160,25 @@ public partial class RadioGroup<TValue> : ComponentBase
     }
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Gets the list of enabled items, using a cached version when possible
+    /// to avoid allocations on every keyboard navigation.
+    /// </summary>
+    private List<RadioGroupItem<TValue>> GetEnabledItems()
+    {
+        // Use items count as a simple version check - if count changed, items changed
+        var currentVersion = context.Items.Count;
+        if (_cachedEnabledItems == null || _lastItemsVersion != currentVersion)
+        {
+            _cachedEnabledItems = context.Items.Where(i => !i.Disabled).ToList();
+            _lastItemsVersion = currentVersion;
+        }
+        return _cachedEnabledItems;
+    }
+
+    /// <summary>
+>>>>>>> pr-89
     /// Navigates to the next radio item.
     /// </summary>
     private async Task NavigateNext(List<RadioGroupItem<TValue>> enabledItems)

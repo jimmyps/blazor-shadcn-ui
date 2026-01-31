@@ -7,8 +7,12 @@
          data-state="@(Context?.Open ?? false ? "open" : "closed")"
          aria-hidden="@(!(Context?.Open ?? false))"
          @attributes="AdditionalAttributes">
+<<<<<<< HEAD
         <div class="overflow-hidden min-h-0">
             @ChildContent
         </div>
+=======
+        @ChildContent
+>>>>>>> pr-89
     </div>
 }

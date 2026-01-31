@@ -1,122 +1,61 @@
 @namespace BlazorUI.Components.DatePicker
+@using BlazorUI.Components.Utilities
+@using BlazorUI.Components.Button
 @using BlazorUI.Components.Popover
 @using BlazorUI.Components.Calendar
-@using BlazorUI.Components.Button
-@using BlazorUI.Icons.Lucide.Components
 @using BlazorUI.Primitives.Services
-@using BlazorUI.Components.Utilities
+@using BlazorUI.Icons.Lucide.Components
 
-@* DatePicker - Date selection with Calendar in Popover *@
+@*
+    Date Picker component - combines a button trigger with a calendar popover.
+*@
 
 <Popover @bind-Open="_isOpen">
-    <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
-        @if (ShowIcon)
-        {
-            <LucideIcon Name="calendar" Class="@GetIconClass()" />
-        }
-        <span>@GetDisplayText()</span>
-        @if (ShowDropdownIcon)
-        {
-            <LucideIcon Name="chevron-down" Class="ml-auto h-4 w-4 opacity-50" />
-        }
+    <PopoverTrigger AsChild="true">
+        <Button Variant="ButtonVariant.Outline"
+                Class="@ButtonCssClass">
+            <LucideIcon Name="calendar" Class="mr-2 h-4 w-4" />
+            @if (Value.HasValue)
+            {
+                <span>@Value.Value.ToString(DateFormat)</span>
+            }
+            else
+            {
+                <span class="text-muted-foreground">@Placeholder</span>
+            }
+        </Button>
     </PopoverTrigger>
-    <PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
-        <Calendar @ref="_calendar" @bind-SelectedDate="_selectedDate"
+    <PopoverContent Class="w-auto p-0" Align="PopoverAlign.Start">
+        <Calendar Selected="@Value"
+                  SelectedChanged="@HandleDateSelected"
                   MinDate="@MinDate"
                   MaxDate="@MaxDate"
-                  IsDateDisabled="@IsDateDisabled"
-                  Culture="@EffectiveCulture"
-                  CaptionLayout="@CaptionLayout"
-                  Class="@GetCalendarClass()"
-                  RowClass="!mt-0" />
+                  DisabledDates="@DisabledDates"
+                  FirstDayOfWeek="@FirstDayOfWeek" />
     </PopoverContent>
 </Popover>
 
 @code {
-    private Calendar? _calendar;
     private bool _isOpen;
-    private DateOnly? _selectedDate;
-    private DateOnly? _lastNotifiedDate;
-
-    private System.Globalization.CultureInfo EffectiveCulture =>
-        Culture ?? System.Globalization.CultureInfo.CurrentCulture;
 
     /// <summary>
-    /// The selected date.
+    /// The selected date value.
     /// </summary>
     [Parameter]
-    public DateOnly? SelectedDate
-    {
-        get => _selectedDate;
-        set
-        {
-            if (_selectedDate != value)
-            {
-                _selectedDate = value;
-            }
-        }
-    }
+    public DateTime? Value { get; set; }
 
     /// <summary>
-    /// Event callback invoked when the selected date changes.
-    /// Use with @bind-SelectedDate for two-way binding.
+    /// Callback when the selected date changes.
     /// </summary>
     [Parameter]
-    public EventCallback<DateOnly?> SelectedDateChanged { get; set; }
+    public EventCallback<DateTime?> ValueChanged { get; set; }
 
     /// <summary>
-    /// Minimum selectable date.
+    /// The date format to display.
+    /// Default is "PPP" style (e.g., "January 20, 2026").
     /// </summary>
     [Parameter]
-    public DateOnly? MinDate { get; set; }
-
-    /// <summary>
-    /// Maximum selectable date.
-    /// </summary>
-    [Parameter]
-    public DateOnly? MaxDate { get; set; }
-
-    /// <summary>
-    /// Function to determine if a specific date should be disabled.
-    /// </summary>
-    [Parameter]
-    public Func<DateOnly, bool>? IsDateDisabled { get; set; }
-
-    /// <summary>
-    /// Culture for date formatting.
-    /// </summary>
-    [Parameter]
-    public System.Globalization.CultureInfo? Culture { get; set; }
-
-    /// <summary>
-    /// Calendar caption layout (label or dropdown).
-    /// </summary>
-    [Parameter]
-    public CalendarCaptionLayout CaptionLayout { get; set; } = CalendarCaptionLayout.Label;
-
-    /// <summary>
-    /// Button variant for the trigger button.
-    /// </summary>
-    [Parameter]
-    public ButtonVariant ButtonVariant { get; set; } = ButtonVariant.Outline;
-
-    /// <summary>
-    /// Button size for the trigger button.
-    /// </summary>
-    [Parameter]
-    public ButtonSize ButtonSize { get; set; } = ButtonSize.Default;
-
-    /// <summary>
-    /// Whether to show the calendar icon in the button.
-    /// </summary>
-    [Parameter]
-    public bool ShowIcon { get; set; } = true;
-
-    /// <summary>
-    /// Whether to show the chevron-down icon on the right side of the button.
-    /// </summary>
-    [Parameter]
-    public bool ShowDropdownIcon { get; set; } = false;
+    public string DateFormat { get; set; } = "MMMM d, yyyy";
 
     /// <summary>
     /// Placeholder text when no date is selected.
@@ -125,10 +64,28 @@
     public string Placeholder { get; set; } = "Pick a date";
 
     /// <summary>
-    /// Date format string for displaying the selected date.
+    /// The minimum selectable date.
     /// </summary>
     [Parameter]
-    public string? DateFormat { get; set; }
+    public DateTime? MinDate { get; set; }
+
+    /// <summary>
+    /// The maximum selectable date.
+    /// </summary>
+    [Parameter]
+    public DateTime? MaxDate { get; set; }
+
+    /// <summary>
+    /// Function to determine if a date is disabled.
+    /// </summary>
+    [Parameter]
+    public Func<DateTime, bool>? DisabledDates { get; set; }
+
+    /// <summary>
+    /// The first day of the week.
+    /// </summary>
+    [Parameter]
+    public DayOfWeek FirstDayOfWeek { get; set; } = DayOfWeek.Sunday;
 
     /// <summary>
     /// Whether the date picker is disabled.
@@ -137,159 +94,31 @@
     public bool Disabled { get; set; }
 
     /// <summary>
-    /// Alignment of the popover content.
-    /// </summary>
-    [Parameter]
-    public PopoverAlign Align { get; set; } = PopoverAlign.Start;
-
-    /// <summary>
-    /// Additional CSS classes for the button.
+    /// Additional CSS classes to apply to the trigger button.
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
     /// <summary>
-    /// Additional CSS classes for the calendar.
+    /// Additional attributes to apply to the date picker.
     /// </summary>
-    [Parameter]
-    public string? CalendarClass { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private async Task HandleDateSelected(DateTime? date)
+    {
+        Value = date;
+        await ValueChanged.InvokeAsync(date);
+        _isOpen = false;
+    }
 
     /// <summary>
-    /// ARIA label for the button.
+    /// Gets the computed CSS classes for the trigger button.
     /// </summary>
-    [Parameter]
-    public string? AriaLabel { get; set; }
-
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-
-        if (_selectedDate != SelectedDate)
-        {
-            _selectedDate = SelectedDate;
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-
-        // Close popover and notify when date is selected (only once per selection)
-        if (_selectedDate.HasValue && _selectedDate != _lastNotifiedDate && _isOpen)
-        {
-            _isOpen = false;
-            _lastNotifiedDate = _selectedDate;
-            await SelectedDateChanged.InvokeAsync(_selectedDate);
-            StateHasChanged();
-        }
-    }
-
-    private async Task OnTriggerClick()
-    {
-        // Allow Popover to toggle open; then focus calendar after render
-        await Task.Yield();
-
-        if (_calendar is not null)
-        {
-            await _calendar.FocusAsync();
-        }
-    }
-
-    private string GetDisplayText()
-    {
-        if (_selectedDate == null)
-            return Placeholder;
-
-        var culture = Culture ?? System.Globalization.CultureInfo.CurrentCulture;
-        
-        if (!string.IsNullOrEmpty(DateFormat))
-            return _selectedDate.Value.ToString(DateFormat, culture);
-
-        return _selectedDate.Value.ToString("D", culture);
-    }
-
-    private string GetButtonClass()
-    {
-        var classes = new List<string> { "w-[280px] justify-start text-left font-normal" };
-        
-        if (_selectedDate == null)
-            classes.Add("text-muted-foreground");
-
-        // Add button variant classes
-        classes.Add(GetButtonVariantClass());
-        classes.Add(GetButtonSizeClass());
-
-        if (!string.IsNullOrEmpty(Class))
-            classes.Add(Class);
-
-        return ClassNames.cn(classes.ToArray());
-    }
-
-    private string GetButtonVariantClass()
-    {
-        return ButtonVariant switch
-        {
-            ButtonVariant.Default => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90",
-            ButtonVariant.Destructive => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-            ButtonVariant.Outline => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-            ButtonVariant.Secondary => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-            ButtonVariant.Ghost => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground",
-            ButtonVariant.Link => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline",
-            _ => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground"
-        };
-    }
-
-    private string GetButtonSizeClass()
-    {
-        return ButtonSize switch
-        {
-            ButtonSize.Small => "h-8 px-3 text-xs",
-            ButtonSize.Large => "h-10 px-8",
-            ButtonSize.Icon => "h-9 w-9",
-            _ => "h-9 px-4 py-2"
-        };
-    }
-
-    private Dictionary<string, object> GetTriggerAttributes()
-    {
-        var attrs = new Dictionary<string, object>();
-        
-        if (Disabled)
-        {
-            attrs.Add("disabled", true);
-        }
-        
-        if (!string.IsNullOrEmpty(AriaLabel))
-        {
-            attrs.Add("aria-label", AriaLabel);
-        }
-        else
-        {
-            attrs.Add("aria-label", "Select date");
-        }
-
-        return attrs;
-    }
-
-    private string GetIconClass()
-    {
-        return ShowIcon ? "h-4 w-4" : "";
-    }
-
-    private string GetPopoverContentClass()
-    {
-        return "w-auto !p-0 border-0 shadow-none";
-    }
-
-    private string GetCalendarClass()
-    {
-        var classes = new List<string> { "!shadow-md" };
-
-        if (!string.IsNullOrEmpty(CalendarClass))
-        {
-            classes.Add(CalendarClass);
-        }
-
-        return ClassNames.cn(classes.ToArray());
-    }
+    private string ButtonCssClass => ClassNames.cn(
+        "w-[280px] justify-start text-left font-normal",
+        !Value.HasValue ? "text-muted-foreground" : null,
+        Disabled ? "opacity-50 pointer-events-none" : null,
+        Class
+    );
 }

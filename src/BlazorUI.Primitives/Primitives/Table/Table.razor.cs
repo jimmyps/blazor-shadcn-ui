@@ -15,6 +15,15 @@ public partial class Table<TData> : ComponentBase, IDisposable where TData : cla
     private int _stateVersion = 0;
     private readonly List<Task> _pendingTasks = new();
 
+<<<<<<< HEAD
+=======
+    // ShouldRender tracking fields
+    private int _lastRenderVersion;
+    private IEnumerable<TData>? _lastData;
+    private SelectionMode _lastSelectionMode;
+    private bool _lastManualPagination;
+
+>>>>>>> pr-89
     /// <summary>
     /// The data source for the table.
     /// </summary>
@@ -103,6 +112,16 @@ public partial class Table<TData> : ComponentBase, IDisposable where TData : cla
     public bool ManualPagination { get; set; } = false;
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// When true, enables keyboard navigation for table rows (arrow keys to navigate, Enter/Space to select).
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool EnableKeyboardNavigation { get; set; } = true;
+
+    /// <summary>
+>>>>>>> pr-89
     /// Gets whether the table is in controlled mode.
     /// </summary>
     private bool IsControlled => State != null;
@@ -134,7 +153,12 @@ public partial class Table<TData> : ComponentBase, IDisposable where TData : cla
     {
         _context = new TableContext<TData>(EffectiveState)
         {
+<<<<<<< HEAD
             SelectionMode = SelectionMode
+=======
+            SelectionMode = SelectionMode,
+            EnableKeyboardNavigation = EnableKeyboardNavigation
+>>>>>>> pr-89
         };
 
         SyncSelectionMode();
@@ -260,6 +284,10 @@ public partial class Table<TData> : ComponentBase, IDisposable where TData : cla
     {
         // Update context with new parameters
         _context.SelectionMode = SelectionMode;
+<<<<<<< HEAD
+=======
+        _context.EnableKeyboardNavigation = EnableKeyboardNavigation;
+>>>>>>> pr-89
 
         // Sync SelectionMode to the actual TableState
         SyncSelectionMode();
@@ -334,6 +362,7 @@ public partial class Table<TData> : ComponentBase, IDisposable where TData : cla
     }
 
     /// <summary>
+<<<<<<< HEAD
     /// Determines whether the component should re-render.
     /// Always returns true to ensure proper updates when state is modified in-place via @bind-State.
     /// </summary>
@@ -344,6 +373,37 @@ public partial class Table<TData> : ComponentBase, IDisposable where TData : cla
         // The _stateVersion optimization doesn't work well with @bind-State
         // when parent components modify the state object in-place
         return true;
+=======
+    /// Determines whether the component should re-render based on tracked state changes.
+    /// For controlled mode (with @bind-State), always returns true since state may be modified in-place.
+    /// For uncontrolled mode, tracks parameter and version changes for optimization.
+    /// </summary>
+    /// <returns>True if the component should re-render.</returns>
+    protected override bool ShouldRender()
+    {
+        // For controlled mode, always allow re-render since state may be modified in-place
+        if (IsControlled)
+        {
+            return true;
+        }
+
+        // For uncontrolled mode, check if anything relevant has changed
+        var dataChanged = !ReferenceEquals(_lastData, Data);
+        var selectionModeChanged = _lastSelectionMode != SelectionMode;
+        var paginationChanged = _lastManualPagination != ManualPagination;
+        var versionChanged = _lastRenderVersion != _stateVersion;
+
+        if (dataChanged || selectionModeChanged || paginationChanged || versionChanged)
+        {
+            _lastData = Data;
+            _lastSelectionMode = SelectionMode;
+            _lastManualPagination = ManualPagination;
+            _lastRenderVersion = _stateVersion;
+            return true;
+        }
+
+        return false;
+>>>>>>> pr-89
     }
 
     /// <summary>

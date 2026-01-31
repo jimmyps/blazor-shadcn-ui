@@ -1,12 +1,21 @@
 @namespace BlazorUI.Primitives.Table
 @typeparam TData where TData : class
 @inject IJSRuntime JSRuntime
+<<<<<<< HEAD
+=======
+@implements IAsyncDisposable
+>>>>>>> pr-89
 
 <tr @ref="_elementRef"
     role="row"
     aria-selected="@(IsSelected ? "true" : "false")"
+<<<<<<< HEAD
     tabindex="@(IsSelectable ? 0 : -1)"
     class="@Class"
+=======
+    tabindex="@(IsKeyboardNavigable ? 0 : -1)"
+    class="@ComputedClass"
+>>>>>>> pr-89
     @onclick="HandleClick"
     @onkeydown="HandleKeyDown"
     @attributes="AdditionalAttributes">
@@ -16,6 +25,11 @@
 @code {
     private ElementReference _elementRef;
     private bool _spaceKeyHandlerAttached = false;
+<<<<<<< HEAD
+=======
+    private IJSObjectReference? _tableRowNavModule;
+    private IJSObjectReference? _spaceKeyCleanup;
+>>>>>>> pr-89
 
     [CascadingParameter]
     private TableContext<TData> Context { get; set; } = default!;
@@ -48,6 +62,7 @@
 
     private bool IsSelectable => Context != null && Context.SelectionMode != SelectionMode.None;
 
+<<<<<<< HEAD
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && IsSelectable && !_spaceKeyHandlerAttached)
@@ -66,6 +81,37 @@
                         }, { capture: true });
                     })(arguments[0])
                 ", _elementRef);
+=======
+    private bool IsKeyboardNavigable => IsSelectable && Context != null && Context.EnableKeyboardNavigation;
+
+    /// <summary>
+    /// Focus ring classes for keyboard navigation visibility.
+    /// Uses focus: instead of focus-visible: because programmatic focus via JS .focus()
+    /// doesn't always trigger focus-visible in browsers.
+    /// Includes relative positioning to ensure ring renders properly on tr elements.
+    /// </summary>
+    private const string FocusRingClasses = "relative focus:outline-none focus:ring-2 focus:ring-ring focus:ring-inset focus:z-10";
+
+    /// <summary>
+    /// Computed class that includes focus ring when row is keyboard navigable
+    /// </summary>
+    private string ComputedClass => IsKeyboardNavigable ? $"{FocusRingClasses} {Class}" : Class ?? "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && IsKeyboardNavigable && !_spaceKeyHandlerAttached)
+        {
+            try
+            {
+                // Lazy-load the table row navigation module
+                _tableRowNavModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorUI.Primitives/js/primitives/table-row-nav.js");
+
+                // Attach event listener in capture phase to prevent Space from scrolling
+                // This runs before Blazor's event handler, allowing us to preventDefault
+                _spaceKeyCleanup = await _tableRowNavModule.InvokeAsync<IJSObjectReference>(
+                    "preventSpaceKeyScroll", _elementRef);
+>>>>>>> pr-89
                 _spaceKeyHandlerAttached = true;
             }
             catch
@@ -85,6 +131,7 @@
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
+<<<<<<< HEAD
         if (!IsSelectable) return;
 
         switch (e.Key)
@@ -104,6 +151,33 @@
             case "ArrowDown":
                 await MoveFocusToNextRow();
                 break;
+=======
+        // Arrow key navigation only works when keyboard navigation is enabled
+        if (IsKeyboardNavigable)
+        {
+            switch (e.Key)
+            {
+                case "ArrowUp":
+                    await MoveFocusToPreviousRow();
+                    return;
+
+                case "ArrowDown":
+                    await MoveFocusToNextRow();
+                    return;
+            }
+        }
+
+        // Enter/Space selection works when row is selectable (even without keyboard nav)
+        if (IsSelectable && Item != null)
+        {
+            switch (e.Key)
+            {
+                case "Enter":
+                case " ":
+                    Context.ToggleRowSelection(Item);
+                    break;
+            }
+>>>>>>> pr-89
         }
     }
 
@@ -111,6 +185,7 @@
     {
         try
         {
+<<<<<<< HEAD
             await JSRuntime.InvokeVoidAsync("eval", @"
                 (function(element) {
                     let prevRow = element.previousElementSibling;
@@ -122,6 +197,11 @@
                     }
                 })(arguments[0])
             ", _elementRef);
+=======
+            _tableRowNavModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/BlazorUI.Primitives/js/primitives/table-row-nav.js");
+            await _tableRowNavModule.InvokeVoidAsync("moveFocusToPreviousRow", _elementRef);
+>>>>>>> pr-89
         }
         catch
         {
@@ -133,6 +213,7 @@
     {
         try
         {
+<<<<<<< HEAD
             await JSRuntime.InvokeVoidAsync("eval", @"
                 (function(element) {
                     let nextRow = element.nextElementSibling;
@@ -144,10 +225,46 @@
                     }
                 })(arguments[0])
             ", _elementRef);
+=======
+            _tableRowNavModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/BlazorUI.Primitives/js/primitives/table-row-nav.js");
+            await _tableRowNavModule.InvokeVoidAsync("moveFocusToNextRow", _elementRef);
+>>>>>>> pr-89
         }
         catch
         {
             // Ignore JS interop errors (e.g., during prerendering)
         }
     }
+<<<<<<< HEAD
+=======
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_spaceKeyCleanup != null)
+        {
+            try
+            {
+                await _spaceKeyCleanup.InvokeVoidAsync("dispose");
+                await _spaceKeyCleanup.DisposeAsync();
+            }
+            catch
+            {
+                // Ignore disposal errors
+            }
+        }
+
+        if (_tableRowNavModule != null)
+        {
+            try
+            {
+                await _tableRowNavModule.DisposeAsync();
+            }
+            catch
+            {
+                // Ignore disposal errors
+            }
+        }
+    }
+>>>>>>> pr-89
 }

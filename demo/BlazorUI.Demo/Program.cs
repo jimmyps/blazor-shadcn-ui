@@ -7,8 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
+    .AddInteractiveServerComponents();
 
 // Add BlazorUI.Primitives services
 builder.Services.AddBlazorUIPrimitives();
@@ -22,35 +21,26 @@ builder.Services.AddScoped<CollapsibleStateService>();
 // Add mock data service for generating demo data
 builder.Services.AddSingleton<MockDataService>();
 
-// Add toast service for notifications
-builder.Services.AddSingleton<IToastService, ToastService>();
-
-// Add keyboard shortcut service for global shortcuts
-builder.Services.AddScoped<KeyboardShortcutService>();
+// Add toast notification service
+builder.Services.AddScoped<ToastService>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 
-app.UseAntiforgery();
-
-// Serve static files (required for WebAssembly framework files)
 app.UseStaticFiles();
 
-// Map static assets (for optimized asset delivery)
-app.MapStaticAssets();
+app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(BlazorUI.Demo.Shared.Routes).Assembly);
+    .AddInteractiveServerRenderMode();
 
 app.Run();

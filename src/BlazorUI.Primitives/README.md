@@ -299,6 +299,7 @@ BlazorUI.Primitives follows the "headless component" pattern popularized by Radi
 ## Documentation
 
 For full documentation, examples, and API reference, visit:
+<<<<<<< HEAD
 - [Documentation Site](https://github.com/jimmyps/blazor-shadcn-ui)
 - [GitHub Repository](https://github.com/jimmyps/blazor-shadcn-ui)
 
@@ -309,3 +310,15 @@ MIT License - see [LICENSE](https://github.com/jimmyps/blazor-shadcn-ui/blob/mai
 ## Contributing
 
 Contributions are welcome! Please see our [Contributing Guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/CONTRIBUTING.md).
+=======
+- [Documentation Site](https://github.com/blazorui-net/ui)
+- [GitHub Repository](https://github.com/blazorui-net/ui)
+
+## License
+
+Apache License 2.0 - see [LICENSE](https://github.com/blazorui-net/ui/blob/main/LICENSE) for details.
+
+## Contributing
+
+Contributions are welcome! Please see our [Contributing Guide](https://github.com/blazorui-net/ui/blob/main/CONTRIBUTING.md).
+>>>>>>> pr-89

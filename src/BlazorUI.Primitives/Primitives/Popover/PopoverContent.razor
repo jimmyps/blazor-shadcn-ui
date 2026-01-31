@@ -63,6 +63,16 @@
     public int Offset { get; set; } = 4;
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Whether to match the popover width to the trigger element width.
+    /// Default is false.
+    /// </summary>
+    [Parameter]
+    public bool MatchTriggerWidth { get; set; } = false;
+
+    /// <summary>
+>>>>>>> pr-89
     /// Event callback invoked when Escape key is pressed.
     /// </summary>
     [Parameter]
@@ -74,16 +84,37 @@
     [Parameter]
     public EventCallback OnClickOutside { get; set; }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Event callback invoked when the popover content is fully ready (positioned and visible).
+    /// Useful for focus management.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnContentReady { get; set; }
+
+>>>>>>> pr-89
     private IJSObjectReference? _clickOutsideModule;
     private IJSObjectReference? _clickOutsideCleanup;
     private DotNetObjectReference<PopoverContent>? _dotNetRef;
     private IAsyncDisposable? _positioningCleanup;
     private bool _isInitialized = false;
     private bool _isPositioned = false;
+<<<<<<< HEAD
+=======
+    private bool _disposed = false;
+>>>>>>> pr-89
     private string _portalId = "";
     private ElementReference _portalContentRef;
     private TaskCompletionSource<bool>? _portalReadyTcs;
 
+<<<<<<< HEAD
+=======
+    // Store computed position so it survives Blazor re-renders
+    private double _positionLeft = 0;
+    private double _positionTop = 0;
+
+>>>>>>> pr-89
     protected override void OnInitialized()
     {
         if (Context == null)
@@ -114,11 +145,21 @@
     {
         base.OnParametersSet();
 
+<<<<<<< HEAD
         // Update portal content when parameters change (e.g., ChildContent)
         // This ensures the portal reflects the latest content from the parent
         if (_isInitialized && Context.IsOpen && !string.IsNullOrEmpty(_portalId))
         {
             PortalService.UpdatePortalContent(_portalId, RenderPopoverContent());
+=======
+        // Re-register portal with updated ChildContent to ensure content updates are reflected
+        // Now safe because GetInitialStyle() includes the stored position,
+        // so re-renders won't lose the position styling
+        if (_isInitialized && Context.IsOpen && !string.IsNullOrEmpty(_portalId))
+        {
+            // Re-register with the new RenderFragment to capture updated ChildContent
+            PortalService.RegisterPortal(_portalId, RenderPopoverContent());
+>>>>>>> pr-89
         }
     }
 
@@ -172,7 +213,10 @@
         try
         {
             // Set up positioning and make visible via JS
+<<<<<<< HEAD
             // IMPORTANT: Don't call UpdatePortalContent after this - it would overwrite the JS-applied position
+=======
+>>>>>>> pr-89
             await SetupPositioningAsync();
 
             // Mark as positioned for any future Blazor re-renders
@@ -183,6 +227,18 @@
             {
                 await SetupClickOutsideAsync();
             }
+<<<<<<< HEAD
+=======
+
+            // Notify subscribers that content is ready (for focus management, etc.)
+            Context.NotifyContentReady();
+
+            // Also invoke the parameter callback if provided
+            if (OnContentReady.HasDelegate)
+            {
+                await OnContentReady.InvokeAsync();
+            }
+>>>>>>> pr-89
         }
         catch (Exception ex)
         {
@@ -191,7 +247,14 @@
             _isPositioned = true;
             try
             {
+<<<<<<< HEAD
                 await JSRuntime.InvokeVoidAsync("eval", $"document.getElementById('{Context.ContentId}').style.opacity = '1'; document.getElementById('{Context.ContentId}').style.pointerEvents = 'auto';");
+=======
+                var elementUtilsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorUI.Primitives/js/primitives/element-utils.js");
+                await elementUtilsModule.InvokeVoidAsync("showElement", Context.ContentId);
+                await elementUtilsModule.DisposeAsync();
+>>>>>>> pr-89
             }
             catch { /* ignore */ }
         }
@@ -206,6 +269,10 @@
              @onkeydown="HandleKeyDown"
              @attributes="GetAttributesWithoutStyle()"
              data-state="open"
+<<<<<<< HEAD
+=======
+             data-portal-content="true"
+>>>>>>> pr-89
              style="@GetMergedStyle()">
             @ChildContent
         </div>
@@ -227,15 +294,24 @@
             var options = new PositioningOptions
             {
                 Placement = placement,
+<<<<<<< HEAD
                 Offset = Offset
             };
 
             // Compute and apply position using the portal content ref
+=======
+                Offset = Offset,
+                MatchReferenceWidth = MatchTriggerWidth
+            };
+
+            // Compute position using the portal content ref
+>>>>>>> pr-89
             var position = await PositioningService.ComputePositionAsync(
                 Context.State.TriggerElement.Value,
                 _portalContentRef,
                 options);
 
+<<<<<<< HEAD
             // Store the computed position in the context state
             Context.State.Position = position;
 
@@ -243,6 +319,16 @@
             await PositioningService.ApplyPositionAsync(_portalContentRef, position, makeVisible: true);
 
             // Set up auto-update for dynamic positioning
+=======
+            // Store position in Blazor state so it survives re-renders
+            _positionLeft = position.X;
+            _positionTop = position.Y;
+
+            // Apply position via JS for initial display
+            await PositioningService.ApplyPositionAsync(_portalContentRef, position, makeVisible: true);
+
+            // Set up auto-update for dynamic positioning (scroll, resize)
+>>>>>>> pr-89
             _positioningCleanup = await PositioningService.AutoUpdateAsync(
                 Context.State.TriggerElement.Value,
                 _portalContentRef,
@@ -263,9 +349,21 @@
 
             _dotNetRef = DotNetObjectReference.Create(this);
 
+<<<<<<< HEAD
             // onClickOutside returns a cleanup function
             _clickOutsideCleanup = await _clickOutsideModule.InvokeAsync<IJSObjectReference>(
                 "onClickOutside", _portalContentRef, _dotNetRef, "HandleClickOutside", Context.State.TriggerElement);
+=======
+            // Use ID-based lookup instead of ElementReference
+            // This ensures we always reference the current DOM element, not a stale one
+            // that may have been replaced during Blazor re-renders
+            _clickOutsideCleanup = await _clickOutsideModule.InvokeAsync<IJSObjectReference>(
+                "onClickOutsideByIds",
+                Context.ContentId,      // Element ID (not ElementReference)
+                _dotNetRef,
+                "HandleClickOutside",
+                Context.TriggerId);     // Trigger ID (not ElementReference)
+>>>>>>> pr-89
         }
         catch (Exception ex)
         {
@@ -276,7 +374,12 @@
     [JSInvokable]
     public async Task HandleClickOutside()
     {
+<<<<<<< HEAD
         if (!Context.IsOpen) return;
+=======
+        // Guard against callbacks after disposal
+        if (_disposed || !Context.IsOpen) return;
+>>>>>>> pr-89
 
         // Invoke custom handler if provided
         if (OnClickOutside.HasDelegate)
@@ -296,6 +399,7 @@
     /// </summary>
     private string GetInitialStyle()
     {
+<<<<<<< HEAD
         var baseStyle = "position: absolute; z-index: 50;";
 
         if (!_isPositioned)
@@ -313,6 +417,20 @@
         }
 
         return baseStyle;
+=======
+        if (!_isPositioned)
+        {
+            // Use position: fixed with off-screen coordinates to prevent:
+            // 1. Flash at wrong position (fixed doesn't depend on parent context)
+            // 2. Scroll jump (visibility: hidden prevents browser from scrolling to element)
+            // 3. Layout interference (pointer-events: none prevents interaction)
+            return "position: fixed; z-index: 50; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
+        }
+
+        // After positioning, include stored position so it survives Blazor re-renders
+        // This prevents the popover from "closing" when parent components re-render
+        return $"position: absolute; z-index: 50; left: {_positionLeft}px; top: {_positionTop}px; opacity: 1; visibility: visible;";
+>>>>>>> pr-89
     }
 
     private string GetMergedStyle()
@@ -415,6 +533,12 @@
 
     public async ValueTask DisposeAsync()
     {
+<<<<<<< HEAD
+=======
+        // Set disposed flag first to prevent JSInvokable callbacks during cleanup
+        _disposed = true;
+
+>>>>>>> pr-89
         // Unsubscribe from portal ready events
         PortalService.OnPortalRendered -= HandlePortalRendered;
 

@@ -5,12 +5,21 @@
 @* Dropdown menu item - represents an individual menu action *@
 <div @ref="_itemRef"
      role="menuitem"
+<<<<<<< HEAD
      tabindex="-1"
      aria-disabled="@Disabled.ToString().ToLowerInvariant()"
      data-disabled="@Disabled.ToString().ToLowerInvariant()"
      @onclick="HandleClick"
      @onkeydown="HandleKeyDown"
      @onmouseenter="HandleMouseEnter"
+=======
+     tabindex="@(Disabled ? -1 : -1)"
+     aria-disabled="@Disabled.ToString().ToLower()"
+     data-disabled="@(Disabled ? "true" : null)"
+     @onclick="HandleClick"
+     @onkeydown="HandleKeyDown"
+     @onkeydown:preventDefault="true"
+>>>>>>> pr-89
      @attributes="AdditionalAttributes">
     @ChildContent
 </div>
@@ -19,6 +28,7 @@
     [CascadingParameter]
     private DropdownMenuContext Context { get; set; } = null!;
 
+<<<<<<< HEAD
     [CascadingParameter]
     private DropdownMenuContent? ContentContext { get; set; }
     
@@ -27,6 +37,10 @@
     
     [CascadingParameter]
     private DropdownMenuSubContent? SubContentContext { get; set; }
+=======
+    [CascadingParameter(Name = "DropdownMenuContentContext")]
+    private DropdownMenuContent? ContentContext { get; set; }
+>>>>>>> pr-89
 
     private ElementReference _itemRef;
 
@@ -71,6 +85,7 @@
                 "Ensure DropdownMenuItem is a child of a DropdownMenu component.");
         }
 
+<<<<<<< HEAD
         // Register this item with the appropriate content for keyboard navigation
         // If we're inside a submenu, register with the submenu content
         // Otherwise, register with the root menu content
@@ -82,6 +97,10 @@
         {
             ContentContext?.RegisterMenuItem(this);
         }
+=======
+        // Register this item with the content for keyboard navigation
+        ContentContext?.RegisterMenuItem(this);
+>>>>>>> pr-89
     }
 
     private async Task HandleClick(MouseEventArgs args)
@@ -112,6 +131,7 @@
         }
     }
 
+<<<<<<< HEAD
     private async void HandleMouseEnter(MouseEventArgs args)
     {
         // Track if there was an active submenu that we're closing
@@ -149,6 +169,8 @@
         }
     }
 
+=======
+>>>>>>> pr-89
     // IDropdownMenuItem implementation
     public async Task FocusAsync()
     {
@@ -171,6 +193,7 @@
     public void Dispose()
     {
         // Unregister this item when disposed
+<<<<<<< HEAD
         if (SubContentContext != null)
         {
             SubContentContext.UnregisterMenuItem(this);
@@ -179,5 +202,8 @@
         {
             ContentContext?.UnregisterMenuItem(this);
         }
+=======
+        ContentContext?.UnregisterMenuItem(this);
+>>>>>>> pr-89
     }
 }

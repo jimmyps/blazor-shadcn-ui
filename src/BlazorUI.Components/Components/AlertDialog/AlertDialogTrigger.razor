@@ -2,10 +2,11 @@
 @using BlazorUI.Primitives.Dialog
 
 @*
-    AlertDialog trigger button.
+    Alert Dialog Trigger - opens the alert dialog when clicked.
+    Wraps the Dialog primitive trigger.
 *@
 
-<DialogTrigger>
+<DialogTrigger AsChild="@AsChild">
     @ChildContent
 </DialogTrigger>
 
@@ -15,4 +16,11 @@
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// When true, the trigger will not render a default button wrapper.
+    /// Instead, the child component receives trigger behavior via cascading context.
+    /// </summary>
+    [Parameter]
+    public bool AsChild { get; set; } = true;
 }

@@ -27,6 +27,16 @@ public class TableContext<TData> : PrimitiveContextWithEvents<TableState<TData>>
     public SelectionMode SelectionMode { get; set; } = SelectionMode.None;
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Gets or sets whether keyboard navigation is enabled for table rows.
+    /// When true, rows can be navigated with arrow keys and selected with Enter/Space.
+    /// Default is true.
+    /// </summary>
+    public bool EnableKeyboardNavigation { get; set; } = true;
+
+    /// <summary>
+>>>>>>> pr-89
     /// Callback invoked when sorting changes.
     /// </summary>
     public Action<string, SortDirection>? OnSortChange { get; set; }

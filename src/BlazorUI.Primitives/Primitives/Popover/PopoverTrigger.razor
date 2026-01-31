@@ -18,7 +18,12 @@ else
             @attributes="AdditionalAttributes"
             aria-haspopup="true"
             aria-expanded="@Context.IsOpen.ToString().ToLower()"
+<<<<<<< HEAD
             aria-controls="@Context.ContentId">
+=======
+            aria-controls="@Context.ContentId"
+            style="@(Context.IsOpen ? "pointer-events: none;" : "")">
+>>>>>>> pr-89
         @ChildContent
     </button>
 }
@@ -74,7 +79,12 @@ else
     {
         TriggerId = Context.TriggerId,
         IsOpen = Context.IsOpen,
+<<<<<<< HEAD
         Toggle = () => Context.Toggle(_asChildTriggerRef),
+=======
+        // Toggle now only opens when closed (to prevent Blazor event routing edge cases)
+        Toggle = () => { if (!Context.IsOpen) Context.Open(_asChildTriggerRef); },
+>>>>>>> pr-89
         Open = () => Context.Open(_asChildTriggerRef),
         Close = () => Context.Close(),
         AriaHasPopup = "true",
@@ -84,6 +94,19 @@ else
 
     private async Task HandleClick(MouseEventArgs args)
     {
+<<<<<<< HEAD
+=======
+        // IMPORTANT: Only OPEN the popover from the trigger, never close it.
+        // Closing is handled by click-outside detection or explicit close actions.
+        // This prevents Blazor Server event routing edge cases where clicks inside
+        // the popover content can incorrectly trigger the trigger's click handler
+        // during component re-renders.
+        if (Context.IsOpen)
+        {
+            return;
+        }
+
+>>>>>>> pr-89
         if (CustomClickHandling && OnClick.HasDelegate)
         {
             // Custom handling only
@@ -91,8 +114,13 @@ else
         }
         else
         {
+<<<<<<< HEAD
             // Default: toggle popover and store trigger element for positioning
             Context.Toggle(_triggerRef);
+=======
+            // Default: open popover and store trigger element for positioning
+            Context.Open(_triggerRef);
+>>>>>>> pr-89
 
             // Also invoke custom handler if provided
             if (OnClick.HasDelegate)

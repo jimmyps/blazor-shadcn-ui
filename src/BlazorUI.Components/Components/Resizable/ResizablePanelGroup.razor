@@ -1,277 +1,157 @@
 @namespace BlazorUI.Components.Resizable
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@implements IAsyncDisposable
 
-@* ResizablePanelGroup - container for resizable panels *@
-<div @ref="_groupRef" @attributes="GetAttributes()">
+<div @ref="_groupRef" class="@CssClass" style="@Style">
     <CascadingValue Value="this" IsFixed="false">
         @ChildContent
     </CascadingValue>
 </div>
 
 @code {
-    private readonly List<ResizablePanel> _panels = new();
-    private readonly List<double> _sizes = new();
-    private readonly object _lock = new();
-    private int _panelCount = 0;
-    private ElementReference _groupRef;
-    private bool _sizesInitialized = false;
-
     /// <summary>
-    /// The content to render within the panel group.
-    /// Should contain ResizablePanel and ResizableHandle components.
+    /// The panels to display.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// The direction of the panel layout.
-    /// Default is Horizontal.
+    /// The direction of the panels.
     /// </summary>
     [Parameter]
     public ResizableDirection Direction { get; set; } = ResizableDirection.Horizontal;
 
     /// <summary>
-    /// The initial sizes of the panels as percentages (must sum to 100).
-    /// If not provided, panels will be sized equally.
-    /// </summary>
-    [Parameter]
-    public double[]? DefaultSizes { get; set; }
-
-    /// <summary>
-    /// Event callback invoked when panel sizes change.
-    /// </summary>
-    [Parameter]
-    public EventCallback<double[]> OnLayoutChange { get; set; }
-
-    /// <summary>
-    /// Additional CSS classes to apply to the container.
+    /// Additional CSS classes to apply.
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
-    /// <summary>
-    /// Additional attributes to apply to the container element.
-    /// </summary>
-    [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+    private ElementReference _groupRef;
+    private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<ResizablePanelGroup>? _dotNetRef;
+    private string _groupId = Guid.NewGuid().ToString("N");
+    private bool _jsInitialized;
+
+    private List<double> _panelSizes = new();
+    private List<double> _panelDefaultSizes = new();
+    private List<double> _panelMinSizes = new();
+    private List<double> _panelMaxSizes = new();
+    private int _panelCount = 0;
+    private int _handleCount = 0;
 
     internal ResizableDirection GetDirection() => Direction;
 
-    internal ElementReference? GetGroupElement() => _groupRef.Id != null ? _groupRef : null;
-
-    internal int RegisterPanel(ResizablePanel panel)
+    internal int RegisterPanel(double defaultSize, double minSize, double maxSize)
     {
-        lock (_lock)
-        {
-            var index = _panelCount++;
-            _panels.Add(panel);
-            
-            if (DefaultSizes != null && index < DefaultSizes.Length)
-            {
-                _sizes.Add(DefaultSizes[index]);
-            }
-            else
-            {
-                // Equal distribution if no default sizes
-                var equalSize = 100.0 / Math.Max(_panelCount, 1);
-                _sizes.Add(equalSize);
-            }
-            
-            return index;
-        }
-    }
+        var index = _panelCount++;
+        _panelDefaultSizes.Add(defaultSize);
+        _panelMinSizes.Add(minSize);
+        _panelMaxSizes.Add(maxSize);
 
-    internal void UnregisterPanel(ResizablePanel panel)
-    {
-        lock (_lock)
+        if (_panelSizes.Count <= index)
         {
-            _panels.Remove(panel);
+            _panelSizes.Add(defaultSize);
         }
-    }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && !_sizesInitialized)
-        {
-            InitializeSizes();
-            _sizesInitialized = true;
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private void InitializeSizes()
-    {
-        lock (_lock)
-        {
-            if (DefaultSizes != null && DefaultSizes.Length == _panels.Count)
-            {
-                _sizes.Clear();
-                _sizes.AddRange(DefaultSizes);
-            }
-            else
-            {
-                // Recalculate equal sizes
-                var equalSize = 100.0 / Math.Max(_panels.Count, 1);
-                _sizes.Clear();
-                for (int i = 0; i < _panels.Count; i++)
-                {
-                    _sizes.Add(equalSize);
-                }
-            }
-        }
+        return index;
     }
 
     internal double GetPanelSize(int index)
     {
-        lock (_lock)
+        if (index >= 0 && index < _panelSizes.Count)
         {
-            if (index >= 0 && index < _sizes.Count)
-            {
-                return _sizes[index];
-            }
-            
-            // Fallback to equal distribution
-            var panelCount = _panels.Count;
-            return panelCount > 0 ? 100.0 / panelCount : 100.0;
+            return _panelSizes[index];
+        }
+        return index < _panelDefaultSizes.Count ? _panelDefaultSizes[index] : 50;
+    }
+
+    internal int RegisterHandle()
+    {
+        return _handleCount++;
+    }
+
+    internal async Task StartResize(int handleIndex, double clientX, double clientY)
+    {
+        if (_jsModule != null && _jsInitialized)
+        {
+            await _jsModule.InvokeVoidAsync("startResize", _groupId, handleIndex, clientX, clientY, _panelSizes.ToArray());
         }
     }
 
-    internal async Task ResizePanels(int handleIndex, double delta)
+    [JSInvokable]
+    public void UpdatePanelSizes(double[] newSizes)
     {
-        double[] newSizes;
-        
-        lock (_lock)
+        // Input validation
+        if (newSizes == null || newSizes.Length == 0)
+            return;
+
+        // Reject excessively large arrays (potential DoS)
+        if (newSizes.Length > 100)
+            return;
+
+        for (int i = 0; i < newSizes.Length && i < _panelSizes.Count; i++)
         {
-            if (handleIndex < 0 || handleIndex >= _panels.Count - 1)
-                return;
-
-            var currentPanel = _panels[handleIndex];
-            var nextPanel = _panels[handleIndex + 1];
-
-            var currentSize = _sizes.Count > handleIndex ? _sizes[handleIndex] : GetPanelSize(handleIndex);
-            var nextSize = _sizes.Count > handleIndex + 1 ? _sizes[handleIndex + 1] : GetPanelSize(handleIndex + 1);
-
-            var newCurrentSize = currentSize + delta;
-            var newNextSize = nextSize - delta;
+            // Skip invalid values
+            if (double.IsNaN(newSizes[i]) || double.IsInfinity(newSizes[i]))
+                continue;
 
             // Apply min/max constraints
-            var currentMinSize = currentPanel.MinSize ?? 0;
-            var currentMaxSize = currentPanel.MaxSize ?? 100;
-            var nextMinSize = nextPanel.MinSize ?? 0;
-            var nextMaxSize = nextPanel.MaxSize ?? 100;
-
-            // Clamp to min/max constraints
-            if (newCurrentSize < currentMinSize)
-            {
-                var adjustment = currentMinSize - newCurrentSize;
-                newCurrentSize = currentMinSize;
-                newNextSize -= adjustment;
-            }
-            else if (newCurrentSize > currentMaxSize)
-            {
-                var adjustment = newCurrentSize - currentMaxSize;
-                newCurrentSize = currentMaxSize;
-                newNextSize += adjustment;
-            }
-
-            if (newNextSize < nextMinSize)
-            {
-                var adjustment = nextMinSize - newNextSize;
-                newNextSize = nextMinSize;
-                newCurrentSize -= adjustment;
-            }
-            else if (newNextSize > nextMaxSize)
-            {
-                var adjustment = newNextSize - nextMaxSize;
-                newNextSize = nextMaxSize;
-                newCurrentSize += adjustment;
-            }
-
-            // Final boundary checks
-            newCurrentSize = Math.Max(currentMinSize, Math.Min(currentMaxSize, newCurrentSize));
-            newNextSize = Math.Max(nextMinSize, Math.Min(nextMaxSize, newNextSize));
-
-            // Update sizes
-            if (_sizes.Count > handleIndex)
-                _sizes[handleIndex] = newCurrentSize;
-            if (_sizes.Count > handleIndex + 1)
-                _sizes[handleIndex + 1] = newNextSize;
-
-            newSizes = _sizes.ToArray();
+            var size = Math.Max(_panelMinSizes[i], Math.Min(_panelMaxSizes[i], newSizes[i]));
+            _panelSizes[i] = size;
         }
-
-        if (OnLayoutChange.HasDelegate)
-        {
-            await OnLayoutChange.InvokeAsync(newSizes);
-        }
-
-        await InvokeAsync(StateHasChanged);
+        StateHasChanged();
     }
 
-    internal async Task CollapsePanel(int handleIndex, string target)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        double[] newSizes;
-        
-        lock (_lock)
+        if (firstRender)
         {
-            if (handleIndex < 0 || handleIndex >= _panels.Count - 1)
-                return;
-
-            var currentPanel = _panels[handleIndex];
-            var nextPanel = _panels[handleIndex + 1];
-
-            var currentSize = _sizes.Count > handleIndex ? _sizes[handleIndex] : GetPanelSize(handleIndex);
-            var nextSize = _sizes.Count > handleIndex + 1 ? _sizes[handleIndex + 1] : GetPanelSize(handleIndex + 1);
-            var totalSize = currentSize + nextSize;
-
-            if (target == "previous" && currentPanel.Collapsible)
-            {
-                // Collapse the previous panel (to its minimum)
-                var minSize = currentPanel.MinSize ?? 0;
-                _sizes[handleIndex] = minSize;
-                _sizes[handleIndex + 1] = totalSize - minSize;
-            }
-            else if (target == "next" && nextPanel.Collapsible)
-            {
-                // Collapse the next panel (to its minimum)
-                var minSize = nextPanel.MinSize ?? 0;
-                _sizes[handleIndex + 1] = minSize;
-                _sizes[handleIndex] = totalSize - minSize;
-            }
-
-            newSizes = _sizes.ToArray();
+            await InitializeJsAsync();
         }
-
-        if (OnLayoutChange.HasDelegate)
-        {
-            await OnLayoutChange.InvokeAsync(newSizes);
-        }
-
-        await InvokeAsync(StateHasChanged);
     }
 
-    private Dictionary<string, object> GetAttributes()
+    private async Task InitializeJsAsync()
     {
-        var baseClass = Direction == ResizableDirection.Horizontal
-            ? "flex h-full w-full"
-            : "flex h-full w-full flex-col";
+        if (_jsInitialized) return;
 
-        var classValue = string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
-
-        var attributes = new Dictionary<string, object>
+        try
         {
-            ["class"] = classValue,
-            ["data-panel-group"] = "",
-            ["data-panel-group-direction"] = Direction.ToString().ToLowerInvariant()
-        };
+            _jsModule = await JS.InvokeAsync<IJSObjectReference>("import",
+                "./_content/BlazorUI.Components/js/resizable.js");
+            _dotNetRef = DotNetObjectReference.Create(this);
 
-        if (AdditionalAttributes != null)
-        {
-            foreach (var kvp in AdditionalAttributes.Where(kvp => kvp.Key != "class"))
-            {
-                attributes[kvp.Key] = kvp.Value;
-            }
+            var isHorizontal = Direction == ResizableDirection.Horizontal;
+            await _jsModule.InvokeVoidAsync("initializeResizable", _groupRef, _dotNetRef, _groupId, isHorizontal);
+            _jsInitialized = true;
         }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Failed to initialize resizable JS: {ex.Message}");
+        }
+    }
 
-        return attributes;
+    private string Style => Direction == ResizableDirection.Horizontal
+        ? "display: flex; flex-direction: row; height: 100%; width: 100%;"
+        : "display: flex; flex-direction: column; height: 100%; width: 100%;";
+
+    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "overflow-hidden",
+        Class
+    );
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule != null && _jsInitialized)
+        {
+            try
+            {
+                await _jsModule.InvokeVoidAsync("disposeResizable", _groupId);
+                await _jsModule.DisposeAsync();
+            }
+            catch { }
+        }
+        _dotNetRef?.Dispose();
     }
 }

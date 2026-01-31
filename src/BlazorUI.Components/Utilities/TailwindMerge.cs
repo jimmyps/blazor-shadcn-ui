@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace BlazorUI.Components.Utilities;
@@ -137,18 +138,39 @@ public static class TailwindMerge
     private static readonly Regex ZIndexRegex = new(@"^z-(\d+|auto)$", RegexOptions.Compiled);
     private static readonly Regex GridColsRegex = new(@"^grid-cols-(\d+|none)$", RegexOptions.Compiled);
     private static readonly Regex GridRowsRegex = new(@"^grid-rows-(\d+|none)$", RegexOptions.Compiled);
-    private static readonly Regex DurationRegex = new(@"^duration-(\d+)$", RegexOptions.Compiled);
-    private static readonly Regex DelayRegex = new(@"^delay-(\d+)$", RegexOptions.Compiled);
-    private static readonly Regex EasingRegex = new(@"^ease-(.+)$", RegexOptions.Compiled);
-    private static readonly Regex AnimateRegex = new(@"^animate-(.+)$", RegexOptions.Compiled);
-    private static readonly Regex TranslateRegex = new(@"^-?(translate-x|translate-y|translate)-(.+)$", RegexOptions.Compiled);
-    private static readonly Regex PositionRegex = new(@"^-?(top|right|bottom|left|inset|inset-x|inset-y)-(.+)$", RegexOptions.Compiled);
-    private static readonly Regex ShadowRegex = new(@"^shadow(-(.+))?$", RegexOptions.Compiled);
+
+    // Cache for utility group lookups to avoid repeated regex evaluation
+    private static readonly ConcurrentDictionary<string, string?> _utilityGroupCache = new();
+
+    // Regex to validate CSS class names - allows alphanumeric, hyphens, underscores, colons, slashes, brackets, dots, percentages, and CSS combinator characters
+    // This covers Tailwind classes like "w-1/2", "hover:bg-blue-500", "data-[state=open]:block", "text-[14px]", "[&>svg]:absolute"
+    private static readonly Regex ValidClassNameRegex = new(@"^[a-zA-Z0-9_\-:/.[\]()%!@#&>+~=]+$", RegexOptions.Compiled);
+
+    /// <summary>
+    /// Validates that a CSS class name contains only safe characters.
+    /// Rejects classes that could be used for CSS injection attacks.
+    /// </summary>
+    private static bool IsValidClassName(string className)
+    {
+        if (string.IsNullOrWhiteSpace(className) || className.Length > 200)
+            return false;
+
+        // Check for potentially dangerous patterns
+        if (className.Contains("expression", StringComparison.OrdinalIgnoreCase) ||
+            className.Contains("javascript", StringComparison.OrdinalIgnoreCase) ||
+            className.Contains("url(", StringComparison.OrdinalIgnoreCase) ||
+            className.Contains("import", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return ValidClassNameRegex.IsMatch(className);
+    }
 
     /// <summary>
     /// Merges an array of CSS class strings, resolving Tailwind utility conflicts.
     /// Later classes in the array take precedence over earlier ones when conflicts occur.
-    /// /// </summary>
+    /// </summary>
     /// <param name="classes">Array of class strings to merge</param>
     /// <returns>Merged class string with conflicts resolved</returns>
     public static string Merge(string[] classes)
@@ -164,6 +186,10 @@ public static class TailwindMerge
         {
             var className = classes[i];
             if (string.IsNullOrWhiteSpace(className))
+                continue;
+
+            // Skip potentially dangerous class names
+            if (!IsValidClassName(className))
                 continue;
 
             var group = GetUtilityGroup(className);
@@ -192,34 +218,44 @@ public static class TailwindMerge
     /// <summary>
     /// Identifies which utility group a class belongs to.
     /// Returns null if the class doesn't match any known Tailwind utility pattern.
+    /// Results are cached for performance.
     /// </summary>
     private static string? GetUtilityGroup(string className)
+    {
+        return _utilityGroupCache.GetOrAdd(className, ComputeUtilityGroup);
+    }
+
+    /// <summary>
+    /// Computes the utility group for a class name.
+    /// This is the uncached implementation called by GetUtilityGroup.
+    /// </summary>
+    private static string? ComputeUtilityGroup(string className)
     {
         // Check exact matches first (display, position, etc.)
         if (TailwindGroups.TryGetValue(className, out var group))
             return group;
 
-        // Check spacing utilities (padding, margin)
-        if (SpacingRegex.IsMatch(className))
+        // Check spacing utilities (padding, margin) - use Match directly to avoid double evaluation
+        var spacingMatch = SpacingRegex.Match(className);
+        if (spacingMatch.Success)
         {
-            var match = SpacingRegex.Match(className);
-            var prefix = match.Groups[1].Value;
+            var prefix = spacingMatch.Groups[1].Value;
             return TailwindGroups.TryGetValue(prefix, out var spacingGroup) ? spacingGroup : null;
         }
 
         // Check sizing utilities (width, height, min/max)
-        if (SizingRegex.IsMatch(className))
+        var sizingMatch = SizingRegex.Match(className);
+        if (sizingMatch.Success)
         {
-            var match = SizingRegex.Match(className);
-            var prefix = match.Groups[1].Value;
+            var prefix = sizingMatch.Groups[1].Value;
             return TailwindGroups.TryGetValue(prefix, out var sizingGroup) ? sizingGroup : null;
         }
 
         // Check gap utilities
-        if (GapRegex.IsMatch(className))
+        var gapMatch = GapRegex.Match(className);
+        if (gapMatch.Success)
         {
-            var match = GapRegex.Match(className);
-            var prefix = match.Groups[1].Value;
+            var prefix = gapMatch.Groups[1].Value;
             return TailwindGroups.TryGetValue(prefix, out var gapGroup) ? gapGroup : null;
         }
 
@@ -254,42 +290,6 @@ public static class TailwindMerge
         // Check grid rows
         if (GridRowsRegex.IsMatch(className))
             return "grid-rows";
-
-        // Check animation duration
-        if (DurationRegex.IsMatch(className))
-            return "animation-duration";
-
-        // Check animation delay
-        if (DelayRegex.IsMatch(className))
-            return "animation-delay";
-
-        // Check animation timing function (ease-*)
-        if (EasingRegex.IsMatch(className))
-            return "animation-timing-function";
-
-        // Check named animations (animate-*)
-        if (AnimateRegex.IsMatch(className))
-            return "animation";
-
-        // Check translate utilities (translate-x, translate-y, translate)
-        if (TranslateRegex.IsMatch(className))
-        {
-            var match = TranslateRegex.Match(className);
-            var prefix = match.Groups[1].Value;
-            return prefix; // Returns "translate-x", "translate-y", or "translate"
-        }
-
-        // Check position utilities (top, right, bottom, left, inset, inset-x, inset-y)
-        if (PositionRegex.IsMatch(className))
-        {
-            var match = PositionRegex.Match(className);
-            var prefix = match.Groups[1].Value;
-            return prefix; // Returns "top", "right", "bottom", "left", "inset", "inset-x", or "inset-y"
-        }
-
-        // Check shadow utilities (shadow, shadow-sm, shadow-md, shadow-lg, shadow-xl, shadow-2xl, shadow-inner, shadow-none)
-        if (ShadowRegex.IsMatch(className))
-            return "box-shadow";
 
         // Unknown utility
         return null;

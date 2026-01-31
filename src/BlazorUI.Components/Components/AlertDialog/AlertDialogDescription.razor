@@ -1,17 +1,31 @@
 @namespace BlazorUI.Components.AlertDialog
 @using BlazorUI.Components.Utilities
+@using BlazorUI.Primitives.Dialog
 
-<p class="@CssClass">
+@*
+    Alert Dialog Description - the description text.
+*@
+
+<DialogDescription class="@CssClass">
     @ChildContent
-</p>
+</DialogDescription>
 
 @code {
-    [Parameter]
-    public string? Class { get; set; }
-
+    /// <summary>
+    /// The description text content.
+    /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    /// <summary>
+    /// Additional CSS classes to apply to the description.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Gets the computed CSS classes for the description.
+    /// </summary>
     private string CssClass => ClassNames.cn(
         "text-sm text-muted-foreground",
         Class

@@ -1,186 +1,69 @@
 @namespace BlazorUI.Components.ScrollArea
-@using Microsoft.JSInterop
-@using Microsoft.Extensions.Logging
-@implements IAsyncDisposable
-@inject IJSRuntime JSRuntime
-@inject ILogger<ScrollArea> Logger
 
-@* ScrollArea - styled scrollable region with custom scrollbars and scroll shadows *@
-<div @ref="_scrollAreaRef" @attributes="GetRootAttributes()">
-    <div @ref="_viewportRef" 
-         class="h-full w-full rounded-[inherit] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" 
-         style="@GetOverflowStyle()"
-         data-scroll-viewport>
-        <div style="min-width: 100%; display: table;">
-            @ChildContent
-        </div>
+<div class="@CssClass" style="@ContainerStyle">
+    <div class="@ComputedViewportClass">
+        @ChildContent
     </div>
-    
-    @* Scroll shadows *@
-    @if (EnableScrollShadows)
-    {
-        <div class="scroll-shadow scroll-shadow-top"></div>
-        <div class="scroll-shadow scroll-shadow-bottom"></div>
-        <div class="scroll-shadow scroll-shadow-left"></div>
-        <div class="scroll-shadow scroll-shadow-right"></div>
-    }
-    
-    @if (ShowVerticalScrollbar)
-    {
-        <ScrollBar Orientation="Orientation.Vertical" />
-    }
-    @if (ShowHorizontalScrollbar)
-    {
-        <ScrollBar Orientation="Orientation.Horizontal" />
-    }
-    @if (ShowVerticalScrollbar && ShowHorizontalScrollbar)
-    {
-        <div class="absolute right-0 bottom-0 h-2.5 w-2.5 bg-transparent"></div>
-    }
 </div>
 
 @code {
-    private ElementReference _scrollAreaRef;
-    private ElementReference _viewportRef;
-    private IJSObjectReference? _module;
-    private IJSObjectReference? _scrollAreaInstance;
-
-    /// <summary>
-    /// The content to render within the scrollable area.
-    /// </summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-
-    /// <summary>
-    /// The type of scrollbar to show.
-    /// Default is Auto (scrollbars visible when content overflows).
-    /// </summary>
-    [Parameter]
-    public ScrollAreaType Type { get; set; } = ScrollAreaType.Auto;
-
-    /// <summary>
-    /// Controls the visibility delay of scrollbars in milliseconds.
-    /// Only applies when Type is Scroll or Hover.
-    /// Default is 600ms.
-    /// </summary>
-    [Parameter]
-    public int ScrollHideDelay { get; set; } = 600;
-
-    /// <summary>
-    /// Whether to show the vertical scrollbar.
-    /// Default is true.
-    /// </summary>
-    [Parameter]
-    public bool ShowVerticalScrollbar { get; set; } = true;
-
-    /// <summary>
-    /// Whether to show the horizontal scrollbar.
-    /// Default is false.
-    /// </summary>
-    [Parameter]
-    public bool ShowHorizontalScrollbar { get; set; } = false;
-
-    /// <summary>
-    /// Whether to enable scroll shadows that indicate more content is available.
-    /// Default is false.
-    /// </summary>
-    [Parameter]
-    public bool EnableScrollShadows { get; set; } = false;
-
-    /// <summary>
-    /// Additional CSS classes to apply to the root element.
-    /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
-    /// <summary>
-    /// Additional attributes to apply to the root element.
-    /// </summary>
-    [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+    [Parameter]
+    public string? ViewportClass { get; set; }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public ScrollAreaType Type { get; set; } = ScrollAreaType.Hover;
+
+    [Parameter]
+    public ScrollAreaOrientation Orientation { get; set; } = ScrollAreaOrientation.Vertical;
+
+    [Parameter]
+    public string? Height { get; set; }
+
+    [Parameter]
+    public string? MaxHeight { get; set; }
+
+    private string ContainerStyle
     {
-        if (firstRender)
+        get
         {
-            try
-            {
-                _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Components/js/scroll-area.js");
-
-                _scrollAreaInstance = await _module.InvokeAsync<IJSObjectReference>(
-                    "initialize",
-                    _scrollAreaRef,
-                    new { enableShadows = EnableScrollShadows });
-            }
-            catch (JSException ex)
-            {
-                // Log JS interop errors during initialization for debugging
-                Logger.LogWarning(ex, "ScrollArea: JavaScript initialization failed. Component will work without JS features.");
-            }
-            catch (InvalidOperationException ex)
-            {
-                // Log when JS runtime is not available (e.g., during server-side prerendering)
-                Logger.LogDebug(ex, "ScrollArea: JS runtime not available during initialization (likely prerendering).");
-            }
+            var styles = new List<string>();
+            if (!string.IsNullOrEmpty(Height))
+                styles.Add($"height: {Height}");
+            if (!string.IsNullOrEmpty(MaxHeight))
+                styles.Add($"max-height: {MaxHeight}");
+            return string.Join("; ", styles);
         }
     }
 
-    private string GetOverflowStyle()
+    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "relative",
+        Class
+    );
+
+    private string ScrollbarClass => Type switch
     {
-        return Type switch
+        ScrollAreaType.Always => "[&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border",
+        ScrollAreaType.Hover => "[&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:opacity-0 hover:[&::-webkit-scrollbar-thumb]:opacity-100",
+        ScrollAreaType.Hidden => "scrollbar-none [&::-webkit-scrollbar]:hidden",
+        _ => "[&::-webkit-scrollbar]:w-2.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border"
+    };
+
+    private string ComputedViewportClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "h-full w-full rounded-[inherit]",
+        Orientation switch
         {
-            ScrollAreaType.Always => "overflow: scroll;",
-            ScrollAreaType.Scroll => "overflow: auto;",
-            ScrollAreaType.Hover => "overflow: hidden;",  // JS would toggle this on hover
-            _ => "overflow: auto;"  // Auto - browser default behavior
-        };
-    }
-
-    private Dictionary<string, object> GetRootAttributes()
-    {
-        var baseClass = "group/scroll-area relative overflow-hidden";
-        var classValue = string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
-
-        var attributes = new Dictionary<string, object> { ["class"] = classValue };
-
-        if (AdditionalAttributes != null)
-        {
-            foreach (var kvp in AdditionalAttributes.Where(kvp => kvp.Key != "class"))
-            {
-                attributes[kvp.Key] = kvp.Value;
-            }
-        }
-
-        return attributes;
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        try
-        {
-            if (_module != null && _scrollAreaInstance != null)
-            {
-                await _module.InvokeVoidAsync("dispose", _scrollAreaInstance);
-            }
-
-            if (_scrollAreaInstance != null)
-            {
-                await _scrollAreaInstance.DisposeAsync();
-            }
-
-            if (_module != null)
-            {
-                await _module.DisposeAsync();
-            }
-        }
-        catch (JSDisconnectedException)
-        {
-            // Silently handle - JS runtime already disconnected
-        }
-        catch (JSException)
-        {
-            // Silently handle - component already disposed or JS error
-        }
-    }
+            ScrollAreaOrientation.Vertical => "overflow-y-auto overflow-x-hidden",
+            ScrollAreaOrientation.Horizontal => "overflow-x-auto overflow-y-hidden",
+            ScrollAreaOrientation.Both => "overflow-auto",
+            _ => "overflow-y-auto overflow-x-hidden"
+        },
+        ScrollbarClass,
+        ViewportClass
+    );
 }

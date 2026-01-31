@@ -1,5 +1,13 @@
 @namespace BlazorUI.Components.Pagination
 
-<li class="@CssClass">
+<li class="@Class">
     @ChildContent
 </li>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

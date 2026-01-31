@@ -115,6 +115,10 @@
     private IAsyncDisposable? _positioningCleanup;
     private bool _isInitialized = false;
     private bool _isPositioned = false;
+<<<<<<< HEAD
+=======
+    private bool _disposed = false;
+>>>>>>> pr-89
     private string _portalId = "";
     private TaskCompletionSource<bool>? _portalReadyTcs;
 
@@ -211,6 +215,7 @@
 
             // Set up keyboard navigation
             await SetupKeyboardNavAsync();
+<<<<<<< HEAD
 
             // Focus the dropdown content
             try
@@ -221,6 +226,8 @@
             {
                 // Focus may fail, that's okay
             }
+=======
+>>>>>>> pr-89
         }
         catch (Exception ex)
         {
@@ -229,7 +236,14 @@
             _isPositioned = true;
             try
             {
+<<<<<<< HEAD
                 await JSRuntime.InvokeVoidAsync("eval", $"document.getElementById('{Context.ContentId}').style.opacity = '1'; document.getElementById('{Context.ContentId}').style.pointerEvents = 'auto';");
+=======
+                var elementUtilsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorUI.Primitives/js/primitives/element-utils.js");
+                await elementUtilsModule.InvokeVoidAsync("showElement", Context.ContentId);
+                await elementUtilsModule.DisposeAsync();
+>>>>>>> pr-89
             }
             catch { /* ignore */ }
         }
@@ -241,12 +255,22 @@
              id="@Context.ContentId"
              role="menu"
              tabindex="-1"
+<<<<<<< HEAD
              @onkeydown="HandleKeyDown"
+=======
+             data-autofocus
+             @onkeydown="HandleKeyDown"
+             @onkeydown:preventDefault="true"
+>>>>>>> pr-89
              @attributes="GetAttributesWithoutStyle()"
              data-state="open"
              style="@GetMergedStyle()">
             <CascadingValue Value="Context" IsFixed="false">
+<<<<<<< HEAD
                 <CascadingValue Value="this" IsFixed="false">
+=======
+                <CascadingValue Value="this" Name="DropdownMenuContentContext" IsFixed="false">
+>>>>>>> pr-89
                     @ChildContent
                 </CascadingValue>
             </CascadingValue>
@@ -356,7 +380,12 @@
     [JSInvokable]
     public async Task HandleClickOutside()
     {
+<<<<<<< HEAD
         if (!Context.IsOpen) return;
+=======
+        // Guard against callbacks after disposal
+        if (_disposed || !Context.IsOpen) return;
+>>>>>>> pr-89
 
         // Invoke custom handler if provided
         if (OnClickOutside.HasDelegate)
@@ -373,6 +402,7 @@
 
     private string GetInitialStyle()
     {
+<<<<<<< HEAD
         var baseStyle = $"position: absolute; z-index: {ZIndex};";
 
         if (!_isPositioned)
@@ -383,6 +413,19 @@
         }
 
         return baseStyle;
+=======
+        if (!_isPositioned)
+        {
+            // Use position: fixed with off-screen coordinates to prevent:
+            // 1. Flash at wrong position (fixed doesn't depend on parent context)
+            // 2. Scroll jump (visibility: hidden prevents browser from scrolling to element)
+            // 3. Layout interference (pointer-events: none prevents interaction)
+            return $"position: fixed; z-index: {ZIndex}; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
+        }
+
+        // After positioning, JS will apply the correct styles
+        return $"position: absolute; z-index: {ZIndex};";
+>>>>>>> pr-89
     }
 
     private string GetMergedStyle()
@@ -443,6 +486,7 @@
             return;
         }
 
+<<<<<<< HEAD
         // Arrow navigation
         var enabledItems = _menuItems.Where(item => !item.Disabled).ToList();
         if (enabledItems.Count == 0) return;
@@ -566,6 +610,36 @@
 
         Context.SetFocusedIndex(absoluteIndex);
         await item.FocusAsync();
+=======
+        // Arrow navigation - use JS to navigate in DOM order
+        if (_keyboardNavModule == null) return;
+
+        try
+        {
+            switch (args.Key)
+            {
+                case "ArrowDown":
+                    await _keyboardNavModule.InvokeVoidAsync("navigateNext", _contentRef, Loop);
+                    break;
+
+                case "ArrowUp":
+                    await _keyboardNavModule.InvokeVoidAsync("navigatePrevious", _contentRef, Loop);
+                    break;
+
+                case "Home":
+                    await _keyboardNavModule.InvokeVoidAsync("navigateFirst", _contentRef);
+                    break;
+
+                case "End":
+                    await _keyboardNavModule.InvokeVoidAsync("navigateLast", _contentRef);
+                    break;
+            }
+        }
+        catch
+        {
+            // Ignore navigation errors
+        }
+>>>>>>> pr-89
     }
 
     private async Task CleanupAsync()
@@ -637,6 +711,12 @@
 
     public async ValueTask DisposeAsync()
     {
+<<<<<<< HEAD
+=======
+        // Set disposed flag first to prevent JSInvokable callbacks during cleanup
+        _disposed = true;
+
+>>>>>>> pr-89
         // Unsubscribe from portal ready events
         PortalService.OnPortalRendered -= HandlePortalRendered;
 
@@ -680,6 +760,7 @@
     }
 
     internal List<IDropdownMenuItem> GetMenuItems() => _menuItems;
+<<<<<<< HEAD
 
     /// <summary>
     /// Focuses the content container for keyboard navigation.
@@ -697,4 +778,6 @@
             // Focus may fail
         }
     }
+=======
+>>>>>>> pr-89
 }

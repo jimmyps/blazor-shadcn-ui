@@ -1,78 +1,26 @@
 @namespace BlazorUI.Components.ScrollArea
 
-@* ScrollBar - native-like scrollbar with dynamic thumb sizing and positioning *@
-<div @attributes="GetAttributes()" data-scrollbar>
-    <div class="@GetThumbClass()" data-scrollbar-thumb></div>
+<div class="@CssClass">
+    <div class="@ThumbClass"></div>
 </div>
 
 @code {
-    /// <summary>
-    /// The orientation of the scrollbar.
-    /// Default is Vertical.
-    /// </summary>
     [Parameter]
-    public Orientation Orientation { get; set; } = Orientation.Vertical;
+    public ScrollAreaOrientation Orientation { get; set; } = ScrollAreaOrientation.Vertical;
 
-    /// <summary>
-    /// Additional CSS classes to apply to the scrollbar.
-    /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
-    /// <summary>
-    /// Additional attributes to apply to the scrollbar element.
-    /// </summary>
-    [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "flex touch-none select-none transition-colors",
+        Orientation == ScrollAreaOrientation.Vertical
+            ? "h-full w-2.5 border-l border-l-transparent p-[1px]"
+            : "h-2.5 flex-col border-t border-t-transparent p-[1px]",
+        Class
+    );
 
-    private string GetBaseClass()
-    {
-        var orientationClass = Orientation == Orientation.Vertical
-            ? "h-full w-2.5"
-            : "h-2.5 w-full";
-
-        // Hidden by default, shown on hover of parent scroll area
-        return $"flex touch-none select-none opacity-0 transition-opacity duration-300 group-hover/scroll-area:opacity-100 {orientationClass}";
-    }
-
-    private string GetThumbClass()
-    {
-        // Thumb with rounded corners, subtle background, and cursor pointer for dragging
-        var baseThumbClass = "rounded-full bg-border/50 hover:bg-border/80 transition-colors cursor-pointer";
-        
-        if (Orientation == Orientation.Vertical)
-        {
-            return $"{baseThumbClass} w-full";
-        }
-        
-        return baseThumbClass;
-    }
-
-    private Dictionary<string, object> GetAttributes()
-    {
-        var baseClass = GetBaseClass();
-        var classValue = string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
-
-        var position = Orientation == Orientation.Vertical
-            ? "absolute right-0 top-0 bottom-0 z-10 p-[1px]"
-            : "absolute bottom-0 left-0 right-0 z-10 p-[1px]";
-
-        classValue = $"{position} {classValue}";
-
-        var attributes = new Dictionary<string, object>
-        {
-            ["class"] = classValue,
-            ["data-orientation"] = Orientation.ToString().ToLowerInvariant()
-        };
-
-        if (AdditionalAttributes != null)
-        {
-            foreach (var kvp in AdditionalAttributes.Where(kvp => kvp.Key != "class"))
-            {
-                attributes[kvp.Key] = kvp.Value;
-            }
-        }
-
-        return attributes;
-    }
+    private string ThumbClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "relative rounded-full bg-border",
+        Orientation == ScrollAreaOrientation.Vertical ? "flex-1" : "flex-1"
+    );
 }

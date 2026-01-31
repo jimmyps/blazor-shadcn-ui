@@ -31,19 +31,14 @@ tailwindcss.exe
 Thumbs.db
 NUL
 
-# DevFlow
-.devflow/snapshots/
-
 # Environment
 .env
 .env.local
 .env.*.local
 
+# Development Tools
 .playwright-mcp
 .devflow
 .claude
-/src/BlazorUI.Components/wwwroot/blazorui.css
-/src/BlazorUI.Components/wwwroot/blazorui.css
-/src/BlazorUI.Components/wwwroot/blazorui.css
-/demo/BlazorUI.Demo/Properties/PublishProfiles/BlazorUIDemo20251223130817 - Web Deploy.pubxml
-/demo/BlazorUI.Demo/Properties/PublishProfiles/BlazorUIDemo20251223130817.pubxml
+DEV-TASKS.md
+.instructions

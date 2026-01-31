@@ -2,17 +2,60 @@
 // CDN: https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.5.3/+esm
 
 let floatingUI = null;
+<<<<<<< HEAD
+=======
+let stylesInjected = false;
+
+/**
+ * Injects required CSS for positioning primitives.
+ * This ensures the library works without requiring manual CSS imports.
+ */
+function injectRequiredStyles() {
+    if (stylesInjected) return;
+
+    const css = `
+        /* BlazorUI Primitives - Auto-injected positioning styles */
+        [data-positioned="false"] {
+            position: absolute !important;
+            top: -9999px !important;
+            left: -9999px !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            z-index: 50;
+        }
+    `;
+
+    const style = document.createElement('style');
+    style.setAttribute('data-blazorui-primitives', 'positioning');
+    style.textContent = css;
+    document.head.appendChild(style);
+    stylesInjected = true;
+}
+>>>>>>> pr-89
 
 // Store cleanup functions with unique IDs to avoid passing functions through JS interop
 const cleanupRegistry = new Map();
 let cleanupIdCounter = 0;
 
 /**
+<<<<<<< HEAD
  * Lazy loads Floating UI from CDN with local fallback
+=======
+ * Lazy loads Floating UI from preloaded global or CDN with fallback
+>>>>>>> pr-89
  */
 async function loadFloatingUI() {
     if (floatingUI) return floatingUI;
 
+<<<<<<< HEAD
+=======
+    // Check for preloaded global first (from App.razor script)
+    if (window.FloatingUIDOM) {
+        floatingUI = window.FloatingUIDOM;
+        return floatingUI;
+    }
+
+>>>>>>> pr-89
     try {
         // Try CDN first
         floatingUI = await import('https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.5.3/+esm');
@@ -71,6 +114,12 @@ export async function waitForElement(elementId, maxWaitMs = 100, intervalMs = 10
  * @returns {Promise<Object>} Position result with x, y, placement
  */
 export async function computePosition(reference, floating, options = {}) {
+<<<<<<< HEAD
+=======
+    // Inject required CSS on first use
+    injectRequiredStyles();
+
+>>>>>>> pr-89
     // Validate elements before proceeding
     if (!isElementReady(reference)) {
         throw new Error('Reference element is not ready or not in DOM');
@@ -88,7 +137,12 @@ export async function computePosition(reference, floating, options = {}) {
         flip = true,
         shift = true,
         padding = 8,
+<<<<<<< HEAD
         strategy = 'absolute'
+=======
+        strategy = 'absolute',
+        matchReferenceWidth = false
+>>>>>>> pr-89
     } = options;
 
     const middleware = [
@@ -108,6 +162,22 @@ export async function computePosition(reference, floating, options = {}) {
         middleware.push(lib.arrow({ element: options.arrow }));
     }
 
+<<<<<<< HEAD
+=======
+    // Add size middleware to match floating element width to reference element
+    if (matchReferenceWidth) {
+        middleware.push(lib.size({
+            apply({ rects, elements }) {
+                Object.assign(elements.floating.style, {
+                    width: `${rects.reference.width}px`,
+                    minWidth: `${rects.reference.width}px`,
+                    maxWidth: `${rects.reference.width}px`
+                });
+            }
+        }));
+    }
+
+>>>>>>> pr-89
     const result = await lib.computePosition(reference, floating, {
         placement,
         middleware,
@@ -136,18 +206,46 @@ export async function computePosition(reference, floating, options = {}) {
 export function applyPosition(floating, position, makeVisible = false) {
     if (!floating || !position) return;
 
+<<<<<<< HEAD
+=======
+    // Apply all positioning styles atomically to prevent flash
+    // Use higher z-index for fixed positioning (nested dropdowns) to ensure they appear above parent popovers
+    const zIndex = position.strategy === 'fixed' ? '9999' : '50';
+>>>>>>> pr-89
     Object.assign(floating.style, {
         position: position.strategy || 'absolute',
         left: `${position.x}px`,
         top: `${position.y}px`,
+<<<<<<< HEAD
+=======
+        zIndex: zIndex,
+>>>>>>> pr-89
         transformOrigin: position.transformOrigin || ''
     });
 
     // If makeVisible is true, show the element after positioning
+<<<<<<< HEAD
     // Note: We don't set opacity here - let CSS animations (animate-in, fade-in) handle it
     if (makeVisible) {
         floating.style.visibility = 'visible';
         floating.style.pointerEvents = 'auto';
+=======
+    // Set all visibility-related properties to ensure the element is fully visible
+    if (makeVisible) {
+        // Use requestAnimationFrame to ensure position is applied before visibility
+        requestAnimationFrame(() => {
+            // Use setProperty with 'important' to override any CSS animations/transitions
+            floating.style.setProperty('visibility', 'visible', 'important');
+            floating.style.setProperty('opacity', '1', 'important');
+            floating.style.setProperty('pointer-events', 'auto', 'important');
+            // Also ensure position is not being reset by CSS
+            floating.style.setProperty('top', floating.style.top, 'important');
+            floating.style.setProperty('left', floating.style.left, 'important');
+
+            // Dispatch event to signal element is now visible and positioned
+            floating.dispatchEvent(new CustomEvent('blazorui:visible', { bubbles: true }));
+        });
+>>>>>>> pr-89
     }
 }
 

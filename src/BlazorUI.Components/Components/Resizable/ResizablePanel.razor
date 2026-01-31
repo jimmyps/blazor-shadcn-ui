@@ -1,8 +1,6 @@
 @namespace BlazorUI.Components.Resizable
-@implements IDisposable
 
-@* ResizablePanel - individual panel within a ResizablePanelGroup *@
-<div @attributes="GetAttributes()">
+<div class="@CssClass" style="@Style">
     @ChildContent
 </div>
 
@@ -10,105 +8,79 @@
     [CascadingParameter]
     private ResizablePanelGroup? Group { get; set; }
 
-    private int _index = -1;
-
     /// <summary>
-    /// The content to render within the panel.
+    /// The content of the panel.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// The default size of the panel as a percentage.
+    /// The default size as a percentage (0-100).
     /// </summary>
     [Parameter]
-    public double? DefaultSize { get; set; }
+    public double DefaultSize { get; set; } = 50;
 
     /// <summary>
-    /// The minimum size of the panel as a percentage.
+    /// The minimum size as a percentage (0-100).
     /// </summary>
     [Parameter]
-    public double? MinSize { get; set; }
+    public double MinSize { get; set; } = 10;
 
     /// <summary>
-    /// The maximum size of the panel as a percentage.
+    /// The maximum size as a percentage (0-100).
     /// </summary>
     [Parameter]
-    public double? MaxSize { get; set; }
+    public double MaxSize { get; set; } = 100;
 
     /// <summary>
-    /// Whether the panel is collapsible.
+    /// Whether the panel can be collapsed.
     /// </summary>
     [Parameter]
-    public bool Collapsible { get; set; } = false;
+    public bool Collapsible { get; set; }
 
     /// <summary>
-    /// Additional CSS classes to apply to the panel.
+    /// Additional CSS classes to apply.
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
-    /// <summary>
-    /// Additional attributes to apply to the panel element.
-    /// </summary>
-    [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+    private int _panelIndex = -1;
+
+    private bool IsHorizontal => Group?.GetDirection() == ResizableDirection.Horizontal;
+
+    private double CurrentSize
+    {
+        get
+        {
+            if (Group != null && _panelIndex >= 0)
+            {
+                return Group.GetPanelSize(_panelIndex);
+            }
+            return DefaultSize;
+        }
+    }
 
     protected override void OnInitialized()
     {
-        if (Group == null)
-        {
-            throw new InvalidOperationException(
-                "ResizablePanel must be used within a ResizablePanelGroup component.");
-        }
-
-        _index = Group.RegisterPanel(this);
-    }
-
-    private double GetSize()
-    {
         if (Group != null)
         {
-            return Group.GetPanelSize(_index);
+            _panelIndex = Group.RegisterPanel(DefaultSize, MinSize, MaxSize);
         }
-        return DefaultSize ?? 50;
     }
 
-    private string GetFlexStyle()
+    private string Style
     {
-        var size = GetSize();
-        return $"flex: {size} 1 0%; overflow: hidden;";
-    }
-
-    private Dictionary<string, object> GetAttributes()
-    {
-        var classValue = string.IsNullOrEmpty(Class) ? "" : Class;
-
-        var attributes = new Dictionary<string, object>
+        get
         {
-            ["style"] = GetFlexStyle(),
-            ["data-panel"] = "",
-            ["data-panel-id"] = _index.ToString()
-        };
-
-        if (!string.IsNullOrEmpty(classValue))
-        {
-            attributes["class"] = classValue;
+            var size = CurrentSize;
+            return IsHorizontal
+                ? $"flex: 0 0 {size:F2}%; min-width: {MinSize}%; max-width: {MaxSize}%; overflow: auto;"
+                : $"flex: 0 0 {size:F2}%; min-height: {MinSize}%; max-height: {MaxSize}%; overflow: auto;";
         }
-
-        if (AdditionalAttributes != null)
-        {
-            foreach (var kvp in AdditionalAttributes.Where(kvp => kvp.Key != "style"))
-            {
-                attributes[kvp.Key] = kvp.Value;
-            }
-        }
-
-        return attributes;
     }
 
-    public void Dispose()
-    {
-        Group?.UnregisterPanel(this);
-    }
+    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "relative",
+        Class
+    );
 }

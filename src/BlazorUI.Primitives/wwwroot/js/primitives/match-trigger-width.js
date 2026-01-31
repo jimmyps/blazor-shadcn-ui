@@ -12,8 +12,13 @@ export function matchTriggerWidth(triggerElement, contentElement) {
 
     function updateWidth() {
         const triggerRect = triggerElement.getBoundingClientRect();
+<<<<<<< HEAD
         // Set width with !important via cssText to override any class-based width
         contentElement.style.cssText += `; width: ${triggerRect.width}px !important`;
+=======
+        // Set width with !important using setProperty to override any class-based width
+        contentElement.style.setProperty('width', triggerRect.width + 'px', 'important');
+>>>>>>> pr-89
     }
 
     // Apply width immediately

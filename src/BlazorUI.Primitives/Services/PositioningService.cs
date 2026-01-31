@@ -62,7 +62,12 @@ public class PositioningService : IPositioningService, IAsyncDisposable
             flip = options.Flip,
             shift = options.Shift,
             padding = options.Padding,
+<<<<<<< HEAD
             strategy = options.Strategy
+=======
+            strategy = options.Strategy,
+            matchReferenceWidth = options.MatchReferenceWidth
+>>>>>>> pr-89
         };
 
         var result = await module.InvokeAsync<JsonElement>(
@@ -105,7 +110,12 @@ public class PositioningService : IPositioningService, IAsyncDisposable
             flip = options.Flip,
             shift = options.Shift,
             padding = options.Padding,
+<<<<<<< HEAD
             strategy = options.Strategy
+=======
+            strategy = options.Strategy,
+            matchReferenceWidth = options.MatchReferenceWidth
+>>>>>>> pr-89
         };
 
         var cleanup = await module.InvokeAsync<IJSObjectReference>(

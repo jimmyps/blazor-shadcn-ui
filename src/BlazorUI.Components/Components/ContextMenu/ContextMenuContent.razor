@@ -1,72 +1,232 @@
 @namespace BlazorUI.Components.ContextMenu
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
 
-@* ContextMenuContent - styled content panel with transparent overlay *@
-<BlazorUI.Primitives.ContextMenu.ContextMenuContent CloseOnEscape="@CloseOnEscape"
-                    CloseOnClickOutside="@CloseOnClickOutside"
-                    ZIndex="@ZIndex"
-                    LockScroll="@LockScroll"
-                    OverlayClass="@GetOverlayClass()"
-                    class="@GetClass()"
-                    @attributes="AdditionalAttributes">
-    @ChildContent
-</BlazorUI.Primitives.ContextMenu.ContextMenuContent>
+@if (Context?.IsOpen == true)
+{
+    <div class="fixed inset-0 z-40"
+         @onclick="HandleOverlayClick"
+         @onclick:stopPropagation="true"
+         @oncontextmenu="HandleOverlayClose"
+         @oncontextmenu:preventDefault="true"></div>
+    <div @ref="_contentRef"
+         class="@CssClass"
+         style="position: fixed; left: @(Context.X)px; top: @(Context.Y)px; z-index: 50;"
+         @onclick:stopPropagation="true"
+         @onkeydown="HandleKeyDown"
+         @onkeydown:preventDefault="true"
+         @oncontextmenu:preventDefault="true"
+         tabindex="-1"
+         data-autofocus
+         role="menu">
+        <div class="p-1">
+            @ChildContent
+        </div>
+    </div>
+}
 
 @code {
-    /// <summary>
-    /// The content to render inside the menu.
-    /// </summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [CascadingParameter]
+    public ContextMenu? Context { get; set; }
 
-    /// <summary>
-    /// Whether pressing Escape should close the menu.
-    /// </summary>
-    [Parameter]
-    public bool CloseOnEscape { get; set; } = true;
-
-    /// <summary>
-    /// Whether clicking outside should close the menu.
-    /// </summary>
-    [Parameter]
-    public bool CloseOnClickOutside { get; set; } = true;
-
-    /// <summary>
-    /// Z-index value for the menu content.
-    /// </summary>
-    [Parameter]
-    public int ZIndex { get; set; } = 50;
-
-    /// <summary>
-    /// Whether to lock body scroll when menu is open.
-    /// Default is true.
-    /// </summary>
-    [Parameter]
-    public bool LockScroll { get; set; } = true;
-
-    /// <summary>
-    /// Additional CSS classes to apply.
-    /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
-    /// <summary>
-    /// Additional attributes to apply.
-    /// </summary>
-    [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 
-    private string GetOverlayClass()
+    [Parameter]
+    public bool Loop { get; set; } = true;
+
+    private ElementReference _contentRef;
+    private bool _wasClosed = true;
+    private IJSObjectReference? _portalModule;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Transparent overlay that covers the entire screen
-        return "bg-transparent";
+        if (Context?.IsOpen == true && _wasClosed)
+        {
+            _wasClosed = false;
+            try
+            {
+                // Load portal module and trigger autofocus
+                _portalModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorUI.Primitives/js/primitives/portal.js");
+                await _portalModule.InvokeVoidAsync("triggerAutofocus", _contentRef);
+            }
+            catch
+            {
+                // Ignore errors during prerendering
+            }
+        }
+        else if (Context?.IsOpen != true)
+        {
+            _wasClosed = true;
+        }
     }
 
-    private string GetClass()
+    public async ValueTask DisposeAsync()
     {
-        var baseClass = "z-50 min-w-[8rem] no-focus-ring overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md " +
-                       "animate-in fade-in-80 data-[state=open]:animate-in data-[state=closed]:animate-out " +
-                       "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 " +
-                       "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95";
-        return string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
+        if (_portalModule != null)
+        {
+            await _portalModule.DisposeAsync();
+        }
     }
+
+    private async Task HandleOverlayClick()
+    {
+        if (Context != null)
+        {
+            await Context.Close();
+        }
+    }
+
+    private async Task HandleOverlayClose(MouseEventArgs e)
+    {
+        if (Context != null)
+        {
+            await Context.Close();
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (Context == null) return;
+
+        switch (e.Key)
+        {
+            case "Escape":
+                await Context.Close();
+                break;
+
+            case "ArrowDown":
+                await NavigateNext();
+                break;
+
+            case "ArrowUp":
+                await NavigatePrevious();
+                break;
+
+            case "Home":
+                await FocusFirst();
+                break;
+
+            case "End":
+                await FocusLast();
+                break;
+        }
+    }
+
+    private async Task NavigateNext()
+    {
+        if (Context == null) return;
+
+        var items = Context.GetMenuItems();
+        var enabledItems = items.Where(i => !i.IsDisabled).ToList();
+        if (enabledItems.Count == 0) return;
+
+        var currentIndex = Context.FocusedIndex;
+        int nextIndex;
+
+        if (currentIndex == -1)
+        {
+            nextIndex = 0;
+        }
+        else
+        {
+            var currentItem = currentIndex < items.Count ? items[currentIndex] : null;
+            var enabledIndex = currentItem != null ? enabledItems.IndexOf(currentItem) : -1;
+
+            if (enabledIndex == -1)
+            {
+                nextIndex = 0;
+            }
+            else if (enabledIndex == enabledItems.Count - 1)
+            {
+                nextIndex = Loop ? 0 : enabledIndex;
+            }
+            else
+            {
+                nextIndex = enabledIndex + 1;
+            }
+        }
+
+        await FocusEnabledItem(enabledItems, items, nextIndex);
+    }
+
+    private async Task NavigatePrevious()
+    {
+        if (Context == null) return;
+
+        var items = Context.GetMenuItems();
+        var enabledItems = items.Where(i => !i.IsDisabled).ToList();
+        if (enabledItems.Count == 0) return;
+
+        var currentIndex = Context.FocusedIndex;
+        int prevIndex;
+
+        if (currentIndex == -1)
+        {
+            prevIndex = enabledItems.Count - 1;
+        }
+        else
+        {
+            var currentItem = currentIndex < items.Count ? items[currentIndex] : null;
+            var enabledIndex = currentItem != null ? enabledItems.IndexOf(currentItem) : -1;
+
+            if (enabledIndex == -1)
+            {
+                prevIndex = enabledItems.Count - 1;
+            }
+            else if (enabledIndex == 0)
+            {
+                prevIndex = Loop ? enabledItems.Count - 1 : 0;
+            }
+            else
+            {
+                prevIndex = enabledIndex - 1;
+            }
+        }
+
+        await FocusEnabledItem(enabledItems, items, prevIndex);
+    }
+
+    private async Task FocusFirst()
+    {
+        if (Context == null) return;
+
+        var items = Context.GetMenuItems();
+        var enabledItems = items.Where(i => !i.IsDisabled).ToList();
+        if (enabledItems.Count == 0) return;
+
+        await FocusEnabledItem(enabledItems, items, 0);
+    }
+
+    private async Task FocusLast()
+    {
+        if (Context == null) return;
+
+        var items = Context.GetMenuItems();
+        var enabledItems = items.Where(i => !i.IsDisabled).ToList();
+        if (enabledItems.Count == 0) return;
+
+        await FocusEnabledItem(enabledItems, items, enabledItems.Count - 1);
+    }
+
+    private async Task FocusEnabledItem(List<ContextMenuItem> enabledItems, List<ContextMenuItem> allItems, int enabledIndex)
+    {
+        if (enabledIndex < 0 || enabledIndex >= enabledItems.Count) return;
+
+        var item = enabledItems[enabledIndex];
+        var absoluteIndex = allItems.IndexOf(item);
+
+        Context!.SetFocusedIndex(absoluteIndex);
+        await item.FocusAsync();
+    }
+
+    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md outline-none",
+        "animate-in fade-in-0 zoom-in-95",
+        Class
+    );
 }

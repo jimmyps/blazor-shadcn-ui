@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 using BlazorUI.Primitives.Contexts;
 using BlazorUI.Primitives.Services;
 using Microsoft.AspNetCore.Components;
+=======
+using Microsoft.AspNetCore.Components;
+using BlazorUI.Primitives.Contexts;
+>>>>>>> pr-89
 
 namespace BlazorUI.Primitives.Popover;
 
@@ -15,12 +20,15 @@ public class PopoverState
     public bool IsOpen { get; set; }
 
     /// <summary>
+<<<<<<< HEAD
     /// Gets or sets the position result for the popover.
     /// </summary>
     public PositionResult? Position { get; set; }
 
 
     /// <summary>
+=======
+>>>>>>> pr-89
     /// Gets or sets the element that triggered the popover opening.
     /// Used for positioning and focus management.
     /// </summary>
@@ -94,4 +102,21 @@ public class PopoverContext : PrimitiveContextWithEvents<PopoverState>
             Open(triggerElement);
         }
     }
+<<<<<<< HEAD
+=======
+
+    /// <summary>
+    /// Event fired when the popover content is fully ready (positioned and visible).
+    /// </summary>
+    public event Action? OnContentReady;
+
+    /// <summary>
+    /// Notifies subscribers that the popover content is fully ready.
+    /// Called by PopoverContent after setup completes.
+    /// </summary>
+    public void NotifyContentReady()
+    {
+        OnContentReady?.Invoke();
+    }
+>>>>>>> pr-89
 }

@@ -61,6 +61,7 @@
         // Update portal registration based on open state
         if (Context.IsOpen || ForceMount)
         {
+<<<<<<< HEAD
             if (_isRegistered)
             {
                 UpdatePortal();
@@ -69,6 +70,16 @@
             {
                 RegisterPortal();
             }
+=======
+            if (!_isRegistered)
+            {
+                RegisterPortal();
+            }
+            // Note: We do NOT call UpdatePortal() here because it would cause infinite loops
+            // when nested portals (like Combobox inside Dialog) are used. The RenderFragment
+            // returned by GetPortalContent() captures ChildContent by reference, so when
+            // PortalHost renders, it will always use the latest content.
+>>>>>>> pr-89
         }
         else
         {
@@ -90,6 +101,7 @@
         }
     }
 
+<<<<<<< HEAD
     private void UpdatePortal()
     {
         if (_isRegistered && ChildContent != null)
@@ -98,6 +110,8 @@
         }
     }
 
+=======
+>>>>>>> pr-89
     private RenderFragment GetPortalContent() => builder =>
     {
         builder.OpenComponent<CascadingValue<DialogContext>>(0);

@@ -9,8 +9,10 @@
                                                    Side="@Side"
                                                    Align="@Align"
                                                    Offset="@Offset"
+                                                   MatchTriggerWidth="@MatchTriggerWidth"
                                                    OnEscapeKeyDown="@OnEscapeKeyDown"
                                                    OnClickOutside="@OnClickOutside"
+                                                   OnContentReady="@OnContentReady"
                                                    class="@CssClass"
                                                    @attributes="AdditionalAttributes">
     @ChildContent
@@ -36,10 +38,20 @@
     public int Offset { get; set; } = 4;
 
     [Parameter]
+    public bool MatchTriggerWidth { get; set; } = false;
+
+    [Parameter]
     public EventCallback<KeyboardEventArgs> OnEscapeKeyDown { get; set; }
 
     [Parameter]
     public EventCallback OnClickOutside { get; set; }
+
+    /// <summary>
+    /// Event callback invoked when the popover content is fully ready (positioned and visible).
+    /// Useful for focus management.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnContentReady { get; set; }
 
     [Parameter]
     public string? Class { get; set; }

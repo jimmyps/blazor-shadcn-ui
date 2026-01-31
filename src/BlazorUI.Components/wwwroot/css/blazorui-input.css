@@ -8,131 +8,9 @@
 /* Component structural variables */
 @layer base {
   :root {
-    /* ──────────────────────────────────────────────────────────
-     Power easings
-     ────────────────────────────────────────────────────────── */
-    --ease-quad-in: cubic-bezier(0.55, 0.085, 0.68, 0.53);
-    --ease-quad-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    --ease-quad-in-out: cubic-bezier(0.455, 0.03, 0.515, 0.955);
-    --ease-cubic-in: cubic-bezier(0.55, 0.055, 0.675, 0.19);
-    --ease-cubic-out: cubic-bezier(0.215, 0.61, 0.355, 1);
-    --ease-cubic-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
-    --ease-quart-in: cubic-bezier(0.895, 0.03, 0.685, 0.22);
-    --ease-quart-out: cubic-bezier(0.165, 0.84, 0.44, 1);
-    --ease-quart-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-    --ease-quint-in: cubic-bezier(0.755, 0.05, 0.855, 0.06);
-    --ease-quint-out: cubic-bezier(0.23, 1, 0.32, 1);
-    --ease-quint-in-out: cubic-bezier(0.86, 0, 0.07, 1);
-    --ease-sine-in: cubic-bezier(0.47, 0, 0.745, 0.715);
-    --ease-sine-out: cubic-bezier(0.39, 0.575, 0.565, 1);
-    --ease-sine-in-out: cubic-bezier(0.445, 0.05, 0.55, 0.95);
-    --ease-expo-in: cubic-bezier(0.95, 0.05, 0.795, 0.035);
-    --ease-expo-out: cubic-bezier(0.19, 1, 0.22, 1);
-    --ease-expo-in-out: cubic-bezier(1, 0, 0, 1);
-    --ease-circ-in: cubic-bezier(0.6, 0.04, 0.98, 0.335);
-    --ease-circ-out: cubic-bezier(0.075, 0.82, 0.165, 1);
-    --ease-circ-in-out: cubic-bezier(0.785, 0.135, 0.15, 0.86);
-    --ease-back-in: cubic-bezier(0.6, -0.28, 0.735, 0.045);
-    --ease-back-out: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    --ease-back-in-out: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    --ease-elastic-in: cubic-bezier(0.36, 0, 0.66, -0.56);
-    --ease-elastic-out: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --ease-elastic-in-out: cubic-bezier(0.68, -0.6, 0.32, 1.6);
-    --ease-bounce-in: cubic-bezier(0.3, 0, 0.66, -0.56);
-    --ease-bounce-out: cubic-bezier(0.34, 1.61, 0.7, 1);
-    --ease-bounce-in-out: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    --ease-step-start: steps(1, start);
-    --ease-step-end: steps(1, end);
-    --ease-steps-4: steps(4, end);
-    --ease-steps-8: steps(8, end);
-    --ease-modal: cubic-bezier(0.32, 0.72, 0, 1);
-    --ease-pop: cubic-bezier(0.2, 1.05, 0.3, 1);
-    --ease-snap: cubic-bezier(0.4, 0, 1, 1);
-    /* Sidebar */
     --sidebar-width: 16rem;
     --sidebar-width-mobile: 18rem;
     --sidebar-width-icon: 3rem;
-    /* Height animation variables */
-    --height-animation-duration: 300ms;
-    --height-animation-timing: var(--ease-cubic-out);
-    /* Dialog animation values - reusable for all components */
-    --dialog-panel-translate-start: -8px;
-    --dialog-panel-scale-start: 0.96;
-    --dialog-panel-translate-exit: 8px;
-    --dialog-panel-scale-exit: 0.98;
-    --dialog-panel-duration: 1s;
-    --dialog-panel-easing: var(--ease-modal);
-    --dialog-item-translate-start: -4px;
-    --dialog-item-translate-exit: 4px;
-    --dialog-item-duration: 150ms;
-    --dialog-item-easing: var(--ease-out);
-    --dialog-overlay-duration: 150ms;
-    /* Chart color palette (5 colors for data series) */
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
-    /* OHLC (candlestick) chart colors in OKLCH format */
-    --chart-up: oklch(0.646 0.222 41.116); /* Green for upward movement */
-    --chart-down: oklch(0.628 0.258 29.234); /* Red for downward movement */
-    --chart-neutral: oklch(0.5 0 0); /* Gray for no change */
-    /* Optional axis/opacity helpers – not used by Tailwind by default */
-    --shadow-x: 0;
-    --shadow-y: 0;
-    --shadow-blur: 0;
-    --shadow-spread: 0;
-    --shadow-opacity: 0.1;
-    --shadow-color: rgba(0, 0, 0, 1);
-    /* Map to Tailwind's default boxShadow scale */
-    /* Tailwind sm */
-    --shadow-2xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    /* Tailwind DEFAULT */
-    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.10), 0 1px 2px -1px rgba(0, 0, 0, 0.10);
-    /* Tailwind md */
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.10), 0 2px 4px -2px rgba(0, 0, 0, 0.10);
-    /* Tailwind lg */
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.10), 0 4px 6px -4px rgba(0, 0, 0, 0.10);
-    /* Tailwind xl */
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.10), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    /* Tailwind 2xl */
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  }
-
-  .dark {
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    /* helpers if you need them */
-    --shadow-x: 0;
-    --shadow-y: 0;
-    --shadow-blur: 0;
-    --shadow-spread: 0;
-    --shadow-opacity: 0.25;
-    --shadow-color: rgba(0, 0, 0, 1);
-    /* Dark-mode tuned shadows (optional) */
-
-    --shadow-2xs: 0 1px 2px 0 rgba(0, 0, 0, 0.20);
-    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.20);
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
-    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.35), 0 1px 2px -1px rgba(0, 0, 0, 0.35);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.35), 0 2px 4px -2px rgba(0, 0, 0, 0.35);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.40), 0 4px 6px -4px rgba(0, 0, 0, 0.40);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.45), 0 10px 10px -5px rgba(0, 0, 0, 0.30);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.60);
-  }
-
-  /* Reduced motion: zero out durations for accessibility */
-  @media (prefers-reduced-motion: reduce) {
-    :root {
-      --dialog-panel-duration: 0ms;
-      --dialog-item-duration: 0ms;
-      --dialog-overlay-duration: 0ms;
-    }
   }
 }
 
@@ -142,119 +20,32 @@
     background-color: var(--accent);
     color: var(--accent-foreground);
   }
+}
 
-  .height-animation-container {
-    transition: height var(--height-animation-duration, 200ms) var(--height-animation-timing, cubic-bezier(0.4, 0, 0.2, 1));
-    will-change: height;
+/* Navigation Menu keyboard navigation focus styling */
+@layer components {
+  /* Remove browser default focus outline from the menu container */
+  [role="menu"]:focus,
+  [role="menu"]:focus-visible {
+    outline: none;
   }
 
-  .height-animation-container [role="listbox"] {
-    overflow-y: auto;
-    overflow-x: hidden;
+  /* Style the parent container when a link inside is focused */
+  [role="menu"] div:has(> a:focus),
+  [role="menu"] div:has(> a:focus-visible) {
+    outline: 2px solid var(--ring);
+    outline-offset: -2px;
+    border-radius: 0.5rem;
+    background-color: var(--accent);
   }
 
-  /* ScrollArea Shadows */
-  .scroll-shadow {
-    position: absolute;
-    pointer-events: none;
-    z-index: 5;
-    opacity: 0;
-    transition: opacity 150ms ease-in-out;
-  }
-
-  .scroll-shadow-top {
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: linear-gradient(to bottom, var(--background) 0%, transparent 100%);
-  }
-
-  .scroll-shadow-bottom {
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: linear-gradient(to top, var(--background) 0%, transparent 100%);
-  }
-
-  .scroll-shadow-left {
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 60px;
-    background: linear-gradient(to right, var(--background) 0%, transparent 100%);
-  }
-
-  .scroll-shadow-right {
-    top: 0;
-    bottom: 0;
-    right: 0;
-    width: 60px;
-    background: linear-gradient(to left, var(--background) 0%, transparent 100%);
-  }
-
-  /* Show shadows when scrollable */
-  [data-scroll-top="true"] .scroll-shadow-top {
-    opacity: 1;
-  }
-
-  [data-scroll-bottom="true"] .scroll-shadow-bottom {
-    opacity: 1;
-  }
-
-  [data-scroll-left="true"] .scroll-shadow-left {
-    opacity: 1;
-  }
-
-  [data-scroll-right="true"] .scroll-shadow-right {
-    opacity: 1;
-  }
-
-  /* Dialog Animation Classes - reusable for any component */
-  /* Apply animations per instance using dialog-animated class on both panel and overlay */
-
-  /* Panel animations - when dialog-animated is on the panel element */
-  .dialog-panel.dialog-animated[data-state="open"] {
-    @apply motion-safe:animate-dialog-panel-in;
-  }
-
-  .dialog-panel.dialog-animated[data-state="closed"] {
-    @apply motion-safe:animate-dialog-panel-out;
-  }
-
-  /* Overlay animations - when dialog-animated is on the overlay element */
-  .dialog-overlay.dialog-animated[data-state="open"] {
-    @apply motion-safe:animate-dialog-overlay-in;
-  }
-
-  .dialog-overlay.dialog-animated[data-state="closed"] {
-    @apply motion-safe:animate-dialog-overlay-out;
-  }
-
-  /* Item animations */
-  .dialog-item {
-    @apply opacity-0;
-  }
-
-  .dialog-item.is-visible {
-    @apply motion-safe:animate-dialog-item-in opacity-100;
-  }
-
-  .dialog-item.is-hidden {
-    @apply motion-safe:animate-dialog-item-out;
-  }
-
-  /* Reduced motion fallbacks */
-  @media (prefers-reduced-motion: reduce) {
-    .dialog-overlay,
-    .dialog-panel,
-    .dialog-item {
-      animation: none !important;
-      transition: none !important;
-    }
+  /* Remove default focus outline from the link itself */
+  [role="menu"] a:focus,
+  [role="menu"] a:focus-visible {
+    outline: none;
   }
 }
+
 
 /* Global theme overrides - utilities layer ensures these override Tailwind's reset */
 @layer utilities {
@@ -266,11 +57,7 @@
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
-  }
-
-  .no-focus-ring:focus,
-  .no-focus-ring:focus:not(:focus-visible) {
-    outline: none !important;
+    letter-spacing: var(--tracking-normal, 0);
   }
 
   /* Grid animation utilities for Accordion/Collapsible */
@@ -291,169 +78,148 @@
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
     transition-duration: var(--tw-duration, var(--default-transition-duration));
   }
+}
 
-  .data-\[motion\=from-end\]\:slide-in-from-right-52[data-motion=from-end] {
-    --tw-enter-translate-x: 13rem !important;
+/* Rich Text Editor - Headless Quill.js styles */
+@layer components {
+  /* Container styling - headless mode has no .ql-snow class */
+  [data-slot="rich-text-editor"] .ql-container {
+    font-family: inherit;
+    font-size: inherit;
   }
 
-  .data-\[motion\=from-start\]\:slide-in-from-left-52[data-motion=from-start] {
-    --tw-enter-translate-x: -13rem !important;
+  /* Editor content area */
+  [data-slot="rich-text-editor"] .ql-editor {
+    min-height: inherit;
+    padding: 0.75rem;
+    color: var(--foreground);
+    outline: none;
   }
 
-  .data-\[motion\=to-end\]\:slide-out-to-right-52[data-motion=to-end] {
-    --tw-exit-translate-x: 13rem !important;
+  /* Placeholder styling */
+  [data-slot="rich-text-editor"] .ql-editor.ql-blank::before {
+    color: var(--muted-foreground) !important;
+    font-style: normal;
+    left: 0.75rem;
+    right: 0.75rem;
+    pointer-events: none;
   }
 
-  .data-\[motion\=to-start\]\:slide-out-to-left-52[data-motion=to-start] {
-    --tw-exit-translate-x: -13rem !important;
+  /* Disabled state */
+  [data-slot="rich-text-editor"].opacity-50 .ql-editor {
+    cursor: not-allowed;
   }
 
-  /* Easing Utility Classes */
-  .ease-quad-in {
-    transition-timing-function: var(--ease-quad-in);
+  /* Inline formatting - reinforce browser defaults */
+  [data-slot="rich-text-editor"] .ql-editor strong,
+  [data-slot="rich-text-editor"] .ql-editor b {
+    font-weight: 700;
   }
 
-  .ease-quad-out {
-    transition-timing-function: var(--ease-quad-out);
+  [data-slot="rich-text-editor"] .ql-editor em,
+  [data-slot="rich-text-editor"] .ql-editor i {
+    font-style: italic;
   }
 
-  .ease-quad-in-out {
-    transition-timing-function: var(--ease-quad-in-out);
+  [data-slot="rich-text-editor"] .ql-editor u {
+    text-decoration: underline;
   }
 
-  .ease-cubic-in {
-    transition-timing-function: var(--ease-cubic-in);
+  [data-slot="rich-text-editor"] .ql-editor s {
+    text-decoration: line-through;
   }
 
-  .ease-cubic-out {
-    transition-timing-function: var(--ease-cubic-out);
+  /* Lists */
+  [data-slot="rich-text-editor"] .ql-editor ul,
+  [data-slot="rich-text-editor"] .ql-editor ol {
+    padding-left: 1.5em;
+    margin: 0.5em 0;
   }
 
-  .ease-cubic-in-out {
-    transition-timing-function: var(--ease-cubic-in-out);
+  [data-slot="rich-text-editor"] .ql-editor ul {
+    list-style-type: disc;
   }
 
-  .ease-quart-in {
-    transition-timing-function: var(--ease-quart-in);
+  [data-slot="rich-text-editor"] .ql-editor ol {
+    list-style-type: decimal;
   }
 
-  .ease-quart-out {
-    transition-timing-function: var(--ease-quart-out);
+  [data-slot="rich-text-editor"] .ql-editor li {
+    margin: 0.25em 0;
   }
 
-  .ease-quart-in-out {
-    transition-timing-function: var(--ease-quart-in-out);
+  /* Code block - Quill uses .ql-code-block classes, not <pre> */
+  [data-slot="rich-text-editor"] .ql-editor .ql-code-block-container {
+    background-color: var(--muted);
+    padding: 0.75em 1em;
+    border-radius: 0.375rem;
+    overflow-x: auto;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.875em;
+    margin: 0.5em 0;
   }
 
-  .ease-quint-in {
-    transition-timing-function: var(--ease-quint-in);
+  [data-slot="rich-text-editor"] .ql-editor .ql-code-block {
+    font-family: inherit;
   }
 
-  .ease-quint-out {
-    transition-timing-function: var(--ease-quint-out);
+  /* Links */
+  [data-slot="rich-text-editor"] .ql-editor a {
+    color: var(--primary);
+    text-decoration: underline;
   }
 
-  .ease-quint-in-out {
-    transition-timing-function: var(--ease-quint-in-out);
+  [data-slot="rich-text-editor"] .ql-editor a:hover {
+    text-decoration: none;
   }
 
-  .ease-sine-in {
-    transition-timing-function: var(--ease-sine-in);
+  /* Paragraphs */
+  [data-slot="rich-text-editor"] .ql-editor p {
+    margin: 0.5em 0;
   }
 
-  .ease-sine-out {
-    transition-timing-function: var(--ease-sine-out);
+  [data-slot="rich-text-editor"] .ql-editor p:first-child {
+    margin-top: 0;
   }
 
-  .ease-sine-in-out {
-    transition-timing-function: var(--ease-sine-in-out);
+  [data-slot="rich-text-editor"] .ql-editor p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* Rich Text Editor - Block formats that must override Tailwind preflight */
+@layer utilities {
+  /* Headings - !important required to override Tailwind preflight resets */
+  [data-slot="rich-text-editor"] .ql-editor h1 {
+    font-size: 2em !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0.5em !important;
   }
 
-  .ease-expo-in {
-    transition-timing-function: var(--ease-expo-in);
+  [data-slot="rich-text-editor"] .ql-editor h2 {
+    font-size: 1.5em !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0.5em !important;
   }
 
-  .ease-expo-out {
-    transition-timing-function: var(--ease-expo-out);
+  [data-slot="rich-text-editor"] .ql-editor h3 {
+    font-size: 1.25em !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0.5em !important;
   }
 
-  .ease-expo-in-out {
-    transition-timing-function: var(--ease-expo-in-out);
-  }
-
-  .ease-circ-in {
-    transition-timing-function: var(--ease-circ-in);
-  }
-
-  .ease-circ-out {
-    transition-timing-function: var(--ease-circ-out);
-  }
-
-  .ease-circ-in-out {
-    transition-timing-function: var(--ease-circ-in-out);
-  }
-
-  .ease-back-in {
-    transition-timing-function: var(--ease-back-in);
-  }
-
-  .ease-back-out {
-    transition-timing-function: var(--ease-back-out);
-  }
-
-  .ease-back-in-out {
-    transition-timing-function: var(--ease-back-in-out);
-  }
-
-  .ease-elastic-in {
-    transition-timing-function: var(--ease-elastic-in);
-  }
-
-  .ease-elastic-out {
-    transition-timing-function: var(--ease-elastic-out);
-  }
-
-  .ease-elastic-in-out {
-    transition-timing-function: var(--ease-elastic-in-out);
-  }
-
-  .ease-bounce-in {
-    transition-timing-function: var(--ease-bounce-in);
-  }
-
-  .ease-bounce-out {
-    transition-timing-function: var(--ease-bounce-out);
-  }
-
-  .ease-bounce-in-out {
-    transition-timing-function: var(--ease-bounce-in-out);
-  }
-
-  .ease-step-start {
-    transition-timing-function: var(--ease-step-start);
-  }
-
-  .ease-step-end {
-    transition-timing-function: var(--ease-step-end);
-  }
-
-  .ease-steps-4 {
-    transition-timing-function: var(--ease-steps-4);
-  }
-
-  .ease-steps-8 {
-    transition-timing-function: var(--ease-steps-8);
-  }
-
-  .ease-modal {
-    transition-timing-function: var(--ease-modal);
-  }
-
-  .ease-pop {
-    transition-timing-function: var(--ease-pop);
-  }
-
-  .ease-snap {
-    transition-timing-function: var(--ease-snap);
+  /* Blockquote - !important required to override Tailwind preflight resets */
+  [data-slot="rich-text-editor"] .ql-editor blockquote {
+    border-left: 4px solid var(--border) !important;
+    padding-left: 1em !important;
+    margin: 0.5em 0 !important;
+    color: var(--muted-foreground) !important;
+    font-style: italic !important;
   }
 }

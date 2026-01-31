@@ -203,6 +203,7 @@ public class SelectContext<TValue> : PrimitiveContextWithEvents<SelectState<TVal
     private List<SelectItemMetadata<TValue>> Items { get; } = new List<SelectItemMetadata<TValue>>();
 
     /// <summary>
+<<<<<<< HEAD
     /// Syncs the display text for the currently selected value from the registered items.
     /// </summary>
     /// <param name="value">The value to sync display text for.</param>
@@ -222,6 +223,8 @@ public class SelectContext<TValue> : PrimitiveContextWithEvents<SelectState<TVal
     }
 
     /// <summary>
+=======
+>>>>>>> pr-89
     /// Registers an item with the select context for keyboard navigation.
     /// </summary>
     /// <param name="value">The value of the item.</param>
@@ -237,6 +240,17 @@ public class SelectContext<TValue> : PrimitiveContextWithEvents<SelectState<TVal
             DisplayText = displayText
         };
         Items.Add(metadata);
+<<<<<<< HEAD
+=======
+
+        // If this item's value matches the currently selected value,
+        // update the DisplayText to show the proper display name
+        if (displayText != null && EqualityComparer<TValue>.Default.Equals(State.Value, value))
+        {
+            UpdateState(state => state.DisplayText = displayText);
+        }
+
+>>>>>>> pr-89
         return Items.Count - 1;
     }
 
@@ -307,6 +321,31 @@ public class SelectContext<TValue> : PrimitiveContextWithEvents<SelectState<TVal
     }
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Moves focus to the currently selected item, or the first enabled item if none is selected.
+    /// </summary>
+    public void FocusSelectedOrFirst()
+    {
+        // Try to find and focus the selected item
+        if (State.Value != null)
+        {
+            for (int i = 0; i < Items.Count; i++)
+            {
+                if (!Items[i].Disabled && EqualityComparer<TValue>.Default.Equals(Items[i].Value, State.Value))
+                {
+                    SetFocusedIndex(i);
+                    return;
+                }
+            }
+        }
+
+        // Fall back to focusing the first item
+        FocusFirst();
+    }
+
+    /// <summary>
+>>>>>>> pr-89
     /// Moves focus to the last enabled item.
     /// </summary>
     public void FocusLast()
@@ -335,6 +374,22 @@ public class SelectContext<TValue> : PrimitiveContextWithEvents<SelectState<TVal
             }
         }
     }
+<<<<<<< HEAD
+=======
+
+    /// <summary>
+    /// Gets the display text for a given value by looking up registered items.
+    /// </summary>
+    /// <param name="value">The value to look up.</param>
+    /// <returns>The display text if found, otherwise null.</returns>
+    public string? GetDisplayTextForValue(TValue? value)
+    {
+        if (value == null) return null;
+
+        var item = Items.FirstOrDefault(i => EqualityComparer<TValue>.Default.Equals(i.Value, value));
+        return item?.DisplayText;
+    }
+>>>>>>> pr-89
 }
 
 /// <summary>

@@ -2,6 +2,7 @@
 @implements IDropdownMenuItem
 @implements IDisposable
 
+<<<<<<< HEAD
 @* DropdownMenuCheckboxItem - a menu item that toggles a boolean state *@
 <div @ref="_itemRef"
      role="menuitemcheckbox"
@@ -12,6 +13,19 @@
      @onkeydown="HandleKeyDown"
      data-state="@(Checked ? "checked" : "unchecked")"
      data-disabled="@(Disabled ? "true" : null)"
+=======
+@* Dropdown menu checkbox item - represents a toggleable menu item *@
+<div @ref="_itemRef"
+     role="menuitemcheckbox"
+     tabindex="@(Disabled ? -1 : -1)"
+     aria-checked="@Checked.ToString().ToLower()"
+     aria-disabled="@Disabled.ToString().ToLower()"
+     data-disabled="@(Disabled ? "true" : null)"
+     data-state="@(Checked ? "checked" : "unchecked")"
+     @onclick="HandleClick"
+     @onkeydown="HandleKeyDown"
+     @onkeydown:preventDefault="true"
+>>>>>>> pr-89
      @attributes="AdditionalAttributes">
     @ChildContent
 </div>
@@ -20,24 +34,37 @@
     [CascadingParameter]
     private DropdownMenuContext Context { get; set; } = null!;
 
+<<<<<<< HEAD
     [CascadingParameter]
+=======
+    [CascadingParameter(Name = "DropdownMenuContentContext")]
+>>>>>>> pr-89
     private DropdownMenuContent? ContentContext { get; set; }
 
     private ElementReference _itemRef;
 
     /// <summary>
+<<<<<<< HEAD
     /// The content to display inside the checkbox item.
+=======
+    /// The content to display inside the menu item.
+>>>>>>> pr-89
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
+<<<<<<< HEAD
     /// Additional attributes to apply to the checkbox item element.
+=======
+    /// Additional attributes to apply to the menu item element.
+>>>>>>> pr-89
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     /// <summary>
+<<<<<<< HEAD
     /// Whether the checkbox item is disabled.
     /// </summary>
     [Parameter]
@@ -51,11 +78,21 @@
 
     /// <summary>
     /// Event callback invoked when the checked state changes.
+=======
+    /// Whether the checkbox is checked.
+    /// </summary>
+    [Parameter]
+    public bool Checked { get; set; }
+
+    /// <summary>
+    /// Event callback for when the checked state changes.
+>>>>>>> pr-89
     /// </summary>
     [Parameter]
     public EventCallback<bool> CheckedChanged { get; set; }
 
     /// <summary>
+<<<<<<< HEAD
     /// Event callback invoked when the checkbox checked state changes.
     /// Receives the new checked state as a parameter.
     /// </summary>
@@ -65,6 +102,16 @@
     /// <summary>
     /// Whether to close the dropdown menu when this item is selected.
     /// Default is false for checkbox items.
+=======
+    /// Whether the menu item is disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    /// <summary>
+    /// Whether to close the dropdown menu when this item is toggled.
+    /// Default is false (checkbox items typically keep menu open).
+>>>>>>> pr-89
     /// </summary>
     [Parameter]
     public bool CloseOnSelect { get; set; } = false;
@@ -86,6 +133,7 @@
     {
         if (Disabled) return;
 
+<<<<<<< HEAD
         // Toggle checked state
         Checked = !Checked;
 
@@ -95,6 +143,12 @@
         {
             await OnCheckedChange.InvokeAsync(Checked);
         }
+=======
+        // Toggle the checked state
+        var newChecked = !Checked;
+        Checked = newChecked;
+        await CheckedChanged.InvokeAsync(newChecked);
+>>>>>>> pr-89
 
         // Close the dropdown menu if configured
         if (CloseOnSelect && Context != null)
@@ -103,14 +157,22 @@
         }
     }
 
+<<<<<<< HEAD
     private async Task HandleKeyDown(KeyboardEventArgs args)
+=======
+    private void HandleKeyDown(KeyboardEventArgs args)
+>>>>>>> pr-89
     {
         if (Disabled) return;
 
         // Enter or Space to toggle
         if (args.Key == "Enter" || args.Key == " ")
         {
+<<<<<<< HEAD
             await HandleClick(new MouseEventArgs());
+=======
+            _ = ClickAsync();
+>>>>>>> pr-89
         }
     }
 

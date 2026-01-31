@@ -23,21 +23,27 @@ public class TableState<TData> where TData : class
     public SelectionState<TData> Selection { get; } = new();
 
     /// <summary>
+<<<<<<< HEAD
     /// Gets the filtering state for the table.
     /// </summary>
     public FilteringState Filtering { get; } = new();
 
     /// <summary>
+=======
+>>>>>>> pr-89
     /// Gets whether the table has any active sorting.
     /// </summary>
     public bool HasSorting => Sorting.Direction != SortDirection.None;
 
     /// <summary>
+<<<<<<< HEAD
     /// Gets whether the table has any active filters.
     /// </summary>
     public bool HasFiltering => Filtering.HasAnyFilter;
 
     /// <summary>
+=======
+>>>>>>> pr-89
     /// Gets whether the table has any selected items.
     /// </summary>
     public bool HasSelection => Selection.HasSelection;
@@ -54,19 +60,31 @@ public class TableState<TData> where TData : class
 
     /// <summary>
     /// Resets all state to default values.
+<<<<<<< HEAD
     /// Clears sorting, filtering, resets to first page, and clears selection.
+=======
+    /// Clears sorting, resets to first page, and clears selection.
+>>>>>>> pr-89
     /// </summary>
     public void Reset()
     {
         Sorting.ClearSort();
+<<<<<<< HEAD
         Filtering.ClearAllFilters();
+=======
+>>>>>>> pr-89
         Pagination.Reset();
         Selection.Clear();
     }
 
     /// <summary>
+<<<<<<< HEAD
     /// Resets only the pagination state while preserving sorting, filtering, and selection.
     /// Useful when data or filters change.
+=======
+    /// Resets only the pagination state while preserving sorting and selection.
+    /// Useful when data changes.
+>>>>>>> pr-89
     /// </summary>
     public void ResetPagination()
     {

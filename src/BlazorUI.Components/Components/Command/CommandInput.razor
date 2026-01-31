@@ -1,7 +1,6 @@
 @namespace BlazorUI.Components.Command
-@using BlazorUI.Primitives.Combobox
 
-<div class="@CssClass" data-command-input-wrapper>
+<div class="@CssClass">
     <svg xmlns="http://www.w3.org/2000/svg"
          width="24"
          height="24"
@@ -15,14 +14,24 @@
         <circle cx="11" cy="11" r="8"></circle>
         <path d="m21 21-4.35-4.35"></path>
     </svg>
-    <ComboboxInput placeholder="@Placeholder"
-                   disabled="@Disabled"
-                   AutoFocus="@AutoFocus"
-                   SearchInterval="@SearchInterval"
-                   class="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 ml-2" />
+    <input @ref="_inputRef"
+           type="text"
+           placeholder="@Placeholder"
+           disabled="@Disabled"
+           value="@Context?.SearchQuery"
+           @oninput="HandleInput"
+           @onkeydown="HandleKeyDown"
+           class="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 ml-2"
+           role="combobox"
+           aria-autocomplete="list"
+           aria-expanded="true"
+           aria-controls="@Context?.ListId" />
 </div>
 
 @code {
+    [CascadingParameter]
+    public CommandContext? Context { get; set; }
+
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the input container.
     /// </summary>
@@ -47,12 +56,24 @@
     [Parameter]
     public bool AutoFocus { get; set; }
 
+    private ElementReference _inputRef;
+    private bool _previousAutoFocus;
+    private bool _shouldFocus;
+
     /// <summary>
-    /// Gets or sets the debounce interval in milliseconds before triggering search.
-    /// Default is 0 (no debouncing). Set to 150-300ms for better performance with large datasets.
+    /// Focuses the input element.
     /// </summary>
-    [Parameter]
-    public int SearchInterval { get; set; } = 0;
+    public async Task FocusAsync()
+    {
+        try
+        {
+            await _inputRef.FocusAsync();
+        }
+        catch
+        {
+            // Ignore focus errors (element may not be ready)
+        }
+    }
 
     /// <summary>
     /// Gets the computed CSS classes for the input container.
@@ -63,6 +84,65 @@
         {
             var baseClasses = "flex items-center border-b border-border px-3";
             return string.IsNullOrWhiteSpace(Class) ? baseClasses : $"{baseClasses} {Class}";
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Check if AutoFocus changed from false to true
+        if (AutoFocus && !_previousAutoFocus)
+        {
+            _shouldFocus = true;
+        }
+        _previousAutoFocus = AutoFocus;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Focus when AutoFocus becomes true (either on first render or when popover opens)
+        if (_shouldFocus)
+        {
+            _shouldFocus = false;
+            try
+            {
+                // Small delay to ensure the element is ready in the DOM (especially after portal rendering)
+                await Task.Delay(50);
+                await _inputRef.FocusAsync();
+            }
+            catch
+            {
+                // Ignore focus errors
+            }
+        }
+    }
+
+    private void HandleInput(ChangeEventArgs args)
+    {
+        var value = args.Value?.ToString() ?? string.Empty;
+        Context?.SetSearchQuery(value);
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs args)
+    {
+        if (Context == null) return;
+
+        switch (args.Key)
+        {
+            case "ArrowDown":
+                await Context.MoveFocusAsync(1);
+                break;
+            case "ArrowUp":
+                await Context.MoveFocusAsync(-1);
+                break;
+            case "Home":
+                await Context.FocusFirstAsync();
+                break;
+            case "End":
+                await Context.FocusLastAsync();
+                break;
+            case "Enter":
+                await Context.SelectFocusedItemAsync();
+                break;
         }
     }
 }

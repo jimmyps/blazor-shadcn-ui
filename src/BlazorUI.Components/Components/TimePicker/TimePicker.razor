@@ -1,141 +1,210 @@
 @namespace BlazorUI.Components.TimePicker
-@using BlazorUI.Components.Popover
+@using BlazorUI.Components.Utilities
 @using BlazorUI.Components.Button
+@using BlazorUI.Components.Popover
 @using BlazorUI.Icons.Lucide.Components
 @using BlazorUI.Primitives.Services
-@using BlazorUI.Components.Utilities
-
-@* TimePicker - Time selection with hour/minute selectors *@
 
 <Popover @bind-Open="_isOpen">
-    <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
-        @if (ShowIcon)
-        {
-            <LucideIcon Name="clock" Class="@GetIconClass()" />
-        }
-        <span>@GetDisplayText()</span>
-    </PopoverTrigger>
-    <PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
-        <div class="flex items-center gap-2">
-            @if (!Use24HourFormat)
+    <PopoverTrigger AsChild="true">
+        <Button Variant="ButtonVariant.Outline"
+                Class="@ButtonCssClass"
+                Disabled="@Disabled">
+            <LucideIcon Name="clock" Class="mr-2 h-4 w-4" />
+            @if (Value.HasValue)
             {
-                <div class="flex flex-col gap-2">
-                    <label class="text-xs font-medium text-muted-foreground">Hour</label>
-                    <select @bind="_hour12" class="@GetSelectClass()" aria-label="Select hour">
-                        @for (int h = 1; h <= 12; h++)
-                        {
-                            <option value="@h">@h.ToString("D2")</option>
-                        }
-                    </select>
-                </div>
+                <span>@FormatTime(Value.Value)</span>
             }
             else
             {
-                <div class="flex flex-col gap-2">
-                    <label class="text-xs font-medium text-muted-foreground">Hour</label>
-                    <select @bind="_hour24" class="@GetSelectClass()" aria-label="Select hour">
-                        @for (int h = 0; h <= 23; h++)
-                        {
-                            <option value="@h">@h.ToString("D2")</option>
-                        }
-                    </select>
-                </div>
+                <span class="text-muted-foreground">@Placeholder</span>
             }
-            
-            <div class="flex flex-col gap-2">
-                <label class="text-xs font-medium text-muted-foreground">Minute</label>
-                <select @bind="_minute" class="@GetSelectClass()" aria-label="Select minute">
-                    @for (int m = 0; m < 60; m += MinuteStep)
-                    {
-                        <option value="@m">@m.ToString("D2")</option>
-                    }
-                </select>
+        </Button>
+    </PopoverTrigger>
+    <PopoverContent Class="w-auto p-4" Align="@PopoverAlign.Start">
+        <div class="flex flex-col gap-4">
+            <div class="flex items-center gap-2">
+                <!-- Hour Column -->
+                <div class="flex flex-col items-center">
+                    <span class="text-xs text-muted-foreground mb-1">Hour</span>
+                    <div class="flex flex-col items-center border rounded-md">
+                        <button type="button"
+                                class="@ScrollButtonClass"
+                                @onclick="IncrementHour"
+                                disabled="@Disabled">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                <path d="m18 15-6-6-6 6"/>
+                            </svg>
+                        </button>
+                        <span class="w-12 h-10 flex items-center justify-center text-lg font-medium tabular-nums">
+                            @DisplayHour.ToString("D2")
+                        </span>
+                        <button type="button"
+                                class="@ScrollButtonClass"
+                                @onclick="DecrementHour"
+                                disabled="@Disabled">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                <path d="m6 9 6 6 6-6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <span class="text-2xl font-medium mt-5">:</span>
+
+                <!-- Minute Column -->
+                <div class="flex flex-col items-center">
+                    <span class="text-xs text-muted-foreground mb-1">Min</span>
+                    <div class="flex flex-col items-center border rounded-md">
+                        <button type="button"
+                                class="@ScrollButtonClass"
+                                @onclick="IncrementMinute"
+                                disabled="@Disabled">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                <path d="m18 15-6-6-6 6"/>
+                            </svg>
+                        </button>
+                        <span class="w-12 h-10 flex items-center justify-center text-lg font-medium tabular-nums">
+                            @CurrentMinute.ToString("D2")
+                        </span>
+                        <button type="button"
+                                class="@ScrollButtonClass"
+                                @onclick="DecrementMinute"
+                                disabled="@Disabled">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                <path d="m6 9 6 6 6-6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                @if (ShowSeconds)
+                {
+                    <span class="text-2xl font-medium mt-5">:</span>
+
+                    <!-- Second Column -->
+                    <div class="flex flex-col items-center">
+                        <span class="text-xs text-muted-foreground mb-1">Sec</span>
+                        <div class="flex flex-col items-center border rounded-md">
+                            <button type="button"
+                                    class="@ScrollButtonClass"
+                                    @onclick="IncrementSecond"
+                                    disabled="@Disabled">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                    <path d="m18 15-6-6-6 6"/>
+                                </svg>
+                            </button>
+                            <span class="w-12 h-10 flex items-center justify-center text-lg font-medium tabular-nums">
+                                @CurrentSecond.ToString("D2")
+                            </span>
+                            <button type="button"
+                                    class="@ScrollButtonClass"
+                                    @onclick="DecrementSecond"
+                                    disabled="@Disabled">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                    <path d="m6 9 6 6 6-6"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                }
+
+                @if (Format == TimeFormat.Hour12)
+                {
+                    <!-- AM/PM Toggle -->
+                    <div class="flex flex-col items-center ml-2">
+                        <span class="text-xs text-muted-foreground mb-1">&nbsp;</span>
+                        <div class="flex flex-col border rounded-md overflow-hidden">
+                            <button type="button"
+                                    class="@GetAmPmButtonClass(true)"
+                                    @onclick="() => SetAmPm(true)"
+                                    disabled="@Disabled">
+                                AM
+                            </button>
+                            <button type="button"
+                                    class="@GetAmPmButtonClass(false)"
+                                    @onclick="() => SetAmPm(false)"
+                                    disabled="@Disabled">
+                                PM
+                            </button>
+                        </div>
+                    </div>
+                }
             </div>
 
-            @if (!Use24HourFormat)
-            {
-                <div class="flex flex-col gap-2">
-                    <label class="text-xs font-medium text-muted-foreground">Period</label>
-                    <select value="@(_isPM ? "PM" : "AM")" @onchange="OnPeriodChanged" class="@GetSelectClass()" aria-label="Select AM or PM">
-                        <option value="AM">AM</option>
-                        <option value="PM">PM</option>
-                    </select>
-                </div>
-            }
-        </div>
-        <div class="mt-4 flex justify-end gap-2">
-            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" @onclick="@(() => _isOpen = false)">
-                Cancel
-            </Button>
-            <Button Variant="ButtonVariant.Default" Size="ButtonSize.Small" @onclick="ApplyTime">
-                Apply
-            </Button>
+            <!-- Action Buttons -->
+            <div class="flex justify-between gap-2">
+                <button type="button"
+                        class="flex-1 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3"
+                        disabled="@Disabled"
+                        @onclick="SetNow">
+                    Now
+                </button>
+                <button type="button"
+                        class="flex-1 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3"
+                        disabled="@(Disabled || !Value.HasValue)"
+                        @onclick="Clear">
+                    Clear
+                </button>
+            </div>
         </div>
     </PopoverContent>
 </Popover>
 
 @code {
     private bool _isOpen;
-    private int _hour12 = 12;
-    private int _hour24 = 0;
-    private int _minute = 0;
-    private bool _isPM = false;
+    private int _internalHour = 12;
+    private int _internalMinute = 0;
+    private int _internalSecond = 0;
+    private bool _isAm = true;
 
     /// <summary>
-    /// The selected time.
+    /// The selected time value.
     /// </summary>
     [Parameter]
-    public TimeOnly? SelectedTime { get; set; }
+    public TimeSpan? Value { get; set; }
 
     /// <summary>
-    /// Event callback invoked when the selected time changes.
-    /// Use with @bind-SelectedTime for two-way binding.
+    /// Callback when the selected time changes.
     /// </summary>
     [Parameter]
-    public EventCallback<TimeOnly?> SelectedTimeChanged { get; set; }
+    public EventCallback<TimeSpan?> ValueChanged { get; set; }
 
     /// <summary>
-    /// Whether to use 24-hour format. Default is false (12-hour with AM/PM).
+    /// The time format (12-hour or 24-hour).
     /// </summary>
     [Parameter]
-    public bool Use24HourFormat { get; set; } = false;
+    public TimeFormat Format { get; set; } = TimeFormat.Hour12;
 
     /// <summary>
-    /// Minute step interval. Default is 1.
+    /// Whether to show the seconds selector.
+    /// </summary>
+    [Parameter]
+    public bool ShowSeconds { get; set; }
+
+    /// <summary>
+    /// The minute step interval.
     /// </summary>
     [Parameter]
     public int MinuteStep { get; set; } = 1;
 
     /// <summary>
-    /// Button variant for the trigger button.
+    /// The minimum allowed time.
     /// </summary>
     [Parameter]
-    public ButtonVariant ButtonVariant { get; set; } = ButtonVariant.Outline;
+    public TimeSpan? MinTime { get; set; }
 
     /// <summary>
-    /// Button size for the trigger button.
+    /// The maximum allowed time.
     /// </summary>
     [Parameter]
-    public ButtonSize ButtonSize { get; set; } = ButtonSize.Default;
-
-    /// <summary>
-    /// Whether to show the clock icon in the button.
-    /// </summary>
-    [Parameter]
-    public bool ShowIcon { get; set; } = true;
+    public TimeSpan? MaxTime { get; set; }
 
     /// <summary>
     /// Placeholder text when no time is selected.
     /// </summary>
     [Parameter]
-    public string Placeholder { get; set; } = "Pick a time";
-
-    /// <summary>
-    /// Time format string for displaying the selected time.
-    /// If not specified, uses "hh:mm tt" for 12-hour or "HH:mm" for 24-hour.
-    /// </summary>
-    [Parameter]
-    public string? TimeFormat { get; set; }
+    public string Placeholder { get; set; } = "Select time";
 
     /// <summary>
     /// Whether the time picker is disabled.
@@ -144,177 +213,193 @@
     public bool Disabled { get; set; }
 
     /// <summary>
-    /// Alignment of the popover content.
-    /// </summary>
-    [Parameter]
-    public PopoverAlign Align { get; set; } = PopoverAlign.Start;
-
-    /// <summary>
-    /// Additional CSS classes for the button.
+    /// Additional CSS classes for the trigger button.
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
-    /// <summary>
-    /// ARIA label for the button.
-    /// </summary>
-    [Parameter]
-    public string? AriaLabel { get; set; }
+    private int CurrentHour => Value?.Hours ?? _internalHour;
+    private int CurrentMinute => Value?.Minutes ?? _internalMinute;
+    private int CurrentSecond => Value?.Seconds ?? _internalSecond;
+
+    private int DisplayHour
+    {
+        get
+        {
+            if (Format == TimeFormat.Hour24)
+                return CurrentHour;
+
+            var hour = CurrentHour % 12;
+            return hour == 0 ? 12 : hour;
+        }
+    }
+
+    private bool IsAm => CurrentHour < 12;
 
     protected override void OnParametersSet()
     {
-        base.OnParametersSet();
-        
-        if (SelectedTime.HasValue)
+        if (Value.HasValue)
         {
-            var time = SelectedTime.Value;
-            _hour24 = time.Hour;
-            _minute = time.Minute;
-            
-            // Convert to 12-hour format
-            if (time.Hour == 0)
-            {
-                _hour12 = 12;
-                _isPM = false;
-            }
-            else if (time.Hour < 12)
-            {
-                _hour12 = time.Hour;
-                _isPM = false;
-            }
-            else if (time.Hour == 12)
-            {
-                _hour12 = 12;
-                _isPM = true;
-            }
-            else
-            {
-                _hour12 = time.Hour - 12;
-                _isPM = true;
-            }
+            _internalHour = Value.Value.Hours;
+            _internalMinute = Value.Value.Minutes;
+            _internalSecond = Value.Value.Seconds;
+            _isAm = Value.Value.Hours < 12;
         }
         else
         {
-            _hour12 = 12;
-            _hour24 = 0;
-            _minute = 0;
-            _isPM = false;
+            // Set appropriate default based on format
+            _internalHour = Format == TimeFormat.Hour24 ? 0 : 12;
+            _internalMinute = 0;
+            _internalSecond = 0;
+            _isAm = true;
         }
     }
 
-    private async Task ApplyTime()
+    private string FormatTime(TimeSpan time)
     {
-        int hour;
-        
-        if (Use24HourFormat)
+        if (Format == TimeFormat.Hour24)
         {
-            hour = _hour24;
-        }
-        else
-        {
-            // Convert 12-hour to 24-hour
-            hour = (_hour12 == 12) ? (_isPM ? 12 : 0) : (_isPM ? _hour12 + 12 : _hour12);
-        }
-
-        var newTime = new TimeOnly(hour, _minute);
-        _isOpen = false;
-        await SelectedTimeChanged.InvokeAsync(newTime);
-    }
-
-    private void OnPeriodChanged(ChangeEventArgs e)
-    {
-        _isPM = e.Value?.ToString() == "PM";
-    }
-
-    private string GetDisplayText()
-    {
-        if (!SelectedTime.HasValue)
-            return Placeholder;
-
-        if (!string.IsNullOrEmpty(TimeFormat))
-            return SelectedTime.Value.ToString(TimeFormat);
-
-        if (Use24HourFormat)
-            return SelectedTime.Value.ToString("HH:mm");
-
-        return SelectedTime.Value.ToString("hh:mm tt");
-    }
-
-    private string GetButtonClass()
-    {
-        var classes = new List<string> { "w-[280px] justify-start text-left font-normal" };
-        
-        if (!SelectedTime.HasValue)
-            classes.Add("text-muted-foreground");
-
-        // Add button variant classes
-        classes.Add(GetButtonVariantClass());
-        classes.Add(GetButtonSizeClass());
-
-        if (!string.IsNullOrEmpty(Class))
-            classes.Add(Class);
-
-        return ClassNames.cn(classes.ToArray());
-    }
-
-    private string GetButtonVariantClass()
-    {
-        return ButtonVariant switch
-        {
-            ButtonVariant.Default => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90",
-            ButtonVariant.Destructive => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-            ButtonVariant.Outline => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-            ButtonVariant.Secondary => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-            ButtonVariant.Ghost => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground",
-            ButtonVariant.Link => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 text-primary underline-offset-4 hover:underline",
-            _ => "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground"
-        };
-    }
-
-    private string GetButtonSizeClass()
-    {
-        return ButtonSize switch
-        {
-            ButtonSize.Small => "h-8 px-3 text-xs",
-            ButtonSize.Large => "h-10 px-8",
-            ButtonSize.Icon => "h-9 w-9",
-            _ => "h-9 px-4 py-2"
-        };
-    }
-
-    private Dictionary<string, object> GetTriggerAttributes()
-    {
-        var attrs = new Dictionary<string, object>();
-        
-        if (Disabled)
-        {
-            attrs.Add("disabled", true);
-        }
-        
-        if (!string.IsNullOrEmpty(AriaLabel))
-        {
-            attrs.Add("aria-label", AriaLabel);
+            // TimeSpan uses lowercase 'hh' for hours, not 'HH' (which is for DateTime)
+            return ShowSeconds
+                ? time.ToString(@"hh\:mm\:ss")
+                : time.ToString(@"hh\:mm");
         }
         else
         {
-            attrs.Add("aria-label", "Select time");
+            var hour = time.Hours % 12;
+            if (hour == 0) hour = 12;
+            var amPm = time.Hours < 12 ? "AM" : "PM";
+
+            return ShowSeconds
+                ? $"{hour:D2}:{time.Minutes:D2}:{time.Seconds:D2} {amPm}"
+                : $"{hour:D2}:{time.Minutes:D2} {amPm}";
         }
-
-        return attrs;
     }
 
-    private string GetIconClass()
+    private async Task UpdateValue()
     {
-        return ShowIcon ? "mr-2 h-4 w-4" : "";
+        var newTime = new TimeSpan(_internalHour, _internalMinute, _internalSecond);
+
+        // Apply constraints
+        if (MinTime.HasValue && newTime < MinTime.Value)
+            newTime = MinTime.Value;
+        if (MaxTime.HasValue && newTime > MaxTime.Value)
+            newTime = MaxTime.Value;
+
+        Value = newTime;
+        await ValueChanged.InvokeAsync(newTime);
+        StateHasChanged();
     }
 
-    private string GetPopoverContentClass()
+    private async Task IncrementHour()
     {
-        return "w-auto p-4";
+        if (Format == TimeFormat.Hour24)
+        {
+            _internalHour = (_internalHour + 1) % 24;
+        }
+        else
+        {
+            var hour12 = _internalHour % 12;
+            hour12 = (hour12 + 1) % 12;
+            _internalHour = _isAm ? hour12 : hour12 + 12;
+            if (_internalHour == 12 && _isAm) _internalHour = 0;
+            if (_internalHour == 0 && !_isAm) _internalHour = 12;
+        }
+        await UpdateValue();
     }
 
-    private string GetSelectClass()
+    private async Task DecrementHour()
     {
-        return "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
+        if (Format == TimeFormat.Hour24)
+        {
+            _internalHour = (_internalHour - 1 + 24) % 24;
+        }
+        else
+        {
+            var hour12 = _internalHour % 12;
+            hour12 = (hour12 - 1 + 12) % 12;
+            _internalHour = _isAm ? hour12 : hour12 + 12;
+            if (_internalHour == 12 && _isAm) _internalHour = 0;
+            if (_internalHour == 0 && !_isAm) _internalHour = 12;
+        }
+        await UpdateValue();
     }
+
+    private async Task IncrementMinute()
+    {
+        _internalMinute = (_internalMinute + MinuteStep) % 60;
+        await UpdateValue();
+    }
+
+    private async Task DecrementMinute()
+    {
+        _internalMinute = (_internalMinute - MinuteStep + 60) % 60;
+        await UpdateValue();
+    }
+
+    private async Task IncrementSecond()
+    {
+        _internalSecond = (_internalSecond + 1) % 60;
+        await UpdateValue();
+    }
+
+    private async Task DecrementSecond()
+    {
+        _internalSecond = (_internalSecond - 1 + 60) % 60;
+        await UpdateValue();
+    }
+
+    private async Task SetAmPm(bool isAm)
+    {
+        _isAm = isAm;
+        if (isAm && _internalHour >= 12)
+            _internalHour -= 12;
+        else if (!isAm && _internalHour < 12)
+            _internalHour += 12;
+
+        await UpdateValue();
+    }
+
+    private async Task SetNow()
+    {
+        var now = DateTime.Now.TimeOfDay;
+        _internalHour = now.Hours;
+        _internalMinute = (now.Minutes / MinuteStep) * MinuteStep;
+        _internalSecond = ShowSeconds ? now.Seconds : 0;
+        _isAm = _internalHour < 12;
+        await UpdateValue();
+        StateHasChanged();
+    }
+
+    private async Task Clear()
+    {
+        Value = null;
+        // Reset to appropriate default based on format
+        _internalHour = Format == TimeFormat.Hour24 ? 0 : 12;
+        _internalMinute = 0;
+        _internalSecond = 0;
+        _isAm = true;
+        await ValueChanged.InvokeAsync(null);
+        StateHasChanged();
+    }
+
+    private string ButtonCssClass => ClassNames.cn(
+        "w-[180px] justify-start text-left font-normal",
+        !Value.HasValue ? "text-muted-foreground" : null,
+        Disabled ? "opacity-50 pointer-events-none" : null,
+        Class
+    );
+
+    private string ScrollButtonClass => ClassNames.cn(
+        "w-12 h-8 flex items-center justify-center",
+        "hover:bg-accent hover:text-accent-foreground",
+        "transition-colors",
+        "disabled:opacity-50 disabled:cursor-not-allowed"
+    );
+
+    private string GetAmPmButtonClass(bool isAm) => ClassNames.cn(
+        "w-12 h-10 text-sm font-medium transition-colors",
+        (isAm == IsAm) ? "bg-primary text-primary-foreground" : "hover:bg-accent hover:text-accent-foreground",
+        "disabled:opacity-50 disabled:cursor-not-allowed"
+    );
 }

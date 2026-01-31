@@ -4,19 +4,13 @@ module.exports = {
   content: [
     './Components/**/*.{razor,html,cs}',
   ],
-  safelist: [
-    // Navigation menu motion animations - ensure these are always generated
-    'data-[motion^=from-]:animate-in',
-    'data-[motion^=to-]:animate-out',
-    'data-[motion^=from-]:fade-in',
-    'data-[motion^=to-]:fade-out',
-    'data-[motion=from-end]:slide-in-from-right-52',
-    'data-[motion=from-start]:slide-in-from-left-52',
-    'data-[motion=to-end]:slide-out-to-right-52',
-    'data-[motion=to-start]:slide-out-to-left-52'
-  ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: "var(--font-sans, ui-sans-serif, system-ui, sans-serif)",
+        serif: "var(--font-serif, ui-serif, Georgia, serif)",
+        mono: "var(--font-mono, ui-monospace, monospace)",
+      },
       colors: {
         border: "var(--border)",
         input: "var(--input)",
@@ -61,89 +55,38 @@ module.exports = {
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)",
         },
+        alert: {
+          success: {
+            DEFAULT: "var(--alert-success)",
+            foreground: "var(--alert-success-foreground)",
+            bg: "var(--alert-success-bg)",
+          },
+          info: {
+            DEFAULT: "var(--alert-info)",
+            foreground: "var(--alert-info-foreground)",
+            bg: "var(--alert-info-bg)",
+          },
+          warning: {
+            DEFAULT: "var(--alert-warning)",
+            foreground: "var(--alert-warning-foreground)",
+            bg: "var(--alert-warning-bg)",
+          },
+          danger: {
+            DEFAULT: "var(--alert-danger)",
+            foreground: "var(--alert-danger-foreground)",
+            bg: "var(--alert-danger-bg)",
+          },
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-      boxShadow: {
-        "2xs": "var(--shadow-2xs)",
-        xs: "var(--shadow-xs)",
-        sm: "var(--shadow-sm)",
-        DEFAULT: "var(--shadow)",
-        md: "var(--shadow-md)",
-        lg: "var(--shadow-lg)",
-        xl: "var(--shadow-xl)",
-        "2xl": "var(--shadow-2xl)",
-      },
       width: {
         "sidebar": "var(--sidebar-width)",
         "sidebar-mobile": "var(--sidebar-width-mobile)",
         "sidebar-icon": "var(--sidebar-width-icon)",
-      },
-      // Add to theme.extend in tailwind.config.js
-      transitionTimingFunction: {
-        // Quad easing
-        'quad-in': 'var(--ease-quad-in)',
-        'quad-out': 'var(--ease-quad-out)',
-        'quad-in-out': 'var(--ease-quad-in-out)',
-
-        // Cubic easing
-        'cubic-in': 'var(--ease-cubic-in)',
-        'cubic-out': 'var(--ease-cubic-out)',
-        'cubic-in-out': 'var(--ease-cubic-in-out)',
-
-        // Quart easing
-        'quart-in': 'var(--ease-quart-in)',
-        'quart-out': 'var(--ease-quart-out)',
-        'quart-in-out': 'var(--ease-quart-in-out)',
-
-        // Quint easing
-        'quint-in': 'var(--ease-quint-in)',
-        'quint-out': 'var(--ease-quint-out)',
-        'quint-in-out': 'var(--ease-quint-in-out)',
-
-        // Sine easing
-        'sine-in': 'var(--ease-sine-in)',
-        'sine-out': 'var(--ease-sine-out)',
-        'sine-in-out': 'var(--ease-sine-in-out)',
-
-        // Expo easing
-        'expo-in': 'var(--ease-expo-in)',
-        'expo-out': 'var(--ease-expo-out)',
-        'expo-in-out': 'var(--ease-expo-in-out)',
-
-        // Circ easing
-        'circ-in': 'var(--ease-circ-in)',
-        'circ-out': 'var(--ease-circ-out)',
-        'circ-in-out': 'var(--ease-circ-in-out)',
-
-        // Back easing
-        'back-in': 'var(--ease-back-in)',
-        'back-out': 'var(--ease-back-out)',
-        'back-in-out': 'var(--ease-back-in-out)',
-
-        // Elastic easing
-        'elastic-in': 'var(--ease-elastic-in)',
-        'elastic-out': 'var(--ease-elastic-out)',
-        'elastic-in-out': 'var(--ease-elastic-in-out)',
-
-        // Bounce easing
-        'bounce-in': 'var(--ease-bounce-in)',
-        'bounce-out': 'var(--ease-bounce-out)',
-        'bounce-in-out': 'var(--ease-bounce-in-out)',
-
-        // Step easing
-        'step-start': 'var(--ease-step-start)',
-        'step-end': 'var(--ease-step-end)',
-        'steps-4': 'var(--ease-steps-4)',
-        'steps-8': 'var(--ease-steps-8)',
-
-        // Custom easing
-        'modal': 'var(--ease-modal)',
-        'pop': 'var(--ease-pop)',
-        'snap': 'var(--ease-snap)',
       },
       keyframes: {
         "accordion-down": {
@@ -162,132 +105,14 @@ module.exports = {
           from: { height: "var(--radix-collapsible-content-height, auto)" },
           to: { height: "0" },
         },
-        "enter": {
-            from: { opacity: "var(--tw-enter-opacity, 1)", transform: "translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0) scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1)) rotate(var(--tw-enter-rotate, 0))" },
-            to: { opacity: "1", transform: "translate3d(0, 0, 0) scale3d(1, 1, 1) rotate(0)" },
-        },
-        "exit": {
-            from: { opacity: "1", transform: "translate3d(0, 0, 0) scale3d(1, 1, 1) rotate(0)" },
-            to: { opacity: "var(--tw-exit-opacity, 1)", transform: "translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0) scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0))" },
-        },
-        "dialog-panel-in": {
-          from: {
-            opacity: "0",
-            transform: "translateY(var(--dialog-panel-translate-start, -8px)) scale(var(--dialog-panel-scale-start, 0.96))",
-          },
-          to: {
-            opacity: "1",
-            transform: "translateY(0) scale(1)",
-          },
-        },
-        "dialog-panel-out": {
-          from: {
-            opacity: "1",
-            transform: "translateY(0) scale(1)",
-          },
-          to: {
-            opacity: "0",
-            transform: "translateY(var(--dialog-panel-translate-exit, 8px)) scale(var(--dialog-panel-scale-exit, 0.98))",
-          },
-        },
-        "dialog-item-in": {
-          from: {
-            opacity: "0",
-            transform: "translateY(var(--dialog-item-translate-start, -4px))",
-          },
-          to: {
-            opacity: "1",
-            transform: "translateY(0)",
-          },
-        },
-        "dialog-item-out": {
-          from: {
-            opacity: "1",
-            transform: "translateY(0)",
-          },
-          to: {
-            opacity: "0",
-            transform: "translateY(var(--dialog-item-translate-exit, 4px))",
-          },
-        },
-        "dialog-overlay-in": {
-          from: { opacity: "0" },
-          to: { opacity: "1" },
-        },
-        "dialog-overlay-out": {
-          from: { opacity: "1" },
-          to: { opacity: "0" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "collapsible-down": "collapsible-down 0.2s ease-out",
         "collapsible-up": "collapsible-up 0.2s ease-out",
-        "in": "enter 0.15s ease-out",
-        "out": "exit 0.15s ease-in",
-        "dialog-panel-in": "dialog-panel-in var(--dialog-panel-duration, 200ms) var(--dialog-panel-easing, cubic-bezier(0.4, 0, 0.2, 1))",
-        "dialog-panel-out": "dialog-panel-out var(--dialog-panel-duration, 200ms) var(--dialog-panel-easing, cubic-bezier(0.4, 0, 0.2, 1))",
-        "dialog-item-in": "dialog-item-in var(--dialog-item-duration, 150ms) var(--dialog-item-easing, cubic-bezier(0.4, 0, 0.2, 1))",
-        "dialog-item-out": "dialog-item-out var(--dialog-item-duration, 150ms) var(--dialog-item-easing, cubic-bezier(0.4, 0, 0.2, 1))",
-        "dialog-overlay-in": "dialog-overlay-in var(--dialog-overlay-duration, 150ms) ease-out",
-        "dialog-overlay-out": "dialog-overlay-out var(--dialog-overlay-duration, 150ms) ease-in",
-      },
-      transitionProperty: {
-        height: "height",
       },
     },
   },
-  plugins: [
-        // Custom plugin for animate-in/animate-out utilities (similar to tailwindcss-animate)
-        function ({ addUtilities, matchUtilities, theme }) {
-            addUtilities({
-                ".animate-in": {
-                    animationName: "enter",
-                    animationDuration: theme("animationDuration.DEFAULT", "150ms"),
-                    "--tw-enter-opacity": "initial",
-                    "--tw-enter-scale": "initial",
-                    "--tw-enter-rotate": "initial",
-                    "--tw-enter-translate-x": "initial",
-                    "--tw-enter-translate-y": "initial",
-                },
-                ".animate-out": {
-                    animationName: "exit",
-                    animationDuration: theme("animationDuration.DEFAULT", "150ms"),
-                    "--tw-exit-opacity": "initial",
-                    "--tw-exit-scale": "initial",
-                    "--tw-exit-rotate": "initial",
-                    "--tw-exit-translate-x": "initial",
-                    "--tw-exit-translate-y": "initial",
-                },
-            });
-            matchUtilities(
-                {
-                    "fade-in": (value) => ({ "--tw-enter-opacity": value }),
-                    "fade-out": (value) => ({ "--tw-exit-opacity": value }),
-                },
-                { values: { ...theme("opacity"), DEFAULT: "0" } }
-            );
-            matchUtilities(
-                {
-                    "zoom-in": (value) => ({ "--tw-enter-scale": value }),
-                    "zoom-out": (value) => ({ "--tw-exit-scale": value }),
-                },
-                { values: { ...theme("scale"), DEFAULT: "0" } }
-            );
-            matchUtilities(
-                {
-                    "slide-in-from-top": (value) => ({ "--tw-enter-translate-y": `-${value}` }),
-                    "slide-in-from-bottom": (value) => ({ "--tw-enter-translate-y": value }),
-                    "slide-in-from-left": (value) => ({ "--tw-enter-translate-x": `-${value}` }),
-                    "slide-in-from-right": (value) => ({ "--tw-enter-translate-x": value }),
-                    "slide-out-to-top": (value) => ({ "--tw-exit-translate-y": `-${value}` }),
-                    "slide-out-to-bottom": (value) => ({ "--tw-exit-translate-y": value }),
-                    "slide-out-to-left": (value) => ({ "--tw-exit-translate-x": `-${value}` }),
-                    "slide-out-to-right": (value) => ({ "--tw-exit-translate-x": value }),
-                },
-                { values: theme("spacing") }
-            );
-        },
-    ],
+  plugins: [],
 }

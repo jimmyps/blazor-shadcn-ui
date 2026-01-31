@@ -60,12 +60,15 @@ public class DropdownMenuContext : PrimitiveContextWithEvents<DropdownMenuState>
     public int FocusedIndex => State.FocusedIndex;
 
     /// <summary>
+<<<<<<< HEAD
     /// Gets or sets the currently active submenu context.
     /// Used to close submenus when hovering over other items.
     /// </summary>
     public DropdownMenuSubContext? ActiveSubMenu { get; set; }
 
     /// <summary>
+=======
+>>>>>>> pr-89
     /// Opens the dropdown menu.
     /// </summary>
     /// <param name="triggerElement">Optional element that triggered the dropdown menu.</param>
@@ -84,10 +87,13 @@ public class DropdownMenuContext : PrimitiveContextWithEvents<DropdownMenuState>
     /// </summary>
     public void Close()
     {
+<<<<<<< HEAD
         // Close any active submenu first
         ActiveSubMenu?.Close();
         ActiveSubMenu = null;
 
+=======
+>>>>>>> pr-89
         UpdateState(state =>
         {
             state.IsOpen = false;
@@ -122,6 +128,7 @@ public class DropdownMenuContext : PrimitiveContextWithEvents<DropdownMenuState>
             state.FocusedIndex = index;
         });
     }
+<<<<<<< HEAD
 
     /// <summary>
     /// Closes any active submenu. Called when hovering over sibling menu items.
@@ -134,4 +141,6 @@ public class DropdownMenuContext : PrimitiveContextWithEvents<DropdownMenuState>
             ActiveSubMenu = null;
         }
     }
+=======
+>>>>>>> pr-89
 }

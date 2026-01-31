@@ -2,9 +2,17 @@
 @implements IDisposable
 
 @* Tabs primitive root component - headless, unstyled behavior only *@
+<<<<<<< HEAD
 <CascadingValue Value="@_context" IsFixed="false">
     @ChildContent
 </CascadingValue>
+=======
+<div @attributes="AdditionalAttributes">
+    <CascadingValue Value="@_context" IsFixed="false">
+        @ChildContent
+    </CascadingValue>
+</div>
+>>>>>>> pr-89
 
 @code {
     private TabsContext _context = new();
@@ -58,6 +66,15 @@
     [Parameter]
     public TabsActivationMode ActivationMode { get; set; } = TabsActivationMode.Automatic;
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Additional attributes to apply to the root div element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+>>>>>>> pr-89
     protected override void OnInitialized()
     {
         // Initialize controllable state

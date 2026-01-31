@@ -1,81 +1,65 @@
 @namespace BlazorUI.Components.NavigationMenu
+@using BlazorUI.Components.Utilities
 @using Microsoft.AspNetCore.Components.Routing
 
-@* NavigationMenuLink - styled navigation link *@
-<BlazorUI.Primitives.NavigationMenu.NavigationMenuLink Href="@Href"
-                    Active="@Active"
-                    AutoActive="@AutoActive"
-                    Match="@Match"
-                    OnClick="OnClick"
-                    class="@GetClass()"
-                    @attributes="AdditionalAttributes">
+@*
+    Navigation Menu Link - a navigation link within the menu.
+*@
+
+<NavLink href="@Href"
+         class="@CssClass"
+         Match="@Match"
+         ActiveClass="@ActiveCssClass"
+         role="menuitem"
+         tabindex="-1"
+         @attributes="AdditionalAttributes">
     @ChildContent
-</BlazorUI.Primitives.NavigationMenu.NavigationMenuLink>
+</NavLink>
 
 @code {
     /// <summary>
-    /// The href for the link.
+    /// The URL the link navigates to.
     /// </summary>
     [Parameter]
-    public string Href { get; set; } = "#";
+    public string? Href { get; set; }
 
     /// <summary>
-    /// Whether the link is currently active.
-    /// If not set, active state will be auto-detected based on the current URL when AutoActive is true.
-    /// </summary>
-    [Parameter]
-    public bool? Active { get; set; }
-
-    /// <summary>
-    /// Whether to automatically detect active state based on the current URL.
-    /// Similar to NavLink behavior.
-    /// Default is false.
-    /// </summary>
-    [Parameter]
-    public bool AutoActive { get; set; } = false;
-
-    /// <summary>
-    /// How to match the URL when AutoActive is true.
-    /// NavLinkMatch.All requires an exact match, NavLinkMatch.Prefix requires the URL to start with Href.
-    /// Default is NavLinkMatch.Prefix.
-    /// </summary>
-    [Parameter]
-    public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
-
-    /// <summary>
-    /// The child content to render within the link.
+    /// The content of the link.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Event callback invoked when the link is clicked.
+    /// How to match the URL for active state.
     /// </summary>
     [Parameter]
-    public EventCallback OnClick { get; set; }
+    public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
 
     /// <summary>
-    /// Additional CSS classes to apply.
+    /// Additional CSS classes to apply to the link.
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
     /// <summary>
-    /// Additional attributes to apply.
+    /// Additional attributes to apply to the link.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private string GetClass()
-    {
-        var baseClass = "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors " +
-                       "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground";
-        
-        if (Active == true)
-        {
-            baseClass += " bg-accent text-accent-foreground";
-        }
-        
-        return string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
-    }
+    /// <summary>
+    /// Gets the computed CSS classes for the link.
+    /// </summary>
+    private string CssClass => ClassNames.cn(
+        "group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium",
+        "transition-colors hover:bg-accent hover:text-accent-foreground",
+        "focus:bg-accent focus:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "disabled:pointer-events-none disabled:opacity-50",
+        Class
+    );
+
+    /// <summary>
+    /// Gets the CSS class for active state.
+    /// </summary>
+    private string ActiveCssClass => "bg-accent/50";
 }
