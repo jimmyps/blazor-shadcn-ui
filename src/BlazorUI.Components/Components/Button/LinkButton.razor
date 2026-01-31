@@ -1,0 +1,24 @@
+@namespace BlazorUI.Components.Button
+
+<a
+    href="@Href"
+    target="@Target"
+    class="@CssClass"
+    aria-label="@AriaLabel"
+    @ref="_linkRef"
+    @attributes="AdditionalAttributes"
+    @onclick="HandleClick"
+    @onmouseenter="HandleMouseEnter"
+    @onmouseleave="HandleMouseLeave"
+    @onfocus="HandleFocus"
+    @onblur="HandleBlur">
+    @if (Icon != null && IconPosition == IconPosition.Start)
+    {
+        <span class="me-2">@Icon</span>
+    }
+    @ChildContent
+    @if (Icon != null && IconPosition == IconPosition.End)
+    {
+        <span class="ms-2">@Icon</span>
+    }
+</a>

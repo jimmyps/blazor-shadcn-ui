@@ -8,7 +8,7 @@ NeoBlazorUI brings the beautiful design system of shadcn/ui to Blazor applicatio
 
 **No Tailwind CSS setup required** - just install the NuGet package and start building!
 
-**[🚀 Try the Live Demo](https://blazoruidemo20251223130817-bch0fhddfkh2bthv.indonesiacentral-01.azurewebsites.net)** - Explore all 75+ components with interactive examples
+**[🚀 Try the Live Demo](https://blazoruidemo20251223130817-bch0fhddfkh2bthv.indonesiacentral-01.azurewebsites.net)** - Explore all 77+ components with interactive examples
 
 ## 🚀 Getting Started
 
@@ -282,7 +282,7 @@ Primitives give you complete control over styling while handling all the complex
 
 ## 📚 Components
 
-NeoBlazorUI includes **75+ styled components** with full shadcn/ui design compatibility:
+NeoBlazorUI includes **77+ styled components** with full shadcn/ui design compatibility:
 
 ### Form Components
 - **Button** - Multiple variants (default, destructive, outline, secondary, ghost, link) with icon support
@@ -294,6 +294,7 @@ NeoBlazorUI includes **75+ styled components** with full shadcn/ui design compat
 - **Input Group** - Enhanced inputs with icons, buttons, and addons
 - **Input OTP** - One-time password input with individual character slots
 - **Label** - Accessible form labels
+- **Link Button** - Semantic links styled as buttons for navigation
 - **Multi Select** - Searchable multi-selection with tags and checkboxes
 - **Native Select** - Styled native HTML select dropdown
 - **Radio Group** - Radio button groups with keyboard navigation
@@ -328,6 +329,7 @@ NeoBlazorUI includes **75+ styled components** with full shadcn/ui design compat
 - **Context Menu** - Right-click menus with actions and shortcuts
 - **Command** - Command palette with keyboard navigation
 - **Dialog** - Modal dialogs
+- **Dialog Service** - Programmatic dialogs with async/await API for alerts and confirmations
 - **Dropdown Menu** - Context menus with nested submenus
 - **Hover Card** - Rich hover previews
 - **Menubar** - Desktop application-style horizontal menu bar

@@ -77,6 +77,50 @@
 
     <Card>
         <CardHeader>
+            <CardTitle>Architecture</CardTitle>
+            <CardDescription>How DialogService works under the hood</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div class="space-y-4">
+                <div>
+                    <h4 class="font-semibold mb-2">Setup Required</h4>
+                    <p class="text-sm text-muted-foreground mb-2">
+                        DialogService uses the <code class="bg-muted px-1.5 py-0.5 rounded text-xs">AlertDialog</code> component 
+                        wrapped in <code class="bg-muted px-1.5 py-0.5 rounded text-xs">DialogHost</code>. 
+                        Add DialogHost once in your root layout to enable dialogs throughout your app:
+                    </p>
+                    <pre class="bg-muted p-4 rounded-md text-sm overflow-x-auto"><code>&lt;!-- In MainLayout.razor or App.razor --&gt;
+&lt;DialogHost /&gt;
+
+&lt;!-- Your app content --&gt;
+@@Body</code></pre>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold mb-2">Service Registration</h4>
+                    <p class="text-sm text-muted-foreground mb-2">
+                        Register DialogService in your DI container:
+                    </p>
+                    <pre class="bg-muted p-4 rounded-md text-sm overflow-x-auto"><code>// In Program.cs
+builder.Services.AddScoped&lt;DialogService&gt;();</code></pre>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold mb-2">Benefits</h4>
+                    <ul class="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                        <li>Consistent dialog interface across all pages and components</li>
+                        <li>No need to manage dialog state in each component</li>
+                        <li>Single DialogHost handles all dialogs - no duplicate overlays</li>
+                        <li>Built on top of accessible AlertDialog primitive</li>
+                        <li>Async/await API makes dialog flows easy to read</li>
+                    </ul>
+                </div>
+            </div>
+        </CardContent>
+    </Card>
+
+    <Card>
+        <CardHeader>
             <CardTitle>Usage Examples</CardTitle>
         </CardHeader>
         <CardContent>

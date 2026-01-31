@@ -192,6 +192,97 @@
         </div>
     </div>
 
+    <!-- LinkButton Component -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">LinkButton (Semantic Links)</h2>
+            <p class="text-sm text-muted-foreground">
+                Use LinkButton for navigation - renders as &lt;a&gt; tag styled as a button for better semantics and SEO.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <h3 class="text-lg font-medium">All Variants</h3>
+                <div class="flex flex-wrap gap-4">
+                    <LinkButton Href="/" Variant="ButtonVariant.Default">Home (Default)</LinkButton>
+                    <LinkButton Href="/" Variant="ButtonVariant.Outline">Home (Outline)</LinkButton>
+                    <LinkButton Href="/" Variant="ButtonVariant.Secondary">Home (Secondary)</LinkButton>
+                    <LinkButton Href="/" Variant="ButtonVariant.Ghost">Home (Ghost)</LinkButton>
+                    <LinkButton Href="/" Variant="ButtonVariant.Link">Home (Link)</LinkButton>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="text-lg font-medium">With Icons</h3>
+                <div class="flex flex-wrap gap-4">
+                    <LinkButton Href="/components" IconPosition="IconPosition.Start">
+                        <Icon>
+                            <LucideIcon Name="arrow-left" Size="16" />
+                        </Icon>
+                        <ChildContent>Back to Components</ChildContent>
+                    </LinkButton>
+                    <LinkButton Href="https://github.com/blazorui-net/BlazorUI" Target="_blank" Variant="ButtonVariant.Outline" IconPosition="IconPosition.End">
+                        <Icon>
+                            <LucideIcon Name="external-link" Size="16" />
+                        </Icon>
+                        <ChildContent>GitHub Repo</ChildContent>
+                    </LinkButton>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="text-lg font-medium">External Links</h3>
+                <div class="flex flex-wrap gap-4">
+                    <LinkButton Href="https://blazor.net" Target="_blank">
+                        Blazor Docs
+                    </LinkButton>
+                    <LinkButton Href="https://tailwindcss.com" Target="_blank" Variant="ButtonVariant.Secondary">
+                        Tailwind CSS
+                    </LinkButton>
+                </div>
+                <p class="text-xs text-muted-foreground">
+                    Tip: Use Target="_blank" to open links in a new tab
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- When to Use Button vs LinkButton -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Button vs LinkButton</h2>
+            <p class="text-sm text-muted-foreground">
+                Choose the right component for better semantics and accessibility.
+            </p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="p-4 border rounded-lg space-y-3">
+                <h3 class="text-lg font-semibold text-green-600 dark:text-green-400">✓ Use Button</h3>
+                <ul class="text-sm space-y-2 list-disc list-inside text-muted-foreground">
+                    <li>Form submissions</li>
+                    <li>Opening modals/dialogs</li>
+                    <li>Triggering state changes</li>
+                    <li>Any action that doesn't navigate</li>
+                </ul>
+                <div class="pt-2">
+                    <Button Variant="ButtonVariant.Default" OnClick="HandleClick">Submit Form</Button>
+                </div>
+            </div>
+            <div class="p-4 border rounded-lg space-y-3">
+                <h3 class="text-lg font-semibold text-blue-600 dark:text-blue-400">✓ Use LinkButton</h3>
+                <ul class="text-sm space-y-2 list-disc list-inside text-muted-foreground">
+                    <li>Navigation to pages</li>
+                    <li>External links</li>
+                    <li>SEO-important links</li>
+                    <li>Any action that changes URL</li>
+                </ul>
+                <div class="pt-2">
+                    <LinkButton Href="/architecture" Variant="ButtonVariant.Default">View Architecture</LinkButton>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom Styling -->
     <div class="space-y-4">
         <div class="space-y-2">
