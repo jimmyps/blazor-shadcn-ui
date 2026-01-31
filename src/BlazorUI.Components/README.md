@@ -1,6 +1,6 @@
 # NeoBlazorUI.Components
 
-Over 75+ production-ready Blazor components with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.
+Over 77+ production-ready Blazor components with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.
 
 ## ✨ Features
 
@@ -104,7 +104,7 @@ BlazorUI Components come with pre-built CSS - no Tailwind setup required!
 
 That's it! No Tailwind installation, no build configuration needed.
 
-## 📚 Available Components (75+)
+## 📚 Available Components (77+)
 
 ### Form & Input Components
 - **Button** - Interactive buttons with 6 variants and multiple sizes
@@ -117,6 +117,7 @@ That's it! No Tailwind installation, no build configuration needed.
 - **Input Group** - Enhanced inputs with icons, buttons, and addons
 - **Input OTP** - One-time password input with character slots
 - **Label** - Accessible labels for form controls
+- **Link Button** - Semantic links styled as buttons
 - **Multi Select** - Searchable multi-selection with tags
 - **Native Select** - Styled native HTML select
 - **Radio Group** - Mutually exclusive options
@@ -156,6 +157,7 @@ That's it! No Tailwind installation, no build configuration needed.
 ### Overlay Components
 - **Alert Dialog** - Modal dialogs for confirmations
 - **Dialog** - Modal dialogs with backdrop
+- **Dialog Service** - Programmatic dialogs with async/await API
 - **Hover Card** - Rich preview cards on hover
 - **Popover** - Floating panels for content
 - **Sheet** - Side panels from viewport edges

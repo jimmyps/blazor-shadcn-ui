@@ -26,6 +26,9 @@ public static class ServiceCollectionExtensions
         // This prevents template conflicts when multiple grids are on the same page
         services.AddTransient(typeof(IGridRenderer<>), typeof(AgGridRenderer<>));
 
+        // Register DialogService for programmatic dialogs
+        services.AddScoped<DialogService>();
+      
         // Register CollapsibleStateService for sidebar collapsible menu state persistence
         services.AddScoped<CollapsibleStateService>();
         

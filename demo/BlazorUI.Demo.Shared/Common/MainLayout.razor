@@ -4,6 +4,7 @@
 @using BlazorUI.Components.Sidebar
 @using BlazorUI.Components.ScrollArea
 @using BlazorUI.Components.Toast
+@using BlazorUI.Components.DialogHost
 
 <PageTitle>BlazorUI Demo</PageTitle>
 
@@ -123,6 +124,11 @@
                                             </SidebarMenuSubButton>
                                         </SidebarMenuSubItem>
                                         <SidebarMenuSubItem>
+                                          <SidebarMenuSubButton Href="components/dialog-service">
+                                            <span>Dialog Service</span>
+                                          </SidebarMenuSubButton>
+                                        </SidebarMenuSubItem>
+                                        <SidebarMenuSubItem>
                                             <SidebarMenuSubButton Href="primitives/dropdown-menu">
                                                 <span>Dropdown Menu</span>
                                             </SidebarMenuSubButton>
@@ -136,6 +142,11 @@
                                             <SidebarMenuSubButton Href="primitives/label">
                                                 <span>Label</span>
                                             </SidebarMenuSubButton>
+                                        </SidebarMenuSubItem>
+                                        <SidebarMenuSubItem>
+                                          <SidebarMenuSubButton Href="components/button#linkbutton">
+                                            <span>Link Button</span>
+                                          </SidebarMenuSubButton>
                                         </SidebarMenuSubItem>
                                         <SidebarMenuSubItem>
                                             <SidebarMenuSubButton Href="primitives/popover">
@@ -584,4 +595,5 @@
 
 <ToastViewport Position="ToastPosition.BottomRight" />
 <SpotlightCommandPalette @ref="_spotlightRef" />
+<DialogHost />
 <PortalHost />
