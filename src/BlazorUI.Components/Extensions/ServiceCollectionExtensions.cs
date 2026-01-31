@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
 using BlazorUI.Components.Services.Grid;
+using BlazorUI.Components.Services;
 
 namespace BlazorUI.Components.Extensions;
 
@@ -23,6 +25,12 @@ public static class ServiceCollectionExtensions
         // Each Grid<TItem> component gets its own renderer instance with its own template dictionary
         // This prevents template conflicts when multiple grids are on the same page
         services.AddTransient(typeof(IGridRenderer<>), typeof(AgGridRenderer<>));
+
+        // Register CollapsibleStateService for sidebar collapsible menu state persistence
+        services.AddScoped<CollapsibleStateService>();
+        
+        // Note: IHttpContextAccessor should be registered by the consuming application if SSR cookie 
+        // reading is needed. Most Blazor apps that use AddRazorComponents() will have this registered automatically.
 
         return services;
     }

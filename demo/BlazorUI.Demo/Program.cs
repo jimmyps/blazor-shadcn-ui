@@ -14,17 +14,17 @@ builder.Services.AddRazorComponents()
 // Add HttpClient services for server-side components
 builder.Services.AddHttpClient();
 
+// Add HttpContextAccessor for SSR scenarios (e.g., reading cookies on server)
+builder.Services.AddHttpContextAccessor();
+
 // Add BlazorUI.Primitives services
 builder.Services.AddBlazorUIPrimitives();
 
-// Add BlazorUI.Components services (includes Grid renderer)
+// Add BlazorUI.Components services (includes Grid renderer and CollapsibleStateService)
 builder.Services.AddBlazorUIComponents();
 
 // Add theme service for dark mode management (scoped because it depends on IJSRuntime)
 builder.Services.AddScoped<ThemeService>();
-
-// Add collapsible state service for menu state persistence
-builder.Services.AddScoped<CollapsibleStateService>();
 
 // Add mock data service for generating demo data
 builder.Services.AddSingleton<MockDataService>();

@@ -31,8 +31,8 @@
             ? "h-full w-2.5"
             : "h-2.5 w-full";
 
-        // Hidden by default, shown on hover of parent scroll area
-        return $"flex touch-none select-none opacity-0 transition-opacity duration-300 group-hover/scroll-area:opacity-100 {orientationClass}";
+        // Hidden by default and when data-state="hidden", shown on hover of parent scroll area when data-state="visible"
+        return $"flex touch-none select-none opacity-0 transition-opacity duration-300 group-hover/scroll-area:data-[state=visible]:opacity-100 data-[state=hidden]:!hidden {orientationClass}";
     }
 
     private string GetThumbClass()

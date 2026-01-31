@@ -34,7 +34,16 @@
 
     private string GetClasses()
     {
-        var baseClasses = "relative flex h-full flex-1 flex-col bg-background focus:outline-none";
+        // Base classes with independent scrolling
+        var baseClasses = "relative flex flex-1 flex-col bg-background focus:outline-none overflow-y-auto";
+        
+        // Height classes based on variant
+        var heightClasses = Context?.Variant switch
+        {
+            SidebarVariant.Inset => "h-full",
+            SidebarVariant.Floating => "h-screen",
+            _ => "h-screen"
+        };
 
         // Floating variant margins - push content when sidebar is visible
         // When sidebar is closed (hidden), remove margins
@@ -50,6 +59,7 @@
 
         return ClassNames.cn(
             baseClasses,
+            heightClasses,
             floatingClasses,
             transitionClasses,
             insetRoundingClasses,
