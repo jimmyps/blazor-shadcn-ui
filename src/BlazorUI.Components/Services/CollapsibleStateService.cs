@@ -17,17 +17,13 @@ public class CollapsibleStateService
     /// Cookie expiration period in days. Cookies will persist for 365 days.
     /// </summary>
     private const int CookieExpirationDays = 365;
-    
-    /// <summary>
-    /// Maximum number of localStorage items to check when clearing all states.
-    /// localStorage typically has a 5-10MB limit, so 10,000 keys is more than sufficient.
-    /// </summary>
-    private const int MaxLocalStorageItems = 10000;
 
     /// <summary>
     /// Gets the storage key prefix used for collapsible state storage.
     /// </summary>
     public static string KeyPrefix => StoragePrefix;
+    
+    private IJSObjectReference? _storageModule;
 
     public CollapsibleStateService(IJSRuntime jsRuntime, IHttpContextAccessor? httpContextAccessor = null)
     {
@@ -143,26 +139,17 @@ public class CollapsibleStateService
     {
         try
         {
-            // Iterate through localStorage keys with a reasonable limit
-            // localStorage.key() returns null when index is out of bounds
-            var allKeys = new List<string>();
-            for (var i = 0; i < MaxLocalStorageItems; i++)
+            // Load the storage helper module if not already loaded
+            if (_storageModule == null)
             {
-                try
-                {
-                    var key = await _jsRuntime.InvokeAsync<string?>("localStorage.key", i);
-                    if (key == null)
-                        break;
-                    
-                    if (key.StartsWith(StoragePrefix))
-                        allKeys.Add(key);
-                }
-                catch
-                {
-                    break;
-                }
+                _storageModule = await _jsRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoBlazorUI.Components/js/storage-helpers.js");
             }
 
+            // Get all localStorage keys that match our prefix using the JS helper
+            var allKeys = await _storageModule.InvokeAsync<string[]>("getLocalStorageKeysByPrefix", StoragePrefix);
+
+            // Remove each matching key
             foreach (var key in allKeys)
             {
                 await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", key);
