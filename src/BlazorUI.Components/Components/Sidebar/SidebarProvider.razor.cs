@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Http;
 using Microsoft.JSInterop;
 
 namespace BlazorUI.Components.Sidebar;
@@ -12,10 +13,25 @@ public partial class SidebarProvider
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
+    [Inject]
+    private IHttpContextAccessor? HttpContextAccessor { get; set; }
+
     protected override void OnInitialized()
     {
+        bool initialOpen = DefaultOpen;
+        
+        // Try to read cookie server-side during prerendering
+        if (HttpContextAccessor?.HttpContext != null && !string.IsNullOrEmpty(CookieKey))
+        {
+            var cookieValue = HttpContextAccessor.HttpContext.Request.Cookies[CookieKey];
+            if (bool.TryParse(cookieValue, out var savedOpen))
+            {
+                initialOpen = savedOpen;
+            }
+        }
+        
         // Initialize context immediately for SSR - enables expand/collapse to work during prerendering
-        Context.Initialize(open: DefaultOpen, variant: Variant, side: Side, staticRendering: StaticRendering);
+        Context.Initialize(open: initialOpen, variant: Variant, side: Side, staticRendering: StaticRendering);
     }
 
     protected override void OnParametersSet()

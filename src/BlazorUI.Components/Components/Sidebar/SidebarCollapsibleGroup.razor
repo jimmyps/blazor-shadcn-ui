@@ -1,0 +1,91 @@
+@namespace BlazorUI.Components.Sidebar
+@using BlazorUI.Components.Collapsible
+@using BlazorUI.Components.Services
+@inject CollapsibleStateService StateService
+@inject IHttpContextAccessor? HttpContextAccessor
+
+@*
+    SidebarCollapsibleGroup - A wrapper component that manages collapsible state persistence.
+    
+    Automatically persists open/closed state to both localStorage (client-side) and cookies (SSR).
+    During server-side rendering, reads initial state from cookies to prevent visual flash.
+    
+    Usage:
+    <SidebarCollapsibleGroup StateKey="sidebar-menu-name" DefaultOpen="false">
+        <CollapsibleTrigger>...</CollapsibleTrigger>
+        <CollapsibleContent>...</CollapsibleContent>
+    </SidebarCollapsibleGroup>
+*@
+
+<Collapsible Open="@_isOpen" OpenChanged="@OnIsOpenChanged">
+    @ChildContent
+</Collapsible>
+
+@code {
+    /// <summary>
+    /// Unique key for storing this collapsible's state.
+    /// Should be unique across the application (e.g., "sidebar-primitives-menu").
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required string StateKey { get; set; }
+
+    /// <summary>
+    /// Default open state when no saved state exists.
+    /// </summary>
+    [Parameter]
+    public bool DefaultOpen { get; set; } = false;
+
+    /// <summary>
+    /// Child content (typically CollapsibleTrigger and CollapsibleContent).
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private bool _isOpen = false;
+    private bool _hasInitialized = false;
+
+    protected override void OnInitialized()
+    {
+        // Try to read from cookie during server-side rendering
+        if (HttpContextAccessor?.HttpContext != null)
+        {
+            var cookieKey = $"blazorui:collapsible:{StateKey}";
+            var cookieValue = HttpContextAccessor.HttpContext.Request.Cookies[cookieKey];
+            
+            if (bool.TryParse(cookieValue, out var savedOpen))
+            {
+                _isOpen = savedOpen;
+                _hasInitialized = true;
+                return;
+            }
+        }
+
+        _isOpen = DefaultOpen;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_hasInitialized)
+        {
+            try
+            {
+                var savedState = await StateService.GetStateAsync(StateKey, DefaultOpen);
+                if (savedState != _isOpen)
+                {
+                    _isOpen = savedState;
+                    StateHasChanged();
+                }
+            }
+            catch
+            {
+                // Silently fail, use default state
+            }
+        }
+    }
+
+    private async Task OnIsOpenChanged(bool newValue)
+    {
+        _isOpen = newValue;
+        await StateService.SetStateAsync(StateKey, newValue);
+    }
+}

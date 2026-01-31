@@ -76,7 +76,7 @@
             <SidebarGroup>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <Collapsible Open="@_primitivesMenuOpen" OpenChanged="@OnPrimitivesMenuOpenChanged">
+                        <SidebarCollapsibleGroup StateKey="sidebar-primitives-menu">
                             <SidebarMenuButton Tooltip="Primitives">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <rect width="18" height="18" x="3" y="3" rx="2"></rect>
@@ -171,7 +171,7 @@
                                     </SidebarMenuSubItem>
                                 </SidebarMenuSub>
                             </CollapsibleContent>
-                        </Collapsible>
+                        </SidebarCollapsibleGroup>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarGroup>
@@ -180,7 +180,7 @@
             <SidebarGroup>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <Collapsible Open="@_componentsMenuOpen" OpenChanged="@OnComponentsMenuOpenChanged">
+                        <SidebarCollapsibleGroup StateKey="sidebar-components-menu">
                             <SidebarMenuButton Tooltip="Components">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <rect width="18" height="18" x="3" y="3" rx="2"></rect>
@@ -496,7 +496,7 @@
                                     </SidebarMenuSubItem>
                                 </SidebarMenuSub>
                             </CollapsibleContent>
-                        </Collapsible>
+                        </SidebarCollapsibleGroup>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarGroup>
@@ -505,7 +505,7 @@
             <SidebarGroup>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <Collapsible Open="@_iconsMenuOpen" OpenChanged="@OnIconsMenuOpenChanged">
+                        <SidebarCollapsibleGroup StateKey="sidebar-icons-menu">
                             <SidebarMenuButton Tooltip="Icons">
                                 <LucideIcon Name="smile" Size="18" />
                                 <span>Icons</span>
@@ -532,7 +532,7 @@
                                     </SidebarMenuSubItem>
                                 </SidebarMenuSub>
                             </CollapsibleContent>
-                        </Collapsible>
+                        </SidebarCollapsibleGroup>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarGroup>
