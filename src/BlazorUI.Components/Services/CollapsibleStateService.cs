@@ -90,7 +90,9 @@ public class CollapsibleStateService
                 {
                     Expires = DateTimeOffset.UtcNow.AddDays(CookieExpirationDays),
                     Path = "/",
-                    SameSite = SameSiteMode.Lax
+                    SameSite = SameSiteMode.Lax,
+                    Secure = true,
+                    HttpOnly = false // Must be false to allow JavaScript access via localStorage
                 };
                 _httpContextAccessor.HttpContext.Response.Cookies.Append(
                     storageKey,
