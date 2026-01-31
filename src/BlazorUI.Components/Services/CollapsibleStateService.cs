@@ -7,7 +7,7 @@ namespace BlazorUI.Components.Services;
 /// Service for persisting collapsible menu state in both localStorage and cookies.
 /// Supports server-side rendering by reading from cookies during SSR.
 /// </summary>
-public class CollapsibleStateService
+public class CollapsibleStateService : IAsyncDisposable
 {
     private readonly IJSRuntime _jsRuntime;
     private readonly IHttpContextAccessor? _httpContextAccessor;
@@ -159,5 +159,25 @@ public class CollapsibleStateService
         {
             // Silently fail
         }
+    }
+
+    /// <summary>
+    /// Disposes the service and its JavaScript module.
+    /// </summary>
+    public async ValueTask DisposeAsync()
+    {
+        if (_storageModule != null)
+        {
+            try
+            {
+                await _storageModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Circuit disconnected, ignore
+            }
+        }
+        
+        GC.SuppressFinalize(this);
     }
 }
