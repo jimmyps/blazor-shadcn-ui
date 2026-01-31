@@ -1,14 +1,7 @@
-<<<<<<< HEAD
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-=======
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
-
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
->>>>>>> pr-89
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -21,15 +14,9 @@
     <PackageTags>blazor;primitives;headless;ui;components;accessibility;radix;unstyled;wcag</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <!-- <PackageIcon>icon.png</PackageIcon> -->
-<<<<<<< HEAD
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jimmyps/blazor-shadcn-ui</PackageProjectUrl>
     <RepositoryUrl>https://github.com/jimmyps/blazor-shadcn-ui</RepositoryUrl>
-=======
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>https://blazorui.net</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/blazorui-net/ui</RepositoryUrl>
->>>>>>> pr-89
     <Authors>Mathew Taylor</Authors>
     <Copyright>Copyright (c) 2025-present Mathew Taylor</Copyright>
 
@@ -43,11 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-<<<<<<< HEAD
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0" />
-=======
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.14" />
->>>>>>> pr-89
     <PackageReference Include="MinVer" Version="5.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
