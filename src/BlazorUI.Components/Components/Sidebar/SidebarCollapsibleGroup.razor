@@ -50,7 +50,7 @@
         // Try to read from cookie during server-side rendering
         if (HttpContextAccessor?.HttpContext != null)
         {
-            var cookieKey = $"blazorui:collapsible:{StateKey}";
+            var cookieKey = CollapsibleStateService.KeyPrefix + StateKey;
             var cookieValue = HttpContextAccessor.HttpContext.Request.Cookies[cookieKey];
             
             if (bool.TryParse(cookieValue, out var savedOpen))

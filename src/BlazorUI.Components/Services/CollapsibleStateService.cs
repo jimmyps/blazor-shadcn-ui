@@ -12,6 +12,16 @@ public class CollapsibleStateService
     private readonly IJSRuntime _jsRuntime;
     private readonly IHttpContextAccessor? _httpContextAccessor;
     private const string StoragePrefix = "blazorui:collapsible:";
+    
+    /// <summary>
+    /// Cookie expiration period in days. Cookies will persist for 365 days.
+    /// </summary>
+    private const int CookieExpirationDays = 365;
+
+    /// <summary>
+    /// Gets the storage key prefix used for collapsible state storage.
+    /// </summary>
+    public static string KeyPrefix => StoragePrefix;
 
     public CollapsibleStateService(IJSRuntime jsRuntime, IHttpContextAccessor? httpContextAccessor = null)
     {
@@ -78,7 +88,7 @@ public class CollapsibleStateService
             {
                 var cookieOptions = new CookieOptions
                 {
-                    Expires = DateTimeOffset.UtcNow.AddYears(1),
+                    Expires = DateTimeOffset.UtcNow.AddDays(CookieExpirationDays),
                     Path = "/",
                     SameSite = SameSiteMode.Lax
                 };
@@ -125,11 +135,27 @@ public class CollapsibleStateService
     {
         try
         {
-            var keys = await _jsRuntime.InvokeAsync<string[]>(
-                "eval",
-                $"Object.keys(localStorage).filter(k => k.startsWith('{StoragePrefix}'))");
+            // Use a safer approach: iterate through all keys and filter client-side
+            // This avoids using eval() which is a security risk
+            var allKeys = new List<string>();
+            for (var i = 0; i < int.MaxValue; i++)
+            {
+                try
+                {
+                    var key = await _jsRuntime.InvokeAsync<string?>("localStorage.key", i);
+                    if (key == null)
+                        break;
+                    
+                    if (key.StartsWith(StoragePrefix))
+                        allKeys.Add(key);
+                }
+                catch
+                {
+                    break;
+                }
+            }
 
-            foreach (var key in keys)
+            foreach (var key in allKeys)
             {
                 await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", key);
             }
