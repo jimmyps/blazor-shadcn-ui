@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
 using BlazorUI.Components.Services.Grid;
 using BlazorUI.Components.Services;
 
@@ -27,6 +28,12 @@ public static class ServiceCollectionExtensions
 
         // Register DialogService for programmatic dialogs
         services.AddScoped<DialogService>();
+      
+        // Register CollapsibleStateService for sidebar collapsible menu state persistence
+        services.AddScoped<CollapsibleStateService>();
+        
+        // Note: IHttpContextAccessor should be registered by the consuming application if SSR cookie 
+        // reading is needed. Most Blazor apps that use AddRazorComponents() will have this registered automatically.
 
         return services;
     }
