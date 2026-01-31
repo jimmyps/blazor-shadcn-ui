@@ -14,6 +14,9 @@ builder.Services.AddRazorComponents()
 // Add HttpClient services for server-side components
 builder.Services.AddHttpClient();
 
+// Add HttpContextAccessor for SSR scenarios (e.g., reading cookies on server)
+builder.Services.AddHttpContextAccessor();
+
 // Add BlazorUI.Primitives services
 builder.Services.AddBlazorUIPrimitives();
 
