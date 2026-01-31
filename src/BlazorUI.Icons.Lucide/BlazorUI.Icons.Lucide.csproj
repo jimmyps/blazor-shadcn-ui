@@ -14,8 +14,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <!-- <PackageIcon>icon.png</PackageIcon> -->
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/blazorui-net/ui</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/blazorui-net/ui</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/jimmyps/blazor-shadcn-ui</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jimmyps/blazor-shadcn-ui</RepositoryUrl>
     <Authors>Mathew Taylor</Authors>
     <Copyright>Copyright (c) 2025-present Mathew Taylor</Copyright>
 

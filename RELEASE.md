@@ -151,7 +151,7 @@ Before releasing a package:
 
 ### GitHub Actions Dashboard
 
-Monitor releases at: https://github.com/blazorui-net/ui/actions
+Monitor releases at: https://github.com/jimmyps/blazor-shadcn-ui/actions
 
 Each release creates a workflow run showing:
 - Build logs

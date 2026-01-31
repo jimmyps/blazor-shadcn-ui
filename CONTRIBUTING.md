@@ -35,8 +35,8 @@ If you find a bug or have a feature request, please create an issue on GitHub:
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/blazorui-net/ui.git
-cd ui
+git clone https://github.com/jimmyps/blazor-shadcn-ui.git
+cd blazor-shadcn-ui
 ```
 
 2. **Build the solution:**

@@ -64,8 +64,8 @@ BlazorUI.Website/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/blazorui-net/ui.git
-   cd blazorui/website/BlazorUI.Website
+   git clone https://github.com/jimmyps/blazor-shadcn-ui.git
+   cd blazor-shadcn-ui/website/BlazorUI.Website
    ```
 
 2. **Install Tailwind CSS CLI** (one-time setup)
@@ -187,7 +187,7 @@ This project is part of the BlazorUI library. See the main repository for licens
 
 ## Links
 
-- **Main Repository**: https://github.com/blazorui-net/ui
+- **Main Repository**: https://github.com/jimmyps/blazor-shadcn-ui
 - **Documentation**: https://www.blazorui.net/docs/introduction
 - **NuGet Packages**:
   - BlazorUI.Primitives
@@ -196,8 +196,8 @@ This project is part of the BlazorUI library. See the main repository for licens
 
 ## Support
 
-- **Issues**: https://github.com/blazorui-net/ui/issues
-- **Discussions**: https://github.com/blazorui-net/ui/discussions
+- **Issues**: https://github.com/jimmyps/blazor-shadcn-ui/issues
+- **Discussions**: https://github.com/jimmyps/blazor-shadcn-ui/discussions
 
 ---
 

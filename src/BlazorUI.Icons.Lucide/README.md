@@ -216,8 +216,8 @@ Lucide icons are ISC licensed by [Lucide Contributors](https://github.com/lucide
 ## Links
 
 - **Lucide Icons**: [lucide.dev](https://lucide.dev/)
-- **BlazorUI**: [GitHub Repository](https://github.com/blazorui-net/ui)
-- **Issues**: [Report a Bug](https://github.com/blazorui-net/ui/issues)
+- **BlazorUI**: [GitHub Repository](https://github.com/jimmyps/blazor-shadcn-ui)
+- **Issues**: [Report a Bug](https://github.com/jimmyps/blazor-shadcn-ui/issues)
 
 ## Contributing
 
