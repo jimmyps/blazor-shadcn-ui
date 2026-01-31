@@ -18,7 +18,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 // Add BlazorUI.Primitives services
 builder.Services.AddBlazorUIPrimitives();
 
-// Add BlazorUI.Components services (includes Grid renderer, CollapsibleStateService, and HttpContextAccessor)
+// Add BlazorUI.Components services (includes Grid renderer and CollapsibleStateService)
 builder.Services.AddBlazorUIComponents();
 
 // Add theme service for dark mode management (scoped because it depends on IJSRuntime)

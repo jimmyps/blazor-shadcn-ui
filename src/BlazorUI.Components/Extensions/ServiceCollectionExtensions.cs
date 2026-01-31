@@ -29,8 +29,8 @@ public static class ServiceCollectionExtensions
         // Register CollapsibleStateService for sidebar collapsible menu state persistence
         services.AddScoped<CollapsibleStateService>();
         
-        // Register HttpContextAccessor for server-side cookie access (required for SSR state persistence)
-        services.AddHttpContextAccessor();
+        // Note: IHttpContextAccessor should be registered by the consuming application if SSR cookie 
+        // reading is needed. Most Blazor apps that use AddRazorComponents() will have this registered automatically.
 
         return services;
     }

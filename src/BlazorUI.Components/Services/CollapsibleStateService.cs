@@ -4,8 +4,10 @@ using Microsoft.JSInterop;
 namespace BlazorUI.Components.Services;
 
 /// <summary>
-/// Service for persisting collapsible menu state in both localStorage and cookies.
-/// Supports server-side rendering by reading from cookies during SSR.
+/// Service for persisting collapsible menu state using JavaScript-based localStorage and cookie management.
+/// This service delegates all storage operations to a JavaScript module that handles both localStorage
+/// and cookie persistence. For SSR scenarios, components should use IHttpContextAccessor to read cookies
+/// server-side before falling back to this service's client-side methods.
 /// </summary>
 public class CollapsibleStateService : IAsyncDisposable
 {
@@ -43,8 +45,8 @@ public class CollapsibleStateService : IAsyncDisposable
     }
 
     /// <summary>
-    /// Get the saved state for a collapsible menu.
-    /// Tries to read from cookies during SSR, falls back to localStorage during client-side rendering.
+    /// Get the saved state for a collapsible menu from client-side storage.
+    /// This method calls JavaScript to read from localStorage/cookies and is only available during client-side rendering.
     /// </summary>
     /// <param name="key">Unique identifier for the collapsible (e.g., "sidebar-primitives-menu")</param>
     /// <param name="defaultValue">Default value if no state is saved</param>

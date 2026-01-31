@@ -76,14 +76,9 @@
                 cookieValue = plainValue;
             }
             
-            if (cookieValue != null && bool.TryParse(cookieValue, out var savedOpen))
-            {
-                _isOpen = savedOpen;
-            }
-            else
-            {
-                _isOpen = DefaultOpen;
-            }
+            _isOpen = (cookieValue != null && bool.TryParse(cookieValue, out var savedOpen))
+                ? savedOpen
+                : DefaultOpen;
         }
         else
         {
