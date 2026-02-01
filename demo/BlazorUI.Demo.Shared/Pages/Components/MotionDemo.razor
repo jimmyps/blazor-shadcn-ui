@@ -23,7 +23,7 @@
         </div>
         
         <div class="border rounded-lg p-6">
-            <Motion Trigger="@MotionTrigger.OnAppear">
+            <Motion Trigger="@MotionTrigger.OnAppear" DisableOnPrerender="true">
                 <Presets>
                     <FadeIn Duration="0.85" />
                 </Presets>
@@ -34,57 +34,12 @@
                             <CardDescription>This card fades in on page load</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <p>Content appears smoothly with a fade animation.</p>
+                            <p>Content appears smoothly with a fade animation while the app is already interactive.</p>
                         </CardContent>
                     </Card>
                 </ChildContent>
             </Motion>
-        </div>
-    </section>
-
-    <!-- DisableOnPrerender Demo -->
-    <section class="space-y-4">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-2xl font-semibold">DisableOnPrerender</h2>
-                <p class="text-muted-foreground">Content visible immediately during SSR/prerender</p>
-            </div>
-        </div>
-        
-        <div class="border rounded-lg p-6 space-y-4">
-            <div class="grid gap-4 md:grid-cols-2">
-                <div>
-                    <h3 class="text-sm font-medium mb-2">Without DisableOnPrerender (default)</h3>
-                    <p class="text-sm text-muted-foreground mb-4">Animation waits for interactive state, may appear blank during SSR</p>
-                    <Motion Trigger="@MotionTrigger.OnAppear">
-                        <Presets>
-                            <FadeIn Duration="0.6" />
-                        </Presets>
-                        <ChildContent>
-                            <div class="border rounded p-4 bg-muted">
-                                <p class="text-sm">This content waits for hydration before showing.</p>
-                            </div>
-                        </ChildContent>
-                    </Motion>
-                </div>
-                
-                <div>
-                    <h3 class="text-sm font-medium mb-2">With DisableOnPrerender="true"</h3>
-                    <p class="text-sm text-muted-foreground mb-4">Content shows immediately during SSR, no animation on hydration</p>
-                    <Motion Trigger="@MotionTrigger.OnAppear" DisableOnPrerender="true">
-                        <Presets>
-                            <FadeIn Duration="0.6" />
-                        </Presets>
-                        <ChildContent>
-                            <div class="border rounded p-4 bg-primary/10">
-                                <p class="text-sm">This content is visible immediately during SSR/prerender!</p>
-                            </div>
-                        </ChildContent>
-                    </Motion>
-                </div>
-            </div>
-            
-            <Alert>
+            <Alert Class="mt-4">
                 <AlertDescription>
                     <strong>Tip:</strong> Use <code class="px-1 py-0.5 bg-muted rounded">DisableOnPrerender="true"</code> when you want instant content visibility during SSR/prerender. If content is shown during prerender, it will NOT animate when the app becomes interactive, preventing jarring transitions. Animation only plays if the app was already interactive from the start.
                 </AlertDescription>

@@ -139,19 +139,19 @@
 
     [CascadingParameter(Name = "MotionContext")]
     private MotionContext? Context { get; set; }
-    
+
     [CascadingParameter(Name = "ParentMotion")]
     private Motion? ParentMotion { get; set; }
-    
+
     [CascadingParameter]
     private AppRenderContext? RenderContext { get; set; }
 
     // Internal state for preset collection
     internal List<IMotionPreset> CollectedPresets { get; } = new();
-    
+
     // List of child Motion components for staggering
     private readonly List<Motion> _childMotions = new();
-    
+
     // Store this child's own index in the stagger sequence
     private int _myStaggerIndex = 0;
 
@@ -166,7 +166,7 @@
             _childMotions.Add(child);
         }
     }
-    
+
     /// <summary>
     /// Unregister a child Motion component.
     /// </summary>
@@ -270,7 +270,7 @@
                 // Separate presets into keyframe providers and option/spring providers
                 var keyframePresets = CollectedPresets.Where(p => p.GetKeyframes()?.Any() == true).ToList();
                 var springPreset = CollectedPresets.FirstOrDefault(p => p.GetSpringOptions() != null);
-                
+
                 // Merge all options first
                 foreach (var presetOptions in CollectedPresets
                     .Select(p => p.GetOptions())
@@ -278,13 +278,13 @@
                 {
                     options = MergeOptions(options, presetOptions);
                 }
-                
+
                 // Apply spring if available (overrides easing)
                 if (springPreset?.GetSpringOptions() != null)
                 {
                     spring = springPreset.GetSpringOptions();
                 }
-                
+
                 // Now handle keyframes
                 if (keyframePresets.Count == 0)
                 {
@@ -303,7 +303,7 @@
                     // Multiple presets with keyframes: merge their FROM/TO
                     var fromKeyframe = new MotionKeyframe();
                     var toKeyframe = new MotionKeyframe();
-                    
+
                     foreach (var (from, to) in keyframePresets.Select(preset =>
                     {
                         var presetKeyframes = preset.GetKeyframes();
@@ -345,7 +345,7 @@
                 keyframes,
                 options,
                 spring);
-            
+
             Console.WriteLine($"Motion: Animation started with ID {_animationId}");
         }
         catch (JSException ex)
@@ -366,7 +366,7 @@
             {
                 return await _jsModule.InvokeAsync<bool>("checkReducedMotion");
             }
-            
+
             // Fallback if module not loaded
             return false;
         }
@@ -430,7 +430,7 @@
         {
             _staggerContext = new MotionContext { StaggerDelay = StaggerChildren.Value };
         }
-        
+
         // If we're a child in a stagger context, register with parent
         if (Context != null && ParentMotion != null)
         {
@@ -439,7 +439,7 @@
             ParentMotion.RegisterChild(this);
         }
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -460,16 +460,18 @@
             // Determine if we should run animations
             // Track if content was rendered during prerender with DisableOnPrerender enabled
             bool isPrerender = RenderContext != null && !RenderContext.IsInteractive;
-            
+
             if (isPrerender && DisableOnPrerender)
             {
                 _wasRenderedDuringPrerender = true;
             }
-            
+
+            Console.WriteLine($"Motion: IsPrerender={isPrerender} WasRendered={_wasRenderedDuringPrerender}");
+
             // Skip animation if content was already shown during prerender
             // This prevents jarring animations when the app becomes interactive
             bool shouldAnimate = RenderContext == null || 
-                                (RenderContext.IsInteractive && !_wasRenderedDuringPrerender);
+                                (!isPrerender && !_wasRenderedDuringPrerender);
 
             if (shouldAnimate)
             {
@@ -485,7 +487,7 @@
             }
         }
     }
-    
+
     public void Dispose()
     {
         // Unregister from parent if we were registered
@@ -539,23 +541,28 @@
     private string GetCombinedClasses()
     {
         var classes = new List<string>();
-        
+
         // Add user-provided classes
         if (!string.IsNullOrEmpty(Class))
         {
             classes.Add(Class);
         }
-        
-        // For OnInView triggers, hide initially to prevent flash before animation
-        // BUT: if DisableOnPrerender is true and we're in prerender, keep content visible
-        if (Trigger == MotionTrigger.OnInView && !_hasAnimated)
+
+        // For non-manual triggers, hide initially to prevent flash before animation
+        // If DisableOnPrerender is true and we're in prerender, keep content visible
+        if ((Trigger == MotionTrigger.OnAppear || Trigger == MotionTrigger.OnInView)
+            && !_hasAnimated && !_wasRenderedDuringPrerender)
         {
             bool isPrerender = RenderContext != null && !RenderContext.IsInteractive;
-            
+
             // Hide content unless we're in prerender with DisableOnPrerender enabled
             if (!(isPrerender && DisableOnPrerender))
             {
                 classes.Add("opacity-0");
+            }
+            else if (isPrerender)
+            {
+                _wasRenderedDuringPrerender = true;
             }
         }
         
