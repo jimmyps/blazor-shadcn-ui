@@ -32,7 +32,7 @@ public partial class MainLayout : LayoutComponentBase
             }
 
             // Trigger re-render with loaded state
-            StateHasChanged();
+            // StateHasChanged();
         }
     }
     

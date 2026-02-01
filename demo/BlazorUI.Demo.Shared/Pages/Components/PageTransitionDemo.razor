@@ -1,0 +1,378 @@
+@page "/components/pagetransition"
+@using BlazorUI.Components.Card
+@using BlazorUI.Components.Alert
+@using BlazorUI.Components.Button
+@using BlazorUI.Components.Badge
+
+<PageTitle>PageTransition - BlazorUI</PageTitle>
+
+<div class="space-y-8">
+    <div>
+        <h1 class="text-3xl font-bold">PageTransition</h1>
+        <p class="text-muted-foreground mt-2">
+            Smooth page transitions that respect SSR and prerendering
+        </p>
+    </div>
+
+    <!-- Overview -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Overview</h2>
+            <p class="text-muted-foreground">
+                PageTransition provides smooth animated transitions between pages during navigation, 
+                while intelligently avoiding animations during server-side rendering and initial hydration.
+            </p>
+        </div>
+
+        <Alert>
+            <AlertTitle>✨ Render State Aware</AlertTitle>
+            <AlertDescription>
+                This component leverages the <code class="px-1 py-0.5 bg-muted rounded">AppRenderContext</code> 
+                to detect SSR, prerendering, and hydration states, ensuring animations only play when appropriate.
+            </AlertDescription>
+        </Alert>
+    </section>
+
+    <!-- Features -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Features</h2>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2">
+            <Card>
+                <CardHeader>
+                    <CardTitle class="text-lg">🎭 Smart Detection</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground">
+                        Automatically detects SSR/prerendering and skips animations during initial load to prevent janky transitions.
+                    </p>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle class="text-lg">🚀 Smooth Navigation</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground">
+                        Provides seamless fade and slide transitions for enhanced (SPA-style) page navigations.
+                    </p>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle class="text-lg">♿ Accessibility</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground">
+                        Respects user's <code class="px-1 py-0.5 bg-muted rounded text-xs">prefers-reduced-motion</code> preference via the Motion component.
+                    </p>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle class="text-lg">⚙️ Configurable</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground">
+                        Customize duration, opacity, slide distance, and more to match your app's design language.
+                    </p>
+                </CardContent>
+            </Card>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">How It Works</h2>
+        </div>
+
+        <div class="border rounded-lg p-6 space-y-4">
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <Badge Variant="BadgeVariant.Default">1</Badge>
+                    <h3 class="font-semibold">Render State Detection</h3>
+                </div>
+                <p class="text-sm text-muted-foreground pl-8">
+                    Uses <code class="px-1 py-0.5 bg-muted rounded text-xs">AppRenderContext</code> to check 
+                    if the app is interactive and hydration is complete.
+                </p>
+            </div>
+
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <Badge Variant="BadgeVariant.Default">2</Badge>
+                    <h3 class="font-semibold">First Load (No Animation)</h3>
+                </div>
+                <p class="text-sm text-muted-foreground pl-8">
+                    During SSR, prerendering, or hydration, content appears instantly without animation to avoid visual glitches.
+                </p>
+            </div>
+
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <Badge Variant="BadgeVariant.Default">3</Badge>
+                    <h3 class="font-semibold">Subsequent Navigation (Animated)</h3>
+                </div>
+                <p class="text-sm text-muted-foreground pl-8">
+                    Once interactive and hydrated, all future page navigations trigger smooth fade/slide animations.
+                </p>
+            </div>
+
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <Badge Variant="BadgeVariant.Default">4</Badge>
+                    <h3 class="font-semibold">Key-Based Re-rendering</h3>
+                </div>
+                <p class="text-sm text-muted-foreground pl-8">
+                    Uses the <code class="px-1 py-0.5 bg-muted rounded text-xs">@@key</code> directive tied to the current URI to force component re-creation on navigation.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Usage -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Basic Usage</h2>
+            <p class="text-muted-foreground">
+                Wrap your layout's <code class="px-1 py-0.5 bg-muted rounded">@@Body</code> with PageTransition
+            </p>
+        </div>
+
+        <div class="border rounded-lg p-6 bg-muted/50">
+            <pre class="text-sm"><code>@@using BlazorUI.Components
+@@using BlazorUI.Components.RenderState
+
+&lt;RenderStateProvider&gt;
+    &lt;PageTransition&gt;
+        @@Body
+    &lt;/PageTransition&gt;
+&lt;/RenderStateProvider&gt;</code></pre>
+        </div>
+
+        <Alert>
+            <AlertTitle>📋 Requirements</AlertTitle>
+            <AlertDescription>
+                The <code class="px-1 py-0.5 bg-muted rounded">RenderStateProvider</code> must wrap the PageTransition component 
+                to provide the necessary render lifecycle context.
+            </AlertDescription>
+        </Alert>
+    </section>
+
+    <!-- Examples -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Configuration Examples</h2>
+        </div>
+
+        <div class="space-y-6">
+            <!-- Default -->
+            <div class="space-y-2">
+                <h3 class="font-semibold">Default Fade (250ms)</h3>
+                <div class="border rounded-lg p-4 bg-muted/50">
+                    <pre class="text-sm"><code>&lt;PageTransition&gt;
+    @@Body
+&lt;/PageTransition&gt;</code></pre>
+                </div>
+            </div>
+
+            <!-- With Slide -->
+            <div class="space-y-2">
+                <h3 class="font-semibold">Fade with Slide Animation</h3>
+                <div class="border rounded-lg p-4 bg-muted/50">
+                    <pre class="text-sm"><code>&lt;PageTransition EnableSlide="true" SlideDistance="20"&gt;
+    @@Body
+&lt;/PageTransition&gt;</code></pre>
+                </div>
+            </div>
+
+            <!-- Custom Duration -->
+            <div class="space-y-2">
+                <h3 class="font-semibold">Faster Transition (150ms)</h3>
+                <div class="border rounded-lg p-4 bg-muted/50">
+                    <pre class="text-sm"><code>&lt;PageTransition Duration="0.15"&gt;
+    @@Body
+&lt;/PageTransition&gt;</code></pre>
+                </div>
+            </div>
+
+            <!-- Subtle Fade -->
+            <div class="space-y-2">
+                <h3 class="font-semibold">Subtle Fade (0.3 to 1 opacity)</h3>
+                <div class="border rounded-lg p-4 bg-muted/50">
+                    <pre class="text-sm"><code>&lt;PageTransition FromOpacity="0.3" Duration="0.2"&gt;
+    @@Body
+&lt;/PageTransition&gt;</code></pre>
+                </div>
+            </div>
+
+            <!-- Disabled -->
+            <div class="space-y-2">
+                <h3 class="font-semibold">Disabled (No Animation)</h3>
+                <div class="border rounded-lg p-4 bg-muted/50">
+                    <pre class="text-sm"><code>&lt;PageTransition DisableAnimation="true"&gt;
+    @@Body
+&lt;/PageTransition&gt;</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Parameters -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Parameters</h2>
+        </div>
+
+        <div class="border rounded-lg overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="bg-muted">
+                    <tr>
+                        <th class="text-left p-3 font-semibold">Parameter</th>
+                        <th class="text-left p-3 font-semibold">Type</th>
+                        <th class="text-left p-3 font-semibold">Default</th>
+                        <th class="text-left p-3 font-semibold">Description</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    <tr>
+                        <td class="p-3"><code class="text-xs">ChildContent</code></td>
+                        <td class="p-3 text-muted-foreground">RenderFragment?</td>
+                        <td class="p-3 text-muted-foreground">-</td>
+                        <td class="p-3 text-muted-foreground">Page content to wrap with transitions</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3"><code class="text-xs">RenderContext</code></td>
+                        <td class="p-3 text-muted-foreground">AppRenderContext?</td>
+                        <td class="p-3 text-muted-foreground">Cascading</td>
+                        <td class="p-3 text-muted-foreground">Render state from RenderStateProvider</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3"><code class="text-xs">DisableAnimation</code></td>
+                        <td class="p-3 text-muted-foreground">bool</td>
+                        <td class="p-3 text-muted-foreground">false</td>
+                        <td class="p-3 text-muted-foreground">Completely disable animations</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3"><code class="text-xs">Duration</code></td>
+                        <td class="p-3 text-muted-foreground">double</td>
+                        <td class="p-3 text-muted-foreground">0.25</td>
+                        <td class="p-3 text-muted-foreground">Transition duration in seconds</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3"><code class="text-xs">FromOpacity</code></td>
+                        <td class="p-3 text-muted-foreground">double</td>
+                        <td class="p-3 text-muted-foreground">0</td>
+                        <td class="p-3 text-muted-foreground">Starting opacity (0-1)</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3"><code class="text-xs">ToOpacity</code></td>
+                        <td class="p-3 text-muted-foreground">double</td>
+                        <td class="p-3 text-muted-foreground">1</td>
+                        <td class="p-3 text-muted-foreground">Ending opacity (0-1)</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3"><code class="text-xs">EnableSlide</code></td>
+                        <td class="p-3 text-muted-foreground">bool</td>
+                        <td class="p-3 text-muted-foreground">false</td>
+                        <td class="p-3 text-muted-foreground">Enable slide animation</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3"><code class="text-xs">SlideDistance</code></td>
+                        <td class="p-3 text-muted-foreground">int</td>
+                        <td class="p-3 text-muted-foreground">10</td>
+                        <td class="p-3 text-muted-foreground">Slide distance in pixels</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3"><code class="text-xs">Class</code></td>
+                        <td class="p-3 text-muted-foreground">string?</td>
+                        <td class="p-3 text-muted-foreground">-</td>
+                        <td class="p-3 text-muted-foreground">Additional CSS classes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Test Navigation -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Test Page Transitions</h2>
+            <p class="text-muted-foreground">
+                Navigate between pages to see the transitions in action (if enabled in your layout)
+            </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+            <Button Href="/components/motion" AsChild="true">Motion Component</Button>
+            <Button Href="/components/accordion" AsChild="true" Variant="ButtonVariant.Outline">Accordion</Button>
+            <Button Href="/components/alert" AsChild="true" Variant="ButtonVariant.Outline">Alert</Button>
+            <Button Href="/components/button" AsChild="true" Variant="ButtonVariant.Outline">Button</Button>
+            <Button Href="/" AsChild="true" Variant="ButtonVariant.Secondary">Home</Button>
+        </div>
+
+        <Alert>
+            <AlertDescription>
+                <strong>Note:</strong> Page transitions are only visible if PageTransition is configured in your MainLayout.
+                The demo currently has it <Badge Variant="BadgeVariant.Secondary">disabled by default</Badge> for stability.
+            </AlertDescription>
+        </Alert>
+    </section>
+
+    <!-- Related -->
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-semibold">Related Components</h2>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-3">
+            <Card>
+                <CardHeader>
+                    <CardTitle class="text-lg">RenderStateProvider</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground mb-3">
+                        Required parent component providing render lifecycle context
+                    </p>
+                    <Button Href="/components/renderstate" AsChild="true" Size="ButtonSize.Small" Variant="ButtonVariant.Link" class="p-0">
+                        View Component →
+                    </Button>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle class="text-lg">Motion</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground mb-3">
+                        Underlying animation system used by PageTransition
+                    </p>
+                    <Button Href="/components/motion" AsChild="true" Size="ButtonSize.Small" Variant="ButtonVariant.Link" class="p-0">
+                        View Component →
+                    </Button>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle class="text-lg">HeightAnimation</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground mb-3">
+                        Smooth height transitions for expanding/collapsing content
+                    </p>
+                    <Button Href="/components/heightanimation" AsChild="true" Size="ButtonSize.Small" Variant="ButtonVariant.Link" class="p-0">
+                        View Component →
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+    </section>
+</div>

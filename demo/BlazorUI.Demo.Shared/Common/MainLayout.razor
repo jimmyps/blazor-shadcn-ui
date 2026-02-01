@@ -5,6 +5,7 @@
 @using BlazorUI.Components.ScrollArea
 @using BlazorUI.Components.Toast
 @using BlazorUI.Components.DialogHost
+@using BlazorUI.Components.RenderState
 
 <PageTitle>BlazorUI Demo</PageTitle>
 
@@ -588,7 +589,9 @@
         </header>
 
         <div class="flex-1 p-6 md:p-8">
-            @Body
+            <RenderStateProvider>
+                @Body
+            </RenderStateProvider>
         </div>
     </SidebarInset>
 </SidebarProvider>
