@@ -456,29 +456,14 @@
             }
 
             // Determine if we should run animations
-            bool shouldAnimate = true;
+            // Don't animate if we're in prerender (not interactive) AND DisableOnPrerender is false
+            // DO animate if:
+            // 1. RenderContext is null (backward compatibility)
+            // 2. App is interactive 
+            // 3. We're in prerender but DisableOnPrerender is false (we want to skip but show content)
             
-            // If DisableOnPrerender is enabled and we're not interactive yet, skip animation
-            if (DisableOnPrerender && RenderContext != null && !RenderContext.IsInteractive)
-            {
-                shouldAnimate = false;
-            }
-            // For backward compatibility: if RenderContext is not available, run animations
-            else if (RenderContext == null)
-            {
-                shouldAnimate = true;
-            }
-            // If RenderContext is available and we're interactive, run animations
-            else if (RenderContext.IsInteractive)
-            {
-                shouldAnimate = true;
-            }
-            // If RenderContext is available but not interactive and DisableOnPrerender is false,
-            // still skip animations (previous behavior)
-            else
-            {
-                shouldAnimate = false;
-            }
+            bool isPrerender = RenderContext != null && !RenderContext.IsInteractive;
+            bool shouldAnimate = RenderContext == null || RenderContext.IsInteractive;
 
             if (shouldAnimate)
             {
@@ -556,13 +541,13 @@
         }
         
         // For OnInView triggers, hide initially to prevent flash before animation
-        // BUT: if DisableOnPrerender is true and we're not interactive yet, keep content visible
+        // BUT: if DisableOnPrerender is true and we're in prerender, keep content visible
         if (Trigger == MotionTrigger.OnInView && !_hasAnimated)
         {
             bool isPrerender = RenderContext != null && !RenderContext.IsInteractive;
             
-            // Only hide if NOT in prerender mode OR if DisableOnPrerender is false
-            if (!isPrerender || !DisableOnPrerender)
+            // Hide content unless we're in prerender with DisableOnPrerender enabled
+            if (!(isPrerender && DisableOnPrerender))
             {
                 classes.Add("opacity-0");
             }
