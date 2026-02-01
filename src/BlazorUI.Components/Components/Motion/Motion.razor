@@ -1,5 +1,6 @@
 @using Microsoft.AspNetCore.Components
 @using Microsoft.JSInterop
+@using BlazorUI.Components.RenderState
 @implements IAsyncDisposable
 @implements IDisposable
 @namespace BlazorUI.Components.Motion
@@ -130,6 +131,9 @@
     
     [CascadingParameter(Name = "ParentMotion")]
     private Motion? ParentMotion { get; set; }
+    
+    [CascadingParameter]
+    private AppRenderContext? RenderContext { get; set; }
 
     // Internal state for preset collection
     internal List<IMotionPreset> CollectedPresets { get; } = new();
@@ -442,14 +446,19 @@
                 return;
             }
 
-            // Set up trigger
-            if (Trigger == MotionTrigger.OnAppear)
+            // Only trigger animations if the app is interactive
+            // This prevents animations from running during SSR/prerender
+            if (RenderContext?.IsInteractive == true)
             {
-                await AnimateInternalAsync();
-            }
-            else if (Trigger == MotionTrigger.OnInView)
-            {
-                await SetupInViewTriggerAsync();
+                // Set up trigger
+                if (Trigger == MotionTrigger.OnAppear)
+                {
+                    await AnimateInternalAsync();
+                }
+                else if (Trigger == MotionTrigger.OnInView)
+                {
+                    await SetupInViewTriggerAsync();
+                }
             }
         }
     }

@@ -1,0 +1,77 @@
+@using Microsoft.AspNetCore.Components.Routing
+@inject NavigationManager Nav
+@implements IDisposable
+@namespace BlazorUI.Components.RenderState
+
+@*
+    RenderStateProvider Component
+    
+    Provides application render lifecycle state through a cascading AppRenderContext.
+    
+    This component detects:
+    - When the app becomes interactive (hydration finished)
+    - When the app is in hydration phase
+    - Whether navigation is enhanced (SPA) vs full reload
+    
+    Usage:
+    Wrap your app's body or layout content with this provider:
+    
+    <RenderStateProvider>
+        @Body
+    </RenderStateProvider>
+    
+    Then consume the context in any child component:
+    
+    [CascadingParameter] public AppRenderContext RenderContext { get; set; } = default!;
+*@
+
+<CascadingValue Value="_context" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private readonly AppRenderContext _context = new();
+    private string? _lastUri;
+
+    /// <summary>
+    /// The content to wrap with the render state context.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _lastUri = Nav.Uri;
+        Nav.LocationChanged += OnLocationChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        // App just became interactive
+        _context.MarkInteractive();
+
+        // Allow DOM to settle post-hydration
+        await Task.Yield();
+
+        // Hydration phase is over
+        _context.MarkHydrationComplete();
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        // If runtime did not restart, this is enhanced nav
+        if (_context.IsInteractive && _lastUri != null)
+        {
+            _context.SetEnhancedNavigation(true);
+        }
+
+        _lastUri = e.Location;
+    }
+
+    public void Dispose()
+    {
+        Nav.LocationChanged -= OnLocationChanged;
+    }
+}
