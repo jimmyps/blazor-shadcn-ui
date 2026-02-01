@@ -223,6 +223,236 @@ All notable changes to this project will be documented in this file.
 - CSS variable handling improvements
 - Parent validation improvements
 
+## 2025-12-25
+
+### Added
+- Automatic navigation and active state detection in Sidebar component
+
+## 2025-12-24
+
+### Added
+- Grid component with 20 comprehensive demo examples
+- Grid demo tabs following charting pattern
+- SearchInterval in CommandInput for faster query performance
+
+### Changed
+- Component index updates
+- ContextMenu updated to use latest positioning pattern
+- Dialog-derivative animations polished with Tailwind config refactor
+- Command demo examples updated
+
+### Fixed
+- Checkbox state sync regression after upstream merge
+- Popover opacity conflicting with animation
+
+## 2025-12-23
+
+### Added
+- Grid Component Milestones 1-4 (Core Object Model, Components, Renderer Abstraction, AG Grid Renderer)
+- Grid architecture documentation (GRID_DEMOS_V1.md, GRID_VS_DATATABLE.md)
+- CI/CD setup for GitHub and Azure App Service
+
+### Changed
+- .NET 10 migration completed
+- README updated with latest architectural changes
+- All components list added to sidebar, index, and spotlight search
+
+### Fixed
+- Missing using directives in Grid component
+- BuildGridDefinition timing issues
+- Page number calculation in Grid
+- CSV formula injection mitigation added
+
+## 2025-12-22
+
+### Added
+- Global search feature with Spotlight command palette
+- Platform-specific keyboard shortcuts (Cmd/Ctrl+K)
+
+### Changed
+- Build targets for Tailwind re-enabled
+- Command palette visual finalized
+
+## 2025-12-21
+
+### Fixed
+- Command OnSelect not working
+- Spotlight command palette for global search finalized
+
+## 2025-12-20
+
+### Added
+- Motion component to global search
+
+## 2025-12-19
+
+### Added
+- Declarative Chart API implementation
+- Theme-aware charts with automatic refresh on theme change
+- Legend text color support
+
+### Changed
+- All chart implementations rebuilt to production quality
+
+## 2025-12-18
+
+### Added
+- Theme-aware implementation for all charts
+- Automatic chart refresh on theme change (JavaScript-only approach)
+
+### Changed
+- ScatterChart, RadarChart, and ComposedChart examples rebuilt to production quality
+- RadarChart code comments improved for clarity
+
+### Fixed
+- RadarChart to use DataKey for extracting series values
+- Bubble chart and dataset descriptions
+
+## 2025-12-17
+
+### Added
+- Animation parameters to ChartBase
+- Full Emphasis support for Pie charts
+- Chart enhancements for Pie, Scatter, Radar, and RadialBar charts
+
+### Changed
+- All chart builders now map animation properties
+- Chart defaults finalized for best developer experience
+- Resizer enhanced with observer
+
+### Fixed
+- Pie, Scatter, Radar, and RadialBar chart rendering issues
+
+## 2025-12-16
+
+### Added
+- Animation system for declarative chart API
+- Fill/LinearGradient/Stop with complete ECharts gradient mapping
+- 6 MVP+ polish features: YAxis position, Grid styling, Axis min/max, Tooltip styling, Symbol customization, Series opacity
+
+### Fixed
+- ECharts renderer: v6 download, improved color detection, single-flight loading
+
+## 2025-12-15
+
+### Added
+- Comprehensive sample data for AreaChart examples
+- Updated shadcn demos with MVP+ features (Area, Bar, Line, Pie charts)
+
+### Changed
+- All chart demos replaced with new declarative API versions
+- Div containers used instead of canvas for ECharts SVG rendering mode
+
+## 2025-12-12
+
+### Added
+- Tooltip component improvements
+
+## 2025-12-11
+
+### Fixed
+- Style issues
+
+## 2025-12-10
+
+### Changed
+- Various component refinements
+
+## 2025-12-09
+
+### Changed
+- Component improvements and bug fixes
+
+## 2025-12-08
+
+### Changed
+- Component updates
+
+## 2025-12-07
+
+### Added
+- HeightAnimation documentation and usage examples to CommandDemo
+- CSS variables to blazorui-input.css
+
+### Changed
+- Visual styles with auto dynamic list height
+
+### Fixed
+- Animation conflicts in Spotlight demo with !animate-none
+
+## 2025-12-06
+
+### Added
+- Calendar base component with keyboard navigation
+- MultiSelect component
+- Smooth expand/collapse animations for Accordion and Collapsible
+- Smooth height animation for command palette filtering
+- Spotlight-style command palette with global keyboard shortcut support
+
+### Changed
+- Primitives package reference updated to 1.1.0
+- Calendar component improvements: centered caption, dropdown mode, styled border/shadow
+- IsFocused documentation simplified
+
+### Fixed
+- Focus ring persisting after clicking outside calendar
+- Double focus ring issue with @key on tbody
+- Dialog positioning with fixed top position
+- Keyboard focus lost after month changes
+- Calendar rendering, focus ring visibility, intrinsic width
+
+## 2025-12-05
+
+### Added
+- Viewport boundary detection for context menu positioning
+- Transparent overlay and scroll lock to ContextMenu
+- Recursive submenu closing support for nested submenus
+- Icon examples section to menu demo pages
+
+### Changed
+- Navigation refactored to follow DropdownMenu pattern
+- ContextMenu refactored to follow DropdownMenu/Menubar pattern
+- Calendar component code cleanup
+
+### Fixed
+- Submenu overflow issue and checkbox/radio item padding
+- Submenu UX: prevent close on hover, update visual state, Escape closes all menus
+- Keyboard navigation in submenus and focus restoration
+- Hover highlighting and keyboard scroll in ContextMenu
+- Disabled menu item style in DropdownMenuItem
+- SubTrigger registration with parent submenu for proper keyboard navigation
+- Overlay z-index to prevent negative values
+
+## 2025-12-04
+
+### Added
+- Input OTP component with error state styling
+- Menubar component
+- CheckboxItem, RadioGroup/RadioItem, and Submenu components to DropdownMenu, Menubar, and ContextMenu
+- Error state styling (AriaInvalid) to InputOtp component
+- Animation utilities to tailwind config
+- Hover-to-switch behavior for menubar triggers
+
+### Changed
+- Demo pages updated to showcase new menu features
+- Animation utilities moved from demo to component library tailwind config
+
+### Fixed
+- Menubar dropdown positioning and keyboard scroll behavior
+- Keyboard navigation and alphabet input support
+- Focus UX: no editing middle slots, only show active state when focused
+- CSS animations for dropdown menus by not setting opacity inline
+- Text alignment (centered) and separator styling
+- Input behaviors during backspace
+
+### Removed
+- eval() usage for security (replaced with makeVisible: true)
+
+## 2025-12-03
+
+### Added
+- Initial Menubar and Input OTP component skeletons
+
 ---
 
 **Note:** This changelog is based on git commit history. For a complete view of all commits, [visit the repository's commit history](https://github.com/jimmyps/blazor-shadcn-ui/commits/main).
