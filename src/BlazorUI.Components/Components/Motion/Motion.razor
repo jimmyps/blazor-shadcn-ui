@@ -448,7 +448,9 @@
 
             // Only trigger animations if the app is interactive
             // This prevents animations from running during SSR/prerender
-            if (RenderContext?.IsInteractive == true)
+            // If RenderContext is not available (provider not in hierarchy),
+            // default to running animations for backward compatibility
+            if (RenderContext == null || RenderContext.IsInteractive)
             {
                 // Set up trigger
                 if (Trigger == MotionTrigger.OnAppear)

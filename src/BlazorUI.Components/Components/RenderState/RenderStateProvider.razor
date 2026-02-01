@@ -52,7 +52,8 @@
         // App just became interactive
         _context.MarkInteractive();
 
-        // Allow DOM to settle post-hydration
+        // Allow DOM to settle post-hydration by yielding to ensure any
+        // immediate post-render work completes before marking hydration done
         await Task.Yield();
 
         // Hydration phase is over
