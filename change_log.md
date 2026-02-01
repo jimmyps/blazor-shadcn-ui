@@ -120,7 +120,7 @@ All notable changes to this project will be documented in this file.
 - SSRM demo showcasing server-side sorting, filtering, and paging
 
 ### Changed
-- GridImportMap refactored to simplify DX in App.razor
+- GridImportMap refactored to simplify developer experience in App.razor
 - Selection sample updated to use new TrackableObservableCollection
 
 ## 2026-01-14
@@ -128,7 +128,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Comprehensive movie database demo with TMDb API integration
 - Server-side row model with GridRowModelType and demo pages
-- NotifyItemsChanged pattern with TrackedObservableCollection
+- NotifyItemsChanged pattern with TrackableObservableCollection
 - Grid Component Milestones 1-4 with complete demo pages
 - Complete AG Grid state management with @bind-State and hash-based mutation detection
 
@@ -238,7 +238,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Component index updates
 - ContextMenu updated to use latest positioning pattern
-- Dialog-derivative animations polished with Tailwind config refactor
+- Dialog-based component animations polished with Tailwind config refactor
 - Command demo examples updated
 
 ### Fixed
@@ -328,7 +328,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Animation system for declarative chart API
 - Fill/LinearGradient/Stop with complete ECharts gradient mapping
-- 6 MVP+ polish features: YAxis position, Grid styling, Axis min/max, Tooltip styling, Symbol customization, Series opacity
+- 6 production-ready features: YAxis position, Grid styling, Axis min/max, Tooltip styling, Symbol customization, Series opacity
 
 ### Fixed
 - ECharts renderer: v6 download, improved color detection, single-flight loading
@@ -337,7 +337,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Comprehensive sample data for AreaChart examples
-- Updated shadcn demos with MVP+ features (Area, Bar, Line, Pie charts)
+- Updated shadcn demos with production-ready features (Area, Bar, Line, Pie charts)
 
 ### Changed
 - All chart demos replaced with new declarative API versions
@@ -351,22 +351,22 @@ All notable changes to this project will be documented in this file.
 ## 2025-12-11
 
 ### Fixed
-- Style issues
+- Code style and formatting inconsistencies in the codebase
 
 ## 2025-12-10
 
 ### Changed
-- Various component refinements
+- Minor UI styling and layout adjustments across existing components
 
 ## 2025-12-09
 
 ### Changed
-- Component improvements and bug fixes
+- Internal component refactoring and minor bug fixes
 
 ## 2025-12-08
 
 ### Changed
-- Component updates
+- Minor accessibility, spacing, and theme consistency updates across existing UI components
 
 ## 2025-12-07
 
@@ -429,7 +429,7 @@ All notable changes to this project will be documented in this file.
 - Input OTP component with error state styling
 - Menubar component
 - CheckboxItem, RadioGroup/RadioItem, and Submenu components to DropdownMenu, Menubar, and ContextMenu
-- Error state styling (AriaInvalid) to InputOtp component
+- Error state styling (AriaInvalid) to Input OTP component
 - Animation utilities to tailwind config
 - Hover-to-switch behavior for menubar triggers
 
