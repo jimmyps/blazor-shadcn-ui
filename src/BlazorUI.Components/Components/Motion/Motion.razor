@@ -466,12 +466,10 @@
                 _wasRenderedDuringPrerender = true;
             }
 
-            Console.WriteLine($"Motion: IsPrerender={isPrerender} WasRendered={_wasRenderedDuringPrerender}");
-
             // Skip animation if content was already shown during prerender
             // This prevents jarring animations when the app becomes interactive
             bool shouldAnimate = RenderContext == null || 
-                                (!isPrerender && !_wasRenderedDuringPrerender);
+                                (RenderContext.IsInteractive && !_wasRenderedDuringPrerender);
 
             if (shouldAnimate)
             {
@@ -544,9 +542,7 @@
 
         // Add user-provided classes
         if (!string.IsNullOrEmpty(Class))
-        {
             classes.Add(Class);
-        }
 
         // For non-manual triggers, hide initially to prevent flash before animation
         // If DisableOnPrerender is true and we're in prerender, keep content visible
@@ -560,7 +556,7 @@
             {
                 classes.Add("opacity-0");
             }
-            else if (isPrerender)
+            else if (isPrerender && DisableOnPrerender)
             {
                 _wasRenderedDuringPrerender = true;
             }
