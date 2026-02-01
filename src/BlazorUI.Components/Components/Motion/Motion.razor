@@ -106,6 +106,15 @@
     public bool RespectReducedMotion { get; set; } = true;
 
     /// <summary>
+    /// When true, disables animation during SSR/prerender and shows content normally.
+    /// This prevents blank screens during initial render and provides instant content visibility.
+    /// Once the app becomes interactive, animations will work as normal.
+    /// Default: false (animations are skipped during prerender but may hide content)
+    /// </summary>
+    [Parameter]
+    public bool DisableOnPrerender { get; set; } = false;
+
+    /// <summary>
     /// Custom keyframes to animate (alternative to using presets).
     /// </summary>
     [Parameter]
@@ -446,11 +455,32 @@
                 return;
             }
 
-            // Only trigger animations if the app is interactive
-            // This prevents animations from running during SSR/prerender
-            // If RenderContext is not available (provider not in hierarchy),
-            // default to running animations for backward compatibility
-            if (RenderContext == null || RenderContext.IsInteractive)
+            // Determine if we should run animations
+            bool shouldAnimate = true;
+            
+            // If DisableOnPrerender is enabled and we're not interactive yet, skip animation
+            if (DisableOnPrerender && RenderContext != null && !RenderContext.IsInteractive)
+            {
+                shouldAnimate = false;
+            }
+            // For backward compatibility: if RenderContext is not available, run animations
+            else if (RenderContext == null)
+            {
+                shouldAnimate = true;
+            }
+            // If RenderContext is available and we're interactive, run animations
+            else if (RenderContext.IsInteractive)
+            {
+                shouldAnimate = true;
+            }
+            // If RenderContext is available but not interactive and DisableOnPrerender is false,
+            // still skip animations (previous behavior)
+            else
+            {
+                shouldAnimate = false;
+            }
+
+            if (shouldAnimate)
             {
                 // Set up trigger
                 if (Trigger == MotionTrigger.OnAppear)
@@ -526,9 +556,16 @@
         }
         
         // For OnInView triggers, hide initially to prevent flash before animation
+        // BUT: if DisableOnPrerender is true and we're not interactive yet, keep content visible
         if (Trigger == MotionTrigger.OnInView && !_hasAnimated)
         {
-            classes.Add("opacity-0");
+            bool isPrerender = RenderContext != null && !RenderContext.IsInteractive;
+            
+            // Only hide if NOT in prerender mode OR if DisableOnPrerender is false
+            if (!isPrerender || !DisableOnPrerender)
+            {
+                classes.Add("opacity-0");
+            }
         }
         
         return string.Join(" ", classes);
