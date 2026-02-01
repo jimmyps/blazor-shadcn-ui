@@ -55,6 +55,7 @@
     private int _observerId = -1;
     private bool _hasAnimated = false;
     private MotionContext? _staggerContext;
+    private bool _wasRenderedDuringPrerender = false;
 
     /// <summary>
     /// The content to render and animate.
@@ -106,10 +107,11 @@
     public bool RespectReducedMotion { get; set; } = true;
 
     /// <summary>
-    /// When true, disables animation during SSR/prerender and shows content normally.
-    /// This prevents blank screens during initial render and provides instant content visibility.
-    /// Once the app becomes interactive, animations will work as normal.
-    /// Default: false (animations are skipped during prerender but may hide content)
+    /// When true, shows content immediately during SSR/prerender without animation.
+    /// If content is rendered during prerender, animations will NOT run when the app becomes interactive.
+    /// Animations will only run if the app was already interactive when the component first rendered.
+    /// This provides instant content visibility during SSR while avoiding jarring animations on hydration.
+    /// Default: false
     /// </summary>
     [Parameter]
     public bool DisableOnPrerender { get; set; } = false;
@@ -456,14 +458,18 @@
             }
 
             // Determine if we should run animations
-            // Don't animate if we're in prerender (not interactive) AND DisableOnPrerender is false
-            // DO animate if:
-            // 1. RenderContext is null (backward compatibility)
-            // 2. App is interactive 
-            // 3. We're in prerender but DisableOnPrerender is false (we want to skip but show content)
-            
+            // Track if content was rendered during prerender with DisableOnPrerender enabled
             bool isPrerender = RenderContext != null && !RenderContext.IsInteractive;
-            bool shouldAnimate = RenderContext == null || RenderContext.IsInteractive;
+            
+            if (isPrerender && DisableOnPrerender)
+            {
+                _wasRenderedDuringPrerender = true;
+            }
+            
+            // Skip animation if content was already shown during prerender
+            // This prevents jarring animations when the app becomes interactive
+            bool shouldAnimate = RenderContext == null || 
+                                (RenderContext.IsInteractive && !_wasRenderedDuringPrerender);
 
             if (shouldAnimate)
             {
