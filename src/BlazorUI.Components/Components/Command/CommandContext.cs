@@ -353,12 +353,17 @@ public class CommandContext
     /// </summary>
     public bool HasVisibleItems()
     {
-        // Don't show "No results" until items have had a chance to register
         if (!_hasRegisteredItems)
             return true;
 
-        return GetFilteredItems().Any(i => !i.Disabled);
+        // Check regular items
+        if (GetFilteredItems().Any(i => !i.Disabled))
+            return true;
+
+        // Check virtualized groups
+        return _virtualizedGroups.Any(g => g.VisibleItemCount > 0);
     }
+
 
     /// <summary>
     /// Gets whether a specific group has any visible items.

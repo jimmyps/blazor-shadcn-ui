@@ -9,12 +9,11 @@
 *@
 
 <DialogPortal>
-    <DialogOverlay class="@GetOverlayClass()" />
+    <DialogOverlay CloseOnClick="@CloseOnClickOutside" class="@GetOverlayClass()" />
 
     <BlazorUI.Primitives.Dialog.DialogContent
         class="@GetClassNames()"
         CloseOnEscape="@CloseOnEscape"
-        CloseOnClickOutside="@CloseOnClickOutside"
         TrapFocus="true"
         LockScroll="true"
         role="alertdialog"

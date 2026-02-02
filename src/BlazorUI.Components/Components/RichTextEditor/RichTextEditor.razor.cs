@@ -223,7 +223,7 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         try
         {
             _jsModule = await JS.InvokeAsync<IJSObjectReference>("import",
-                "./_content/BlazorUI.Components/js/quill-interop.js");
+                "./_content/NeoBlazorUI.Components/js/quill-interop.js");
             _dotNetRef = DotNetObjectReference.Create(this);
 
             var options = BuildEditorOptions();

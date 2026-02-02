@@ -180,7 +180,7 @@
             {
                 // Use 'nearest' to scroll only if item is out of view, avoiding page jumps
                 var elementUtilsModule = await JS.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Primitives/js/primitives/element-utils.js");
+                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/element-utils.js");
                 await elementUtilsModule.InvokeVoidAsync("scrollIntoView", _itemId, "nearest", "instant");
                 await elementUtilsModule.DisposeAsync();
             }

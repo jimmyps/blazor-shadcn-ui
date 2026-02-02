@@ -280,7 +280,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
             try
             {
                 _multiSelectModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Components/js/multiselect.js");
+                    "import", "./_content/NeoBlazorUI.Components/js/multiselect.js");
 
                 _dotNetRef = DotNetObjectReference.Create(this);
 

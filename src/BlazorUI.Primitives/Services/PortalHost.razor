@@ -47,7 +47,7 @@
             try
             {
                 _portalModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Primitives/js/primitives/portal.js");
+                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/portal.js");
             }
             catch (JSDisconnectedException)
             {

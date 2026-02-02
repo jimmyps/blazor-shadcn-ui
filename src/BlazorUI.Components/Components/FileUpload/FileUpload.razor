@@ -216,7 +216,7 @@
             try
             {
                 _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Components/js/file-upload.js");
+                    "import", "./_content/NeoBlazorUI.Components/js/file-upload.js");
 
                 // Get the underlying input element from InputFile
                 _jsCleanup = await _jsModule.InvokeAsync<IJSObjectReference>(

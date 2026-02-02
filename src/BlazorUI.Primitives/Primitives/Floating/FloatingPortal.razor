@@ -208,7 +208,7 @@
             try
             {
                 var elementUtilsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Primitives/js/primitives/element-utils.js");
+                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/element-utils.js");
                 await elementUtilsModule.InvokeVoidAsync("showElement", PortalId);
                 await elementUtilsModule.DisposeAsync();
             }

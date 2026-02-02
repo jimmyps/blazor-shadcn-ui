@@ -84,7 +84,7 @@
                 try
                 {
                     _portalModule = await JS.InvokeAsync<IJSObjectReference>(
-                        "import", "./_content/BlazorUI.Primitives/js/primitives/portal.js");
+                        "import", "./_content/NeoBlazorUI.Primitives/js/primitives/portal.js");
                     _scrollLockCleanup = await _portalModule.InvokeAsync<IJSObjectReference>("lockBodyScroll");
                 }
                 catch (Exception ex)

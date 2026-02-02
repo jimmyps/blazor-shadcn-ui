@@ -204,7 +204,7 @@
         try
         {
             _jsModule = await JS.InvokeAsync<IJSObjectReference>("import",
-                "./_content/BlazorUI.Components/js/range-slider.js");
+                "./_content/NeoBlazorUI.Components/js/range-slider.js");
             _dotNetRef = DotNetObjectReference.Create(this);
             await _jsModule.InvokeVoidAsync("initializeRangeSlider", _trackRef, _dotNetRef, _sliderId);
             _jsInitialized = true;

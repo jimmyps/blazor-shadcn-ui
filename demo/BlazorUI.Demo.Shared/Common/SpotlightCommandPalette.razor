@@ -2,6 +2,8 @@
 @using BlazorUI.Components.Dialog
 @using BlazorUI.Components.HeightAnimation
 @using BlazorUI.Demo.Services
+@using BlazorUI.Icons.Feather.Data
+@using BlazorUI.Icons.Heroicons.Data
 @using Microsoft.AspNetCore.Components
 @inject KeyboardShortcutService KeyboardShortcuts
 @inject NavigationManager NavigationManager
@@ -15,9 +17,9 @@
         OverlayClass="!bg-background/70 backdrop-blur backdrop-saturate-150 dialog-overlay dialog-animated">
         
         <HeightAnimation Config="@_heightAnimationConfig" Enabled="@_isOpen">
-            <BlazorUI.Components.Command.Command OnSelect="@HandleSelect">
+            <BlazorUI.Components.Command.Command OnValueChange="@HandleSelect">
                 <CommandInput 
-                    Placeholder="Type a command or search..." SearchInterval="300"
+                    Placeholder="Type a command or search..." SearchInterval="300" AutoFocus="true"
                     Class="border-0 border-b border-border/40 rounded-none focus-visible:ring-0" />
                 
                 <CommandList Class="max-h-[350px] scrollbar-thin">
@@ -48,30 +50,80 @@
                     </CommandGroup>
                     
                     <CommandSeparator />
-                    
-                    <CommandGroup Heading="Components">
-                        @foreach (var component in _components)
-                        {
-                            <CommandItem Value="@component.Value">
-                                <LucideIcon Name="@component.Icon" Size="16" Class="mr-2" />
-                                <span>@component.Name</span>
-                                <CommandShortcut>Component</CommandShortcut>
-                            </CommandItem>
-                        }
-                    </CommandGroup>
+
+                    <CommandVirtualizedGroup TItem="ComponentItem"
+                            Heading="Components"
+                            Items="_components"
+                            ItemValue="@(item => item.Value)"
+                            ItemSearchText="@(item => item.Name)"
+                            MaxDisplayCount="0">
+                        <ItemTemplate Context="item">
+                            <LucideIcon Name="@item.Icon" Size="16" Class="mr-2 text-primary" />
+                            @item.Name
+                            <span class="ml-auto text-xs text-muted-foreground">Styled</span>
+                        </ItemTemplate>
+                    </CommandVirtualizedGroup>
                     
                     <CommandSeparator />
-                    
-                    <CommandGroup Heading="Primitives">
-                        @foreach (var primitive in _primitives)
-                        {
-                            <CommandItem Value="@primitive.Value">
-                                <LucideIcon Name="@primitive.Icon" Size="16" Class="mr-2" />
-                                <span>@primitive.Name</span>
-                                <CommandShortcut>Primitive</CommandShortcut>
-                            </CommandItem>
-                        }
-                    </CommandGroup>
+
+                    <CommandVirtualizedGroup TItem="ComponentItem"
+                            Heading="Primitives"
+                            Items="_primitives"
+                            ItemValue="@(item => item.Value)"
+                            ItemSearchText="@(item => item.Name)"
+                            MaxDisplayCount="0">
+                        <ItemTemplate Context="item">
+                            <LucideIcon Name="@item.Icon" Size="16" Class="mr-2 text-muted-foreground" />
+                            @item.Name
+                            <span class="ml-auto text-xs text-muted-foreground">Headless</span>
+                        </ItemTemplate>
+                    </CommandVirtualizedGroup>
+
+                    <CommandVirtualizedGroup TItem="string"
+                        Heading="Lucide Icons"
+                        Items="AllLucideIcons"
+                        ItemValue="@(name => $"/icons/lucide?search={name}")"
+                        ItemSearchText="@(name => name)"
+                        MaxDisplayCount="0"
+                        EnableLazyLoading="true">
+                        <ItemTemplate Context="iconName">
+                            <LucideIcon Name="@iconName" Size="16" Class="mr-2 text-blue-500" />
+                            @FormatIconName(iconName)
+                            <span class="ml-auto text-xs text-muted-foreground">Lucide</span>
+                        </ItemTemplate>
+                    </CommandVirtualizedGroup>
+
+                    <CommandSeparator />
+
+                    <CommandVirtualizedGroup TItem="string"
+                        Heading="Heroicons"
+                        Items="AllHeroIcons"
+                        ItemValue="@(name => $"/icons/heroicons?search={name}")"
+                        ItemSearchText="@(name => name)"
+                        MaxDisplayCount="0"
+                        EnableLazyLoading="true">
+                        <ItemTemplate Context="iconName">
+                            <HeroIcon Name="@iconName" Size="16" Class="mr-2 text-indigo-500" />
+                            @FormatIconName(iconName)
+                            <span class="ml-auto text-xs text-muted-foreground">Heroicons</span>
+                        </ItemTemplate>
+                    </CommandVirtualizedGroup>
+
+                    <CommandSeparator />
+
+                    <CommandVirtualizedGroup TItem="string"
+                        Heading="Feather Icons"
+                        Items="AllFeatherIcons"
+                        ItemValue="@(name => $"/icons/feather?search={name}")"
+                        ItemSearchText="@(name => name)"
+                        MaxDisplayCount="0"
+                        EnableLazyLoading="true">
+                        <ItemTemplate Context="iconName">
+                            <FeatherIcon Name="@iconName" Size="16" Class="mr-2 text-cyan-500" />
+                            @FormatIconName(iconName)
+                            <span class="ml-auto text-xs text-muted-foreground">Feather</span>
+                        </ItemTemplate>
+                    </CommandVirtualizedGroup>
 
                 </CommandList>
             </BlazorUI.Components.Command.Command>
@@ -125,8 +177,12 @@
         
         // Navigate based on the selected value
         NavigationManager.NavigateTo(value);
-        
-        StateHasChanged();
+    }
+
+    private static string FormatIconName(string iconName)
+    {
+        return string.Join(" ", iconName.Split('-').Select(word =>
+            char.ToUpper(word[0]) + word.Substring(1)));
     }
     
     // Component data structure
@@ -220,6 +276,10 @@
         new("Tabs", "primitives/tabs", "folder"),
         new("Tooltip", "primitives/tooltip", "message-circle"),
     };
+
+    private static readonly string[] AllLucideIcons = LucideIconData.GetAvailableIcons().OrderBy(x => x).ToArray();
+    private static readonly string[] AllHeroIcons = HeroIconData.GetAvailableIcons(HeroIconVariant.Outline).OrderBy(x => x).ToArray();
+    private static readonly string[] AllFeatherIcons = FeatherIconData.GetAvailableIcons().OrderBy(x => x).ToArray();
 
     public async ValueTask DisposeAsync()
     {

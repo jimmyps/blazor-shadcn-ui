@@ -118,9 +118,11 @@
             contentBuilder.AddAttribute(3, "aria-labelledby", _context.TriggerId);
             contentBuilder.AddAttribute(4, "aria-activedescendant", GetActiveDescendantId());
             contentBuilder.AddAttribute(5, "data-select-content", "true");
-            contentBuilder.AddAttribute(6, "tabindex", "-1");
-            contentBuilder.AddMultipleAttributes(7, AdditionalAttributes);
-            contentBuilder.AddContent(8, ChildContent);
+            contentBuilder.AddAttribute(6, "data-state", "open");
+            contentBuilder.AddAttribute(7, "data-side", GetDataSide());
+            contentBuilder.AddAttribute(8, "tabindex", "-1");
+            contentBuilder.AddMultipleAttributes(9, AdditionalAttributes);
+            contentBuilder.AddContent(10, ChildContent);
             contentBuilder.CloseElement();
         }));
         builder.CloseComponent();
@@ -158,7 +160,7 @@
         try
         {
             _clickOutsideModule = await JS.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/BlazorUI.Primitives/js/primitives/click-outside.js");
+                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/click-outside.js");
 
             if (_dotNetRef == null)
             {
@@ -258,6 +260,21 @@
     public void HandleTabKey()
     {
         _context?.Close();
+    }
+
+    /// <summary>
+    /// Gets the data-side attribute value based on the Side parameter.
+    /// </summary>
+    private string GetDataSide()
+    {
+        return Side switch
+        {
+            PopoverSide.Top => "top",
+            PopoverSide.Bottom => "bottom",
+            PopoverSide.Left => "left",
+            PopoverSide.Right => "right",
+            _ => "bottom"
+        };
     }
 
     public async ValueTask DisposeAsync()

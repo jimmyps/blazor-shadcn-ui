@@ -74,7 +74,7 @@
             {
                 // Lazy-load the table row navigation module
                 _tableRowNavModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Primitives/js/primitives/table-row-nav.js");
+                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/table-row-nav.js");
 
                 // Attach event listener in capture phase to prevent Space from scrolling
                 // This runs before Blazor's event handler, allowing us to preventDefault
@@ -132,7 +132,7 @@
         try
         {
             _tableRowNavModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/BlazorUI.Primitives/js/primitives/table-row-nav.js");
+                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/table-row-nav.js");
             await _tableRowNavModule.InvokeVoidAsync("moveFocusToPreviousRow", _elementRef);
         }
         catch
@@ -146,7 +146,7 @@
         try
         {
             _tableRowNavModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/BlazorUI.Primitives/js/primitives/table-row-nav.js");
+                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/table-row-nav.js");
             await _tableRowNavModule.InvokeVoidAsync("moveFocusToNextRow", _elementRef);
         }
         catch

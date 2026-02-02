@@ -168,7 +168,7 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
             try
             {
                 _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Components/js/masked-input.js");
+                    "import", "./_content/NeoBlazorUI.Components/js/masked-input.js");
                 _jsModuleLoaded = true;
             }
             catch (JSDisconnectedException)

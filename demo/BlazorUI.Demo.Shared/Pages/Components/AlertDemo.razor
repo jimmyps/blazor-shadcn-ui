@@ -52,7 +52,7 @@
             <!-- Destructive -->
             <Alert Variant="AlertVariant.Destructive">
                 <Icon>
-                    <LucideIcon Name="x-circle" Class="h-4 w-4" />
+                    <LucideIcon Name="octagon-alert" Class="h-4 w-4" />
                 </Icon>
                 <ChildContent>
                     <AlertTitle>Destructive</AlertTitle>
@@ -204,107 +204,6 @@
                     Your session has expired. Please log in again.
                 </AlertDescription>
             </Alert>
-        </div>
-    </div>
-
-    <!-- Usage Examples -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Usage Examples</h2>
-            <p class="text-sm text-muted-foreground">
-                Common use cases for alert messages.
-            </p>
-        </div>
-        <div class="space-y-6">
-            <!-- Success Message -->
-            <div class="space-y-3">
-                <h3 class="text-lg font-medium">Success Message</h3>
-                <Alert Variant="AlertVariant.Success">
-                    <Icon>
-                        <LucideIcon Name="circle-check" Class="h-4 w-4" />
-                    </Icon>
-                    <ChildContent>
-                        <AlertTitle>Success</AlertTitle>
-                        <AlertDescription>
-                            Your changes have been saved successfully.
-                        </AlertDescription>
-                    </ChildContent>
-                </Alert>
-            </div>
-
-            <!-- Warning Message -->
-            <div class="space-y-3">
-                <h3 class="text-lg font-medium">Warning Message</h3>
-                <Alert Variant="AlertVariant.Warning">
-                    <Icon>
-                        <LucideIcon Name="triangle-alert" Class="h-4 w-4" />
-                    </Icon>
-                    <ChildContent>
-                        <AlertTitle>Warning</AlertTitle>
-                        <AlertDescription>
-                            This action cannot be undone. Please review before proceeding.
-                        </AlertDescription>
-                    </ChildContent>
-                </Alert>
-            </div>
-
-            <!-- Info Message -->
-            <div class="space-y-3">
-                <h3 class="text-lg font-medium">Information</h3>
-                <Alert Variant="AlertVariant.Info">
-                    <Icon>
-                        <LucideIcon Name="info" Class="h-4 w-4" />
-                    </Icon>
-                    <ChildContent>
-                        <AlertTitle>Did you know?</AlertTitle>
-                        <AlertDescription>
-                            You can customize the appearance of alerts using CSS variables.
-                        </AlertDescription>
-                    </ChildContent>
-                </Alert>
-            </div>
-
-            <!-- Error with Link -->
-            <div class="space-y-3">
-                <h3 class="text-lg font-medium">Error with Action</h3>
-                <Alert Variant="AlertVariant.Danger">
-                    <Icon>
-                        <LucideIcon Name="x-circle" Class="h-4 w-4" />
-                    </Icon>
-                    <ChildContent>
-                        <AlertTitle>Payment Failed</AlertTitle>
-                        <AlertDescription>
-                            We couldn't process your payment. Please <a href="#" class="font-medium underline underline-offset-4">update your payment method</a>.
-                        </AlertDescription>
-                    </ChildContent>
-                </Alert>
-            </div>
-
-            <!-- Alert without Icon -->
-            <div class="space-y-3">
-                <h3 class="text-lg font-medium">Without Icon</h3>
-                <Alert Variant="AlertVariant.Muted">
-                    <AlertTitle>Maintenance Scheduled</AlertTitle>
-                    <AlertDescription>
-                        Our services will be temporarily unavailable on Sunday, December 10th from 2:00 AM to 4:00 AM EST.
-                    </AlertDescription>
-                </Alert>
-            </div>
-
-            <!-- Alert with only Description -->
-            <div class="space-y-3">
-                <h3 class="text-lg font-medium">Description Only</h3>
-                <Alert>
-                    <Icon>
-                        <LucideIcon Name="lightbulb" Class="h-4 w-4" />
-                    </Icon>
-                    <ChildContent>
-                        <AlertDescription>
-                            Tip: Use keyboard shortcuts to navigate faster through the application.
-                        </AlertDescription>
-                    </ChildContent>
-                </Alert>
-            </div>
         </div>
     </div>
 

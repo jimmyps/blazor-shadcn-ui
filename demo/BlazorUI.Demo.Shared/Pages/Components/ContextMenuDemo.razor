@@ -1,4 +1,4 @@
-﻿@page "/components/context-menu"
+@page "/components/context-menu"
 @using BlazorUI.Components.ContextMenu
 
 <PageTitle>Context Menu Component - BlazorUI</PageTitle>
@@ -8,7 +8,7 @@
         <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">Context Menu Component</h1>
             <p class="text-xl text-muted-foreground">
-                Displays a menu to the user ΓÇö such as a set of actions or functions ΓÇö triggered by right-clicking.
+                Displays a menu to the user — such as a set of actions or functions — triggered by right-clicking.
             </p>
         </div>
     </div>
@@ -31,20 +31,20 @@
                 <ContextMenuContent>
                     <ContextMenuItem OnClick="@(() => Console.WriteLine("Back"))">
                         Back
-                        <ContextMenuShortcut>Γîÿ[</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘[</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuItem Disabled="true">
                         Forward
-                        <ContextMenuShortcut>Γîÿ]</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘]</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuItem>
                         Reload
-                        <ContextMenuShortcut>ΓîÿR</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘R</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem>
                         Save As...
-                        <ContextMenuShortcut>ΓçºΓîÿS</ContextMenuShortcut>
+                        <ContextMenuShortcut>⇧⌘S</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuItem>Print...</ContextMenuItem>
                 </ContextMenuContent>
@@ -71,12 +71,12 @@
                     <ContextMenuItem OnClick="@(() => HandleIconsAction("Edit"))">
                         <LucideIcon Name="pencil" Size="16" Class="mr-2" />
                         Edit
-                        <ContextMenuShortcut>ΓîÿE</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘E</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuItem OnClick="@(() => HandleIconsAction("Duplicate"))">
                         <LucideIcon Name="copy" Size="16" Class="mr-2" />
                         Duplicate
-                        <ContextMenuShortcut>ΓîÿD</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘D</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem OnClick="@(() => HandleIconsAction("Share"))">
@@ -95,7 +95,7 @@
                     <ContextMenuItem OnClick="@(() => HandleIconsAction("Delete"))" Class="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950">
                         <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
                         Delete
-                        <ContextMenuShortcut>Γî½</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌫</ContextMenuShortcut>
                     </ContextMenuItem>
                 </ContextMenuContent>
             </ContextMenu>
@@ -125,26 +125,26 @@
                     <ContextMenuSeparator />
                     <ContextMenuItem>
                         New File
-                        <ContextMenuShortcut>ΓîÿN</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘N</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuItem>
                         Open
-                        <ContextMenuShortcut>ΓîÿO</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘O</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuLabel>Edit</ContextMenuLabel>
                     <ContextMenuSeparator />
                     <ContextMenuItem>
                         Cut
-                        <ContextMenuShortcut>ΓîÿX</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘X</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuItem>
                         Copy
-                        <ContextMenuShortcut>ΓîÿC</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘C</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuItem>
                         Paste
-                        <ContextMenuShortcut>ΓîÿV</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘V</ContextMenuShortcut>
                     </ContextMenuItem>
                 </ContextMenuContent>
             </ContextMenu>
@@ -167,18 +167,18 @@
                 <ContextMenuContent>
                     <ContextMenuItem>
                         Edit
-                        <ContextMenuShortcut>ΓîÿE</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘E</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuItem>
                         Duplicate
-                        <ContextMenuShortcut>ΓîÿD</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘D</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem>Archive</ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem Class="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950">
                         Delete
-                        <ContextMenuShortcut>Γî½</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌫</ContextMenuShortcut>
                     </ContextMenuItem>
                 </ContextMenuContent>
             </ContextMenu>
@@ -201,20 +201,20 @@
                 <ContextMenuContent>
                     <ContextMenuItem Inset="true">
                         Profile
-                        <ContextMenuShortcut>ΓçºΓîÿP</ContextMenuShortcut>
+                        <ContextMenuShortcut>⇧⌘P</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuItem Inset="true">
                         Billing
-                        <ContextMenuShortcut>ΓîÿB</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘B</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuItem Inset="true">
                         Settings
-                        <ContextMenuShortcut>ΓîÿS</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘S</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem Inset="true">
                         Log out
-                        <ContextMenuShortcut>ΓçºΓîÿQ</ContextMenuShortcut>
+                        <ContextMenuShortcut>⇧⌘Q</ContextMenuShortcut>
                     </ContextMenuItem>
                 </ContextMenuContent>
             </ContextMenu>
@@ -252,7 +252,7 @@
                 <li>Opens on right-click (contextmenu event)</li>
                 <li>Positioned at mouse cursor location</li>
                 <li>Closes on outside click or Escape key</li>
-                <li>Full keyboard navigation (Γåæ/Γåô, Enter, Escape)</li>
+                <li>Full keyboard navigation (↑/↓, Enter, Escape)</li>
                 <li>Support for disabled items</li>
                 <li>Keyboard shortcut hints</li>
                 <li>Separator and label components</li>
@@ -265,7 +265,7 @@
             </div>
             <div class="grid gap-2 text-sm">
                 <div class="flex gap-4">
-                    <kbd class="px-2 py-1 bg-muted rounded">Γåæ/Γåô</kbd>
+                    <kbd class="px-2 py-1 bg-muted rounded">↑/↓</kbd>
                     <span>Navigate items</span>
                 </div>
                 <div class="flex gap-4">
@@ -302,7 +302,7 @@
     &lt;ContextMenuContent&gt;
         &lt;ContextMenuItem OnClick="HandleCopy"&gt;
             Copy
-            &lt;ContextMenuShortcut&gt;ΓîÿC&lt;/ContextMenuShortcut&gt;
+            &lt;ContextMenuShortcut&gt;⌘C&lt;/ContextMenuShortcut&gt;
         &lt;/ContextMenuItem&gt;
         &lt;ContextMenuSeparator /&gt;
         &lt;ContextMenuItem&gt;Delete&lt;/ContextMenuItem&gt;
@@ -393,7 +393,7 @@
                 <ContextMenuContent Class="w-64">
                     <ContextMenuItem OnClick="@(() => HandleContextAction("Copy"))">
                         Copy
-                        <ContextMenuShortcut>ΓîÿC</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌘C</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuSub>
@@ -422,7 +422,7 @@
                     <ContextMenuSeparator />
                     <ContextMenuItem OnClick="@(() => HandleContextAction("Delete"))" Class="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950">
                         Delete
-                        <ContextMenuShortcut>Γî½</ContextMenuShortcut>
+                        <ContextMenuShortcut>⌫</ContextMenuShortcut>
                     </ContextMenuItem>
                 </ContextMenuContent>
             </ContextMenu>

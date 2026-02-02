@@ -102,8 +102,8 @@
         // Sync initial value to context
         _context.State.Value = _state.Value;
         _context.State.Disabled = Disabled;
-        // Set initial DisplayText - use DisplayTextSelector if provided, otherwise fall back to Value.ToString()
-        // (will be updated when items register with correct display text if dropdown is opened)
+        // Set initial DisplayText - prioritize DisplayTextSelector if provided,
+        // otherwise fall back to Value.ToString() (items will update when they register)
         _context.State.DisplayText = GetDisplayText(_state.Value);
 
         // Subscribe to context value changes

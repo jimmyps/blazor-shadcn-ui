@@ -193,9 +193,15 @@ export function applyPosition(floating, position, makeVisible = false) {
         position: position.strategy || 'absolute',
         left: `${position.x}px`,
         top: `${position.y}px`,
-        zIndex: zIndex,
-        transformOrigin: position.transformOrigin || ''
+        zIndex: zIndex
     });
+
+    // Set transform-origin on the first child if it exists (for proper animations)
+    // Otherwise, set it on the floating element itself
+    if (position.transformOrigin) {
+        const targetElement = floating.firstElementChild || floating;
+        targetElement.style.transformOrigin = position.transformOrigin;
+    }
 
     // If makeVisible is true, show the element after positioning
     // Set all visibility-related properties to ensure the element is fully visible

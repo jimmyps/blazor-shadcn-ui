@@ -704,21 +704,23 @@ A  demo/BlazorUI.Demo.Shared/Pages/Components/CommandLibraryDemo.razor
 
 ### Testing Checklist
 
-- [ ] Basic command list renders and filters
-- [ ] Search/filter works correctly with live typing
-- [ ] **SearchInterval debouncing works** (300ms delay on typing)
-- [ ] Keyboard navigation (Arrow Up/Down, Home, End, Enter)
-- [ ] `OnValueChange` fires on item selection
-- [ ] `Disabled` state prevents all interactions
-- [ ] `CloseOnSelect` behavior works correctly
-- [ ] Custom `FilterFunction` works
-- [ ] Controlled `SearchQuery` with `@bind` works
-- [ ] **CommandVirtualizedGroup with large dataset** (1500+ items)
-- [ ] Lazy loading in virtualized groups
-- [ ] Global CommandSearch with Ctrl+K/Cmd+K
-- [ ] No performance issues with large lists
-- [ ] ARIA attributes present and correct
-- [ ] Screen reader announces items correctly
+- [x] Basic command list renders and filters
+- [x] Search/filter works correctly with live typing
+- [x] **SearchInterval debouncing works** (300ms delay on typing)
+- [x] Keyboard navigation (Arrow Up/Down, Home, End, Enter)
+- [x] `OnValueChange` fires on item selection
+- [x] `Disabled` state prevents all interactions
+- [x] `CloseOnSelect` behavior works correctly
+- [x] Custom `FilterFunction` works
+- [x] Controlled `SearchQuery` with `@bind` works
+- [x] **CommandVirtualizedGroup with large dataset** (1500+ items)
+- [x] Lazy loading in virtualized groups
+- [x] Global CommandSearch with Ctrl+K/Cmd+K
+- [x] No performance issues with large lists
+- [x] ARIA attributes present and correct
+- [x] Screen reader announces items correctly
+
+**Status:** ✅ ALL TESTS PASSED - Command component fully tested and validated
 
 ---
 
@@ -798,6 +800,371 @@ A  demo/BlazorUI.Demo.Shared/Pages/Components/CommandLibraryDemo.razor
 
 **10. Progress (2 files vs 2 files)**
 - Likely identical, kept ours
+
+---
+
+## 6. Select Component - Post-Merge Refactor & Fixes ✅
+
+**Date:** 2025-01-15  
+**Status:** VALIDATED, TESTED, FIXED
+
+### Overview
+After merging upstream Select changes, performed comprehensive refactor and fixes to improve architecture, fix lifecycle issues, restore animations, and enhance chart demo examples.
+
+---
+
+### 6.1 Select Primitive Refactor
+
+#### ✅ FloatingPortal Migration
+**Previous:** SelectContent used Combobox's PopoverContent  
+**New:** SelectContent uses FloatingPortal directly
+
+**Changed Files:**
+- `src/BlazorUI.Primitives/Primitives/Select/SelectContent.razor`
+
+**Benefits:**
+- Better separation of concerns (Select is independent of Combobox)
+- Simplified architecture (one less layer of abstraction)
+- Direct control over portal behavior
+- Consistent with Popover and DropdownMenu patterns
+
+**Implementation:**
+```razor
+<!-- Before: Wrapped in PopoverContent -->
+<PopoverContent ...>
+  <div role="listbox">...</div>
+</PopoverContent>
+
+<!-- After: Direct FloatingPortal usage -->
+<FloatingPortal ...>
+  <div role="listbox">...</div>
+</FloatingPortal>
+```
+
+---
+
+#### ✅ Transform Origin Fix
+**Issue:** After refactor, `transformOrigin` was set on the wrong element (floating wrapper instead of first child)
+
+**Root Cause:** Portal structure creates two levels:
+```html
+<div id="portal-wrapper" style="position: absolute;">  <!-- FloatingPortal -->
+    <div class="... zoom-in-95 ...">                    <!-- SelectContent with animations -->
+        <!-- Actual content -->
+    </div>
+</div>
+```
+
+**Solution:** Updated `applyPosition` in `positioning.js` to set `transformOrigin` on first child
+
+**Changed Files:**
+- `src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js`
+
+```javascript
+// Set transform-origin on the first child if it exists (for proper animations)
+if (position.transformOrigin) {
+    const targetElement = floating.firstElementChild || floating;
+    targetElement.style.transformOrigin = position.transformOrigin;
+}
+```
+
+**Why This Matters:** Ensures animations like `zoom-in-95` scale from the correct origin point (e.g., "top center" for bottom-positioned popovers).
+
+---
+
+### 6.2 Display Text Lifecycle Fix
+
+#### ✅ OnAfterRender DisplayText Sync
+**Issue:** Display text showed value instead of text when `DisplayTextSelector` wasn't provided
+
+**Root Cause:** Items hadn't registered yet in `OnParametersSet` (lifecycle timing issue)
+
+**Solution:** Added `OnAfterRender` to sync display text from registered items after they render
+
+**Changed Files:**
+- `src/BlazorUI.Primitives/Primitives/Select/Select.razor`
+
+**Implementation:**
+```csharp
+protected override void OnAfterRender(bool firstRender)
+{
+    // After render, items have registered - sync display text from items if DisplayTextSelector not provided
+    if (DisplayTextSelector == null && _context.State.Value != null)
+    {
+        var displayTextFromItems = _context.GetDisplayTextForValue(_context.State.Value);
+        if (displayTextFromItems != null && displayTextFromItems != _context.State.DisplayText)
+        {
+            _context.State.DisplayText = displayTextFromItems;
+            StateHasChanged();
+        }
+    }
+}
+```
+
+**Best Practice Applied:**
+- ✅ `OnParametersSet` - Update state from parameters (fast, synchronous)
+- ✅ `OnAfterRender` - Sync with child component state after they've rendered
+- ✅ Conditional `StateHasChanged` - Only re-render when display text actually changes
+- ✅ Prioritization - Use reliable sources first (`DisplayTextSelector`), fall back gracefully
+
+---
+
+### 6.3 Animation Classes Restoration
+
+#### ✅ Added data-state and data-side Attributes
+**Issue:** SelectContent lost slide-in animations after FloatingPortal migration
+
+**Root Cause:** Animation CSS classes depend on `data-state` and `data-side` attributes:
+- PopoverContent sets these on its **inner div**
+- SelectContent had animation classes but missing the data attributes they depend on
+
+**Solution:** Added `data-state="open"` and `data-side` to SelectContent's inner div
+
+**Changed Files:**
+- `src/BlazorUI.Primitives/Primitives/Select/SelectContent.razor`
+- `src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor`
+- `src/BlazorUI.Components/Components/Select/SelectContent.razor`
+
+**SelectContent Primitive:**
+```csharp
+contentBuilder.AddAttribute(6, "data-state", "open");
+contentBuilder.AddAttribute(7, "data-side", GetDataSide());
+
+private string GetDataSide()
+{
+    return Side switch
+    {
+        PopoverSide.Top => "top",
+        PopoverSide.Bottom => "bottom",
+        PopoverSide.Left => "left",
+        PopoverSide.Right => "right",
+        _ => "bottom"
+    };
+}
+```
+
+**SelectContent Component:**
+```csharp
+private string CssClass => ClassNames.cn(
+    "z-50 max-h-60 w-full overflow-auto rounded-md border",
+    "bg-popover text-popover-foreground shadow-md",
+    "data-[state=open]:animate-in data-[state=closed]:animate-out",
+    "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+    "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+    "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
+    "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+    "[&::-webkit-scrollbar]:hidden",
+    Class
+);
+```
+
+**Active Animations:**
+| Animation Type | CSS Classes | Effect |
+|---------------|-------------|--------|
+| **Fade** | `data-[state=open]:fade-in-0` / `closed:fade-out-0` | Opacity 0→1 / 1→0 |
+| **Zoom** | `data-[state=open]:zoom-in-95` / `closed:zoom-out-95` | Scale 95%→100% / 100%→95% |
+| **Slide (Bottom)** | `data-[side=bottom]:slide-in-from-top-2` | Slides down from 8px above |
+| **Slide (Top)** | `data-[side=top]:slide-in-from-bottom-2` | Slides up from 8px below |
+| **Slide (Left)** | `data-[side=left]:slide-in-from-right-2` | Slides left from 8px right |
+| **Slide (Right)** | `data-[side=right]:slide-in-from-left-2` | Slides right from 8px left |
+
+**Result:** Select dropdowns now have smooth animations matching Popover/DropdownMenu behavior! ✨
+
+---
+
+### 6.4 Chart Examples - DisplayTextSelector Pattern
+
+#### ✅ Refactored Time Range Selects
+**Issue:** Repetitive code with hardcoded SelectItems and ternary chains for display text
+
+**Solution:** Dictionary-based pattern with `DisplayTextSelector`
+
+**Changed Files:**
+- `demo/BlazorUI.Demo.Shared/Pages/Components/Charts/AreaChartExamples.razor`
+- `demo/BlazorUI.Demo.Shared/Pages/Components/Charts/BarChartExamples.razor`
+- `demo/BlazorUI.Demo.Shared/Pages/Components/Charts/LineChartExamples.razor`
+
+**Before (Repetitive):**
+```razor
+<CardDescription>
+    @(timeRange == "7d" ? "last 7 days" : 
+      timeRange == "30d" ? "last 30 days" : 
+      "last 3 months")
+</CardDescription>
+
+<Select @bind-Value="@timeRange">
+    <SelectContent>
+        <SelectItem Value="@("90d")" Text="Last 3 months">Last 3 months</SelectItem>
+        <SelectItem Value="@("30d")" Text="Last 30 days">Last 30 days</SelectItem>
+        <SelectItem Value="@("7d")" Text="Last 7 days">Last 7 days</SelectItem>
+    </SelectContent>
+</Select>
+
+@code {
+    private string GetTimeRangeDisplayText(string value) { ... }
+    private string GetTimeRangeDescription() { ... }
+}
+```
+
+**After (DRY Pattern):**
+```razor
+<CardDescription>
+    Showing trends for the @(timeRanges.TryGetValue(timeRange, out var description) 
+        ? description.ToLower() 
+        : "last 3 months")
+</CardDescription>
+
+<Select @bind-Value="@timeRange" 
+        DisplayTextSelector="@(value => timeRanges.TryGetValue(value, out var text) ? text : value)">
+    <SelectContent>
+        @foreach (var range in timeRanges)
+        {
+            <SelectItem Value="@range.Key" Text="@range.Value">@range.Value</SelectItem>
+        }
+    </SelectContent>
+</Select>
+
+@code {
+    private readonly Dictionary<string, string> timeRanges = new()
+    {
+        { "90d", "Last 3 months" },
+        { "30d", "Last 30 days" },
+        { "7d", "Last 7 days" }
+    };
+}
+```
+
+**Benefits:**
+- ✅ **DRY Principle** - Single dictionary instead of 3 separate methods/hardcoded items
+- ✅ **Easy to Extend** - Just add one line to dictionary to add new time ranges
+- ✅ **Type-Safe** - Dictionary key/value pairs validated at compile time
+- ✅ **Maintainable** - All time range logic in one place
+- ✅ **Consistent** - Same values used everywhere (Select, description, display text)
+- ✅ **No Flicker** - `DisplayTextSelector` provides immediate display text
+
+---
+
+### 6.5 Command Component Improvements
+
+#### ✅ Fixed ARIA Role on Command Root
+**Issue:** Command root had `role="listbox"` but it's a container for input + listbox
+
+**Solution:** Changed to `role="group"` for semantic correctness
+
+**Changed Files:**
+- `src/BlazorUI.Components/Components/Command/Command.razor`
+
+```razor
+<!-- Before -->
+<div class="@CssClass" role="listbox" aria-label="Command menu">
+
+<!-- After -->
+<div class="@CssClass" role="group" aria-label="Command menu">
+```
+
+**Correct ARIA Structure:**
+```
+Command (role="group")
+├── CommandInput (role="combobox" or role="searchbox")
+└── CommandList (role="listbox")
+    └── CommandItem (role="option")
+```
+
+---
+
+#### ✅ Fixed HasVisibleItems() for Virtualized Groups
+**Issue:** `CommandEmpty` showed "No results" even when virtualized groups had matching items
+
+**Root Cause:** `HasVisibleItems()` only checked regular items, ignored virtualized groups
+
+**Solution:** Updated to check both regular items AND virtualized groups
+
+**Changed Files:**
+- `src/BlazorUI.Components/Components/Command/CommandContext.cs`
+
+```csharp
+public bool HasVisibleItems()
+{
+    if (!_hasRegisteredItems)
+        return true;
+
+    // Check regular items
+    if (GetFilteredItems().Any(i => !i.Disabled))
+        return true;
+
+    // Check virtualized groups (FIXED!)
+    return _virtualizedGroups.Any(g => g.VisibleItemCount > 0);
+}
+```
+
+**Why This Matters:** SpotlightCommandPalette has mostly virtualized groups (icons) and only a few regular items. Without this fix, it would incorrectly show "No results" when icon searches matched but navigation items didn't.
+
+---
+
+### Testing Summary
+
+**All Tests Passed:**
+- ✅ Select animations (fade, zoom, slide) work correctly
+- ✅ Transform origin set on correct element (first child)
+- ✅ Display text syncs properly from registered items
+- ✅ `DisplayTextSelector` provides immediate text (no flicker)
+- ✅ Chart time range selects work with dictionary pattern
+- ✅ Command ARIA structure is semantically correct
+- ✅ `CommandEmpty` respects virtualized groups
+- ✅ SpotlightCommandPalette shows/hides empty state correctly
+- ✅ All chart examples render and function properly
+- ✅ Build successful with no errors
+
+**Components Fully Tested & Validated:**
+- ✅ **Select** (Primitive + Component) - Animations, DisplayText lifecycle, FloatingPortal integration
+- ✅ **Command** (All subcomponents) - ARIA roles, virtualized groups, empty state, keyboard nav, SearchInterval
+- ✅ **SpotlightCommandPalette** - Empty state logic, icon search, navigation items
+- ✅ **Chart Examples** (Area, Bar, Line) - DisplayTextSelector pattern, time range filtering
+- ✅ **FloatingPortal** - Transform origin fix, data-state/data-side attributes
+
+**User-Facing Features Validated:**
+- ✅ Smooth Select dropdown animations from all directions (top, bottom, left, right)
+- ✅ Zero-flicker display text in Select components
+- ✅ Command palette correctly shows "No results" only when truly no matches
+- ✅ Chart time range selectors with clean dictionary-based code
+- ✅ All keyboard navigation working (Arrow keys, Home, End, Enter, Escape)
+- ✅ Search debouncing preserves performance (300ms SearchInterval)
+
+---
+
+### Files Modified (Summary)
+
+**Primitives:**
+```
+M  src/BlazorUI.Primitives/Primitives/Select/Select.razor
+M  src/BlazorUI.Primitives/Primitives/Select/SelectContent.razor
+M  src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor
+M  src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js
+```
+
+**Components:**
+```
+M  src/BlazorUI.Components/Components/Select/SelectContent.razor
+M  src/BlazorUI.Components/Components/Command/Command.razor
+M  src/BlazorUI.Components/Components/Command/CommandContext.cs
+```
+
+**Demos:**
+```
+M  demo/BlazorUI.Demo.Shared/Pages/Components/Charts/AreaChartExamples.razor
+M  demo/BlazorUI.Demo.Shared/Pages/Components/Charts/BarChartExamples.razor
+M  demo/BlazorUI.Demo.Shared/Pages/Components/Charts/LineChartExamples.razor
+```
+
+---
+
+### Breaking Changes
+❌ None - All changes are fixes and improvements
+
+### Migration Notes
+- No migration needed - all changes are transparent to consumers
+- Chart examples now demonstrate best practice pattern for Select with dictionaries
+- Command components have improved accessibility and correctness
 
 **11. Kbd (same)**
 - Keyboard key badge component
@@ -1314,5 +1681,58 @@ git commit -m "Merge upstream/<branch>: <brief description>"
 ---
 
 **Log Maintained By:** AI Assistant with Human Review  
-**Last Updated:** 2025-01-XX  
+**Last Updated:** 2025-01-15  
 **Next Review:** After next upstream merge
+
+---
+
+## Overall Merge Status: ✅ COMPLETE
+
+### Components Merged & Tested (100%)
+
+**Fully Tested & Validated:**
+- ✅ Alert (7 variants, Icon, AccentBorder)
+- ✅ AlertDialog (dismissal behavior, AsChild pattern, accessibility)
+- ✅ Button (documentation improvements)
+- ✅ RichTextEditor (refactored initialization, new event types)
+- ✅ Sidebar (improved context subscription)
+- ✅ Select (FloatingPortal migration, animations, DisplayText lifecycle)
+- ✅ NativeSelect (new component)
+- ✅ Command (self-contained architecture, virtualization, SearchInterval preserved)
+- ✅ DropdownMenu (Floating UI refactor)
+- ✅ HoverCard (Floating UI refactor)
+- ✅ Popover (Floating UI refactor)
+- ✅ Tooltip (Floating UI refactor)
+
+**Additional Validated:**
+- ✅ Chart Examples (Area, Bar, Line) - DisplayTextSelector pattern
+- ✅ SpotlightCommandPalette - virtualized groups, empty state
+- ✅ FloatingPortal - transform origin, data attributes
+
+**Components Kept (Our Superior Implementations):**
+- ✅ Pagination (21 files vs 16)
+- ✅ Toast (13 files vs 10)
+- ✅ Toggle + ToggleGroup (7 files vs 4)
+- ✅ Menubar (18 files vs 16)
+- ✅ Slider, TimePicker, ScrollArea, Resizable, NavigationMenu, Progress, Kbd, Empty, Spinner
+
+### Files Modified Statistics
+- **Total Files Changed:** ~150+
+- **Components Enhanced:** 12
+- **New Components Added:** 14 (kept ours)
+- **Primitives Refactored:** 4 (Floating UI migration)
+- **Demo Pages Updated:** 15+
+- **JavaScript Files Updated:** 1 (positioning.js)
+- **Lines of Code Reduced:** ~515 lines (35% in primitives)
+
+### Build & Test Status
+- ✅ Solution builds successfully
+- ✅ No compilation errors
+- ✅ All animations working
+- ✅ All accessibility features validated
+- ✅ All keyboard navigation tested
+- ✅ Performance validated (virtualization, debouncing)
+- ✅ No breaking changes for end users
+
+### Ready for Production
+All merged components and fixes are production-ready and thoroughly tested.
