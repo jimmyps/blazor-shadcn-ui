@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -9,42 +11,34 @@ namespace BlazorUI.Components.MultiSelect;
 /// A multi-select component that allows users to select multiple options from a searchable dropdown.
 /// </summary>
 /// <typeparam name="TItem">The type of items in the multiselect list.</typeparam>
-/// <remarks>
-/// <para>
-/// The MultiSelect component combines search/filter functionality with a multi-selection dropdown.
-/// Selected items are displayed as dismissible tags. It includes keyboard navigation and
-/// accessibility features.
-/// </para>
-/// <para>
-/// Features:
-/// - Generic type support for flexible data binding
-/// - Two-way binding with @bind-Values
-/// - Search/filter functionality (case-insensitive)
-/// - Multiple selection with checkbox indicators
-/// - Select All option with indeterminate state
-/// - Selected items displayed as tags
-/// - "+N more" overflow indicator
-/// - Form validation integration (EditContext)
-/// - Keyboard navigation support
-/// - Accessibility: ARIA attributes, keyboard support
-/// </para>
-/// </remarks>
-/// <example>
-/// <code>
-/// &lt;MultiSelect TItem="Language"
-///              Items="languages"
-///              @bind-Values="selectedLanguages"
-///              ValueSelector="@(l => l.Code)"
-///              DisplaySelector="@(l => l.Name)"
-///              Placeholder="Select languages..."
-///              SearchPlaceholder="Search..."
-///              ShowSelectAll="true" /&gt;
-/// </code>
-/// </example>
-public partial class MultiSelect<TItem> : ComponentBase
+public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
 {
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
+
     private FieldIdentifier _fieldIdentifier;
     private EditContext? _editContext;
+    private IJSObjectReference? _multiSelectModule;
+    private DotNetObjectReference<MultiSelect<TItem>>? _dotNetRef;
+    private ElementReference _searchInputRef;
+    private bool _jsSetupDone = false;
+    private bool _focusDone = false;
+
+    // ShouldRender tracking fields
+    private IEnumerable<TItem>? _lastItems;
+    private IEnumerable<string>? _lastValues;
+    private bool _lastIsOpen;
+    private string _lastSearchQuery = string.Empty;
+    private bool _lastDisabled;
+
+    // Cached event handlers to avoid allocations on every render
+    private readonly Dictionary<string, Func<Task>> _toggleHandlerCache = new();
+    private readonly Dictionary<string, Func<Task>> _removeHandlerCache = new();
+
+    // Cached CSS class strings to avoid recomputation on every render
+    private string? _cachedTriggerCssClass;
+    private string? _lastPopoverWidth;
+    private string? _lastClass;
 
     /// <summary>
     /// Gets or sets the cascaded EditContext from a parent EditForm.
@@ -144,9 +138,25 @@ public partial class MultiSelect<TItem> : ComponentBase
 
     /// <summary>
     /// Gets or sets the width of the popover content.
+    /// Ignored when MatchTriggerWidth is true.
     /// </summary>
     [Parameter]
     public string PopoverWidth { get; set; } = "w-[300px]";
+
+    /// <summary>
+    /// Gets or sets whether to match the dropdown width to the trigger element width.
+    /// When true, PopoverWidth is ignored.
+    /// </summary>
+    [Parameter]
+    public bool MatchTriggerWidth { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets whether clicking outside the dropdown should close it.
+    /// When true, the dropdown will close and the search query will be cleared.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool AutoClose { get; set; } = true;
 
     /// <summary>
     /// Gets or sets an expression that identifies the bound values.
@@ -159,6 +169,11 @@ public partial class MultiSelect<TItem> : ComponentBase
     /// Tracks whether the popover is currently open.
     /// </summary>
     private bool _isOpen { get; set; } = false;
+
+    /// <summary>
+    /// Tracks the current search query for filtering.
+    /// </summary>
+    private string _searchQuery = string.Empty;
 
     /// <summary>
     /// Gets a unique identifier for this multiselect instance.
@@ -179,6 +194,30 @@ public partial class MultiSelect<TItem> : ComponentBase
     /// Gets whether any items are selected.
     /// </summary>
     private bool HasSelectedItems => SelectedValues.Count > 0;
+
+    /// <summary>
+    /// Gets the filtered items based on current search query.
+    /// </summary>
+    private IEnumerable<TItem> FilteredItems => GetFilteredItems();
+
+    /// <summary>
+    /// Gets whether there are any items visible after filtering.
+    /// </summary>
+    private bool HasFilteredItems => FilteredItems.Any();
+
+    /// <summary>
+    /// Gets the items that match the current search query.
+    /// </summary>
+    private IEnumerable<TItem> GetFilteredItems()
+    {
+        if (string.IsNullOrWhiteSpace(_searchQuery))
+        {
+            return Items;
+        }
+
+        return Items.Where(item =>
+            DisplaySelector(item).Contains(_searchQuery, StringComparison.OrdinalIgnoreCase));
+    }
 
     /// <summary>
     /// Gets whether the multiselect is in an invalid state (for validation).
@@ -217,11 +256,81 @@ public partial class MultiSelect<TItem> : ComponentBase
         // Filter out null items for safety
         Items = Items?.Where(item => item != null) ?? Enumerable.Empty<TItem>();
 
+        // Clear handler caches when Items reference changes to avoid stale delegates
+        if (!ReferenceEquals(_lastItems, Items))
+        {
+            _toggleHandlerCache.Clear();
+        }
+
         // Initialize EditContext integration if available
         if (CascadedEditContext != null && ValuesExpression != null)
         {
             _editContext = CascadedEditContext;
             _fieldIdentifier = FieldIdentifier.Create(ValuesExpression);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Setup JS when popover opens
+        if (_isOpen && !_jsSetupDone)
+        {
+            _jsSetupDone = true;
+
+            try
+            {
+                _multiSelectModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorUI.Components/js/multiselect.js");
+
+                _dotNetRef = DotNetObjectReference.Create(this);
+
+                await _multiSelectModule.InvokeVoidAsync(
+                    "setupMultiSelectInput",
+                    _searchInputRef,
+                    _dotNetRef,
+                    $"{Id}-search",
+                    $"{Id}-listbox");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"MultiSelect JS setup failed: {ex.Message}");
+            }
+        }
+        // Cleanup JS when popover closes
+        else if (!_isOpen && _jsSetupDone)
+        {
+            await CleanupJsAsync();
+        }
+    }
+
+    private async Task CleanupJsAsync()
+    {
+        if (_multiSelectModule != null)
+        {
+            try
+            {
+                await _multiSelectModule.InvokeVoidAsync("removeMultiSelectInput", $"{Id}-search");
+            }
+            catch
+            {
+                // Module may already be disposed
+            }
+        }
+        _jsSetupDone = false;
+        _focusDone = false;
+    }
+
+    /// <summary>
+    /// Handles the open state change of the popover.
+    /// Resets focus tracking when the popover closes.
+    /// </summary>
+    /// <param name="isOpen">Whether the popover is now open.</param>
+    private void HandleOpenChanged(bool isOpen)
+    {
+        _isOpen = isOpen;
+        if (!isOpen)
+        {
+            _focusDone = false; // Reset for next open
         }
     }
 
@@ -240,27 +349,77 @@ public partial class MultiSelect<TItem> : ComponentBase
     private void Close()
     {
         _isOpen = false;
+        _searchQuery = string.Empty;
     }
 
     /// <summary>
-    /// Toggles the dropdown.
+    /// Gets the click-outside event handler based on AutoClose setting.
+    /// Returns an empty EventCallback when AutoClose is false.
     /// </summary>
-    private void Toggle()
+    private EventCallback GetClickOutsideHandler()
     {
-        if (_isOpen)
+        return AutoClose
+            ? EventCallback.Factory.Create(this, HandleClickOutside)
+            : default;
+    }
+
+    /// <summary>
+    /// Handles click-outside events when AutoClose is enabled.
+    /// </summary>
+    private void HandleClickOutside()
+    {
+        Close();
+    }
+
+    /// <summary>
+    /// Handles the popover content ready event to focus the search input.
+    /// This is called when the popover is fully positioned and visible.
+    /// </summary>
+    private async Task HandleContentReady()
+    {
+        // Guard against multiple calls per open
+        if (_focusDone) return;
+        _focusDone = true;
+
+        try
         {
-            Close();
+            // Small delay to let browser finish processing DOM changes
+            await Task.Delay(50);
+            await _searchInputRef.FocusAsync();
         }
-        else
+        catch
         {
-            Open();
+            // Ignore focus errors
+        }
+    }
+
+    /// <summary>
+    /// Handles search input changes.
+    /// </summary>
+    private void HandleSearchInput(ChangeEventArgs args)
+    {
+        _searchQuery = args.Value?.ToString() ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Handles keyboard events on the search input.
+    /// </summary>
+    private void HandleSearchKeyDown(KeyboardEventArgs args)
+    {
+        switch (args.Key)
+        {
+            case "Enter":
+                HandleEnter();
+                break;
+            case "Escape":
+                HandleEscape();
+                break;
         }
     }
 
     /// <summary>
     /// Handles item toggle (selection/deselection).
     /// </summary>
-    /// <param name="item">The item that was toggled.</param>
     private async Task HandleToggle(TItem item)
     {
         var itemValue = ValueSelector(item);
@@ -279,29 +438,63 @@ public partial class MultiSelect<TItem> : ComponentBase
     }
 
     /// <summary>
-    /// Handles Select All toggle.
+    /// Gets a cached toggle handler for the specified item to avoid delegate allocations.
+    /// </summary>
+    private Func<Task> GetToggleHandler(TItem item)
+    {
+        var key = ValueSelector(item);
+        if (!_toggleHandlerCache.TryGetValue(key, out var handler))
+        {
+            handler = () => HandleToggle(item);
+            _toggleHandlerCache[key] = handler;
+        }
+        return handler;
+    }
+
+    /// <summary>
+    /// Gets a cached remove handler for the specified value to avoid delegate allocations.
+    /// </summary>
+    private Func<Task> GetRemoveHandler(string value)
+    {
+        if (!_removeHandlerCache.TryGetValue(value, out var handler))
+        {
+            handler = () => RemoveValue(value);
+            _removeHandlerCache[value] = handler;
+        }
+        return handler;
+    }
+
+    /// <summary>
+    /// Handles Select All toggle. Only affects filtered/visible items.
     /// </summary>
     private async Task HandleSelectAllToggle()
     {
-        var allValues = Items.Select(ValueSelector).ToList();
+        var filteredValues = FilteredItems.Select(ValueSelector).ToList();
         var currentValues = SelectedValues;
 
-        if (currentValues.Count == allValues.Count)
+        // Check if all FILTERED items are selected
+        var allFilteredSelected = filteredValues.All(v => currentValues.Contains(v));
+
+        if (allFilteredSelected)
         {
-            // All selected, deselect all
-            await UpdateValues(new List<string>());
+            // Deselect only the filtered items
+            currentValues.RemoveAll(v => filteredValues.Contains(v));
         }
         else
         {
-            // Select all
-            await UpdateValues(allValues);
+            // Select all filtered items (add to existing selection)
+            foreach (var value in filteredValues.Where(v => !currentValues.Contains(v)))
+            {
+                currentValues.Add(value);
+            }
         }
+
+        await UpdateValues(currentValues);
     }
 
     /// <summary>
     /// Removes a value from the selection.
     /// </summary>
-    /// <param name="value">The value to remove.</param>
     private async Task RemoveValue(string value)
     {
         var currentValues = SelectedValues;
@@ -320,7 +513,6 @@ public partial class MultiSelect<TItem> : ComponentBase
     /// <summary>
     /// Updates the selected values and notifies parent.
     /// </summary>
-    /// <param name="values">The new values.</param>
     private async Task UpdateValues(List<string> values)
     {
         Values = values.Count > 0 ? values : null;
@@ -331,43 +523,99 @@ public partial class MultiSelect<TItem> : ComponentBase
         {
             _editContext.NotifyFieldChanged(_fieldIdentifier);
         }
-
-        // Force re-render to update checkbox states
-        StateHasChanged();
     }
 
     /// <summary>
     /// Checks if an item is currently selected.
     /// </summary>
-    /// <param name="item">The item to check.</param>
-    /// <returns>True if the item is selected; otherwise, false.</returns>
     private bool IsSelected(TItem item)
     {
         return SelectedValues.Contains(ValueSelector(item));
     }
 
     /// <summary>
-    /// Gets the Select All state (None, Indeterminate, All).
+    /// Gets the Select All state based on filtered items.
     /// </summary>
     private SelectAllState GetSelectAllState()
     {
-        var totalCount = Items.Count();
-        var selectedCount = SelectedValues.Count;
+        var filteredValues = FilteredItems.Select(ValueSelector).ToHashSet();
+        var selectedFilteredCount = SelectedValues.Count(v => filteredValues.Contains(v));
 
-        if (selectedCount == 0) return SelectAllState.None;
-        if (selectedCount == totalCount) return SelectAllState.All;
+        if (selectedFilteredCount == 0) return SelectAllState.None;
+        if (selectedFilteredCount == filteredValues.Count) return SelectAllState.All;
         return SelectAllState.Indeterminate;
     }
 
     /// <summary>
     /// Gets the display text for a value.
     /// </summary>
-    /// <param name="value">The value to get display text for.</param>
-    /// <returns>The display text.</returns>
     private string GetDisplayText(string value)
     {
         var item = Items.FirstOrDefault(i => ValueSelector(i) == value);
         return item != null ? DisplaySelector(item) : value;
+    }
+
+    // JSInvokable callbacks for keyboard navigation
+    [JSInvokable]
+    public void HandleSpace()
+    {
+        // Space toggles checkbox - item click already handled by JS
+        // No additional action needed, dropdown stays open
+    }
+
+    [JSInvokable]
+    public void HandleEnter()
+    {
+        // Enter closes the dropdown after item toggle
+        Close();
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void HandleEscape()
+    {
+        // Escape closes the dropdown
+        Close();
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await CleanupJsAsync();
+
+        if (_multiSelectModule != null)
+        {
+            await _multiSelectModule.DisposeAsync();
+            _multiSelectModule = null;
+        }
+
+        _dotNetRef?.Dispose();
+        _dotNetRef = null;
+    }
+
+    /// <summary>
+    /// Determines whether the component should re-render based on tracked state changes.
+    /// This optimization reduces unnecessary render cycles.
+    /// </summary>
+    protected override bool ShouldRender()
+    {
+        var itemsChanged = !ReferenceEquals(_lastItems, Items);
+        var valuesChanged = !ReferenceEquals(_lastValues, Values);
+        var openChanged = _lastIsOpen != _isOpen;
+        var searchChanged = _lastSearchQuery != _searchQuery;
+        var disabledChanged = _lastDisabled != Disabled;
+
+        if (itemsChanged || valuesChanged || openChanged || searchChanged || disabledChanged)
+        {
+            _lastItems = Items;
+            _lastValues = Values;
+            _lastIsOpen = _isOpen;
+            _lastSearchQuery = _searchQuery;
+            _lastDisabled = Disabled;
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -377,11 +625,20 @@ public partial class MultiSelect<TItem> : ComponentBase
 
     /// <summary>
     /// Gets the CSS class for the trigger button.
+    /// Uses caching to avoid recomputation on every render.
     /// </summary>
     private string TriggerCssClass
     {
         get
         {
+            // Return cached value if inputs haven't changed
+            if (_cachedTriggerCssClass != null &&
+                _lastPopoverWidth == PopoverWidth &&
+                _lastClass == Class)
+            {
+                return _cachedTriggerCssClass;
+            }
+
             var builder = new StringBuilder();
 
             // Base button styles
@@ -406,15 +663,14 @@ public partial class MultiSelect<TItem> : ComponentBase
                 builder.Append(Class);
             }
 
-            return builder.ToString().Trim();
+            // Cache the result
+            _cachedTriggerCssClass = builder.ToString().Trim();
+            _lastPopoverWidth = PopoverWidth;
+            _lastClass = Class;
+
+            return _cachedTriggerCssClass;
         }
     }
-
-    /// <summary>
-    /// Gets the CSS class for the tag.
-    /// </summary>
-    private string TagCssClass =>
-        "inline-flex items-center gap-1 rounded-full border bg-secondary px-2 py-0.5 text-xs font-semibold transition-colors";
 
     /// <summary>
     /// Gets the CSS class for the tag remove button.
@@ -432,23 +688,15 @@ public partial class MultiSelect<TItem> : ComponentBase
 
     /// <summary>
     /// Gets the CSS class for the checkbox.
+    /// Uses data-state attribute from Checkbox primitive for checked/unchecked/indeterminate styling.
     /// </summary>
     private string CheckboxCssClass =>
-        "h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background " +
+        "h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background flex items-center justify-center " +
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
-        "disabled:cursor-not-allowed disabled:opacity-50";
-
-    /// <summary>
-    /// Gets the CSS class for a checked checkbox.
-    /// </summary>
-    private string CheckboxCheckedCssClass =>
-        CheckboxCssClass + " bg-primary text-primary-foreground";
-
-    /// <summary>
-    /// Gets the CSS class for an unchecked checkbox.
-    /// </summary>
-    private string CheckboxUncheckedCssClass =>
-        CheckboxCssClass + " bg-background";
+        "disabled:cursor-not-allowed disabled:opacity-50 " +
+        "data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground " +
+        "data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground " +
+        "data-[state=unchecked]:bg-background";
 }
 
 /// <summary>

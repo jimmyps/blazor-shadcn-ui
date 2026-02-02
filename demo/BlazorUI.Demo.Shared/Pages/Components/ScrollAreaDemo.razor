@@ -1,5 +1,9 @@
 @page "/components/scroll-area"
 @using BlazorUI.Components.ScrollArea
+<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/ScrollAreaDemo.razor
+=======
+@using BlazorUI.Components.Separator
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/ScrollAreaDemo.razor
 
 <PageTitle>Scroll Area Component - BlazorUI</PageTitle>
 
@@ -8,11 +12,16 @@
         <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">Scroll Area Component</h1>
             <p class="text-xl text-muted-foreground">
+<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/ScrollAreaDemo.razor
                 Augments native scroll functionality for custom, cross-browser styling.
+=======
+                Augments native scroll functionality with custom styling.
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/ScrollAreaDemo.razor
             </p>
         </div>
     </div>
 
+<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/ScrollAreaDemo.razor
     <div class="space-y-6">
         <section class="space-y-4">
             <div class="space-y-2">
@@ -251,10 +260,94 @@
 &lt;/ScrollArea&gt;</code></pre>
             </div>
         </section>
+=======
+    <!-- Basic Example -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic Example</h2>
+            <p class="text-sm text-muted-foreground">
+                A scrollable area with vertical scrolling.
+            </p>
+        </div>
+        <ScrollArea Height="200px" Class="w-[350px] rounded-md border p-4">
+            <div class="space-y-4">
+                <h4 class="text-sm font-medium leading-none">Tags</h4>
+                @foreach (var tag in _tags)
+                {
+                    <div class="text-sm">@tag</div>
+                    <Separator />
+                }
+            </div>
+        </ScrollArea>
+    </div>
+
+    <!-- Horizontal Scrolling -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Horizontal Scrolling</h2>
+            <p class="text-sm text-muted-foreground">
+                A scrollable area with horizontal scrolling.
+            </p>
+        </div>
+        <ScrollArea Orientation="ScrollAreaOrientation.Horizontal" Class="w-full whitespace-nowrap rounded-md border">
+            <div class="flex w-max space-x-4 p-4">
+                @for (int i = 1; i <= 10; i++)
+                {
+                    <div class="shrink-0">
+                        <div class="overflow-hidden rounded-md">
+                            <div class="h-[150px] w-[250px] bg-muted flex items-center justify-center">
+                                <span class="text-2xl font-semibold">Image @i</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </ScrollArea>
+    </div>
+
+    <!-- Long Content -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Long Content</h2>
+            <p class="text-sm text-muted-foreground">
+                Scroll area with extensive content.
+            </p>
+        </div>
+        <ScrollArea MaxHeight="300px" Class="w-[350px] rounded-md border p-4">
+            <div class="space-y-4">
+                <h4 class="text-sm font-medium leading-none mb-4">Lorem Ipsum</h4>
+                @for (int i = 0; i < 5; i++)
+                {
+                    <p class="text-sm text-muted-foreground">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    </p>
+                }
+            </div>
+        </ScrollArea>
+    </div>
+
+    <!-- API Reference -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+        </div>
+        <div class="border rounded-lg p-6 space-y-4">
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">ScrollArea Parameters</h3>
+                <div class="space-y-2 text-sm">
+                    <p><strong>Orientation:</strong> <code class="bg-muted px-1 py-0.5 rounded">ScrollAreaOrientation</code> - Vertical (default), Horizontal, or Both</p>
+                    <p><strong>Type:</strong> <code class="bg-muted px-1 py-0.5 rounded">ScrollAreaType</code> - Auto, Always, Hover, or Hidden</p>
+                    <p><strong>Height:</strong> <code class="bg-muted px-1 py-0.5 rounded">string</code> - Fixed height (e.g., "200px")</p>
+                    <p><strong>MaxHeight:</strong> <code class="bg-muted px-1 py-0.5 rounded">string</code> - Maximum height (e.g., "300px")</p>
+                </div>
+            </div>
+        </div>
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/ScrollAreaDemo.razor
     </div>
 </div>
 
 @code {
+<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/ScrollAreaDemo.razor
     private string[] tags = new[]
     {
         "v1.2.0-beta.1",
@@ -293,5 +386,12 @@
         ("The styling is really clean and consistent.", "10:06 AM", false),
         ("Agreed! And the keyboard navigation works great too.", "10:08 AM", true),
         ("Can't wait to use it in our project!", "10:10 AM", false)
+=======
+    private readonly string[] _tags = new[]
+    {
+        "React", "Vue", "Angular", "Svelte", "Blazor",
+        "Next.js", "Nuxt", "Gatsby", "Remix", "Astro",
+        "TypeScript", "JavaScript", "C#", "Python", "Go"
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/ScrollAreaDemo.razor
     };
 }

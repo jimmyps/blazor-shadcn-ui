@@ -5,11 +5,12 @@
 @* Dropdown menu item - represents an individual menu action *@
 <div @ref="_itemRef"
      role="menuitem"
-     tabindex="-1"
+     tabindex="@(Disabled ? -1 : -1)"
      aria-disabled="@Disabled.ToString().ToLowerInvariant()"
-     data-disabled="@Disabled.ToString().ToLowerInvariant()"
+     data-disabled="@(Disabled ? "true" : null)"
      @onclick="HandleClick"
      @onkeydown="HandleKeyDown"
+     @onkeydown:preventDefault="true"
      @onmouseenter="HandleMouseEnter"
      @attributes="AdditionalAttributes">
     @ChildContent
@@ -19,7 +20,7 @@
     [CascadingParameter]
     private DropdownMenuContext Context { get; set; } = null!;
 
-    [CascadingParameter]
+    [CascadingParameter(Name = "DropdownMenuContentContext")]
     private DropdownMenuContent? ContentContext { get; set; }
     
     [CascadingParameter(Name = "ParentSubContext")]

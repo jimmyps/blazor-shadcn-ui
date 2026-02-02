@@ -1,11 +1,16 @@
 @namespace BlazorUI.Components.ContextMenu
 
+<<<<<<< HEAD
 @* ContextMenuShortcut - keyboard shortcut hint *@
 <span class="@GetClass()" @attributes="AdditionalAttributes">
+=======
+<span class="@CssClass">
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     @ChildContent
 </span>
 
 @code {
+<<<<<<< HEAD
     /// <summary>
     /// The shortcut text (e.g., "⌘C" or "Ctrl+C").
     /// </summary>
@@ -29,4 +34,16 @@
         var baseClass = "ml-auto text-xs tracking-widest text-muted-foreground";
         return string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
     }
+=======
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "ml-auto text-xs tracking-widest opacity-60",
+        Class
+    );
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
 }

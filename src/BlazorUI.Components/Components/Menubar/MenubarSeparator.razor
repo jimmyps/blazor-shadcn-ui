@@ -1,5 +1,6 @@
 @namespace BlazorUI.Components.Menubar
 
+<<<<<<< HEAD
 @* Styled MenubarSeparator - horizontal divider between menu items *@
 <div class="@CssClass" role="separator" aria-orientation="horizontal"></div>
 
@@ -18,4 +19,16 @@
             return string.IsNullOrWhiteSpace(Class) ? baseClasses : $"{baseClasses} {Class}";
         }
     }
+=======
+<div role="separator" class="@CssClass"></div>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "-mx-1 my-1 h-px bg-muted",
+        Class
+    );
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
 }

@@ -4,6 +4,8 @@
 
 @*
     AlertDialog content with alert-specific styling.
+    By default, prevents dismissal via click-outside for standard alert dialog behavior.
+    Escape key dismissal is configurable via CloseOnEscape parameter.
 *@
 
 <DialogPortal>
@@ -12,8 +14,10 @@
     <BlazorUI.Primitives.Dialog.DialogContent
         class="@GetClassNames()"
         CloseOnEscape="@CloseOnEscape"
+        CloseOnClickOutside="@CloseOnClickOutside"
         TrapFocus="true"
         LockScroll="true"
+        role="alertdialog"
         @attributes="AdditionalAttributes">
         @ChildContent
     </BlazorUI.Primitives.Dialog.DialogContent>
@@ -38,6 +42,13 @@
     /// </summary>
     [Parameter]
     public bool CloseOnEscape { get; set; } = true;
+
+    /// <summary>
+    /// Whether the alert dialog can be closed by clicking outside.
+    /// Default is false to comply with standard alert dialog behavior.
+    /// </summary>
+    [Parameter]
+    public bool CloseOnClickOutside { get; set; } = false;
 
     /// <summary>
     /// Additional attributes to apply to the alert dialog content element.

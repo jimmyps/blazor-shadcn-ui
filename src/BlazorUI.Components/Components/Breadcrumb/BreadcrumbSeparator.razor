@@ -1,4 +1,8 @@
 @namespace BlazorUI.Components.Breadcrumb
+<<<<<<< HEAD
+=======
+@using BlazorUI.Icons.Lucide.Components
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
 
 <li role="presentation" aria-hidden="true" class="@CssClass">
     @if (ChildContent != null)
@@ -7,8 +11,27 @@
     }
     else
     {
+<<<<<<< HEAD
         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="m5.625 11.25 3.75-3.75-3.75-3.75"/>
         </svg>
     }
 </li>
+=======
+        <LucideIcon Name="chevron-right" Class="h-3.5 w-3.5" />
+    }
+</li>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "[&>svg]:w-3.5 [&>svg]:h-3.5",
+        Class
+    );
+}
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf

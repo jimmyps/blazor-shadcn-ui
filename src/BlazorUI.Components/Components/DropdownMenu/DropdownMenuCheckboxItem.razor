@@ -3,12 +3,20 @@
 
 @* Styled DropdownMenuCheckboxItem - wrapper with shadcn Tailwind classes *@
 <BlazorUI.Primitives.DropdownMenu.DropdownMenuCheckboxItem class="@CssClass"
+<<<<<<< HEAD
                                                            Disabled="@Disabled"
                                                            Checked="@Checked"
                                                            CheckedChanged="@OnCheckedChanged"
                                                            OnCheckedChange="@OnCheckedChange"
                                                            CloseOnSelect="@CloseOnSelect">
     <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+=======
+                                                           Checked="@Checked"
+                                                           CheckedChanged="@HandleCheckedChanged"
+                                                           Disabled="@Disabled"
+                                                           CloseOnSelect="@CloseOnSelect">
+    <span class="@IndicatorClass">
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
         @if (Checked)
         {
             <svg xmlns="http://www.w3.org/2000/svg"
@@ -25,6 +33,7 @@
             </svg>
         }
     </span>
+<<<<<<< HEAD
     <span>@ChildContent</span>
 </BlazorUI.Primitives.DropdownMenu.DropdownMenuCheckboxItem>
 
@@ -38,17 +47,30 @@
 
     /// <summary>
     /// The content to display inside the checkbox item.
+=======
+    @ChildContent
+</BlazorUI.Primitives.DropdownMenu.DropdownMenuCheckboxItem>
+
+@code {
+    /// <summary>
+    /// The content to display inside the menu item.
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
+<<<<<<< HEAD
     /// Additional CSS classes to apply to the checkbox item.
+=======
+    /// Additional CSS classes to apply to the menu item.
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
     /// <summary>
+<<<<<<< HEAD
     /// Whether the checkbox item is disabled.
     /// </summary>
     [Parameter]
@@ -62,11 +84,21 @@
 
     /// <summary>
     /// Event callback invoked when the checked state changes (for two-way binding).
+=======
+    /// Whether the checkbox is checked.
+    /// </summary>
+    [Parameter]
+    public bool Checked { get; set; }
+
+    /// <summary>
+    /// Event callback for when the checked state changes.
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     /// </summary>
     [Parameter]
     public EventCallback<bool> CheckedChanged { get; set; }
 
     /// <summary>
+<<<<<<< HEAD
     /// Event callback invoked when the checkbox state changes.
     /// </summary>
     [Parameter]
@@ -75,10 +107,29 @@
     /// <summary>
     /// Whether to close the dropdown menu when this item is selected.
     /// Default is false for checkbox items.
+=======
+    /// Whether the menu item is disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    /// <summary>
+    /// Whether to close the dropdown menu when this item is toggled.
+    /// Default is false.
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     /// </summary>
     [Parameter]
     public bool CloseOnSelect { get; set; } = false;
 
+<<<<<<< HEAD
+=======
+    private async Task HandleCheckedChanged(bool value)
+    {
+        Checked = value;
+        await CheckedChanged.InvokeAsync(value);
+    }
+
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     private string CssClass
     {
         get
@@ -86,7 +137,11 @@
             var baseClasses = "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 " +
                             "text-sm outline-none transition-colors " +
                             "focus:bg-accent focus:text-accent-foreground " +
+<<<<<<< HEAD
                             "data-[disabled]:pointer-events-none data-[disabled]:opacity-50";
+=======
+                            "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50";
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
 
             if (!Disabled)
             {
@@ -97,6 +152,7 @@
         }
     }
 
+<<<<<<< HEAD
     private void OnCheckedChanged(bool isChecked)
     {
         if (CheckedChanged.HasDelegate)
@@ -107,4 +163,7 @@
             Checked = isChecked;
     }
 
+=======
+    private const string IndicatorClass = "absolute left-2 flex h-3.5 w-3.5 items-center justify-center";
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
 }

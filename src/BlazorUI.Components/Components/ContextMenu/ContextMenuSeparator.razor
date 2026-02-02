@@ -1,5 +1,6 @@
 @namespace BlazorUI.Components.ContextMenu
 
+<<<<<<< HEAD
 @* ContextMenuSeparator - visual separator between items *@
 <div role="separator" class="@GetClass()" @attributes="AdditionalAttributes"></div>
 
@@ -21,4 +22,16 @@
         var baseClass = "-mx-1 my-1 h-px bg-border";
         return string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
     }
+=======
+<div role="separator" class="@CssClass"></div>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "-mx-1 my-1 h-px bg-muted",
+        Class
+    );
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
 }

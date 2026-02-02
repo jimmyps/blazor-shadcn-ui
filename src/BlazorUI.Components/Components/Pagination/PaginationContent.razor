@@ -3,3 +3,19 @@
 <ul class="@CssClass">
     @ChildContent
 </ul>
+<<<<<<< HEAD
+=======
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "flex flex-row items-center gap-1",
+        Class
+    );
+}
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf

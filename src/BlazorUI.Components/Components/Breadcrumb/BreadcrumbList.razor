@@ -1,5 +1,17 @@
 @namespace BlazorUI.Components.Breadcrumb
 
+<<<<<<< HEAD
 <ol class="@CssClass">
     @ChildContent
 </ol>
+=======
+@* BreadcrumbList is optional - items can be placed directly in Breadcrumb *@
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf

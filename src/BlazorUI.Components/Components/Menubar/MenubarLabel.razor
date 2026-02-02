@@ -1,11 +1,16 @@
 @namespace BlazorUI.Components.Menubar
 
+<<<<<<< HEAD
 @* MenubarLabel - label for a group of menu items *@
 <div class="@CssClass" role="presentation">
+=======
+<div class="@CssClass">
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     @ChildContent
 </div>
 
 @code {
+<<<<<<< HEAD
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the label.
     /// </summary>
@@ -41,4 +46,20 @@
             return string.IsNullOrWhiteSpace(Class) ? baseClasses : $"{baseClasses} {Class}";
         }
     }
+=======
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool Inset { get; set; }
+
+    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "px-2 py-1.5 text-sm font-semibold",
+        Inset ? "pl-8" : null,
+        Class
+    );
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
 }

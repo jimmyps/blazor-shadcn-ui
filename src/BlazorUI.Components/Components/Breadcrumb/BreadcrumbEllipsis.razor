@@ -1,5 +1,24 @@
 @namespace BlazorUI.Components.Breadcrumb
+<<<<<<< HEAD
 
 <li role="presentation" aria-hidden="true" class="@CssClass">
     <span>...</span>
 </li>
+=======
+@using BlazorUI.Icons.Lucide.Components
+
+<span role="presentation" aria-hidden="true" class="@CssClass">
+    <LucideIcon Name="ellipsis" Class="h-4 w-4" />
+    <span class="sr-only">More</span>
+</span>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+        "flex h-9 w-9 items-center justify-center",
+        Class
+    );
+}
+>>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf

@@ -1,8 +1,12 @@
 @namespace BlazorUI.Components.DataTable
 @typeparam TData where TData : class
 @using BlazorUI.Primitives.Table
+@using BlazorUI.Primitives.Services
 @using BlazorUI.Components.Utilities
 @using BlazorUI.Components.Checkbox
+@using BlazorUI.Components.DropdownMenu
+@using BlazorUI.Components.Empty
+@using BlazorUI.Components.Pagination
 
 <CascadingValue Value="this" IsFixed="true">
     <div class="@ContainerCssClass">
@@ -39,9 +43,7 @@
                 }
                 else
                 {
-                    <div class="flex items-center justify-center p-8 text-muted-foreground">
-                        <div class="text-sm">No results found.</div>
-                    </div>
+                    <Empty Title="No results found" Size="EmptySize.Small" />
                 }
             }
             else
@@ -51,6 +53,7 @@
                                                  @bind-State="@_tableState"
                                                  SelectionMode="@GetPrimitiveSelectionMode()"
                                                  ManualPagination="true"
+                                                 EnableKeyboardNavigation="@EnableKeyboardNavigation"
                                                  OnSortChange="HandleSortChange"
                                                  OnSelectionChange="HandleSelectionChange"
                                                  Class="@TableCssClass"
@@ -60,9 +63,41 @@
                             @if (SelectionMode == DataTableSelectionMode.Multiple)
                             {
                                 <TableHeaderCell TData="TData" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-12" role="columnheader">
-                                    <Checkbox Checked="@IsAllSelected()"
-                                              CheckedChanged="@(async (bool isChecked) => await HandleSelectAllChanged(isChecked))"
-                                              AriaLabel="Select all rows on this page" />
+                                    <div @onclick:stopPropagation="true">
+                                        @if (ShouldShowSelectAllPrompt())
+                                        {
+                                            <DropdownMenu @bind-Open="_selectAllDropdownOpen">
+                                                <DropdownMenuTrigger Class="inline-flex items-center justify-center p-0 bg-transparent border-0 hover:bg-transparent focus:outline-none">
+                                                    <Checkbox Checked="@IsAllSelected()"
+                                                              Indeterminate="@IsSomeSelected()"
+                                                              AriaLabel="Select rows - click to see options"
+                                                              Class="pointer-events-none" />
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent Side="PopoverSide.Bottom" Align="PopoverAlign.Start">
+                                                    <DropdownMenuItem OnClick="@HandleSelectAllOnCurrentPage">
+                                                        Select all on this page (@_processedData.Count() items)
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem OnClick="@HandleSelectAllItems">
+                                                        Select all @GetTotalFilteredItemCount() items
+                                                    </DropdownMenuItem>
+                                                    @if (_tableState.Selection.HasSelection)
+                                                    {
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem OnClick="@HandleClearSelection">
+                                                            Clear selection
+                                                        </DropdownMenuItem>
+                                                    }
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        }
+                                        else
+                                        {
+                                            <Checkbox Checked="@IsAllSelected()"
+                                                      CheckedChanged="@(async (bool isChecked) => await HandleSelectAllChanged(isChecked))"
+                                                      Indeterminate="@IsSomeSelected()"
+                                                      AriaLabel="Select all rows" />
+                                        }
+                                    </div>
                                 </TableHeaderCell>
                             }
                             @foreach (var column in _columns.Where(c => c.Visible))
@@ -121,13 +156,15 @@
                         @foreach (var item in _processedData)
                         {
                             var isSelected = _tableState.Selection.IsSelected(item);
-                            <TableRow TData="TData" Class="@ClassNames.cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted", isSelected ? "bg-muted" : "")">
+                            <TableRow TData="TData" Item="@item" Class="@ClassNames.cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted", isSelected ? "bg-muted" : "")">
                                 @if (SelectionMode == DataTableSelectionMode.Multiple)
                                 {
                                     <TableCell Class="p-4 align-middle w-12" role="gridcell">
-                                        <Checkbox Checked="@isSelected"
-                                                  CheckedChanged="@(async (bool isChecked) => await HandleRowSelectionChanged(item, isChecked))"
-                                                  AriaLabel="@($"Select this row")" />
+                                        <div @onclick:stopPropagation="true">
+                                            <Checkbox Checked="@isSelected"
+                                                      CheckedChanged="@(async (bool isChecked) => await HandleRowSelectionChanged(item, isChecked))"
+                                                      AriaLabel="@($"Select this row")" />
+                                        </div>
                                     </TableCell>
                                 }
                                 @foreach (var column in _columns.Where(c => c.Visible))
@@ -160,11 +197,25 @@
 
         @if (ShowPagination && !IsLoading && _processedData.Any())
         {
-            <DataTablePagination TData="TData"
-                                 State="@_tableState"
-                                 PageSizes="@PageSizes"
-                                 OnPageChanged="@HandlePageChanged"
-                                 OnPageSizeChanged="@HandlePageSizeChanged" />
+            <Pagination State="@_tableState.Pagination"
+                        PageSizes="@PageSizes"
+                        OnPageChanged="@HandlePageChanged"
+                        OnPageSizeChanged="@HandlePageSizeChanged"
+                        Class="flex items-center justify-between px-2 py-4">
+                <PaginationInfo />
+                <PaginationContent Class="flex items-center gap-6 lg:gap-8">
+                    <PaginationPageSizeSelector />
+                    <div class="flex items-center gap-2">
+                        <PaginationPageDisplay />
+                        <div class="flex items-center gap-1">
+                            <PaginationItem><PaginationFirst /></PaginationItem>
+                            <PaginationItem><PaginationPrevious ShowText="false" /></PaginationItem>
+                            <PaginationItem><PaginationNext ShowText="false" /></PaginationItem>
+                            <PaginationItem><PaginationLast /></PaginationItem>
+                        </div>
+                    </div>
+                </PaginationContent>
+            </Pagination>
         }
     </div>
 

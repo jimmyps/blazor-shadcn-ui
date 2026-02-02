@@ -2,10 +2,11 @@
 @using BlazorUI.Primitives.Dialog
 
 @*
-    AlertDialog action button - performs the action and closes the dialog.
+    Alert Dialog Action - the confirmation/action button.
+    Closes the dialog when clicked.
 *@
 
-<DialogClose>
+<DialogClose AsChild="@AsChild">
     @ChildContent
 </DialogClose>
 
@@ -15,4 +16,11 @@
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// When true, the action will not render a default button wrapper.
+    /// Instead, the child component receives close behavior via cascading context.
+    /// </summary>
+    [Parameter]
+    public bool AsChild { get; set; } = true;
 }
