@@ -1,10 +1,6 @@
-@page "/components/breadcrumb"
+﻿@page "/components/breadcrumb"
 @using BlazorUI.Components.Breadcrumb
-<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/BreadcrumbDemo.razor
 @using BlazorUI.Icons.Lucide.Components
-=======
-@using BlazorUI.Components.Separator
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/BreadcrumbDemo.razor
 
 <PageTitle>Breadcrumb Component - BlazorUI</PageTitle>
 
@@ -18,7 +14,6 @@
         </div>
     </div>
 
-<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/BreadcrumbDemo.razor
     <!-- Basic Breadcrumb -->
     <div class="space-y-4">
         <div class="space-y-2">
@@ -74,32 +69,6 @@
     </div>
 
     <!-- With Dropdown -->
-=======
-    <!-- Basic Example -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Basic Example</h2>
-            <p class="text-sm text-muted-foreground">
-                A simple breadcrumb navigation showing the current page path.
-            </p>
-        </div>
-        <Breadcrumb>
-            <BreadcrumbItem>
-                <BreadcrumbLink Href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-                <BreadcrumbLink Href="/components">Components</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-                <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-            </BreadcrumbItem>
-        </Breadcrumb>
-    </div>
-
-    <!-- With Ellipsis -->
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/BreadcrumbDemo.razor
     <div class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">With Ellipsis</h2>
@@ -108,7 +77,6 @@
             </p>
         </div>
         <Breadcrumb>
-<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/BreadcrumbDemo.razor
             <BreadcrumbList>
                 <BreadcrumbItem>
                     <BreadcrumbLink Href="/">Home</BreadcrumbLink>
@@ -216,66 +184,6 @@
                 The Breadcrumb component uses semantic HTML with <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">nav</code> and 
                 <code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">aria-label</code> attributes for proper screen reader support.
             </p>
-=======
-            <BreadcrumbItem>
-                <BreadcrumbLink Href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-                <BreadcrumbEllipsis />
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-                <BreadcrumbLink Href="/components">Components</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-                <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-            </BreadcrumbItem>
-        </Breadcrumb>
-    </div>
-
-    <!-- Custom Separator -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Custom Separator</h2>
-            <p class="text-sm text-muted-foreground">
-                Customize the separator between breadcrumb items.
-            </p>
-        </div>
-        <Breadcrumb>
-            <BreadcrumbItem>
-                <BreadcrumbLink Href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator>/</BreadcrumbSeparator>
-            <BreadcrumbItem>
-                <BreadcrumbLink Href="/components">Components</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator>/</BreadcrumbSeparator>
-            <BreadcrumbItem>
-                <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-            </BreadcrumbItem>
-        </Breadcrumb>
-    </div>
-
-    <!-- API Reference -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">API Reference</h2>
-        </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-semibold mb-2">Components</h3>
-                <div class="space-y-2 text-sm">
-                    <p><code class="bg-muted px-1 py-0.5 rounded">Breadcrumb</code> - Container with nav element</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbItem</code> - Individual breadcrumb item</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbLink</code> - Clickable link</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbPage</code> - Current page (non-clickable)</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbSeparator</code> - Separator between items</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbEllipsis</code> - Collapsed items indicator</p>
-                </div>
-            </div>
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/BreadcrumbDemo.razor
         </div>
     </div>
 </div>

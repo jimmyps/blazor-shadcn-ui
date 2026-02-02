@@ -169,6 +169,45 @@
         </div>
     </section>
 
+    <!-- With Keyboard Shortcuts -->
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">With Keyboard Shortcuts</h2>
+        <p class="text-sm text-muted-foreground">
+            Display keyboard shortcuts alongside menu items (visual only).
+        </p>
+
+        <div class="flex items-start gap-2">
+            <DropdownMenu>
+                <DropdownMenuTrigger Class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                    File Menu
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuItem OnClick="@(() => HandleShortcutsAction("New"))">
+                        New
+                        <DropdownMenuShortcut>ΓîÿN</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem OnClick="@(() => HandleShortcutsAction("Open"))">
+                        Open
+                        <DropdownMenuShortcut>ΓîÿO</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem OnClick="@(() => HandleShortcutsAction("Save"))">
+                        Save
+                        <DropdownMenuShortcut>ΓîÿS</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem OnClick="@(() => HandleShortcutsAction("Print"))">
+                        Print
+                        <DropdownMenuShortcut>ΓîÿP</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+            @if (!string.IsNullOrEmpty(shortcutsAction))
+            {
+                <p class="text-sm">Last action: <strong>@shortcutsAction</strong></p>
+            }
+        </div>
+    </section>
+
     <!-- With Keyboard Shortcuts (Functional) -->
     <section class="space-y-4">
         <h2 class="text-2xl font-semibold">Functional Keyboard Shortcuts</h2>
@@ -183,31 +222,31 @@
                     File Menu
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                    <DropdownMenuItem OnClick="@(() => HandleShortcutsAction("New File"))">
+                    <DropdownMenuItem OnClick="@(() => HandleFunctionalShortcutsAction("New File"))">
                         New File
                         <DropdownMenuShortcut>Ctrl+Shift+N</DropdownMenuShortcut>
                     </DropdownMenuItem>
-                    <DropdownMenuItem OnClick="@(() => HandleShortcutsAction("Open"))">
+                    <DropdownMenuItem OnClick="@(() => HandleFunctionalShortcutsAction("Open"))">
                         Open
                         <DropdownMenuShortcut>Ctrl+O</DropdownMenuShortcut>
                     </DropdownMenuItem>
-                    <DropdownMenuItem OnClick="@(() => HandleShortcutsAction("Save"))">
+                    <DropdownMenuItem OnClick="@(() => HandleFunctionalShortcutsAction("Save"))">
                         Save
                         <DropdownMenuShortcut>Ctrl+S</DropdownMenuShortcut>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem OnClick="@(() => HandleShortcutsAction("Save As"))">
+                    <DropdownMenuItem OnClick="@(() => HandleFunctionalShortcutsAction("Save As"))">
                         Save As...
                         <DropdownMenuShortcut>Ctrl+Shift+S</DropdownMenuShortcut>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            @if (!string.IsNullOrEmpty(shortcutsAction))
+            @if (!string.IsNullOrEmpty(functionalShortcutsAction))
             {
                 <div class="flex items-center gap-2 p-3 bg-primary/10 text-primary rounded-md animate-pulse">
                     <LucideIcon Name="check-circle" Size="16" />
-                    <span>Shortcut triggered: <strong>@shortcutsAction</strong></span>
+                    <span>Shortcut triggered: <strong>@functionalShortcutsAction</strong></span>
                 </div>
             }
         </div>
@@ -357,49 +396,6 @@
         </div>
     </section>
 
-    <!-- Checkbox Items -->
-    <section class="space-y-4">
-        <h2 class="text-2xl font-semibold">Checkbox Items</h2>
-        <p class="text-sm text-muted-foreground">
-            Toggle menu items that maintain checked state. The menu stays open when toggling checkboxes.
-        </p>
-
-        <div class="flex items-start gap-4">
-            <DropdownMenu>
-                <DropdownMenuTrigger Class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
-                    View Options
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                    <DropdownMenuLabel>Appearance</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuCheckboxItem @bind-Checked="showStatusBar">
-                        Status Bar
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem @bind-Checked="showActivityBar">
-                        Activity Bar
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem @bind-Checked="showPanel">
-                        Panel
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuCheckboxItem @bind-Checked="fullScreen">
-                        Full Screen
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem Disabled="true" Checked="false">
-                        Word Wrap (Disabled)
-                    </DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-
-            <div class="text-sm space-y-1">
-                <p>Status Bar: <strong>@(showStatusBar ? "Visible" : "Hidden")</strong></p>
-                <p>Activity Bar: <strong>@(showActivityBar ? "Visible" : "Hidden")</strong></p>
-                <p>Panel: <strong>@(showPanel ? "Visible" : "Hidden")</strong></p>
-                <p>Full Screen: <strong>@(fullScreen ? "On" : "Off")</strong></p>
-            </div>
-        </div>
-    </section>
-
     <!-- AsChild Pattern -->
     <section class="space-y-4">
         <h2 class="text-2xl font-semibold">AsChild Pattern</h2>
@@ -494,19 +490,19 @@
                     <DropdownMenuGroup>
                         <DropdownMenuItem OnClick="@(() => HandleComplexAction("Profile"))">
                             Profile
-                            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                            <DropdownMenuShortcut>ΓçºΓîÿP</DropdownMenuShortcut>
                         </DropdownMenuItem>
                         <DropdownMenuItem OnClick="@(() => HandleComplexAction("Billing"))">
                             Billing
-                            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                            <DropdownMenuShortcut>ΓîÿB</DropdownMenuShortcut>
                         </DropdownMenuItem>
                         <DropdownMenuItem OnClick="@(() => HandleComplexAction("Settings"))">
                             Settings
-                            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                            <DropdownMenuShortcut>ΓîÿS</DropdownMenuShortcut>
                         </DropdownMenuItem>
                         <DropdownMenuItem Disabled="true" OnClick="@(() => HandleComplexAction("Keyboard shortcuts"))">
                             Keyboard shortcuts
-                            <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
+                            <DropdownMenuShortcut>ΓîÿK</DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
@@ -514,7 +510,7 @@
                         <DropdownMenuItem OnClick="@(() => HandleComplexAction("Team"))">Team</DropdownMenuItem>
                         <DropdownMenuItem OnClick="@(() => HandleComplexAction("Invite users"))">
                             Invite users
-                            <DropdownMenuShortcut>⌘I</DropdownMenuShortcut>
+                            <DropdownMenuShortcut>ΓîÿI</DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
@@ -523,7 +519,7 @@
                     <DropdownMenuSeparator />
                     <DropdownMenuItem OnClick="@(() => HandleComplexAction("Log out"))">
                         Log out
-                        <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                        <DropdownMenuShortcut>ΓçºΓîÿQ</DropdownMenuShortcut>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
@@ -655,16 +651,19 @@
     private string? labelsAction;
     private string? groupsAction;
     private string? shortcutsAction;
+    private string? functionalShortcutsAction;
     private string? disabledAction;
     private string? complexAction;
     private string? submenuAction;
     private Dictionary<string, string?> menuActions = new();
 
-    // Checkbox items state
+    // Checkbox state
     private bool showStatusBar = true;
     private bool showActivityBar = true;
     private bool showPanel = false;
-    private bool fullScreen = false;
+
+    // Radio state
+    private string? position = "bottom";
 
     // Keyboard shortcut registrations
     private IDisposable? _shortcutNew;
@@ -687,7 +686,7 @@
 
     private async Task HandleShortcutAsync(string action)
     {
-        shortcutsAction = action;
+        functionalShortcutsAction = action;
         await InvokeAsync(StateHasChanged);
 
         // Cancel any previous clear timer
@@ -698,7 +697,7 @@
         try
         {
             await Task.Delay(2000, _clearCts.Token);
-            shortcutsAction = null;
+            functionalShortcutsAction = null;
             await InvokeAsync(StateHasChanged);
         }
         catch (TaskCanceledException)
@@ -712,7 +711,8 @@
     private void HandleIconsAction(string action) => iconsAction = action;
     private void HandleLabelsAction(string action) => labelsAction = action;
     private void HandleGroupsAction(string action) => groupsAction = action;
-    private void HandleShortcutsAction(string action) => _ = HandleShortcutAsync(action);
+    private void HandleShortcutsAction(string action) => shortcutsAction = action;
+    private void HandleFunctionalShortcutsAction(string action) => _ = HandleShortcutAsync(action);
     private void HandleDisabledAction(string action) => disabledAction = action;
     private void HandleComplexAction(string action) => complexAction = action;
     private void HandleSubmenuAction(string action) => submenuAction = action;

@@ -1,20 +1,13 @@
-@namespace BlazorUI.Components.Carousel
-<<<<<<< HEAD
+﻿@namespace BlazorUI.Components.Carousel
 
 @* CarouselItem - Individual slide in a carousel *@
 
 <div class="@GetItemClass()" data-carousel-item="true">
-=======
-@implements IDisposable
-
-<div role="group" aria-roledescription="slide" class="@CssClass">
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     @ChildContent
 </div>
 
 @code {
     [CascadingParameter]
-<<<<<<< HEAD
     private Carousel? ParentCarousel { get; set; }
 
     /// <summary>
@@ -53,29 +46,4 @@
 
         return baseClass;
     }
-=======
-    public Carousel? Context { get; set; }
-
-    [Parameter]
-    public string? Class { get; set; }
-
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-
-    protected override void OnInitialized()
-    {
-        Context?.RegisterItem();
-    }
-
-    public void Dispose()
-    {
-        Context?.UnregisterItem();
-    }
-
-    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
-        "min-w-0 shrink-0 grow-0 basis-full",
-        Context?.Orientation == CarouselOrientation.Horizontal ? "pl-4" : "pt-4",
-        Class
-    );
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
 }

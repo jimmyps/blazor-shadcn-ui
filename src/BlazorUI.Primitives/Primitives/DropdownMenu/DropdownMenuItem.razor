@@ -138,15 +138,7 @@
         // This enables keyboard navigation without showing focus ring on a specific item
         if (hadActiveSubmenu)
         {
-            // Focus the content container - if in submenu, focus SubContentContext, else ContentContext
-            if (SubContentContext != null)
-            {
-                await SubContentContext.FocusContainerAsync();
-            }
-            else if (ContentContext != null)
-            {
-                await ContentContext.FocusContainerAsync();
-            }
+            // Focus handling removed - FloatingPortal handles focus management
         }
     }
 

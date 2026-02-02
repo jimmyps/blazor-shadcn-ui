@@ -1,13 +1,5 @@
-@page "/components/menubar"
+﻿@page "/components/menubar"
 @using BlazorUI.Components.Menubar
-<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/MenubarDemo.razor
-=======
-@using BlazorUI.Components.Separator
-@using BlazorUI.Components.Kbd
-@using BlazorUI.Primitives.Services
-@inject IKeyboardShortcutService KeyboardShortcuts
-@implements IAsyncDisposable
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/MenubarDemo.razor
 
 <PageTitle>Menubar Component - BlazorUI</PageTitle>
 
@@ -16,16 +8,11 @@
         <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">Menubar Component</h1>
             <p class="text-xl text-muted-foreground">
-<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/MenubarDemo.razor
                 A visually persistent menu common in desktop applications that provides quick access to a consistent set of commands.
-=======
-                A visually persistent menu common in desktop applications.
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/MenubarDemo.razor
             </p>
         </div>
     </div>
 
-<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/MenubarDemo.razor
     <!-- Basic Menubar -->
     <section class="space-y-4">
         <h2 class="text-2xl font-semibold">Basic Menubar</h2>
@@ -34,30 +21,17 @@
         </p>
 
         <div class="flex flex-col gap-4">
-=======
-    <!-- Example with Keyboard Shortcuts -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Example</h2>
-            <p class="text-sm text-muted-foreground">
-                A menubar with working keyboard shortcuts. Press shortcuts anywhere on the page - they work even when menus are closed.
-            </p>
-        </div>
-
-        <div class="flex items-start gap-4">
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/MenubarDemo.razor
             <Menubar>
                 <MenubarMenu>
                     <MenubarTrigger>File</MenubarTrigger>
                     <MenubarContent>
-<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/MenubarDemo.razor
                         <MenubarItem OnClick="@(() => HandleAction("New Tab"))">
                             New Tab
-                            <MenubarShortcut>⌘T</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿT</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleAction("New Window"))">
                             New Window
-                            <MenubarShortcut>⌘N</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿN</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleAction("New Incognito Window"))" Disabled="true">
                             New Incognito Window
@@ -69,7 +43,7 @@
                         <MenubarSeparator />
                         <MenubarItem OnClick="@(() => HandleAction("Print"))">
                             Print...
-                            <MenubarShortcut>⌘P</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿP</MenubarShortcut>
                         </MenubarItem>
                     </MenubarContent>
                 </MenubarMenu>
@@ -79,29 +53,29 @@
                     <MenubarContent>
                         <MenubarItem OnClick="@(() => HandleAction("Undo"))">
                             Undo
-                            <MenubarShortcut>⌘Z</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿZ</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleAction("Redo"))">
                             Redo
-                            <MenubarShortcut>⇧⌘Z</MenubarShortcut>
+                            <MenubarShortcut>ΓçºΓîÿZ</MenubarShortcut>
                         </MenubarItem>
                         <MenubarSeparator />
                         <MenubarItem OnClick="@(() => HandleAction("Cut"))">
                             Cut
-                            <MenubarShortcut>⌘X</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿX</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleAction("Copy"))">
                             Copy
-                            <MenubarShortcut>⌘C</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿC</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleAction("Paste"))">
                             Paste
-                            <MenubarShortcut>⌘V</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿV</MenubarShortcut>
                         </MenubarItem>
                         <MenubarSeparator />
                         <MenubarItem OnClick="@(() => HandleAction("Select All"))">
                             Select All
-                            <MenubarShortcut>⌘A</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿA</MenubarShortcut>
                         </MenubarItem>
                     </MenubarContent>
                 </MenubarMenu>
@@ -118,11 +92,11 @@
                         <MenubarSeparator />
                         <MenubarItem OnClick="@(() => HandleAction("Reload"))">
                             Reload
-                            <MenubarShortcut>⌘R</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿR</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleAction("Force Reload"))" Disabled="true">
                             Force Reload
-                            <MenubarShortcut>⇧⌘R</MenubarShortcut>
+                            <MenubarShortcut>ΓçºΓîÿR</MenubarShortcut>
                         </MenubarItem>
                         <MenubarSeparator />
                         <MenubarItem OnClick="@(() => HandleAction("Toggle Fullscreen"))">
@@ -155,82 +129,10 @@
                         <MenubarItem OnClick="@(() => HandleAction("Add Profile"))">
                             Add Profile...
                         </MenubarItem>
-=======
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("New Tab"))">
-                            New Tab
-                            <MenubarShortcut>Ctrl+Shift+T</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("New Window"))">
-                            New Window
-                            <MenubarShortcut>Ctrl+Shift+N</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Share"))">Share</MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Print"))">
-                            Print...
-                            <MenubarShortcut>Ctrl+Shift+P</MenubarShortcut>
-                        </MenubarItem>
-                    </MenubarContent>
-                </MenubarMenu>
-                <MenubarMenu>
-                    <MenubarTrigger>Edit</MenubarTrigger>
-                    <MenubarContent>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Undo"))">
-                            Undo
-                            <MenubarShortcut>Ctrl+Z</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Redo"))">
-                            Redo
-                            <MenubarShortcut>Ctrl+Y</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Find"))">
-                            Find
-                            <MenubarShortcut>Ctrl+F</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Replace"))">
-                            Replace
-                            <MenubarShortcut>Ctrl+H</MenubarShortcut>
-                        </MenubarItem>
-                    </MenubarContent>
-                </MenubarMenu>
-                <MenubarMenu>
-                    <MenubarTrigger>View</MenubarTrigger>
-                    <MenubarContent>
-                        <MenubarLabel>Appearance</MenubarLabel>
-                        <MenubarCheckboxItem @bind-Checked="_showStatusBar">Status Bar</MenubarCheckboxItem>
-                        <MenubarCheckboxItem @bind-Checked="_showActivityBar">Activity Bar</MenubarCheckboxItem>
-                        <MenubarCheckboxItem @bind-Checked="_showSidebar">Sidebar</MenubarCheckboxItem>
-                        <MenubarSeparator />
-                        <MenubarLabel>Zoom</MenubarLabel>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Zoom In"))">
-                            Zoom In
-                            <MenubarShortcut>Ctrl+=</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Zoom Out"))">
-                            Zoom Out
-                            <MenubarShortcut>Ctrl+-</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarCheckboxItem @bind-Checked="_fullScreen">Full Screen</MenubarCheckboxItem>
-                    </MenubarContent>
-                </MenubarMenu>
-                <MenubarMenu>
-                    <MenubarTrigger>Help</MenubarTrigger>
-                    <MenubarContent>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Documentation"))">
-                            Documentation
-                            <MenubarShortcut>F1</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("About"))">About</MenubarItem>
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/MenubarDemo.razor
                     </MenubarContent>
                 </MenubarMenu>
             </Menubar>
 
-<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/MenubarDemo.razor
             @if (!string.IsNullOrEmpty(lastAction))
             {
                 <p class="text-sm">Last action: <strong>@lastAction</strong></p>
@@ -256,23 +158,23 @@
                         <MenubarItem OnClick="@(() => HandleIconsAction("New File"))">
                             <LucideIcon Name="file-plus" Size="16" Class="mr-2" />
                             New File
-                            <MenubarShortcut>⌘N</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿN</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleIconsAction("Open"))">
                             <LucideIcon Name="folder-open" Size="16" Class="mr-2" />
                             Open
-                            <MenubarShortcut>⌘O</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿO</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleIconsAction("Save"))">
                             <LucideIcon Name="save" Size="16" Class="mr-2" />
                             Save
-                            <MenubarShortcut>⌘S</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿS</MenubarShortcut>
                         </MenubarItem>
                         <MenubarSeparator />
                         <MenubarItem OnClick="@(() => HandleIconsAction("Print"))">
                             <LucideIcon Name="printer" Size="16" Class="mr-2" />
                             Print
-                            <MenubarShortcut>⌘P</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿP</MenubarShortcut>
                         </MenubarItem>
                     </MenubarContent>
                 </MenubarMenu>
@@ -286,28 +188,28 @@
                         <MenubarItem OnClick="@(() => HandleIconsAction("Undo"))">
                             <LucideIcon Name="undo" Size="16" Class="mr-2" />
                             Undo
-                            <MenubarShortcut>⌘Z</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿZ</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleIconsAction("Redo"))">
                             <LucideIcon Name="redo" Size="16" Class="mr-2" />
                             Redo
-                            <MenubarShortcut>⇧⌘Z</MenubarShortcut>
+                            <MenubarShortcut>ΓçºΓîÿZ</MenubarShortcut>
                         </MenubarItem>
                         <MenubarSeparator />
                         <MenubarItem OnClick="@(() => HandleIconsAction("Cut"))">
                             <LucideIcon Name="scissors" Size="16" Class="mr-2" />
                             Cut
-                            <MenubarShortcut>⌘X</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿX</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleIconsAction("Copy"))">
                             <LucideIcon Name="copy" Size="16" Class="mr-2" />
                             Copy
-                            <MenubarShortcut>⌘C</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿC</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleIconsAction("Paste"))">
                             <LucideIcon Name="clipboard" Size="16" Class="mr-2" />
                             Paste
-                            <MenubarShortcut>⌘V</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿV</MenubarShortcut>
                         </MenubarItem>
                     </MenubarContent>
                 </MenubarMenu>
@@ -378,9 +280,9 @@
             The menubar supports full keyboard navigation. Try using:
         </p>
         <ul class="text-sm text-muted-foreground list-disc list-inside space-y-1">
-            <li><kbd class="px-1 py-0.5 bg-muted rounded text-xs">←</kbd> / <kbd class="px-1 py-0.5 bg-muted rounded text-xs">→</kbd> to navigate between menus</li>
-            <li><kbd class="px-1 py-0.5 bg-muted rounded text-xs">↓</kbd> to open a menu</li>
-            <li><kbd class="px-1 py-0.5 bg-muted rounded text-xs">↑</kbd> / <kbd class="px-1 py-0.5 bg-muted rounded text-xs">↓</kbd> to navigate menu items</li>
+            <li><kbd class="px-1 py-0.5 bg-muted rounded text-xs">ΓåÉ</kbd> / <kbd class="px-1 py-0.5 bg-muted rounded text-xs">ΓåÆ</kbd> to navigate between menus</li>
+            <li><kbd class="px-1 py-0.5 bg-muted rounded text-xs">Γåô</kbd> to open a menu</li>
+            <li><kbd class="px-1 py-0.5 bg-muted rounded text-xs">Γåæ</kbd> / <kbd class="px-1 py-0.5 bg-muted rounded text-xs">Γåô</kbd> to navigate menu items</li>
             <li><kbd class="px-1 py-0.5 bg-muted rounded text-xs">Enter</kbd> or <kbd class="px-1 py-0.5 bg-muted rounded text-xs">Space</kbd> to activate an item</li>
             <li><kbd class="px-1 py-0.5 bg-muted rounded text-xs">Escape</kbd> to close the menu</li>
         </ul>
@@ -483,7 +385,7 @@
                     <MenubarContent>
                         <MenubarItem OnClick="@(() => HandleSubmenuAction("Text"))">
                             Text
-                            <MenubarShortcut>⌘T</MenubarShortcut>
+                            <MenubarShortcut>ΓîÿT</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleSubmenuAction("Image"))">
                             Image
@@ -547,162 +449,4 @@
     private void HandleDisabledAction(string action) => disabledAction = action;
     private void HandleKeyboardAction(string action) => keyboardAction = action;
     private void HandleSubmenuAction(string action) => submenuAction = action;
-=======
-            @if (!string.IsNullOrEmpty(_shortcutAction))
-            {
-                <div class="flex items-center gap-2 p-3 bg-primary/10 text-primary rounded-md animate-pulse">
-                    <LucideIcon Name="check-circle" Size="16" />
-                    <span>Shortcut triggered: <strong>@_shortcutAction</strong></span>
-                </div>
-            }
-        </div>
-
-        <div class="mt-4 p-4 bg-muted rounded-lg">
-            <p class="font-medium mb-3">Available shortcuts:</p>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-                <div class="flex items-center gap-2">
-                    <Kbd Keys="Ctrl+Shift+T" Size="KbdSize.Small" /> <span class="text-muted-foreground">New Tab</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <Kbd Keys="Ctrl+Shift+N" Size="KbdSize.Small" /> <span class="text-muted-foreground">New Window</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <Kbd Keys="Ctrl+Z" Size="KbdSize.Small" /> <span class="text-muted-foreground">Undo</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <Kbd Keys="Ctrl+Y" Size="KbdSize.Small" /> <span class="text-muted-foreground">Redo</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <Kbd Keys="Ctrl+F" Size="KbdSize.Small" /> <span class="text-muted-foreground">Find</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <Kbd Keys="Ctrl+H" Size="KbdSize.Small" /> <span class="text-muted-foreground">Replace</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <Kbd Keys="F1" Size="KbdSize.Small" /> <span class="text-muted-foreground">Documentation</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- API Reference -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">API Reference</h2>
-        </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-semibold mb-2">Components</h3>
-                <div class="space-y-2 text-sm">
-                    <p><code class="bg-muted px-1 py-0.5 rounded">Menubar</code> - Root container</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarMenu</code> - Individual menu</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarTrigger</code> - Menu button</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarContent</code> - Dropdown content</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarItem</code> - Menu item</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarCheckboxItem</code> - Toggleable menu item</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarLabel</code> - Section label</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarSeparator</code> - Visual divider</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarShortcut</code> - Keyboard shortcut hint</p>
-                </div>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">MenubarItem Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>OnClick:</strong> <code class="bg-muted px-1 py-0.5 rounded">EventCallback</code> - Click handler</p>
-                    <p><strong>Disabled:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disables the item</p>
-                    <p><strong>Inset:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Adds left padding</p>
-                </div>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">MenubarCheckboxItem Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Checked:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Whether the item is checked</p>
-                    <p><strong>CheckedChanged:</strong> <code class="bg-muted px-1 py-0.5 rounded">EventCallback&lt;bool&gt;</code> - Callback when checked state changes</p>
-                    <p><strong>Disabled:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disables the item</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-@code {
-    private string? _shortcutAction;
-
-    // View menu checkbox states
-    private bool _showStatusBar = true;
-    private bool _showActivityBar = true;
-    private bool _showSidebar = false;
-    private bool _fullScreen = false;
-
-    // Keyboard shortcut registrations
-    private IDisposable? _shortcutNewTab;
-    private IDisposable? _shortcutNewWindow;
-    private IDisposable? _shortcutPrint;
-    private IDisposable? _shortcutUndo;
-    private IDisposable? _shortcutRedo;
-    private IDisposable? _shortcutFind;
-    private IDisposable? _shortcutReplace;
-    private IDisposable? _shortcutDocs;
-    private CancellationTokenSource? _clearCts;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            // Register keyboard shortcuts
-            _shortcutNewTab = await KeyboardShortcuts.RegisterAsync("Ctrl+Shift+T", () => HandleShortcutAsync("New Tab"));
-            _shortcutNewWindow = await KeyboardShortcuts.RegisterAsync("Ctrl+Shift+N", () => HandleShortcutAsync("New Window"));
-            _shortcutPrint = await KeyboardShortcuts.RegisterAsync("Ctrl+Shift+P", () => HandleShortcutAsync("Print"));
-            _shortcutUndo = await KeyboardShortcuts.RegisterAsync("Ctrl+Z", () => HandleShortcutAsync("Undo"));
-            _shortcutRedo = await KeyboardShortcuts.RegisterAsync("Ctrl+Y", () => HandleShortcutAsync("Redo"));
-            _shortcutFind = await KeyboardShortcuts.RegisterAsync("Ctrl+F", () => HandleShortcutAsync("Find"));
-            _shortcutReplace = await KeyboardShortcuts.RegisterAsync("Ctrl+H", () => HandleShortcutAsync("Replace"));
-            _shortcutDocs = await KeyboardShortcuts.RegisterAsync("F1", () => HandleShortcutAsync("Documentation"));
-        }
-    }
-
-    private async Task HandleShortcutAsync(string action)
-    {
-        _shortcutAction = action;
-        await InvokeAsync(StateHasChanged);
-
-        // Cancel any previous clear timer
-        _clearCts?.Cancel();
-        _clearCts = new CancellationTokenSource();
-
-        // Clear after 2 seconds
-        try
-        {
-            await Task.Delay(2000, _clearCts.Token);
-            _shortcutAction = null;
-            await InvokeAsync(StateHasChanged);
-        }
-        catch (TaskCanceledException)
-        {
-            // Timer was cancelled, ignore
-        }
-    }
-
-    private void HandleShortcutAction(string action)
-    {
-        _ = HandleShortcutAsync(action);
-    }
-
-    public ValueTask DisposeAsync()
-    {
-        _clearCts?.Cancel();
-        _clearCts?.Dispose();
-        _shortcutNewTab?.Dispose();
-        _shortcutNewWindow?.Dispose();
-        _shortcutPrint?.Dispose();
-        _shortcutUndo?.Dispose();
-        _shortcutRedo?.Dispose();
-        _shortcutFind?.Dispose();
-        _shortcutReplace?.Dispose();
-        _shortcutDocs?.Dispose();
-        return ValueTask.CompletedTask;
-    }
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/MenubarDemo.razor
 }

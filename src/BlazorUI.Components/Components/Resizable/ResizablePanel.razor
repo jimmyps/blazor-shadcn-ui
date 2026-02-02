@@ -1,13 +1,8 @@
-@namespace BlazorUI.Components.Resizable
-<<<<<<< HEAD
+﻿@namespace BlazorUI.Components.Resizable
 @implements IDisposable
 
 @* ResizablePanel - individual panel within a ResizablePanelGroup *@
 <div @attributes="GetAttributes()">
-=======
-
-<div class="@CssClass" style="@Style">
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     @ChildContent
 </div>
 
@@ -15,21 +10,15 @@
     [CascadingParameter]
     private ResizablePanelGroup? Group { get; set; }
 
-<<<<<<< HEAD
     private int _index = -1;
 
     /// <summary>
     /// The content to render within the panel.
-=======
-    /// <summary>
-    /// The content of the panel.
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-<<<<<<< HEAD
     /// The default size of the panel as a percentage.
     /// </summary>
     [Parameter]
@@ -55,38 +44,10 @@
 
     /// <summary>
     /// Additional CSS classes to apply to the panel.
-=======
-    /// The default size as a percentage (0-100).
-    /// </summary>
-    [Parameter]
-    public double DefaultSize { get; set; } = 50;
-
-    /// <summary>
-    /// The minimum size as a percentage (0-100).
-    /// </summary>
-    [Parameter]
-    public double MinSize { get; set; } = 10;
-
-    /// <summary>
-    /// The maximum size as a percentage (0-100).
-    /// </summary>
-    [Parameter]
-    public double MaxSize { get; set; } = 100;
-
-    /// <summary>
-    /// Whether the panel can be collapsed.
-    /// </summary>
-    [Parameter]
-    public bool Collapsible { get; set; }
-
-    /// <summary>
-    /// Additional CSS classes to apply.
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
-<<<<<<< HEAD
     /// <summary>
     /// Additional attributes to apply to the panel element.
     /// </summary>
@@ -150,45 +111,4 @@
     {
         Group?.UnregisterPanel(this);
     }
-=======
-    private int _panelIndex = -1;
-
-    private bool IsHorizontal => Group?.GetDirection() == ResizableDirection.Horizontal;
-
-    private double CurrentSize
-    {
-        get
-        {
-            if (Group != null && _panelIndex >= 0)
-            {
-                return Group.GetPanelSize(_panelIndex);
-            }
-            return DefaultSize;
-        }
-    }
-
-    protected override void OnInitialized()
-    {
-        if (Group != null)
-        {
-            _panelIndex = Group.RegisterPanel(DefaultSize, MinSize, MaxSize);
-        }
-    }
-
-    private string Style
-    {
-        get
-        {
-            var size = CurrentSize;
-            return IsHorizontal
-                ? $"flex: 0 0 {size:F2}%; min-width: {MinSize}%; max-width: {MaxSize}%; overflow: auto;"
-                : $"flex: 0 0 {size:F2}%; min-height: {MinSize}%; max-height: {MaxSize}%; overflow: auto;";
-        }
-    }
-
-    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
-        "relative",
-        Class
-    );
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
 }

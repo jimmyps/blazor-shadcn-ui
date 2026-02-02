@@ -1,15 +1,11 @@
-@namespace BlazorUI.Components.Menubar
+﻿@namespace BlazorUI.Components.Menubar
 
-<<<<<<< HEAD
 @* Styled MenubarShortcut - displays keyboard shortcut hint *@
-=======
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
 <span class="@CssClass">
     @ChildContent
 </span>
 
 @code {
-<<<<<<< HEAD
     /// <summary>
     /// Additional CSS classes to apply to the shortcut.
     /// </summary>
@@ -17,7 +13,7 @@
     public string? Class { get; set; }
 
     /// <summary>
-    /// The content to be rendered inside the shortcut (e.g., "⌘K", "Ctrl+S").
+    /// The content to be rendered inside the shortcut (e.g., "ΓîÿK", "Ctrl+S").
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -30,16 +26,4 @@
             return string.IsNullOrWhiteSpace(Class) ? baseClasses : $"{baseClasses} {Class}";
         }
     }
-=======
-    [Parameter]
-    public string? Class { get; set; }
-
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-
-    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
-        "ml-auto text-xs tracking-widest opacity-60",
-        Class
-    );
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
 }

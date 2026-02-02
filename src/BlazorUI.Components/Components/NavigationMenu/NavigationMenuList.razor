@@ -1,5 +1,4 @@
-@namespace BlazorUI.Components.NavigationMenu
-<<<<<<< HEAD
+﻿@namespace BlazorUI.Components.NavigationMenu
 
 @* NavigationMenuList - styled list container *@
 <BlazorUI.Primitives.NavigationMenu.NavigationMenuList class="@GetClass()" @attributes="AdditionalAttributes">
@@ -9,37 +8,17 @@
 @code {
     /// <summary>
     /// The child content to render within the list.
-=======
-@using BlazorUI.Components.Utilities
-
-@*
-    Navigation Menu List - contains navigation menu items.
-*@
-
-<ul class="@CssClass">
-    @ChildContent
-</ul>
-
-@code {
-    /// <summary>
-    /// The navigation menu items.
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-<<<<<<< HEAD
     /// Additional CSS classes to apply.
-=======
-    /// Additional CSS classes to apply to the list.
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
     /// <summary>
-<<<<<<< HEAD
     /// Additional attributes to apply.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
@@ -50,12 +29,4 @@
         var baseClass = "group flex flex-1 list-none items-center justify-center space-x-1";
         return string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
     }
-=======
-    /// Gets the computed CSS classes for the list.
-    /// </summary>
-    private string CssClass => ClassNames.cn(
-        "group flex flex-1 list-none items-center justify-center space-x-1",
-        Class
-    );
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
 }

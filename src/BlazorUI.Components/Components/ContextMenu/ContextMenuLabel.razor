@@ -1,16 +1,11 @@
-@namespace BlazorUI.Components.ContextMenu
+﻿@namespace BlazorUI.Components.ContextMenu
 
-<<<<<<< HEAD
 @* ContextMenuLabel - label for a group of items *@
 <div class="@GetClass()" @attributes="AdditionalAttributes">
-=======
-<div class="@CssClass">
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     @ChildContent
 </div>
 
 @code {
-<<<<<<< HEAD
     /// <summary>
     /// The label content.
     /// </summary>
@@ -46,20 +41,4 @@
 
         return string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
     }
-=======
-    [Parameter]
-    public string? Class { get; set; }
-
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-
-    [Parameter]
-    public bool Inset { get; set; }
-
-    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
-        "px-2 py-1.5 text-sm font-semibold",
-        Inset ? "pl-8" : null,
-        Class
-    );
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
 }

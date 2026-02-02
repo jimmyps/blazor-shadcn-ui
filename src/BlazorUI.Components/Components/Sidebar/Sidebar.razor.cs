@@ -5,7 +5,7 @@ using System;
 
 namespace BlazorUI.Components.Sidebar;
 
-public partial class Sidebar : IDisposable
+public partial class Sidebar : ComponentBase, IDisposable
 {
     [CascadingParameter]
     private SidebarContext? Context { get; set; }

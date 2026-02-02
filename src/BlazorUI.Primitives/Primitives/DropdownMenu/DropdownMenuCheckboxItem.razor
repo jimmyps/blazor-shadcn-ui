@@ -10,8 +10,6 @@
      data-state="@(Checked ? "checked" : "unchecked")"
      @onclick="HandleClick"
      @onkeydown="HandleKeyDown"
-     data-state="@(Checked ? "checked" : "unchecked")"
-     data-disabled="@(Disabled ? "true" : null)"
      @onkeydown:preventDefault="true"
      @attributes="AdditionalAttributes">
     @ChildContent
@@ -62,12 +60,6 @@
     /// </summary>
     [Parameter]
     public EventCallback<bool> OnCheckedChange { get; set; }
-
-    /// <summary>
-    /// Whether the menu item is disabled.
-    /// </summary>
-    [Parameter]
-    public bool Disabled { get; set; } = false;
 
     /// <summary>
     /// Whether to close the dropdown menu when this item is selected.

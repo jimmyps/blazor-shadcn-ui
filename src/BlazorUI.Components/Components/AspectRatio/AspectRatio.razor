@@ -1,35 +1,18 @@
-@namespace BlazorUI.Components.AspectRatio
+﻿@namespace BlazorUI.Components.AspectRatio
 
-<<<<<<< HEAD
 @* AspectRatio - maintains a fixed aspect ratio for its children *@
 <div @attributes="GetAttributes()" style="@GetStyle()">
-=======
-<div class="@CssClass" style="@Style">
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     @ChildContent
 </div>
 
 @code {
     /// <summary>
-<<<<<<< HEAD
     /// The content to render within the aspect ratio container.
-=======
-    /// The aspect ratio to maintain (width / height).
-    /// Common values: 16/9, 4/3, 1/1, 21/9
-    /// Default is 1 (square).
-    /// </summary>
-    [Parameter]
-    public double Ratio { get; set; } = 1;
-
-    /// <summary>
-    /// The content to display within the aspect ratio container.
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-<<<<<<< HEAD
     /// The desired aspect ratio (width / height).
     /// Default is 1 (square). Common values: 16/9 = 1.778, 4/3 = 1.333, 1/1 = 1.
     /// </summary>
@@ -37,14 +20,11 @@
     public double Ratio { get; set; } = 1.0;
 
     /// <summary>
-=======
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
     /// Additional CSS classes to apply to the container.
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
-<<<<<<< HEAD
     /// <summary>
     /// Additional attributes to apply to the container element.
     /// </summary>
@@ -82,12 +62,4 @@
 
         return attributes;
     }
-=======
-    private string Style => $"position: relative; width: 100%; padding-bottom: {100 / Ratio:F4}%;";
-
-    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
-        "[&>*]:absolute [&>*]:inset-0 [&>*]:h-full [&>*]:w-full",
-        Class
-    );
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf
 }

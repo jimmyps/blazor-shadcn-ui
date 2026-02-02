@@ -1,21 +1,5 @@
-@namespace BlazorUI.Components.Breadcrumb
+﻿@namespace BlazorUI.Components.Breadcrumb
 
 <li class="@CssClass">
     @ChildContent
 </li>
-<<<<<<< HEAD
-=======
-
-@code {
-    [Parameter]
-    public string? Class { get; set; }
-
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-
-    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
-        "inline-flex items-center gap-1.5",
-        Class
-    );
-}
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf

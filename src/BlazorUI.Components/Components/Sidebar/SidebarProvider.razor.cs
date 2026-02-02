@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BlazorUI.Components.Sidebar;
 
-public partial class SidebarProvider : IDisposable
+public partial class SidebarProvider : ComponentBase
 {
     private SidebarContext Context { get; set; } = new();
     private IJSObjectReference? _module;

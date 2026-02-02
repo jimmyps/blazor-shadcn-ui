@@ -1,9 +1,5 @@
-@page "/components/slider"
+﻿@page "/components/slider"
 @using BlazorUI.Components.Slider
-<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/SliderDemo.razor
-=======
-@using BlazorUI.Components.Separator
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/SliderDemo.razor
 
 <PageTitle>Slider Component - BlazorUI</PageTitle>
 
@@ -17,22 +13,14 @@
         </div>
     </div>
 
-<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/SliderDemo.razor
     <!-- Basic Slider -->
     <div class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Basic</h2>
-=======
-    <!-- Basic Example -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Basic Example</h2>
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/SliderDemo.razor
             <p class="text-sm text-muted-foreground">
                 A simple slider with default settings.
             </p>
         </div>
-<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/SliderDemo.razor
         <div class="space-y-2">
             <Slider @bind-Value="basicValue" />
             <p class="text-sm text-muted-foreground">Value: @basicValue</p>
@@ -40,34 +28,10 @@
     </div>
 
     <!-- With Min and Max -->
-=======
-        <div class="w-[60%]">
-            <Slider @bind-Value="_basicValue" />
-        </div>
-        <p class="text-sm text-muted-foreground">Value: @_basicValue</p>
-    </div>
-
-    <!-- With Default Value -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">With Default Value</h2>
-            <p class="text-sm text-muted-foreground">
-                Slider with a preset default value.
-            </p>
-        </div>
-        <div class="w-[60%]">
-            <Slider @bind-Value="_presetValue" DefaultValue="50" />
-        </div>
-        <p class="text-sm text-muted-foreground">Value: @_presetValue</p>
-    </div>
-
-    <!-- Custom Range -->
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/SliderDemo.razor
     <div class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Custom Range</h2>
             <p class="text-sm text-muted-foreground">
-<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/SliderDemo.razor
                 Set custom minimum and maximum values.
             </p>
         </div>
@@ -89,29 +53,6 @@
             <Slider @bind-Value="stepValue" Min="0" Max="100" Step="5" />
             <p class="text-sm text-muted-foreground">Value: @stepValue (increments of 5)</p>
         </div>
-=======
-                Slider with custom min and max values.
-            </p>
-        </div>
-        <div class="w-[60%]">
-            <Slider @bind-Value="_rangeValue" Min="0" Max="10" Step="1" />
-        </div>
-        <p class="text-sm text-muted-foreground">Value: @_rangeValue (0-10)</p>
-    </div>
-
-    <!-- Step Size -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Step Size</h2>
-            <p class="text-sm text-muted-foreground">
-                Slider with custom step increments.
-            </p>
-        </div>
-        <div class="w-[60%]">
-            <Slider @bind-Value="_stepValue" Step="10" />
-        </div>
-        <p class="text-sm text-muted-foreground">Value: @_stepValue (step: 10)</p>
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/SliderDemo.razor
     </div>
 
     <!-- Disabled -->
@@ -119,7 +60,6 @@
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Disabled</h2>
             <p class="text-sm text-muted-foreground">
-<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/SliderDemo.razor
                 A disabled slider cannot be interacted with.
             </p>
         </div>
@@ -203,38 +143,11 @@
             <p class="text-sm text-muted-foreground">
                 The Slider uses the native HTML range input which provides built-in keyboard navigation (arrow keys) and screen reader support.
             </p>
-=======
-                A disabled slider.
-            </p>
-        </div>
-        <div class="w-[60%]">
-            <Slider Value="50" Disabled="true" />
-        </div>
-    </div>
-
-    <!-- API Reference -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">API Reference</h2>
-        </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Slider Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Value:</strong> <code class="bg-muted px-1 py-0.5 rounded">double</code> - Current value</p>
-                    <p><strong>Min:</strong> <code class="bg-muted px-1 py-0.5 rounded">double</code> - Minimum value. Default: 0</p>
-                    <p><strong>Max:</strong> <code class="bg-muted px-1 py-0.5 rounded">double</code> - Maximum value. Default: 100</p>
-                    <p><strong>Step:</strong> <code class="bg-muted px-1 py-0.5 rounded">double</code> - Step increment. Default: 1</p>
-                    <p><strong>Disabled:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disables the slider</p>
-                </div>
-            </div>
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/SliderDemo.razor
         </div>
     </div>
 </div>
 
 @code {
-<<<<<<< HEAD:demo/BlazorUI.Demo.Shared/Pages/Components/SliderDemo.razor
     private double basicValue = 50;
     private double rangeValue = 100;
     private double stepValue = 50;
@@ -252,10 +165,4 @@
         5 => "Very High Quality",
         _ => "Unknown"
     };
-=======
-    private double _basicValue = 0;
-    private double _presetValue = 50;
-    private double _rangeValue = 5;
-    private double _stepValue = 50;
->>>>>>> 8835bfed9859e4bf8349954ac05f732fe9ffddcf:demo/BlazorUI.Demo/Pages/Components/SliderDemo.razor
 }

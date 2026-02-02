@@ -3,7 +3,7 @@ using Microsoft.JSInterop;
 
 namespace BlazorUI.Components.ResponsiveNav;
 
-public partial class ResponsiveNavProvider
+public partial class ResponsiveNavProvider : ComponentBase
 {
     private ResponsiveNavContext Context { get; set; } = new();
     private IJSObjectReference? _module;
