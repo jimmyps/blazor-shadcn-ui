@@ -1,5 +1,7 @@
 @namespace BlazorUI.Primitives.Floating
 @using BlazorUI.Primitives.Services
+@using BlazorUI.Primitives.Constants
+@using System.Collections.Concurrent
 @inject IPositioningService PositioningService
 @inject IPortalService PortalService
 @inject IJSRuntime JSRuntime
@@ -77,10 +79,15 @@
 
     /// <summary>
     /// CSS z-index value for the floating content.
-    /// Default is 50.
+    /// Default is 60 (PopoverContent level).
+    /// Use ZIndexLevels constants for proper layering:
+    /// - DialogOverlay: 40
+    /// - DialogContent: 50
+    /// - PopoverContent: 60 (default for dropdowns/menus/selects)
+    /// - TooltipContent: 70
     /// </summary>
     [Parameter]
-    public int ZIndex { get; set; } = 50;
+    public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;
 
     /// <summary>
     /// Event callback invoked when the floating content is positioned and visible.
@@ -104,6 +111,12 @@
     // Store computed position so it survives Blazor re-renders
     private double _positionLeft = 0;
     private double _positionTop = 0;
+
+    // Rate limiting to prevent infinite loops with nested portals
+    // ConcurrentDictionary + ConcurrentQueue = lock-free thread-safe access
+    private static readonly ConcurrentDictionary<string, ConcurrentQueue<DateTime>> _refreshAttemptsByPortal = new();
+    private const int MaxRefreshAttempts = 3;
+    private const int RefreshWindowMs = 100;
 
     protected override void OnInitialized()
     {
@@ -130,13 +143,42 @@
     {
         base.OnParametersSet();
 
-        // Re-register portal with updated ChildContent to ensure content updates are reflected
-        // Safe because GetInitialStyle() includes the stored position,
-        // so re-renders won't lose the position styling
-        if (_isInitialized && IsOpen && !string.IsNullOrEmpty(PortalId))
+        // Only refresh if portal is initialized and open
+        if (!_isInitialized || !IsOpen || string.IsNullOrEmpty(PortalId))
+            return;
+
+        // Rate limiting: Track refresh attempts per PortalId to detect infinite loops
+        // Get or create the concurrent queue for this PortalId (thread-safe, no lock needed)
+        var attempts = _refreshAttemptsByPortal.GetOrAdd(PortalId, _ => new ConcurrentQueue<DateTime>());
+
+        // Remove attempts older than the time window  
+        var now = DateTime.UtcNow;
+        var cutoff = now.AddMilliseconds(-RefreshWindowMs);
+        
+        while (attempts.TryPeek(out var oldest) && oldest < cutoff)
         {
-            PortalService.RegisterPortal(PortalId, RenderPortalContent());
+            attempts.TryDequeue(out _);
         }
+
+        // Count current attempts within the time window
+        var currentCount = attempts.Count;
+
+        // If we've hit the limit within the time window for THIS PortalId, we're in a loop - exit
+        if (currentCount >= MaxRefreshAttempts)
+        {
+            // Log warning once when limit is first hit
+            if (currentCount == MaxRefreshAttempts)
+            {
+                Console.WriteLine($"Warning: Portal '{PortalId}' refresh rate limit hit - possible infinite loop with nested portals");
+            }
+            return;
+        }
+
+        // Record this attempt for this PortalId
+        attempts.Enqueue(now);
+        
+        // Refresh the portal to pick up parameter changes
+        PortalService.RefreshPortal(PortalId);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

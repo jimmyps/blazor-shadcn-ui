@@ -3,6 +3,7 @@
 
 let floatingUI = null;
 let stylesInjected = false;
+let floatingZIndex = 60; // to be consistent with ZIndexLevels.Popover
 
 /**
  * Injects required CSS for positioning primitives.
@@ -19,7 +20,7 @@ function injectRequiredStyles() {
             left: -9999px !important;
             opacity: 0 !important;
             pointer-events: none !important;
-            z-index: 50;
+            z-index: ${floatingZIndex};
         }
     `;
 
@@ -184,17 +185,17 @@ export async function computePosition(reference, floating, options = {}) {
  * @param {boolean} makeVisible - Whether to make the element visible after positioning
  */
 export function applyPosition(floating, position, makeVisible = false) {
-    if (!floating || !position) return;
+if (!floating || !position) return;
 
-    // Apply all positioning styles atomically to prevent flash
-    // Use higher z-index for fixed positioning (nested dropdowns) to ensure they appear above parent popovers
-    const zIndex = position.strategy === 'fixed' ? '9999' : '50';
-    Object.assign(floating.style, {
-        position: position.strategy || 'absolute',
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        zIndex: zIndex
-    });
+// Apply all positioning styles atomically to prevent flash
+// Use higher z-index for fixed positioning (nested dropdowns) to ensure they appear above parent popovers
+const zIndex = position.strategy === 'fixed' ? '9999' : floatingZIndex;
+Object.assign(floating.style, {
+    position: position.strategy || 'absolute',
+    left: `${position.x}px`,
+    top: `${position.y}px`,
+    zIndex: zIndex
+});
 
     // Set transform-origin on the first child if it exists (for proper animations)
     // Otherwise, set it on the floating element itself

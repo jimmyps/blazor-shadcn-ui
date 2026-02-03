@@ -13,7 +13,12 @@ module.exports = {
     'data-[motion=from-end]:slide-in-from-right-52',
     'data-[motion=from-start]:slide-in-from-left-52',
     'data-[motion=to-end]:slide-out-to-right-52',
-    'data-[motion=to-start]:slide-out-to-left-52'
+    'data-[motion=to-start]:slide-out-to-left-52',
+    // Required by ZIndexLevels
+    'z-50',
+    'z-55',
+    'z-60',
+    'z-70',
   ],
   theme: {
     extend: {

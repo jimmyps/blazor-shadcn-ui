@@ -53,7 +53,7 @@
 
                     <CommandVirtualizedGroup TItem="ComponentItem"
                             Heading="Components"
-                            Items="_components"
+                            Items="Components"
                             ItemValue="@(item => item.Value)"
                             ItemSearchText="@(item => item.Name)"
                             MaxDisplayCount="0">
@@ -68,7 +68,7 @@
 
                     <CommandVirtualizedGroup TItem="ComponentItem"
                             Heading="Primitives"
-                            Items="_primitives"
+                            Items="Primitives"
                             ItemValue="@(item => item.Value)"
                             ItemSearchText="@(item => item.Name)"
                             MaxDisplayCount="0">
@@ -189,7 +189,7 @@
     private record ComponentItem(string Name, string Value, string Icon);
     
     // List of all components
-    private readonly List<ComponentItem> _components = new()
+    private readonly List<ComponentItem> Components = new()
     {
         new("Accordion", "components/accordion", "chevrons-down-up"),
         new("Alert", "components/alert", "circle-alert"),
@@ -257,7 +257,7 @@
     };
     
     // List of all primitives
-    private readonly List<ComponentItem> _primitives = new()
+    private readonly List<ComponentItem> Primitives = new()
     {
         new("Accordion", "primitives/accordion", "chevrons-down-up"),
         new("Checkbox", "primitives/checkbox", "square-check"),

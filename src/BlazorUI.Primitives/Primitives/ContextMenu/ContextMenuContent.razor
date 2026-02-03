@@ -1,4 +1,5 @@
 @namespace BlazorUI.Primitives.ContextMenu
+@using BlazorUI.Primitives.Constants
 @using BlazorUI.Primitives.Services
 @inject IPositioningService PositioningService
 @inject IPortalService PortalService
@@ -58,7 +59,7 @@
     /// Z-index value for the menu content.
     /// </summary>
     [Parameter]
-    public int ZIndex { get; set; } = 50;
+    public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;
 
     /// <summary>
     /// Whether to enable keyboard loop navigation.

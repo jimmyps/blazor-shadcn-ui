@@ -1,4 +1,5 @@
 @namespace BlazorUI.Primitives.Popover
+@using BlazorUI.Primitives.Constants
 @using BlazorUI.Primitives.Floating
 @using BlazorUI.Primitives.Services
 @inject IJSRuntime JSRuntime
@@ -94,10 +95,10 @@
 
     /// <summary>
     /// CSS z-index value for the popover content.
-    /// Default is 50.
+    /// Default is ZIndexLevels.PopoverContent (60).
     /// </summary>
     [Parameter]
-    public int ZIndex { get; set; } = 50;
+    public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;
 
     /// <summary>
     /// Event callback invoked when Escape key is pressed.

@@ -1,6 +1,7 @@
 @using BlazorUI.Primitives.Services
 @namespace BlazorUI.Components.Tooltip
 @using BlazorUI.Primitives.Tooltip
+@using BlazorUI.Primitives.Constants
 
 @* Styled TooltipContent - wrapper with shadcn Tailwind classes *@
 <BlazorUI.Primitives.Tooltip.TooltipContent class="@CssClass"
@@ -78,7 +79,7 @@
     {
         get
         {
-            var baseClasses = "z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md " +
+            var baseClasses = $"z-{ZIndexLevels.TooltipContent} overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md " +
                             "animate-in fade-in-0 zoom-in-95 max-w-md";
 
             // Add slide animation based on effective side

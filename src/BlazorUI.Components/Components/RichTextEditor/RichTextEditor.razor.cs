@@ -669,7 +669,8 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
 
     private string ContainerCssClass => ClassNames.cn(
         "flex flex-col rounded-md border border-input bg-background",
-        "focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50",
+        "focus-within:border-ring focus-within:ring-[2px] focus-within:ring-ring/50",
+        "shadow-xs transition-[color,box-shadow]",
         ClassNames.when(AriaInvalid == true, "border-destructive ring-destructive/20"),
         ClassNames.when(Disabled, "opacity-50 cursor-not-allowed"),
         Class

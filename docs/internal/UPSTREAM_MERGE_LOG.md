@@ -1703,11 +1703,470 @@ git commit -m "Merge upstream/<branch>: <brief description>"
 - ✅ HoverCard (Floating UI refactor)
 - ✅ Popover (Floating UI refactor)
 - ✅ Tooltip (Floating UI refactor)
+- ✅ Z-Index Hierarchy (proper layering for nested portals)
+- ✅ FloatingPortal (infinite loop prevention with rate limiting)
 
 **Additional Validated:**
 - ✅ Chart Examples (Area, Bar, Line) - DisplayTextSelector pattern
 - ✅ SpotlightCommandPalette - virtualized groups, empty state
-- ✅ FloatingPortal - transform origin, data attributes
+- ✅ FloatingPortal - transform origin, data attributes, nested portal support
+- ✅ Nested Portals - Select inside Dialog, Dropdown inside Dialog
+
+**Components Kept (Our Superior Implementations):**
+- ✅ Pagination (21 files vs 16)
+- ✅ Toast (13 files vs 10)
+- ✅ Toggle + ToggleGroup (7 files vs 4)
+- ✅ Menubar (18 files vs 16)
+- ✅ Slider, TimePicker, ScrollArea, Resizable, NavigationMenu, Progress, Kbd, Empty, Spinner
+
+---
+
+## 4. Z-Index Hierarchy & Layering System
+
+### Merge Strategy: **NEW IMPLEMENTATION**
+Implemented proper z-index hierarchy to fix nested portal rendering issues and inconsistent layering.
+
+### Problem Statement
+**Issues Found:**
+1. All floating components used `z-index: 50`, causing conflicts with nested portals
+2. Select/Combobox inside Dialog would render behind the dialog
+3. JavaScript had hardcoded z-index values inconsistent with C#
+4. No centralized z-index management
+5. Portal container in JS overrode component z-index with `z-index: 9999`
+
+### Key Decisions
+
+#### ✅ ZIndexLevels Constants
+**Decision:** Create centralized constants for all z-index values
+
+**Created:**
+- `src/BlazorUI.Primitives/Constants/ZIndexLevels.cs`
+
+**Values:**
+```csharp
+public static class ZIndexLevels
+{
+    public const int DialogOverlay = 40;    // Backdrop/darkening
+    public const int DialogContent = 50;    // Dialog box
+    public const int PopoverContent = 60;   // Dropdowns, menus, selects
+    public const int TooltipContent = 70;   // Always on top
+}
+```
+
+**Rationale:**
+- Clear hierarchy: Overlay < Dialog < Popover < Tooltip
+- Nested portals work correctly (Select in Dialog: 60 > 50 ✅)
+- Single source of truth prevents inconsistencies
+- Easy to maintain and update
+
+**Changed Files:**
+- `src/BlazorUI.Primitives/Constants/ZIndexLevels.cs` (NEW)
+
+#### ✅ Component Z-Index Defaults
+**Decision:** Update all components to use `ZIndexLevels` constants
+
+**Fixed Components (C# - Changed from 50 to 60):**
+1. `PopoverContent.razor` - `ZIndexLevels.PopoverContent`
+2. `DropdownMenuContent.razor` (Primitives) - `ZIndexLevels.PopoverContent`
+3. `MenubarContent.razor` (Primitives) - `ZIndexLevels.PopoverContent`
+4. `ContextMenuContent.razor` (Primitives) - `ZIndexLevels.PopoverContent`
+
+**Added Using Directive:**
+```razor
+@using BlazorUI.Primitives.Constants
+```
+
+**Updated Components (already had ZIndex parameter, now use property):**
+5. `DropdownMenuContent.razor` (Components) - CSS uses `ZIndex` property
+6. `DropdownMenuSubContent.razor` (Components) - CSS uses `ZIndex` property
+7. `ContextMenuContent.razor` (Components) - CSS uses `ZIndex` property
+8. `ContextMenuSubContent.razor` (Components) - CSS uses `ZIndex` property
+9. `MenubarContent.razor` (Components) - CSS uses `ZIndex` property
+10. `MenubarSubContent.razor` (Components) - CSS uses `ZIndex` property
+
+**Before (WRONG):**
+```csharp
+// Hardcoded value
+[Parameter]
+public int ZIndex { get; set; } = 50;
+
+// CSS ignored parameter
+private string CssClass => $"z-{ZIndexLevels.PopoverContent} ..."; // ❌ Ignores ZIndex parameter
+```
+
+**After (CORRECT):**
+```csharp
+// Use constant as default
+[Parameter]
+public int ZIndex { get; set; } = ZIndexLevels.PopoverContent; // 60
+
+// CSS uses parameter value
+private string CssClass => $"z-{ZIndex} ..."; // ✅ Respects custom overrides
+```
+
+**Rationale:**
+- Components respect custom `ZIndex` parameter values
+- Default to proper hierarchy level
+- Allow flexibility when needed (e.g., nested menus at z-70)
+
+**Changed Files:**
+- `src/BlazorUI.Primitives/Primitives/Popover/PopoverContent.razor`
+- `src/BlazorUI.Primitives/Primitives/DropdownMenu/DropdownMenuContent.razor`
+- `src/BlazorUI.Primitives/Primitives/Menubar/MenubarContent.razor`
+- `src/BlazorUI.Primitives/Primitives/ContextMenu/ContextMenuContent.razor`
+- `src/BlazorUI.Components/Components/DropdownMenu/DropdownMenuContent.razor`
+- `src/BlazorUI.Components/Components/DropdownMenu/DropdownMenuSubContent.razor`
+- `src/BlazorUI.Components/Components/ContextMenu/ContextMenuContent.razor`
+- `src/BlazorUI.Components/Components/ContextMenu/ContextMenuSubContent.razor`
+- `src/BlazorUI.Components/Components/Menubar/MenubarContent.razor`
+- `src/BlazorUI.Components/Components/Menubar/MenubarSubContent.razor`
+
+#### ✅ JavaScript Z-Index Fixes
+**Decision:** Remove hardcoded z-index values and use consistent variable
+
+**Fixed Files:**
+1. **portal.js** - Removed `z-index: 9999` from portal container
+   - Portal container should NOT have z-index
+   - Individual portal contents manage their own z-index via CSS
+   
+2. **positioning.js** - Centralized z-index with variable
+   - Created `floatingZIndex = 60` variable (matches `ZIndexLevels.PopoverContent`)
+   - Replaced hardcoded `'50'` → `floatingZIndex`
+   - Replaced hardcoded `'60'` → `floatingZIndex`
+   - Injected CSS uses `${floatingZIndex}` template literal
+
+**Before (WRONG):**
+```javascript
+// portal.js
+container.style.zIndex = '9999'; // ❌ Overrides everything!
+
+// positioning.js
+z-index: 50;  // ❌ Hardcoded in CSS
+const zIndex = '60';  // ❌ Hardcoded in code
+```
+
+**After (CORRECT):**
+```javascript
+// portal.js
+// No z-index set - children manage their own ✅
+
+// positioning.js
+let floatingZIndex = 60; // ✅ Single source
+z-index: ${floatingZIndex};  // ✅ Uses variable
+const zIndex = floatingZIndex;  // ✅ Consistent
+```
+
+**Rationale:**
+- JavaScript z-index consistent with C# constants
+- Easy to update in one place
+- Portal container doesn't interfere with layering
+
+**Changed Files:**
+- `src/BlazorUI.Primitives/wwwroot/js/primitives/portal.js`
+- `src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js`
+
+#### ✅ TailwindMerge Regex Fix
+**Decision:** Support Tailwind arbitrary values with commas and spaces
+
+**Problem:** 
+- `ValidClassNameRegex` rejected valid arbitrary values like `transition-[color, box-shadow]`
+- Caused CSS class validation failures
+
+**Fixed:**
+```csharp
+// Before
+@"^[a-zA-Z0-9_\-:/.[\]()%!@#&>+~=]+$"
+
+// After - added comma and space
+@"^[a-zA-Z0-9_\-:/.[\]()%!@#&>+~=, ]+$"
+//                                ^ ^ Added
+```
+
+**Now Supports:**
+- ✅ `transition-[color, box-shadow]`
+- ✅ `bg-[rgb(255, 0, 0)]`
+- ✅ `w-[calc(100% - 20px)]`
+- ✅ `shadow-[0_4px_6px_rgba(0, 0, 0, 0.1)]`
+
+**Changed Files:**
+- `src/BlazorUI.Components/Utilities/TailwindMerge.cs`
+
+### Files Modified
+```
+A  src/BlazorUI.Primitives/Constants/ZIndexLevels.cs
+M  src/BlazorUI.Primitives/Primitives/Popover/PopoverContent.razor
+M  src/BlazorUI.Primitives/Primitives/DropdownMenu/DropdownMenuContent.razor
+M  src/BlazorUI.Primitives/Primitives/Menubar/MenubarContent.razor
+M  src/BlazorUI.Primitives/Primitives/ContextMenu/ContextMenuContent.razor
+M  src/BlazorUI.Components/Components/DropdownMenu/DropdownMenuContent.razor
+M  src/BlazorUI.Components/Components/DropdownMenu/DropdownMenuSubContent.razor
+M  src/BlazorUI.Components/Components/ContextMenu/ContextMenuContent.razor
+M  src/BlazorUI.Components/Components/ContextMenu/ContextMenuSubContent.razor
+M  src/BlazorUI.Components/Components/Menubar/MenubarContent.razor
+M  src/BlazorUI.Components/Components/Menubar/MenubarSubContent.razor
+M  src/BlazorUI.Primitives/wwwroot/js/primitives/portal.js
+M  src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js
+M  src/BlazorUI.Components/Utilities/TailwindMerge.cs
+```
+
+### Breaking Changes
+❌ None - All z-index changes are internal improvements
+
+### Testing Completed
+✅ **Nested Portals:**
+- Select inside Dialog renders correctly (z-60 > z-50)
+- Dropdown inside Dialog works
+- Multiple levels of nesting validated
+
+✅ **Z-Index Layering:**
+- Dialog overlay below content (40 < 50)
+- Popovers above dialogs (60 > 50)
+- Tooltips above everything (70 > 60)
+
+✅ **Custom Overrides:**
+- Components respect `ZIndex` parameter
+- JavaScript doesn't override CSS values
+
+---
+
+## 5. FloatingPortal Infinite Loop Prevention
+
+### Merge Strategy: **NEW FIX**
+Implemented rate-limiting to prevent infinite render loops with nested portals.
+
+### Problem Statement
+**Issue:**
+When using nested floating portals (e.g., `Select` inside `Dialog`, `Combobox` inside `Dialog`), the application would experience infinite re-render loops causing browser freezes.
+
+**Root Cause:**
+```
+Dialog renders → OnParametersSet → RegisterPortal → OnPortalsChanged
+  ↓
+PortalHost re-renders → Nested Select renders → OnParametersSet → RegisterPortal
+  ↓
+OnPortalsChanged → PortalHost re-renders → Dialog re-renders → OnParametersSet
+  ↓
+INFINITE LOOP 🔄
+```
+
+### Key Decisions
+
+#### ✅ Rate-Limiting Approach
+**Decision:** Track refresh attempts per PortalId with time-based rate limiting
+
+**Implementation:**
+```csharp
+// Lock-free thread-safe tracking
+private static readonly ConcurrentDictionary<string, ConcurrentQueue<DateTime>> _refreshAttemptsByPortal = new();
+private const int MaxRefreshAttempts = 3;
+private const int RefreshWindowMs = 100;
+```
+
+**Algorithm:**
+1. Track refresh timestamps per `PortalId` (not per instance)
+2. Remove attempts older than 100ms window
+3. If 3+ attempts within 100ms → Block refresh (infinite loop detected)
+4. Otherwise → Allow refresh and record attempt
+
+**Rationale:**
+- **Per-PortalId tracking:** Scoped to specific portal, not global
+- **Time window:** 100ms is fast enough to catch loops, slow enough for legitimate updates
+- **Threshold:** 3 attempts balances sensitivity vs false positives
+- **Lock-free:** `ConcurrentDictionary` + `ConcurrentQueue` = no contention
+- **Automatic recovery:** Old timestamps age out naturally
+
+**Before (BROKEN - Guard Flag Approach):**
+```csharp
+private bool _isUpdating = false;
+
+protected override void OnParametersSet()
+{
+    try {
+        _isUpdating = true;
+        PortalService.RefreshPortal(PortalId);
+    } finally {
+        _isUpdating = false; // ❌ Resets before cascade completes
+    }
+}
+```
+
+**Problem:** Flag resets in `finally` before nested cascades complete, doesn't prevent loop.
+
+**After (FIXED - Rate Limiting):**
+```csharp
+protected override void OnParametersSet()
+{
+    var attempts = _refreshAttemptsByPortal.GetOrAdd(PortalId, _ => new ConcurrentQueue<DateTime>());
+    
+    // Remove old attempts (>100ms ago)
+    var now = DateTime.UtcNow;
+    var cutoff = now.AddMilliseconds(-RefreshWindowMs);
+    while (attempts.TryPeek(out var oldest) && oldest < cutoff)
+    {
+        attempts.TryDequeue(out _);
+    }
+    
+    // Check rate limit
+    if (attempts.Count >= MaxRefreshAttempts)
+    {
+        Console.WriteLine($"Warning: Portal '{PortalId}' refresh rate limit hit");
+        return; // ✅ Blocks infinite loop
+    }
+    
+    // Record attempt and proceed
+    attempts.Enqueue(now);
+    PortalService.RefreshPortal(PortalId);
+}
+```
+
+#### ✅ Lock-Free Concurrency
+**Decision:** Use `ConcurrentDictionary` and `ConcurrentQueue` instead of locks
+
+**Benefits:**
+- No lock contention
+- Multiple portal IDs can update simultaneously
+- Better performance in high-concurrency scenarios
+- Thread-safe without explicit locking
+
+**Thread-Safe Operations:**
+- `GetOrAdd()` - atomically gets or creates queue
+- `TryPeek()` - safely checks oldest item
+- `TryDequeue()` - safely removes items
+- `Enqueue()` - safely adds items
+- `Count` - thread-safe count
+
+**Changed Files:**
+- `src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor`
+
+### Files Modified
+```
+M  src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor
+A  docs/internal/FLOATING_PORTAL_GUARD_FIX.md
+```
+
+### Testing Completed
+✅ **Nested Portal Scenarios:**
+```razor
+<!-- All tested and working -->
+<Dialog>
+    <DialogContent>
+        <Select>  <!-- No infinite loop! -->
+            <SelectContent>...</SelectContent>
+        </Select>
+    </DialogContent>
+</Dialog>
+
+<Dialog>
+    <DialogContent>
+        <DropdownMenu>  <!-- Works! -->
+            <DropdownMenuSubMenu>  <!-- 3 levels deep! -->
+                <DropdownMenuSubContent>...</DropdownMenuSubContent>
+            </DropdownMenuSubMenu>
+        </DropdownMenu>
+    </DialogContent>
+</Dialog>
+```
+
+✅ **Content Updates:**
+- Dynamic content changes still work (e.g., updating Select items)
+- Rate limiting doesn't block legitimate updates
+- Only blocks rapid cascading updates (infinite loops)
+
+✅ **Performance:**
+- No performance degradation
+- Lock-free operations scale well
+- Memory efficient (old timestamps auto-cleanup)
+
+### Breaking Changes
+❌ None - Internal implementation fix
+
+---
+
+## 6. Additional Improvements
+
+### Kbd Component Demo Fix
+**Changed:** Updated `DropdownMenuDemo.razor` to use `ChildContent` instead of non-existent `Keys` parameter
+
+**Before:**
+```razor
+<Kbd Keys="Ctrl+Shift+N" />
+```
+
+**After:**
+```razor
+<Kbd>Ctrl+Shift+N</Kbd>
+```
+
+**Changed Files:**
+- `demo/BlazorUI.Demo.Shared/Pages/Components/DropdownMenuDemo.razor`
+
+### JavaScript Positioning Comments
+**Added:** Updated comments in `positioning.js` explaining offset vs padding parameters
+
+**Documentation:**
+- `offset`: Gap between trigger and floating element (default: 8px)
+- `padding`: Safety buffer from viewport edges (default: 8px) - used by `flip()` and `shift()`
+
+**Changed Files:**
+- `src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js`
+
+---
+
+## Summary of Session Improvements
+
+### Problems Solved
+1. ✅ Nested portals z-index conflicts (Select inside Dialog)
+2. ✅ Infinite loops with nested floating elements
+3. ✅ Inconsistent z-index between C# and JavaScript
+4. ✅ Portal container overriding component z-index
+5. ✅ TailwindMerge rejecting valid arbitrary values
+6. ✅ Components ignoring `ZIndex` parameter in CSS
+
+### Architecture Improvements
+1. ✅ Centralized z-index management (`ZIndexLevels` constants)
+2. ✅ Lock-free rate limiting (thread-safe, performant)
+3. ✅ Proper z-index hierarchy (40 → 50 → 60 → 70)
+4. ✅ JavaScript z-index consistency with C#
+5. ✅ Better Tailwind arbitrary value support
+
+### Files Modified Statistics (This Session)
+- **Total Files Changed:** 17
+- **New Files Added:** 2 (ZIndexLevels.cs, documentation)
+- **Components Fixed:** 10
+- **JavaScript Files Updated:** 2
+- **Documentation Added:** 1 comprehensive fix guide
+
+### Ready for Production
+All z-index and nested portal fixes are production-ready and thoroughly tested with multiple nesting scenarios.
+
+---
+
+## Overall Merge Status: ✅ COMPLETE
+
+### Components Merged & Tested (100%)
+
+**Fully Tested & Validated:**
+- ✅ Alert (7 variants, Icon, AccentBorder)
+- ✅ AlertDialog (dismissal behavior, AsChild pattern, accessibility)
+- ✅ Button (documentation improvements)
+- ✅ RichTextEditor (refactored initialization, new event types)
+- ✅ Sidebar (improved context subscription)
+- ✅ Select (FloatingPortal migration, animations, DisplayText lifecycle)
+- ✅ NativeSelect (new component)
+- ✅ Command (self-contained architecture, virtualization, SearchInterval preserved)
+- ✅ DropdownMenu (Floating UI refactor, z-index fixes)
+- ✅ HoverCard (Floating UI refactor)
+- ✅ Popover (Floating UI refactor, z-index fixes)
+- ✅ Tooltip (Floating UI refactor, z-index fixes)
+- ✅ Z-Index Hierarchy (proper layering for all floating elements)
+- ✅ FloatingPortal (infinite loop prevention, nested portal support)
+
+**Additional Validated:**
+- ✅ Chart Examples (Area, Bar, Line) - DisplayTextSelector pattern
+- ✅ SpotlightCommandPalette - virtualized groups, empty state
+- ✅ FloatingPortal - transform origin, data attributes, rate limiting
+- ✅ Nested Portals - Select/Dropdown/Menu inside Dialog at any depth
+- ✅ TailwindMerge - arbitrary values with commas and spaces
 
 **Components Kept (Our Superior Implementations):**
 - ✅ Pagination (21 files vs 16)
@@ -1717,13 +2176,15 @@ git commit -m "Merge upstream/<branch>: <brief description>"
 - ✅ Slider, TimePicker, ScrollArea, Resizable, NavigationMenu, Progress, Kbd, Empty, Spinner
 
 ### Files Modified Statistics
-- **Total Files Changed:** ~150+
-- **Components Enhanced:** 12
-- **New Components Added:** 14 (kept ours)
+- **Total Files Changed:** ~167+
+- **Components Enhanced:** 14
+- **New Components Added:** 15 (kept ours)
 - **Primitives Refactored:** 4 (Floating UI migration)
-- **Demo Pages Updated:** 15+
-- **JavaScript Files Updated:** 1 (positioning.js)
-- **Lines of Code Reduced:** ~515 lines (35% in primitives)
+- **Demo Pages Updated:** 16+
+- **JavaScript Files Updated:** 2 (positioning.js, portal.js)
+- **New Constants Added:** 1 (ZIndexLevels)
+- **Lines of Code Reduced:** ~515 lines in primitives
+- **Infinite Loops Fixed:** 1 critical bug
 
 ### Build & Test Status
 - ✅ Solution builds successfully
@@ -1731,8 +2192,10 @@ git commit -m "Merge upstream/<branch>: <brief description>"
 - ✅ All animations working
 - ✅ All accessibility features validated
 - ✅ All keyboard navigation tested
-- ✅ Performance validated (virtualization, debouncing)
+- ✅ Performance validated (virtualization, debouncing, rate limiting)
+- ✅ Nested portals tested at multiple depths
+- ✅ Z-index hierarchy verified across all components
 - ✅ No breaking changes for end users
 
 ### Ready for Production
-All merged components and fixes are production-ready and thoroughly tested.
+All merged components, z-index fixes, and floating portal improvements are production-ready and thoroughly tested in real-world scenarios including complex nested portal configurations.

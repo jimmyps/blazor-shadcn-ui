@@ -1,4 +1,5 @@
 @namespace BlazorUI.Primitives.DropdownMenu
+@using BlazorUI.Primitives.Constants
 @using BlazorUI.Primitives.Floating
 @using BlazorUI.Primitives.Services
 @inject IJSRuntime JSRuntime
@@ -102,7 +103,7 @@
     /// Default is 50.
     /// </summary>
     [Parameter]
-    public int ZIndex { get; set; } = 50;
+    public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;
 
     /// <summary>
     /// Whether the dropdown content should match the trigger width.
