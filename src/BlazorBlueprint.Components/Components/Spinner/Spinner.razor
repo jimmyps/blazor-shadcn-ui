@@ -56,7 +56,7 @@
     /// Gets the computed CSS classes for the spinner.
     /// </summary>
     private string CssClass => ClassNames.cn(
-        "animate-spin text-muted-foreground",
+        "animate-spin",
         Size switch
         {
             SpinnerSize.Small => "h-4 w-4",
@@ -64,6 +64,9 @@
             SpinnerSize.Large => "h-10 w-10",
             _ => "h-6 w-6"
         },
+        HasCustomColor ? null : "text-muted-foreground",
         Class
     );
+
+    private bool HasCustomColor => !string.IsNullOrEmpty(Class) && Class.Contains("text-");
 }

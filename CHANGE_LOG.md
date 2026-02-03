@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to BlazorBlueprint are documented in this file.
+All notable changes to Blazor Blueprint are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
@@ -190,7 +190,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 - RichTextEditor rewritten to use Quill.js v2 in headless mode with custom Blazor toolbar
-- RichTextEditor now uses BlazorBlueprint components (NativeSelect, Dialog, Toggle, Button) instead of raw HTML elements
+- RichTextEditor now uses Blazor Blueprint components (NativeSelect, Dialog, Toggle, Button) instead of raw HTML elements
 - Link insertion uses BlazorBlueprint Dialog instead of browser prompt for consistent UX
 
 ### Fixed

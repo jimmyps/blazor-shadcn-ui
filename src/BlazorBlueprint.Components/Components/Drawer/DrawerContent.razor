@@ -56,14 +56,12 @@
     private IJSObjectReference? _portalModule;
     private IJSObjectReference? _scrollLockCleanup;
     private bool _isInitialized;
-    private bool _wasClosed = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (Context?.IsOpen == true && !_isInitialized)
         {
             _isInitialized = true;
-            _wasClosed = false;
 
             // Set up focus trap
             if (TrapFocus)
@@ -95,7 +93,6 @@
         }
         else if (Context?.IsOpen != true && _isInitialized)
         {
-            _wasClosed = true;
             await CleanupAsync();
         }
     }

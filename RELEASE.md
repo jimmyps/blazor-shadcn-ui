@@ -1,10 +1,10 @@
 # Release Guide
 
-This document describes the automated NuGet publishing system for BlazorBlueprint.
+This document describes the automated NuGet publishing system for Blazor Blueprint.
 
 ## Overview
 
-BlazorBlueprint uses a **monorepo with independent package versioning**. Each of the five packages can be released independently with its own version number:
+Blazor Blueprint uses a **monorepo with independent package versioning**. Each of the five packages can be released independently with its own version number:
 
 - **BlazorBlueprint.Primitives** - Headless UI primitives
 - **BlazorBlueprint.Components** - Styled components

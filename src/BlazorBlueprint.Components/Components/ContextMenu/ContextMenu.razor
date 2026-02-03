@@ -85,8 +85,9 @@
         await Close();
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
         _dotNetRef?.Dispose();
+        return ValueTask.CompletedTask;
     }
 }

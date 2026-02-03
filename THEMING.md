@@ -1,6 +1,6 @@
-# BlazorBlueprint Theming Guide
+# Blazor Blueprint Theming Guide
 
-BlazorBlueprint uses CSS custom properties (variables) for theming, following the [shadcn/ui](https://ui.shadcn.com) design system. This allows complete customization of colors, typography, and sizing without modifying component code.
+Blazor Blueprint uses CSS custom properties (variables) for theming, following the [shadcn/ui](https://ui.shadcn.com) design system. This allows complete customization of colors, typography, and sizing without modifying component code.
 
 ## Quick Start
 
@@ -15,7 +15,7 @@ BlazorBlueprint uses CSS custom properties (variables) for theming, following th
 
 ## Color Format
 
-BlazorBlueprint uses the [OKLCH color space](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch) for perceptually uniform colors:
+Blazor Blueprint uses the [OKLCH color space](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch) for perceptually uniform colors:
 
 ```css
 --primary: oklch(0.205 0 0);
@@ -378,7 +378,7 @@ Here's a complete theme file with all variables:
 
 ## Dark Mode
 
-BlazorBlueprint uses class-based dark mode. Add the `dark` class to the `<html>` element to enable dark mode:
+Blazor Blueprint uses class-based dark mode. Add the `dark` class to the `<html>` element to enable dark mode:
 
 ```html
 <html class="dark">

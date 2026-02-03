@@ -7,7 +7,7 @@
 @using BlazorBlueprint.Components.Kbd
 @using BlazorBlueprint.Icons.Lucide.Components
 
-<PageTitle>Table Primitive - BlazorBlueprint</PageTitle>
+<PageTitle>Table Primitive - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-7xl">
     <div class="space-y-3">
@@ -83,8 +83,8 @@
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent Class="w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md" Align="PopoverAlign.End">
-                                        <DropdownMenuLabel Class="px-2 py-1.5 text-sm font-semibold">Actions</DropdownMenuLabel>
-                                        <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                        <BlazorBlueprint.Components.DropdownMenu.DropdownMenuLabel Class="px-2 py-1.5 text-sm font-semibold">Actions</BlazorBlueprint.Components.DropdownMenu.DropdownMenuLabel>
+                                        <BlazorBlueprint.Components.DropdownMenu.DropdownMenuSeparator Class="my-1 h-px bg-muted" />
                                         <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                           OnClick="@(() => HandleViewDetails(person))">
                                             <LucideIcon Name="eye" Size="16" Class="mr-2" />
@@ -100,7 +100,7 @@
                                             <LucideIcon Name="copy" Size="16" Class="mr-2" />
                                             Duplicate
                                         </DropdownMenuItem>
-                                        <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                        <BlazorBlueprint.Components.DropdownMenu.DropdownMenuSeparator Class="my-1 h-px bg-muted" />
                                         <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground text-destructive"
                                                           OnClick="@(() => HandleDelete(person))">
                                             <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
@@ -383,8 +383,8 @@
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent Class="w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md" Align="PopoverAlign.End">
-                                            <DropdownMenuLabel Class="px-2 py-1.5 text-sm font-semibold">Actions</DropdownMenuLabel>
-                                            <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                            <BlazorBlueprint.Components.DropdownMenu.DropdownMenuLabel Class="px-2 py-1.5 text-sm font-semibold">Actions</BlazorBlueprint.Components.DropdownMenu.DropdownMenuLabel>
+                                            <BlazorBlueprint.Components.DropdownMenu.DropdownMenuSeparator Class="my-1 h-px bg-muted" />
                                             <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                               OnClick="@(() => HandleViewDetails(person))">
                                                 <LucideIcon Name="eye" Size="16" Class="mr-2" />
@@ -400,7 +400,7 @@
                                                 <LucideIcon Name="copy" Size="16" Class="mr-2" />
                                                 Duplicate
                                             </DropdownMenuItem>
-                                            <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                            <BlazorBlueprint.Components.DropdownMenu.DropdownMenuSeparator Class="my-1 h-px bg-muted" />
                                             <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground text-destructive"
                                                               OnClick="@(() => HandleDelete(person))">
                                                 <LucideIcon Name="trash-2" Size="16" Class="mr-2" />

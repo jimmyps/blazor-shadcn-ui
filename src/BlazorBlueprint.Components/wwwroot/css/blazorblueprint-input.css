@@ -80,6 +80,22 @@
   }
 }
 
+/* AspectRatio component - content wrapper fills parent and children fill wrapper */
+/* Using utilities layer for higher specificity */
+@layer utilities {
+  .aspect-ratio-content {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .aspect-ratio-content > * {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
 /* Chart tooltip styles - theme-aware ApexCharts tooltip */
 @layer components {
   .blazorblueprint-chart-tooltip {

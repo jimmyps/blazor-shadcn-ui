@@ -397,7 +397,7 @@
         // Prevent default to allow drop
     }
 
-    private async Task HandleDrop(DragEventArgs e)
+    private void HandleDrop(DragEventArgs e)
     {
         _isDragging = false;
         // The InputFile component handles the actual file drop

@@ -13,7 +13,6 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     private ElementReference _inputRef;
     private MaskProcessor? _processor;
     private string _displayValue = string.Empty;
-    private bool _isFocused;
     private IJSObjectReference? _jsModule;
     private bool _jsModuleLoaded;
 
@@ -322,8 +321,6 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
 
     private async Task HandleFocus(FocusEventArgs args)
     {
-        _isFocused = true;
-
         // Show the mask if empty
         if (string.IsNullOrEmpty(Value) && ShowMask)
         {
@@ -354,8 +351,6 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
 
     private void HandleBlur(FocusEventArgs args)
     {
-        _isFocused = false;
-
         // Clear display if value is empty and not showing mask
         if (string.IsNullOrEmpty(Value) && !ShowMask)
         {

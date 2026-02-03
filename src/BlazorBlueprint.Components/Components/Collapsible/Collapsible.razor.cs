@@ -79,7 +79,6 @@ namespace BlazorBlueprint.Components.Collapsible;
 public partial class Collapsible : ComponentBase
 {
     private bool _isOpen;
-    private bool _isInitialized;
 
     /// <summary>
     /// Gets or sets a value indicating whether the collapsible is currently expanded.
@@ -164,7 +163,6 @@ public partial class Collapsible : ComponentBase
     {
         // Initialize with DefaultOpen if not controlled
         _isOpen = OpenChanged.HasDelegate ? Open : DefaultOpen;
-        _isInitialized = true;
     }
 
     /// <inheritdoc />

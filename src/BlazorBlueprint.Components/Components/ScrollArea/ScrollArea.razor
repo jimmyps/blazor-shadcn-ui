@@ -1,7 +1,7 @@
 @namespace BlazorBlueprint.Components.ScrollArea
 
-<div class="@CssClass" style="@ContainerStyle">
-    <div class="@ComputedViewportClass">
+<div class="@CssClass">
+    <div class="@ComputedViewportClass" style="@ViewportStyle">
         @ChildContent
     </div>
 </div>
@@ -28,7 +28,7 @@
     [Parameter]
     public string? MaxHeight { get; set; }
 
-    private string ContainerStyle
+    private string ViewportStyle
     {
         get
         {
@@ -55,7 +55,7 @@
     };
 
     private string ComputedViewportClass => BlazorBlueprint.Components.Utilities.ClassNames.cn(
-        "h-full w-full rounded-[inherit]",
+        "w-full rounded-[inherit]",
         Orientation switch
         {
             ScrollAreaOrientation.Vertical => "overflow-y-auto overflow-x-hidden",

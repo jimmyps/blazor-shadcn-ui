@@ -1,6 +1,6 @@
-# Contributing to BlazorBlueprint
+# Contributing to Blazor Blueprint
 
-Thank you for your interest in contributing to BlazorBlueprint! We welcome contributions from the community.
+Thank you for your interest in contributing to Blazor Blueprint! We welcome contributions from the community.
 
 ## How to Contribute
 
@@ -77,9 +77,6 @@ BlazorBlueprint/
 │   └── BlazorBlueprint.Icons.Feather/   # Feather icon integration
 ├── demo/
 │   └── BlazorBlueprint.Demo/            # Demo Blazor Server app
-├── website/
-│   └── BlazorBlueprint.Website/         # Documentation website
-├── .devflow/                     # DevFlow documentation and standards
 ├── scripts/                      # Release automation scripts
 └── .github/                      # CI/CD workflows
 ```
@@ -91,12 +88,6 @@ BlazorBlueprint/
 - **Tailwind CSS** - Utility-first CSS framework (standalone CLI, no Node.js required)
 - **CSS Variables** - Runtime theme switching
 - **Lucide Icons** - 1000+ beautiful, consistent icons
-
-For detailed technical architecture, see [.devflow/architecture.md](../.devflow/architecture.md)
-
-## Code Style Guidelines
-
-BlazorBlueprint follows the coding standards documented in `.devflow/constitution.md`. Key guidelines:
 
 ### Naming Conventions
 - **PascalCase** for public members, types, and namespaces
@@ -131,12 +122,12 @@ Before submitting a pull request, please:
 
 ## License
 
-By contributing to BlazorBlueprint, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE).
+By contributing to Blazor Blueprint, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE).
 
 This means:
 - Your contributions will be freely available to everyone
 - You retain copyright to your contributions
-- You grant BlazorBlueprint and its users the rights specified in the Apache License 2.0
+- You grant Blazor Blueprint and its users the rights specified in the Apache License 2.0
 
 ## Code of Conduct
 
@@ -163,4 +154,4 @@ If you have questions about contributing, feel free to:
 - Join the community discussions on GitHub
 - Reach out to the maintainers
 
-Thank you for contributing to BlazorBlueprint!
+Thank you for contributing to Blazor Blueprint!
