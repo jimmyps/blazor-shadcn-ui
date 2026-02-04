@@ -1,4 +1,4 @@
-﻿@page "/components/menubar"
+@page "/components/menubar"
 @using BlazorUI.Components.Menubar
 
 <PageTitle>Menubar Component - BlazorUI</PageTitle>
@@ -27,11 +27,11 @@
                     <MenubarContent>
                         <MenubarItem OnClick="@(() => HandleAction("New Tab"))">
                             New Tab
-                            <MenubarShortcut>ΓîÿT</MenubarShortcut>
+                            <MenubarShortcut>⌘T</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleAction("New Window"))">
                             New Window
-                            <MenubarShortcut>ΓîÿN</MenubarShortcut>
+                            <MenubarShortcut>⌘N</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleAction("New Incognito Window"))" Disabled="true">
                             New Incognito Window
@@ -43,7 +43,7 @@
                         <MenubarSeparator />
                         <MenubarItem OnClick="@(() => HandleAction("Print"))">
                             Print...
-                            <MenubarShortcut>ΓîÿP</MenubarShortcut>
+                            <MenubarShortcut>⌘P</MenubarShortcut>
                         </MenubarItem>
                     </MenubarContent>
                 </MenubarMenu>
@@ -53,29 +53,29 @@
                     <MenubarContent>
                         <MenubarItem OnClick="@(() => HandleAction("Undo"))">
                             Undo
-                            <MenubarShortcut>ΓîÿZ</MenubarShortcut>
+                            <MenubarShortcut>⌘Z</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleAction("Redo"))">
                             Redo
-                            <MenubarShortcut>ΓçºΓîÿZ</MenubarShortcut>
+                            <MenubarShortcut>⌘⇧Z</MenubarShortcut>
                         </MenubarItem>
                         <MenubarSeparator />
                         <MenubarItem OnClick="@(() => HandleAction("Cut"))">
                             Cut
-                            <MenubarShortcut>ΓîÿX</MenubarShortcut>
+                            <MenubarShortcut>⌘X</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleAction("Copy"))">
                             Copy
-                            <MenubarShortcut>ΓîÿC</MenubarShortcut>
+                            <MenubarShortcut>⌘C</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleAction("Paste"))">
                             Paste
-                            <MenubarShortcut>ΓîÿV</MenubarShortcut>
+                            <MenubarShortcut>⌘V</MenubarShortcut>
                         </MenubarItem>
                         <MenubarSeparator />
                         <MenubarItem OnClick="@(() => HandleAction("Select All"))">
                             Select All
-                            <MenubarShortcut>ΓîÿA</MenubarShortcut>
+                            <MenubarShortcut>⌘A</MenubarShortcut>
                         </MenubarItem>
                     </MenubarContent>
                 </MenubarMenu>
@@ -92,11 +92,11 @@
                         <MenubarSeparator />
                         <MenubarItem OnClick="@(() => HandleAction("Reload"))">
                             Reload
-                            <MenubarShortcut>ΓîÿR</MenubarShortcut>
+                            <MenubarShortcut>⌘R</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleAction("Force Reload"))" Disabled="true">
                             Force Reload
-                            <MenubarShortcut>ΓçºΓîÿR</MenubarShortcut>
+                            <MenubarShortcut>⌘⇧R</MenubarShortcut>
                         </MenubarItem>
                         <MenubarSeparator />
                         <MenubarItem OnClick="@(() => HandleAction("Toggle Fullscreen"))">
@@ -158,23 +158,23 @@
                         <MenubarItem OnClick="@(() => HandleIconsAction("New File"))">
                             <LucideIcon Name="file-plus" Size="16" Class="mr-2" />
                             New File
-                            <MenubarShortcut>ΓîÿN</MenubarShortcut>
+                            <MenubarShortcut>⌘N</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleIconsAction("Open"))">
                             <LucideIcon Name="folder-open" Size="16" Class="mr-2" />
                             Open
-                            <MenubarShortcut>ΓîÿO</MenubarShortcut>
+                            <MenubarShortcut>⌘O</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleIconsAction("Save"))">
                             <LucideIcon Name="save" Size="16" Class="mr-2" />
                             Save
-                            <MenubarShortcut>ΓîÿS</MenubarShortcut>
+                            <MenubarShortcut>⌘S</MenubarShortcut>
                         </MenubarItem>
                         <MenubarSeparator />
                         <MenubarItem OnClick="@(() => HandleIconsAction("Print"))">
                             <LucideIcon Name="printer" Size="16" Class="mr-2" />
                             Print
-                            <MenubarShortcut>ΓîÿP</MenubarShortcut>
+                            <MenubarShortcut>⌘P</MenubarShortcut>
                         </MenubarItem>
                     </MenubarContent>
                 </MenubarMenu>
@@ -188,28 +188,28 @@
                         <MenubarItem OnClick="@(() => HandleIconsAction("Undo"))">
                             <LucideIcon Name="undo" Size="16" Class="mr-2" />
                             Undo
-                            <MenubarShortcut>ΓîÿZ</MenubarShortcut>
+                            <MenubarShortcut>⌘Z</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleIconsAction("Redo"))">
                             <LucideIcon Name="redo" Size="16" Class="mr-2" />
                             Redo
-                            <MenubarShortcut>ΓçºΓîÿZ</MenubarShortcut>
+                            <MenubarShortcut>⌘Y</MenubarShortcut>
                         </MenubarItem>
                         <MenubarSeparator />
                         <MenubarItem OnClick="@(() => HandleIconsAction("Cut"))">
                             <LucideIcon Name="scissors" Size="16" Class="mr-2" />
                             Cut
-                            <MenubarShortcut>ΓîÿX</MenubarShortcut>
+                            <MenubarShortcut>⌘X</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleIconsAction("Copy"))">
                             <LucideIcon Name="copy" Size="16" Class="mr-2" />
                             Copy
-                            <MenubarShortcut>ΓîÿC</MenubarShortcut>
+                            <MenubarShortcut>⌘C</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleIconsAction("Paste"))">
                             <LucideIcon Name="clipboard" Size="16" Class="mr-2" />
                             Paste
-                            <MenubarShortcut>ΓîÿV</MenubarShortcut>
+                            <MenubarShortcut>⌘V</MenubarShortcut>
                         </MenubarItem>
                     </MenubarContent>
                 </MenubarMenu>
@@ -385,7 +385,7 @@
                     <MenubarContent>
                         <MenubarItem OnClick="@(() => HandleSubmenuAction("Text"))">
                             Text
-                            <MenubarShortcut>ΓîÿT</MenubarShortcut>
+                            <MenubarShortcut>⌘T</MenubarShortcut>
                         </MenubarItem>
                         <MenubarItem OnClick="@(() => HandleSubmenuAction("Image"))">
                             Image

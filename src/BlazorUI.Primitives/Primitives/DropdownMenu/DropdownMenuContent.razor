@@ -429,4 +429,43 @@
     }
 
     internal List<IDropdownMenuItem> GetMenuItems() => _menuItems;
+
+    /// <summary>
+    /// Focuses the content container for keyboard navigation.
+    /// Used when closing submenus to restore focus to parent menu.
+    /// </summary>
+    internal async Task FocusContainerAsync()
+    {
+        if (_keyboardNavModule != null)
+        {
+            try
+            {
+                await _keyboardNavModule.InvokeAsync<bool>("focusElement", _contentRef);
+            }
+            catch
+            {
+                // Fallback to C# focus
+                try
+                {
+                    await _contentRef.FocusAsync();
+                }
+                catch
+                {
+                    // Focus failed
+                }
+            }
+        }
+        else
+        {
+            // JS module not loaded, use C# focus
+            try
+            {
+                await _contentRef.FocusAsync();
+            }
+            catch
+            {
+                // Focus failed
+            }
+        }
+    }
 }

@@ -116,6 +116,37 @@ public class PositioningService : IPositioningService, IAsyncDisposable
         return new AutoUpdateHandle(cleanup);
     }
 
+    /// <inheritdoc />
+    public async Task<PositionResult> ApplyCoordinatePositionAsync(
+        ElementReference floating,
+        double x,
+        double y,
+        int padding = 8,
+        bool makeVisible = true)
+    {
+        var module = await GetModuleAsync();
+
+        var jsOptions = new
+        {
+            padding,
+            makeVisible
+        };
+
+        var result = await module.InvokeAsync<JsonElement>(
+            "applyCoordinatePosition", floating, x, y, jsOptions);
+
+        return new PositionResult
+        {
+            X = result.GetProperty("x").GetDouble(),
+            Y = result.GetProperty("y").GetDouble(),
+            TransformOrigin = result.TryGetProperty("transformOrigin", out var origin)
+                ? origin.GetString()
+                : "top left",
+            Placement = "bottom", // Not applicable for coordinate positioning
+            Strategy = "fixed"
+        };
+    }
+
     /// <summary>
     /// Disposes the positioning service, releasing JavaScript module resources.
     /// </summary>

@@ -30,9 +30,26 @@
 
     /// <summary>
     /// The element to position the floating content relative to.
+    /// Optional - use X and Y coordinates instead for positioning at arbitrary locations.
     /// </summary>
     [Parameter]
     public ElementReference? AnchorElement { get; set; }
+
+    /// <summary>
+    /// X coordinate for positioning (in pixels).
+    /// Used when AnchorElement is null for positioning at arbitrary coordinates.
+    /// Useful for context menus that need to appear at mouse click location.
+    /// </summary>
+    [Parameter]
+    public double? X { get; set; }
+
+    /// <summary>
+    /// Y coordinate for positioning (in pixels).
+    /// Used when AnchorElement is null for positioning at arbitrary coordinates.
+    /// Useful for context menus that need to appear at mouse click location.
+    /// </summary>
+    [Parameter]
+    public double? Y { get; set; }
 
     /// <summary>
     /// Unique identifier for this portal instance.
@@ -270,12 +287,50 @@
 
     private async Task SetupPositioningAsync()
     {
-        if (AnchorElement == null || !AnchorElement.HasValue)
+        // Support two positioning modes:
+        // 1. Anchor-based: Position relative to an element (dropdowns, popovers, tooltips)
+        // 2. Coordinate-based: Position at specific X/Y coordinates (context menus)
+        
+        if (X.HasValue && Y.HasValue)
         {
-            Console.WriteLine("Warning: FloatingPortal - AnchorElement is null, positioning may not work correctly");
-            return;
+            // Coordinate-based positioning for context menus
+            await SetupCoordinatePositioningAsync(X.Value, Y.Value);
         }
+        else if (AnchorElement.HasValue)
+        {
+            // Anchor-based positioning for dropdowns/popovers
+            await SetupAnchorPositioningAsync(AnchorElement.Value);
+        }
+        else
+        {
+            Console.WriteLine("Warning: FloatingPortal - Neither AnchorElement nor X/Y coordinates provided");
+        }
+    }
 
+    private async Task SetupCoordinatePositioningAsync(double x, double y)
+    {
+        try
+        {
+            // Position at exact coordinates with viewport boundary detection
+            var position = await PositioningService.ApplyCoordinatePositionAsync(
+                _portalContentRef,
+                x,
+                y,
+                padding: Offset,
+                makeVisible: true);
+
+            // Store final position (may be adjusted by viewport boundaries)
+            _positionLeft = position.X;
+            _positionTop = position.Y;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to set up coordinate positioning: {ex.Message}");
+        }
+    }
+
+    private async Task SetupAnchorPositioningAsync(ElementReference anchor)
+    {
         try
         {
             // Construct placement string from Side and Align
@@ -293,7 +348,7 @@
 
             // Compute position using the portal content ref
             var position = await PositioningService.ComputePositionAsync(
-                AnchorElement.Value,
+                anchor,
                 _portalContentRef,
                 options);
 
@@ -306,13 +361,13 @@
 
             // Set up auto-update for dynamic positioning (scroll, resize)
             _positioningCleanup = await PositioningService.AutoUpdateAsync(
-                AnchorElement.Value,
+                anchor,
                 _portalContentRef,
                 options);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to set up positioning: {ex.Message}");
+            Console.WriteLine($"Failed to set up anchor positioning: {ex.Message}");
         }
     }
 

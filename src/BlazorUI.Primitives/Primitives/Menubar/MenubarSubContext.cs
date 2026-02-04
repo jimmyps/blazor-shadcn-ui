@@ -23,6 +23,12 @@ public class MenubarSubContext
     public Func<bool, Task>? OnOpenChange { get; set; }
 
     /// <summary>
+    /// Gets or sets the nesting depth of this submenu (0 = first level, 1 = second level, etc.).
+    /// Used to calculate proper z-index stacking for nested submenus.
+    /// </summary>
+    public int Depth { get; set; } = 0;
+
+    /// <summary>
     /// Opens the submenu.
     /// </summary>
     public void Open(ElementReference? triggerElement = null)

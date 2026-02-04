@@ -6,10 +6,17 @@ namespace BlazorUI.Primitives.Services;
 /// <summary>
 /// Implementation of portal rendering service for Blazor.
 /// Manages a registry of portals that can be rendered at document body level.
+/// Maintains insertion order to ensure proper rendering sequence (e.g., parent before child).
 /// </summary>
 public class PortalService : IPortalService
 {
-    private readonly ConcurrentDictionary<string, RenderFragment> _portals = new();
+    /// <summary>
+    /// Wraps a portal's RenderFragment with its insertion order for stable sorting.
+    /// </summary>
+    private record PortalEntry(long Order, RenderFragment Content);
+
+    private readonly ConcurrentDictionary<string, PortalEntry> _portals = new();
+    private long _nextOrder = 0;
 
     /// <inheritdoc />
     public event Action? OnPortalsChanged;
@@ -36,7 +43,12 @@ public class PortalService : IPortalService
             throw new ArgumentNullException(nameof(content));
         }
 
-        _portals[id] = content;
+        // Preserve order for existing portals, assign new order for new portals
+        _portals.AddOrUpdate(
+            id,
+            _ => new PortalEntry(Interlocked.Increment(ref _nextOrder), content),
+            (_, existing) => existing with { Content = content });
+        
         OnPortalsChanged?.Invoke();
     }
 
@@ -57,10 +69,13 @@ public class PortalService : IPortalService
             throw new ArgumentNullException(nameof(content));
         }
 
-        if (!_portals.TryUpdate(id, content, _portals.GetValueOrDefault(id)!))
+        if (!_portals.TryGetValue(id, out var existing))
         {
             throw new InvalidOperationException($"Portal with ID '{id}' is not registered.");
         }
+
+        // Update content while preserving insertion order
+        _portals[id] = existing with { Content = content };
 
         OnPortalsChanged?.Invoke();
     }
@@ -80,6 +95,9 @@ public class PortalService : IPortalService
     /// <inheritdoc />
     public IReadOnlyDictionary<string, RenderFragment> GetPortals()
     {
-        return _portals;
+        // Return portals sorted by insertion order
+        return _portals
+            .OrderBy(kvp => kvp.Value.Order)
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Content);
     }
 }

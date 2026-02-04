@@ -24,6 +24,34 @@ export function setupKeyboardNav(element, dotNetRef) {
 }
 
 /**
+ * Focuses an element with a delay to ensure it's fully ready and focusable.
+ * Uses requestAnimationFrame to defer focus until the next render frame.
+ * @param {HTMLElement} element - The element to focus
+ * @returns {Promise<boolean>} True if focus succeeded, false otherwise
+ */
+export function focusElement(element) {
+    return new Promise((resolve) => {
+        if (!element) {
+            resolve(false);
+            return;
+        }
+
+        // Use double requestAnimationFrame to ensure element is fully rendered and focusable
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                try {
+                    element.focus();
+                    resolve(document.activeElement === element);
+                } catch (e) {
+                    console.warn('Failed to focus element:', e);
+                    resolve(false);
+                }
+            });
+        });
+    });
+}
+
+/**
  * Gets menu items in DOM order within a container.
  * Includes menuitem, menuitemcheckbox, and menuitemradio roles.
  * @param {HTMLElement} container - The menu container element

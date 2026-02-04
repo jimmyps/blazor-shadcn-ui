@@ -194,6 +194,7 @@ Object.assign(floating.style, {
     position: position.strategy || 'absolute',
     left: `${position.x}px`,
     top: `${position.y}px`,
+    transformOrigin: position.transformOrigin,
     zIndex: zIndex
 });
 
@@ -346,3 +347,103 @@ export async function focusById(elementId, maxWaitMs = 200) {
     }
     return false;
 }
+
+/**
+ * Positions an element at specific X/Y coordinates with viewport boundary detection.
+ * Used for context menus and other components that need to appear at arbitrary coordinates.
+ * @param {HTMLElement} floating - The element to position
+ * @param {number} x - X coordinate in pixels
+ * @param {number} y - Y coordinate in pixels
+ * @param {Object} options - Positioning options (padding, makeVisible)
+ * @returns {Object} Final position after viewport adjustments {x, y, transformOrigin}
+ */
+export function applyCoordinatePosition(floating, x, y, options = {}) {
+    if (!floating) {
+        console.warn('applyCoordinatePosition: floating element is null');
+        return { x, y, transformOrigin: 'top left' };
+    }
+
+    const {
+        padding = 8,
+        makeVisible = true
+    } = options;
+
+    // Set initial position
+    floating.style.position = 'fixed';
+    floating.style.left = `${x}px`;
+    floating.style.top = `${y}px`;
+
+    // Get element dimensions after it's positioned
+    const rect = floating.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    let newX = x;
+    let newY = y;
+
+    // Adjust if overflowing viewport (with padding)
+    if (newX + rect.width > vw - padding) {
+        newX = vw - rect.width - padding;
+    }
+    if (newY + rect.height > vh - padding) {
+        newY = vh - rect.height - padding;
+    }
+    if (newX < padding) {
+        newX = padding;
+    }
+    if (newY < padding) {
+        newY = padding;
+    }
+
+    // Apply final position
+    floating.style.left = `${newX}px`;
+    floating.style.top = `${newY}px`;
+
+    // Calculate transform-origin based on which quadrant of the viewport the element is in
+    // This makes animations appear to emanate from the correct corner
+    const transformOrigin = getTransformOriginFromCoordinates(x, y, vw, vh);
+    
+    // Set transform-origin on the first child if it exists (for proper animations)
+    // Otherwise, set it on the floating element itself
+    const targetElement = floating.firstElementChild || floating;
+    targetElement.style.transformOrigin = transformOrigin;
+
+    // Make visible if requested
+    if (makeVisible) {
+        floating.style.opacity = '1';
+        floating.style.visibility = 'visible';
+        floating.style.pointerEvents = 'auto';
+    }
+
+    return { x: newX, y: newY, transformOrigin };
+}
+
+/**
+ * Gets the transform-origin based on position in viewport for coordinate-based positioning.
+ * @param {number} x - X coordinate in pixels
+ * @param {number} y - Y coordinate in pixels
+ * @param {number} viewportWidth - Viewport width in pixels
+ * @param {number} viewportHeight - Viewport height in pixels
+ * @returns {string} CSS transform-origin value
+ */
+function getTransformOriginFromCoordinates(x, y, viewportWidth, viewportHeight) {
+    // Determine which quadrant of the viewport we're in
+    const isLeft = x < viewportWidth / 2;
+    const isTop = y < viewportHeight / 2;
+
+    // Map quadrant to transform-origin
+    // Top-left: origin from top-left corner
+    // Top-right: origin from top-right corner
+    // Bottom-left: origin from bottom-left corner
+    // Bottom-right: origin from bottom-right corner
+    if (isTop && isLeft) {
+        return 'top left';
+    } else if (isTop && !isLeft) {
+        return 'top right';
+    } else if (!isTop && isLeft) {
+        return 'bottom left';
+    } else {
+        return 'bottom right';
+    }
+}
+
