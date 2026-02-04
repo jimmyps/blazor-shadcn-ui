@@ -89,7 +89,7 @@
                 <Field IsInvalid="true">
                     <FieldLabel For="username-error">Username</FieldLabel>
                     <FieldContent>
-                        <Input Id="username-error" Type="InputType.Text" Placeholder="Enter your username" Class="border-destructive" />
+                        <Input Id="username-error" Type="InputType.Text" Placeholder="Enter your username" AriaInvalid="true" />
                         <FieldError>
                             Username is already taken. Please choose another.
                         </FieldError>
@@ -102,7 +102,7 @@
                 <Field IsInvalid="true">
                     <FieldLabel For="password-errors">Password</FieldLabel>
                     <FieldContent>
-                        <Input Id="password-errors" Type="InputType.Password" Class="border-destructive" />
+                        <Input Id="password-errors" Type="InputType.Password" AriaInvalid="true" />
                         <FieldError Errors="passwordErrors" />
                     </FieldContent>
                 </Field>
@@ -113,7 +113,7 @@
                 <Field IsInvalid="true">
                     <FieldLabel For="email-invalid">Email Address</FieldLabel>
                     <FieldContent>
-                        <Input Id="email-invalid" Type="InputType.Email" Value="invalid-email" Class="border-destructive" />
+                        <Input Id="email-invalid" Type="InputType.Email" Value="invalid-email" AriaInvalid="true" />
                         <FieldError>
                             Please enter a valid email address.
                         </FieldError>
@@ -262,6 +262,43 @@
                         <FieldLabel For="billing-address">Billing Address</FieldLabel>
                         <FieldContent>
                             <Input Id="billing-address" Type="InputType.Text" />
+                        </FieldContent>
+                    </Field>
+                </FieldGroup>
+            </div>
+
+            <!-- With Separator and Centered Content -->
+            <div class="space-y-2">
+                <FieldGroup Orientation="FieldGroupOrientation.Vertical">
+                    <Field>
+                        <FieldLabel For="email-signup">Email Address</FieldLabel>
+                        <FieldContent>
+                            <Input Id="email-signup" Type="InputType.Email" Placeholder="you@example.com" />
+                        </FieldContent>
+                    </Field>
+                    <Field>
+                        <FieldLabel For="password-signup">Password</FieldLabel>
+                        <FieldContent>
+                            <Input Id="password-signup" Type="InputType.Password" />
+                        </FieldContent>
+                    </Field>
+
+                    <FieldSeparator>Or continue with</FieldSeparator>
+
+                    <Field>
+                        <FieldContent>
+                            <div class="flex items-center gap-2">
+                                <Checkbox Id="google-signup" />
+                                <FieldLabel For="google-signup" Class="font-normal">Sign up with Google</FieldLabel>
+                            </div>
+                        </FieldContent>
+                    </Field>
+                    <Field>
+                        <FieldContent>
+                            <div class="flex items-center gap-2">
+                                <Checkbox Id="github-signup" />
+                                <FieldLabel For="github-signup" Class="font-normal">Sign up with GitHub</FieldLabel>
+                            </div>
                         </FieldContent>
                     </Field>
                 </FieldGroup>
@@ -448,6 +485,7 @@
                     <li><strong>FieldSet</strong> - Semantic fieldset element for grouping</li>
                     <li><strong>FieldLegend</strong> - Legend for fieldsets with variant options</li>
                     <li><strong>FieldGroup</strong> - Layout wrapper for stacking fields</li>
+                    <li><strong>FieldSeparator</strong> - Visual divider with optional centered content</li>
                     <li><strong>FieldTitle</strong> - Title element for complex field layouts</li>
                     <li><strong>FieldSeparator</strong> - Visual divider between sections</li>
                 </ul>

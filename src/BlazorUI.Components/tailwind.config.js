@@ -13,10 +13,20 @@ module.exports = {
     'data-[motion=from-end]:slide-in-from-right-52',
     'data-[motion=from-start]:slide-in-from-left-52',
     'data-[motion=to-end]:slide-out-to-right-52',
-    'data-[motion=to-start]:slide-out-to-left-52'
+    'data-[motion=to-start]:slide-out-to-left-52',
+    // Required by ZIndexLevels
+    'z-50',
+    'z-55',
+    'z-60',
+    'z-70',
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: "var(--font-sans, ui-sans-serif, system-ui, sans-serif)",
+        serif: "var(--font-serif, ui-serif, Georgia, serif)",
+        mono: "var(--font-mono, ui-monospace, monospace)",
+      },
       colors: {
         border: "var(--border)",
         input: "var(--input)",
@@ -60,6 +70,28 @@ module.exports = {
           "accent-foreground": "var(--sidebar-accent-foreground)",
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)",
+        },
+        alert: {
+          success: {
+            DEFAULT: "var(--alert-success)",
+            foreground: "var(--alert-success-foreground)",
+            bg: "var(--alert-success-bg)",
+          },
+          info: {
+            DEFAULT: "var(--alert-info)",
+            foreground: "var(--alert-info-foreground)",
+            bg: "var(--alert-info-bg)",
+          },
+          warning: {
+            DEFAULT: "var(--alert-warning)",
+            foreground: "var(--alert-warning-foreground)",
+            bg: "var(--alert-warning-bg)",
+          },
+          danger: {
+            DEFAULT: "var(--alert-danger)",
+            foreground: "var(--alert-danger-foreground)",
+            bg: "var(--alert-danger-bg)",
+          },
         },
       },
       borderRadius: {

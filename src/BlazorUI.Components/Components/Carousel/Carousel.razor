@@ -1,4 +1,4 @@
-@namespace BlazorUI.Components.Carousel
+﻿@namespace BlazorUI.Components.Carousel
 @using BlazorUI.Components.Button
 @using BlazorUI.Icons.Lucide.Components
 @using BlazorUI.Components.Utilities
@@ -160,7 +160,7 @@
             try
             {
                 _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Components/js/carousel.js");
+                    "import", "./_content/NeoBlazorUI.Components/js/carousel.js");
 
                 var options = new
                 {

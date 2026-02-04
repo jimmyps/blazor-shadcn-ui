@@ -95,9 +95,9 @@ public partial class InputGroup : ComponentBase
     private string CssClass => ClassNames.cn(
         // Base container styles
         "group/input-group relative flex w-full",
-        "border border-input rounded-md shadow-sm",
-        "bg-background",
-        "transition-colors outline-none",
+        "border border-input rounded-md shadow-xs",
+        "bg-background overflow-hidden",
+        "outline-none",
 
         // Default height and alignment for inputs
         "h-9 min-w-0 items-center",
@@ -125,15 +125,18 @@ public partial class InputGroup : ComponentBase
         "has-[>[data-align=inline-start]>button]:[&>textarea]:py-1.5",
         "has-[>[data-align=inline-end]>button]:[&>textarea]:py-1.5",
 
-        // Focus state - when any control inside is focused
+        // Focus state - when any control inside is focused (matching Input component)
         "has-[[data-slot=input-group-control]:focus-visible]:border-ring",
         "has-[[data-slot=input-group-control]:focus-visible]:ring-2",
-        "has-[[data-slot=input-group-control]:focus-visible]:ring-ring",
-        "has-[[data-slot=input-group-control]:focus-visible]:ring-offset-2",
-        "has-[[data-slot=input-group-control]:focus-visible]:ring-offset-background",
+        "has-[[data-slot=input-group-control]:focus-visible]:ring-ring/50",
 
         // Error state - when any control inside has aria-invalid
         "has-[[data-slot=input-group-control][aria-invalid=true]]:border-destructive",
+        "has-[[data-slot=input-group-control][aria-invalid=true]]:ring-destructive",
+        "has-[[data-slot=input-group-control][aria-invalid=true]:focus-visible]:ring-destructive/30",
+
+        // Smooth transitions for state changes (matching Input component)
+        "transition-[colors,box-shadow]",
 
         // Custom classes
         Class

@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.ScrollArea;
+﻿namespace BlazorUI.Components.ScrollArea;
 
 /// <summary>
 /// Type of scrollbar behavior in a ScrollArea.

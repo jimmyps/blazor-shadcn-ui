@@ -18,7 +18,8 @@ else
             @attributes="AdditionalAttributes"
             aria-haspopup="true"
             aria-expanded="@Context.IsOpen.ToString().ToLower()"
-            aria-controls="@Context.ContentId">
+            aria-controls="@Context.ContentId"
+            style="@(Context.IsOpen ? "pointer-events: none;" : "")">
         @ChildContent
     </button>
 }
@@ -74,7 +75,8 @@ else
     {
         TriggerId = Context.TriggerId,
         IsOpen = Context.IsOpen,
-        Toggle = () => Context.Toggle(_asChildTriggerRef),
+        // Toggle now only opens when closed (to prevent Blazor event routing edge cases)
+        Toggle = () => { if (!Context.IsOpen) Context.Open(_asChildTriggerRef); },
         Open = () => Context.Open(_asChildTriggerRef),
         Close = () => Context.Close(),
         AriaHasPopup = "true",
@@ -84,6 +86,16 @@ else
 
     private async Task HandleClick(MouseEventArgs args)
     {
+        // IMPORTANT: Only OPEN the popover from the trigger, never close it.
+        // Closing is handled by click-outside detection or explicit close actions.
+        // This prevents Blazor Server event routing edge cases where clicks inside
+        // the popover content can incorrectly trigger the trigger's click handler
+        // during component re-renders.
+        if (Context.IsOpen)
+        {
+            return;
+        }
+
         if (CustomClickHandling && OnClick.HasDelegate)
         {
             // Custom handling only
@@ -91,8 +103,8 @@ else
         }
         else
         {
-            // Default: toggle popover and store trigger element for positioning
-            Context.Toggle(_triggerRef);
+            // Default: open popover and store trigger element for positioning
+            Context.Open(_triggerRef);
 
             // Also invoke custom handler if provided
             if (OnClick.HasDelegate)
@@ -109,6 +121,24 @@ else
             throw new InvalidOperationException(
                 "PopoverTrigger must be used within a Popover component. " +
                 "Ensure PopoverTrigger is a child of a Popover component.");
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        // Proactively set the trigger element reference so it's available
+        // even when the popover is opened programmatically (via @bind-Open)
+        // This runs after every render to ensure the reference stays current
+        if (!AsChild)
+        {
+            Context.SetTriggerElement(_triggerRef);
+        }
+        else if (_asChildTriggerRef.HasValue)
+        {
+            // When using AsChild pattern, the child component (e.g., Button) sets
+            // _asChildTriggerRef via TriggerContext.SetTriggerElement. We need to
+            // propagate this to the context so Content can position relative to it.
+            Context.SetTriggerElement(_asChildTriggerRef.Value);
         }
     }
 }

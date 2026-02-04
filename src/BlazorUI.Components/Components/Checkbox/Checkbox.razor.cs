@@ -126,6 +126,26 @@ public partial class Checkbox : ComponentBase
     public string? Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of the checkbox for form submission.
+    /// </summary>
+    /// <remarks>
+    /// This is critical for form submission. The name/value pair is submitted to the server.
+    /// If not specified, falls back to the Id value.
+    /// </remarks>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the checkbox is required.
+    /// </summary>
+    /// <remarks>
+    /// When true, the checkbox must be checked for form submission.
+    /// Works with form validation.
+    /// </remarks>
+    [Parameter]
+    public bool Required { get; set; }
+
+    /// <summary>
     /// Gets or sets an expression that identifies the bound value.
     /// </summary>
     /// <remarks>
@@ -134,6 +154,14 @@ public partial class Checkbox : ComponentBase
     /// </remarks>
     [Parameter]
     public Expression<Func<bool>>? CheckedExpression { get; set; }
+
+    /// <summary>
+    /// Gets the effective name attribute, falling back to Id if Name is not specified.
+    /// </summary>
+    /// <remarks>
+    /// This ensures form submission works even when Name is not explicitly set.
+    /// </remarks>
+    private string? EffectiveName => Name ?? Id;
 
     /// <summary>
     /// Gets whether the checkbox is in an invalid state (for validation).
@@ -166,8 +194,9 @@ public partial class Checkbox : ComponentBase
         {
             var builder = new StringBuilder();
 
-            // Base checkbox styles (from shadcn/ui)
+            // Base checkbox styles (from shadcn/ui) with transitions
             builder.Append("peer h-4 w-4 shrink-0 rounded-sm border border-primary ");
+            builder.Append("transition-colors duration-150 ease-in-out ");
             builder.Append("ring-offset-background focus-visible:outline-none focus-visible:ring-2 ");
             builder.Append("focus-visible:ring-ring focus-visible:ring-offset-2 ");
             builder.Append("disabled:cursor-not-allowed disabled:opacity-50 ");

@@ -21,6 +21,19 @@ public class RadioGroupContext<TValue>
     public bool Disabled { get; set; }
 
     /// <summary>
+    /// Gets or sets the name for all radio items in this group.
+    /// </summary>
+    /// <remarks>
+    /// This name is shared by all radio items in the group for form submission.
+    /// </remarks>
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether a selection is required in this radio group.
+    /// </summary>
+    public bool Required { get; set; }
+
+    /// <summary>
     /// Gets or sets the callback invoked when a radio item is selected.
     /// </summary>
     public Func<TValue, Task>? SelectValue { get; set; }

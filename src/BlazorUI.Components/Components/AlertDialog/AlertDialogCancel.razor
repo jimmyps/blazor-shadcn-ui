@@ -2,10 +2,11 @@
 @using BlazorUI.Primitives.Dialog
 
 @*
-    AlertDialog cancel button - closes the dialog.
+    Alert Dialog Cancel - the cancel button.
+    Closes the dialog when clicked.
 *@
 
-<DialogClose>
+<DialogClose AsChild="@AsChild">
     @ChildContent
 </DialogClose>
 
@@ -15,4 +16,11 @@
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// When true, the cancel will not render a default button wrapper.
+    /// Instead, the child component receives close behavior via cascading context.
+    /// </summary>
+    [Parameter]
+    public bool AsChild { get; set; } = true;
 }

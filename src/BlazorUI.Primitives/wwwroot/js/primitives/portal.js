@@ -129,3 +129,47 @@ export function isElementInViewport(element) {
         rect.right <= (window.innerWidth || document.documentElement.clientWidth)
     );
 }
+
+// ============================================================================
+// Auto-focus Listener
+// Automatically focuses elements with data-autofocus attribute when they become visible
+// Listens for 'blazorui:visible' event dispatched by the positioning service
+// ============================================================================
+
+let autofocusListenerInitialized = false;
+
+function initAutofocusListener() {
+    if (autofocusListenerInitialized) return;
+
+    document.addEventListener('blazorui:visible', (event) => {
+        const element = event.target;
+
+        // Check if the element or any of its children has data-autofocus
+        if (element.hasAttribute('data-autofocus')) {
+            element.focus();
+        } else {
+            // Check children for data-autofocus
+            const autofocusChild = element.querySelector('[data-autofocus]');
+            if (autofocusChild) {
+                autofocusChild.focus();
+            }
+        }
+    });
+
+    autofocusListenerInitialized = true;
+}
+
+// Initialize listener when module loads
+initAutofocusListener();
+
+/**
+ * Triggers autofocus for an element that has become visible.
+ * Call this from components that don't use the positioning service.
+ * @param {HTMLElement} element - The element that is now visible
+ */
+export function triggerAutofocus(element) {
+    if (!element) return;
+
+    // Dispatch the same event that positioning service uses
+    element.dispatchEvent(new CustomEvent('blazorui:visible', { bubbles: true }));
+}

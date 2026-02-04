@@ -1,6 +1,7 @@
 @using BlazorUI.Primitives.Services
 @namespace BlazorUI.Components.DropdownMenu
 @using BlazorUI.Primitives.DropdownMenu
+@using BlazorUI.Primitives.Constants
 
 @* Styled DropdownMenuContent - wrapper with shadcn Tailwind classes *@
 <BlazorUI.Primitives.DropdownMenu.DropdownMenuContent class="@CssClass"
@@ -99,10 +100,10 @@
 
     /// <summary>
     /// Z-index for the dropdown content.
-    /// Default is 50.
+    /// Default is 60 (PopoverContent level).
     /// </summary>
     [Parameter]
-    public int ZIndex { get; set; } = 50;
+    public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;
 
     /// <summary>
     /// Inline styles to apply to the dropdown content.
@@ -114,7 +115,7 @@
     {
         get
         {
-            var baseClasses = "z-50 min-w-[8rem] no-focus-ring overflow-hidden rounded-md border bg-popover " +
+            var baseClasses = $"z-{ZIndex} min-w-[8rem] no-focus-ring overflow-hidden rounded-md border bg-popover " +
                             "text-popover-foreground shadow-md " +
                             "data-[state=open]:animate-in data-[state=closed]:animate-out " +
                             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 " +

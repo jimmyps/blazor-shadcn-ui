@@ -1,5 +1,6 @@
 @using Microsoft.AspNetCore.Components
 @using Microsoft.JSInterop
+@using BlazorUI.Components.RenderState
 @implements IAsyncDisposable
 @implements IDisposable
 @namespace BlazorUI.Components.Motion
@@ -54,6 +55,7 @@
     private int _observerId = -1;
     private bool _hasAnimated = false;
     private MotionContext? _staggerContext;
+    private bool _wasRenderedDuringPrerender = false;
 
     /// <summary>
     /// The content to render and animate.
@@ -105,6 +107,16 @@
     public bool RespectReducedMotion { get; set; } = true;
 
     /// <summary>
+    /// When true, shows content immediately during SSR/prerender without animation.
+    /// If content is rendered during prerender, animations will NOT run when the app becomes interactive.
+    /// Animations will only run if the app was already interactive when the component first rendered.
+    /// This provides instant content visibility during SSR while avoiding jarring animations on hydration.
+    /// Default: false
+    /// </summary>
+    [Parameter]
+    public bool DisableOnPrerender { get; set; } = false;
+
+    /// <summary>
     /// Custom keyframes to animate (alternative to using presets).
     /// </summary>
     [Parameter]
@@ -127,16 +139,19 @@
 
     [CascadingParameter(Name = "MotionContext")]
     private MotionContext? Context { get; set; }
-    
+
     [CascadingParameter(Name = "ParentMotion")]
     private Motion? ParentMotion { get; set; }
 
+    [CascadingParameter]
+    private AppRenderContext? RenderContext { get; set; }
+
     // Internal state for preset collection
     internal List<IMotionPreset> CollectedPresets { get; } = new();
-    
+
     // List of child Motion components for staggering
     private readonly List<Motion> _childMotions = new();
-    
+
     // Store this child's own index in the stagger sequence
     private int _myStaggerIndex = 0;
 
@@ -151,7 +166,7 @@
             _childMotions.Add(child);
         }
     }
-    
+
     /// <summary>
     /// Unregister a child Motion component.
     /// </summary>
@@ -255,7 +270,7 @@
                 // Separate presets into keyframe providers and option/spring providers
                 var keyframePresets = CollectedPresets.Where(p => p.GetKeyframes()?.Any() == true).ToList();
                 var springPreset = CollectedPresets.FirstOrDefault(p => p.GetSpringOptions() != null);
-                
+
                 // Merge all options first
                 foreach (var presetOptions in CollectedPresets
                     .Select(p => p.GetOptions())
@@ -263,13 +278,13 @@
                 {
                     options = MergeOptions(options, presetOptions);
                 }
-                
+
                 // Apply spring if available (overrides easing)
                 if (springPreset?.GetSpringOptions() != null)
                 {
                     spring = springPreset.GetSpringOptions();
                 }
-                
+
                 // Now handle keyframes
                 if (keyframePresets.Count == 0)
                 {
@@ -288,7 +303,7 @@
                     // Multiple presets with keyframes: merge their FROM/TO
                     var fromKeyframe = new MotionKeyframe();
                     var toKeyframe = new MotionKeyframe();
-                    
+
                     foreach (var (from, to) in keyframePresets.Select(preset =>
                     {
                         var presetKeyframes = preset.GetKeyframes();
@@ -330,7 +345,7 @@
                 keyframes,
                 options,
                 spring);
-            
+
             Console.WriteLine($"Motion: Animation started with ID {_animationId}");
         }
         catch (JSException ex)
@@ -351,7 +366,7 @@
             {
                 return await _jsModule.InvokeAsync<bool>("checkReducedMotion");
             }
-            
+
             // Fallback if module not loaded
             return false;
         }
@@ -415,7 +430,7 @@
         {
             _staggerContext = new MotionContext { StaggerDelay = StaggerChildren.Value };
         }
-        
+
         // If we're a child in a stagger context, register with parent
         if (Context != null && ParentMotion != null)
         {
@@ -424,7 +439,7 @@
             ParentMotion.RegisterChild(this);
         }
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -432,7 +447,7 @@
             try
             {
                 _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Components/js/motion.js");
+                    "import", "./_content/NeoBlazorUI.Components/js/motion.js");
 
                 _dotNetRef = DotNetObjectReference.Create(this);
             }
@@ -442,18 +457,35 @@
                 return;
             }
 
-            // Set up trigger
-            if (Trigger == MotionTrigger.OnAppear)
+            // Determine if we should run animations
+            // Track if content was rendered during prerender with DisableOnPrerender enabled
+            bool isPrerender = RenderContext != null && !RenderContext.IsInteractive;
+
+            if (isPrerender && DisableOnPrerender)
             {
-                await AnimateInternalAsync();
+                _wasRenderedDuringPrerender = true;
             }
-            else if (Trigger == MotionTrigger.OnInView)
+
+            // Skip animation if content was already shown during prerender
+            // This prevents jarring animations when the app becomes interactive
+            bool shouldAnimate = RenderContext == null || 
+                                (RenderContext.IsInteractive && !_wasRenderedDuringPrerender);
+
+            if (shouldAnimate)
             {
-                await SetupInViewTriggerAsync();
+                // Set up trigger
+                if (Trigger == MotionTrigger.OnAppear)
+                {
+                    await AnimateInternalAsync();
+                }
+                else if (Trigger == MotionTrigger.OnInView)
+                {
+                    await SetupInViewTriggerAsync();
+                }
             }
         }
     }
-    
+
     public void Dispose()
     {
         // Unregister from parent if we were registered
@@ -507,17 +539,27 @@
     private string GetCombinedClasses()
     {
         var classes = new List<string>();
-        
+
         // Add user-provided classes
         if (!string.IsNullOrEmpty(Class))
-        {
             classes.Add(Class);
-        }
-        
-        // For OnInView triggers, hide initially to prevent flash before animation
-        if (Trigger == MotionTrigger.OnInView && !_hasAnimated)
+
+        // For non-manual triggers, hide initially to prevent flash before animation
+        // If DisableOnPrerender is true and we're in prerender, keep content visible
+        if ((Trigger == MotionTrigger.OnAppear || Trigger == MotionTrigger.OnInView)
+            && !_hasAnimated && !_wasRenderedDuringPrerender)
         {
-            classes.Add("opacity-0");
+            bool isPrerender = RenderContext != null && !RenderContext.IsInteractive;
+
+            // Hide content unless we're in prerender with DisableOnPrerender enabled
+            if (!(isPrerender && DisableOnPrerender))
+            {
+                classes.Add("opacity-0");
+            }
+            else if (isPrerender && DisableOnPrerender)
+            {
+                _wasRenderedDuringPrerender = true;
+            }
         }
         
         return string.Join(" ", classes);

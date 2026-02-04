@@ -6,9 +6,15 @@
                  Disabled="@Disabled"
                  Id="@Id"
                  aria-label="@AriaLabel"
-                 aria-required="@(CheckedExpression != null ? "true" : null)"
+                 aria-required="@(Required || CheckedExpression != null ? "true" : null)"
                  aria-invalid="@(IsInvalid ? "true" : null)"
                  class="@CssClass">
     <span data-state="@(Checked ? "checked" : "unchecked")" class="@ThumbCssClass">
     </span>
 </BlazorUI.Primitives.Switch.Switch>
+
+@* Hidden input for form submission *@
+@if (!string.IsNullOrEmpty(EffectiveName))
+{
+    <input type="hidden" name="@EffectiveName" value="@(Checked ? "true" : "false")" />
+}

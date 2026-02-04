@@ -2,15 +2,16 @@
 @using BlazorUI.Primitives.Dialog
 
 @*
-    AlertDialog component wrapper for critical confirmations.
-    Uses the same Dialog primitive but with alert-specific semantics.
+    Alert Dialog component - a modal requiring acknowledgement.
+    Wraps the Dialog primitive with specific accessibility for confirmations.
+    Use AlertDialogContent to configure dismissal behavior (CloseOnClickOutside, CloseOnEscape).
 *@
 
 <BlazorUI.Primitives.Dialog.Dialog Open="@Open"
-                                         OpenChanged="@OpenChanged"
-                                         DefaultOpen="@DefaultOpen"
-                                         OnOpenChange="@OnOpenChange"
-                                         Modal="true">
+                                   OpenChanged="@OpenChanged"
+                                   DefaultOpen="@DefaultOpen"
+                                   OnOpenChange="@OnOpenChange"
+                                   Modal="true">
     @ChildContent
 </BlazorUI.Primitives.Dialog.Dialog>
 

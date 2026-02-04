@@ -129,6 +129,13 @@ public partial class DataTableColumn<TData, TValue> : ComponentBase where TData 
     public string? HeaderClass { get; set; }
 
     /// <summary>
+    /// Gets or sets the text alignment for both the header and cells in this column.
+    /// Default is Left. Typically set to Right for numeric columns.
+    /// </summary>
+    [Parameter]
+    public ColumnAlignment Alignment { get; set; } = ColumnAlignment.Left;
+
+    /// <summary>
     /// Gets or sets the parent DataTable component.
     /// Automatically set via cascading parameter.
     /// </summary>

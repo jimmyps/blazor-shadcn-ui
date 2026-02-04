@@ -10,7 +10,7 @@
     Disabled="@Disabled"
     AriaLabel="@AriaLabel"
     class="@CssClass"
-    aria-required="@(CheckedExpression != null ? "true" : null)"
+    aria-required="@(Required || CheckedExpression != null ? "true" : null)"
     aria-invalid="@(IsInvalid ? "true" : null)">
     @if (Checked)
     {
@@ -43,3 +43,9 @@
         </svg>
     }
 </BlazorUI.Primitives.Checkbox.Checkbox>
+
+@* Hidden input for form submission *@
+@if (!string.IsNullOrEmpty(EffectiveName))
+{
+    <input type="hidden" name="@EffectiveName" value="@(Checked ? "true" : "false")" />
+}

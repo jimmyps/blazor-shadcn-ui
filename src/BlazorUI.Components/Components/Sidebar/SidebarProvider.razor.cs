@@ -1,16 +1,77 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Http;
 using Microsoft.JSInterop;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BlazorUI.Components.Sidebar;
 
-public partial class SidebarProvider
+public partial class SidebarProvider : ComponentBase
 {
     private SidebarContext Context { get; set; } = new();
     private IJSObjectReference? _module;
     private DotNetObjectReference<SidebarProvider>? _dotNetRef;
+    private PersistingComponentStateSubscription _persistingSubscription;
+    private IHttpContextAccessor? _httpContextAccessor;
 
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
+
+    [Inject]
+    private IServiceProvider ServiceProvider { get; set; } = default!;
+
+    [Inject]
+    private PersistentComponentState PersistentState { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        // Try to get IHttpContextAccessor - it's only available in Server/SSR, not in WebAssembly
+        _httpContextAccessor = ServiceProvider.GetService<IHttpContextAccessor>();
+        
+        bool initialOpen = DefaultOpen;
+        
+        // Try to restore state from persistent component state (client-side after prerender)
+        if (PersistentState.TryTakeFromJson<bool>("SidebarOpen", out var persistedOpen))
+        {
+            initialOpen = persistedOpen;
+        }
+        // Otherwise try to read cookie server-side during prerendering (only available in Server/SSR)
+        else if (_httpContextAccessor?.HttpContext != null && !string.IsNullOrEmpty(CookieKey))
+        {
+            var cookies = _httpContextAccessor.HttpContext.Request.Cookies;
+            
+            // URL-encode the cookie key to match how JavaScript sets it (e.g., "sidebar:state" -> "sidebar%3Astate")
+            var encodedCookieKey = Uri.EscapeDataString(CookieKey);
+            
+            // Try both the original and encoded key names
+            string? cookieValue = null;
+            if (cookies.TryGetValue(encodedCookieKey, out var encodedValue))
+            {
+                cookieValue = Uri.UnescapeDataString(encodedValue);
+            }
+            else if (cookies.TryGetValue(CookieKey, out var plainValue))
+            {
+                cookieValue = plainValue;
+            }
+            
+            if (cookieValue != null && bool.TryParse(cookieValue, out var savedOpen))
+            {
+                initialOpen = savedOpen;
+            }
+        }
+        
+        // Initialize context immediately for SSR - enables expand/collapse to work during prerendering
+        Context.Initialize(open: initialOpen, variant: Variant, side: Side, staticRendering: StaticRendering);
+        
+        // Register a callback to persist the state during prerendering
+        _persistingSubscription = PersistentState.RegisterOnPersisting(PersistState);
+    }
+
+    private Task PersistState()
+    {
+        // Persist the current sidebar open state for client-side restoration
+        PersistentState.PersistAsJson("SidebarOpen", Context.Open);
+        return Task.CompletedTask;
+    }
 
     protected override void OnParametersSet()
     {
@@ -27,38 +88,20 @@ public partial class SidebarProvider
             {
                 // Load the sidebar JavaScript module
                 _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/BlazorUI.Components/js/sidebar.js");
+                    "import", "./_content/NeoBlazorUI.Components/js/sidebar.js");
 
                 // Create a reference to this component for JS callbacks
                 _dotNetRef = DotNetObjectReference.Create(this);
 
-                // Initialize sidebar state from cookie if persistence is enabled
-                bool? savedOpen = null;
-                if (!string.IsNullOrEmpty(CookieKey))
-                {
-                    savedOpen = await _module.InvokeAsync<bool?>("getSidebarState", CookieKey);
-                }
-
-                // Initialize context with saved state or defaults
-                Context.Initialize(
-                    open: savedOpen ?? DefaultOpen,
-                    variant: Variant,
-                    side: Side
-                );
-
-                // Set up mobile detection and keyboard shortcuts
-                await _module.InvokeVoidAsync("initializeSidebar", _dotNetRef, CookieKey);
+                // Set up mobile detection, keyboard shortcuts, and optional static rendering support
+                await _module.InvokeVoidAsync("initializeSidebar", _dotNetRef, CookieKey, StaticRendering);
 
                 // Subscribe to state changes for persistence
                 Context.StateChanged += OnStateChanged;
-
-                StateHasChanged();
             }
             catch (JSException)
             {
-                // JS module not available, continue without JS features
-                Context.Initialize(open: DefaultOpen, variant: Variant, side: Side);
-                StateHasChanged();
+                // JS module not available, continue without JS enhancements
             }
         }
     }
@@ -98,7 +141,22 @@ public partial class SidebarProvider
     public void OnToggleShortcut()
     {
         Context.ToggleSidebar();
-        StateHasChanged(); // Force re-render after toggle
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Toggle sidebar - called from JS interop when StaticRendering is enabled.
+    /// </summary>
+    [JSInvokable]
+    public void ToggleSidebar()
+    {
+        Context.ToggleSidebar();
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        _persistingSubscription.Dispose();
     }
 
     public async ValueTask DisposeAsync()
@@ -122,6 +180,7 @@ public partial class SidebarProvider
         }
 
         _dotNetRef?.Dispose();
+        _persistingSubscription.Dispose();
 
         GC.SuppressFinalize(this);
     }

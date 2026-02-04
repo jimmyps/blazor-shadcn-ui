@@ -44,6 +44,9 @@ export function initialize(scrollAreaElement, options) {
         if (verticalThumb && verticalScrollbar) {
             const scrollableHeight = scrollHeight - clientHeight;
             if (scrollableHeight > 0) {
+                // Show scrollbar when content overflows
+                verticalScrollbar.setAttribute('data-state', 'visible');
+                
                 // Calculate thumb height as a ratio of viewport to content
                 const thumbHeightRatio = clientHeight / scrollHeight;
                 const thumbHeight = Math.max(thumbHeightRatio * clientHeight, 20); // Minimum 20px
@@ -55,6 +58,9 @@ export function initialize(scrollAreaElement, options) {
                 
                 verticalThumb.style.height = `${thumbHeight}px`;
                 verticalThumb.style.transform = `translateY(${thumbOffset}px)`;
+            } else {
+                // Hide scrollbar when no overflow
+                verticalScrollbar.setAttribute('data-state', 'hidden');
             }
         }
 
@@ -62,6 +68,9 @@ export function initialize(scrollAreaElement, options) {
         if (horizontalThumb && horizontalScrollbar) {
             const scrollableWidth = scrollWidth - clientWidth;
             if (scrollableWidth > 0) {
+                // Show scrollbar when content overflows
+                horizontalScrollbar.setAttribute('data-state', 'visible');
+                
                 // Calculate thumb width as a ratio of viewport to content
                 const thumbWidthRatio = clientWidth / scrollWidth;
                 const thumbWidth = Math.max(thumbWidthRatio * clientWidth, 20); // Minimum 20px
@@ -73,6 +82,9 @@ export function initialize(scrollAreaElement, options) {
                 
                 horizontalThumb.style.width = `${thumbWidth}px`;
                 horizontalThumb.style.transform = `translateX(${thumbOffset}px)`;
+            } else {
+                // Hide scrollbar when no overflow
+                horizontalScrollbar.setAttribute('data-state', 'hidden');
             }
         }
     }
@@ -119,6 +131,7 @@ export function initialize(scrollAreaElement, options) {
     updateAll();
 
     // Observe content size changes (throttled for performance)
+    // Watch both the viewport and its child content wrapper
     let resizeRafId = null;
     const resizeObserver = new ResizeObserver(() => {
         if (isDisposed) return;
@@ -130,7 +143,15 @@ export function initialize(scrollAreaElement, options) {
             resizeRafId = null;
         });
     });
+    
+    // Observe the viewport itself
     resizeObserver.observe(viewport);
+    
+    // Also observe the content wrapper (first child of viewport) for content height changes
+    const contentWrapper = viewport.firstElementChild;
+    if (contentWrapper) {
+        resizeObserver.observe(contentWrapper);
+    }
 
     // Drag functionality for vertical scrollbar
     let verticalDragHandlers = null;

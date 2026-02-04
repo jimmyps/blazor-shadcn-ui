@@ -56,6 +56,7 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         public RenderFragment<TData>? CellTemplate { get; set; }
         public string? CellClass { get; set; }
         public string? HeaderClass { get; set; }
+        public ColumnAlignment Alignment { get; set; } = ColumnAlignment.Left;
     }
 
     private List<ColumnData> _columns = new();
@@ -64,6 +65,19 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     private IEnumerable<TData> _filteredData = Array.Empty<TData>();
     private string _globalSearchValue = string.Empty;
     private int _columnsVersion = 0;
+    private bool _selectAllDropdownOpen = false;
+
+    // ShouldRender tracking fields
+    private IEnumerable<TData>? _lastData;
+    private DataTableSelectionMode _lastSelectionMode;
+    private bool _lastIsLoading;
+    private int _lastColumnsVersion;
+    private string _lastGlobalSearchValue = string.Empty;
+    private int _selectionVersion = 0;
+    private int _lastSelectionVersion = 0;
+    private IReadOnlyCollection<TData>? _lastSelectedItems;
+    private int _paginationVersion = 0;
+    private int _lastPaginationVersion = 0;
 
     /// <summary>
     /// Gets or sets the data source for the table.
@@ -107,18 +121,26 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     public bool IsLoading { get; set; }
 
     /// <summary>
-    /// Gets or sets the available page size options.
-    /// Default is [10, 20, 50, 100].
+    /// Gets or sets whether keyboard navigation is enabled for table rows.
+    /// When true, rows can be navigated with arrow keys and selected with Enter/Space.
+    /// Default is true.
     /// </summary>
     [Parameter]
-    public int[] PageSizes { get; set; } = { 10, 20, 50, 100 };
+    public bool EnableKeyboardNavigation { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the available page size options.
+    /// Default is [5, 10, 20, 50, 100].
+    /// </summary>
+    [Parameter]
+    public int[] PageSizes { get; set; } = { 5, 10, 20, 50, 100 };
 
     /// <summary>
     /// Gets or sets the initial page size.
-    /// Default is 10.
+    /// Default is 5.
     /// </summary>
     [Parameter]
-    public int InitialPageSize { get; set; } = 10;
+    public int InitialPageSize { get; set; } = 5;
 
     /// <summary>
     /// Gets or sets custom toolbar actions (buttons, etc.).
@@ -173,11 +195,11 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     public EventCallback<(string ColumnId, SortDirection Direction)> OnSort { get; set; }
 
     /// <summary>
-    /// Event callback invoked when filtering changes.
+    /// Event callback invoked when the global search value changes.
     /// Use for custom filtering logic (hybrid mode).
     /// </summary>
     [Parameter]
-    public EventCallback<(string? GlobalSearch, Dictionary<string, string> ColumnFilters)> OnFilter { get; set; }
+    public EventCallback<string?> OnFilter { get; set; }
 
     /// <summary>
     /// Gets or sets a function to preprocess data before automatic processing.
@@ -212,10 +234,29 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     {
         _tableState.Pagination.PageSize = InitialPageSize;
         _tableState.Pagination.CurrentPage = 1;
+        // Set selection mode on the state so Select/Deselect methods work correctly
+        _tableState.Selection.Mode = GetPrimitiveSelectionMode();
     }
 
     protected override async Task OnParametersSetAsync()
     {
+        // Keep selection mode in sync with parameter
+        _tableState.Selection.Mode = GetPrimitiveSelectionMode();
+
+        // Sync SelectedItems parameter to internal state if changed externally
+        // Skip if SelectedItems is the same reference as our internal collection (shouldn't happen with the copy we make, but defensive)
+        if (!ReferenceEquals(SelectedItems, _lastSelectedItems) &&
+            !ReferenceEquals(SelectedItems, _tableState.Selection.SelectedItems))
+        {
+            _tableState.Selection.Clear();
+            foreach (var item in SelectedItems)
+            {
+                _tableState.Selection.Select(item);
+            }
+            _lastSelectedItems = SelectedItems;
+            _selectionVersion++;
+        }
+
         await ProcessDataAsync();
     }
 
@@ -243,7 +284,8 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             MaxWidth = column.MaxWidth,
             CellTemplate = column.CellTemplate,
             CellClass = column.CellClass,
-            HeaderClass = column.HeaderClass
+            HeaderClass = column.HeaderClass,
+            Alignment = column.Alignment
         };
 
         _columns.Add(columnData);
@@ -279,58 +321,54 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Applies filtering to the data (column filters + global search).
+    /// Applies global search filtering to the data.
     /// </summary>
     private IEnumerable<TData> ApplyFiltering(IEnumerable<TData> data)
     {
-        var filtered = data;
-
-        // Apply column filters
-        foreach (var filter in _tableState.Filtering.ColumnFilters)
+        if (string.IsNullOrWhiteSpace(_globalSearchValue))
         {
-            var column = _columns.FirstOrDefault(c => c.Id == filter.Key);
-            if (column != null && !string.IsNullOrWhiteSpace(filter.Value))
+            return data;
+        }
+
+        // Cache search value to avoid repeated property access in closure
+        var searchValue = _globalSearchValue;
+
+        // Pre-filter to only filterable columns to reduce iterations
+        var filterableColumns = _columns.Where(c => c.Filterable).ToList();
+        if (filterableColumns.Count == 0)
+        {
+            filterableColumns = _columns; // Fall back to all columns if none marked filterable
+        }
+
+        return data.Where(item => MatchesSearch(item, searchValue, filterableColumns));
+    }
+
+    /// <summary>
+    /// Checks if an item matches the search criteria across the specified columns.
+    /// Extracted method to reduce closure overhead and improve JIT optimization.
+    /// </summary>
+    private static bool MatchesSearch(TData item, string searchValue, List<ColumnData> columns)
+    {
+        foreach (var column in columns)
+        {
+            try
             {
-                filtered = filtered.Where(item =>
+                var value = column.Property(item);
+                if (value == null) continue;
+
+                var stringValue = value.ToString();
+                if (!string.IsNullOrEmpty(stringValue) &&
+                    stringValue.Contains(searchValue, StringComparison.OrdinalIgnoreCase))
                 {
-                    try
-                    {
-                        var value = column.Property(item);
-                        var stringValue = value?.ToString();
-                        return !string.IsNullOrEmpty(stringValue) &&
-                               stringValue.Contains(filter.Value, StringComparison.OrdinalIgnoreCase);
-                    }
-                    catch
-                    {
-                        return false; // Skip items that cause errors during property access
-                    }
-                });
+                    return true;
+                }
+            }
+            catch
+            {
+                // Skip columns that cause errors during property access
             }
         }
-
-        // Apply global search
-        if (!string.IsNullOrWhiteSpace(_globalSearchValue))
-        {
-            filtered = filtered.Where(item =>
-            {
-                return _columns.Any(column =>
-                {
-                    try
-                    {
-                        var value = column.Property(item);
-                        var stringValue = value?.ToString();
-                        return !string.IsNullOrEmpty(stringValue) &&
-                               stringValue.Contains(_globalSearchValue, StringComparison.OrdinalIgnoreCase);
-                    }
-                    catch
-                    {
-                        return false; // Skip columns that cause errors during property access
-                    }
-                });
-            });
-        }
-
-        return filtered;
+        return false;
     }
 
     /// <summary>
@@ -378,14 +416,14 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         // Invoke custom callback if provided
         if (OnFilter.HasDelegate)
         {
-            await OnFilter.InvokeAsync((_globalSearchValue, _tableState.Filtering.ColumnFilters.ToDictionary(f => f.Key, f => f.Value ?? string.Empty)));
+            await OnFilter.InvokeAsync(_globalSearchValue);
         }
 
         // Reset to first page when filtering
         _tableState.Pagination.CurrentPage = 1;
 
         await ProcessDataAsync();
-        StateHasChanged();
+        // StateHasChanged() not needed - Blazor auto-renders after async event handlers
     }
 
     /// <summary>
@@ -412,29 +450,98 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     {
         if (SelectedItemsChanged.HasDelegate)
         {
-            await SelectedItemsChanged.InvokeAsync(selectedItems);
+            // Pass a copy to avoid reference aliasing - if parent stores the reference
+            // and we later call Clear(), it would clear the parent's collection too
+            await SelectedItemsChanged.InvokeAsync(selectedItems.ToList().AsReadOnly());
         }
     }
 
     /// <summary>
+    /// Determines whether to show the select-all dropdown prompt.
+    /// Returns true when total items exceed the current page count.
+    /// </summary>
+    private bool ShouldShowSelectAllPrompt()
+    {
+        return _tableState.Pagination.TotalItems > _processedData.Count();
+    }
+
+    /// <summary>
+    /// Gets the total count of filtered items across all pages.
+    /// </summary>
+    private int GetTotalFilteredItemCount()
+    {
+        return _filteredData.Count();
+    }
+
+    /// <summary>
+    /// Opens the select-all dropdown menu.
+    /// </summary>
+    private void OpenSelectAllDropdown()
+    {
+        _selectAllDropdownOpen = true;
+        StateHasChanged();
+    }
+
+    /// <summary>
     /// Handles select all checkbox changes.
+    /// When multiple pages exist, opens a dropdown for user to choose scope.
     /// </summary>
     private async Task HandleSelectAllChanged(bool isChecked)
     {
-        if (isChecked)
+        if (!isChecked)
         {
-            // Select all items on current page
-            foreach (var item in _processedData)
-            {
-                _tableState.Selection.Select(item);
-            }
-        }
-        else
-        {
-            // Deselect all
-            _tableState.Selection.Clear();
+            await HandleClearSelection();
+            return;
         }
 
+        if (ShouldShowSelectAllPrompt())
+        {
+            _selectAllDropdownOpen = true;
+            StateHasChanged();
+            return;
+        }
+
+        await HandleSelectAllOnCurrentPage();
+    }
+
+    /// <summary>
+    /// Selects all items on the current page only.
+    /// </summary>
+    private async Task HandleSelectAllOnCurrentPage()
+    {
+        foreach (var item in _processedData)
+        {
+            _tableState.Selection.Select(item);
+        }
+        _selectAllDropdownOpen = false;
+        _selectionVersion++;
+        await HandleSelectionChange(_tableState.Selection.SelectedItems);
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Selects all items across all pages (entire filtered dataset).
+    /// </summary>
+    private async Task HandleSelectAllItems()
+    {
+        foreach (var item in _filteredData)
+        {
+            _tableState.Selection.Select(item);
+        }
+        _selectAllDropdownOpen = false;
+        _selectionVersion++;
+        await HandleSelectionChange(_tableState.Selection.SelectedItems);
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Clears all selected items.
+    /// </summary>
+    private async Task HandleClearSelection()
+    {
+        _tableState.Selection.Clear();
+        _selectAllDropdownOpen = false;
+        _selectionVersion++;
         await HandleSelectionChange(_tableState.Selection.SelectedItems);
         StateHasChanged();
     }
@@ -453,6 +560,7 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             _tableState.Selection.Deselect(item);
         }
 
+        _selectionVersion++;  // Track selection change for ShouldRender
         await HandleSelectionChange(_tableState.Selection.SelectedItems);
         StateHasChanged();
     }
@@ -466,6 +574,19 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             return false;
 
         return _processedData.All(item => _tableState.Selection.IsSelected(item));
+    }
+
+    /// <summary>
+    /// Checks if some (but not all) rows on the current page are selected.
+    /// Used for the indeterminate state of the select-all checkbox.
+    /// </summary>
+    private bool IsSomeSelected()
+    {
+        if (!_processedData.Any())
+            return false;
+
+        var selectedCount = _processedData.Count(item => _tableState.Selection.IsSelected(item));
+        return selectedCount > 0 && selectedCount < _processedData.Count();
     }
 
     /// <summary>
@@ -506,6 +627,7 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// </summary>
     private async Task HandlePageChanged(int newPage)
     {
+        _paginationVersion++;  // Track pagination change for ShouldRender
         await ProcessDataAsync();
         StateHasChanged();
     }
@@ -515,7 +637,37 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// </summary>
     private async Task HandlePageSizeChanged(int newPageSize)
     {
+        _paginationVersion++;  // Track pagination change for ShouldRender
         await ProcessDataAsync();
         StateHasChanged();
+    }
+
+    /// <summary>
+    /// Determines whether the component should re-render based on tracked state changes.
+    /// This optimization reduces unnecessary render cycles for complex tables.
+    /// </summary>
+    protected override bool ShouldRender()
+    {
+        var dataChanged = !ReferenceEquals(_lastData, Data);
+        var selectionModeChanged = _lastSelectionMode != SelectionMode;
+        var loadingChanged = _lastIsLoading != IsLoading;
+        var columnsChanged = _lastColumnsVersion != _columnsVersion;
+        var searchChanged = _lastGlobalSearchValue != _globalSearchValue;
+        var selectionChanged = _lastSelectionVersion != _selectionVersion;
+        var paginationChanged = _lastPaginationVersion != _paginationVersion;
+
+        if (dataChanged || selectionModeChanged || loadingChanged || columnsChanged || searchChanged || selectionChanged || paginationChanged)
+        {
+            _lastData = Data;
+            _lastSelectionMode = SelectionMode;
+            _lastIsLoading = IsLoading;
+            _lastColumnsVersion = _columnsVersion;
+            _lastGlobalSearchValue = _globalSearchValue;
+            _lastSelectionVersion = _selectionVersion;
+            _lastPaginationVersion = _paginationVersion;
+            return true;
+        }
+
+        return false;
     }
 }

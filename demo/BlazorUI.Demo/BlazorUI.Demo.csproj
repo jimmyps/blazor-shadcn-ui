@@ -19,6 +19,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>BlazorUI.Demo</RootNamespace>
     <AssemblyName>BlazorUI.Demo</AssemblyName>
+    <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
 
 </Project>

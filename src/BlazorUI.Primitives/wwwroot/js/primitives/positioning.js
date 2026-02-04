@@ -2,16 +2,50 @@
 // CDN: https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.5.3/+esm
 
 let floatingUI = null;
+let stylesInjected = false;
+let floatingZIndex = 60; // to be consistent with ZIndexLevels.Popover
+
+/**
+ * Injects required CSS for positioning primitives.
+ * This ensures the library works without requiring manual CSS imports.
+ */
+function injectRequiredStyles() {
+    if (stylesInjected) return;
+
+    const css = `
+        /* BlazorUI Primitives - Auto-injected positioning styles */
+        [data-positioned="false"] {
+            position: absolute !important;
+            top: -9999px !important;
+            left: -9999px !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            z-index: ${floatingZIndex};
+        }
+    `;
+
+    const style = document.createElement('style');
+    style.setAttribute('data-blazorui-primitives', 'positioning');
+    style.textContent = css;
+    document.head.appendChild(style);
+    stylesInjected = true;
+}
 
 // Store cleanup functions with unique IDs to avoid passing functions through JS interop
 const cleanupRegistry = new Map();
 let cleanupIdCounter = 0;
 
 /**
- * Lazy loads Floating UI from CDN with local fallback
+ * Lazy loads Floating UI from preloaded global or CDN with fallback
  */
 async function loadFloatingUI() {
     if (floatingUI) return floatingUI;
+
+    // Check for preloaded global first (from App.razor script)
+    if (window.FloatingUIDOM) {
+        floatingUI = window.FloatingUIDOM;
+        return floatingUI;
+    }
 
     try {
         // Try CDN first
@@ -71,6 +105,9 @@ export async function waitForElement(elementId, maxWaitMs = 100, intervalMs = 10
  * @returns {Promise<Object>} Position result with x, y, placement
  */
 export async function computePosition(reference, floating, options = {}) {
+    // Inject required CSS on first use
+    injectRequiredStyles();
+
     // Validate elements before proceeding
     if (!isElementReady(reference)) {
         throw new Error('Reference element is not ready or not in DOM');
@@ -88,7 +125,8 @@ export async function computePosition(reference, floating, options = {}) {
         flip = true,
         shift = true,
         padding = 8,
-        strategy = 'absolute'
+        strategy = 'absolute',
+        matchReferenceWidth = false
     } = options;
 
     const middleware = [
@@ -106,6 +144,19 @@ export async function computePosition(reference, floating, options = {}) {
     // Add arrow middleware if arrow element provided
     if (options.arrow) {
         middleware.push(lib.arrow({ element: options.arrow }));
+    }
+
+    // Add size middleware to match floating element width to reference element
+    if (matchReferenceWidth) {
+        middleware.push(lib.size({
+            apply({ rects, elements }) {
+                Object.assign(elements.floating.style, {
+                    width: `${rects.reference.width}px`,
+                    minWidth: `${rects.reference.width}px`,
+                    maxWidth: `${rects.reference.width}px`
+                });
+            }
+        }));
     }
 
     const result = await lib.computePosition(reference, floating, {
@@ -134,20 +185,42 @@ export async function computePosition(reference, floating, options = {}) {
  * @param {boolean} makeVisible - Whether to make the element visible after positioning
  */
 export function applyPosition(floating, position, makeVisible = false) {
-    if (!floating || !position) return;
+if (!floating || !position) return;
 
-    Object.assign(floating.style, {
-        position: position.strategy || 'absolute',
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        transformOrigin: position.transformOrigin || ''
-    });
+// Apply all positioning styles atomically to prevent flash
+// Use higher z-index for fixed positioning (nested dropdowns) to ensure they appear above parent popovers
+const zIndex = position.strategy === 'fixed' ? '9999' : floatingZIndex;
+Object.assign(floating.style, {
+    position: position.strategy || 'absolute',
+    left: `${position.x}px`,
+    top: `${position.y}px`,
+    transformOrigin: position.transformOrigin,
+    zIndex: zIndex
+});
+
+    // Set transform-origin on the first child if it exists (for proper animations)
+    // Otherwise, set it on the floating element itself
+    if (position.transformOrigin) {
+        const targetElement = floating.firstElementChild || floating;
+        targetElement.style.transformOrigin = position.transformOrigin;
+    }
 
     // If makeVisible is true, show the element after positioning
-    // Note: We don't set opacity here - let CSS animations (animate-in, fade-in) handle it
+    // Set all visibility-related properties to ensure the element is fully visible
     if (makeVisible) {
-        floating.style.visibility = 'visible';
-        floating.style.pointerEvents = 'auto';
+        // Use requestAnimationFrame to ensure position is applied before visibility
+        requestAnimationFrame(() => {
+            // Use setProperty with 'important' to override any CSS animations/transitions
+            floating.style.setProperty('visibility', 'visible', 'important');
+            floating.style.setProperty('opacity', '1', 'important');
+            floating.style.setProperty('pointer-events', 'auto', 'important');
+            // Also ensure position is not being reset by CSS
+            floating.style.setProperty('top', floating.style.top, 'important');
+            floating.style.setProperty('left', floating.style.left, 'important');
+
+            // Dispatch event to signal element is now visible and positioned
+            floating.dispatchEvent(new CustomEvent('blazorui:visible', { bubbles: true }));
+        });
     }
 }
 
@@ -274,3 +347,103 @@ export async function focusById(elementId, maxWaitMs = 200) {
     }
     return false;
 }
+
+/**
+ * Positions an element at specific X/Y coordinates with viewport boundary detection.
+ * Used for context menus and other components that need to appear at arbitrary coordinates.
+ * @param {HTMLElement} floating - The element to position
+ * @param {number} x - X coordinate in pixels
+ * @param {number} y - Y coordinate in pixels
+ * @param {Object} options - Positioning options (padding, makeVisible)
+ * @returns {Object} Final position after viewport adjustments {x, y, transformOrigin}
+ */
+export function applyCoordinatePosition(floating, x, y, options = {}) {
+    if (!floating) {
+        console.warn('applyCoordinatePosition: floating element is null');
+        return { x, y, transformOrigin: 'top left' };
+    }
+
+    const {
+        padding = 8,
+        makeVisible = true
+    } = options;
+
+    // Set initial position
+    floating.style.position = 'fixed';
+    floating.style.left = `${x}px`;
+    floating.style.top = `${y}px`;
+
+    // Get element dimensions after it's positioned
+    const rect = floating.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    let newX = x;
+    let newY = y;
+
+    // Adjust if overflowing viewport (with padding)
+    if (newX + rect.width > vw - padding) {
+        newX = vw - rect.width - padding;
+    }
+    if (newY + rect.height > vh - padding) {
+        newY = vh - rect.height - padding;
+    }
+    if (newX < padding) {
+        newX = padding;
+    }
+    if (newY < padding) {
+        newY = padding;
+    }
+
+    // Apply final position
+    floating.style.left = `${newX}px`;
+    floating.style.top = `${newY}px`;
+
+    // Calculate transform-origin based on which quadrant of the viewport the element is in
+    // This makes animations appear to emanate from the correct corner
+    const transformOrigin = getTransformOriginFromCoordinates(x, y, vw, vh);
+    
+    // Set transform-origin on the first child if it exists (for proper animations)
+    // Otherwise, set it on the floating element itself
+    const targetElement = floating.firstElementChild || floating;
+    targetElement.style.transformOrigin = transformOrigin;
+
+    // Make visible if requested
+    if (makeVisible) {
+        floating.style.opacity = '1';
+        floating.style.visibility = 'visible';
+        floating.style.pointerEvents = 'auto';
+    }
+
+    return { x: newX, y: newY, transformOrigin };
+}
+
+/**
+ * Gets the transform-origin based on position in viewport for coordinate-based positioning.
+ * @param {number} x - X coordinate in pixels
+ * @param {number} y - Y coordinate in pixels
+ * @param {number} viewportWidth - Viewport width in pixels
+ * @param {number} viewportHeight - Viewport height in pixels
+ * @returns {string} CSS transform-origin value
+ */
+function getTransformOriginFromCoordinates(x, y, viewportWidth, viewportHeight) {
+    // Determine which quadrant of the viewport we're in
+    const isLeft = x < viewportWidth / 2;
+    const isTop = y < viewportHeight / 2;
+
+    // Map quadrant to transform-origin
+    // Top-left: origin from top-left corner
+    // Top-right: origin from top-right corner
+    // Bottom-left: origin from bottom-left corner
+    // Bottom-right: origin from bottom-right corner
+    if (isTop && isLeft) {
+        return 'top left';
+    } else if (isTop && !isLeft) {
+        return 'top right';
+    } else if (!isTop && isLeft) {
+        return 'bottom left';
+    } else {
+        return 'bottom right';
+    }
+}
+

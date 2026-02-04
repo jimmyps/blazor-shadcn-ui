@@ -5,13 +5,15 @@ using System;
 
 namespace BlazorUI.Components.Sidebar;
 
-public partial class Sidebar : IDisposable
+public partial class Sidebar : ComponentBase, IDisposable
 {
     [CascadingParameter]
     private SidebarContext? Context { get; set; }
 
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
+
+    private SidebarContext? _subscribedContext;
 
     /// <summary>
     /// The content to render inside the sidebar.
@@ -90,12 +92,12 @@ public partial class Sidebar : IDisposable
             ? "w-[var(--sidebar-width)] transition-[width] duration-200 ease-linear data-[state=collapsed]:w-[var(--sidebar-width-icon)]"
             : "w-[var(--sidebar-width)] transition-[width,opacity] duration-200 ease-linear data-[state=closed]:w-0 data-[state=closed]:opacity-0 overflow-hidden";
 
-        // Variant-specific layout classes
+        // Variant-specific layout classes with independent scrolling
         var layoutClasses = Context?.Variant switch
         {
-            SidebarVariant.Floating => "fixed top-2 bottom-2 z-10",
-            SidebarVariant.Inset => "relative h-full",
-            _ => "sticky top-0 min-h-full"
+            SidebarVariant.Floating => "fixed top-2 bottom-2 z-10 h-[calc(100vh-1rem)] overflow-y-auto",
+            SidebarVariant.Inset => "relative h-full overflow-y-auto",
+            _ => "sticky top-0 h-screen overflow-y-auto"
         };
 
         // Add left/right positioning for floating/default variants
@@ -124,7 +126,7 @@ public partial class Sidebar : IDisposable
     private string GetMobileClasses()
     {
         return Utilities.ClassNames.cn(
-            "w-[var(--sidebar-width)] bg-sidebar p-0 flex flex-col",
+            "w-[var(--sidebar-width)] bg-sidebar p-0 flex flex-col overflow-y-auto",
             "[&>button]:hidden", // Hide the default Sheet close button
             Class
         );
@@ -144,14 +146,25 @@ public partial class Sidebar : IDisposable
     {
         base.OnParametersSet();
 
-        // Subscribe to state changes when context is available
-        if (Context != null)
+        // Only resubscribe if context reference changed
+        if (Context != _subscribedContext)
         {
-            Context.StateChanged -= OnContextStateChanged;
-            Context.StateChanged += OnContextStateChanged;
+            // Unsubscribe from old context
+            if (_subscribedContext != null)
+            {
+                _subscribedContext.StateChanged -= OnContextStateChanged;
+            }
 
-            // Update the context with AutoDetectActive setting
-            Context.SetAutoDetectActive(AutoDetectActive);
+            // Subscribe to new context
+            if (Context != null)
+            {
+                Context.StateChanged += OnContextStateChanged;
+
+                // Update the context with AutoDetectActive setting
+                Context.SetAutoDetectActive(AutoDetectActive);
+            }
+
+            _subscribedContext = Context;
 
             // Set up or tear down navigation listener based on AutoDetectActive
             SetupNavigationListener();
@@ -203,9 +216,10 @@ public partial class Sidebar : IDisposable
 
     public void Dispose()
     {
-        if (Context != null)
+        if (_subscribedContext != null)
         {
-            Context.StateChanged -= OnContextStateChanged;
+            _subscribedContext.StateChanged -= OnContextStateChanged;
+            _subscribedContext = null;
         }
 
         if (_isNavigationListenerActive)

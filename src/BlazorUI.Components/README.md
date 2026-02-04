@@ -1,31 +1,33 @@
-# BlazorUI.Components
+# NeoBlazorUI.Components
 
-Pre-styled Blazor components with shadcn/ui design. Beautiful defaults with zero configuration - no Tailwind setup required!
+Over 77+ production-ready Blazor components with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.
 
-## Features
+## ✨ Features
 
-- **Zero Configuration**: Pre-built CSS included - no Tailwind setup required
-- **shadcn/ui Design**: Beautiful, modern design language inspired by shadcn/ui
-- **Pre-Styled Components**: Production-ready components with pre-built styling
-- **Dark Mode**: Built-in dark mode support using CSS variables
-- **shadcn/ui Theme Compatible**: Use any theme from shadcn/ui or tweakcn.com
-- **Fully Customizable**: Override styles with custom CSS or Tailwind classes
-- **Accessible**: Built on BlazorUI.Primitives with WCAG 2.1 AA compliance
-- **Composable**: Flexible component composition patterns
-- **Type-Safe**: Full C# type safety with IntelliSense support
-- **.NET 8**: Built for the latest .NET platform
+- **🎨 Zero Configuration**: Pre-built CSS included - no Tailwind setup required
+- **🌙 Dark Mode Built-in**: Automatic dark mode support using CSS variables
+- **🎯 .NET 10 Ready**: Built for the latest .NET platform with full WebAssembly and Server support
+- **♿ Accessible First**: WCAG 2.1 AA compliant with proper ARIA attributes
+- **🧩 Composable**: Flexible component composition patterns
+- **🎭 shadcn/ui Design**: Modern design language inspired by shadcn/ui
+- **🎨 Theme Compatible**: Use any theme from shadcn/ui or tweakcn.com
+- **📦 Pre-Styled**: Production-ready components with beautiful defaults
+- **🔧 Fully Customizable**: Override styles with custom CSS or Tailwind classes
+- **🔒 Type-Safe**: Full C# type safety with IntelliSense support
+- **📱 Responsive**: Mobile-first design with touch gesture support
 
-## Installation
+## 📦 Installation
 
 ```bash
-dotnet add package BlazorUI.Components
+dotnet add package NeoBlazorUI.Components
 ```
 
 This package automatically includes:
-- `BlazorUI.Primitives` - Headless primitives providing behavior and accessibility
+- `NeoBlazorUI.Primitives` - Headless primitives providing behavior and accessibility
+- `NeoBlazorUI.Icons.Lucide` - 1,640+ beautiful icons
 - Pre-built CSS - No Tailwind setup required!
 
-## Quick Start
+## 🚀 Quick Start
 
 ### 1. Add to your `_Imports.razor`:
 
@@ -40,17 +42,21 @@ This package automatically includes:
 @using BlazorUI.Components.Select
 @using BlazorUI.Components.Avatar
 @using BlazorUI.Components.Badge
+@using BlazorUI.Components.Card
+@using BlazorUI.Components.Chart
+@using BlazorUI.Components.DataTable
+@using BlazorUI.Icons.Lucide.Components
 ```
 
 Add imports for each component namespace you use. This gives access to component-specific enums like `ButtonVariant`, `InputType`, etc.
 
-### 2. Add CSS to your `App.razor`:
+### 2. Add CSS to your `App.razor` or `index.html`:
 
 BlazorUI Components come with pre-built CSS - no Tailwind setup required!
 
-```razor
+```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="default">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -60,12 +66,12 @@ BlazorUI Components come with pre-built CSS - no Tailwind setup required!
     <link rel="stylesheet" href="styles/theme.css" />
 
     <!-- Pre-built BlazorUI styles (included in NuGet package) -->
-    <link rel="stylesheet" href="_content/BlazorUI.Components/blazorui.css" />
+    <link rel="stylesheet" href="_content/NeoBlazorUI.Components/blazorui.css" />
 
-    <HeadOutlet @rendermode="InteractiveServer" />
+    <HeadOutlet @rendermode="InteractiveAuto" />
 </head>
 <body>
-    <Routes @rendermode="InteractiveServer" />
+    <Routes @rendermode="InteractiveAuto" />
     <script src="_framework/blazor.web.js"></script>
 </body>
 </html>
@@ -82,7 +88,7 @@ BlazorUI Components come with pre-built CSS - no Tailwind setup required!
     </DialogTrigger>
     <DialogContent>
         <DialogHeader>
-            <DialogTitle>Welcome to BlazorUI</DialogTitle>
+            <DialogTitle>Welcome to NeoBlazorUI</DialogTitle>
             <DialogDescription>
                 Beautiful Blazor components with zero configuration
             </DialogDescription>
@@ -98,438 +104,277 @@ BlazorUI Components come with pre-built CSS - no Tailwind setup required!
 
 That's it! No Tailwind installation, no build configuration needed.
 
-## Available Components
+## 📚 Available Components (77+)
 
-- **Accordion**: Collapsible content sections with smooth animations
-- **Alert**: Status messages and callouts with Default/Destructive variants
-- **Alert Dialog**: Modal dialogs for critical confirmations
-- **Avatar**: User profile images with fallback initials and icons
-- **Badge**: Labels for status, categories, and metadata
-- **Breadcrumb**: Hierarchical navigation with customizable separators
-- **Button**: Interactive buttons with multiple variants and sizes
-- **ButtonGroup**: Grouped button controls with shared styling
-- **Card**: Content container with header, content, and footer sections
-- **Checkbox**: Binary selection control with indeterminate state
-- **Collapsible**: Expandable content area with trigger control
-- **Combobox**: Autocomplete input with searchable dropdown
-- **Command**: Command palette for quick actions and navigation
-- **DataTable**: Data table with sorting, pagination, and toolbar
-- **Dialog**: Modal dialogs with backdrop and focus management
-- **Dropdown Menu**: Context menus with items, separators, and shortcuts
-- **Empty**: Empty state displays with icon, title, and actions
-- **Field**: Form field wrapper with label, description, and error states
-- **Hover Card**: Rich preview cards on hover with delay control
-- **Input**: Text input fields with multiple types and sizes
-- **Kbd**: Keyboard shortcut badges with semantic markup
-- **InputGroup**: Grouped input controls with addons
-- **Item**: List item container for menus and lists
-- **Label**: Accessible labels for form controls
-- **Native Select**: Styled native HTML select dropdown
-- **Pagination**: Page navigation with Previous/Next/Ellipsis
-- **MarkdownEditor**: Markdown editor with toolbar and live preview
-- **MultiSelect**: Multi-select dropdown with tag support
-- **Popover**: Floating panels for additional content and actions
-- **Progress**: Progress bars with ARIA support and animations
-- **Radio Group**: Mutually exclusive options with keyboard navigation
-- **RichTextEditor**: Rich text editor with formatting toolbar
-- **Select**: Dropdown selection with groups and labels
-- **Separator**: Visual dividers for content sections
-- **Sheet**: Side panels that slide in from viewport edges
-- **Sidebar**: Responsive navigation sidebar with collapsible menus
-- **Skeleton**: Loading placeholders for content and images
-- **Slider**: Range input for numeric value selection
-- **Spinner**: Loading indicators in multiple sizes
-- **Switch**: Toggle control for on/off states
-- **Tabs**: Tabbed interface for organizing related content
-- **Toggle**: Pressable toggle buttons with variants
-- **Toggle Group**: Single/multiple selection toggle groups
-- **Textarea**: Multi-line text input field
-- **Tooltip**: Brief informational popups on hover or focus
-- **Typography**: Semantic text styling with consistent typography
+### Form & Input Components
+- **Button** - Interactive buttons with 6 variants and multiple sizes
+- **Button Group** - Visually group related buttons
+- **Checkbox** - Binary selection with indeterminate state
+- **Combobox** - Autocomplete input with searchable dropdown
+- **Date Picker** - Date selection with calendar popover
+- **Field** - Form field wrapper with label, description, and errors
+- **Input** - Text input fields with multiple types
+- **Input Group** - Enhanced inputs with icons, buttons, and addons
+- **Input OTP** - One-time password input with character slots
+- **Label** - Accessible labels for form controls
+- **Link Button** - Semantic links styled as buttons
+- **Multi Select** - Searchable multi-selection with tags
+- **Native Select** - Styled native HTML select
+- **Radio Group** - Mutually exclusive options
+- **Select** - Dropdown selection with groups
+- **Slider** - Range input for numeric values
+- **Switch** - Toggle control for on/off states
+- **Textarea** - Multi-line text input
+- **Time Picker** - Time selection with hour/minute controls
 
-## Component API Reference
+### Data Display Components
+- **Avatar** - User profile images with fallbacks
+- **Badge** - Labels for status and categories
+- **Card** - Content container with header/footer
+- **Data Table** - Advanced tables with sorting, filtering, pagination
+- **Empty** - Empty state displays
+- **Grid** - Advanced data grid with state management
+- **Item** - Flexible list items with media and actions
+- **Kbd** - Keyboard shortcut badges
+- **Progress** - Progress bars with ARIA support
+- **Separator** - Visual dividers
+- **Skeleton** - Loading placeholders
+- **Spinner** - Loading indicators
+- **Typography** - Semantic text styling
 
-### Button
+### Navigation Components
+- **Accordion** - Collapsible content sections
+- **Breadcrumb** - Hierarchical navigation
+- **Command** - Command palette for quick actions
+- **Context Menu** - Right-click menus
+- **Dropdown Menu** - Context menus with shortcuts
+- **Menubar** - Desktop-style horizontal menu bar
+- **Navigation Menu** - Horizontal navigation with dropdowns
+- **Pagination** - Page navigation
+- **Sidebar** - Responsive navigation sidebar
+- **Tabs** - Tabbed interface
 
-```razor
-<Button
-    Variant="ButtonVariant.Default"
-    Size="ButtonSize.Default"
-    Type="ButtonType.Button"
-    IconPosition="IconPosition.Start"
-    Disabled="false">
-    Click me
-</Button>
-```
+### Overlay Components
+- **Alert Dialog** - Modal dialogs for confirmations
+- **Dialog** - Modal dialogs with backdrop
+- **Dialog Service** - Programmatic dialogs with async/await API
+- **Hover Card** - Rich preview cards on hover
+- **Popover** - Floating panels for content
+- **Sheet** - Side panels from viewport edges
+- **Toast** - Temporary notifications
+- **Tooltip** - Brief informational popups
 
-| Parameter | Type | Default | Values |
-|-----------|------|---------|--------|
-| `Variant` | `ButtonVariant` | `Default` | `Default`, `Destructive`, `Outline`, `Secondary`, `Ghost`, `Link` |
-| `Size` | `ButtonSize` | `Default` | `Small`, `Default`, `Large`, `Icon`, `IconSmall`, `IconLarge` |
-| `Type` | `ButtonType` | `Button` | `Button`, `Submit`, `Reset` |
-| `IconPosition` | `IconPosition` | `Start` | `Start`, `End` |
+### Feedback Components
+- **Alert** - Status messages and callouts
 
-### Input
+### Layout & Display Components
+- **Aspect Ratio** - Display content with desired ratio
+- **Carousel** - Slideshow with gestures and animations
+- **Collapsible** - Expandable content area
+- **Resizable** - Split layouts with draggable handles
+- **Scroll Area** - Custom scrollbars
 
-```razor
-<Input
-    Type="InputType.Email"
-    Placeholder="name@example.com"
-    Disabled="false" />
-```
+### Advanced Components
+- **Chart** - 8 chart types with beautiful defaults (Line, Bar, Area, Pie, Doughnut, Radar, Polar Area, Bubble)
+- **Markdown Editor** - Write/preview tabs with syntax support
+- **Motion** - Declarative animation system with 20+ presets
+- **Rich Text Editor** - WYSIWYG editor with formatting toolbar
+- **Toggle** - Pressable toggle buttons
+- **Toggle Group** - Single/multiple selection toggles
 
-| Parameter | Type | Default | Values |
-|-----------|------|---------|--------|
-| `Type` | `InputType` | `Text` | `Text`, `Email`, `Password`, `Number`, `Tel`, `Url`, `Search`, `Date`, `Time`, `File` |
+### Icon Libraries
+- **Lucide Icons** - 1,640+ beautiful, consistent icons (included)
+- **Heroicons** - 1,288 icons across 4 variants (separate package)
+- **Feather Icons** - 286 minimalist icons (separate package)
 
-### Avatar
+## 🎯 Component Highlights
 
-```razor
-<Avatar Size="AvatarSize.Default">
-    <AvatarImage Src="user.jpg" Alt="User" />
-    <AvatarFallback>JD</AvatarFallback>
-</Avatar>
-```
-
-| Parameter | Type | Default | Values |
-|-----------|------|---------|--------|
-| `Size` | `AvatarSize` | `Default` | `Small`, `Default`, `Large`, `ExtraLarge` |
-
-### Badge
+### Chart Component
+Create beautiful, responsive charts with a declarative Recharts-inspired API:
 
 ```razor
-<Badge Variant="BadgeVariant.Default">New</Badge>
-```
-
-| Parameter | Type | Default | Values |
-|-----------|------|---------|--------|
-| `Variant` | `BadgeVariant` | `Default` | `Default`, `Secondary`, `Destructive`, `Outline` |
-
-### Accordion
-
-```razor
-<Accordion Type="AccordionType.Single" Collapsible="true">
-    <AccordionItem Value="item-1">
-        <AccordionTrigger>Section 1</AccordionTrigger>
-        <AccordionContent>Content 1</AccordionContent>
-    </AccordionItem>
-</Accordion>
-```
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `Type` | `AccordionType` | `Single` | `Single` (one item open) or `Multiple` (many items open) |
-| `Collapsible` | `bool` | `false` | When `Single`, allows closing all items |
-
-### Tabs
-
-```razor
-<Tabs
-    DefaultValue="tab1"
-    Orientation="TabsOrientation.Horizontal"
-    ActivationMode="TabsActivationMode.Automatic">
-    <TabsList>
-        <TabsTrigger Value="tab1">Tab 1</TabsTrigger>
-        <TabsTrigger Value="tab2">Tab 2</TabsTrigger>
-    </TabsList>
-    <TabsContent Value="tab1">Content 1</TabsContent>
-    <TabsContent Value="tab2">Content 2</TabsContent>
-</Tabs>
-```
-
-| Parameter | Type | Default | Values |
-|-----------|------|---------|--------|
-| `Orientation` | `TabsOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
-| `ActivationMode` | `TabsActivationMode` | `Automatic` | `Automatic` (on focus), `Manual` (on click) |
-
-### Sheet
-
-```razor
-<Sheet>
-    <SheetTrigger AsChild>
-        <Button>Open Sheet</Button>
-    </SheetTrigger>
-    <SheetContent Side="SheetSide.Right">
-        <SheetHeader>
-            <SheetTitle>Sheet Title</SheetTitle>
-            <SheetDescription>Sheet description</SheetDescription>
-        </SheetHeader>
-        <!-- Content -->
-    </SheetContent>
-</Sheet>
-```
-
-| Parameter | Type | Default | Values |
-|-----------|------|---------|--------|
-| `Side` | `SheetSide` | `Right` | `Top`, `Right`, `Bottom`, `Left` |
-
-### Select
-
-```razor
-<Select TValue="string" @bind-Value="selectedValue">
-    <SelectTrigger>
-        <SelectValue Placeholder="Select an option" />
-    </SelectTrigger>
-    <SelectContent>
-        <SelectItem Value="@("option1")">Option 1</SelectItem>
-        <SelectItem Value="@("option2")">Option 2</SelectItem>
-    </SelectContent>
-</Select>
-```
-
-Select is a generic component. Specify `TValue` for type safety.
-
-### Separator
-
-```razor
-<Separator Orientation="SeparatorOrientation.Horizontal" />
-```
-
-| Parameter | Type | Default | Values |
-|-----------|------|---------|--------|
-| `Orientation` | `SeparatorOrientation` | `Horizontal` | `Horizontal`, `Vertical` |
-
-### Skeleton
-
-```razor
-<Skeleton Shape="SkeletonShape.Rectangular" Class="w-full h-4" />
-<Skeleton Shape="SkeletonShape.Circular" Class="w-12 h-12" />
-```
-
-| Parameter | Type | Default | Values |
-|-----------|------|---------|--------|
-| `Shape` | `SkeletonShape` | `Rectangular` | `Rectangular`, `Circular` |
-
-### DataTable
-
-```razor
-<DataTable TItem="User" Items="users" SelectionMode="DataTableSelectionMode.Multiple">
-    <DataTableColumn TItem="User" Field="x => x.Name" Header="Name" />
-    <DataTableColumn TItem="User" Field="x => x.Email" Header="Email" />
-</DataTable>
-```
-
-| Parameter | Type | Default | Values |
-|-----------|------|---------|--------|
-| `SelectionMode` | `DataTableSelectionMode` | `None` | `None`, `Single`, `Multiple` |
-
-## Theming
-
-BlazorUI is **100% compatible with shadcn/ui themes**. Customize your application's appearance using CSS variables.
-
-### Using Themes from shadcn/ui and tweakcn
-
-You can use any theme from:
-- **[shadcn/ui themes](https://ui.shadcn.com/themes)** - Official shadcn/ui theme gallery
-- **[tweakcn.com](https://tweakcn.com)** - Advanced theme customization tool
-
-Simply copy the CSS variables and paste them into your `wwwroot/styles/theme.css` file.
-
-### Example Theme
-
-Create `wwwroot/styles/theme.css`:
-
-```css
-@layer base {
-  :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.1450 0 0);
-    --primary: oklch(0.2050 0 0);
-    --primary-foreground: oklch(0.9850 0 0);
-    /* ... other variables */
-  }
-
-  .dark {
-    --background: oklch(0.1450 0 0);
-    --foreground: oklch(0.9850 0 0);
-    --primary: oklch(0.9220 0 0);
-    --primary-foreground: oklch(0.2050 0 0);
-    /* ... other variables */
-  }
-}
-```
-
-Reference it in your `App.razor` **before** the BlazorUI CSS:
-
-```razor
-<link rel="stylesheet" href="styles/theme.css" />
-<link rel="stylesheet" href="_content/BlazorUI.Components/blazorui.css" />
-```
-
-### Dark Mode
-
-Dark mode automatically activates when you add the `.dark` class to the `<html>` element. All components will switch to dark mode colors.
-
-## Usage Example
-
-```razor
-@using BlazorUI.Components.Dialog
-
-<Dialog>
-    <DialogTrigger AsChild>
-        <Button>Open Dialog</Button>
-    </DialogTrigger>
-    <DialogContent>
-        <DialogHeader>
-            <DialogTitle>Confirm Action</DialogTitle>
-            <DialogDescription>
-                Are you sure you want to proceed?
-            </DialogDescription>
-        </DialogHeader>
-        <p>This action cannot be undone.</p>
-        <DialogFooter>
-            <DialogClose AsChild>
-                <Button Variant="ButtonVariant.Outline">Cancel</Button>
-            </DialogClose>
-            <Button Variant="ButtonVariant.Default">Confirm</Button>
-        </DialogFooter>
-    </DialogContent>
-</Dialog>
-```
-
-### AsChild Pattern
-
-Use `AsChild` on trigger components to use your own styled elements instead of the default button:
-
-```razor
-<DropdownMenu>
-    <DropdownMenuTrigger AsChild>
-        <Button Variant="ButtonVariant.Outline">
-            Actions
-            <LucideIcon Name="chevron-down" Size="16" />
-        </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent>
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem>Delete</DropdownMenuItem>
-    </DropdownMenuContent>
-</DropdownMenu>
-```
-
-This is the industry-standard pattern from Radix UI/shadcn/ui. When `AsChild` is true, the child component (e.g., Button) automatically receives trigger behavior via `TriggerContext`.
-
-## Form Example
-
-```razor
-@using BlazorUI.Components.Label
-@using BlazorUI.Components.Input
-@using BlazorUI.Components.Checkbox
-@using BlazorUI.Components.Button
-
-<div class="space-y-4">
-    <div>
-        <Label For="email">Email</Label>
-        <Input Id="email" Type="InputType.Email" Placeholder="name@example.com" />
-    </div>
-
-    <div class="flex items-center space-x-2">
-        <Checkbox Id="terms" @bind-Checked="agreedToTerms" />
-        <Label For="terms">I agree to the terms and conditions</Label>
-    </div>
-
-    <Button Disabled="@(!agreedToTerms)">Submit</Button>
-</div>
+<LineChart Data="@salesData">
+    <XAxis DataKey="Month" />
+    <YAxis />
+    <Grid />
+    <Tooltip />
+    <Legend />
+    <Line DataKey="Revenue" Fill="var(--chart-1)" />
+    <Line DataKey="Target" Fill="var(--chart-2)" />
+</LineChart>
 
 @code {
-    private bool agreedToTerms = false;
+    private List<SalesData> salesData = new()
+    {
+        new() { Month = "Jan", Revenue = 4000, Target = 3500 },
+        new() { Month = "Feb", Revenue = 3000, Target = 3200 },
+        new() { Month = "Mar", Revenue = 5000, Target = 4500 },
+        new() { Month = "Apr", Revenue = 4500, Target = 4000 },
+        new() { Month = "May", Revenue = 6000, Target = 5500 }
+    };
+
+    public class SalesData
+    {
+        public string Month { get; set; } = "";
+        public int Revenue { get; set; }
+        public int Target { get; set; }
+    }
 }
 ```
 
-## Customizing Components
-
-### Override Default Styles
-
-Use the `Class` parameter to add custom CSS classes or Tailwind classes (if you have Tailwind set up):
+### Data Table Component
+Powerful data tables with built-in sorting, filtering, pagination, and selection:
 
 ```razor
-<Button Class="bg-purple-600 hover:bg-purple-700">
+<DataTable TItem="User"
+           Items="@users"
+           Columns="@columns"
+           ShowPagination="true"
+           PageSize="10" />
+```
+
+### Grid Component
+Enterprise-grade data grid powered by AG Grid with Blazor template support and auto-discovery actions, designed with shadcn theme with real-time light/dark theme switching support:
+
+```razor
+<Grid Items="@orders" ActionHost="this">
+    <Columns>
+        <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+        <GridColumn Field="CustomerName" Header="Customer" Sortable="true" />
+        <GridColumn Field="OrderDate" Header="Date" DataFormatString="d" />
+        <GridColumn Field="Total" Header="Total" DataFormatString="C" />
+        <GridColumn Field="Status" Header="Status">
+            <CellTemplate Context="order">
+                <Badge Variant="@GetStatusVariant(order.Status)">
+                    @order.Status
+                </Badge>
+            </CellTemplate>
+        </GridColumn>
+        <GridColumn Field="Actions" Header="">
+            <CellTemplate Context="order">
+                <Button data-action="Edit" Variant="ButtonVariant.Ghost">
+                    Edit
+                </Button>
+            </CellTemplate>
+        </GridColumn>
+    </Columns>
+</Grid>
+
+@code {
+    [GridAction]
+    private async Task Edit(Order order)
+    {
+        // Action auto-wired via [GridAction] attribute
+        await ShowEditDialog(order);
+    }
+}
+```
+
+### Motion Component
+Add smooth animations with 20+ presets:
+
+```razor
+<Motion Preset="MotionPreset.FadeIn" Duration="500">
+    <div>Animated content</div>
+</Motion>
+```
+
+## 🎨 Theming
+
+NeoBlazorUI uses CSS variables for theming, compatible with shadcn/ui themes. You can use any theme from:
+- [shadcn/ui themes](https://ui.shadcn.com/themes)
+- [tweakcn.com](https://tweakcn.com)
+
+Or create your own by defining CSS variables:
+
+```css
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  /* ... and more */
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  /* ... dark mode colors */
+}
+```
+
+## 🔧 Customization
+
+All components accept standard HTML attributes and CSS classes:
+
+```razor
+<Button Class="my-custom-class" id="my-button" data-test="submit">
     Custom Button
 </Button>
-
-<Card Class="border-2 border-purple-500 shadow-xl">
-    Custom Card Styling
-</Card>
 ```
 
-**Note:** BlazorUI Components include pre-built CSS and don't require Tailwind. However, you can still use Tailwind classes for customization if you've set up Tailwind in your project.
-
-### Component Composition
-
-Build complex UIs by composing components:
+Override default styles with Tailwind classes:
 
 ```razor
-<Card>
-    <CardHeader>
-        <CardTitle>Settings</CardTitle>
-        <CardDescription>Manage your account settings</CardDescription>
-    </CardHeader>
-    <CardContent class="space-y-4">
-        <div>
-            <Label>Email Notifications</Label>
-            <Switch @bind-Checked="emailNotifications" />
-        </div>
-        <Separator />
-        <div>
-            <Label>Push Notifications</Label>
-            <Switch @bind-Checked="pushNotifications" />
-        </div>
-    </CardContent>
-    <CardFooter>
-        <Button>Save Changes</Button>
-    </CardFooter>
+<Card Class="bg-blue-500 border-blue-700">
+    Custom colored card
 </Card>
 ```
 
-## Design Philosophy
+## ♿ Accessibility
 
-BlazorUI.Components follows the shadcn/ui philosophy with zero-configuration deployment:
+All components are built with accessibility in mind:
+- WCAG 2.1 AA compliant
+- Proper ARIA attributes
+- Keyboard navigation support
+- Screen reader friendly
+- Focus management
+- High contrast mode support
 
-1. **Zero Configuration**: Pre-built CSS included - just install and use
-2. **shadcn/ui Compatible**: Uses the same design tokens and CSS variables
-3. **Built on Primitives**: All behavior comes from BlazorUI.Primitives
-4. **Theme Tokens**: Fully themeable using CSS variables
-5. **Accessible by Default**: WCAG 2.1 AA compliance built-in
-6. **Customizable**: Override with custom CSS or add Tailwind if needed
+## 📖 Documentation & Examples
 
-## When to Use
+Visit our interactive documentation site for:
+- Live component demos
+- API reference for all components
+- Code examples and recipes
+- Theming guides
+- Best practices
 
-**Use BlazorUI.Components when:**
-- Want beautiful defaults with shadcn/ui design
-- Need zero-configuration setup (no build tools required)
-- Want to ship quickly without building components from scratch
-- Need dark mode and theming support out of the box
-- Want shadcn/ui theme compatibility
+[View Full Documentation](https://github.com/jimmyps/blazor-shadcn-ui)
 
-**Consider [BlazorUI.Primitives](https://www.nuget.org/packages/BlazorUI.Primitives) when:**
-- Building a completely custom design system
-- Want zero opinions about styling
-- Need to match a specific brand or design language
-- Prefer full control over all CSS
+## 🏗️ Built On Primitives
 
-## Documentation
+These components are built on top of `NeoBlazorUI.Primitives` - a library of headless, unstyled components that provide behavior and accessibility without any styling. If you need complete control over styling, you can use the primitives directly.
 
-For full documentation, examples, and API reference, visit:
-- [Documentation Site](https://github.com/blazorui-net/ui)
-- [Component Demos](https://github.com/blazorui-net/ui)
-- [GitHub Repository](https://github.com/blazorui-net/ui)
+## 📦 Related Packages
 
-## Dependencies
+- **NeoBlazorUI.Primitives** - Headless, unstyled components (included)
+- **NeoBlazorUI.Icons.Lucide** - 1,640+ Lucide icons (included)
+- **NeoBlazorUI.Icons.Heroicons** - 1,288 Heroicons across 4 variants
+- **NeoBlazorUI.Icons.Feather** - 286 beautiful minimalist icons
 
-- [BlazorUI.Primitives](https://www.nuget.org/packages/BlazorUI.Primitives) - Headless component primitives (auto-installed)
-- Pre-built CSS (included in package)
-- No external dependencies required!
+## 🤝 Contributing
 
-**Optional:**
-- Tailwind CSS (if you want to use Tailwind classes for customization)
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
+## 📄 License
 
-MIT License - see [LICENSE](https://github.com/blazorui-net/ui/blob/main/LICENSE) for details.
+MIT License - see LICENSE file for details
 
-## Contributing
+## 🙏 Acknowledgments
 
-Contributions are welcome! Please see our [Contributing Guide](https://github.com/blazorui-net/ui/blob/main/CONTRIBUTING.md).
+- Initial Blazor components inspiration by [Mathew Taylor](https://github.com/blazorui-net/ui)
+- Design inspired by [shadcn/ui](https://ui.shadcn.com)
+- Icons from [Lucide](https://lucide.dev), [Heroicons](https://heroicons.com), and [Feather](https://feathericons.com)
+- Built with ❤️ for the Blazor community
+
+## 📊 Version Information
+
+- **Current Version**: 1.0.15
+- **Target Framework**: .NET 10
+- **Package ID**: NeoBlazorUI.Components
+- **Assembly Name**: NeoBlazorUI.Components
 
 ---
 
-Made with ❤️ by the BlazorUI team
+**Note**: This package was formerly known as `BlazorUI.Components`. As of version 1.0.7, the assembly name has been updated to `NeoBlazorUI.Components` to match the NuGet package ID, ensuring consistent asset paths when consumed from NuGet.

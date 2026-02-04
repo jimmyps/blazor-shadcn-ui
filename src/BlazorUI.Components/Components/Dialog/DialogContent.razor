@@ -1,6 +1,7 @@
 @namespace BlazorUI.Components.Dialog
 @using BlazorUI.Components.Utilities
 @using BlazorUI.Primitives.Dialog
+@using BlazorUI.Primitives.Constants
 @using BlazorUI.Icons.Lucide.Components
 
 @*
@@ -105,7 +106,7 @@
     {
         var baseClasses = new List<string>
         {
-            "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
+            $"fixed left-[50%] top-[50%] z-{ZIndexLevels.DialogContent} grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
             "gap-4 border bg-background p-6 shadow-lg backdrop-blur-sm",
             "sm:rounded-lg"
         };
@@ -132,7 +133,7 @@
     {
         var baseClasses = new List<string>
         {
-            "fixed inset-0 z-50 bg-black/40"
+            $"fixed inset-0 z-{ZIndexLevels.DialogOverlay} bg-black/40"
         };
 
         if (!UseCustomAnimations)

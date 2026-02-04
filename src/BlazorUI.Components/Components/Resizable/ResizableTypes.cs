@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Resizable;
+﻿namespace BlazorUI.Components.Resizable;
 
 /// <summary>
 /// Direction of the resizable panel layout.

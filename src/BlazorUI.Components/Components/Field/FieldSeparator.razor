@@ -1,7 +1,23 @@
 @namespace BlazorUI.Components.Field
+@using BlazorUI.Components.Separator
 
 <div
     data-slot="field-separator"
+    data-content="@(HasContent ? "true" : null)"
     class="@CssClass"
     @attributes="AdditionalAttributes">
+    <div
+        data-orientation="horizontal"
+        role="none"
+        data-slot="separator"
+        class="@SeparatorLineCssClass">
+    </div>
+    @if (HasContent)
+    {
+        <span
+            class="@ContentCssClass"
+            data-slot="field-separator-content">
+            @ChildContent
+        </span>
+    }
 </div>

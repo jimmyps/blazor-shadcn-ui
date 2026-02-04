@@ -1,0 +1,167 @@
+@namespace BlazorUI.Components.DialogHost
+@using BlazorUI.Components.AlertDialog
+@using BlazorUI.Components.Services
+@using BlazorUI.Components.Button
+@using BlazorUI.Icons.Lucide.Components
+@inject DialogService DialogService
+@implements IDisposable
+
+@if (_isOpen)
+{
+    <AlertDialog Open="_isOpen" OpenChanged="OnOpenChanged">
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <div class="flex items-center gap-3">
+                    @if (!string.IsNullOrEmpty(_options?.Icon))
+                    {
+                        <div class="@GetIconContainerClass()">
+                            <LucideIcon Name="@_options.Icon" Size="20" Class="@GetIconClass()" />
+                        </div>
+                    }
+                    <AlertDialogTitle>@_options?.Title</AlertDialogTitle>
+                </div>
+                <AlertDialogDescription>
+                    @_options?.Message
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                @if (_options?.Buttons != DialogButtons.OkOnly)
+                {
+                    <AlertDialogCancel>
+                        <Button Variant="ButtonVariant.Outline" @onclick="HandleCancel">@GetCancelButtonText()</Button>
+                    </AlertDialogCancel>
+                }
+                
+                @if (_options?.Buttons == DialogButtons.YesNoCancel && !string.IsNullOrEmpty(_options.AlternateText))
+                {
+                    <AlertDialogCancel>
+                        <Button Variant="ButtonVariant.Outline" @onclick="HandleAlternate">@_options.AlternateText</Button>
+                    </AlertDialogCancel>
+                }
+                
+                <AlertDialogAction>
+                    <Button Variant="@GetConfirmButtonVariant()" Class="@GetConfirmButtonClass()" @onclick="HandleConfirm">@GetConfirmButtonText()</Button>
+                </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
+}
+
+@code {
+    private bool _isOpen = false;
+    private DialogOptions? _options;
+
+    protected override void OnInitialized()
+    {
+        DialogService.RegisterHost(this);
+    }
+
+    internal void Show(DialogOptions options)
+    {
+        _options = options;
+        _isOpen = true;
+        StateHasChanged();
+    }
+
+    private void OnOpenChanged(bool isOpen)
+    {
+        if (!isOpen && _isOpen)
+        {
+            // Dialog was closed externally (e.g., ESC key)
+            _isOpen = false;
+            DialogService.NotifyResult(DialogResult.Cancelled);
+        }
+    }
+
+    private void HandleConfirm()
+    {
+        _isOpen = false;
+        DialogService.NotifyResult(DialogResult.Confirmed);
+    }
+
+    private void HandleCancel()
+    {
+        _isOpen = false;
+        DialogService.NotifyResult(DialogResult.Cancelled);
+    }
+
+    private void HandleAlternate()
+    {
+        _isOpen = false;
+        DialogService.NotifyResult(DialogResult.Alternate);
+    }
+
+    private string GetIconContainerClass()
+    {
+        return _options?.Variant switch
+        {
+            DialogVariant.Destructive => "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-destructive/10",
+            DialogVariant.Warning => "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-yellow-500/10",
+            DialogVariant.Success => "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-500/10",
+            DialogVariant.Info => "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-500/10",
+            _ => "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10"
+        };
+    }
+
+    private string GetIconClass()
+    {
+        return _options?.Variant switch
+        {
+            DialogVariant.Destructive => "text-destructive",
+            DialogVariant.Warning => "text-yellow-600 dark:text-yellow-500",
+            DialogVariant.Success => "text-green-600 dark:text-green-500",
+            DialogVariant.Info => "text-blue-600 dark:text-blue-500",
+            _ => "text-primary"
+        };
+    }
+
+    private string GetConfirmButtonClass()
+    {
+        return _options?.Variant switch
+        {
+            DialogVariant.Destructive => "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+            DialogVariant.Warning => "bg-yellow-600 text-white hover:bg-yellow-700 dark:bg-yellow-500 dark:hover:bg-yellow-600",
+            DialogVariant.Success => "bg-green-600 text-white hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600",
+            _ => ""
+        };
+    }
+
+    private ButtonVariant GetConfirmButtonVariant()
+    {
+        return _options?.Variant switch
+        {
+            DialogVariant.Destructive => ButtonVariant.Destructive,
+            DialogVariant.Warning or DialogVariant.Success => ButtonVariant.Default,
+            _ => ButtonVariant.Default
+        };
+    }
+
+    private string GetConfirmButtonText()
+    {
+        if (!string.IsNullOrEmpty(_options?.ConfirmText))
+            return _options.ConfirmText;
+
+        return _options?.Buttons switch
+        {
+            DialogButtons.YesNo or DialogButtons.YesNoCancel => "Yes",
+            _ => "OK"
+        };
+    }
+
+    private string GetCancelButtonText()
+    {
+        if (!string.IsNullOrEmpty(_options?.CancelText))
+            return _options.CancelText;
+
+        return _options?.Buttons switch
+        {
+            DialogButtons.YesNo or DialogButtons.YesNoCancel => "No",
+            _ => "Cancel"
+        };
+    }
+
+    public void Dispose()
+    {
+        // Cleanup if needed
+    }
+}

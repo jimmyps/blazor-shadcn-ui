@@ -52,7 +52,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Determine package and version
         id: package-info
@@ -80,23 +80,23 @@ jobs:
           case $PACKAGE in
             primitives)
               echo "project_path=src/BlazorUI.Primitives/BlazorUI.Primitives.csproj" >> $GITHUB_OUTPUT
-              echo "display_name=BlazorUI.Primitives" >> $GITHUB_OUTPUT
+              echo "display_name=NeoBlazorUI.Primitives" >> $GITHUB_OUTPUT
               ;;
             components)
               echo "project_path=src/BlazorUI.Components/BlazorUI.Components.csproj" >> $GITHUB_OUTPUT
-              echo "display_name=BlazorUI.Components" >> $GITHUB_OUTPUT
+              echo "display_name=NeoBlazorUI.Components" >> $GITHUB_OUTPUT
               ;;
             icons-lucide)
               echo "project_path=src/BlazorUI.Icons.Lucide/BlazorUI.Icons.Lucide.csproj" >> $GITHUB_OUTPUT
-              echo "display_name=BlazorUI.Icons.Lucide" >> $GITHUB_OUTPUT
+              echo "display_name=NeoBlazorUI.Icons.Lucide" >> $GITHUB_OUTPUT
               ;;
             icons-heroicons)
               echo "project_path=src/BlazorUI.Icons.Heroicons/BlazorUI.Icons.Heroicons.csproj" >> $GITHUB_OUTPUT
-              echo "display_name=BlazorUI.Icons.Heroicons" >> $GITHUB_OUTPUT
+              echo "display_name=NeoBlazorUI.Icons.Heroicons" >> $GITHUB_OUTPUT
               ;;
             icons-feather)
               echo "project_path=src/BlazorUI.Icons.Feather/BlazorUI.Icons.Feather.csproj" >> $GITHUB_OUTPUT
-              echo "display_name=BlazorUI.Icons.Feather" >> $GITHUB_OUTPUT
+              echo "display_name=NeoBlazorUI.Icons.Feather" >> $GITHUB_OUTPUT
               ;;
             *)
               echo "Unknown package: $PACKAGE"
