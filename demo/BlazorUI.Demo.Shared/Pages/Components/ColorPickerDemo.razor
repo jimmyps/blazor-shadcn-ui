@@ -1,0 +1,223 @@
+@page "/components/color-picker"
+@using BlazorUI.Components.ColorPicker
+@using BlazorUI.Components.Field
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>ColorPicker Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">ColorPicker Component</h1>
+            <p class="text-xl text-muted-foreground">
+                Color selection with multiple format support (Hex, RGB, HSL) and preset color swatches.
+            </p>
+        </div>
+    </div>
+
+    <div class="space-y-6">
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Hex Format (Default)</h2>
+                <p class="text-muted-foreground">
+                    A color picker using hexadecimal color format.
+                </p>
+            </div>
+
+            <div class="max-w-md">
+                <ColorPicker 
+                    @bind-Color="hexColor"
+                    Format="ColorFormat.Hex"
+                    Id="hex-picker"
+                    Name="hex-color" />
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">RGB Format</h2>
+                <p class="text-muted-foreground">
+                    Color picker with RGB (Red, Green, Blue) inputs.
+                </p>
+            </div>
+
+            <div class="max-w-md">
+                <ColorPicker 
+                    @bind-Color="rgbColor"
+                    Format="ColorFormat.RGB"
+                    Id="rgb-picker"
+                    Name="rgb-color" />
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">HSL Format</h2>
+                <p class="text-muted-foreground">
+                    Color picker with HSL (Hue, Saturation, Lightness) inputs.
+                </p>
+            </div>
+
+            <div class="max-w-md">
+                <ColorPicker 
+                    @bind-Color="hslColor"
+                    Format="ColorFormat.HSL"
+                    Id="hsl-picker"
+                    Name="hsl-color" />
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">With Alpha Channel</h2>
+                <p class="text-muted-foreground">
+                    Color picker with alpha (opacity) support.
+                </p>
+            </div>
+
+            <div class="max-w-md">
+                <ColorPicker 
+                    @bind-Color="alphaColor"
+                    Format="ColorFormat.Hex"
+                    ShowAlpha="true"
+                    Id="alpha-picker"
+                    Name="alpha-color" />
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">RGB with Alpha</h2>
+                <p class="text-muted-foreground">
+                    RGB color picker with opacity control (RGBA format).
+                </p>
+            </div>
+
+            <div class="max-w-md">
+                <ColorPicker 
+                    @bind-Color="rgbaColor"
+                    Format="ColorFormat.RGB"
+                    ShowAlpha="true"
+                    Id="rgba-picker"
+                    Name="rgba-color" />
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Disabled State</h2>
+                <p class="text-muted-foreground">
+                    A disabled color picker that cannot be changed.
+                </p>
+            </div>
+
+            <div class="max-w-md">
+                <ColorPicker 
+                    @bind-Color="disabledColor"
+                    Format="ColorFormat.Hex"
+                    Disabled="true"
+                    Id="disabled-picker"
+                    Name="disabled-color" />
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">With Form Validation</h2>
+                <p class="text-muted-foreground">
+                    Color picker integrated with Blazor form validation.
+                </p>
+            </div>
+
+            <EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit" class="max-w-md space-y-4">
+                <DataAnnotationsValidator />
+
+                <Field>
+                    <Label For="form-color">Favorite Color</Label>
+                    <ColorPicker 
+                        @bind-Color="formModel.FavoriteColor"
+                        Format="ColorFormat.Hex"
+                        Required="true"
+                        ShowValidationError="true"
+                        Id="form-color"
+                        Name="favorite-color"
+                        ValueExpression="@(() => formModel.FavoriteColor)" />
+                </Field>
+
+                <div>
+                    <button type="submit" 
+                            class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-primary text-primary-foreground hover:bg-primary/90 h-10 py-2 px-4">
+                        Submit
+                    </button>
+                </div>
+
+                @if (!string.IsNullOrEmpty(submitMessage))
+                {
+                    <div class="p-4 rounded-md bg-green-50 dark:bg-green-900/20 text-green-900 dark:text-green-100">
+                        @submitMessage
+                    </div>
+                }
+            </EditForm>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">All Formats Side by Side</h2>
+                <p class="text-muted-foreground">
+                    Compare different color format inputs.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <h3 class="text-sm font-medium mb-2">Hex</h3>
+                    <ColorPicker 
+                        @bind-Color="comparisonColor"
+                        Format="ColorFormat.Hex"
+                        Id="comp-hex"
+                        Name="comp-hex" />
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium mb-2">RGB</h3>
+                    <ColorPicker 
+                        @bind-Color="comparisonColor"
+                        Format="ColorFormat.RGB"
+                        Id="comp-rgb"
+                        Name="comp-rgb" />
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium mb-2">HSL</h3>
+                    <ColorPicker 
+                        @bind-Color="comparisonColor"
+                        Format="ColorFormat.HSL"
+                        Id="comp-hsl"
+                        Name="comp-hsl" />
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+@code {
+    private string? hexColor = "#3B82F6";
+    private string? rgbColor = "rgb(239, 68, 68)";
+    private string? hslColor = "hsl(142, 71%, 45%)";
+    private string? alphaColor = "#8B5CF6AA";
+    private string? rgbaColor = "rgba(236, 72, 153, 0.75)";
+    private string? disabledColor = "#6B7280";
+    private string? comparisonColor = "#F59E0B";
+    private string? submitMessage;
+
+    private FormModel formModel = new();
+
+    private void HandleValidSubmit()
+    {
+        submitMessage = $"Form submitted! Selected color: {formModel.FavoriteColor}";
+    }
+
+    public class FormModel
+    {
+        [Required(ErrorMessage = "Please select a color")]
+        public string? FavoriteColor { get; set; } = "#EC4899";
+    }
+}

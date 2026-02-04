@@ -1,0 +1,180 @@
+@namespace BlazorUI.Components.ColorPicker
+@using BlazorUI.Components.Input
+@using BlazorUI.Components.Label
+
+<div class="@CssClass">
+    @* Color Preview *@
+    <div class="flex items-center gap-3">
+        <div class="w-16 h-16 rounded-md border-2 border-input shadow-sm" 
+             style="@GetPreviewStyle()" 
+             title="Color preview">
+        </div>
+        <div class="flex-1">
+            <Label>Color Preview</Label>
+            <p class="text-sm text-muted-foreground">@GetColorString()</p>
+        </div>
+    </div>
+
+    @* Format-specific inputs *@
+    @if (Format == ColorFormat.Hex)
+    {
+        <div class="space-y-2">
+            <Label For="@($"{Id}-hex")">Hex Color</Label>
+            <Input 
+                Id="@($"{Id}-hex")"
+                Name="@($"{Name}-hex")"
+                Type="InputType.Text"
+                Value="@GetColorString()"
+                ValueChanged="HandleHexChange"
+                Placeholder="#FF5733"
+                Disabled="@Disabled"
+                Required="@Required"
+                Class="font-mono" />
+        </div>
+    }
+    else if (Format == ColorFormat.RGB)
+    {
+        <div class="grid grid-cols-3 gap-2">
+            <div class="space-y-2">
+                <Label For="@($"{Id}-r")">Red</Label>
+                <Input 
+                    Id="@($"{Id}-r")"
+                    Name="@($"{Name}-r")"
+                    Type="InputType.Number"
+                    Value="@_red.ToString()"
+                    ValueChanged="HandleRedChange"
+                    Min="0"
+                    Max="255"
+                    Disabled="@Disabled"
+                    Required="@Required" />
+            </div>
+            <div class="space-y-2">
+                <Label For="@($"{Id}-g")">Green</Label>
+                <Input 
+                    Id="@($"{Id}-g")"
+                    Name="@($"{Name}-g")"
+                    Type="InputType.Number"
+                    Value="@_green.ToString()"
+                    ValueChanged="HandleGreenChange"
+                    Min="0"
+                    Max="255"
+                    Disabled="@Disabled"
+                    Required="@Required" />
+            </div>
+            <div class="space-y-2">
+                <Label For="@($"{Id}-b")">Blue</Label>
+                <Input 
+                    Id="@($"{Id}-b")"
+                    Name="@($"{Name}-b")"
+                    Type="InputType.Number"
+                    Value="@_blue.ToString()"
+                    ValueChanged="HandleBlueChange"
+                    Min="0"
+                    Max="255"
+                    Disabled="@Disabled"
+                    Required="@Required" />
+            </div>
+        </div>
+    }
+    else if (Format == ColorFormat.HSL)
+    {
+        <div class="grid grid-cols-3 gap-2">
+            <div class="space-y-2">
+                <Label For="@($"{Id}-h")">Hue</Label>
+                <Input 
+                    Id="@($"{Id}-h")"
+                    Name="@($"{Name}-h")"
+                    Type="InputType.Number"
+                    Value="@_hue.ToString()"
+                    ValueChanged="HandleHueChange"
+                    Min="0"
+                    Max="360"
+                    Disabled="@Disabled"
+                    Required="@Required" />
+            </div>
+            <div class="space-y-2">
+                <Label For="@($"{Id}-s")">Saturation (%)</Label>
+                <Input 
+                    Id="@($"{Id}-s")"
+                    Name="@($"{Name}-s")"
+                    Type="InputType.Number"
+                    Value="@_saturation.ToString()"
+                    ValueChanged="HandleSaturationChange"
+                    Min="0"
+                    Max="100"
+                    Disabled="@Disabled"
+                    Required="@Required" />
+            </div>
+            <div class="space-y-2">
+                <Label For="@($"{Id}-l")">Lightness (%)</Label>
+                <Input 
+                    Id="@($"{Id}-l")"
+                    Name="@($"{Name}-l")"
+                    Type="InputType.Number"
+                    Value="@_lightness.ToString()"
+                    ValueChanged="HandleLightnessChange"
+                    Min="0"
+                    Max="100"
+                    Disabled="@Disabled"
+                    Required="@Required" />
+            </div>
+        </div>
+    }
+
+    @* Alpha Channel *@
+    @if (ShowAlpha)
+    {
+        <div class="space-y-2">
+            <Label For="@($"{Id}-alpha")">Alpha (Opacity)</Label>
+            <Input 
+                Id="@($"{Id}-alpha")"
+                Name="@($"{Name}-alpha")"
+                Type="InputType.Number"
+                Value="@_alpha.ToString("F2")"
+                ValueChanged="HandleAlphaChange"
+                Min="0"
+                Max="1"
+                Step="0.01"
+                Disabled="@Disabled"
+                Required="@Required" />
+        </div>
+    }
+
+    @* Preset Color Swatches *@
+    <div class="space-y-2">
+        <Label>Preset Colors</Label>
+        <div class="grid grid-cols-8 gap-2">
+            @foreach (var preset in PresetColors)
+            {
+                <button 
+                    type="button"
+                    class="@GetSwatchClass(preset)"
+                    style="@($"background-color: {preset};")"
+                    @onclick="() => HandlePresetClick(preset)"
+                    disabled="@Disabled"
+                    title="@preset">
+                </button>
+            }
+        </div>
+    </div>
+
+    @* Validation *@
+    @if (ShowValidationError && EditContext != null && ValueExpression != null)
+    {
+        <Microsoft.AspNetCore.Components.Forms.ValidationMessage For="@ValueExpression" />
+    }
+</div>
+
+@code {
+    private string GetSwatchClass(string preset)
+    {
+        var isSelected = GetColorString().Equals(preset, StringComparison.OrdinalIgnoreCase);
+        return ClassNames.cn(
+            "w-8 h-8 rounded border-2 cursor-pointer transition-all",
+            "hover:scale-110 hover:shadow-md",
+            "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            isSelected ? "border-primary ring-2 ring-ring" : "border-input"
+        );
+    }
+}

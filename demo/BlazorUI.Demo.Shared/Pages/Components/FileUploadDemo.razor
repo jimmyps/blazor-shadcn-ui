@@ -1,0 +1,342 @@
+@page "/components/fileupload"
+@using BlazorUI.Components.FileUpload
+@using BlazorUI.Components.Button
+@using BlazorUI.Components.Card
+@using BlazorUI.Components.Separator
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>FileUpload Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">FileUpload Component</h1>
+            <p class="text-xl text-muted-foreground">
+                A file upload component with drag-and-drop support, validation, and image previews.
+            </p>
+        </div>
+    </div>
+
+    <div class="space-y-6">
+    </div>
+
+    <!-- Single File Upload -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Single File Upload</h2>
+            <p class="text-sm text-muted-foreground">
+                Basic single file upload with drag-and-drop support.
+            </p>
+        </div>
+        <div class="max-w-2xl">
+            <FileUpload @bind-Files="singleFile" 
+                       Multiple="false"
+                       DropZoneText="Drop a file here or click to browse" />
+        </div>
+    </div>
+
+    <!-- Multiple File Upload -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Multiple File Upload</h2>
+            <p class="text-sm text-muted-foreground">
+                Upload multiple files at once with file list display.
+            </p>
+        </div>
+        <div class="max-w-2xl">
+            <FileUpload @bind-Files="multipleFiles" 
+                       Multiple="true"
+                       DropZoneText="Drop files here or click to browse" />
+        </div>
+    </div>
+
+    <!-- Image Upload with Previews -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Image Upload with Previews</h2>
+            <p class="text-sm text-muted-foreground">
+                Upload images with thumbnail previews.
+            </p>
+        </div>
+        <div class="max-w-2xl">
+            <FileUpload @bind-Files="imageFiles" 
+                       Multiple="true"
+                       Accept="image/*"
+                       ShowPreview="true"
+                       DropZoneText="Drop images here or click to browse" />
+        </div>
+    </div>
+
+    <!-- Document Upload -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Document Upload</h2>
+            <p class="text-sm text-muted-foreground">
+                Upload PDF and Word documents only.
+            </p>
+        </div>
+        <div class="max-w-2xl">
+            <FileUpload @bind-Files="documentFiles" 
+                       Multiple="true"
+                       Accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                       ShowPreview="false"
+                       DropZoneText="Drop PDF or Word documents here" />
+        </div>
+    </div>
+
+    <!-- File Size Limit -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">File Size Limit</h2>
+            <p class="text-sm text-muted-foreground">
+                Upload files with a maximum size of 2MB.
+            </p>
+        </div>
+        <div class="max-w-2xl">
+            <FileUpload @bind-Files="sizeLimitFiles" 
+                       Multiple="true"
+                       MaxFileSize="2097152"
+                       DropZoneText="Drop files here (max 2MB each)" />
+        </div>
+    </div>
+
+    <!-- File Count Limit -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">File Count Limit</h2>
+            <p class="text-sm text-muted-foreground">
+                Upload up to 3 files maximum.
+            </p>
+        </div>
+        <div class="max-w-2xl">
+            <FileUpload @bind-Files="countLimitFiles" 
+                       Multiple="true"
+                       MaxFiles="3"
+                       DropZoneText="Drop up to 3 files here" />
+        </div>
+    </div>
+
+    <!-- Without Progress -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Without Upload Progress</h2>
+            <p class="text-sm text-muted-foreground">
+                File upload without progress indicator.
+            </p>
+        </div>
+        <div class="max-w-2xl">
+            <FileUpload @bind-Files="noProgressFiles" 
+                       Multiple="true"
+                       ShowProgress="false"
+                       DropZoneText="Drop files here" />
+        </div>
+    </div>
+
+    <!-- Disabled State -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Disabled State</h2>
+            <p class="text-sm text-muted-foreground">
+                Disabled file upload component.
+            </p>
+        </div>
+        <div class="max-w-2xl">
+            <FileUpload @bind-Files="disabledFiles" 
+                       Disabled="true"
+                       DropZoneText="Upload disabled" />
+        </div>
+    </div>
+
+    <!-- Form Integration with Validation -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Form Integration with Validation</h2>
+            <p class="text-sm text-muted-foreground">
+                File upload integrated with Blazor's EditForm and validation.
+            </p>
+        </div>
+        <div class="max-w-2xl">
+            <EditForm Model="@uploadForm" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Profile Picture</label>
+                        <FileUpload @bind-Files="uploadForm.ProfilePicture" 
+                                   Multiple="false"
+                                   Accept="image/*"
+                                   MaxFileSize="5242880"
+                                   ShowValidationError="true"
+                                   ValueExpression="@(() => uploadForm.ProfilePicture)"
+                                   DropZoneText="Upload your profile picture" />
+                        <ValidationMessage For="@(() => uploadForm.ProfilePicture)" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Documents (Required)</label>
+                        <FileUpload @bind-Files="uploadForm.Documents" 
+                                   Multiple="true"
+                                   Accept=".pdf,.docx"
+                                   MaxFiles="5"
+                                   ShowValidationError="true"
+                                   ValueExpression="@(() => uploadForm.Documents)"
+                                   DropZoneText="Upload required documents" />
+                        <ValidationMessage For="@(() => uploadForm.Documents)" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Supporting Images</label>
+                        <FileUpload @bind-Files="uploadForm.SupportingImages" 
+                                   Multiple="true"
+                                   Accept="image/*"
+                                   MaxFiles="10"
+                                   MaxFileSize="3145728"
+                                   ShowValidationError="true"
+                                   ValueExpression="@(() => uploadForm.SupportingImages)"
+                                   DropZoneText="Upload supporting images (optional)" />
+                        <ValidationMessage For="@(() => uploadForm.SupportingImages)" />
+                    </div>
+
+                    <div class="flex gap-2">
+                        <Button Type="ButtonType.Submit">Submit Form</Button>
+                        <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetForm">
+                            Reset
+                        </Button>
+                    </div>
+
+                    @if (formSubmitted)
+                    {
+                        <div class="p-4 rounded-lg border border-border bg-muted/50">
+                            <p class="text-sm font-medium text-green-600">Form submitted successfully!</p>
+                            <p class="text-xs text-muted-foreground mt-1">
+                                Profile Picture: @(uploadForm.ProfilePicture?.Count ?? 0) file(s)<br />
+                                Documents: @(uploadForm.Documents?.Count ?? 0) file(s)<br />
+                                Supporting Images: @(uploadForm.SupportingImages?.Count ?? 0) file(s)
+                            </p>
+                        </div>
+                    }
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+    <!-- Custom Styling -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Styling</h2>
+            <p class="text-sm text-muted-foreground">
+                File upload with custom CSS classes.
+            </p>
+        </div>
+        <div class="max-w-2xl">
+            <FileUpload @bind-Files="customStyleFiles" 
+                       Multiple="true"
+                       Class="border-primary/50"
+                       DropZoneText="Custom styled upload zone" />
+        </div>
+    </div>
+
+    <!-- All Features Combined -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">All Features Combined</h2>
+            <p class="text-sm text-muted-foreground">
+                Demonstrates all features: multiple files, file type restriction, size limit, count limit, previews, and progress.
+            </p>
+        </div>
+        <div class="max-w-2xl">
+            <FileUpload @bind-Files="combinedFiles" 
+                       Multiple="true"
+                       Accept="image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp"
+                       MaxFileSize="5242880"
+                       MaxFiles="5"
+                       ShowPreview="true"
+                       ShowProgress="true"
+                       DropZoneText="Drop up to 5 images (max 5MB each)" />
+            
+            @if (combinedFiles?.Any() == true)
+            {
+                <div class="mt-4 p-4 rounded-lg border border-border bg-muted/50">
+                    <h3 class="text-sm font-medium mb-2">Upload Summary</h3>
+                    <div class="space-y-1 text-xs text-muted-foreground">
+                        <p>Total files: @combinedFiles.Count / 5</p>
+                        <p>Total size: @FormatFileSize(combinedFiles.Sum(f => f.Size))</p>
+                        <div class="mt-2">
+                            <p class="font-medium">Files:</p>
+                            <ul class="list-disc list-inside">
+                                @foreach (var file in combinedFiles)
+                                {
+                                    <li>@file.Name - @FormatFileSize(file.Size)</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<IBrowserFile>? singleFile;
+    private List<IBrowserFile>? multipleFiles;
+    private List<IBrowserFile>? imageFiles;
+    private List<IBrowserFile>? documentFiles;
+    private List<IBrowserFile>? sizeLimitFiles;
+    private List<IBrowserFile>? countLimitFiles;
+    private List<IBrowserFile>? noProgressFiles;
+    private List<IBrowserFile>? disabledFiles;
+    private List<IBrowserFile>? customStyleFiles;
+    private List<IBrowserFile>? combinedFiles;
+    
+    private UploadFormModel uploadForm = new();
+    private bool formSubmitted = false;
+
+    private void HandleValidSubmit()
+    {
+        formSubmitted = true;
+        StateHasChanged();
+        
+        // Reset after 3 seconds
+        Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            formSubmitted = false;
+            await InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private void ResetForm()
+    {
+        uploadForm = new();
+        formSubmitted = false;
+    }
+
+    private string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+        double len = bytes;
+        int order = 0;
+        
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len /= 1024;
+        }
+        
+        return $"{len:0.##} {sizes[order]}";
+    }
+
+    public class UploadFormModel
+    {
+        [Required(ErrorMessage = "Profile picture is required")]
+        public List<IBrowserFile>? ProfilePicture { get; set; }
+
+        [Required(ErrorMessage = "At least one document is required")]
+        [MinLength(1, ErrorMessage = "At least one document is required")]
+        public List<IBrowserFile>? Documents { get; set; }
+
+        public List<IBrowserFile>? SupportingImages { get; set; }
+    }
+}

@@ -1,48 +1,60 @@
-/**
- * File Upload JavaScript interop module.
- * Handles drag-and-drop file transfers to Blazor's InputFile component.
- */
+// File upload drag-and-drop handler
+// Provides enhanced drag-and-drop functionality for file uploads
 
-/**
- * Initializes the drop zone for file uploads.
- * @param {HTMLElement} dropZoneElement - The drop zone container element.
- * @param {HTMLInputElement} inputFileElement - The InputFile element.
- * @returns {Object} Cleanup object with dispose method.
- */
-export function initializeDropZone(dropZoneElement, inputFileElement) {
-    if (!dropZoneElement || !inputFileElement) {
-        console.warn('FileUpload: Missing dropZone or inputFile element');
-        return { dispose: () => {} };
+export function initializeDragDrop(dropZoneId, inputFileId) {
+    const dropZone = document.getElementById(dropZoneId);
+    const inputFile = document.getElementById(inputFileId);
+    
+    if (!dropZone || !inputFile) return;
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    // Highlight drop zone when item is dragged over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    // Handle dropped files
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
     }
 
-    const handleDragOver = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-    };
+    function highlight(e) {
+        dropZone.classList.add('drag-over');
+    }
 
-    const handleDrop = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+    function unhighlight(e) {
+        dropZone.classList.remove('drag-over');
+    }
 
-        if (e.dataTransfer?.files?.length > 0) {
-            // Transfer files to the InputFile element
-            inputFileElement.files = e.dataTransfer.files;
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
 
-            // Dispatch change event to trigger Blazor's InputFile handler
+        if (files.length > 0) {
+            // Trigger the file input change event with the dropped files
+            inputFile.files = files;
             const event = new Event('change', { bubbles: true });
-            inputFileElement.dispatchEvent(event);
+            inputFile.dispatchEvent(event);
         }
-    };
+    }
+}
 
-    // Add event listeners
-    dropZoneElement.addEventListener('dragover', handleDragOver);
-    dropZoneElement.addEventListener('drop', handleDrop);
+export function cleanup(dropZoneId) {
+    const dropZone = document.getElementById(dropZoneId);
+    if (!dropZone) return;
 
-    // Return cleanup object
-    return {
-        dispose: () => {
-            dropZoneElement.removeEventListener('dragover', handleDragOver);
-            dropZoneElement.removeEventListener('drop', handleDrop);
-        }
-    };
+    // Remove event listeners
+    dropZone.classList.remove('drag-over');
 }
