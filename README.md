@@ -395,17 +395,15 @@ NeoBlazorUI offers **three icon library packages** to suit different design pref
 
 ## 🔧 Primitives
 
-NeoBlazorUI also includes **17 headless primitive components** for building custom UI:
+NeoBlazorUI also includes **15 headless primitive components** for building custom UI:
 
 - Accordion Primitive
 - Checkbox Primitive
 - Collapsible Primitive
-- Combobox Primitive
 - Dialog Primitive
 - Dropdown Menu Primitive
 - Hover Card Primitive
 - Label Primitive
-- MultiSelect Primitive
 - Popover Primitive
 - Radio Group Primitive
 - Select Primitive
