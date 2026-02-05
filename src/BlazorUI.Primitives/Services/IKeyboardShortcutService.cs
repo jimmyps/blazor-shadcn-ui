@@ -51,4 +51,10 @@ public interface IKeyboardShortcutService : IAsyncDisposable
     /// Gets whether shortcuts are currently suspended.
     /// </summary>
     bool IsSuspended { get; }
+
+    /// <summary>
+    /// Gets the platform-specific modifier key symbol for display purposes.
+    /// </summary>
+    /// <returns>The modifier key symbol (⌘ for Mac, Ctrl for Windows/Linux).</returns>
+    Task<string> GetModifierKeyAsync();
 }

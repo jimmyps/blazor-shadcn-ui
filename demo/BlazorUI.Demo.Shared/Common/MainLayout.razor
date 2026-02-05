@@ -640,3 +640,37 @@
 <SpotlightCommandPalette @ref="_spotlightRef" />
 <DialogHost />
 <PortalHost />
+
+@code
+{
+    [Inject]
+    private IKeyboardShortcutService KeyboardShortcuts { get; set; } = null!;
+    
+    // Reference to the SpotlightCommandPalette component
+    private SpotlightCommandPalette? _spotlightRef;
+
+    // Platform-specific modifier key (⌘ for Mac, Ctrl for others)
+    private string _modifierKey = "Ctrl";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Detect platform-specific modifier key
+            try
+            {
+                _modifierKey = await KeyboardShortcuts.GetModifierKeyAsync();
+            }
+            catch
+            {
+                // Fallback to Ctrl if detection fails
+                _modifierKey = "Ctrl";
+            }
+        }
+    }
+
+    private void OpenSpotlight()
+    {
+        _spotlightRef?.Open();
+    }
+}

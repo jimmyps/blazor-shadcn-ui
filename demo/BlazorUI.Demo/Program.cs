@@ -32,9 +32,6 @@ builder.Services.AddSingleton<MockDataService>();
 // Add toast service for notifications
 builder.Services.AddSingleton<IToastService, ToastService>();
 
-// Add keyboard shortcut service for global shortcuts
-builder.Services.AddScoped<KeyboardShortcutService>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

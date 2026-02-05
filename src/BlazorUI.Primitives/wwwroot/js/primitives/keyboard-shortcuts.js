@@ -45,6 +45,16 @@ export function dispose() {
 }
 
 /**
+ * Gets the platform-specific modifier key symbol.
+ * @returns {string} The modifier key symbol (⌘ for Mac, Ctrl for others)
+ */
+export function getModifierKey() {
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0 || 
+                  navigator.userAgent.toUpperCase().indexOf('MAC') >= 0;
+    return isMac ? '⌘' : 'Ctrl';
+}
+
+/**
  * Handles keydown events and invokes registered shortcuts.
  * @param {KeyboardEvent} event - The keyboard event
  */

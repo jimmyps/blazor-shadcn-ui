@@ -31,18 +31,17 @@
         </p>
 
         <div class="flex flex-col gap-4">
-            <!-- Search Box Styled Trigger -->
-            <button 
-                @onclick="OpenSpotlight"
-                aria-label="Open command palette (Cmd+K)"
-                class="group flex items-center gap-3 w-full max-w-md px-4 py-2.5 text-sm text-muted-foreground bg-background hover:bg-accent/50 border border-border/40 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+            <!-- Search Box Styled Display -->
+            <div 
+                aria-label="Press Cmd+K or Ctrl+K to open command palette"
+                class="group flex items-center gap-3 w-full max-w-md px-4 py-2.5 text-sm text-muted-foreground bg-background border border-border/40 rounded-lg shadow-sm">
                 <LucideIcon Name="search" Size="16" Class="text-muted-foreground" />
-                <span class="flex-1 text-left">Search documentation...</span>
+                <span class="flex-1 text-left">Press the keyboard shortcut to search...</span>
                 <div class="flex items-center gap-1">
                     <kbd class="px-2 py-1 text-xs bg-muted/50 border border-border/40 rounded font-mono">⌘</kbd>
                     <kbd class="px-2 py-1 text-xs bg-muted/50 border border-border/40 rounded font-mono">K</kbd>
                 </div>
-            </button>
+            </div>
 
             <div class="rounded-lg border bg-muted/20 p-4 text-sm">
                 <h3 class="font-medium mb-2 flex items-center gap-2">
@@ -557,8 +556,6 @@
 </div>
 
 @code {
-[Inject] private KeyboardShortcutService? KeyboardShortcuts { get; set; }
-    
 // Icon data for lazy loading demo - all three libraries
 private static readonly (string Name, int Index)[] _lucideIcons = LucideIconData.GetAvailableIcons()
     .Select((name, index) => (name, index))
@@ -580,15 +577,6 @@ private static int TotalIconCount => _lucideIcons.Length + _featherIcons.Length 
     private string? disabledSelected;
     private string? complexSelected;
     private string? lazySelected;
-
-    // Method to open the global spotlight palette
-    private async Task OpenSpotlight()
-    {
-        if (KeyboardShortcuts != null)
-        {
-            await KeyboardShortcuts.TriggerShortcutAsync("k");
-        }
-    }
 
     // Individual handlers for each section
     private void HandlePaletteSelect(string value)

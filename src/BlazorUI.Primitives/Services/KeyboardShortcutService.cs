@@ -84,6 +84,27 @@ public class KeyboardShortcutService : IKeyboardShortcutService
         _suspended = false;
     }
 
+    /// <inheritdoc />
+    public async Task<string> GetModifierKeyAsync()
+    {
+        await EnsureInitializedAsync();
+
+        if (_module != null)
+        {
+            try
+            {
+                return await _module.InvokeAsync<string>("getModifierKey");
+            }
+            catch
+            {
+                // Fallback to Ctrl if JS call fails
+                return "Ctrl";
+            }
+        }
+
+        return "Ctrl";
+    }
+
     /// <summary>
     /// Called from JavaScript when a registered shortcut key is pressed.
     /// </summary>

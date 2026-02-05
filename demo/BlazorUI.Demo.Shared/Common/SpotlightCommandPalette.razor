@@ -1,13 +1,12 @@
 @using BlazorUI.Components.Command
 @using BlazorUI.Components.Dialog
 @using BlazorUI.Components.HeightAnimation
-@using BlazorUI.Demo.Services
 @using BlazorUI.Icons.Feather.Data
 @using BlazorUI.Icons.Heroicons.Data
+@using BlazorUI.Primitives.Services
 @using Microsoft.AspNetCore.Components
-@inject KeyboardShortcutService KeyboardShortcuts
+@inject IKeyboardShortcutService KeyboardShortcuts
 @inject NavigationManager NavigationManager
-@implements IAsyncDisposable
 
 @* Spotlight Command Palette - Global search and command interface *@
 <Dialog @bind-Open="_isOpen">
@@ -161,9 +160,8 @@
     {
         if (firstRender)
         {
-            // Initialize keyboard shortcuts
-            await KeyboardShortcuts.InitializeAsync();
-            KeyboardShortcuts.RegisterShortcut("k", async () =>
+            // Register keyboard shortcut (Ctrl+K / Cmd+K)
+            await KeyboardShortcuts.RegisterAsync("Ctrl+K", async () =>
             {
                 _isOpen = !_isOpen;
                 await InvokeAsync(StateHasChanged);
@@ -288,23 +286,4 @@
     private static readonly string[] AllLucideIcons = LucideIconData.GetAvailableIcons().OrderBy(x => x).ToArray();
     private static readonly string[] AllHeroIcons = HeroIconData.GetAvailableIcons(HeroIconVariant.Outline).OrderBy(x => x).ToArray();
     private static readonly string[] AllFeatherIcons = FeatherIconData.GetAvailableIcons().OrderBy(x => x).ToArray();
-
-    public async ValueTask DisposeAsync()
-    {
-        if (KeyboardShortcuts != null)
-        {
-            try
-            {
-                KeyboardShortcuts.UnregisterShortcut("k");
-            }
-            catch (ObjectDisposedException)
-            {
-                // Service already disposed, ignore
-            }
-            catch (InvalidOperationException)
-            {
-                // Shortcut not registered or already removed, ignore
-            }
-        }
-    }
 }
