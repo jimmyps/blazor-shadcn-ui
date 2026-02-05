@@ -1,0 +1,54 @@
+@namespace BlazorUI.Components.Popover
+@using BlazorUI.Primitives.Popover
+
+@* Styled PopoverArrow with shadcn/ui design *@
+
+<BlazorUI.Primitives.Popover.PopoverArrow Width="@Width"
+                                          Height="@Height"
+                                          EdgePadding="@EdgePadding"
+                                          Class="@CssClass"
+                                          @attributes="AdditionalAttributes" />
+
+@code {
+    /// <summary>
+    /// Gets or sets the width of the arrow in pixels.
+    /// Default is 16.
+    /// </summary>
+    [Parameter]
+    public int Width { get; set; } = 16;
+
+    /// <summary>
+    /// Gets or sets the height of the arrow in pixels.
+    /// Default is 8.
+    /// </summary>
+    [Parameter]
+    public int Height { get; set; } = 8;
+
+    /// <summary>
+    /// Gets or sets the minimum distance from popover edges in pixels.
+    /// Default is 8.
+    /// </summary>
+    [Parameter]
+    public int EdgePadding { get; set; } = 8;
+
+    /// <summary>
+    /// Gets or sets additional CSS classes.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional attributes.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CssClass
+    {
+        get
+        {
+            var baseClasses = "text-popover [&_svg]:drop-shadow-sm";
+            return string.IsNullOrWhiteSpace(Class) ? baseClasses : $"{baseClasses} {Class}";
+        }
+    }
+}

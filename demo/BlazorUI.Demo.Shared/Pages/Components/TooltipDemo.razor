@@ -274,6 +274,29 @@
             </div>
         </div>
 
+        <!-- With Arrow -->
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">With Arrow</h2>
+                <p class="text-sm text-muted-foreground">
+                    Tooltips can include an arrow that points to the trigger element.
+                </p>
+            </div>
+            <div class="flex gap-4">
+                <Tooltip>
+                    <TooltipTrigger AsChild>
+                        <Button Size="ButtonSize.Icon" Variant="ButtonVariant.Ghost">
+                            <LucideIcon Name="info" Size="16" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <PopoverArrow Width="12" Height="6" />
+                        Tooltip with arrow pointer
+                    </TooltipContent>
+                </Tooltip>
+            </div>
+        </div>
+
         <!-- Accessibility Notes -->
         <div class="space-y-4">
             <div class="space-y-2">
