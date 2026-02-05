@@ -24,7 +24,7 @@ if (!ctx) return;
 
     if (canvas.width === 0 || canvas.height === 0) return;
 
-let isDragging = false;
+    let isDragging = false;
 
     // Draw the saturation/lightness gradient
     function drawGradient() {
