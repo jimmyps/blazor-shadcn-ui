@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 
 namespace BlazorUI.Components.Input;
 
@@ -50,8 +49,8 @@ namespace BlazorUI.Components.Input;
 /// </example>
 public partial class Input : ComponentBase, IAsyncDisposable
 {
-    // Track first invalid input per EditContext to avoid cross-form interference and race conditions
-    private static ConditionalWeakTable<EditContext, StrongBox<string?>> _firstInvalidInputIdPerContext = new();
+    // Key for storing first invalid input ID in EditContext.Properties
+    private static readonly object _firstInvalidInputIdKey = new();
     
     private IJSObjectReference? _validationModule;
     private EditContext? _previousEditContext;
@@ -468,8 +467,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
         // Reset first invalid input tracking for this EditContext on new validation cycle
         if (EditContext != null)
         {
-            var box = _firstInvalidInputIdPerContext.GetOrCreateValue(EditContext);
-            box.Value = null;
+            EditContext.Properties[_firstInvalidInputIdKey] = null;
         }
         _hasShownTooltip = false;
 
@@ -498,10 +496,17 @@ public partial class Input : ComponentBase, IAsyncDisposable
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    // Atomically determine if this is the first invalid input for this EditContext
-                    var box = _firstInvalidInputIdPerContext.GetOrCreateValue(EditContext);
-                    var previousValue = Interlocked.CompareExchange(ref box.Value, Id, null);
-                    var isFirstInvalid = previousValue == null;
+                    // Determine if this is the first invalid input for this EditContext
+                    // Using EditContext.Properties for per-form state storage
+                    var firstInvalidId = EditContext.Properties.TryGetValue(_firstInvalidInputIdKey, out var value) 
+                        ? value as string 
+                        : null;
+                    var isFirstInvalid = firstInvalidId == null;
+                    
+                    if (isFirstInvalid)
+                    {
+                        EditContext.Properties[_firstInvalidInputIdKey] = Id;
+                    }
 
                     if (isFirstInvalid && !_hasShownTooltip)
                     {
