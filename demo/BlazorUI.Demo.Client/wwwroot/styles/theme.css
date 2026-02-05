@@ -119,6 +119,7 @@
     color: var(--foreground);
     font-family: var(--font-sans);
     letter-spacing: var(--tracking-normal);
+    overflow: hidden;
   }
 
   h1:focus {

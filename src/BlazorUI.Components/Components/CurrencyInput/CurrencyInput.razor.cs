@@ -50,33 +50,9 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
 {
     private static string? _firstInvalidInputId = null;
     
-    // Static currency-to-culture mapping to avoid repeated allocations
-    private static readonly Dictionary<string, string> CurrencyToCultureMap = new()
-    {
-        { "USD", "en-US" },
-        { "EUR", "de-DE" },
-        { "GBP", "en-GB" },
-        { "JPY", "ja-JP" },
-        { "CNY", "zh-CN" },
-        { "CHF", "de-CH" },
-        { "CAD", "en-CA" },
-        { "AUD", "en-AU" },
-        { "INR", "hi-IN" },
-        { "BRL", "pt-BR" },
-        { "MXN", "es-MX" },
-        { "KRW", "ko-KR" },
-        { "RUB", "ru-RU" },
-        { "SEK", "sv-SE" },
-        { "NOK", "nb-NO" },
-        { "DKK", "da-DK" },
-        { "PLN", "pl-PL" },
-        { "TRY", "tr-TR" },
-        { "ZAR", "en-ZA" },
-        { "NZD", "en-NZ" }
-    };
-    
-    // Cache for region info to avoid expensive culture iteration
-    private static readonly Dictionary<string, RegionInfo?> RegionInfoCache = new();
+    // Cache for currency definitions to avoid repeated lookups
+    private CurrencyDefinition? _cachedCurrency;
+    private string? _cachedCurrencyCode;
     
     private IJSObjectReference? _validationModule;
     private EditContext? _previousEditContext;
@@ -104,7 +80,7 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     /// - Change: Updates value only when input loses focus
     /// </remarks>
     [Parameter]
-    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Input;
+    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Change;
 
     /// <summary>
     /// Gets or sets the current value of the input.
@@ -208,14 +184,22 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Gets or sets the minimum value for validation.
     /// </summary>
+    /// <remarks>
+    /// When set, values less than this minimum will be clamped to this value.
+    /// Can be specified as a string (e.g., "10", "0.01").
+    /// </remarks>
     [Parameter]
-    public TValue? Min { get; set; }
+    public string? Min { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum value for validation.
     /// </summary>
+    /// <remarks>
+    /// When set, values greater than this maximum will be clamped to this value.
+    /// Can be specified as a string (e.g., "1000", "999.99").
+    /// </remarks>
     [Parameter]
-    public TValue? Max { get; set; }
+    public string? Max { get; set; }
 
     /// <summary>
     /// Gets or sets whether the input should be auto-focused when the page loads.
@@ -379,10 +363,30 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     private string? EffectiveName => Name ?? Id;
 
     /// <summary>
+    /// Gets the currency definition for the current currency code.
+    /// </summary>
+    private CurrencyDefinition CurrencyDefinition
+    {
+        get
+        {
+            // Use cached value if currency code hasn't changed
+            if (_cachedCurrency != null && _cachedCurrencyCode == Currency)
+            {
+                return _cachedCurrency;
+            }
+
+            _cachedCurrency = CurrencyCatalog.GetCurrency(Currency);
+            _cachedCurrencyCode = Currency;
+            return _cachedCurrency;
+        }
+    }
+
+    /// <summary>
     /// Gets the culture info to use for formatting.
     /// </summary>
     private CultureInfo GetCultureInfo()
     {
+        // If Culture parameter is explicitly set, use it
         if (!string.IsNullOrEmpty(Culture))
         {
             try
@@ -391,10 +395,20 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
             }
             catch (CultureNotFoundException)
             {
-                // Fall back to current culture if specified culture is invalid
+                // Fall back to currency's default culture if specified culture is invalid
             }
         }
-        return CultureInfo.CurrentCulture;
+        
+        // Use the currency's default culture
+        try
+        {
+            return CultureInfo.GetCultureInfo(CurrencyDefinition.CultureName);
+        }
+        catch (CultureNotFoundException)
+        {
+            // Final fallback to current culture
+            return CultureInfo.CurrentCulture;
+        }
     }
 
     /// <summary>
@@ -411,30 +425,35 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
             if (Value == null)
                 return null;
 
-            var cultureInfo = GetCultureInfo();
-            var formatString = ShowCurrencySymbol ? "C" : "F2";
-
             try
             {
                 var numericValue = Convert.ToDecimal(Value);
+                var currencyDef = CurrencyDefinition;
                 
                 if (ShowCurrencySymbol)
                 {
-                    // Create a custom NumberFormatInfo with the specified currency
+                    // Format with currency symbol and correct decimal places
+                    var cultureInfo = GetCultureInfo();
                     var numberFormat = (NumberFormatInfo)cultureInfo.NumberFormat.Clone();
                     
-                    // Get the currency symbol for the specified currency
-                    var regionInfo = GetRegionInfoForCurrency(Currency);
-                    if (regionInfo != null)
+                    // Override with our currency definition values
+                    numberFormat.CurrencySymbol = currencyDef.Symbol;
+                    numberFormat.CurrencyDecimalDigits = currencyDef.DecimalPlaces;
+                    
+                    // Handle symbol positioning (for currencies like VND that have symbol after)
+                    if (!currencyDef.SymbolBefore)
                     {
-                        numberFormat.CurrencySymbol = regionInfo.CurrencySymbol;
+                        numberFormat.CurrencyPositivePattern = 1; // n $
+                        numberFormat.CurrencyNegativePattern = 1; // -n $
                     }
                     
                     return numericValue.ToString("C", numberFormat);
                 }
                 else
                 {
-                    return numericValue.ToString("F2", cultureInfo);
+                    // Format without symbol, using currency's decimal places
+                    var formatString = $"F{currencyDef.DecimalPlaces}";
+                    return numericValue.ToString(formatString, GetCultureInfo());
                 }
             }
             catch
@@ -442,58 +461,6 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
                 return null;
             }
         }
-    }
-
-    /// <summary>
-    /// Gets a RegionInfo for the specified currency code.
-    /// </summary>
-    private RegionInfo? GetRegionInfoForCurrency(string currencyCode)
-    {
-        var upperCode = currencyCode.ToUpperInvariant();
-        
-        // Check cache first
-        if (RegionInfoCache.TryGetValue(upperCode, out var cachedRegion))
-        {
-            return cachedRegion;
-        }
-
-        RegionInfo? regionInfo = null;
-        
-        try
-        {
-            if (CurrencyToCultureMap.TryGetValue(upperCode, out var cultureName))
-            {
-                regionInfo = new RegionInfo(cultureName);
-            }
-            else
-            {
-                // Try to find a culture that uses this currency (expensive operation)
-                foreach (var culture in CultureInfo.GetCultures(CultureTypes.SpecificCultures))
-                {
-                    try
-                    {
-                        var region = new RegionInfo(culture.Name);
-                        if (region.ISOCurrencySymbol.Equals(upperCode, StringComparison.OrdinalIgnoreCase))
-                        {
-                            regionInfo = region;
-                            break;
-                        }
-                    }
-                    catch
-                    {
-                        // Skip cultures that don't have region info
-                    }
-                }
-            }
-        }
-        catch
-        {
-            // Fall back to null
-        }
-
-        // Cache the result (even if null)
-        RegionInfoCache[upperCode] = regionInfo;
-        return regionInfo;
     }
 
     /// <summary>
@@ -535,7 +502,9 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
         // Update value on blur if UpdateOn is set to Change
         if (UpdateOn == InputUpdateMode.Change)
         {
-            var parsedValue = TryParseValue(stringValue);
+            // Use the editing value if available (more reliable than args.Value)
+            var valueToUse = !string.IsNullOrEmpty(_editingValue) ? _editingValue : stringValue;
+            var parsedValue = TryParseValue(valueToUse);
             Value = parsedValue;
 
             if (ValueChanged.HasDelegate)
@@ -583,8 +552,14 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     /// </summary>
     private void HandleBlur()
     {
+        // Clear editing state to restore formatted display
+        // This is critical because @onchange doesn't fire if the value didn't change,
+        // but we still need to restore the formatted value on blur
         _isFocused = false;
         _editingValue = null;
+        
+        // Force re-render to show formatted value
+        StateHasChanged();
     }
 
     /// <summary>
@@ -596,21 +571,18 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
             return default;
 
         var cultureInfo = GetCultureInfo();
+        var currencyDef = CurrencyDefinition;
         var targetType = typeof(TValue);
         var underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
 
         // Remove currency symbols and group separators
         var cleanValue = value;
         
-        // Remove culture-specific currency symbol
-        cleanValue = cleanValue.Replace(cultureInfo.NumberFormat.CurrencySymbol, "");
+        // Remove the currency symbol
+        cleanValue = cleanValue.Replace(currencyDef.Symbol, "");
         
-        // Remove the specific currency symbol for the configured currency
-        var regionInfo = GetRegionInfoForCurrency(Currency);
-        if (regionInfo != null && !string.IsNullOrEmpty(regionInfo.CurrencySymbol))
-        {
-            cleanValue = cleanValue.Replace(regionInfo.CurrencySymbol, "");
-        }
+        // Remove culture-specific currency symbol (fallback)
+        cleanValue = cleanValue.Replace(cultureInfo.NumberFormat.CurrencySymbol, "");
         
         // Remove group separators (thousands separators)
         cleanValue = cleanValue.Replace(cultureInfo.NumberFormat.CurrencyGroupSeparator, "")
@@ -623,11 +595,18 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
             {
                 if (decimal.TryParse(cleanValue, NumberStyles.Number, cultureInfo, out var result))
                 {
-                    // Apply min/max validation
-                    if (Min != null && result < Convert.ToDecimal(Min))
-                        result = Convert.ToDecimal(Min);
-                    if (Max != null && result > Convert.ToDecimal(Max))
-                        result = Convert.ToDecimal(Max);
+                    // Apply min/max validation - parse from string
+                    if (!string.IsNullOrEmpty(Min) && decimal.TryParse(Min, NumberStyles.Number, CultureInfo.InvariantCulture, out var minValue))
+                    {
+                        if (result < minValue)
+                            result = minValue;
+                    }
+                    
+                    if (!string.IsNullOrEmpty(Max) && decimal.TryParse(Max, NumberStyles.Number, CultureInfo.InvariantCulture, out var maxValue))
+                    {
+                        if (result > maxValue)
+                            result = maxValue;
+                    }
                     
                     return (TValue)(object)result;
                 }
@@ -636,11 +615,18 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
             {
                 if (double.TryParse(cleanValue, NumberStyles.Number, cultureInfo, out var result))
                 {
-                    // Apply min/max validation
-                    if (Min != null && result < Convert.ToDouble(Min))
-                        result = Convert.ToDouble(Min);
-                    if (Max != null && result > Convert.ToDouble(Max))
-                        result = Convert.ToDouble(Max);
+                    // Apply min/max validation - parse from string
+                    if (!string.IsNullOrEmpty(Min) && double.TryParse(Min, NumberStyles.Number, CultureInfo.InvariantCulture, out var minValue))
+                    {
+                        if (result < minValue)
+                            result = minValue;
+                    }
+                    
+                    if (!string.IsNullOrEmpty(Max) && double.TryParse(Max, NumberStyles.Number, CultureInfo.InvariantCulture, out var maxValue))
+                    {
+                        if (result > maxValue)
+                            result = maxValue;
+                    }
                     
                     return (TValue)(object)result;
                 }

@@ -8,7 +8,7 @@ NeoBlazorUI brings the beautiful design system of shadcn/ui to Blazor applicatio
 
 **No Tailwind CSS setup required** - just install the NuGet package and start building!
 
-**[🚀 Try the Live Demo](https://blazoruidemo20251223130817-bch0fhddfkh2bthv.indonesiacentral-01.azurewebsites.net)** - Explore all 77+ components with interactive examples
+**[🚀 Try the Live Demo](https://blazoruidemo20251223130817-bch0fhddfkh2bthv.indonesiacentral-01.azurewebsites.net)** - Explore all 85+ components with interactive examples
 
 ## 🚀 Getting Started
 
@@ -282,22 +282,28 @@ Primitives give you complete control over styling while handling all the complex
 
 ## 📚 Components
 
-NeoBlazorUI includes **77+ styled components** with full shadcn/ui design compatibility:
+NeoBlazorUI includes **85+ styled components** with full shadcn/ui design compatibility:
 
 ### Form Components
 - **Button** - Multiple variants (default, destructive, outline, secondary, ghost, link) with icon support
 - **Button Group** - Visually grouped related buttons with connected styling
 - **Checkbox** - Accessible checkbox with indeterminate state
+- **Color Picker** - Color selection with hex, RGB, and HSL support
 - **Combobox** - Searchable autocomplete dropdown
+- **Currency Input** - Formatted currency input with locale support
 - **Field** - Combine labels, controls, and help text for accessible forms
 - **Input** - Text input with multiple types and validation support
 - **Input Group** - Enhanced inputs with icons, buttons, and addons
 - **Input OTP** - One-time password input with individual character slots
 - **Label** - Accessible form labels
 - **Link Button** - Semantic links styled as buttons for navigation
+- **Masked Input** - Text input with customizable format masks (phone, date, etc.)
 - **Multi Select** - Searchable multi-selection with tags and checkboxes
-- **Native Select** - Styled native HTML select dropdown
+- **Native Select** - Styled native HTML select dropdown with chevron icon
+- **Numeric Input** - Number input with increment/decrement buttons and formatting
 - **Radio Group** - Radio button groups with keyboard navigation
+- **Range Slider** - Dual-handle slider for selecting value ranges
+- **Rating** - Star rating input with half-star precision and readonly mode
 - **Select** - Dropdown select with search and keyboard navigation
 - **Slider** - Range input for numeric value selection
 - **Switch** - Toggle switch component
@@ -305,7 +311,8 @@ NeoBlazorUI includes **77+ styled components** with full shadcn/ui design compat
 
 ### Date & Time
 - **Calendar** - Date selection grid with month navigation
-- **Date Picker** - Date selection with calendar in popover (includes Date Range Picker)
+- **Date Picker** - Date selection with calendar in popover
+- **Date Range Picker** - Date range selection with presets and two-calendar view
 - **Time Picker** - Time selection with 12/24-hour format support
 
 ### Layout & Navigation
@@ -330,6 +337,7 @@ NeoBlazorUI includes **77+ styled components** with full shadcn/ui design compat
 - **Command** - Command palette with keyboard navigation
 - **Dialog** - Modal dialogs
 - **Dialog Service** - Programmatic dialogs with async/await API for alerts and confirmations
+- **Drawer** - Slide-out panel with gesture controls and backdrop
 - **Dropdown Menu** - Context menus with nested submenus
 - **Hover Card** - Rich hover previews
 - **Menubar** - Desktop application-style horizontal menu bar

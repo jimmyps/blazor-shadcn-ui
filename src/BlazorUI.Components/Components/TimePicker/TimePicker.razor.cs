@@ -27,13 +27,13 @@ public partial class TimePickerBase : ComponentBase
     /// The selected time.
     /// </summary>
     [Parameter]
-    public TimeSpan? Time { get; set; }
+    public TimeOnly? SelectedTime { get; set; }
 
     /// <summary>
     /// Event callback invoked when the selected time changes.
     /// </summary>
     [Parameter]
-    public EventCallback<TimeSpan?> TimeChanged { get; set; }
+    public EventCallback<TimeOnly?> SelectedTimeChanged { get; set; }
 
     /// <summary>
     /// Whether to use 12-hour format. Default is false (24-hour).
@@ -51,19 +51,26 @@ public partial class TimePickerBase : ComponentBase
     /// Minimum allowed time.
     /// </summary>
     [Parameter]
-    public TimeSpan? MinTime { get; set; }
+    public TimeOnly? MinTime { get; set; }
 
     /// <summary>
     /// Maximum allowed time.
     /// </summary>
     [Parameter]
-    public TimeSpan? MaxTime { get; set; }
+    public TimeOnly? MaxTime { get; set; }
 
     /// <summary>
-    /// Step interval in minutes. Default is 1.
+    /// Minute step interval for the dropdown.
+    /// Common values: 1, 5, 10, 15, 30. Default is 1.
     /// </summary>
     [Parameter]
-    public int Step { get; set; } = 1;
+    public int MinuteStep { get; set; } = 1;
+
+    /// <summary>
+    /// Whether to show the clock icon. Default is true.
+    /// </summary>
+    [Parameter]
+    public bool ShowIcon { get; set; } = true;
 
     /// <summary>
     /// Whether the time picker is disabled.
@@ -105,7 +112,7 @@ public partial class TimePickerBase : ComponentBase
     /// Expression that identifies the bound value.
     /// </summary>
     [Parameter]
-    public Expression<Func<TimeSpan?>>? ValueExpression { get; set; }
+    public Expression<Func<TimeOnly?>>? ValueExpression { get; set; }
 
     /// <summary>
     /// Placeholder text when no time is selected.
@@ -117,32 +124,32 @@ public partial class TimePickerBase : ComponentBase
     {
         base.OnParametersSet();
         
-        if (Time.HasValue)
+        if (SelectedTime.HasValue)
         {
-            var time = Time.Value;
-            _hour24 = time.Hours;
-            _minute = time.Minutes;
-            _second = time.Seconds;
+            var time = SelectedTime.Value;
+            _hour24 = time.Hour;
+            _minute = time.Minute;
+            _second = time.Second;
             
             // Convert to 12-hour format
-            if (time.Hours == 0)
+            if (time.Hour == 0)
             {
                 _hour12 = 12;
                 _isPM = false;
             }
-            else if (time.Hours < 12)
+            else if (time.Hour < 12)
             {
-                _hour12 = time.Hours;
+                _hour12 = time.Hour;
                 _isPM = false;
             }
-            else if (time.Hours == 12)
+            else if (time.Hour == 12)
             {
                 _hour12 = 12;
                 _isPM = true;
             }
             else
             {
-                _hour12 = time.Hours - 12;
+                _hour12 = time.Hour - 12;
                 _isPM = true;
             }
         }
@@ -180,7 +187,7 @@ public partial class TimePickerBase : ComponentBase
             hour = _hour24;
         }
 
-        var newTime = new TimeSpan(hour, _minute, ShowSeconds ? _second : 0);
+        var newTime = new TimeOnly(hour, _minute, ShowSeconds ? _second : 0);
 
         // Validate against MinTime/MaxTime
         if (MinTime.HasValue && newTime < MinTime.Value)
@@ -193,7 +200,7 @@ public partial class TimePickerBase : ComponentBase
         }
 
         _isOpen = false;
-        await TimeChanged.InvokeAsync(newTime);
+        await SelectedTimeChanged.InvokeAsync(newTime);
 
         // Notify EditContext if available
         if (EditContext != null && ValueExpression != null)
@@ -207,28 +214,31 @@ public partial class TimePickerBase : ComponentBase
         _isPM = e.Value?.ToString() == "PM";
     }
 
+    protected void OnPeriodChangedFromSelect(string? value)
+    {
+        _isPM = value == "PM";
+    }
+
     protected string GetDisplayText()
     {
-        if (!Time.HasValue)
+        if (!SelectedTime.HasValue)
             return Placeholder;
 
-        var time = Time.Value;
+        var time = SelectedTime.Value;
         
         if (Use12Hour)
         {
-            var format = ShowSeconds ? "h\\:mm\\:ss tt" : "h\\:mm tt";
-            var hour = time.Hours % 12;
+            var hour = time.Hour % 12;
             if (hour == 0) hour = 12;
-            var period = time.Hours >= 12 ? "PM" : "AM";
+            var period = time.Hour >= 12 ? "PM" : "AM";
             return ShowSeconds 
-                ? $"{hour}:{time.Minutes:D2}:{time.Seconds:D2} {period}"
-                : $"{hour}:{time.Minutes:D2} {period}";
+                ? $"{hour}:{time.Minute:D2}:{time.Second:D2} {period}"
+                : $"{hour}:{time.Minute:D2} {period}";
         }
         
-        var format24 = ShowSeconds ? "hh\\:mm\\:ss" : "hh\\:mm";
         return ShowSeconds 
-            ? $"{time.Hours:D2}:{time.Minutes:D2}:{time.Seconds:D2}"
-            : $"{time.Hours:D2}:{time.Minutes:D2}";
+            ? $"{time.Hour:D2}:{time.Minute:D2}:{time.Second:D2}"
+            : $"{time.Hour:D2}:{time.Minute:D2}";
     }
 
     protected string GetButtonClass()
@@ -243,7 +253,7 @@ public partial class TimePickerBase : ComponentBase
             "h-9 px-4 py-2"
         };
         
-        if (!Time.HasValue)
+        if (!SelectedTime.HasValue)
             classes.Add("text-muted-foreground");
 
         if (!string.IsNullOrEmpty(Class))
@@ -279,14 +289,5 @@ public partial class TimePickerBase : ComponentBase
     protected string GetPopoverContentClass()
     {
         return "w-auto p-4";
-    }
-
-    protected string GetSelectClass()
-    {
-        return ClassNames.cn(
-            "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm",
-            "ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-            "disabled:cursor-not-allowed disabled:opacity-50"
-        );
     }
 }

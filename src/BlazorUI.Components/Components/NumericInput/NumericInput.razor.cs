@@ -75,7 +75,7 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
     /// - Change: Updates value only when input loses focus
     /// </remarks>
     [Parameter]
-    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Input;
+    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Change;
 
     /// <summary>
     /// Gets or sets the current value of the input.

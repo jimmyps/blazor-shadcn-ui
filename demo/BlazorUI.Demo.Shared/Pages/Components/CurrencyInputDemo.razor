@@ -184,7 +184,7 @@
         <div class="max-w-md space-y-4">
             <div class="space-y-2">
                 <label class="text-sm font-medium">Price ($10 - $1000)</label>
-                <CurrencyInput TValue="decimal" @bind-Value="constrainedPrice" Currency="USD" Min="10m" Max="1000m" Placeholder="Enter price" />
+                <CurrencyInput TValue="decimal" @bind-Value="constrainedPrice" Currency="USD" Min="10" Max="1000" Placeholder="Enter price" />
                 <p class="text-xs text-muted-foreground">Value will be clamped between $10 and $1000. Current: @constrainedPrice.ToString("C")</p>
             </div>
         </div>
@@ -343,41 +343,178 @@
     <!-- International Currencies -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">More Currencies</h2>
+            <h2 class="text-2xl font-semibold">International Currencies</h2>
             <p class="text-sm text-muted-foreground">
-                Examples with various international currencies.
+                Examples showcasing the CurrencyCatalog with 40+ currencies, correct decimal places, and Unicode symbols.
             </p>
         </div>
-        <div class="max-w-md space-y-4">
+        <div class="max-w-3xl space-y-4">
             <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-2">
                     <label class="text-sm font-medium">Canadian Dollar (CAD)</label>
                     <CurrencyInput TValue="decimal" @bind-Value="cad" Currency="CAD" />
+                    <p class="text-xs text-muted-foreground">2 decimals</p>
                 </div>
                 
                 <div class="space-y-2">
                     <label class="text-sm font-medium">Australian Dollar (AUD)</label>
                     <CurrencyInput TValue="decimal" @bind-Value="aud" Currency="AUD" />
+                    <p class="text-xs text-muted-foreground">2 decimals</p>
                 </div>
                 
                 <div class="space-y-2">
                     <label class="text-sm font-medium">Swiss Franc (CHF)</label>
                     <CurrencyInput TValue="decimal" @bind-Value="chf" Currency="CHF" />
+                    <p class="text-xs text-muted-foreground">2 decimals</p>
                 </div>
                 
                 <div class="space-y-2">
                     <label class="text-sm font-medium">Chinese Yuan (CNY)</label>
                     <CurrencyInput TValue="decimal" @bind-Value="cny" Currency="CNY" />
+                    <p class="text-xs text-muted-foreground">¥ symbol, 2 decimals</p>
                 </div>
 
                 <div class="space-y-2">
                     <label class="text-sm font-medium">Indian Rupee (INR)</label>
                     <CurrencyInput TValue="decimal" @bind-Value="inr" Currency="INR" />
+                    <p class="text-xs text-muted-foreground">₹ symbol, 2 decimals</p>
                 </div>
                 
                 <div class="space-y-2">
                     <label class="text-sm font-medium">Brazilian Real (BRL)</label>
                     <CurrencyInput TValue="decimal" @bind-Value="brl" Currency="BRL" />
+                    <p class="text-xs text-muted-foreground">R$ symbol, 2 decimals</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Special Decimal Places -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Special Decimal Places</h2>
+            <p class="text-sm text-muted-foreground">
+                CurrencyCatalog handles currencies with 0 decimals (JPY, KRW) and 3 decimals (KWD, BHD, OMR).
+            </p>
+        </div>
+        <div class="max-w-3xl space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Japanese Yen (JPY) - 0 decimals</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="jpyZero" Currency="JPY" />
+                    <p class="text-xs text-green-600 dark:text-green-400">
+                        ✓ No decimal places: <code>¥10000</code> not <code>¥10000.00</code>
+                    </p>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">South Korean Won (KRW) - 0 decimals</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="krwZero" Currency="KRW" />
+                    <p class="text-xs text-green-600 dark:text-green-400">
+                        ✓ No decimal places: <code>₩50000</code> not <code>₩50000.00</code>
+                    </p>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Kuwaiti Dinar (KWD) - 3 decimals</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="kwdThree" Currency="KWD" />
+                    <p class="text-xs text-green-600 dark:text-green-400">
+                        ✓ Three decimal places: <code>د.ك 123.456</code>
+                    </p>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Bahraini Dinar (BHD) - 3 decimals</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="bhdThree" Currency="BHD" />
+                    <p class="text-xs text-green-600 dark:text-green-400">
+                        ✓ Three decimal places: <code>ب.د 45.678</code>
+                    </p>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Indonesian Rupiah (IDR) - 0 decimals</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="idrZero" Currency="IDR" />
+                    <p class="text-xs text-green-600 dark:text-green-400">
+                        ✓ No decimal places: <code>Rp 100000</code>
+                    </p>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Omani Rial (OMR) - 3 decimals</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="omrThree" Currency="OMR" />
+                    <p class="text-xs text-green-600 dark:text-green-400">
+                        ✓ Three decimal places: <code>ر.ع 89.123</code>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Symbol Positioning -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Symbol Positioning</h2>
+            <p class="text-sm text-muted-foreground">
+                Some currencies like Vietnamese Dong (VND) display the symbol after the amount.
+            </p>
+        </div>
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Vietnamese Dong (VND) - Symbol After</label>
+                <CurrencyInput TValue="decimal" @bind-Value="vnd" Currency="VND" />
+                <p class="text-xs text-green-600 dark:text-green-400">
+                    ✓ Symbol after amount: <code>250000₫</code> (0 decimals)
+                </p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">US Dollar (USD) - Symbol Before</label>
+                <CurrencyInput TValue="decimal" @bind-Value="usdBefore" Currency="USD" />
+                <p class="text-xs text-muted-foreground">
+                    Symbol before amount: <code>$250.00</code>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- More Unicode Symbols -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Unicode Currency Symbols</h2>
+            <p class="text-sm text-muted-foreground">
+                CurrencyCatalog includes proper Unicode symbols for international currencies.
+            </p>
+        </div>
+        <div class="max-w-3xl">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Thai Baht (THB) - ฿</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="thb" Currency="THB" />
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Philippine Peso (PHP) - ₱</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="php" Currency="PHP" />
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Israeli Shekel (ILS) - ₪</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="ils" Currency="ILS" />
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Turkish Lira (TRY) - ₺</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="tryLira" Currency="TRY" />
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Nigerian Naira (NGN) - ₦</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="ngn" Currency="NGN" />
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Russian Ruble (RUB) - ₽</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="rub" Currency="RUB" />
                 </div>
             </div>
         </div>
@@ -417,6 +554,28 @@
     private decimal cny = 750.00m;
     private decimal inr = 8500.00m;
     private decimal brl = 550.00m;
+    
+    // Special decimal places (0 decimals)
+    private decimal jpyZero = 10000m;
+    private decimal krwZero = 50000m;
+    private decimal idrZero = 100000m;
+    
+    // Special decimal places (3 decimals)
+    private decimal kwdThree = 123.456m;
+    private decimal bhdThree = 45.678m;
+    private decimal omrThree = 89.123m;
+    
+    // Symbol positioning
+    private decimal vnd = 250000m;
+    private decimal usdBefore = 250.00m;
+    
+    // Unicode symbols
+    private decimal thb = 3500.00m;
+    private decimal php = 5500.00m;
+    private decimal ils = 385.00m;
+    private decimal tryLira = 2850.00m;
+    private decimal ngn = 45000.00m;
+    private decimal rub = 9500.00m;
     
     // Form validation
     private OrderFormModel formModel = new();

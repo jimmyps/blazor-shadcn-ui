@@ -1,63 +1,67 @@
-﻿@namespace BlazorUI.Components.TimePicker
+@namespace BlazorUI.Components.TimePicker
 @using BlazorUI.Components.Popover
 @using BlazorUI.Components.Button
+@using BlazorUI.Components.NativeSelect
 @using BlazorUI.Icons.Lucide.Components
 @using BlazorUI.Components.Utilities
 @using BlazorUI.Primitives.Services
 @inherits TimePickerBase
 
 <Popover @bind-Open="_isOpen">
-    <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
+<PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
+    @if (ShowIcon)
+    {
         <LucideIcon Name="clock" Class="h-4 w-4" />
-        <span>@GetDisplayText()</span>
-    </PopoverTrigger>
+    }
+    <span>@GetDisplayText()</span>
+</PopoverTrigger>
     <PopoverContent Class="@GetPopoverContentClass()" Align="PopoverAlign.Start">
         <div class="flex items-center gap-2">
             @if (!Use12Hour)
             {
                 <div class="flex flex-col gap-2">
                     <label class="text-xs font-medium text-muted-foreground">Hour</label>
-                    <select @bind="_hour24" class="@GetSelectClass()" aria-label="Select hour" disabled="@Disabled">
+                    <NativeSelect @bind-Value="_hour24" Size="NativeSelectSize.Small" Disabled="@Disabled">
                         @for (int h = 0; h <= 23; h++)
                         {
                             <option value="@h">@h.ToString("D2")</option>
                         }
-                    </select>
+                    </NativeSelect>
                 </div>
             }
             else
             {
                 <div class="flex flex-col gap-2">
                     <label class="text-xs font-medium text-muted-foreground">Hour</label>
-                    <select @bind="_hour12" class="@GetSelectClass()" aria-label="Select hour" disabled="@Disabled">
+                    <NativeSelect @bind-Value="_hour12" Size="NativeSelectSize.Small" Disabled="@Disabled">
                         @for (int h = 1; h <= 12; h++)
                         {
                             <option value="@h">@h.ToString("D2")</option>
                         }
-                    </select>
+                    </NativeSelect>
                 </div>
             }
             
             <div class="flex flex-col gap-2">
                 <label class="text-xs font-medium text-muted-foreground">Minute</label>
-                <select @bind="_minute" class="@GetSelectClass()" aria-label="Select minute" disabled="@Disabled">
-                    @for (int m = 0; m < 60; m += Step)
+                <NativeSelect @bind-Value="_minute" Size="NativeSelectSize.Small" Disabled="@Disabled">
+                    @for (int m = 0; m < 60; m += MinuteStep)
                     {
                         <option value="@m">@m.ToString("D2")</option>
                     }
-                </select>
+                </NativeSelect>
             </div>
 
             @if (ShowSeconds)
             {
                 <div class="flex flex-col gap-2">
                     <label class="text-xs font-medium text-muted-foreground">Second</label>
-                    <select @bind="_second" class="@GetSelectClass()" aria-label="Select second" disabled="@Disabled">
+                    <NativeSelect @bind-Value="_second" Size="NativeSelectSize.Small" Disabled="@Disabled">
                         @for (int s = 0; s < 60; s++)
                         {
                             <option value="@s">@s.ToString("D2")</option>
                         }
-                    </select>
+                    </NativeSelect>
                 </div>
             }
 
@@ -65,10 +69,10 @@
             {
                 <div class="flex flex-col gap-2">
                     <label class="text-xs font-medium text-muted-foreground">Period</label>
-                    <select value="@(_isPM ? "PM" : "AM")" @onchange="OnPeriodChanged" class="@GetSelectClass()" aria-label="Select AM or PM" disabled="@Disabled">
+                    <NativeSelect Value="@(_isPM ? "PM" : "AM")" ValueChanged="@((string? value) => OnPeriodChangedFromSelect(value))" Size="NativeSelectSize.Small" Disabled="@Disabled">
                         <option value="AM">AM</option>
                         <option value="PM">PM</option>
-                    </select>
+                    </NativeSelect>
                 </div>
             }
         </div>

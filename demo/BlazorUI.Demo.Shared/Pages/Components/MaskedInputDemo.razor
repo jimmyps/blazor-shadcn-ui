@@ -189,6 +189,31 @@
         </div>
     </div>
 
+    <!-- Indonesian National ID -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Indonesian National ID (KTP)</h2>
+            <p class="text-sm text-muted-foreground">
+                Indonesian National Identity Card (Kartu Tanda Penduduk) - 16 digits format.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <Label For="indonesian-id-input">NIK (Nomor Induk Kependudukan)</Label>
+                <MaskedInput 
+                    @bind-Value="indonesianId" 
+                    Id="indonesian-id-input"
+                    Mask="00.00.00.000000.0000" 
+                    Placeholder="00.00.00.DDMMYY.0000"
+                    ShowMask="true" />
+                <p class="text-xs text-muted-foreground">Raw value: @(indonesianId ?? "(empty)")</p>
+                <p class="text-xs text-blue-600 dark:text-blue-400">
+                    💡 Format: Province.Regency.District.BirthDate.Sequence
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom Mask - Product Code -->
     <div class="space-y-4">
         <div class="space-y-2">
@@ -411,22 +436,23 @@
 </div>
 
 @code {
-    private string? phoneNumber;
-    private string? intlPhone;
-    private string? ssn;
-    private string? creditCard;
-    private string? dateValue;
-    private string? timeValue;
-    private string? zipCode;
-    private string? zip4Code;
-    private string? productCode;
-    private string? licensePlate;
-    private string? phoneNoMask;
-    private string? errorPhone = "5551234";
-    private string? requiredPhone;
-    private bool submitSuccess = false;
+private string? phoneNumber;
+private string? intlPhone;
+private string? ssn;
+private string? creditCard;
+private string? dateValue;
+private string? timeValue;
+private string? zipCode;
+private string? zip4Code;
+private string? indonesianId;
+private string? productCode;
+private string? licensePlate;
+private string? phoneNoMask;
+private string? errorPhone = "5551234";
+private string? requiredPhone;
+private bool submitSuccess = false;
 
-    private FormModel formModel = new();
+private FormModel formModel = new();
 
     private async Task HandleValidSubmit()
     {

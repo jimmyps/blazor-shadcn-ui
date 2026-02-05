@@ -48,6 +48,8 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     private string? _currentErrorMessage;
     private bool _hasShownTooltip = false;
     private string? _lastRawValue;
+    private DotNetObjectReference<MaskedInput>? _dotNetRef;
+    private bool _isInitialized = false;
 
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
@@ -371,6 +373,14 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
 
     private async Task HandleInput(ChangeEventArgs args)
     {
+        // When JS module is loaded, it handles all the masking
+        // This is a fallback for when JS is not available
+        if (_isInitialized)
+        {
+            return; // JS handles everything
+        }
+
+        // Fallback: Basic masking without advanced features
         var maskedValue = args.Value?.ToString() ?? string.Empty;
         var rawValue = ExtractRawValue(maskedValue);
 
@@ -388,26 +398,16 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
             {
                 EditContext.NotifyFieldChanged(_fieldIdentifier);
             }
-
-            // Update cursor position via JS interop if available
-            if (_maskModule != null && !string.IsNullOrEmpty(Id))
-            {
-                try
-                {
-                    var cursorPos = await _maskModule.InvokeAsync<int>("getCursorPosition", Id);
-                    var newCursorPos = CalculateNewCursorPosition(maskedValue, cursorPos);
-                    await _maskModule.InvokeVoidAsync("setCursorPosition", Id, newCursorPos);
-                }
-                catch (JSException)
-                {
-                    // Ignore cursor positioning errors
-                }
-            }
         }
     }
 
     private async Task HandleChange(ChangeEventArgs args)
     {
+        if (_isInitialized)
+        {
+            return; // JS handles everything
+        }
+
         if (UpdateOn == InputUpdateMode.Change)
         {
             var maskedValue = args.Value?.ToString() ?? string.Empty;
@@ -488,19 +488,52 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
                         "import", "./_content/NeoBlazorUI.Components/js/input-validation.js");
                 }
 
-                // Load mask module for cursor management
+                // Load mask module
                 _maskModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
                     "import", "./_content/NeoBlazorUI.Components/js/masked-input.js");
+
+                // Initialize masked input with JavaScript
+                if (_maskModule != null && !string.IsNullOrEmpty(Id) && !string.IsNullOrEmpty(Mask))
+                {
+                    _dotNetRef = DotNetObjectReference.Create(this);
+                    await _maskModule.InvokeVoidAsync("initializeMaskedInput", Id, Mask, MaskChar, _dotNetRef);
+                    _isInitialized = true;
+                }
             }
             catch (JSException)
             {
-                // JS modules not available, component will still work
+                // JS modules not available, component will work without advanced features
             }
         }
 
         if (ShowValidationError && _validationModule != null)
         {
             await UpdateValidationDisplayAsync();
+        }
+    }
+
+    /// <summary>
+    /// JavaScript callback when value changes from JS side
+    /// </summary>
+    [JSInvokable]
+    public async Task OnValueChanged(string? rawValue)
+    {
+        if (rawValue != _lastRawValue)
+        {
+            _lastRawValue = rawValue;
+            Value = string.IsNullOrEmpty(rawValue) ? null : rawValue;
+
+            if (ValueChanged.HasDelegate)
+            {
+                await ValueChanged.InvokeAsync(Value);
+            }
+
+            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            {
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
+            }
+
+            StateHasChanged();
         }
     }
 
@@ -573,6 +606,21 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         DetachValidationStateChangedListener();
+        
+        // Clean up masked input JS
+        if (_maskModule != null && _isInitialized && !string.IsNullOrEmpty(Id))
+        {
+            try
+            {
+                await _maskModule.InvokeVoidAsync("disposeMaskedInput", Id);
+            }
+            catch (JSException)
+            {
+                // Ignore
+            }
+        }
+
+        _dotNetRef?.Dispose();
         
         if (_validationModule != null)
         {

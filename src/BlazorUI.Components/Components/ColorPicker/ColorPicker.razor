@@ -1,180 +1,122 @@
 @namespace BlazorUI.Components.ColorPicker
+@using BlazorUI.Components.Button
+@using BlazorUI.Components.Popover
 @using BlazorUI.Components.Input
-@using BlazorUI.Components.Label
+@using BlazorUI.Primitives.Services
 
-<div class="@CssClass">
-    @* Color Preview *@
-    <div class="flex items-center gap-3">
-        <div class="w-16 h-16 rounded-md border-2 border-input shadow-sm" 
-             style="@GetPreviewStyle()" 
-             title="Color preview">
-        </div>
-        <div class="flex-1">
-            <Label>Color Preview</Label>
-            <p class="text-sm text-muted-foreground">@GetColorString()</p>
-        </div>
-    </div>
+<Popover @bind-Open="_isOpen">
+    <PopoverTrigger AsChild="true">
+        <Button Variant="ButtonVariant.Outline"
+                Class="@TriggerCssClass"
+                Disabled="@Disabled">
+            <div class="h-5 w-5 rounded border border-input mr-2"
+                 style="background-color: @CurrentColorString;">
+            </div>
+            <span class="font-mono text-sm">@CurrentColorString</span>
+        </Button>
+    </PopoverTrigger>
 
-    @* Format-specific inputs *@
-    @if (Format == ColorFormat.Hex)
-    {
-        <div class="space-y-2">
-            <Label For="@($"{Id}-hex")">Hex Color</Label>
-            <Input 
-                Id="@($"{Id}-hex")"
-                Name="@($"{Name}-hex")"
-                Type="InputType.Text"
-                Value="@GetColorString()"
-                ValueChanged="HandleHexChange"
-                Placeholder="#FF5733"
-                Disabled="@Disabled"
-                Required="@Required"
-                Class="font-mono" />
-        </div>
-    }
-    else if (Format == ColorFormat.RGB)
-    {
-        <div class="grid grid-cols-3 gap-2">
-            <div class="space-y-2">
-                <Label For="@($"{Id}-r")">Red</Label>
-                <Input 
-                    Id="@($"{Id}-r")"
-                    Name="@($"{Name}-r")"
-                    Type="InputType.Number"
-                    Value="@_red.ToString()"
-                    ValueChanged="HandleRedChange"
-                    Min="0"
-                    Max="255"
-                    Disabled="@Disabled"
-                    Required="@Required" />
+    <PopoverContent Class="@($"{PopoverWidth} {PopoverPadding}")" Align="PopoverAlign.Start">
+        <div class="@SpacingClass">
+            @* 2D Saturation/Lightness Canvas *@
+            <div class="relative">
+                <canvas @ref="_canvasRef"
+                        id="@($"{Id}-canvas")"
+                        class="@($"w-full {CanvasHeight} rounded-md border border-input cursor-crosshair touch-none")">
+                </canvas>
             </div>
-            <div class="space-y-2">
-                <Label For="@($"{Id}-g")">Green</Label>
-                <Input 
-                    Id="@($"{Id}-g")"
-                    Name="@($"{Name}-g")"
-                    Type="InputType.Number"
-                    Value="@_green.ToString()"
-                    ValueChanged="HandleGreenChange"
-                    Min="0"
-                    Max="255"
-                    Disabled="@Disabled"
-                    Required="@Required" />
-            </div>
-            <div class="space-y-2">
-                <Label For="@($"{Id}-b")">Blue</Label>
-                <Input 
-                    Id="@($"{Id}-b")"
-                    Name="@($"{Name}-b")"
-                    Type="InputType.Number"
-                    Value="@_blue.ToString()"
-                    ValueChanged="HandleBlueChange"
-                    Min="0"
-                    Max="255"
-                    Disabled="@Disabled"
-                    Required="@Required" />
-            </div>
-        </div>
-    }
-    else if (Format == ColorFormat.HSL)
-    {
-        <div class="grid grid-cols-3 gap-2">
-            <div class="space-y-2">
-                <Label For="@($"{Id}-h")">Hue</Label>
-                <Input 
-                    Id="@($"{Id}-h")"
-                    Name="@($"{Name}-h")"
-                    Type="InputType.Number"
-                    Value="@_hue.ToString()"
-                    ValueChanged="HandleHueChange"
-                    Min="0"
-                    Max="360"
-                    Disabled="@Disabled"
-                    Required="@Required" />
-            </div>
-            <div class="space-y-2">
-                <Label For="@($"{Id}-s")">Saturation (%)</Label>
-                <Input 
-                    Id="@($"{Id}-s")"
-                    Name="@($"{Name}-s")"
-                    Type="InputType.Number"
-                    Value="@_saturation.ToString()"
-                    ValueChanged="HandleSaturationChange"
-                    Min="0"
-                    Max="100"
-                    Disabled="@Disabled"
-                    Required="@Required" />
-            </div>
-            <div class="space-y-2">
-                <Label For="@($"{Id}-l")">Lightness (%)</Label>
-                <Input 
-                    Id="@($"{Id}-l")"
-                    Name="@($"{Name}-l")"
-                    Type="InputType.Number"
-                    Value="@_lightness.ToString()"
-                    ValueChanged="HandleLightnessChange"
-                    Min="0"
-                    Max="100"
-                    Disabled="@Disabled"
-                    Required="@Required" />
-            </div>
-        </div>
-    }
 
-    @* Alpha Channel *@
-    @if (ShowAlpha)
-    {
-        <div class="space-y-2">
-            <Label For="@($"{Id}-alpha")">Alpha (Opacity)</Label>
-            <Input 
-                Id="@($"{Id}-alpha")"
-                Name="@($"{Name}-alpha")"
-                Type="InputType.Number"
-                Value="@_alpha.ToString("F2")"
-                ValueChanged="HandleAlphaChange"
-                Min="0"
-                Max="1"
-                Step="0.01"
-                Disabled="@Disabled"
-                Required="@Required" />
-        </div>
-    }
+            @* Hue Slider *@
+            <div class="space-y-1">
+                <input type="range"
+                       min="0"
+                       max="360"
+                       step="1"
+                       value="@_hue"
+                       @oninput="HandleHueChange"
+                       class="w-full h-3 rounded-md appearance-none cursor-pointer"
+                       style="background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);" />
+            </div>
 
-    @* Preset Color Swatches *@
-    <div class="space-y-2">
-        <Label>Preset Colors</Label>
-        <div class="grid grid-cols-8 gap-2">
-            @foreach (var preset in PresetColors)
+            @* Alpha Slider *@
+            @if (ShowAlpha)
             {
-                <button 
-                    type="button"
-                    class="@GetSwatchClass(preset)"
-                    style="@($"background-color: {preset};")"
-                    @onclick="() => HandlePresetClick(preset)"
-                    disabled="@Disabled"
-                    title="@preset">
-                </button>
+                <div class="space-y-1">
+                    <input type="range"
+                           min="0"
+                           max="100"
+                           step="1"
+                           value="@((int)(_alpha * 100))"
+                           @oninput="HandleAlphaChange"
+                           class="w-full h-3 rounded-md appearance-none cursor-pointer"
+                           style="background: linear-gradient(to right, transparent, @GetOpaqueColorString());" />
+                </div>
+            }
+
+            @* Color Preview + Hex Input *@
+            <div class="flex items-center gap-2">
+                <div class="h-10 w-10 rounded border border-input shadow-sm flex-shrink-0"
+                     style="background-color: @CurrentColorString;">
+                </div>
+                <Input Type="InputType.Text"
+                       Value="@CurrentColorString"
+                       ValueChanged="HandleHexInputChange"
+                       Class="font-mono text-sm"
+                       Placeholder="#000000" />
+            </div>
+
+            @* RGB Inputs *@
+            @if (ShowInputs)
+            {
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="space-y-1">
+                        <label class="text-xs text-muted-foreground">R</label>
+                        <Input Type="InputType.Number"
+                               Value="@_red.ToString()"
+                               ValueChanged="HandleRedChange"
+                               Min="0"
+                               Max="255"
+                               Class="text-center" />
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs text-muted-foreground">G</label>
+                        <Input Type="InputType.Number"
+                               Value="@_green.ToString()"
+                               ValueChanged="HandleGreenChange"
+                               Min="0"
+                               Max="255"
+                               Class="text-center" />
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs text-muted-foreground">B</label>
+                        <Input Type="InputType.Number"
+                               Value="@_blue.ToString()"
+                               ValueChanged="HandleBlueChange"
+                               Min="0"
+                               Max="255"
+                               Class="text-center" />
+                    </div>
+                </div>
+            }
+
+            @* Preset Colors *@
+            @if (ShowPresets)
+            {
+                <div class="space-y-2">
+                    <label class="text-xs text-muted-foreground">Presets</label>
+                    <div class="@($"grid {PresetColumns} gap-1.5")">
+                        @foreach (var preset in VisiblePresetColors)
+                        {
+                            <button type="button"
+                                    class="@($"{PresetSize} rounded border-2 hover:border-ring transition-colors")"
+                                    style="background-color: @preset;"
+                                    @onclick="() => HandlePresetClick(preset)"
+                                    title="@preset">
+                            </button>
+                        }
+                    </div>
+                </div>
             }
         </div>
-    </div>
-
-    @* Validation *@
-    @if (ShowValidationError && EditContext != null && ValueExpression != null)
-    {
-        <Microsoft.AspNetCore.Components.Forms.ValidationMessage For="@ValueExpression" />
-    }
-</div>
-
-@code {
-    private string GetSwatchClass(string preset)
-    {
-        var isSelected = GetColorString().Equals(preset, StringComparison.OrdinalIgnoreCase);
-        return ClassNames.cn(
-            "w-8 h-8 rounded border-2 cursor-pointer transition-all",
-            "hover:scale-110 hover:shadow-md",
-            "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-            "disabled:cursor-not-allowed disabled:opacity-50",
-            isSelected ? "border-primary ring-2 ring-ring" : "border-input"
-        );
-    }
-}
+    </PopoverContent>
+</Popover>

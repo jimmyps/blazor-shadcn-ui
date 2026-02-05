@@ -1,4 +1,4 @@
-﻿@page "/components/time-picker"
+@page "/components/time-picker"
 @using BlazorUI.Components.TimePicker
 @using BlazorUI.Components.Field
 @using System.ComponentModel.DataAnnotations
@@ -26,10 +26,10 @@
 
             <div class="flex flex-col gap-4">
                 <div>
-                    <TimePicker @bind-Time="selectedTime1" />
+                    <TimePicker @bind-SelectedTime="selectedTime1" />
                 </div>
                 <p class="text-sm text-muted-foreground">
-                    Selected: @(selectedTime1?.ToString(@"hh\:mm") ?? "None")
+                    Selected: @(selectedTime1?.ToString("HH:mm") ?? "None")
                 </p>
             </div>
         </section>
@@ -44,7 +44,7 @@
 
             <div class="flex flex-col gap-4">
                 <div>
-                    <TimePicker @bind-Time="selectedTime2"
+                    <TimePicker @bind-SelectedTime="selectedTime2"
                                Use12Hour="true" />
                 </div>
                 <p class="text-sm text-muted-foreground">
@@ -63,11 +63,11 @@
 
             <div class="flex flex-col gap-4">
                 <div>
-                    <TimePicker @bind-Time="selectedTime3"
+                    <TimePicker @bind-SelectedTime="selectedTime3"
                                ShowSeconds="true" />
                 </div>
                 <p class="text-sm text-muted-foreground">
-                    Selected: @(selectedTime3?.ToString(@"hh\:mm\:ss") ?? "None")
+                    Selected: @(selectedTime3?.ToString("HH:mm:ss") ?? "None")
                 </p>
             </div>
         </section>
@@ -82,12 +82,12 @@
 
             <div class="flex flex-col gap-4">
                 <div>
-                    <TimePicker @bind-Time="selectedTime4"
-                               Step="15"
+                    <TimePicker @bind-SelectedTime="selectedTime4"
+                               MinuteStep="15"
                                Placeholder="Select time (15 min steps)" />
                 </div>
                 <p class="text-sm text-muted-foreground">
-                    Selected: @(selectedTime4?.ToString(@"hh\:mm") ?? "None")
+                    Selected: @(selectedTime4?.ToString("HH:mm") ?? "None")
                 </p>
             </div>
         </section>
@@ -102,8 +102,8 @@
 
             <div class="flex flex-col gap-4">
                 <div>
-                    <TimePicker @bind-Time="selectedTime5"
-                               Step="30"
+                    <TimePicker @bind-SelectedTime="selectedTime5"
+                               MinuteStep="30"
                                Use12Hour="true"
                                Placeholder="Select time (30 min steps)" />
                 </div>
@@ -123,9 +123,9 @@
 
             <div class="flex flex-col gap-4">
                 <div>
-                    <TimePicker @bind-Time="selectedTime6"
-                               MinTime="@(new TimeSpan(9, 0, 0))"
-                               MaxTime="@(new TimeSpan(17, 0, 0))"
+                    <TimePicker @bind-SelectedTime="selectedTime6"
+                               MinTime="@(new TimeOnly(9, 0, 0))"
+                               MaxTime="@(new TimeOnly(17, 0, 0))"
                                Use12Hour="true"
                                Placeholder="Business hours only" />
                 </div>
@@ -146,8 +146,8 @@
             <div class="flex flex-col gap-4 max-w-sm">
                 <Field>
                     <FieldLabel>Appointment Time</FieldLabel>
-                    <TimePicker @bind-Time="appointmentTime"
-                               Step="15"
+                    <TimePicker @bind-SelectedTime="appointmentTime"
+                               MinuteStep="15"
                                Use12Hour="true"
                                Placeholder="Select appointment time" />
                     <FieldDescription>Select your preferred appointment time.</FieldDescription>
@@ -169,21 +169,21 @@
             <div class="flex flex-col gap-4 max-w-sm">
                 <Field>
                     <FieldLabel>Meeting Start</FieldLabel>
-                    <TimePicker @bind-Time="meetingStart"
-                               Step="15"
+                    <TimePicker @bind-SelectedTime="meetingStart"
+                               MinuteStep="15"
                                Placeholder="Start time" />
                 </Field>
                 <Field>
                     <FieldLabel>Meeting End</FieldLabel>
-                    <TimePicker @bind-Time="meetingEnd"
-                               Step="15"
+                    <TimePicker @bind-SelectedTime="meetingEnd"
+                               MinuteStep="15"
                                Placeholder="End time" />
                 </Field>
                 <p class="text-sm text-muted-foreground">
                     Duration:
                     @if (meetingStart.HasValue && meetingEnd.HasValue)
                     {
-                        var duration = meetingEnd.Value - meetingStart.Value;
+                        var duration = meetingEnd.Value.ToTimeSpan() - meetingStart.Value.ToTimeSpan();
                         <span class="font-medium">@((int)duration.TotalHours) hours @duration.Minutes minutes</span>
                     }
                     else
@@ -204,7 +204,7 @@
 
             <div class="flex flex-col gap-4">
                 <div>
-                    <TimePicker @bind-Time="selectedTime7"
+                    <TimePicker @bind-SelectedTime="selectedTime7"
                                Disabled="true"
                                Placeholder="Disabled picker" />
                 </div>
@@ -214,26 +214,26 @@
 </div>
 
 @code {
-    private TimeSpan? selectedTime1;
-    private TimeSpan? selectedTime2;
-    private TimeSpan? selectedTime3;
-    private TimeSpan? selectedTime4;
-    private TimeSpan? selectedTime5;
-    private TimeSpan? selectedTime6;
-    private TimeSpan? selectedTime7;
-    private TimeSpan? appointmentTime;
-    private TimeSpan? meetingStart;
-    private TimeSpan? meetingEnd;
+    private TimeOnly? selectedTime1;
+    private TimeOnly? selectedTime2;
+    private TimeOnly? selectedTime3;
+    private TimeOnly? selectedTime4;
+    private TimeOnly? selectedTime5;
+    private TimeOnly? selectedTime6;
+    private TimeOnly? selectedTime7;
+    private TimeOnly? appointmentTime;
+    private TimeOnly? meetingStart;
+    private TimeOnly? meetingEnd;
 
-    private string FormatTime12Hour(TimeSpan? time)
+    private string FormatTime12Hour(TimeOnly? time)
     {
         if (!time.HasValue)
             return "None";
 
         var t = time.Value;
-        var hour = t.Hours % 12;
+        var hour = t.Hour % 12;
         if (hour == 0) hour = 12;
-        var period = t.Hours >= 12 ? "PM" : "AM";
-        return $"{hour}:{t.Minutes:D2} {period}";
+        var period = t.Hour >= 12 ? "PM" : "AM";
+        return $"{hour}:{t.Minute:D2} {period}";
     }
 }
