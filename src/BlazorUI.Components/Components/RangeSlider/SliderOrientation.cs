@@ -1,17 +1,17 @@
 namespace BlazorUI.Components.RangeSlider;
 
 /// <summary>
-/// Defines the orientation of a RangeSlider.
+/// Defines the orientation of a slider component.
 /// </summary>
-public enum RangeSliderOrientation
+public enum SliderOrientation
 {
     /// <summary>
-    /// Horizontal slider (default).
+    /// Horizontal orientation (left to right).
     /// </summary>
     Horizontal,
-
+    
     /// <summary>
-    /// Vertical slider.
+    /// Vertical orientation (bottom to top).
     /// </summary>
     Vertical
 }

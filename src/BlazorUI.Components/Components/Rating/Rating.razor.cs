@@ -1,16 +1,23 @@
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using System.Linq.Expressions;
 
 namespace BlazorUI.Components.Rating;
 
 /// <summary>
-/// A rating component with customizable icons and half-rating support.
+/// A rating component for selecting a value with star/heart/circle icons.
 /// </summary>
-public partial class Rating : ComponentBase
+public partial class Rating : ComponentBase, IDisposable
 {
-    private readonly string _instanceId = Guid.NewGuid().ToString("N")[..8];
-    private double _hoverValue;
+    private EditContext? _previousEditContext;
+    private FieldIdentifier _fieldIdentifier;
+    private double? _hoverValue;
+    private double? _lastClickValue;
+
+    [CascadingParameter]
+    private EditContext? EditContext { get; set; }
 
     /// <summary>
     /// Gets or sets the current rating value.
@@ -19,7 +26,7 @@ public partial class Rating : ComponentBase
     public double Value { get; set; }
 
     /// <summary>
-    /// Gets or sets the callback invoked when the value changes.
+    /// Gets or sets the callback invoked when the rating value changes.
     /// </summary>
     [Parameter]
     public EventCallback<double> ValueChanged { get; set; }
@@ -28,7 +35,7 @@ public partial class Rating : ComponentBase
     /// Gets or sets the maximum rating value.
     /// </summary>
     [Parameter]
-    public int Max { get; set; } = 5;
+    public int MaxRating { get; set; } = 5;
 
     /// <summary>
     /// Gets or sets whether half ratings are allowed.
@@ -37,16 +44,10 @@ public partial class Rating : ComponentBase
     public bool AllowHalf { get; set; }
 
     /// <summary>
-    /// Gets or sets whether clicking the current value clears the rating.
+    /// Gets or sets whether the rating can be cleared by clicking the same value.
     /// </summary>
     [Parameter]
     public bool AllowClear { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets whether the rating is read-only (display only).
-    /// </summary>
-    [Parameter]
-    public bool ReadOnly { get; set; }
 
     /// <summary>
     /// Gets or sets whether the rating is disabled.
@@ -55,28 +56,28 @@ public partial class Rating : ComponentBase
     public bool Disabled { get; set; }
 
     /// <summary>
+    /// Gets or sets whether the rating is read-only.
+    /// </summary>
+    [Parameter]
+    public bool ReadOnly { get; set; }
+
+    /// <summary>
+    /// Gets or sets the size of the rating icons.
+    /// </summary>
+    [Parameter]
+    public RatingSize Size { get; set; } = RatingSize.Medium;
+
+    /// <summary>
     /// Gets or sets the icon type.
     /// </summary>
     [Parameter]
-    public RatingIcon Icon { get; set; } = RatingIcon.Star;
+    public RatingIconType IconType { get; set; } = RatingIconType.Star;
 
     /// <summary>
-    /// Gets or sets the color for active (filled) icons.
+    /// Gets or sets whether to show validation errors.
     /// </summary>
     [Parameter]
-    public string? ActiveColor { get; set; }
-
-    /// <summary>
-    /// Gets or sets the color for inactive (empty) icons.
-    /// </summary>
-    [Parameter]
-    public string? InactiveColor { get; set; }
-
-    /// <summary>
-    /// Gets or sets a custom icon template.
-    /// </summary>
-    [Parameter]
-    public RenderFragment<RatingIconContext>? IconTemplate { get; set; }
+    public bool ShowValidationError { get; set; }
 
     /// <summary>
     /// Gets or sets additional CSS classes.
@@ -85,142 +86,115 @@ public partial class Rating : ComponentBase
     public string? Class { get; set; }
 
     /// <summary>
-    /// Gets or sets the ARIA label for the rating group.
+    /// Gets or sets the HTML id attribute.
     /// </summary>
     [Parameter]
-    public string? AriaLabel { get; set; }
+    public string? Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the size of the icons.
+    /// Gets or sets the name for form submission.
     /// </summary>
     [Parameter]
-    public RatingSize Size { get; set; } = RatingSize.Default;
+    public string? Name { get; set; }
 
-    private string CssClass => ClassNames.cn(
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    [Parameter]
+    public Expression<Func<double>>? ValueExpression { get; set; }
+
+    private string ContainerCssClass => ClassNames.cn(
         "inline-flex items-center gap-1",
-        (Disabled || ReadOnly) ? "cursor-default" : "cursor-pointer",
-        Disabled ? "opacity-50" : null,
+        Disabled ? "cursor-not-allowed opacity-50" : ReadOnly ? "cursor-default" : "cursor-pointer",
         Class
     );
 
-    private string IconClass => ClassNames.cn(
-        Size switch
-        {
-            RatingSize.Small => "h-4 w-4",
-            RatingSize.Large => "h-8 w-8",
-            _ => "h-6 w-6"
-        },
-        "transition-transform",
-        !(Disabled || ReadOnly) ? "hover:scale-110" : null
-    );
-
-    private string GetIconContainerClass(int index)
+    private string IconSizeClass => Size switch
     {
-        var isActive = GetFillPercentage(index) > 0;
-        return ClassNames.cn(
-            "relative inline-flex",
-            !(Disabled || ReadOnly) ? "cursor-pointer" : null
-        );
+        RatingSize.Small => "w-4 h-4",
+        RatingSize.Large => "w-8 h-8",
+        _ => "w-6 h-6"
+    };
+
+    private double GetDisplayValue()
+    {
+        return _hoverValue ?? Value;
     }
 
-    private double GetFillPercentage(int index)
+    private bool IsIconFilled(int iconIndex)
     {
-        var currentValue = _hoverValue > 0 ? _hoverValue : Value;
-
-        if (currentValue >= index)
-            return 1;
-
-        if (AllowHalf && currentValue >= index - 0.5)
-            return 0.5;
-
-        return 0;
+        var displayValue = GetDisplayValue();
+        return displayValue >= iconIndex;
     }
 
-    private async Task HandleClick(int index)
+    private bool IsIconHalfFilled(int iconIndex)
+    {
+        if (!AllowHalf) return false;
+        
+        var displayValue = GetDisplayValue();
+        return displayValue >= iconIndex - 0.5 && displayValue < iconIndex;
+    }
+
+    private async Task OnIconClick(int iconIndex, bool isHalf)
     {
         if (Disabled || ReadOnly) return;
 
-        double newValue;
+        var newValue = isHalf && AllowHalf ? iconIndex - 0.5 : iconIndex;
 
-        if (AllowHalf)
+        // Allow clearing if clicking the same value
+        if (AllowClear && _lastClickValue == newValue)
         {
-            // If clicking the same value, toggle between half and full, or clear
-            if (Value == index)
-            {
-                newValue = AllowClear ? 0 : index;
-            }
-            else if (Value == index - 0.5)
-            {
-                newValue = index;
-            }
-            else
-            {
-                newValue = index;
-            }
+            newValue = 0;
+            _lastClickValue = null;
         }
         else
         {
-            // Simple click behavior
-            if (AllowClear && Value == index)
-            {
-                newValue = 0;
-            }
-            else
-            {
-                newValue = index;
-            }
+            _lastClickValue = newValue;
         }
 
-        if (newValue != Value)
+        Value = newValue;
+        await ValueChanged.InvokeAsync(Value);
+
+        if (EditContext != null && ValueExpression != null)
         {
-            Value = newValue;
-            await ValueChanged.InvokeAsync(newValue);
+            EditContext.NotifyFieldChanged(_fieldIdentifier);
         }
     }
 
-    private void HandleMouseMove(MouseEventArgs e, int index)
+    private void OnIconMouseEnter(int iconIndex, bool isHalf)
+    {
+        if (Disabled || ReadOnly) return;
+        _hoverValue = isHalf && AllowHalf ? iconIndex - 0.5 : iconIndex;
+    }
+
+    private void OnMouseLeave()
+    {
+        if (Disabled || ReadOnly) return;
+        _hoverValue = null;
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
     {
         if (Disabled || ReadOnly) return;
 
-        if (AllowHalf)
-        {
-            // Determine if hovering over the left or right half of the icon
-            // This is a simplified approach - in practice you'd need JS to get exact position
-            _hoverValue = index;
-        }
-        else
-        {
-            _hoverValue = index;
-        }
-    }
-
-    private void HandleMouseLeave()
-    {
-        _hoverValue = 0;
-    }
-
-    private async Task HandleKeyDown(KeyboardEventArgs e)
-    {
-        if (Disabled || ReadOnly) return;
-
-        var step = AllowHalf ? 0.5 : 1.0;
-        double newValue = Value;
+        var newValue = Value;
+        var handled = false;
 
         switch (e.Key)
         {
             case "ArrowRight":
             case "ArrowUp":
-                newValue = Math.Min(Max, Value + step);
+                newValue = Math.Min(MaxRating, Value + (AllowHalf ? 0.5 : 1));
+                handled = true;
                 break;
             case "ArrowLeft":
             case "ArrowDown":
-                newValue = Math.Max(0, Value - step);
+                newValue = Math.Max(0, Value - (AllowHalf ? 0.5 : 1));
+                handled = true;
                 break;
-            case "Home":
+            case "0":
                 newValue = 0;
-                break;
-            case "End":
-                newValue = Max;
+                handled = true;
                 break;
             case "1":
             case "2":
@@ -232,40 +206,62 @@ public partial class Rating : ComponentBase
             case "8":
             case "9":
                 var numValue = int.Parse(e.Key);
-                if (numValue <= Max)
+                if (numValue <= MaxRating)
+                {
                     newValue = numValue;
-                break;
-            case "0":
-                if (AllowClear)
-                    newValue = 0;
+                    handled = true;
+                }
                 break;
         }
 
-        if (newValue != Value)
+        if (handled)
         {
             Value = newValue;
-            await ValueChanged.InvokeAsync(newValue);
+            await ValueChanged.InvokeAsync(Value);
+
+            if (EditContext != null && ValueExpression != null)
+            {
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
+            }
         }
     }
-}
 
-/// <summary>
-/// Defines the size of the Rating component icons.
-/// </summary>
-public enum RatingSize
-{
-    /// <summary>
-    /// Small size (16px).
-    /// </summary>
-    Small,
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
 
-    /// <summary>
-    /// Default size (24px).
-    /// </summary>
-    Default,
+        // Set up field identifier for validation
+        if (EditContext != null && ValueExpression != null)
+        {
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
-    /// <summary>
-    /// Large size (32px).
-    /// </summary>
-    Large
+            // Subscribe to EditContext if it changed
+            if (EditContext != _previousEditContext)
+            {
+                DetachValidationStateChangedListener();
+                EditContext.OnValidationStateChanged += OnValidationStateChanged;
+                _previousEditContext = EditContext;
+            }
+        }
+    }
+
+    private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void DetachValidationStateChangedListener()
+    {
+        if (_previousEditContext != null)
+        {
+            _previousEditContext.OnValidationStateChanged -= OnValidationStateChanged;
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        DetachValidationStateChangedListener();
+    }
 }

@@ -1,61 +1,116 @@
+using BlazorUI.Components.Common;
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using System.Linq.Expressions;
 
 namespace BlazorUI.Components.MaskedInput;
 
 /// <summary>
-/// A masked input component with preset and custom mask patterns.
+/// A masked input component that follows the shadcn/ui design system.
 /// </summary>
+/// <remarks>
+/// <para>
+/// The MaskedInput component provides structured input with automatic masking and formatting.
+/// It follows WCAG 2.1 AA standards for accessibility and integrates with Blazor's data binding system.
+/// </para>
+/// <para>
+/// Features:
+/// - Real-time masking as user types
+/// - Auto-skip literal characters
+/// - Cursor position management
+/// - Backspace/Delete support
+/// - Paste support with automatic formatting
+/// - Form validation integration
+/// - Common preset masks (phone, SSN, credit card, etc.)
+/// - Full ARIA attribute support
+/// - RTL and dark mode compatible
+/// </para>
+/// </remarks>
+/// <example>
+/// <code>
+/// &lt;MaskedInput @bind-Value="phoneNumber" Mask="(000) 000-0000" Placeholder="Enter phone number" /&gt;
+/// &lt;MaskedInput @bind-Value="ssn" Mask="@MaskedInput.Masks.SSN" ShowMask="true" /&gt;
+/// &lt;MaskedInput @bind-Value="creditCard" Mask="@MaskedInput.Masks.CreditCard" /&gt;
+/// </code>
+/// </example>
 public partial class MaskedInput : ComponentBase, IAsyncDisposable
 {
-    private ElementReference _inputRef;
-    private MaskProcessor? _processor;
-    private string _displayValue = string.Empty;
-    private bool _isFocused;
-    private IJSObjectReference? _jsModule;
-    private bool _jsModuleLoaded;
+    private static string? _firstInvalidInputId = null;
+    
+    private IJSObjectReference? _validationModule;
+    private IJSObjectReference? _maskModule;
+    private ElementReference inputElement;
+    private EditContext? _previousEditContext;
+    private FieldIdentifier _fieldIdentifier;
+    private string? _currentErrorMessage;
+    private bool _hasShownTooltip = false;
+    private string? _lastRawValue;
+    private DotNetObjectReference<MaskedInput>? _dotNetRef;
+    private bool _isInitialized = false;
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the unmasked value (raw input without formatting).
+    /// Gets the cascaded EditContext from an EditForm.
+    /// </summary>
+    [CascadingParameter]
+    private EditContext? EditContext { get; set; }
+
+    /// <summary>
+    /// Gets or sets when the input should update its bound value.
+    /// </summary>
+    /// <remarks>
+    /// - Input: Updates value immediately on every keystroke (default)
+    /// - Change: Updates value only when input loses focus
+    /// </remarks>
+    [Parameter]
+    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Input;
+
+    /// <summary>
+    /// Gets or sets the current value of the input (unmasked).
     /// </summary>
     [Parameter]
-    public string Value { get; set; } = string.Empty;
+    public string? Value { get; set; }
 
     /// <summary>
-    /// Gets or sets the callback invoked when the unmasked value changes.
+    /// Gets or sets the callback invoked when the input value changes.
     /// </summary>
     [Parameter]
-    public EventCallback<string> ValueChanged { get; set; }
+    public EventCallback<string?> ValueChanged { get; set; }
 
     /// <summary>
-    /// Gets or sets the mask preset.
+    /// Gets or sets the mask pattern.
+    /// </summary>
+    /// <remarks>
+    /// Pattern characters:
+    /// - '0' = Digit (0-9)
+    /// - '9' = Digit or space
+    /// - 'A' = Letter (a-Z)
+    /// - 'a' = Letter or space
+    /// - '*' = Alphanumeric
+    /// - Any other character is a literal
+    /// </remarks>
+    [Parameter]
+    public string Mask { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the placeholder character for mask positions.
     /// </summary>
     [Parameter]
-    public MaskPreset Preset { get; set; } = MaskPreset.Custom;
+    public char MaskChar { get; set; } = '_';
 
     /// <summary>
-    /// Gets or sets the custom mask pattern (when Preset is Custom).
-    /// Mask characters: 9 = digit, A = letter, * = alphanumeric.
-    /// </summary>
-    [Parameter]
-    public string? Mask { get; set; }
-
-    /// <summary>
-    /// Gets or sets the placeholder character for unfilled positions.
-    /// </summary>
-    [Parameter]
-    public char PlaceholderChar { get; set; } = '_';
-
-    /// <summary>
-    /// Gets or sets whether to show the mask with placeholders.
+    /// Gets or sets whether to show the mask when input is empty.
     /// </summary>
     [Parameter]
     public bool ShowMask { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the placeholder text (shown when empty and not focused).
+    /// Gets or sets the placeholder text displayed when the input is empty.
     /// </summary>
     [Parameter]
     public string? Placeholder { get; set; }
@@ -73,19 +128,43 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     public bool Required { get; set; }
 
     /// <summary>
-    /// Gets or sets additional CSS classes.
+    /// Gets or sets the name of the input for form submission.
+    /// </summary>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the input is read-only.
+    /// </summary>
+    [Parameter]
+    public bool Readonly { get; set; }
+
+    /// <summary>
+    /// Gets or sets the input mode hint for mobile keyboards.
+    /// </summary>
+    [Parameter]
+    public string? InputMode { get; set; } = "text";
+
+    /// <summary>
+    /// Gets or sets whether the input should be auto-focused when the page loads.
+    /// </summary>
+    [Parameter]
+    public bool Autofocus { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional CSS classes to apply to the input.
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
     /// <summary>
-    /// Gets or sets the HTML id attribute.
+    /// Gets or sets the HTML id attribute for the input element.
     /// </summary>
     [Parameter]
     public string? Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the ARIA label.
+    /// Gets or sets the ARIA label for the input.
     /// </summary>
     [Parameter]
     public string? AriaLabel { get; set; }
@@ -103,62 +182,298 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     public bool? AriaInvalid { get; set; }
 
     /// <summary>
-    /// Gets the masked (formatted) value.
+    /// Gets or sets whether to automatically show validation errors from EditContext.
     /// </summary>
-    public string MaskedValue => _displayValue;
+    [Parameter]
+    public bool ShowValidationError { get; set; }
 
     /// <summary>
-    /// Gets the unmasked value.
+    /// Gets or sets an expression that identifies the bound value.
     /// </summary>
-    public string UnmaskedValue => Processor.GetUnmaskedValue(_displayValue);
+    [Parameter]
+    public Expression<Func<string?>>? ValueExpression { get; set; }
 
-    private MaskProcessor Processor
+    /// <summary>
+    /// Gets or sets additional attributes to be applied to the input element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Common mask patterns for convenience.
+    /// </summary>
+    public static class Masks
+    {
+        /// <summary>US Phone number: (000) 000-0000</summary>
+        public const string PhoneUS = "(000) 000-0000";
+        
+        /// <summary>International Phone: +0 (000) 000-0000</summary>
+        public const string PhoneInternational = "+0 (000) 000-0000";
+        
+        /// <summary>Social Security Number: 000-00-0000</summary>
+        public const string SSN = "000-00-0000";
+        
+        /// <summary>Credit Card: 0000 0000 0000 0000</summary>
+        public const string CreditCard = "0000 0000 0000 0000";
+        
+        /// <summary>Date: 00/00/0000</summary>
+        public const string Date = "00/00/0000";
+        
+        /// <summary>Time: 00:00</summary>
+        public const string Time = "00:00";
+        
+        /// <summary>ZIP Code: 00000</summary>
+        public const string ZIP = "00000";
+        
+        /// <summary>ZIP+4: 00000-0000</summary>
+        public const string ZIP4 = "00000-0000";
+    }
+
+    private bool? EffectiveAriaInvalid => ShowValidationError && EditContext != null
+        ? !string.IsNullOrEmpty(_currentErrorMessage)
+        : AriaInvalid;
+
+    private string CssClass => ClassNames.cn(
+        "flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-base shadow-xs",
+        "placeholder:text-muted-foreground",
+        "outline-none focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        "aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive",
+        "aria-[invalid=true]:focus-visible:ring-destructive/30",
+        "transition-[color,box-shadow]",
+        "md:text-sm",
+        Class
+    );
+
+    private string? EffectiveName => Name ?? Id;
+
+    private string? EffectivePlaceholder => !ShowMask || string.IsNullOrEmpty(Mask) ? Placeholder : null;
+
+    private string CurrentDisplayValue
     {
         get
         {
-            var effectiveMask = GetEffectiveMask();
-            if (_processor == null || _processor.Mask != effectiveMask || _processor.PlaceholderChar != PlaceholderChar)
+            if (string.IsNullOrEmpty(Mask))
+                return Value ?? string.Empty;
+
+            if (string.IsNullOrEmpty(Value) && ShowMask)
+                return GenerateEmptyMask();
+
+            return ApplyMask(Value ?? string.Empty);
+        }
+    }
+
+    private string GenerateEmptyMask()
+    {
+        var result = new char[Mask.Length];
+        for (int i = 0; i < Mask.Length; i++)
+        {
+            result[i] = IsLiteral(Mask[i]) ? Mask[i] : MaskChar;
+        }
+        return new string(result);
+    }
+
+    private bool IsLiteral(char maskChar)
+    {
+        return maskChar != '0' && maskChar != '9' && maskChar != 'A' && maskChar != 'a' && maskChar != '*';
+    }
+
+    private bool MatchesMaskChar(char input, char maskChar)
+    {
+        return maskChar switch
+        {
+            '0' => char.IsDigit(input),
+            '9' => char.IsDigit(input) || input == ' ',
+            'A' => char.IsLetter(input),
+            'a' => char.IsLetter(input) || input == ' ',
+            '*' => char.IsLetterOrDigit(input),
+            _ => input == maskChar // Literal character
+        };
+    }
+
+    private string ApplyMask(string rawValue)
+    {
+        if (string.IsNullOrEmpty(Mask))
+            return rawValue;
+
+        var result = new List<char>();
+        int rawIndex = 0;
+
+        for (int maskIndex = 0; maskIndex < Mask.Length; maskIndex++)
+        {
+            char maskChar = Mask[maskIndex];
+
+            if (IsLiteral(maskChar))
             {
-                _processor = new MaskProcessor(effectiveMask, PlaceholderChar);
+                result.Add(maskChar);
+                // Skip matching literal in raw value
+                if (rawIndex < rawValue.Length && rawValue[rawIndex] == maskChar)
+                    rawIndex++;
             }
-            return _processor;
+            else
+            {
+                if (rawIndex < rawValue.Length)
+                {
+                    char rawChar = rawValue[rawIndex];
+                    if (MatchesMaskChar(rawChar, maskChar))
+                    {
+                        result.Add(rawChar);
+                        rawIndex++;
+                    }
+                    else
+                    {
+                        // Invalid character, try to skip it
+                        rawIndex++;
+                        maskIndex--; // Retry current mask position
+                    }
+                }
+                else if (ShowMask)
+                {
+                    result.Add(MaskChar);
+                }
+            }
         }
+
+        return new string(result.ToArray());
     }
 
-    private string GetEffectiveMask()
+    private string ExtractRawValue(string maskedValue)
     {
-        if (Preset != MaskPreset.Custom)
-            return MaskDefinitions.GetPattern(Preset);
+        if (string.IsNullOrEmpty(Mask))
+            return maskedValue;
 
-        return Mask ?? string.Empty;
-    }
+        var result = new List<char>();
+        int maskIndex = 0;
 
-    private string InputMode => MaskDefinitions.GetInputMode(Preset);
-
-    private int MaskLength => GetEffectiveMask().Length;
-
-    private string EffectivePlaceholder
-    {
-        get
+        foreach (char c in maskedValue)
         {
-            if (!string.IsNullOrEmpty(Placeholder))
-                return Placeholder;
+            if (maskIndex >= Mask.Length)
+                break;
 
-            if (Preset != MaskPreset.Custom)
-                return MaskDefinitions.GetPlaceholder(Preset);
+            char maskChar = Mask[maskIndex];
 
-            return Processor.GetEmptyMask();
+            if (IsLiteral(maskChar))
+            {
+                if (c == maskChar)
+                    maskIndex++;
+                // Skip literal characters
+            }
+            else
+            {
+                if (c != MaskChar && MatchesMaskChar(c, maskChar))
+                {
+                    result.Add(c);
+                }
+                maskIndex++;
+            }
+        }
+
+        return new string(result.ToArray());
+    }
+
+    private async Task HandleInput(ChangeEventArgs args)
+    {
+        // When JS module is loaded, it handles all the masking
+        // This is a fallback for when JS is not available
+        if (_isInitialized)
+        {
+            return; // JS handles everything
+        }
+
+        // Fallback: Basic masking without advanced features
+        var maskedValue = args.Value?.ToString() ?? string.Empty;
+        var rawValue = ExtractRawValue(maskedValue);
+
+        if (rawValue != _lastRawValue && UpdateOn == InputUpdateMode.Input)
+        {
+            _lastRawValue = rawValue;
+            Value = string.IsNullOrEmpty(rawValue) ? null : rawValue;
+
+            if (ValueChanged.HasDelegate)
+            {
+                await ValueChanged.InvokeAsync(Value);
+            }
+
+            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            {
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
+            }
         }
     }
 
-    protected override void OnInitialized()
+    private async Task HandleChange(ChangeEventArgs args)
     {
-        UpdateDisplayValue();
+        if (_isInitialized)
+        {
+            return; // JS handles everything
+        }
+
+        if (UpdateOn == InputUpdateMode.Change)
+        {
+            var maskedValue = args.Value?.ToString() ?? string.Empty;
+            var rawValue = ExtractRawValue(maskedValue);
+
+            _lastRawValue = rawValue;
+            Value = string.IsNullOrEmpty(rawValue) ? null : rawValue;
+
+            if (ValueChanged.HasDelegate)
+            {
+                await ValueChanged.InvokeAsync(Value);
+            }
+
+            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            {
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
+            }
+        }
+    }
+
+    private int CalculateNewCursorPosition(string maskedValue, int currentPos)
+    {
+        // Skip over literal characters
+        while (currentPos < maskedValue.Length && currentPos < Mask.Length && 
+               IsLiteral(Mask[currentPos]) && maskedValue[currentPos] == Mask[currentPos])
+        {
+            currentPos++;
+        }
+        return currentPos;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs args)
+    {
+        // Allow navigation and editing keys
+        if (args.Key == "Backspace" || args.Key == "Delete" || 
+            args.Key == "ArrowLeft" || args.Key == "ArrowRight" ||
+            args.Key == "Home" || args.Key == "End" || args.Key == "Tab")
+        {
+            return;
+        }
+
+        // Let the default input handling work
+        await Task.CompletedTask;
+    }
+
+    private async Task HandlePaste(ClipboardEventArgs args)
+    {
+        // Paste will be handled by oninput event
+        await Task.CompletedTask;
     }
 
     protected override void OnParametersSet()
     {
-        UpdateDisplayValue();
+        base.OnParametersSet();
+
+        if (ShowValidationError && ValueExpression != null)
+        {
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+
+            if (EditContext != _previousEditContext)
+            {
+                DetachValidationStateChangedListener();
+                EditContext?.OnValidationStateChanged += OnValidationStateChanged;
+                _previousEditContext = EditContext;
+            }
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -167,228 +482,168 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         {
             try
             {
-                _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                if (ShowValidationError)
+                {
+                    _validationModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                        "import", "./_content/NeoBlazorUI.Components/js/input-validation.js");
+                }
+
+                // Load mask module
+                _maskModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
                     "import", "./_content/NeoBlazorUI.Components/js/masked-input.js");
-                _jsModuleLoaded = true;
-            }
-            catch (JSDisconnectedException)
-            {
-                // Expected during circuit disconnect
-            }
-            catch (InvalidOperationException)
-            {
-                // JS interop not available during prerendering
-            }
-        }
-    }
 
-    private void UpdateDisplayValue()
-    {
-        _displayValue = Processor.ApplyMask(Value);
-    }
-
-    private void HandleInput(ChangeEventArgs args)
-    {
-        var inputValue = args.Value?.ToString() ?? string.Empty;
-        var mask = GetEffectiveMask();
-
-        // Count max editable positions in mask
-        var maxEditablePositions = 0;
-        foreach (var c in mask)
-        {
-            if (MaskProcessor.IsMaskChar(c))
-                maxEditablePositions++;
-        }
-
-        // Extract only valid characters from input (letters and digits only)
-        var rawInput = new System.Text.StringBuilder();
-
-        foreach (var c in inputValue)
-        {
-            // Skip placeholder characters
-            if (c == PlaceholderChar)
-                continue;
-
-            // Only collect alphanumeric characters
-            if (char.IsLetterOrDigit(c))
-            {
-                rawInput.Append(c);
-            }
-
-            // Stop if we have enough characters
-            if (rawInput.Length >= maxEditablePositions)
-                break;
-        }
-
-        var rawInputStr = rawInput.ToString();
-
-        // Validate each character against its corresponding mask position
-        var validatedInput = new System.Text.StringBuilder();
-        var rawIndex = 0;
-        var maskIndex = 0;
-
-        while (rawIndex < rawInputStr.Length && maskIndex < mask.Length)
-        {
-            // Find next editable mask position
-            while (maskIndex < mask.Length && !MaskProcessor.IsMaskChar(mask[maskIndex]))
-                maskIndex++;
-
-            if (maskIndex >= mask.Length)
-                break;
-
-            var maskChar = mask[maskIndex];
-            var inputChar = rawInputStr[rawIndex];
-
-            var isValid = maskChar switch
-            {
-                '9' => char.IsDigit(inputChar),
-                'A' => char.IsLetter(inputChar),
-                '*' => char.IsLetterOrDigit(inputChar),
-                _ => false
-            };
-
-            if (isValid)
-            {
-                validatedInput.Append(inputChar);
-                maskIndex++;
-            }
-            rawIndex++;
-        }
-
-        var validatedStr = validatedInput.ToString();
-
-        // Apply mask to get display value
-        var newDisplayValue = Processor.ApplyMask(validatedStr);
-
-        // Calculate cursor position
-        var cursorPosition = CalculateCursorPosition(validatedStr.Length);
-
-        // Update state
-        _displayValue = newDisplayValue;
-
-        // Update the bound Value
-        var unmasked = Processor.GetUnmaskedValue(_displayValue);
-        if (unmasked != Value)
-        {
-            Value = unmasked;
-            _ = ValueChanged.InvokeAsync(unmasked);
-        }
-
-        // Use JS to set value and cursor atomically to prevent flashing
-        _ = SetInputValueAsync(newDisplayValue, cursorPosition);
-    }
-
-    private async Task SetInputValueAsync(string value, int cursorPosition)
-    {
-        if (_jsModuleLoaded && _jsModule != null)
-        {
-            try
-            {
-                await _jsModule.InvokeVoidAsync("setInputValue", _inputRef, value, cursorPosition);
-            }
-            catch (JSDisconnectedException)
-            {
-                // Expected during circuit disconnect
-            }
-        }
-    }
-
-    private int CalculateCursorPosition(int rawInputLength)
-    {
-        var mask = GetEffectiveMask();
-        var position = 0;
-        var inputCount = 0;
-
-        for (var i = 0; i < mask.Length && inputCount < rawInputLength; i++)
-        {
-            position = i + 1;
-            if (MaskProcessor.IsMaskChar(mask[i]))
-            {
-                inputCount++;
-            }
-        }
-
-        // If we've filled some characters, skip any following literals
-        if (rawInputLength > 0 && position < mask.Length)
-        {
-            while (position < mask.Length && !MaskProcessor.IsMaskChar(mask[position]))
-            {
-                position++;
-            }
-        }
-
-        return position;
-    }
-
-    private async Task HandleFocus(FocusEventArgs args)
-    {
-        _isFocused = true;
-
-        // Show the mask if empty
-        if (string.IsNullOrEmpty(Value) && ShowMask)
-        {
-            _displayValue = Processor.GetEmptyMask();
-
-            // Use JS to set the value and position cursor at start
-            if (_jsModuleLoaded && _jsModule != null)
-            {
-                try
+                // Initialize masked input with JavaScript
+                if (_maskModule != null && !string.IsNullOrEmpty(Id) && !string.IsNullOrEmpty(Mask))
                 {
-                    // Find the first editable position
-                    var firstEditablePos = Processor.GetNextEditablePosition(0);
-                    if (firstEditablePos < 0) firstEditablePos = 0;
-
-                    await _jsModule.InvokeVoidAsync("setInputValue", _inputRef, _displayValue, firstEditablePos);
-                }
-                catch (JSDisconnectedException)
-                {
-                    // Expected during circuit disconnect
+                    _dotNetRef = DotNetObjectReference.Create(this);
+                    await _maskModule.InvokeVoidAsync("initializeMaskedInput", Id, Mask, MaskChar, _dotNetRef);
+                    _isInitialized = true;
                 }
             }
-            else
+            catch (JSException)
             {
-                StateHasChanged();
+                // JS modules not available, component will work without advanced features
             }
+        }
+
+        if (ShowValidationError && _validationModule != null)
+        {
+            await UpdateValidationDisplayAsync();
         }
     }
 
-    private void HandleBlur(FocusEventArgs args)
+    /// <summary>
+    /// JavaScript callback when value changes from JS side
+    /// </summary>
+    [JSInvokable]
+    public async Task OnValueChanged(string? rawValue)
     {
-        _isFocused = false;
-
-        // Clear display if value is empty and not showing mask
-        if (string.IsNullOrEmpty(Value) && !ShowMask)
+        if (rawValue != _lastRawValue)
         {
-            _displayValue = string.Empty;
+            _lastRawValue = rawValue;
+            Value = string.IsNullOrEmpty(rawValue) ? null : rawValue;
+
+            if (ValueChanged.HasDelegate)
+            {
+                await ValueChanged.InvokeAsync(Value);
+            }
+
+            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            {
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
+            }
+
             StateHasChanged();
+        }
+    }
+
+    private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
+    {
+        _firstInvalidInputId = null;
+        _hasShownTooltip = false;
+
+        InvokeAsync(async () =>
+        {
+            await UpdateValidationDisplayAsync();
+            StateHasChanged();
+        });
+    }
+
+    private async Task UpdateValidationDisplayAsync()
+    {
+        if (EditContext == null || _validationModule == null || string.IsNullOrEmpty(Id))
+            return;
+
+        try
+        {
+            var messages = EditContext.GetValidationMessages(_fieldIdentifier).ToList();
+            var errorMessage = messages.FirstOrDefault();
+
+            if (errorMessage != _currentErrorMessage)
+            {
+                _currentErrorMessage = errorMessage;
+
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    var isFirstInvalid = _firstInvalidInputId == null;
+                    
+                    if (isFirstInvalid)
+                    {
+                        _firstInvalidInputId = Id;
+                    }
+
+                    if (isFirstInvalid && !_hasShownTooltip)
+                    {
+                        await _validationModule.InvokeVoidAsync("showValidationError", Id, errorMessage);
+                        _hasShownTooltip = true;
+                    }
+                }
+                else
+                {
+                    await _validationModule.InvokeVoidAsync("clearValidationError", Id);
+                    
+                    if (_firstInvalidInputId == Id)
+                    {
+                        _firstInvalidInputId = null;
+                    }
+                }
+            }
+        }
+        catch (JSException)
+        {
+            // Ignore JS errors
+        }
+    }
+
+    private void DetachValidationStateChangedListener()
+    {
+        if (_previousEditContext != null)
+        {
+            _previousEditContext.OnValidationStateChanged -= OnValidationStateChanged;
         }
     }
 
     public async ValueTask DisposeAsync()
     {
-        if (_jsModule != null)
+        DetachValidationStateChangedListener();
+        
+        // Clean up masked input JS
+        if (_maskModule != null && _isInitialized && !string.IsNullOrEmpty(Id))
         {
             try
             {
-                await _jsModule.DisposeAsync();
+                await _maskModule.InvokeVoidAsync("disposeMaskedInput", Id);
+            }
+            catch (JSException)
+            {
+                // Ignore
+            }
+        }
+
+        _dotNetRef?.Dispose();
+        
+        if (_validationModule != null)
+        {
+            try
+            {
+                await _validationModule.DisposeAsync();
             }
             catch (JSDisconnectedException)
             {
-                // Expected during circuit disconnect
+                // Ignore
+            }
+        }
+
+        if (_maskModule != null)
+        {
+            try
+            {
+                await _maskModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Ignore
             }
         }
     }
-
-    private string CssClass => ClassNames.cn(
-        "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base",
-        "ring-offset-background",
-        "placeholder:text-muted-foreground",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        "disabled:cursor-not-allowed disabled:opacity-50",
-        "aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive",
-        "transition-colors",
-        "md:text-sm",
-        "font-mono tracking-wider",
-        Class
-    );
 }

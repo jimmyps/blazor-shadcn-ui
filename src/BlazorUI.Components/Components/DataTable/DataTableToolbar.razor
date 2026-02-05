@@ -5,6 +5,7 @@
 @using BlazorUI.Components.Popover
 @using BlazorUI.Components.Utilities
 @using BlazorUI.Components.Checkbox
+@using BlazorUI.Components.Field
 @using BlazorUI.Primitives.Services
 
 <div class="flex items-center justify-between gap-2 py-4">
@@ -46,15 +47,19 @@
                 </Button>
             </PopoverTrigger>
             <PopoverContent Class="w-[200px] p-0" Side="@PopoverSide.Bottom" Align="@PopoverAlign.End">
-                <div class="p-4 space-y-2">
+                <div class="space-y-2">
                     <div class="text-sm font-medium mb-3">Toggle columns</div>
                     @foreach (var column in Columns)
                     {
+                        var checkboxId = $"column-toggle-{column.Id}";
                         <div class="flex items-center gap-2 p-2 hover:bg-accent rounded-sm transition-colors"
                              @onclick:stopPropagation="true">
-                            <Checkbox Checked="@column.Visible"
+                            <Checkbox Id="@checkboxId"
+                                      Checked="@column.Visible"
                                       CheckedChanged="@((bool isChecked) => OnColumnVisibilityChanged?.Invoke(column.Id, isChecked))" />
-                            <span class="text-sm select-none cursor-pointer" @onclick="@(() => OnColumnVisibilityChanged?.Invoke(column.Id, !column.Visible))">@column.Header</span>
+                            <FieldLabel For="@checkboxId" Class="text-sm flex-1 cursor-pointer">
+                                @column.Header
+                            </FieldLabel>
                         </div>
                     }
                 </div>

@@ -1,4 +1,4 @@
-@page "/components/numeric-input"
+@page "/components/numericinput"
 @using BlazorUI.Components.NumericInput
 
 <PageTitle>NumericInput Component - BlazorUI</PageTitle>
@@ -6,194 +6,193 @@
 <div class="space-y-8 max-w-4xl">
     <div>
         <div class="space-y-3">
-            <h1 class="text-4xl font-bold tracking-tight">NumericInput Component</h1>
-            <p class="text-xl text-muted-foreground">
-                A generic numeric input supporting int, double, decimal, float, long, and short with min/max/step constraints.
-            </p>
+        <h1 class="text-4xl font-bold tracking-tight">NumericInput Component</h1>
+        <p class="text-xl text-muted-foreground">
+            A type-safe numeric input component with support for various numeric types.
+        </p>
         </div>
     </div>
 
-    <!-- Basic Integer Example -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Basic Integer</h2>
-            <p class="text-sm text-muted-foreground">
-                A simple integer input with default settings.
-            </p>
-        </div>
-        <div class="w-64">
-            <NumericInput TValue="int" @bind-Value="_intValue" Placeholder="Enter a number" />
-        </div>
-        <p class="text-sm text-muted-foreground">Value: @_intValue</p>
+    <div class="space-y-6">
     </div>
 
-    <!-- Double with Decimal Places -->
+    <!-- Default Integer Input -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Double with Decimal Places</h2>
+            <h2 class="text-2xl font-semibold">Integer Input</h2>
             <p class="text-sm text-muted-foreground">
-                A double input with 2 decimal places.
+                A simple integer input with placeholder.
             </p>
         </div>
-        <div class="w-64">
-            <NumericInput TValue="double" @bind-Value="_doubleValue" DecimalPlaces="2" Placeholder="0.00" />
+        <div class="max-w-md">
+            <NumericInput TValue="int" @bind-Value="quantity" Placeholder="Enter quantity..." />
+            <p class="text-xs text-muted-foreground mt-2">Current value: @quantity</p>
         </div>
-        <p class="text-sm text-muted-foreground">Value: @_doubleValue.ToString("F2")</p>
+    </div>
+
+    <!-- Decimal Input -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Decimal Input</h2>
+            <p class="text-sm text-muted-foreground">
+                Decimal input for precise values like currency.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Price</label>
+                <NumericInput TValue="decimal" @bind-Value="price" Placeholder="0.00" Step="0.01" Min="0" Max="10000" />
+                <p class="text-xs text-muted-foreground">Current value: @price.ToString("C")</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Double Input -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Double Input</h2>
+            <p class="text-sm text-muted-foreground">
+                Double precision floating point input.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Percentage</label>
+                <NumericInput TValue="double" @bind-Value="percentage" Placeholder="0.0" Step="0.1" Min="0" Max="100" />
+                <p class="text-xs text-muted-foreground">Current value: @percentage%</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Float Input -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Float Input</h2>
+            <p class="text-sm text-muted-foreground">
+                Single precision floating point input.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Rating</label>
+                <NumericInput TValue="float" @bind-Value="rating" Placeholder="0.0" Step="0.1" Min="0" Max="5" />
+                <p class="text-xs text-muted-foreground">Current value: @rating</p>
+            </div>
+        </div>
     </div>
 
     <!-- With Min/Max Constraints -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">With Min/Max Constraints</h2>
+            <h2 class="text-2xl font-semibold">Min/Max Constraints</h2>
             <p class="text-sm text-muted-foreground">
-                Value is constrained between 0 and 100.
+                Input with minimum and maximum value validation.
             </p>
         </div>
-        <div class="w-64">
-            <NumericInput TValue="int" @bind-Value="_constrainedValue" Min="0" Max="100" Placeholder="0-100" />
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Age (18-120)</label>
+                <NumericInput TValue="int" @bind-Value="age" Min="18" Max="120" Step="1" Placeholder="Enter age" />
+                <p class="text-xs text-muted-foreground">Current value: @age</p>
+            </div>
         </div>
-        <p class="text-sm text-muted-foreground">Value: @_constrainedValue (min: 0, max: 100)</p>
     </div>
 
-    <!-- With Step -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">With Step</h2>
-            <p class="text-sm text-muted-foreground">
-                Use arrow keys to increment/decrement by step value (5).
-            </p>
-        </div>
-        <div class="w-64">
-            <NumericInput TValue="int" @bind-Value="_steppedValue" Step="5" Min="0" Max="100" Placeholder="Step: 5" />
-        </div>
-        <p class="text-sm text-muted-foreground">Value: @_steppedValue (step: 5, use arrow keys)</p>
-    </div>
-
-    <!-- With Buttons -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">With Increment/Decrement Buttons</h2>
-            <p class="text-sm text-muted-foreground">
-                Shows +/- buttons for easy value adjustment.
-            </p>
-        </div>
-        <div class="w-64">
-            <NumericInput TValue="int" @bind-Value="_buttonValue" ShowButtons="true" Min="0" Max="99" />
-        </div>
-        <p class="text-sm text-muted-foreground">Value: @_buttonValue</p>
-    </div>
-
-    <!-- Decimal Type -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Decimal Type (Currency)</h2>
-            <p class="text-sm text-muted-foreground">
-                Using decimal type with 2 decimal places for currency values.
-            </p>
-        </div>
-        <div class="w-64">
-            <NumericInput TValue="decimal" @bind-Value="_decimalValue" DecimalPlaces="2" Step="0.01m" Min="0m" />
-        </div>
-        <p class="text-sm text-muted-foreground">Value: $@_decimalValue.ToString("F2")</p>
-    </div>
-
-    <!-- Positive Only -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Positive Numbers Only</h2>
-            <p class="text-sm text-muted-foreground">
-                Negative values are not allowed.
-            </p>
-        </div>
-        <div class="w-64">
-            <NumericInput TValue="int" @bind-Value="_positiveValue" AllowNegative="false" Placeholder="Positive only" />
-        </div>
-        <p class="text-sm text-muted-foreground">Value: @_positiveValue</p>
-    </div>
-
-    <!-- Disabled -->
+    <!-- Disabled State -->
     <div class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Disabled</h2>
             <p class="text-sm text-muted-foreground">
-                A disabled numeric input.
+                Input with disabled state.
             </p>
         </div>
-        <div class="w-64">
-            <NumericInput TValue="int" Value="42" Disabled="true" />
+        <div class="max-w-md">
+            <NumericInput TValue="int" Placeholder="Disabled input" Disabled="true" Value="42" />
         </div>
     </div>
 
-    <!-- Float Type -->
+    <!-- Required State -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Float Type</h2>
+            <h2 class="text-2xl font-semibold">Required</h2>
             <p class="text-sm text-muted-foreground">
-                Using float type with custom format.
+                Input with HTML5 required validation.
             </p>
         </div>
-        <div class="w-64">
-            <NumericInput TValue="float" @bind-Value="_floatValue" Format="F3" Step="0.1f" />
+        <div class="max-w-md">
+            <form class="space-y-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Quantity (required)</label>
+                    <NumericInput TValue="int" @bind-Value="requiredQuantity" Placeholder="Enter quantity" Required="true" Min="1" />
+                </div>
+                <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90">
+                    Submit
+                </button>
+            </form>
         </div>
-        <p class="text-sm text-muted-foreground">Value: @_floatValue.ToString("F3")</p>
     </div>
 
-    <!-- Long Type -->
+    <!-- With Label and Description -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Long Type</h2>
+            <h2 class="text-2xl font-semibold">With Label</h2>
             <p class="text-sm text-muted-foreground">
-                Using long type for large numbers.
+                Inputs with labels and helper text.
             </p>
         </div>
-        <div class="w-64">
-            <NumericInput TValue="long" @bind-Value="_longValue" Step="1000" Placeholder="Large number" />
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label for="amount-input" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Amount
+                </label>
+                <NumericInput TValue="decimal" @bind-Value="amount" Id="amount-input" Placeholder="0.00" Step="0.01" AriaLabel="Amount" />
+                <p class="text-sm text-muted-foreground">
+                    Current value: @amount.ToString("C")
+                </p>
+            </div>
         </div>
-        <p class="text-sm text-muted-foreground">Value: @_longValue.ToString("N0")</p>
     </div>
 
-    <!-- API Reference -->
+    <!-- Error State -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <h2 class="text-2xl font-semibold">Error State</h2>
+            <p class="text-sm text-muted-foreground">
+                Input with error visualization using aria-invalid.
+            </p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">NumericInput&lt;TValue&gt; Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>TValue:</strong> <code class="bg-muted px-1 py-0.5 rounded">struct, INumber&lt;TValue&gt;</code> - The numeric type (int, double, decimal, float, long, short)</p>
-                    <p><strong>Value:</strong> <code class="bg-muted px-1 py-0.5 rounded">TValue</code> - Current value</p>
-                    <p><strong>Min:</strong> <code class="bg-muted px-1 py-0.5 rounded">TValue?</code> - Minimum allowed value</p>
-                    <p><strong>Max:</strong> <code class="bg-muted px-1 py-0.5 rounded">TValue?</code> - Maximum allowed value</p>
-                    <p><strong>Step:</strong> <code class="bg-muted px-1 py-0.5 rounded">TValue?</code> - Step increment for arrow keys/buttons. Default: 1</p>
-                    <p><strong>DecimalPlaces:</strong> <code class="bg-muted px-1 py-0.5 rounded">int?</code> - Number of decimal places to display</p>
-                    <p><strong>AllowNegative:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Whether negative values are allowed. Default: true</p>
-                    <p><strong>ShowButtons:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Show increment/decrement buttons. Default: false</p>
-                    <p><strong>Format:</strong> <code class="bg-muted px-1 py-0.5 rounded">string?</code> - Custom format string (e.g., "F2", "N0")</p>
-                    <p><strong>Disabled:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disables the input</p>
-                </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Invalid value</label>
+                <NumericInput TValue="int" @bind-Value="errorValue" AriaInvalid="true" Placeholder="This field has an error" />
+                <p class="text-sm text-destructive">
+                    Please enter a valid number. Current: @errorValue
+                </p>
             </div>
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Keyboard Navigation</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Arrow Up/Down:</strong> Increment/decrement by step</p>
-                    <p><strong>Page Up/Down:</strong> Increment/decrement by 10x step</p>
-                    <p><strong>Home:</strong> Go to minimum value</p>
-                    <p><strong>End:</strong> Go to maximum value</p>
-                </div>
-            </div>
+        </div>
+    </div>
+
+    <!-- Readonly State -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Readonly</h2>
+            <p class="text-sm text-muted-foreground">
+                Input in readonly mode - focusable but not editable.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <NumericInput TValue="decimal" Value="99.99m" Readonly="true" Placeholder="Readonly value" />
         </div>
     </div>
 </div>
 
 @code {
-    private int _intValue = 0;
-    private double _doubleValue = 0.0;
-    private int _constrainedValue = 50;
-    private int _steppedValue = 0;
-    private int _buttonValue = 1;
-    private decimal _decimalValue = 99.99m;
-    private int _positiveValue = 0;
-    private float _floatValue = 3.14f;
-    private long _longValue = 0;
+    private int quantity = 10;
+    private decimal price = 29.99m;
+    private double percentage = 75.5;
+    private float rating = 4.5f;
+    private int age = 25;
+    private int requiredQuantity;
+    private decimal amount = 100.00m;
+    private int errorValue = -1;
 }

@@ -1,45 +1,372 @@
-/**
- * Masked Input JavaScript interop module.
- * Handles cursor positioning that Blazor can't manage during active typing.
- */
+// Enhanced Masked Input - Industry standard approach
+// Based on patterns from react-input-mask, IMask.js, and Cleave.js
+// Works WITH the browser's native input handling, not against it
 
-/**
- * Sets the value of an input element and positions the cursor.
- * @param {HTMLInputElement} element - The input element.
- * @param {string} value - The value to set.
- * @param {number} cursorPosition - Where to position the cursor.
- */
-export function setInputValue(element, value, cursorPosition) {
+const instances = new Map();
+
+export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper) {
+    const element = document.getElementById(elementId);
     if (!element) return;
 
-    element.value = value;
+    // Clean up existing instance if any
+    disposeMaskedInput(elementId);
 
-    // Set cursor position
-    if (cursorPosition >= 0 && cursorPosition <= value.length) {
-        element.setSelectionRange(cursorPosition, cursorPosition);
+    const maskDefs = {
+        '0': /\d/,              // Digit (0-9)
+        '9': /[\d\s]/,          // Digit or space
+        'A': /[A-Za-z]/,        // Letter
+        'a': /[A-Za-z\s]/,      // Letter or space
+        '*': /[A-Za-z0-9]/      // Alphanumeric
+    };
+
+    // Parse mask into positions array
+    const positions = [];
+    for (let i = 0; i < mask.length; i++) {
+        const c = mask[i];
+        const pattern = maskDefs[c];
+        positions.push({
+            index: i,
+            isEditable: !!pattern,
+            pattern: pattern,
+            literal: pattern ? null : c
+        });
+    }
+
+    // State
+    let lastValue = element.value;
+    let lastCursorPos = 0;
+
+    // ============ UTILITY FUNCTIONS ============
+
+    // Extract raw value (only editable characters, no literals, no mask chars)
+    function getRawValue(masked) {
+        let raw = '';
+        for (let i = 0; i < positions.length && i < masked.length; i++) {
+            const pos = positions[i];
+            const char = masked[i];
+            if (pos.isEditable && char !== maskChar && pos.pattern.test(char)) {
+                raw += char;
+            }
+        }
+        return raw;
+    }
+
+    // Apply mask to raw value
+    function applyMask(raw) {
+        let result = '';
+        let rawIdx = 0;
+
+        for (let i = 0; i < positions.length; i++) {
+            const pos = positions[i];
+            
+            if (!pos.isEditable) {
+                // Literal character
+                result += pos.literal;
+            } else if (rawIdx < raw.length) {
+                // We have a character to place
+                const char = raw[rawIdx];
+                if (pos.pattern.test(char)) {
+                    result += char;
+                    rawIdx++;
+                } else {
+                    // Invalid char, skip it and try next
+                    rawIdx++;
+                    i--; // Retry this position
+                }
+            } else {
+                // No more raw characters, fill with mask char
+                result += maskChar;
+            }
+        }
+
+        return result;
+    }
+
+    // Get editable position count up to index
+    function getEditableCountBefore(idx, value) {
+        let count = 0;
+        for (let i = 0; i < idx && i < positions.length; i++) {
+            if (positions[i].isEditable && value[i] !== maskChar) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    // Get cursor position for given raw position
+    function getCursorPosForRawPos(rawPos) {
+        let count = 0;
+        for (let i = 0; i < positions.length; i++) {
+            if (positions[i].isEditable) {
+                if (count === rawPos) return i;
+                count++;
+            }
+        }
+        return positions.length;
+    }
+
+    // Find first empty editable position
+    function getFirstEmptyPos(value) {
+        for (let i = 0; i < positions.length; i++) {
+            if (positions[i].isEditable && (!value[i] || value[i] === maskChar)) {
+                return i;
+            }
+        }
+        return positions.length;
+    }
+
+    // Find nearest editable position (forward)
+    function getNearestEditablePos(pos, forward = true) {
+        if (forward) {
+            for (let i = pos; i < positions.length; i++) {
+                if (positions[i].isEditable) return i;
+            }
+            return positions.length;
+        } else {
+            for (let i = Math.min(pos, positions.length - 1); i >= 0; i--) {
+                if (positions[i].isEditable) return i;
+            }
+            return 0;
+        }
+    }
+
+    // ============ EVENT HANDLERS ============
+
+    function handleKeyDown(e) {
+        lastCursorPos = element.selectionStart;
+        
+        // Handle special keys
+        if (e.key === 'Backspace') {
+            e.preventDefault();
+            handleBackspace();
+        } else if (e.key === 'Delete') {
+            e.preventDefault();
+            handleDelete();
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            // Let browser handle, but we'll fix position on keyup
+        }
+    }
+
+    function handleBackspace() {
+        const start = element.selectionStart;
+        const end = element.selectionEnd;
+        const value = element.value;
+
+        if (start !== end) {
+            // Selection - clear selected range
+            const raw = getRawValue(value);
+            const rawStart = getEditableCountBefore(start, value);
+            const rawEnd = getEditableCountBefore(end, value);
+            const newRaw = raw.slice(0, rawStart) + raw.slice(rawEnd);
+            
+            updateValue(newRaw, rawStart);
+        } else {
+            // No selection - delete char before cursor
+            let targetPos = start - 1;
+            
+            // Skip backwards over literals to find editable position
+            while (targetPos >= 0 && !positions[targetPos]?.isEditable) {
+                targetPos--;
+            }
+
+            if (targetPos >= 0) {
+                const raw = getRawValue(value);
+                const rawPos = getEditableCountBefore(targetPos + 1, value);
+                const newRaw = raw.slice(0, rawPos - 1) + raw.slice(rawPos);
+                
+                updateValue(newRaw, rawPos - 1);
+            }
+        }
+    }
+
+    function handleDelete() {
+        const start = element.selectionStart;
+        const end = element.selectionEnd;
+        const value = element.value;
+
+        if (start !== end) {
+            // Selection - clear selected range
+            const raw = getRawValue(value);
+            const rawStart = getEditableCountBefore(start, value);
+            const rawEnd = getEditableCountBefore(end, value);
+            const newRaw = raw.slice(0, rawStart) + raw.slice(rawEnd);
+            
+            updateValue(newRaw, rawStart);
+        } else {
+            // No selection - delete char at cursor
+            let targetPos = start;
+            
+            // Skip forward over literals to find editable position
+            while (targetPos < positions.length && !positions[targetPos]?.isEditable) {
+                targetPos++;
+            }
+
+            if (targetPos < positions.length) {
+                const raw = getRawValue(value);
+                const rawPos = getEditableCountBefore(targetPos + 1, value);
+                const newRaw = raw.slice(0, rawPos - 1) + raw.slice(rawPos);
+                
+                updateValue(newRaw, rawPos - 1);
+            }
+        }
+    }
+
+    function handleInput(e) {
+        const newValue = element.value;
+        const cursorPos = element.selectionStart;
+
+        // Extract all valid characters from new input
+        let allChars = '';
+        for (let i = 0; i < newValue.length; i++) {
+            const char = newValue[i];
+            // Check if this character is valid for ANY editable position
+            for (const pos of positions) {
+                if (pos.isEditable && pos.pattern.test(char)) {
+                    allChars += char;
+                    break;
+                }
+            }
+        }
+
+        // Calculate raw cursor position
+        // How many editable chars were before cursor in old value
+        const oldRawPos = getEditableCountBefore(lastCursorPos, lastValue);
+        
+        // Estimate new raw position based on what was typed
+        const charsTyped = newValue.length - lastValue.length;
+        const newRawPos = Math.max(0, oldRawPos + Math.max(0, charsTyped));
+
+        updateValue(allChars, newRawPos);
+    }
+
+    function handlePaste(e) {
+        e.preventDefault();
+        
+        const pastedText = (e.clipboardData || window.clipboardData)?.getData('text') || '';
+        const cursorPos = element.selectionStart;
+        
+        // Get current raw value
+        const currentRaw = getRawValue(element.value);
+        const rawCursorPos = getEditableCountBefore(cursorPos, element.value);
+        
+        // Filter pasted text to only valid characters
+        let validChars = '';
+        for (const char of pastedText) {
+            for (const pos of positions) {
+                if (pos.isEditable && pos.pattern.test(char)) {
+                    validChars += char;
+                    break;
+                }
+            }
+        }
+
+        // Insert at cursor position
+        const newRaw = currentRaw.slice(0, rawCursorPos) + validChars + currentRaw.slice(rawCursorPos);
+        
+        updateValue(newRaw, rawCursorPos + validChars.length);
+    }
+
+    function handleFocus(e) {
+        // Delay to let browser set initial cursor
+        setTimeout(() => {
+            const value = element.value;
+            if (!value) return;
+            
+            const firstEmpty = getFirstEmptyPos(value);
+            setCursor(firstEmpty);
+        }, 0);
+    }
+
+    function handleClick(e) {
+        // Ensure cursor is at an editable position
+        setTimeout(() => {
+            const pos = element.selectionStart;
+            if (pos < positions.length && !positions[pos]?.isEditable) {
+                const nearestPos = getNearestEditablePos(pos, true);
+                setCursor(nearestPos);
+            }
+        }, 0);
+    }
+
+    // ============ CORE UPDATE FUNCTION ============
+
+    function updateValue(rawValue, rawCursorPos) {
+        // Limit raw value to max editable positions
+        const maxRaw = positions.filter(p => p.isEditable).length;
+        rawValue = rawValue.slice(0, maxRaw);
+        
+        // Apply mask
+        const masked = applyMask(rawValue);
+        
+        // Update element
+        element.value = masked;
+        lastValue = masked;
+
+        // Calculate and set cursor position
+        const cursorPos = getCursorPosForRawPos(Math.min(rawCursorPos, rawValue.length));
+        setCursor(cursorPos);
+
+        // Notify Blazor
+        dotNetHelper.invokeMethodAsync('OnValueChanged', rawValue);
+    }
+
+    function setCursor(pos) {
+        // Ensure position is at an editable slot or end
+        let finalPos = pos;
+        if (finalPos < positions.length && !positions[finalPos]?.isEditable) {
+            finalPos = getNearestEditablePos(finalPos, true);
+        }
+        finalPos = Math.min(finalPos, element.value.length);
+        
+        element.setSelectionRange(finalPos, finalPos);
+        lastCursorPos = finalPos;
+    }
+
+    // ============ ATTACH LISTENERS ============
+
+    element.addEventListener('keydown', handleKeyDown);
+    element.addEventListener('input', handleInput);
+    element.addEventListener('paste', handlePaste);
+    element.addEventListener('focus', handleFocus);
+    element.addEventListener('click', handleClick);
+
+    // Store for cleanup
+    instances.set(elementId, {
+        element,
+        handlers: { handleKeyDown, handleInput, handlePaste, handleFocus, handleClick }
+    });
+
+    // Initialize with current value
+    if (element.value) {
+        const raw = getRawValue(element.value);
+        element.value = applyMask(raw);
+        lastValue = element.value;
     }
 }
 
-/**
- * Sets the cursor position in an input element.
- * @param {HTMLInputElement} element - The input element.
- * @param {number} cursorPosition - Where to position the cursor.
- */
-export function setCursorPosition(element, cursorPosition) {
-    if (!element) return;
-
-    // Set cursor position immediately
-    if (cursorPosition >= 0 && cursorPosition <= element.value.length) {
-        element.setSelectionRange(cursorPosition, cursorPosition);
+export function disposeMaskedInput(elementId) {
+    const instance = instances.get(elementId);
+    if (instance) {
+        const { element, handlers } = instance;
+        element.removeEventListener('keydown', handlers.handleKeyDown);
+        element.removeEventListener('input', handlers.handleInput);
+        element.removeEventListener('paste', handlers.handlePaste);
+        element.removeEventListener('focus', handlers.handleFocus);
+        element.removeEventListener('click', handlers.handleClick);
+        instances.delete(elementId);
     }
 }
 
-/**
- * Gets the current cursor position in an input element.
- * @param {HTMLInputElement} element - The input element.
- * @returns {number} The cursor position.
- */
-export function getCursorPosition(element) {
-    if (!element) return 0;
-    return element.selectionStart || 0;
+// Legacy compatibility
+export function getCursorPosition(elementId) {
+    const el = document.getElementById(elementId);
+    return el?.selectionStart || 0;
+}
+
+export function setCursorPosition(elementId, position) {
+    const el = document.getElementById(elementId);
+    if (el) {
+        const pos = Math.min(Math.max(0, position), el.value.length);
+        el.setSelectionRange(pos, pos);
+    }
 }

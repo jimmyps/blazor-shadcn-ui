@@ -138,6 +138,7 @@ export async function computePosition(reference, floating, options = {}) {
     }
 
     if (shift) {
+        // Allow aggressive shifting to maximize use of available space
         middleware.push(lib.shift({ padding }));
     }
 
@@ -203,6 +204,67 @@ Object.assign(floating.style, {
     if (position.transformOrigin) {
         const targetElement = floating.firstElementChild || floating;
         targetElement.style.transformOrigin = position.transformOrigin;
+    }
+
+    // Handle viewport boundary constraints AFTER positioning
+    // This ensures flip/shift have done their work first
+    const rect = floating.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+    const padding = 8;
+
+    // Check if element extends beyond viewport boundaries
+    const exceedsBottom = rect.bottom > viewportHeight - padding;
+    const exceedsTop = rect.top < padding;
+    const exceedsRight = rect.right > viewportWidth - padding;
+    const exceedsLeft = rect.left < padding;
+
+    // Only add scrollbars if element genuinely exceeds viewport
+    // This is the absolute last resort after all positioning attempts
+    if (exceedsBottom || exceedsTop) {
+        const maxHeight = viewportHeight - (padding * 2);
+        if (rect.height > maxHeight) {
+            // Content is larger than viewport - add scrollbar
+            floating.style.maxHeight = `${maxHeight}px`;
+            floating.style.overflowY = 'auto';
+            // Reposition to ensure it's within bounds
+            if (exceedsBottom) {
+                floating.style.top = `${padding}px`;
+            }
+        } else {
+            // Content fits in viewport but positioned poorly - just reposition it
+            if (exceedsBottom) {
+                // Shift up to fit
+                const newTop = viewportHeight - rect.height - padding;
+                floating.style.top = `${Math.max(padding, newTop)}px`;
+            } else if (exceedsTop) {
+                // Shift down to fit
+                floating.style.top = `${padding}px`;
+            }
+        }
+    }
+
+    if (exceedsRight || exceedsLeft) {
+        const maxWidth = viewportWidth - (padding * 2);
+        if (rect.width > maxWidth) {
+            // Content is wider than viewport - add scrollbar
+            floating.style.maxWidth = `${maxWidth}px`;
+            floating.style.overflowX = 'auto';
+            // Reposition to ensure it's within bounds
+            if (exceedsRight) {
+                floating.style.left = `${padding}px`;
+            }
+        } else {
+            // Content fits in viewport but positioned poorly - just reposition it
+            if (exceedsRight) {
+                // Shift left to fit
+                const newLeft = viewportWidth - rect.width - padding;
+                floating.style.left = `${Math.max(padding, newLeft)}px`;
+            } else if (exceedsLeft) {
+                // Shift right to fit
+                floating.style.left = `${padding}px`;
+            }
+        }
     }
 
     // If makeVisible is true, show the element after positioning

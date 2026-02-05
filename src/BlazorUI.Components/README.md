@@ -1,6 +1,6 @@
 # NeoBlazorUI.Components
 
-Over 77+ production-ready Blazor components with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.
+Over 85+ production-ready Blazor components with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.
 
 ## ✨ Features
 
@@ -104,28 +104,35 @@ BlazorUI Components come with pre-built CSS - no Tailwind setup required!
 
 That's it! No Tailwind installation, no build configuration needed.
 
-## 📚 Available Components (77+)
+## 📚 Available Components (85+)
 
 ### Form & Input Components
 - **Button** - Interactive buttons with 6 variants and multiple sizes
 - **Button Group** - Visually group related buttons
 - **Checkbox** - Binary selection with indeterminate state
+- **Color Picker** - Color selection with hex, RGB, and HSL support
 - **Combobox** - Autocomplete input with searchable dropdown
+- **Currency Input** - Formatted currency input with locale support
 - **Date Picker** - Date selection with calendar popover
+- **Date Range Picker** - Date range selection with presets and two calendars
 - **Field** - Form field wrapper with label, description, and errors
 - **Input** - Text input fields with multiple types
 - **Input Group** - Enhanced inputs with icons, buttons, and addons
 - **Input OTP** - One-time password input with character slots
 - **Label** - Accessible labels for form controls
 - **Link Button** - Semantic links styled as buttons
+- **Masked Input** - Text input with customizable format masks (phone, date, etc.)
 - **Multi Select** - Searchable multi-selection with tags
-- **Native Select** - Styled native HTML select
+- **Native Select** - Styled native HTML select with chevron icon
+- **Numeric Input** - Number input with increment/decrement buttons and formatting
 - **Radio Group** - Mutually exclusive options
+- **Range Slider** - Dual-handle slider for selecting value ranges
+- **Rating** - Star rating input with half-star precision and readonly mode
 - **Select** - Dropdown selection with groups
 - **Slider** - Range input for numeric values
 - **Switch** - Toggle control for on/off states
 - **Textarea** - Multi-line text input
-- **Time Picker** - Time selection with hour/minute controls
+- **Time Picker** - Time selection with hour/minute/period controls
 
 ### Data Display Components
 - **Avatar** - User profile images with fallbacks
@@ -158,6 +165,7 @@ That's it! No Tailwind installation, no build configuration needed.
 - **Alert Dialog** - Modal dialogs for confirmations
 - **Dialog** - Modal dialogs with backdrop
 - **Dialog Service** - Programmatic dialogs with async/await API
+- **Drawer** - Slide-out panel with gesture controls and backdrop
 - **Hover Card** - Rich preview cards on hover
 - **Popover** - Floating panels for content
 - **Sheet** - Side panels from viewport edges

@@ -1,224 +1,520 @@
-@page "/components/currency-input"
+@page "/components/currencyinput"
 @using BlazorUI.Components.CurrencyInput
+@using BlazorUI.Components.Button
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
 
 <PageTitle>CurrencyInput Component - BlazorUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
     <div>
         <div class="space-y-3">
-            <h1 class="text-4xl font-bold tracking-tight">CurrencyInput Component</h1>
-            <p class="text-xl text-muted-foreground">
-                A locale-aware currency input with support for 40+ currencies and automatic formatting.
-            </p>
+        <h1 class="text-4xl font-bold tracking-tight">CurrencyInput Component</h1>
+        <p class="text-xl text-muted-foreground">
+            A locale-aware currency input component with support for multiple currencies and cultures.
+        </p>
         </div>
     </div>
 
-    <!-- US Dollar -->
+    <div class="space-y-6">
+    </div>
+
+    <!-- Default USD -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">US Dollar (USD)</h2>
+            <h2 class="text-2xl font-semibold">Default (USD)</h2>
             <p class="text-sm text-muted-foreground">
-                Standard US Dollar input with 2 decimal places.
+                A simple currency input defaulting to US Dollars.
             </p>
         </div>
-        <div class="w-64">
-            <CurrencyInput @bind-Value="_usdValue" CurrencyCode="USD" Placeholder="0.00" />
+        <div class="max-w-md">
+            <CurrencyInput TValue="decimal" @bind-Value="priceUSD" Placeholder="Enter amount..." />
+            <p class="text-xs text-muted-foreground mt-2">Current value: @priceUSD.ToString("C")</p>
         </div>
-        <p class="text-sm text-muted-foreground">Value: $@_usdValue.ToString("F2")</p>
     </div>
 
-    <!-- Euro -->
+    <!-- Different Currencies -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Euro (EUR)</h2>
+            <h2 class="text-2xl font-semibold">Different Currencies</h2>
             <p class="text-sm text-muted-foreground">
-                Euro with European formatting (comma as decimal separator).
+                Examples with USD, EUR, GBP, and JPY currencies.
             </p>
         </div>
-        <div class="w-64">
-            <CurrencyInput @bind-Value="_eurValue" CurrencyCode="EUR" Placeholder="0,00" />
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">US Dollar (USD)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="amountUSD" Currency="USD" Placeholder="$0.00" />
+                <p class="text-xs text-muted-foreground">Current value: @amountUSD.ToString("C")</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Euro (EUR)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="amountEUR" Currency="EUR" Placeholder="€0.00" />
+                <p class="text-xs text-muted-foreground">Current value: @amountEUR.ToString("C2") EUR</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">British Pound (GBP)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="amountGBP" Currency="GBP" Placeholder="£0.00" />
+                <p class="text-xs text-muted-foreground">Current value: @amountGBP.ToString("C2") GBP</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Japanese Yen (JPY)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="amountJPY" Currency="JPY" Placeholder="¥0" />
+                <p class="text-xs text-muted-foreground">Current value: @amountJPY.ToString("N0") JPY</p>
+            </div>
         </div>
-        <p class="text-sm text-muted-foreground">Value: @_eurValue.ToString("F2")</p>
     </div>
 
-    <!-- British Pound -->
+    <!-- Different Cultures -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">British Pound (GBP)</h2>
-        </div>
-        <div class="w-64">
-            <CurrencyInput @bind-Value="_gbpValue" CurrencyCode="GBP" />
-        </div>
-        <p class="text-sm text-muted-foreground">Value: @_gbpValue.ToString("F2")</p>
-    </div>
-
-    <!-- Japanese Yen (0 decimals) -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Japanese Yen (JPY)</h2>
+            <h2 class="text-2xl font-semibold">Different Cultures</h2>
             <p class="text-sm text-muted-foreground">
-                No decimal places - Yen uses whole numbers only.
+                Same currency (EUR) with different culture formatting.
             </p>
         </div>
-        <div class="w-64">
-            <CurrencyInput @bind-Value="_jpyValue" CurrencyCode="JPY" />
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">EUR with German Culture (de-DE)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="eurDE" Currency="EUR" Culture="de-DE" />
+                <p class="text-xs text-muted-foreground">Uses comma as decimal separator: @eurDE.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("de-DE"))</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">EUR with French Culture (fr-FR)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="eurFR" Currency="EUR" Culture="fr-FR" />
+                <p class="text-xs text-muted-foreground">French formatting: @eurFR.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("fr-FR"))</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">EUR with US Culture (en-US)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="eurUS" Currency="EUR" Culture="en-US" />
+                <p class="text-xs text-muted-foreground">US formatting: @eurUS.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</p>
+            </div>
         </div>
-        <p class="text-sm text-muted-foreground">Value: @_jpyValue.ToString("F0")</p>
     </div>
 
-    <!-- Kuwaiti Dinar (3 decimals) -->
+    <!-- High Precision Values -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Kuwaiti Dinar (KWD)</h2>
+            <h2 class="text-2xl font-semibold">High Precision Values</h2>
             <p class="text-sm text-muted-foreground">
-                3 decimal places - one of few currencies with 3 decimals.
+                Demonstrates native value precision during editing. Click to focus and see the exact stored value.
             </p>
         </div>
-        <div class="w-64">
-            <CurrencyInput @bind-Value="_kwdValue" CurrencyCode="KWD" />
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Price with decimals (100.2378)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="precisionValue1" Currency="USD" />
+                <p class="text-xs text-muted-foreground">
+                    <strong>Display:</strong> @precisionValue1.ToString("C") | 
+                    <strong>Native value:</strong> @precisionValue1.ToString("G")
+                </p>
+                <p class="text-xs text-blue-600 dark:text-blue-400">
+                    💡 When focused, shows full precision: <code>100.2378</code><br/>
+                    When blurred, shows formatted: <code>$100.24</code>
+                </p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Scientific value (0.000123456)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="precisionValue2" Currency="USD" />
+                <p class="text-xs text-muted-foreground">
+                    <strong>Display:</strong> @precisionValue2.ToString("C") | 
+                    <strong>Native value:</strong> @precisionValue2.ToString("G")
+                </p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Many decimals (1234.56789012)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="precisionValue3" Currency="USD" />
+                <p class="text-xs text-muted-foreground">
+                    <strong>Display:</strong> @precisionValue3.ToString("C") | 
+                    <strong>Native value:</strong> @precisionValue3.ToString("G")
+                </p>
+            </div>
         </div>
-        <p class="text-sm text-muted-foreground">Value: @_kwdValue.ToString("F3")</p>
     </div>
 
-    <!-- Swiss Franc (symbol after) -->
+    <!-- Without Currency Symbol -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Swiss Franc (CHF)</h2>
+            <h2 class="text-2xl font-semibold">Without Currency Symbol</h2>
             <p class="text-sm text-muted-foreground">
-                Symbol appears after the amount.
+                Display numeric value only, without the currency symbol.
             </p>
         </div>
-        <div class="w-64">
-            <CurrencyInput @bind-Value="_chfValue" CurrencyCode="CHF" />
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Amount (no symbol)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="noSymbol" Currency="USD" ShowCurrencySymbol="false" Placeholder="0.00" />
+                <p class="text-xs text-muted-foreground">Current value: @noSymbol.ToString("F2")</p>
+            </div>
         </div>
-        <p class="text-sm text-muted-foreground">Value: @_chfValue.ToString("F2")</p>
     </div>
 
-    <!-- Brazilian Real -->
+    <!-- Double Type -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Brazilian Real (BRL)</h2>
-        </div>
-        <div class="w-64">
-            <CurrencyInput @bind-Value="_brlValue" CurrencyCode="BRL" />
-        </div>
-        <p class="text-sm text-muted-foreground">Value: @_brlValue.ToString("F2")</p>
-    </div>
-
-    <!-- Indian Rupee -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Indian Rupee (INR)</h2>
-        </div>
-        <div class="w-64">
-            <CurrencyInput @bind-Value="_inrValue" CurrencyCode="INR" />
-        </div>
-        <p class="text-sm text-muted-foreground">Value: @_inrValue.ToString("F2")</p>
-    </div>
-
-    <!-- Without Symbol -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Without Symbol</h2>
+            <h2 class="text-2xl font-semibold">Double Type</h2>
             <p class="text-sm text-muted-foreground">
-                Currency input without the symbol prefix/suffix.
+                Using double instead of decimal for the value type.
             </p>
         </div>
-        <div class="w-64">
-            <CurrencyInput @bind-Value="_noSymbolValue" CurrencyCode="USD" ShowSymbol="false" />
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Amount (double)</label>
+                <CurrencyInput TValue="double" @bind-Value="doubleValue" Currency="USD" />
+                <p class="text-xs text-muted-foreground">Current value: @doubleValue.ToString("C")</p>
+            </div>
         </div>
-        <p class="text-sm text-muted-foreground">Value: @_noSymbolValue.ToString("F2")</p>
     </div>
 
-    <!-- With Min/Max -->
+    <!-- With Min/Max Validation -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">With Min/Max Constraints</h2>
+            <h2 class="text-2xl font-semibold">Min/Max Constraints</h2>
             <p class="text-sm text-muted-foreground">
-                Value is constrained between $0 and $1,000.
+                Input with minimum and maximum value validation.
             </p>
         </div>
-        <div class="w-64">
-            <CurrencyInput @bind-Value="_constrainedValue" CurrencyCode="USD" Min="0" Max="1000" />
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Price ($10 - $1000)</label>
+                <CurrencyInput TValue="decimal" @bind-Value="constrainedPrice" Currency="USD" Min="10" Max="1000" Placeholder="Enter price" />
+                <p class="text-xs text-muted-foreground">Value will be clamped between $10 and $1000. Current: @constrainedPrice.ToString("C")</p>
+            </div>
         </div>
-        <p class="text-sm text-muted-foreground">Value: $@_constrainedValue.ToString("F2") (min: $0, max: $1,000)</p>
     </div>
 
-    <!-- Positive Only -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Positive Only</h2>
-            <p class="text-sm text-muted-foreground">
-                Negative values are not allowed.
-            </p>
-        </div>
-        <div class="w-64">
-            <CurrencyInput @bind-Value="_positiveValue" CurrencyCode="USD" AllowNegative="false" />
-        </div>
-        <p class="text-sm text-muted-foreground">Value: $@_positiveValue.ToString("F2")</p>
-    </div>
-
-    <!-- Disabled -->
+    <!-- Disabled State -->
     <div class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Disabled</h2>
-        </div>
-        <div class="w-64">
-            <CurrencyInput Value="1234.56m" CurrencyCode="USD" Disabled="true" />
-        </div>
-    </div>
-
-    <!-- Currency Selector Example -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Dynamic Currency</h2>
             <p class="text-sm text-muted-foreground">
-                Change the currency to see different formatting.
+                Input with disabled state.
             </p>
         </div>
-        <div class="flex gap-4 items-end">
-            <div class="w-64">
-                <CurrencyInput @bind-Value="_dynamicValue" CurrencyCode="@_selectedCurrency" />
-            </div>
-            <select class="h-10 px-3 rounded-md border border-input bg-background text-sm"
-                    @onchange="HandleCurrencyChange">
-                <option value="USD">USD - US Dollar</option>
-                <option value="EUR">EUR - Euro</option>
-                <option value="GBP">GBP - British Pound</option>
-                <option value="JPY">JPY - Japanese Yen</option>
-                <option value="CNY">CNY - Chinese Yuan</option>
-                <option value="INR">INR - Indian Rupee</option>
-                <option value="BRL">BRL - Brazilian Real</option>
-                <option value="CHF">CHF - Swiss Franc</option>
-                <option value="KWD">KWD - Kuwaiti Dinar</option>
-            </select>
+        <div class="max-w-md">
+            <CurrencyInput TValue="decimal" Currency="USD" Placeholder="Disabled input" Disabled="true" Value="99.99m" />
         </div>
-        <p class="text-sm text-muted-foreground">Value: @_dynamicValue (@_selectedCurrency)</p>
     </div>
 
-    <!-- API Reference -->
+    <!-- Readonly State -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <h2 class="text-2xl font-semibold">Readonly</h2>
+            <p class="text-sm text-muted-foreground">
+                Input in readonly mode - focusable but not editable.
+            </p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">CurrencyInput Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Value:</strong> <code class="bg-muted px-1 py-0.5 rounded">decimal</code> - Current value</p>
-                    <p><strong>CurrencyCode:</strong> <code class="bg-muted px-1 py-0.5 rounded">string</code> - ISO 4217 currency code. Default: "USD"</p>
-                    <p><strong>ShowSymbol:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Show currency symbol. Default: true</p>
-                    <p><strong>Min:</strong> <code class="bg-muted px-1 py-0.5 rounded">decimal?</code> - Minimum allowed value</p>
-                    <p><strong>Max:</strong> <code class="bg-muted px-1 py-0.5 rounded">decimal?</code> - Maximum allowed value</p>
-                    <p><strong>AllowNegative:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Allow negative values. Default: true</p>
-                    <p><strong>UseThousandSeparator:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Use thousand separators. Default: true</p>
-                    <p><strong>Disabled:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disables the input</p>
+        <div class="max-w-md">
+            <CurrencyInput TValue="decimal" Currency="EUR" Value="249.99m" Readonly="true" />
+        </div>
+    </div>
+
+    <!-- Required State -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Required</h2>
+            <p class="text-sm text-muted-foreground">
+                Input with HTML5 required validation.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <form class="space-y-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Amount (required)</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="requiredAmount" Currency="USD" Placeholder="Enter amount" Required="true" />
+                </div>
+                <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90">
+                    Submit
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Error State</h2>
+            <p class="text-sm text-muted-foreground">
+                Input with error visualization using aria-invalid.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Invalid price</label>
+                <CurrencyInput TValue="decimal" @bind-Value="errorValue" Currency="USD" AriaInvalid="true" Placeholder="This field has an error" />
+                <p class="text-sm text-destructive">
+                    Please enter a valid amount. Current: @errorValue.ToString("C")
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Validation Example -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Form Validation</h2>
+            <p class="text-sm text-muted-foreground">
+                Integration with Blazor's EditForm and data annotations.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit" class="space-y-4">
+                <DataAnnotationsValidator />
+                
+                <div class="space-y-2">
+                    <label for="product-price" class="text-sm font-medium">Product Price</label>
+                    <CurrencyInput TValue="decimal?" 
+                                   Id="product-price"
+                                   @bind-Value="formModel.Price" 
+                                   Currency="USD"
+                                   ShowValidationError="true"
+                                   Required="true" />
+                    <ValidationMessage For="@(() => formModel.Price)" class="text-sm text-destructive" />
+                </div>
+
+                <div class="space-y-2">
+                    <label for="discount" class="text-sm font-medium">Discount Amount</label>
+                    <CurrencyInput TValue="decimal?" 
+                                   Id="discount"
+                                   @bind-Value="formModel.Discount" 
+                                   Currency="USD"
+                                   ShowValidationError="true" />
+                    <ValidationMessage For="@(() => formModel.Discount)" class="text-sm text-destructive" />
+                </div>
+
+                <div class="space-y-2">
+                    <label for="shipping" class="text-sm font-medium">Shipping Cost</label>
+                    <CurrencyInput TValue="decimal?" 
+                                   Id="shipping"
+                                   @bind-Value="formModel.ShippingCost" 
+                                   Currency="USD"
+                                   ShowValidationError="true" />
+                    <ValidationMessage For="@(() => formModel.ShippingCost)" class="text-sm text-destructive" />
+                </div>
+
+                <div class="flex gap-2">
+                    <Button Type="ButtonType.Submit">Submit Order</Button>
+                    <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</Button>
+                </div>
+
+                @if (!string.IsNullOrEmpty(submitMessage))
+                {
+                    <div class="p-4 rounded-md bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                        <p class="text-sm text-green-800 dark:text-green-200">@submitMessage</p>
+                    </div>
+                }
+            </EditForm>
+        </div>
+    </div>
+
+    <!-- With Label and ARIA -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">ARIA Attributes</h2>
+            <p class="text-sm text-muted-foreground">
+                Accessible inputs with proper ARIA labels and descriptions.
+            </p>
+        </div>
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label for="donation-input" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Donation Amount
+                </label>
+                <CurrencyInput TValue="decimal" 
+                               @bind-Value="donation" 
+                               Id="donation-input" 
+                               Currency="USD"
+                               AriaLabel="Donation amount in US Dollars"
+                               AriaDescribedBy="donation-help" />
+                <p id="donation-help" class="text-sm text-muted-foreground">
+                    Enter the amount you'd like to donate. Minimum $5.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- International Currencies -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">International Currencies</h2>
+            <p class="text-sm text-muted-foreground">
+                Examples showcasing the CurrencyCatalog with 40+ currencies, correct decimal places, and Unicode symbols.
+            </p>
+        </div>
+        <div class="max-w-3xl space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Canadian Dollar (CAD)</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="cad" Currency="CAD" />
+                    <p class="text-xs text-muted-foreground">2 decimals</p>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Australian Dollar (AUD)</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="aud" Currency="AUD" />
+                    <p class="text-xs text-muted-foreground">2 decimals</p>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Swiss Franc (CHF)</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="chf" Currency="CHF" />
+                    <p class="text-xs text-muted-foreground">2 decimals</p>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Chinese Yuan (CNY)</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="cny" Currency="CNY" />
+                    <p class="text-xs text-muted-foreground">¥ symbol, 2 decimals</p>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Indian Rupee (INR)</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="inr" Currency="INR" />
+                    <p class="text-xs text-muted-foreground">₹ symbol, 2 decimals</p>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Brazilian Real (BRL)</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="brl" Currency="BRL" />
+                    <p class="text-xs text-muted-foreground">R$ symbol, 2 decimals</p>
                 </div>
             </div>
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Supported Currencies (40+)</h3>
-                <div class="text-sm text-muted-foreground">
-                    <p>USD, EUR, GBP, JPY, CNY, INR, CAD, AUD, CHF, HKD, SGD, SEK, NOK, DKK, NZD, MXN, BRL, KRW, TRY, RUB, ZAR, THB, MYR, IDR, PHP, VND, PLN, CZK, ILS, AED, SAR, KWD, BHD, OMR, NGN, EGP, ARS, CLP, COP, TWD</p>
+        </div>
+    </div>
+
+    <!-- Special Decimal Places -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Special Decimal Places</h2>
+            <p class="text-sm text-muted-foreground">
+                CurrencyCatalog handles currencies with 0 decimals (JPY, KRW) and 3 decimals (KWD, BHD, OMR).
+            </p>
+        </div>
+        <div class="max-w-3xl space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Japanese Yen (JPY) - 0 decimals</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="jpyZero" Currency="JPY" />
+                    <p class="text-xs text-green-600 dark:text-green-400">
+                        ✓ No decimal places: <code>¥10000</code> not <code>¥10000.00</code>
+                    </p>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">South Korean Won (KRW) - 0 decimals</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="krwZero" Currency="KRW" />
+                    <p class="text-xs text-green-600 dark:text-green-400">
+                        ✓ No decimal places: <code>₩50000</code> not <code>₩50000.00</code>
+                    </p>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Kuwaiti Dinar (KWD) - 3 decimals</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="kwdThree" Currency="KWD" />
+                    <p class="text-xs text-green-600 dark:text-green-400">
+                        ✓ Three decimal places: <code>د.ك 123.456</code>
+                    </p>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Bahraini Dinar (BHD) - 3 decimals</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="bhdThree" Currency="BHD" />
+                    <p class="text-xs text-green-600 dark:text-green-400">
+                        ✓ Three decimal places: <code>ب.د 45.678</code>
+                    </p>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Indonesian Rupiah (IDR) - 0 decimals</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="idrZero" Currency="IDR" />
+                    <p class="text-xs text-green-600 dark:text-green-400">
+                        ✓ No decimal places: <code>Rp 100000</code>
+                    </p>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Omani Rial (OMR) - 3 decimals</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="omrThree" Currency="OMR" />
+                    <p class="text-xs text-green-600 dark:text-green-400">
+                        ✓ Three decimal places: <code>ر.ع 89.123</code>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Symbol Positioning -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Symbol Positioning</h2>
+            <p class="text-sm text-muted-foreground">
+                Some currencies like Vietnamese Dong (VND) display the symbol after the amount.
+            </p>
+        </div>
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Vietnamese Dong (VND) - Symbol After</label>
+                <CurrencyInput TValue="decimal" @bind-Value="vnd" Currency="VND" />
+                <p class="text-xs text-green-600 dark:text-green-400">
+                    ✓ Symbol after amount: <code>250000₫</code> (0 decimals)
+                </p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">US Dollar (USD) - Symbol Before</label>
+                <CurrencyInput TValue="decimal" @bind-Value="usdBefore" Currency="USD" />
+                <p class="text-xs text-muted-foreground">
+                    Symbol before amount: <code>$250.00</code>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- More Unicode Symbols -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Unicode Currency Symbols</h2>
+            <p class="text-sm text-muted-foreground">
+                CurrencyCatalog includes proper Unicode symbols for international currencies.
+            </p>
+        </div>
+        <div class="max-w-3xl">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Thai Baht (THB) - ฿</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="thb" Currency="THB" />
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Philippine Peso (PHP) - ₱</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="php" Currency="PHP" />
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Israeli Shekel (ILS) - ₪</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="ils" Currency="ILS" />
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Turkish Lira (TRY) - ₺</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="tryLira" Currency="TRY" />
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Nigerian Naira (NGN) - ₦</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="ngn" Currency="NGN" />
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-medium">Russian Ruble (RUB) - ₽</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="rub" Currency="RUB" />
                 </div>
             </div>
         </div>
@@ -226,22 +522,87 @@
 </div>
 
 @code {
-    private decimal _usdValue = 1234.56m;
-    private decimal _eurValue = 999.99m;
-    private decimal _gbpValue = 500.00m;
-    private decimal _jpyValue = 15000m;
-    private decimal _kwdValue = 100.500m;
-    private decimal _chfValue = 750.00m;
-    private decimal _brlValue = 1500.00m;
-    private decimal _inrValue = 10000.00m;
-    private decimal _noSymbolValue = 250.00m;
-    private decimal _constrainedValue = 500.00m;
-    private decimal _positiveValue = 100.00m;
-    private decimal _dynamicValue = 1000.00m;
-    private string _selectedCurrency = "USD";
+    // Simple values
+    private decimal priceUSD = 99.99m;
+    private decimal amountUSD = 150.00m;
+    private decimal amountEUR = 200.00m;
+    private decimal amountGBP = 75.50m;
+    private decimal amountJPY = 10000m;
+    
+    // Different cultures
+    private decimal eurDE = 1234.56m;
+    private decimal eurFR = 987.65m;
+    private decimal eurUS = 456.78m;
+    
+    // Other examples
+    private decimal noSymbol = 50.00m;
+    private double doubleValue = 299.99;
+    private decimal constrainedPrice = 100m;
+    private decimal requiredAmount;
+    private decimal errorValue = -10m;
+    private decimal donation = 25.00m;
+    
+    // High precision values to demonstrate native value editing
+    private decimal precisionValue1 = 100.2378m;
+    private decimal precisionValue2 = 0.000123456m;
+    private decimal precisionValue3 = 1234.56789012m;
+    
+    // International currencies
+    private decimal cad = 120.00m;
+    private decimal aud = 180.00m;
+    private decimal chf = 95.00m;
+    private decimal cny = 750.00m;
+    private decimal inr = 8500.00m;
+    private decimal brl = 550.00m;
+    
+    // Special decimal places (0 decimals)
+    private decimal jpyZero = 10000m;
+    private decimal krwZero = 50000m;
+    private decimal idrZero = 100000m;
+    
+    // Special decimal places (3 decimals)
+    private decimal kwdThree = 123.456m;
+    private decimal bhdThree = 45.678m;
+    private decimal omrThree = 89.123m;
+    
+    // Symbol positioning
+    private decimal vnd = 250000m;
+    private decimal usdBefore = 250.00m;
+    
+    // Unicode symbols
+    private decimal thb = 3500.00m;
+    private decimal php = 5500.00m;
+    private decimal ils = 385.00m;
+    private decimal tryLira = 2850.00m;
+    private decimal ngn = 45000.00m;
+    private decimal rub = 9500.00m;
+    
+    // Form validation
+    private OrderFormModel formModel = new();
+    private string? submitMessage;
 
-    private void HandleCurrencyChange(ChangeEventArgs e)
+    private class OrderFormModel
     {
-        _selectedCurrency = e.Value?.ToString() ?? "USD";
+        [Required(ErrorMessage = "Price is required")]
+        [Range(0.01, 999999.99, ErrorMessage = "Price must be between $0.01 and $999,999.99")]
+        public decimal? Price { get; set; } = 99.99m;
+
+        [Range(0, 1000, ErrorMessage = "Discount must be between $0 and $1,000")]
+        public decimal? Discount { get; set; }
+
+        [Range(0, 500, ErrorMessage = "Shipping cost must be between $0 and $500")]
+        public decimal? ShippingCost { get; set; } = 5.99m;
+    }
+
+    private void HandleValidSubmit()
+    {
+        var total = (formModel.Price ?? 0) - (formModel.Discount ?? 0) + (formModel.ShippingCost ?? 0);
+        submitMessage = $"Order submitted! Total: {total:C} (Price: {formModel.Price?.ToString("C") ?? "N/A"}, Discount: {formModel.Discount?.ToString("C") ?? "N/A"}, Shipping: {formModel.ShippingCost?.ToString("C") ?? "N/A"})";
+    }
+
+    private void ResetForm()
+    {
+        formModel = new OrderFormModel();
+        submitMessage = null;
     }
 }

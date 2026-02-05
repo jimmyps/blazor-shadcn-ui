@@ -1,5 +1,7 @@
 @page "/components/color-picker"
 @using BlazorUI.Components.ColorPicker
+@using BlazorUI.Components.Field
+@using System.ComponentModel.DataAnnotations
 
 <PageTitle>ColorPicker Component - BlazorUI</PageTitle>
 
@@ -8,170 +10,239 @@
         <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">ColorPicker Component</h1>
             <p class="text-xl text-muted-foreground">
-                A visual color selection component with hex/RGB input, preset colors, and optional alpha channel.
+                Color selection with multiple format support (Hex, RGB, HSL) and preset color swatches.
             </p>
         </div>
     </div>
 
-    <!-- Basic Example -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Basic Example</h2>
-            <p class="text-sm text-muted-foreground">
-                Select a color using the visual picker or enter a hex value.
-            </p>
-        </div>
-        <ColorPicker @bind-Value="_basicColor" />
-        <p class="text-sm text-muted-foreground">Selected: @_basicColor</p>
-        <div class="h-16 w-32 rounded-md border border-input"
-             style="background-color: @_basicColor;">
-        </div>
-    </div>
-
-    <!-- With Alpha Channel -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">With Alpha Channel</h2>
-            <p class="text-sm text-muted-foreground">
-                Enable transparency selection with the alpha slider.
-            </p>
-        </div>
-        <ColorPicker @bind-Value="_alphaColor" ShowAlpha="true" />
-        <p class="text-sm text-muted-foreground">Selected: @_alphaColor</p>
-        <div class="h-16 w-32 rounded-md border border-input"
-             style="background: @_alphaColor, url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 fill-opacity=%22.1%22><rect x=%220%22 y=%220%22 width=%228%22 height=%228%22 fill=%22%23000%22/><rect x=%228%22 y=%228%22 width=%228%22 height=%228%22 fill=%22%23000%22/></svg>');">
-        </div>
-    </div>
-
-    <!-- Without Presets -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Without Presets</h2>
-            <p class="text-sm text-muted-foreground">
-                Preset color swatches are hidden.
-            </p>
-        </div>
-        <ColorPicker @bind-Value="_noPresetsColor" ShowPresets="false" />
-        <p class="text-sm text-muted-foreground">Selected: @_noPresetsColor</p>
-    </div>
-
-    <!-- Custom Presets -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Custom Presets</h2>
-            <p class="text-sm text-muted-foreground">
-                Brand colors as presets.
-            </p>
-        </div>
-        <ColorPicker @bind-Value="_customPresetsColor"
-                     PresetColors="@_brandColors" />
-        <p class="text-sm text-muted-foreground">Selected: @_customPresetsColor</p>
-    </div>
-
-    <!-- Without Inputs -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Without Inputs</h2>
-            <p class="text-sm text-muted-foreground">
-                Visual picker only, no hex/RGB inputs.
-            </p>
-        </div>
-        <ColorPicker @bind-Value="_noInputsColor" ShowInputs="false" />
-        <p class="text-sm text-muted-foreground">Selected: @_noInputsColor</p>
-    </div>
-
-    <!-- Pre-selected Color -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Pre-selected Color</h2>
-            <p class="text-sm text-muted-foreground">
-                Initialized with a specific color.
-            </p>
-        </div>
-        <ColorPicker @bind-Value="_preselectedColor" />
-        <p class="text-sm text-muted-foreground">Selected: @_preselectedColor</p>
-    </div>
-
-    <!-- Multiple Pickers -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Foreground & Background</h2>
-            <p class="text-sm text-muted-foreground">
-                Common pattern for selecting text and background colors.
-            </p>
-        </div>
-        <div class="flex items-center gap-4">
-            <div>
-                <label class="text-sm font-medium mb-1 block">Foreground</label>
-                <ColorPicker @bind-Value="_fgColor" />
+    <div class="space-y-6">
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Minimal Picker</h2>
+                <p class="text-muted-foreground">
+                    Canvas and sliders only - no RGB inputs or preset swatches.
+                </p>
             </div>
-            <div>
-                <label class="text-sm font-medium mb-1 block">Background</label>
-                <ColorPicker @bind-Value="_bgColor" />
+
+            <div class="max-w-[160px]">
+                <ColorPicker @bind-Color="minimalColor"
+                             ShowInputs="false"
+                             ShowPresets="false" />
+                <p class="text-xs text-muted-foreground mt-2">Selected: @minimalColor</p>
             </div>
-        </div>
-        <div class="p-4 rounded-md border border-input"
-             style="background-color: @_bgColor; color: @_fgColor;">
-            <p class="text-lg font-medium">Sample Text</p>
-            <p class="text-sm">This text uses the selected colors.</p>
-        </div>
-    </div>
+        </section>
 
-    <!-- Disabled -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Disabled</h2>
-        </div>
-        <ColorPicker Value="#3B82F6" Disabled="true" />
-    </div>
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Compact Size (Default)</h2>
+                <p class="text-muted-foreground">
+                    Space-efficient picker with smaller canvas and fewer presets. Ideal for forms.
+                </p>
+            </div>
 
-    <!-- API Reference -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">API Reference</h2>
-        </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">ColorPicker Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Value:</strong> <code class="bg-muted px-1 py-0.5 rounded">string</code> - Color value in hex format (#RRGGBB)</p>
-                    <p><strong>Format:</strong> <code class="bg-muted px-1 py-0.5 rounded">ColorFormat</code> - Output format (Hex, RGB, HSL). Default: Hex</p>
-                    <p><strong>ShowAlpha:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Show alpha slider. Default: false</p>
-                    <p><strong>ShowPresets:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Show preset colors. Default: true</p>
-                    <p><strong>PresetColors:</strong> <code class="bg-muted px-1 py-0.5 rounded">string[]?</code> - Custom preset colors</p>
-                    <p><strong>ShowInputs:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Show hex/RGB inputs. Default: true</p>
-                    <p><strong>Disabled:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disables the picker</p>
+            <div class="max-w-[160px]">
+                <ColorPicker @bind-Color="hexColor" />
+                <p class="text-xs text-muted-foreground mt-2">Selected: @hexColor</p>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Large Size</h2>
+                <p class="text-muted-foreground">
+                    Full-featured picker with larger canvas and more presets. Better for dedicated color selection.
+                </p>
+            </div>
+
+            <div class="max-w-[160px]">
+                <ColorPicker @bind-Color="largeColor"
+                             Size="ColorPickerSize.Large" />
+                <p class="text-xs text-muted-foreground mt-2">Selected: @largeColor</p>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Canvas + Presets Only</h2>
+                <p class="text-muted-foreground">
+                    No RGB inputs, just canvas gradient and quick color swatches.
+                </p>
+            </div>
+
+            <div class="max-w-[160px]">
+                <ColorPicker @bind-Color="presetsOnlyColor"
+                             ShowInputs="false" />
+                <p class="text-xs text-muted-foreground mt-2">Selected: @presetsOnlyColor</p>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">RGB Format</h2>
+                <p class="text-muted-foreground">
+                    Returns color in RGB format: rgb(r, g, b)
+                </p>
+            </div>
+
+            <div class="max-w-[250px]">
+                <ColorPicker @bind-Color="rgbColor"
+                             Format="ColorFormat.RGB" />
+                <p class="text-xs text-muted-foreground mt-2">Selected: @rgbColor</p>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">HSL Format</h2>
+                <p class="text-muted-foreground">
+                    Returns color in HSL format: hsl(h, s%, l%)
+                </p>
+            </div>
+
+            <div class="max-w-[250px]">
+                <ColorPicker @bind-Color="hslColor"
+                             Format="ColorFormat.HSL" />
+                <p class="text-xs text-muted-foreground mt-2">Selected: @hslColor</p>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">With Alpha Channel</h2>
+                <p class="text-muted-foreground">
+                    Includes opacity slider for transparent colors.
+                </p>
+            </div>
+
+            <div class="max-w-[160px]">
+                <ColorPicker @bind-Color="alphaColor"
+                             ShowAlpha="true" />
+                <p class="text-xs text-muted-foreground mt-2">Selected: @alphaColor</p>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">RGBA Format</h2>
+                <p class="text-muted-foreground">
+                    RGB with alpha: rgba(r, g, b, a)
+                </p>
+            </div>
+
+            <div class="max-w-[250px]">
+                <ColorPicker @bind-Color="rgbaColor"
+                             Format="ColorFormat.RGB"
+                             ShowAlpha="true" />
+                <p class="text-xs text-muted-foreground mt-2">Selected: @rgbaColor</p>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Disabled State</h2>
+                <p class="text-muted-foreground">
+                    A disabled color picker that cannot be changed.
+                </p>
+            </div>
+
+            <div class="max-w-[160px]">
+                <ColorPicker @bind-Color="disabledColor"
+                             Disabled="true" />
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">With Form Validation</h2>
+                <p class="text-muted-foreground">
+                    Color picker integrated with Blazor form validation.
+                </p>
+            </div>
+
+            <EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit" class="max-w-[160px] space-y-4">
+                <DataAnnotationsValidator />
+
+                <Field>
+                    <Label For="form-color">Favorite Color</Label>
+                    <ColorPicker @bind-Color="formModel.FavoriteColor"
+                                 Id="form-color"
+                                 Required="true"
+                                 ShowValidationError="true"
+                                 ValueExpression="@(() => formModel.FavoriteColor)" />
+                </Field>
+
+                <div>
+                    <button type="submit"
+                            class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-primary text-primary-foreground hover:bg-primary/90 h-10 py-2 px-4">
+                        Submit
+                    </button>
+                </div>
+
+                @if (!string.IsNullOrEmpty(submitMessage))
+                {
+                    <div class="p-4 rounded-md bg-green-50 dark:bg-green-900/20 text-green-900 dark:text-green-100">
+                        @submitMessage
+                    </div>
+                }
+            </EditForm>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">All Formats Side by Side</h2>
+                <p class="text-muted-foreground">
+                    Compare different color format outputs with the same visual picker.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <h3 class="text-sm font-medium mb-2">Hex</h3>
+                    <ColorPicker @bind-Color="comparisonColor" />
+                    <p class="text-xs text-muted-foreground mt-1">@comparisonColor</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium mb-2">RGB</h3>
+                    <ColorPicker @bind-Color="comparisonColorRgb"
+                                 Format="ColorFormat.RGB" />
+                    <p class="text-xs text-muted-foreground mt-1">@comparisonColorRgb</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium mb-2">HSL</h3>
+                    <ColorPicker @bind-Color="comparisonColorHsl"
+                                 Format="ColorFormat.HSL" />
+                    <p class="text-xs text-muted-foreground mt-1">@comparisonColorHsl</p>
                 </div>
             </div>
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">ColorUtils Static Methods</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>RgbToHsl(r, g, b):</strong> Convert RGB to HSL</p>
-                    <p><strong>HslToRgb(h, s, l):</strong> Convert HSL to RGB</p>
-                    <p><strong>RgbToHsv(r, g, b):</strong> Convert RGB to HSV</p>
-                    <p><strong>HsvToRgb(h, s, v):</strong> Convert HSV to RGB</p>
-                    <p><strong>ToHex(r, g, b, a?):</strong> Format as hex string</p>
-                    <p><strong>ParseHex(hex):</strong> Parse hex to RGBA values</p>
-                    <p><strong>IsValidHex(hex):</strong> Validate hex string</p>
-                </div>
-            </div>
-        </div>
+        </section>
     </div>
 </div>
 
 @code {
-    private string _basicColor = "#3B82F6";
-    private string _alphaColor = "#3B82F680";
-    private string _noPresetsColor = "#10B981";
-    private string _customPresetsColor = "#6366F1";
-    private string _noInputsColor = "#F59E0B";
-    private string _preselectedColor = "#EC4899";
-    private string _fgColor = "#FFFFFF";
-    private string _bgColor = "#1E293B";
+    private string? hexColor = "#3B82F6";
+    private string? largeColor = "#EC4899";
+    private string? minimalColor = "#10B981";
+    private string? presetsOnlyColor = "#F59E0B";
+    private string? rgbColor = "rgb(239, 68, 68)";
+    private string? hslColor = "hsl(142, 71%, 45%)";
+    private string? alphaColor = "#8B5CF6AA";
+    private string? rgbaColor = "rgba(236, 72, 153, 0.75)";
+    private string? disabledColor = "#6B7280";
+    private string? comparisonColor = "#EC4899";
+    private string? comparisonColorRgb = "rgb(236, 72, 153)";
+    private string? comparisonColorHsl = "hsl(330, 81%, 60%)";
+    private string? submitMessage;
 
-    private string[] _brandColors = {
-        "#6366F1", "#8B5CF6", "#A855F7", "#D946EF",
-        "#EC4899", "#F43F5E", "#EF4444", "#F97316",
-        "#F59E0B", "#EAB308", "#84CC16", "#22C55E"
-    };
+    private FormModel formModel = new();
+
+    private void HandleValidSubmit()
+    {
+        submitMessage = $"Form submitted! Selected color: {formModel.FavoriteColor}";
+    }
+
+    public class FormModel
+    {
+        [Required(ErrorMessage = "Please select a color")]
+        public string? FavoriteColor { get; set; } = "#EC4899";
+    }
 }

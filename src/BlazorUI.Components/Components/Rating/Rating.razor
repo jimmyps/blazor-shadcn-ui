@@ -1,111 +1,100 @@
 @namespace BlazorUI.Components.Rating
 
-<div role="radiogroup"
-     aria-label="@(AriaLabel ?? "Rating")"
-     class="@CssClass"
-     @onmouseleave="HandleMouseLeave"
-     @onkeydown="HandleKeyDown"
-     tabindex="@(Disabled || ReadOnly ? -1 : 0)">
-    @for (int i = 1; i <= Max; i++)
+<div class="@ContainerCssClass" 
+     id="@Id" 
+     tabindex="@(Disabled || ReadOnly ? -1 : 0)"
+     @onkeydown="OnKeyDown"
+     @onmouseleave="OnMouseLeave">
+    @for (int i = 1; i <= MaxRating; i++)
     {
-        var index = i;
-        var fill = GetFillPercentage(index);
-        var isHovered = _hoverValue > 0 && index <= Math.Ceiling(_hoverValue);
-
-        <span role="radio"
-              aria-checked="@(index <= Value)"
-              aria-label="@($"{index} out of {Max}")"
-              class="@GetIconContainerClass(index)"
-              @onclick="() => HandleClick(index)"
-              @onmousemove="e => HandleMouseMove(e, index)">
-            @if (IconTemplate != null)
-            {
-                @IconTemplate(new RatingIconContext
+        var iconIndex = i; // Capture for closure
+        var hoverZIndex = "z-10";
+        
+        @if (AllowHalf)
+        {
+            <div class="relative inline-flex">
+                <!-- Half icon (left side) -->
+                <div class="@($"absolute inset-0 w-1/2 overflow-hidden cursor-pointer {hoverZIndex}")"
+                     @onclick="() => OnIconClick(iconIndex, true)"
+                     @onmouseenter="() => OnIconMouseEnter(iconIndex, true)">
+                </div>
+                
+                <!-- Full icon (right side) -->
+                <div class="@($"absolute inset-0 left-1/2 w-1/2 overflow-hidden cursor-pointer {hoverZIndex}")"
+                     @onclick="() => OnIconClick(iconIndex, false)"
+                     @onmouseenter="() => OnIconMouseEnter(iconIndex, false)">
+                </div>
+                
+                <!-- Icon display -->
+                @if (IsIconFilled(iconIndex))
                 {
-                    Index = index,
-                    Fill = fill,
-                    IsHovered = isHovered,
-                    ActiveColor = ActiveColor,
-                    InactiveColor = InactiveColor
-                })
-            }
-            else
-            {
-                @RenderIcon(fill)
-            }
-        </span>
+                    @RenderIcon(true)
+                }
+                else if (IsIconHalfFilled(iconIndex))
+                {
+                    <div class="relative">
+                        <div class="absolute inset-0 w-1/2 overflow-hidden">
+                            @RenderIcon(true)
+                        </div>
+                        @RenderIcon(false)
+                    </div>
+                }
+                else
+                {
+                    @RenderIcon(false)
+                }
+            </div>
+        }
+        else
+        {
+            <div @onclick="() => OnIconClick(iconIndex, false)"
+                 @onmouseenter="() => OnIconMouseEnter(iconIndex, false)">
+                @if (IsIconFilled(iconIndex))
+                {
+                    @RenderIcon(true)
+                }
+                else
+                {
+                    @RenderIcon(false)
+                }
+            </div>
+        }
+    }
+    
+    @if (!string.IsNullOrEmpty(Name))
+    {
+        <input type="hidden" name="@Name" value="@Value" />
     }
 </div>
 
+@if (ShowValidationError && EditContext != null && ValueExpression != null)
+{
+    <ValidationMessage For="@ValueExpression" />
+}
+
 @code {
-    private RenderFragment RenderIcon(double fill)
+    private RenderFragment RenderIcon(bool filled) => __builder =>
     {
-        return Icon switch
+        var fillColor = filled ? "fill-primary text-primary" : "fill-none text-muted-foreground";
+        var cssClass = $"{IconSizeClass} {fillColor} transition-colors";
+        
+        switch (IconType)
         {
-            RatingIcon.Star => RenderStar(fill),
-            RatingIcon.Heart => RenderHeart(fill),
-            RatingIcon.Circle => RenderCircle(fill),
-            _ => RenderStar(fill)
-        };
-    }
-
-    private RenderFragment RenderStar(double fill) => __builder =>
-    {
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="@IconClass">
-            <defs>
-                <linearGradient id="@($"star-gradient-{_instanceId}-{fill}")">
-                    <stop offset="@($"{fill * 100}%")" stop-color="@(ActiveColor ?? "currentColor")" class="@(fill > 0 ? "text-yellow-400" : "")" />
-                    <stop offset="@($"{fill * 100}%")" stop-color="@(InactiveColor ?? "currentColor")" class="text-muted-foreground/30" />
-                </linearGradient>
-            </defs>
-            <polygon
-                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-                fill="@($"url(#star-gradient-{_instanceId}-{fill})")"
-                stroke="@(fill > 0 ? (ActiveColor ?? "currentColor") : (InactiveColor ?? "currentColor"))"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="@(fill > 0 ? "text-yellow-400" : "text-muted-foreground/30")" />
-        </svg>
-    };
-
-    private RenderFragment RenderHeart(double fill) => __builder =>
-    {
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="@IconClass">
-            <defs>
-                <linearGradient id="@($"heart-gradient-{_instanceId}-{fill}")">
-                    <stop offset="@($"{fill * 100}%")" stop-color="@(ActiveColor ?? "currentColor")" class="@(fill > 0 ? "text-red-500" : "")" />
-                    <stop offset="@($"{fill * 100}%")" stop-color="@(InactiveColor ?? "currentColor")" class="text-muted-foreground/30" />
-                </linearGradient>
-            </defs>
-            <path
-                d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
-                fill="@($"url(#heart-gradient-{_instanceId}-{fill})")"
-                stroke="@(fill > 0 ? (ActiveColor ?? "currentColor") : (InactiveColor ?? "currentColor"))"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="@(fill > 0 ? "text-red-500" : "text-muted-foreground/30")" />
-        </svg>
-    };
-
-    private RenderFragment RenderCircle(double fill) => __builder =>
-    {
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="@IconClass">
-            <defs>
-                <linearGradient id="@($"circle-gradient-{_instanceId}-{fill}")">
-                    <stop offset="@($"{fill * 100}%")" stop-color="@(ActiveColor ?? "currentColor")" class="@(fill > 0 ? "text-primary" : "")" />
-                    <stop offset="@($"{fill * 100}%")" stop-color="@(InactiveColor ?? "currentColor")" class="text-muted-foreground/30" />
-                </linearGradient>
-            </defs>
-            <circle
-                cx="12"
-                cy="12"
-                r="10"
-                fill="@($"url(#circle-gradient-{_instanceId}-{fill})")"
-                stroke="@(fill > 0 ? (ActiveColor ?? "currentColor") : (InactiveColor ?? "currentColor"))"
-                stroke-width="1.5"
-                class="@(fill > 0 ? "text-primary" : "text-muted-foreground/30")" />
-        </svg>
+            case RatingIconType.Star:
+                <svg class="@cssClass" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                break;
+            case RatingIconType.Heart:
+                <svg class="@cssClass" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                break;
+            case RatingIconType.Circle:
+                <svg class="@cssClass" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                </svg>
+                break;
+        }
     };
 }

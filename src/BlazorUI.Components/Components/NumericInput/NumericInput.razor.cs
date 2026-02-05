@@ -1,322 +1,649 @@
+using BlazorUI.Components.Common;
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using System.Globalization;
-using System.Numerics;
+using System.Linq.Expressions;
 
 namespace BlazorUI.Components.NumericInput;
 
 /// <summary>
-/// A generic numeric input component supporting int, double, decimal, float, long, and short.
+/// A numeric input component that follows the shadcn/ui design system.
 /// </summary>
-/// <typeparam name="TValue">The numeric type (must implement INumber&lt;TValue&gt;).</typeparam>
-public partial class NumericInput<TValue> : ComponentBase where TValue : struct, INumber<TValue>
+/// <typeparam name="TValue">The type of numeric value (int, decimal, double, or float).</typeparam>
+/// <remarks>
+/// <para>
+/// The NumericInput component provides a customizable, accessible numeric input that supports
+/// multiple numeric types. It follows WCAG 2.1 AA standards for accessibility and integrates 
+/// with Blazor's data binding system.
+/// </para>
+/// <para>
+/// Features:
+/// - Generic type support for int, decimal, double, and float
+/// - Form submission support via name attribute
+/// - Input validation (required, min, max, step)
+/// - Number input controls (min, max, step)
+/// - Mobile keyboard hints via inputmode
+/// - Auto-focus capability
+/// - Error state visualization via aria-invalid attribute
+/// - Smooth color transitions for state changes
+/// - Disabled and required states
+/// - Placeholder text support
+/// - Two-way data binding with Value/ValueChanged
+/// - Full ARIA attribute support
+/// - RTL (Right-to-Left) support
+/// - Dark mode compatible via CSS variables
+/// </para>
+/// </remarks>
+/// <example>
+/// <code>
+/// &lt;NumericInput TValue="int" @bind-Value="quantity" Name="quantity" Placeholder="Enter quantity" /&gt;
+///
+/// &lt;NumericInput TValue="decimal" @bind-Value="price" Name="price" Min="0" Max="1000" Step="0.01" /&gt;
+///
+/// &lt;NumericInput TValue="double" @bind-Value="percentage" Name="percentage" Min="0" Max="100" Step="0.1" /&gt;
+/// </code>
+/// </example>
+public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
 {
-    private ElementReference _inputRef;
-    private string _editingValue = string.Empty;
-    private bool _isEditing;
+    private static string? _firstInvalidInputId = null;
+    
+    private IJSObjectReference? _validationModule;
+    private IJSObjectReference? _cursorModule;
+    private EditContext? _previousEditContext;
+    private FieldIdentifier _fieldIdentifier;
+    private string? _currentErrorMessage;
+    private bool _hasShownTooltip = false;
+    private ElementReference _inputElement;
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the current value.
+    /// Gets the cascaded EditContext from an EditForm.
     /// </summary>
+    [CascadingParameter]
+    private EditContext? EditContext { get; set; }
+
+    /// <summary>
+    /// Gets or sets when the input should update its bound value.
+    /// </summary>
+    /// <remarks>
+    /// - Input: Updates value immediately on every keystroke (default)
+    /// - Change: Updates value only when input loses focus
+    /// </remarks>
     [Parameter]
-    public TValue Value { get; set; }
+    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Change;
 
     /// <summary>
-    /// Gets or sets the callback invoked when the value changes.
+    /// Gets or sets the current value of the input.
     /// </summary>
+    /// <remarks>
+    /// Supports two-way binding via @bind-Value syntax.
+    /// </remarks>
     [Parameter]
-    public EventCallback<TValue> ValueChanged { get; set; }
+    public TValue? Value { get; set; }
 
     /// <summary>
-    /// Gets or sets the minimum allowed value.
+    /// Gets or sets the callback invoked when the input value changes.
     /// </summary>
+    /// <remarks>
+    /// This event is fired on every keystroke (oninput event).
+    /// Use with Value parameter for two-way binding.
+    /// </remarks>
     [Parameter]
-    public TValue? Min { get; set; }
+    public EventCallback<TValue?> ValueChanged { get; set; }
 
     /// <summary>
-    /// Gets or sets the maximum allowed value.
+    /// Gets or sets the placeholder text displayed when the input is empty.
     /// </summary>
-    [Parameter]
-    public TValue? Max { get; set; }
-
-    /// <summary>
-    /// Gets or sets the step increment for arrow key/button changes.
-    /// </summary>
-    [Parameter]
-    public TValue? Step { get; set; }
-
-    /// <summary>
-    /// Gets or sets the number of decimal places to display (for decimal/double/float types).
-    /// </summary>
-    [Parameter]
-    public int? DecimalPlaces { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether negative values are allowed.
-    /// </summary>
-    [Parameter]
-    public bool AllowNegative { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets whether to show increment/decrement buttons.
-    /// </summary>
-    [Parameter]
-    public bool ShowButtons { get; set; }
-
-    /// <summary>
-    /// Gets or sets the placeholder text.
-    /// </summary>
+    /// <remarks>
+    /// Provides a hint to the user about what to enter.
+    /// Should not be used as a replacement for a label.
+    /// </remarks>
     [Parameter]
     public string? Placeholder { get; set; }
 
     /// <summary>
     /// Gets or sets whether the input is disabled.
     /// </summary>
+    /// <remarks>
+    /// When disabled:
+    /// - Input cannot be focused or edited
+    /// - Cursor is set to not-allowed
+    /// - Opacity is reduced for visual feedback
+    /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
 
     /// <summary>
     /// Gets or sets whether the input is required.
     /// </summary>
+    /// <remarks>
+    /// When true, the HTML5 required attribute is set.
+    /// Works with form validation and :invalid CSS pseudo-class.
+    /// </remarks>
     [Parameter]
     public bool Required { get; set; }
 
     /// <summary>
-    /// Gets or sets additional CSS classes.
+    /// Gets or sets the name of the input for form submission.
     /// </summary>
+    /// <remarks>
+    /// This is critical for form submission. The name/value pair is submitted to the server.
+    /// Should be unique within the form.
+    /// </remarks>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the input is read-only.
+    /// </summary>
+    /// <remarks>
+    /// When true, the user cannot modify the value, but it's still focusable and submitted with forms.
+    /// Different from Disabled - readonly inputs are still submitted with forms.
+    /// </remarks>
+    [Parameter]
+    public bool Readonly { get; set; }
+
+    /// <summary>
+    /// Gets or sets the minimum value for number inputs.
+    /// </summary>
+    /// <remarks>
+    /// Works with form validation and :invalid pseudo-class.
+    /// </remarks>
+    [Parameter]
+    public string? Min { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum value for number inputs.
+    /// </summary>
+    /// <remarks>
+    /// Works with form validation and :invalid pseudo-class.
+    /// </remarks>
+    [Parameter]
+    public string? Max { get; set; }
+
+    /// <summary>
+    /// Gets or sets the step interval for number inputs.
+    /// </summary>
+    /// <remarks>
+    /// Defines the granularity of values (e.g., "0.01" for currency, "1" for integers).
+    /// </remarks>
+    [Parameter]
+    public string? Step { get; set; }
+
+    /// <summary>
+    /// Gets or sets the input mode hint for mobile keyboards.
+    /// </summary>
+    /// <remarks>
+    /// Examples: "decimal", "numeric".
+    /// Helps mobile devices show the appropriate keyboard.
+    /// Default is "decimal" for numeric inputs.
+    /// </remarks>
+    [Parameter]
+    public string? InputMode { get; set; } = "decimal";
+
+    /// <summary>
+    /// Gets or sets whether the input should be auto-focused when the page loads.
+    /// </summary>
+    /// <remarks>
+    /// Only one element per page should have autofocus.
+    /// Improves accessibility when used appropriately.
+    /// </remarks>
+    [Parameter]
+    public bool Autofocus { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional CSS classes to apply to the input.
+    /// </summary>
+    /// <remarks>
+    /// Custom classes are appended after the component's base classes,
+    /// allowing for style overrides and extensions.
+    /// </remarks>
     [Parameter]
     public string? Class { get; set; }
 
     /// <summary>
-    /// Gets or sets the HTML id attribute.
+    /// Gets or sets the HTML id attribute for the input element.
     /// </summary>
+    /// <remarks>
+    /// Used to associate the input with a label element via the label's 'for' attribute.
+    /// This is essential for accessibility and allows clicking the label to focus the input.
+    /// </remarks>
     [Parameter]
     public string? Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the ARIA label.
+    /// Gets or sets the ARIA label for the input.
     /// </summary>
+    /// <remarks>
+    /// Provides an accessible name for screen readers.
+    /// Use when there is no visible label element.
+    /// </remarks>
     [Parameter]
     public string? AriaLabel { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the element that describes the input.
     /// </summary>
+    /// <remarks>
+    /// References the id of an element containing help text or error messages.
+    /// Improves screen reader experience by associating descriptive text.
+    /// </remarks>
     [Parameter]
     public string? AriaDescribedBy { get; set; }
 
     /// <summary>
     /// Gets or sets whether the input value is invalid.
     /// </summary>
+    /// <remarks>
+    /// When true, aria-invalid="true" is set.
+    /// Should be set based on validation state.
+    /// </remarks>
     [Parameter]
     public bool? AriaInvalid { get; set; }
 
     /// <summary>
-    /// Gets or sets the format string for displaying the value.
+    /// Gets or sets whether to automatically show validation errors from EditContext.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When true and used within an EditForm, automatically:
+    /// - Displays validation errors in a native browser tooltip
+    /// - Focuses the first invalid input
+    /// - Sets AriaInvalid to true for error styling (red border/ring)
+    /// </para>
+    /// <para>
+    /// Only the FIRST invalid input will show the tooltip and receive focus.
+    /// All invalid inputs will get the destructive border/ring styling via aria-invalid.
+    /// </para>
+    /// <para>
+    /// Requires ValueExpression to be set (automatically set when using @bind-Value).
+    /// Best used together with ValidationMessage for persistent error display.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// &lt;NumericInput TValue="int" Id="age"
+    ///        @bind-Value="model.Age"
+    ///        ShowValidationError="true" /&gt;
+    /// &lt;ValidationMessage For="@(() => model.Age)" /&gt;
+    /// </code>
+    /// </example>
     [Parameter]
-    public string? Format { get; set; }
+    public bool ShowValidationError { get; set; }
 
-    private TValue StepValue => Step ?? TValue.One;
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    /// <remarks>
+    /// This is automatically set when using @bind-Value syntax.
+    /// Required for ShowValidationError to work with EditContext validation.
+    /// </remarks>
+    [Parameter]
+    public Expression<Func<TValue?>>? ValueExpression { get; set; }
 
-    private bool IsAtMax => Max.HasValue && Value >= Max.Value;
-    private bool IsAtMin => Min.HasValue && Value <= Min.Value;
+    /// <summary>
+    /// Gets or sets additional attributes to be applied to the input element.
+    /// </summary>
+    /// <remarks>
+    /// Captures any HTML attributes not explicitly defined as parameters.
+    /// This allows for maximum flexibility while maintaining type safety for common attributes.
+    /// Examples: data-* attributes, form, list, size, title, tabindex, etc.
+    /// </remarks>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private string DisplayValue
-    {
-        get
-        {
-            if (_isEditing)
-                return _editingValue;
+    /// <summary>
+    /// Gets whether the input is in an invalid state (for validation).
+    /// </summary>
+    /// <remarks>
+    /// When ShowValidationError is true, this is automatically set based on validation state.
+    /// Otherwise, uses the manually set AriaInvalid parameter.
+    /// </remarks>
+    private bool? EffectiveAriaInvalid => ShowValidationError && EditContext != null
+        ? !string.IsNullOrEmpty(_currentErrorMessage)
+        : AriaInvalid;
 
-            if (Format != null)
-            {
-                return string.Format(CultureInfo.InvariantCulture, $"{{0:{Format}}}", Value);
-            }
-
-            if (DecimalPlaces.HasValue && IsFloatingPoint)
-            {
-                return string.Format(CultureInfo.InvariantCulture, $"{{0:F{DecimalPlaces.Value}}}", Value);
-            }
-
-            return Value.ToString() ?? string.Empty;
-        }
-    }
-
-    private bool IsFloatingPoint =>
-        typeof(TValue) == typeof(double) ||
-        typeof(TValue) == typeof(float) ||
-        typeof(TValue) == typeof(decimal);
-
-    private string InputMode => IsFloatingPoint ? "decimal" : "numeric";
-
-    private string ContainerClass => ClassNames.cn(
-        "flex items-center",
-        ShowButtons ? "rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background" : null
-    );
-
+    /// <summary>
+    /// Gets the computed CSS classes for the input element.
+    /// </summary>
+    /// <remarks>
+    /// Combines:
+    /// - Base input styles (flex, rounded, border, transitions, focus states)
+    /// - aria-invalid pseudo-selector for error state styling with destructive colors
+    /// - Smooth color transitions for state changes
+    /// - Disabled and required state styles
+    /// - Placeholder text styles
+    /// - RTL and dark mode adjustments
+    /// - Custom classes from the Class parameter
+    /// Uses the cn() utility for intelligent class merging and Tailwind conflict resolution.
+    /// </remarks>
     private string CssClass => ClassNames.cn(
-        "flex h-10 w-full border border-input bg-background px-3 py-2 text-base",
+        // Base input styles (from shadcn/ui)
+        "flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-base shadow-xs",
         "placeholder:text-muted-foreground",
-        ShowButtons ? "focus-visible:outline-none" : "rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "outline-none focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        "aria-[invalid=true]:border-destructive",
-        "transition-colors",
+        // aria-invalid state styling (destructive error colors)
+        "aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive",
+        "aria-[invalid=true]:focus-visible:ring-destructive/30",
+        // Smooth transitions for state changes
+        "transition-[color,box-shadow]",
+        // Medium screens and up: smaller text
         "md:text-sm",
-        ShowButtons ? "pr-8 border-r-0" : null,
+        // Custom classes (if provided)
         Class
     );
 
-    private string ButtonClass => ClassNames.cn(
-        "flex items-center justify-center w-8 h-5 border border-input bg-background",
-        "hover:bg-accent hover:text-accent-foreground",
-        "focus-visible:outline-none",
-        "disabled:cursor-not-allowed disabled:opacity-50",
-        "first:border-b-0",
-        "transition-colors"
-    );
+    /// <summary>
+    /// Gets the effective name attribute, falling back to Id if Name is not specified.
+    /// </summary>
+    /// <remarks>
+    /// This ensures form submission works even when Name is not explicitly set.
+    /// </remarks>
+    private string? EffectiveName => Name ?? Id;
 
-    private void HandleInput(ChangeEventArgs args)
+    /// <summary>
+    /// Gets the current value as a string for binding to the input element.
+    /// </summary>
+    private string? CurrentValueAsString
     {
-        var inputValue = args.Value?.ToString() ?? string.Empty;
-        _editingValue = inputValue;
-        _isEditing = true;
-
-        // Try to parse and update value in real-time
-        if (TryParseValue(inputValue, out var parsedValue))
+        get
         {
-            var clampedValue = ClampValue(parsedValue);
-            if (!clampedValue.Equals(Value))
+            if (Value == null)
+                return null;
+
+            // Use invariant culture for consistent number formatting
+            return Convert.ToString(Value, CultureInfo.InvariantCulture);
+        }
+    }
+
+    /// <summary>
+    /// Handles the input event (fired on every keystroke).
+    /// </summary>
+    /// <param name="args">The change event arguments.</param>
+    private async Task HandleInput(ChangeEventArgs args)
+    {
+        // Only update value if UpdateOn is set to Input
+        if (UpdateOn == InputUpdateMode.Input)
+        {
+            // Save cursor position before update
+            int? cursorPosition = null;
+            if (_cursorModule != null)
             {
-                Value = clampedValue;
-                ValueChanged.InvokeAsync(clampedValue);
+                try
+                {
+                    cursorPosition = await _cursorModule.InvokeAsync<int?>("getCursorPosition", _inputElement);
+                }
+                catch { }
+            }
+
+            var stringValue = args.Value?.ToString();
+            var parsedValue = TryParseValue(stringValue);
+            
+            Value = parsedValue;
+
+            if (ValueChanged.HasDelegate)
+            {
+                await ValueChanged.InvokeAsync(parsedValue);
+            }
+
+            // Notify EditContext of field change to trigger validation
+            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            {
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
+            }
+
+            // Restore cursor position after state has changed
+            if (cursorPosition.HasValue && _cursorModule != null)
+            {
+                try
+                {
+                    await _cursorModule.InvokeVoidAsync("setCursorPosition", _inputElement, cursorPosition.Value);
+                }
+                catch { }
             }
         }
     }
 
-    private void HandleBlur(FocusEventArgs args)
+    /// <summary>
+    /// Handles the change event (fired when input loses focus).
+    /// </summary>
+    /// <param name="args">The change event arguments.</param>
+    private async Task HandleChange(ChangeEventArgs args)
     {
-        _isEditing = false;
-
-        // On blur, ensure we have a valid value
-        if (TryParseValue(_editingValue, out var parsedValue))
+        // Update value on change if UpdateOn is set to Change
+        if (UpdateOn == InputUpdateMode.Change)
         {
-            var clampedValue = ClampValue(parsedValue);
-            if (!clampedValue.Equals(Value))
+            var stringValue = args.Value?.ToString();
+            var parsedValue = TryParseValue(stringValue);
+            
+            Value = parsedValue;
+
+            if (ValueChanged.HasDelegate)
             {
-                Value = clampedValue;
-                ValueChanged.InvokeAsync(clampedValue);
+                await ValueChanged.InvokeAsync(parsedValue);
+            }
+
+            // Notify EditContext of field change to trigger validation
+            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            {
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Tries to parse the string value to the target numeric type.
+    /// </summary>
+    /// <param name="value">The string value to parse.</param>
+    /// <returns>The parsed value, or null if parsing fails.</returns>
+    private TValue? TryParseValue(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return default;
+
+        var targetType = typeof(TValue);
+        var underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+        try
+        {
+            if (underlyingType == typeof(int))
+            {
+                if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var result))
+                    return (TValue)(object)result;
+            }
+            else if (underlyingType == typeof(decimal))
+            {
+                if (decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var result))
+                    return (TValue)(object)result;
+            }
+            else if (underlyingType == typeof(double))
+            {
+                if (double.TryParse(value, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
+                    return (TValue)(object)result;
+            }
+            else if (underlyingType == typeof(float))
+            {
+                if (float.TryParse(value, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result))
+                    return (TValue)(object)result;
+            }
+            else if (underlyingType == typeof(long))
+            {
+                if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var result))
+                    return (TValue)(object)result;
+            }
+            else if (underlyingType == typeof(short))
+            {
+                if (short.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var result))
+                    return (TValue)(object)result;
+            }
+        }
+        catch (OverflowException)
+        {
+            // Value is too large or too small for the target type
+            // Return default value
+        }
+        catch (FormatException)
+        {
+            // Value is not in a valid format
+            // Return default value
+        }
+
+        return default;
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        // Set up field identifier for validation
+        if (ShowValidationError && ValueExpression != null)
+        {
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+
+            // Subscribe to EditContext if it changed
+            if (EditContext != _previousEditContext)
+            {
+                DetachValidationStateChangedListener();
+                EditContext?.OnValidationStateChanged += OnValidationStateChanged;
+                _previousEditContext = EditContext;
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                if (ShowValidationError)
+                {
+                    _validationModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                        "import", "./_content/NeoBlazorUI.Components/js/input-validation.js");
+                }
+                
+                // Load cursor position module
+                _cursorModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoBlazorUI.Components/js/cursor-position.js");
+            }
+            catch (JSException)
+            {
+                // JS module not available, validation will still work via HTML5
             }
         }
 
-        StateHasChanged();
-    }
-
-    private void HandleFocus(FocusEventArgs args)
-    {
-        _editingValue = Value.ToString() ?? string.Empty;
-        _isEditing = true;
-    }
-
-    private async Task HandleKeyDown(KeyboardEventArgs e)
-    {
-        if (Disabled) return;
-
-        switch (e.Key)
+        // Apply validation errors after render
+        if (ShowValidationError && _validationModule != null)
         {
-            case "ArrowUp":
-                await Increment();
-                break;
-            case "ArrowDown":
-                await Decrement();
-                break;
-            case "PageUp":
-                await IncrementBy(TValue.CreateChecked(10) * StepValue);
-                break;
-            case "PageDown":
-                await DecrementBy(TValue.CreateChecked(10) * StepValue);
-                break;
-            case "Home":
-                if (Min.HasValue)
-                    await SetValue(Min.Value);
-                break;
-            case "End":
-                if (Max.HasValue)
-                    await SetValue(Max.Value);
-                break;
+            await UpdateValidationDisplayAsync();
         }
     }
 
-    private async Task Increment()
+    private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
     {
-        if (Disabled || IsAtMax) return;
-        await SetValue(Value + StepValue);
-    }
+        // Reset first invalid input tracking on new validation cycle
+        _firstInvalidInputId = null;
+        _hasShownTooltip = false;
 
-    private async Task Decrement()
-    {
-        if (Disabled || IsAtMin) return;
-        await SetValue(Value - StepValue);
-    }
-
-    private async Task IncrementBy(TValue amount)
-    {
-        if (Disabled) return;
-        await SetValue(Value + amount);
-    }
-
-    private async Task DecrementBy(TValue amount)
-    {
-        if (Disabled) return;
-        await SetValue(Value - amount);
-    }
-
-    private async Task SetValue(TValue value)
-    {
-        var clampedValue = ClampValue(value);
-
-        if (!clampedValue.Equals(Value))
+        InvokeAsync(async () =>
         {
-            Value = clampedValue;
-            _editingValue = clampedValue.ToString() ?? string.Empty;
-            await ValueChanged.InvokeAsync(clampedValue);
+            await UpdateValidationDisplayAsync();
+            StateHasChanged(); // Re-render to update aria-invalid attribute
+        });
+    }
+
+    private async Task UpdateValidationDisplayAsync()
+    {
+        if (EditContext == null || _validationModule == null || string.IsNullOrEmpty(Id))
+            return;
+
+        try
+        {
+            // Get validation messages for this field
+            var messages = EditContext.GetValidationMessages(_fieldIdentifier).ToList();
+            var errorMessage = messages.FirstOrDefault();
+
+            // Only update if the error message changed
+            if (errorMessage != _currentErrorMessage)
+            {
+                _currentErrorMessage = errorMessage;
+
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    // Determine if this is the first invalid input
+                    var isFirstInvalid = _firstInvalidInputId == null;
+                    
+                    if (isFirstInvalid)
+                    {
+                        _firstInvalidInputId = Id;
+                    }
+
+                    // Show tooltip and focus only for the first invalid input
+                    if (isFirstInvalid && !_hasShownTooltip)
+                    {
+                        await _validationModule.InvokeVoidAsync("showValidationError", Id, errorMessage);
+                        _hasShownTooltip = true;
+                    }
+                }
+                else
+                {
+                    // Clear validation error
+                    await _validationModule.InvokeVoidAsync("clearValidationError", Id);
+                    
+                    // Reset first invalid tracking if this was the first invalid input
+                    if (_firstInvalidInputId == Id)
+                    {
+                        _firstInvalidInputId = null;
+                    }
+                }
+            }
+        }
+        catch (JSException)
+        {
+            // Ignore JS errors, validation will still work via aria-invalid
         }
     }
 
-    private TValue ClampValue(TValue value)
+    private void DetachValidationStateChangedListener()
     {
-        if (!AllowNegative && value < TValue.Zero)
-            value = TValue.Zero;
-
-        if (Min.HasValue && value < Min.Value)
-            value = Min.Value;
-
-        if (Max.HasValue && value > Max.Value)
-            value = Max.Value;
-
-        return value;
+        if (_previousEditContext != null)
+        {
+            _previousEditContext.OnValidationStateChanged -= OnValidationStateChanged;
+        }
     }
 
-    private bool TryParseValue(string? input, out TValue result)
+    public async ValueTask DisposeAsync()
     {
-        result = default;
-
-        if (string.IsNullOrWhiteSpace(input))
+        DetachValidationStateChangedListener();
+        
+        if (_validationModule != null)
         {
-            result = TValue.Zero;
-            return true;
+            try
+            {
+                await _validationModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Ignore - this happens during hot reload or when navigating away
+            }
         }
-
-        // Remove any thousand separators and normalize decimal separator
-        input = input.Replace(",", "").Trim();
-
-        // Handle negative sign
-        if (!AllowNegative && input.StartsWith("-"))
+        
+        if (_cursorModule != null)
         {
-            return false;
+            try
+            {
+                await _cursorModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Ignore - this happens during hot reload or when navigating away
+            }
         }
-
-        return TValue.TryParse(input, CultureInfo.InvariantCulture, out result);
     }
 }

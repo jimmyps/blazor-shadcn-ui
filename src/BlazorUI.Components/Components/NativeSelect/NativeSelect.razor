@@ -1,19 +1,25 @@
 @namespace BlazorUI.Components.NativeSelect
+@using BlazorUI.Icons.Lucide.Components
 @typeparam TValue
 
-<select class="@CssClass"
-        id="@Id"
-        name="@Name"
-        value="@Value"
-        disabled="@Disabled"
-        required="@Required"
-        @onchange="HandleChange">
-    @if (!string.IsNullOrEmpty(Placeholder))
-    {
-        <option value="" disabled selected="@(Value == null || Value.Equals(default(TValue)))">@Placeholder</option>
-    }
-    @ChildContent
-</select>
+<div class="relative">
+    <select class="@CssClass"
+            id="@Id"
+            name="@Name"
+            value="@Value"
+            disabled="@Disabled"
+            required="@Required"
+            @onchange="HandleChange">
+        @if (!string.IsNullOrEmpty(Placeholder))
+        {
+            <option value="" disabled selected="@(Value == null || Value.Equals(default(TValue)))">@Placeholder</option>
+        }
+        @ChildContent
+    </select>
+    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+        <LucideIcon Name="chevron-down" Class="@($"h-4 w-4 text-muted-foreground {(Disabled ? "opacity-50" : "")}")" />
+    </div>
+</div>
 
 @code {
     /// <summary>
@@ -106,13 +112,12 @@
         _ => "h-10 text-sm px-3"
     };
 
-    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+    private string CssClass => ClassNames.cn(
         "flex w-full rounded-md border border-input bg-background py-2 ring-offset-background",
-        "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+        "outline-none focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        "appearance-none bg-no-repeat",
-        "bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')]",
-        "bg-[length:1rem] bg-[right_0.5rem_center] pr-8",
+        "transition-[color,box-shadow]",
+        "appearance-none pr-8",
         SizeClasses,
         Class
     );

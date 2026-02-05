@@ -8,69 +8,64 @@
         <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">Rating Component</h1>
             <p class="text-xl text-muted-foreground">
-                A customizable rating component with star, heart, or circle icons and half-rating support.
+                A rating component for selecting a value with interactive icons.
             </p>
         </div>
     </div>
 
-    <!-- Basic Star Rating -->
+    <!-- Basic Rating -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Basic Star Rating</h2>
+            <h2 class="text-2xl font-semibold">Basic</h2>
             <p class="text-sm text-muted-foreground">
-                Click to rate, click the same star again to clear.
+                A simple star rating with default settings.
             </p>
         </div>
-        <Rating @bind-Value="_starValue" />
-        <p class="text-sm text-muted-foreground">Rating: @_starValue / 5</p>
+        <div class="space-y-2">
+            <Rating @bind-Value="basicValue" />
+            <p class="text-sm text-muted-foreground">Value: @basicValue</p>
+        </div>
     </div>
 
-    <!-- Heart Rating -->
+    <!-- Half Ratings -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Heart Rating</h2>
+            <h2 class="text-2xl font-semibold">Half Ratings</h2>
             <p class="text-sm text-muted-foreground">
-                Using heart icons instead of stars.
+                Allow half-star ratings for more granular control.
             </p>
         </div>
-        <Rating @bind-Value="_heartValue" Icon="RatingIcon.Heart" />
-        <p class="text-sm text-muted-foreground">Rating: @_heartValue / 5</p>
+        <div class="space-y-2">
+            <Rating @bind-Value="halfValue" AllowHalf="true" />
+            <p class="text-sm text-muted-foreground">Value: @halfValue</p>
+        </div>
     </div>
 
-    <!-- Circle Rating -->
+    <!-- Icon Types -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Circle Rating</h2>
+            <h2 class="text-2xl font-semibold">Icon Types</h2>
             <p class="text-sm text-muted-foreground">
-                Using circle icons.
+                Different icon types: Star, Heart, and Circle.
             </p>
         </div>
-        <Rating @bind-Value="_circleValue" Icon="RatingIcon.Circle" />
-        <p class="text-sm text-muted-foreground">Rating: @_circleValue / 5</p>
-    </div>
-
-    <!-- Half Rating -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Half Rating Support</h2>
-            <p class="text-sm text-muted-foreground">
-                Allows half-star ratings for more precision. Use arrow keys for precise control.
-            </p>
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <p class="text-sm font-medium">Star:</p>
+                <Rating @bind-Value="starValue" IconType="RatingIconType.Star" />
+                <p class="text-sm text-muted-foreground">Value: @starValue</p>
+            </div>
+            <div class="space-y-2">
+                <p class="text-sm font-medium">Heart:</p>
+                <Rating @bind-Value="heartValue" IconType="RatingIconType.Heart" />
+                <p class="text-sm text-muted-foreground">Value: @heartValue</p>
+            </div>
+            <div class="space-y-2">
+                <p class="text-sm font-medium">Circle:</p>
+                <Rating @bind-Value="circleValue" IconType="RatingIconType.Circle" />
+                <p class="text-sm text-muted-foreground">Value: @circleValue</p>
+            </div>
         </div>
-        <Rating @bind-Value="_halfValue" AllowHalf="true" />
-        <p class="text-sm text-muted-foreground">Rating: @_halfValue / 5</p>
-    </div>
-
-    <!-- Custom Max -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Custom Max (10 Stars)</h2>
-            <p class="text-sm text-muted-foreground">
-                Rating with 10 stars maximum.
-            </p>
-        </div>
-        <Rating @bind-Value="_maxValue" Max="10" Size="RatingSize.Small" />
-        <p class="text-sm text-muted-foreground">Rating: @_maxValue / 10</p>
     </div>
 
     <!-- Sizes -->
@@ -78,22 +73,50 @@
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Sizes</h2>
             <p class="text-sm text-muted-foreground">
-                Small, default, and large icon sizes.
+                Small, Medium, and Large sizes.
             </p>
         </div>
         <div class="space-y-4">
-            <div class="flex items-center gap-4">
-                <span class="text-sm text-muted-foreground w-16">Small:</span>
-                <Rating @bind-Value="_sizeSmall" Size="RatingSize.Small" />
+            <div class="space-y-2">
+                <p class="text-sm font-medium">Small:</p>
+                <Rating @bind-Value="sizeValue" Size="RatingSize.Small" />
             </div>
-            <div class="flex items-center gap-4">
-                <span class="text-sm text-muted-foreground w-16">Default:</span>
-                <Rating @bind-Value="_sizeDefault" Size="RatingSize.Default" />
+            <div class="space-y-2">
+                <p class="text-sm font-medium">Medium:</p>
+                <Rating @bind-Value="sizeValue" Size="RatingSize.Medium" />
             </div>
-            <div class="flex items-center gap-4">
-                <span class="text-sm text-muted-foreground w-16">Large:</span>
-                <Rating @bind-Value="_sizeLarge" Size="RatingSize.Large" />
+            <div class="space-y-2">
+                <p class="text-sm font-medium">Large:</p>
+                <Rating @bind-Value="sizeValue" Size="RatingSize.Large" />
             </div>
+            <p class="text-sm text-muted-foreground">Value: @sizeValue</p>
+        </div>
+    </div>
+
+    <!-- Max Rating -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Max Rating</h2>
+            <p class="text-sm text-muted-foreground">
+                Set a custom maximum rating (default is 5).
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Rating @bind-Value="maxValue" MaxRating="10" Size="RatingSize.Small" />
+            <p class="text-sm text-muted-foreground">Value: @maxValue / 10</p>
+        </div>
+    </div>
+
+    <!-- Disabled -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Disabled</h2>
+            <p class="text-sm text-muted-foreground">
+                Disabled state prevents interaction.
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Rating Value="3.5" Disabled="true" AllowHalf="true" />
         </div>
     </div>
 
@@ -102,108 +125,72 @@
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Read-Only</h2>
             <p class="text-sm text-muted-foreground">
-                Display-only rating (cannot be changed).
+                Read-only state displays the rating without allowing changes.
             </p>
         </div>
         <div class="space-y-2">
-            <div class="flex items-center gap-2">
-                <Rating Value="4" ReadOnly="true" />
-                <span class="text-sm text-muted-foreground">4.0</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <Rating Value="3.5" ReadOnly="true" AllowHalf="true" />
-                <span class="text-sm text-muted-foreground">3.5</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <Rating Value="2" ReadOnly="true" Icon="RatingIcon.Heart" />
-                <span class="text-sm text-muted-foreground">2.0</span>
-            </div>
+            <Rating Value="4" ReadOnly="true" />
+        </div>
+    </div>
+
+    <!-- Allow Clear -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Allow Clear</h2>
+            <p class="text-sm text-muted-foreground">
+                Click the same rating again to clear it (AllowClear is true by default).
+            </p>
+        </div>
+        <div class="space-y-2">
+            <Rating @bind-Value="clearValue" AllowClear="true" />
+            <p class="text-sm text-muted-foreground">Value: @clearValue (Click the same star twice to clear)</p>
         </div>
     </div>
 
     <!-- No Clear -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Disable Clear</h2>
+            <h2 class="text-2xl font-semibold">No Clear</h2>
             <p class="text-sm text-muted-foreground">
-                Cannot clear the rating once set (minimum 1 star).
+                Prevent clearing by setting AllowClear to false.
             </p>
         </div>
-        <Rating @bind-Value="_noClearValue" AllowClear="false" />
-        <p class="text-sm text-muted-foreground">Rating: @_noClearValue / 5</p>
+        <div class="space-y-2">
+            <Rating @bind-Value="noClearValue" AllowClear="false" />
+            <p class="text-sm text-muted-foreground">Value: @noClearValue</p>
+        </div>
     </div>
 
-    <!-- Disabled -->
+    <!-- Keyboard Support -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Disabled</h2>
+            <h2 class="text-2xl font-semibold">Keyboard Support</h2>
             <p class="text-sm text-muted-foreground">
-                A disabled rating component.
+                Use arrow keys to adjust, number keys (1-5) to set directly, or 0 to clear.
             </p>
         </div>
-        <Rating Value="3" Disabled="true" />
-    </div>
-
-    <!-- Keyboard Navigation -->
-    <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Keyboard Navigation</h2>
-            <p class="text-sm text-muted-foreground">
-                Focus the rating and use keyboard to navigate.
-            </p>
-        </div>
-        <Rating @bind-Value="_keyboardValue" AllowHalf="true" />
-        <p class="text-sm text-muted-foreground">
-            Value: @_keyboardValue - Use Arrow keys, number keys (1-5), Home/End
-        </p>
-    </div>
-
-    <!-- API Reference -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">API Reference</h2>
-        </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Rating Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Value:</strong> <code class="bg-muted px-1 py-0.5 rounded">double</code> - Current rating value</p>
-                    <p><strong>Max:</strong> <code class="bg-muted px-1 py-0.5 rounded">int</code> - Maximum rating. Default: 5</p>
-                    <p><strong>AllowHalf:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Enable half ratings. Default: false</p>
-                    <p><strong>AllowClear:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Allow clearing by clicking same value. Default: true</p>
-                    <p><strong>ReadOnly:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Display-only mode. Default: false</p>
-                    <p><strong>Disabled:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disables the rating. Default: false</p>
-                    <p><strong>Icon:</strong> <code class="bg-muted px-1 py-0.5 rounded">RatingIcon</code> - Icon type (Star, Heart, Circle). Default: Star</p>
-                    <p><strong>Size:</strong> <code class="bg-muted px-1 py-0.5 rounded">RatingSize</code> - Icon size (Small, Default, Large). Default: Default</p>
-                    <p><strong>ActiveColor:</strong> <code class="bg-muted px-1 py-0.5 rounded">string?</code> - Custom color for filled icons</p>
-                    <p><strong>InactiveColor:</strong> <code class="bg-muted px-1 py-0.5 rounded">string?</code> - Custom color for empty icons</p>
-                    <p><strong>IconTemplate:</strong> <code class="bg-muted px-1 py-0.5 rounded">RenderFragment&lt;RatingIconContext&gt;?</code> - Custom icon template</p>
-                </div>
-            </div>
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Keyboard Navigation</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Arrow Right/Up:</strong> Increase rating</p>
-                    <p><strong>Arrow Left/Down:</strong> Decrease rating</p>
-                    <p><strong>Home:</strong> Clear rating (if AllowClear)</p>
-                    <p><strong>End:</strong> Set to maximum</p>
-                    <p><strong>1-9:</strong> Set specific rating value</p>
-                    <p><strong>0:</strong> Clear rating (if AllowClear)</p>
-                </div>
-            </div>
+            <Rating @bind-Value="keyboardValue" />
+            <p class="text-sm text-muted-foreground">Value: @keyboardValue</p>
+            <ul class="text-sm text-muted-foreground list-disc list-inside">
+                <li>Arrow Left/Down: Decrease rating</li>
+                <li>Arrow Right/Up: Increase rating</li>
+                <li>Number keys 1-9: Set rating directly (within MaxRating)</li>
+                <li>0: Clear rating</li>
+            </ul>
         </div>
     </div>
 </div>
 
 @code {
-    private double _starValue = 0;
-    private double _heartValue = 0;
-    private double _circleValue = 0;
-    private double _halfValue = 0;
-    private double _maxValue = 7;
-    private double _sizeSmall = 3;
-    private double _sizeDefault = 3;
-    private double _sizeLarge = 3;
-    private double _noClearValue = 1;
-    private double _keyboardValue = 2.5;
+    private double basicValue = 0;
+    private double halfValue = 2.5;
+    private double starValue = 3;
+    private double heartValue = 4;
+    private double circleValue = 2;
+    private double sizeValue = 3;
+    private double maxValue = 5;
+    private double clearValue = 3;
+    private double noClearValue = 3;
+    private double keyboardValue = 2;
 }

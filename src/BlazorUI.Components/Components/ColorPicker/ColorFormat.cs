@@ -1,22 +1,22 @@
 namespace BlazorUI.Components.ColorPicker;
 
 /// <summary>
-/// Defines the color format for the ColorPicker.
+/// Specifies the color format for the ColorPicker component.
 /// </summary>
 public enum ColorFormat
 {
     /// <summary>
-    /// Hexadecimal format (#RRGGBB or #RRGGBBAA).
+    /// Hexadecimal format (e.g., #FF5733 or #FF5733AA with alpha).
     /// </summary>
     Hex,
 
     /// <summary>
-    /// RGB format (rgb(r, g, b) or rgba(r, g, b, a)).
+    /// RGB format (e.g., rgb(255, 87, 51) or rgba(255, 87, 51, 0.67) with alpha).
     /// </summary>
     RGB,
 
     /// <summary>
-    /// HSL format (hsl(h, s%, l%) or hsla(h, s%, l%, a)).
+    /// HSL format (e.g., hsl(9, 100%, 60%) or hsla(9, 100%, 60%, 0.67) with alpha).
     /// </summary>
     HSL
 }
