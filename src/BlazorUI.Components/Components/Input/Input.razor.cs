@@ -467,7 +467,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
         // Reset first invalid input tracking for this EditContext on new validation cycle
         if (EditContext != null)
         {
-            EditContext.Properties[_firstInvalidInputIdKey] = null;
+            EditContext.Properties.Remove(_firstInvalidInputIdKey);
         }
         _hasShownTooltip = false;
 
@@ -498,9 +498,11 @@ public partial class Input : ComponentBase, IAsyncDisposable
                 {
                     // Determine if this is the first invalid input for this EditContext
                     // Using EditContext.Properties for per-form state storage
-                    var firstInvalidId = EditContext.Properties.TryGetValue(_firstInvalidInputIdKey, out var value) 
-                        ? value as string 
-                        : null;
+                    string? firstInvalidId = null;
+                    if (EditContext.Properties.TryGetValue(_firstInvalidInputIdKey, out var value))
+                    {
+                        firstInvalidId = value as string;
+                    }
                     var isFirstInvalid = firstInvalidId == null;
                     
                     if (isFirstInvalid)
