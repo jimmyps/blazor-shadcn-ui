@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace BlazorUI.Components.Input;
 
@@ -49,7 +50,8 @@ namespace BlazorUI.Components.Input;
 /// </example>
 public partial class Input : ComponentBase, IAsyncDisposable
 {
-    private static string? _firstInvalidInputId = null;
+    // Track first invalid input per EditContext to prevent cross-form interference
+    private static ConditionalWeakTable<EditContext, StrongBox<string?>> _firstInvalidInputIdByContext = new();
     
     private IJSObjectReference? _validationModule;
     private EditContext? _previousEditContext;
@@ -463,8 +465,11 @@ public partial class Input : ComponentBase, IAsyncDisposable
 
     private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
     {
-        // Reset first invalid input tracking on new validation cycle
-        _firstInvalidInputId = null;
+        // Reset first invalid input tracking on new validation cycle for this EditContext
+        if (EditContext != null)
+        {
+            _firstInvalidInputIdByContext.AddOrUpdate(EditContext, new StrongBox<string?>(null));
+        }
         _hasShownTooltip = false;
 
         InvokeAsync(async () =>
@@ -492,12 +497,20 @@ public partial class Input : ComponentBase, IAsyncDisposable
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    // Determine if this is the first invalid input
-                    var isFirstInvalid = _firstInvalidInputId == null;
-                    
-                    if (isFirstInvalid)
+                    // Determine if this is the first invalid input for this EditContext
+                    string? firstInvalidId = null;
+                    if (EditContext != null)
                     {
-                        _firstInvalidInputId = Id;
+                        var box = _firstInvalidInputIdByContext.GetOrCreateValue(EditContext);
+                        firstInvalidId = box.Value;
+                    }
+                    
+                    var isFirstInvalid = firstInvalidId == null;
+                    
+                    if (isFirstInvalid && EditContext != null)
+                    {
+                        var box = _firstInvalidInputIdByContext.GetOrCreateValue(EditContext);
+                        box.Value = Id;
                     }
 
                     if (isFirstInvalid && !_hasShownTooltip)
