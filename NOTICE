@@ -1,9 +1,16 @@
 BlazorUI
 Copyright 2025-present Mathew Taylor
 
+NeoBlazorUI
+Copyright 2025-present Jimmy Petrus
+
 This project provides a Blazor UI component library inspired by shadcn/ui.
 
-Original project: https://github.com/blazorui-net/ui
+Original projects:
+https://github.com/blazorui-net/ui
+https://github.com/jimmyps/blazor-shadcn-ui
+
+Licensed under the Apache License, Version 2.0 (the "License");
 
 If you use this software or create derivative works, you must include this
 NOTICE file (or its contents) in your distribution, as required by the
