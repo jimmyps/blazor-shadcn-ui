@@ -1,18 +1,124 @@
 @namespace BlazorUI.Components.NativeSelect
+@using BlazorUI.Icons.Lucide.Components
+@typeparam TValue
 
-<div class="@ContainerCssClass">
-    <select
-        id="@Id"
-        name="@Name"
-        disabled="@Disabled"
-        required="@Required"
-        value="@Value"
-        @onchange="@OnChangeAsync"
-        class="@CssClass">
+<div class="relative">
+    <select class="@CssClass"
+            id="@Id"
+            name="@Name"
+            value="@Value"
+            disabled="@Disabled"
+            required="@Required"
+            @onchange="HandleChange">
         @if (!string.IsNullOrEmpty(Placeholder))
         {
-            <option value="" disabled selected="@(string.IsNullOrEmpty(Value))">@Placeholder</option>
+            <option value="" disabled selected="@(Value == null || Value.Equals(default(TValue)))">@Placeholder</option>
         }
         @ChildContent
     </select>
+    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+        <LucideIcon Name="chevron-down" Class="@($"h-4 w-4 text-muted-foreground {(Disabled ? "opacity-50" : "")}")" />
+    </div>
 </div>
+
+@code {
+    /// <summary>
+    /// The currently selected value.
+    /// </summary>
+    [Parameter]
+    public TValue? Value { get; set; }
+
+    /// <summary>
+    /// Event callback when the value changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<TValue?> ValueChanged { get; set; }
+
+    /// <summary>
+    /// The HTML id attribute for the select element.
+    /// </summary>
+    [Parameter]
+    public string? Id { get; set; }
+
+    /// <summary>
+    /// The HTML name attribute for form submission.
+    /// </summary>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Whether the select is required for HTML5 validation.
+    /// </summary>
+    [Parameter]
+    public bool Required { get; set; }
+
+    /// <summary>
+    /// Placeholder text shown when no value is selected.
+    /// </summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// Whether the select is disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    /// <summary>
+    /// The option elements to display.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes to apply.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Size variant for the select.
+    /// </summary>
+    [Parameter]
+    public NativeSelectSize Size { get; set; } = NativeSelectSize.Default;
+
+    private async Task HandleChange(ChangeEventArgs e)
+    {
+        var stringValue = e.Value?.ToString();
+
+        if (string.IsNullOrEmpty(stringValue))
+        {
+            await ValueChanged.InvokeAsync(default);
+        }
+        else
+        {
+            try
+            {
+                var convertedValue = (TValue)Convert.ChangeType(stringValue, typeof(TValue));
+                await ValueChanged.InvokeAsync(convertedValue);
+            }
+            catch
+            {
+                await ValueChanged.InvokeAsync(default);
+            }
+        }
+    }
+
+    private string SizeClasses => Size switch
+    {
+        NativeSelectSize.Small => "h-8 text-xs px-2",
+        NativeSelectSize.Default => "h-10 text-sm px-3",
+        NativeSelectSize.Large => "h-12 text-base px-4",
+        _ => "h-10 text-sm px-3"
+    };
+
+    private string CssClass => ClassNames.cn(
+        "flex w-full rounded-md border border-input bg-background py-2 ring-offset-background",
+        "outline-none focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        "transition-[color,box-shadow]",
+        "appearance-none pr-8",
+        SizeClasses,
+        Class
+    );
+}

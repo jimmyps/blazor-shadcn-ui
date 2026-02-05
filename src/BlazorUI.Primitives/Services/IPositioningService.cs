@@ -38,6 +38,23 @@ public interface IPositioningService
         ElementReference reference,
         ElementReference floating,
         PositioningOptions? options = null);
+
+    /// <summary>
+    /// Positions an element at specific X/Y coordinates with viewport boundary detection.
+    /// Used for context menus and other components that need to appear at arbitrary coordinates.
+    /// </summary>
+    /// <param name="floating">The element to position.</param>
+    /// <param name="x">X coordinate in pixels.</param>
+    /// <param name="y">Y coordinate in pixels.</param>
+    /// <param name="padding">Padding from viewport edges in pixels (default: 8).</param>
+    /// <param name="makeVisible">Whether to make the element visible after positioning.</param>
+    /// <returns>Final position after viewport adjustments.</returns>
+    Task<PositionResult> ApplyCoordinatePositionAsync(
+        ElementReference floating,
+        double x,
+        double y,
+        int padding = 8,
+        bool makeVisible = true);
 }
 
 /// <summary>
@@ -77,6 +94,11 @@ public class PositioningOptions
     /// Absolute positions relative to offset parent, fixed relative to viewport.
     /// </summary>
     public string Strategy { get; set; } = "absolute";
+
+    /// <summary>
+    /// Whether to match the floating element width to the reference element width.
+    /// </summary>
+    public bool MatchReferenceWidth { get; set; } = false;
 }
 
 /// <summary>

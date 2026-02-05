@@ -4,32 +4,27 @@ using Microsoft.AspNetCore.Components;
 namespace BlazorUI.Components.Alert;
 
 /// <summary>
-/// An alert component that displays important messages to users.
+/// A callout component that displays a prominent message to users.
 /// </summary>
 /// <remarks>
 /// <para>
-/// The Alert component provides a way to display status messages, notifications,
-/// or important information. It follows the shadcn/ui design system with semantic variants.
+/// The Alert component provides a way to display important messages that attract
+/// user attention. It follows accessibility guidelines with proper ARIA attributes.
 /// </para>
 /// <para>
 /// Features:
-/// - 2 visual variants (Default, Destructive)
-/// - Semantic HTML with role="alert" for accessibility
-/// - Composable with AlertTitle and AlertDescription
-/// - Support for icons via child content
+/// - 7 visual variants (Default, Muted, Destructive, Success, Info, Warning, Danger)
+/// - Optional left accent border with subtle tinted background
+/// - Optional icon support
+/// - Semantic HTML with role="alert"
 /// - Dark mode compatible via CSS variables
 /// </para>
 /// </remarks>
 /// <example>
 /// <code>
 /// &lt;Alert Variant="AlertVariant.Default"&gt;
-///     &lt;AlertTitle&gt;Information&lt;/AlertTitle&gt;
-///     &lt;AlertDescription&gt;Your session will expire in 5 minutes.&lt;/AlertDescription&gt;
-/// &lt;/Alert&gt;
-///
-/// &lt;Alert Variant="AlertVariant.Destructive"&gt;
-///     &lt;AlertTitle&gt;Error&lt;/AlertTitle&gt;
-///     &lt;AlertDescription&gt;Unable to save your changes.&lt;/AlertDescription&gt;
+///     &lt;AlertTitle&gt;Heads up!&lt;/AlertTitle&gt;
+///     &lt;AlertDescription&gt;You can add components to your app.&lt;/AlertDescription&gt;
 /// &lt;/Alert&gt;
 /// </code>
 /// </example>
@@ -59,31 +54,58 @@ public partial class Alert : ComponentBase
     /// Gets or sets the content to be rendered inside the alert.
     /// </summary>
     /// <remarks>
-    /// Typically contains AlertTitle, AlertDescription, and optionally an icon.
-    /// For accessibility, ensure meaningful content is provided.
+    /// Typically contains AlertTitle and AlertDescription components.
     /// </remarks>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets the computed CSS classes for the alert element.
+    /// Gets or sets an optional icon to display in the alert.
     /// </summary>
     /// <remarks>
-    /// Combines:
-    /// - Base alert styles (relative positioning, rounded, border, padding)
-    /// - Variant-specific classes (colors, backgrounds)
-    /// - Custom classes from the Class parameter
-    /// Uses the cn() utility for intelligent class merging and Tailwind conflict resolution.
+    /// Can be any RenderFragment (SVG, icon font, image).
+    /// Positioned absolutely in the top-left corner.
     /// </remarks>
+    [Parameter]
+    public RenderFragment? Icon { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether to show a thick left accent border.
+    /// </summary>
+    /// <remarks>
+    /// When true, displays a 4px left border in the variant's accent color.
+    /// When false (default), displays a standard 1px border on all sides.
+    /// </remarks>
+    [Parameter]
+    public bool AccentBorder { get; set; } = false;
+
+    /// <summary>
+    /// Gets the computed CSS classes for the alert element.
+    /// </summary>
     private string CssClass => ClassNames.cn(
-        // Base alert styles (from shadcn/ui)
-        "relative w-full rounded-lg border p-4",
-        "[&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground",
-        // Variant-specific styles
+        // Base alert styles
+        "relative w-full rounded-lg border p-4 text-foreground",
+        // Accent border style (thick left border)
+        AccentBorder ? "border-l-4" : null,
+        Icon != null ? "[&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&:has(svg)]:pl-11" : null,
+        // Variant-specific styles (border color, background tint, icon color)
         Variant switch
         {
             AlertVariant.Default => "bg-background text-foreground",
+            AlertVariant.Muted => "bg-muted/30 [&>svg]:text-muted-foreground",
             AlertVariant.Destructive => "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
+            AlertVariant.Success => AccentBorder
+                ? "border-l-alert-success bg-alert-success-bg border-alert-success/30 [&>svg]:text-alert-success"
+                : "border-alert-success/30 bg-alert-success-bg [&>svg]:text-alert-success",
+            AlertVariant.Info => AccentBorder
+                ? "border-l-alert-info bg-alert-info-bg border-alert-info/30 [&>svg]:text-alert-info"
+                : "border-alert-info/30 bg-alert-info-bg [&>svg]:text-alert-info",
+            AlertVariant.Warning => AccentBorder
+                ? "border-l-alert-warning bg-alert-warning-bg border-alert-warning/30 [&>svg]:text-alert-warning"
+                : "border-alert-warning/30 bg-alert-warning-bg [&>svg]:text-alert-warning",
+            AlertVariant.Danger => AccentBorder
+                ? "border-l-alert-danger bg-alert-danger-bg border-alert-danger/30 [&>svg]:text-alert-danger"
+                : "border-alert-danger/30 bg-alert-danger-bg [&>svg]:text-alert-danger",
             _ => "bg-background text-foreground"
         },
         // Custom classes (if provided)

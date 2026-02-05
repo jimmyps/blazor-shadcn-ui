@@ -11,6 +11,9 @@
     [CascadingParameter]
     private MenubarContext? MenuContext { get; set; }
 
+    [CascadingParameter(Name = "ParentSubContext")]
+    private MenubarSubContext? ParentSubContext { get; set; }
+
     /// <summary>
     /// The content to render inside the submenu.
     /// Typically contains MenubarSubTrigger and MenubarSubContent.
@@ -38,6 +41,10 @@
 
     protected override void OnInitialized()
     {
+        // Set depth based on parent submenu depth (for proper z-index stacking)
+        // First-level submenu = depth 0, second-level = depth 1, etc.
+        EnsureDepth();
+
         if (Open.HasValue)
         {
             _context.IsOpen = Open.Value;
@@ -54,8 +61,25 @@
         }
     }
 
+    private void EnsureDepth()
+    {
+        if (ParentSubContext != null)
+        {
+            if (ParentSubContext.ActiveSubMenu != null)
+                _context.Depth = ParentSubContext.ActiveSubMenu.Depth + 1;
+            else
+                _context.Depth = ParentSubContext.Depth + 1;
+        }
+        else
+        {
+            _context.Depth = 0;
+        }
+    }
+
     private async Task HandleOpenChange(bool isOpen)
     {
+        EnsureDepth();
+
         _context.IsOpen = isOpen;
 
         await OpenChanged.InvokeAsync(isOpen);

@@ -1,6 +1,7 @@
 @page "/components/time-picker"
 @using BlazorUI.Components.TimePicker
 @using BlazorUI.Components.Field
+@using System.ComponentModel.DataAnnotations
 
 <PageTitle>TimePicker Component - BlazorUI</PageTitle>
 
@@ -9,7 +10,7 @@
         <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">TimePicker Component</h1>
             <p class="text-xl text-muted-foreground">
-                Time selection with hour and minute selectors. Supports both 12-hour and 24-hour formats.
+                Time selection with hour, minute, and optional second selectors. Supports both 12-hour and 24-hour formats.
             </p>
         </div>
     </div>
@@ -17,9 +18,9 @@
     <div class="space-y-6">
         <section class="space-y-4">
             <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Default (12-Hour)</h2>
+                <h2 class="text-2xl font-semibold">Default (24-Hour)</h2>
                 <p class="text-muted-foreground">
-                    A basic time picker with 12-hour format and AM/PM selector.
+                    A basic time picker with 24-hour format.
                 </p>
             </div>
 
@@ -28,26 +29,45 @@
                     <TimePicker @bind-SelectedTime="selectedTime1" />
                 </div>
                 <p class="text-sm text-muted-foreground">
-                    Selected: @(selectedTime1?.ToString("hh:mm tt") ?? "None")
+                    Selected: @(selectedTime1?.ToString("HH:mm") ?? "None")
                 </p>
             </div>
         </section>
 
         <section class="space-y-4">
             <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">24-Hour Format</h2>
+                <h2 class="text-2xl font-semibold">12-Hour Format</h2>
                 <p class="text-muted-foreground">
-                    Time picker with 24-hour format (military time).
+                    Time picker with 12-hour format and AM/PM selector.
                 </p>
             </div>
 
             <div class="flex flex-col gap-4">
                 <div>
                     <TimePicker @bind-SelectedTime="selectedTime2"
-                               Use24HourFormat="true" />
+                               Use12Hour="true" />
                 </div>
                 <p class="text-sm text-muted-foreground">
-                    Selected: @(selectedTime2?.ToString("HH:mm") ?? "None")
+                    Selected: @(FormatTime12Hour(selectedTime2))
+                </p>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">With Seconds</h2>
+                <p class="text-muted-foreground">
+                    Time picker with seconds selector enabled.
+                </p>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <div>
+                    <TimePicker @bind-SelectedTime="selectedTime3"
+                               ShowSeconds="true" />
+                </div>
+                <p class="text-sm text-muted-foreground">
+                    Selected: @(selectedTime3?.ToString("HH:mm:ss") ?? "None")
                 </p>
             </div>
         </section>
@@ -62,12 +82,12 @@
 
             <div class="flex flex-col gap-4">
                 <div>
-                    <TimePicker @bind-SelectedTime="selectedTime3"
+                    <TimePicker @bind-SelectedTime="selectedTime4"
                                MinuteStep="15"
                                Placeholder="Select time (15 min steps)" />
                 </div>
                 <p class="text-sm text-muted-foreground">
-                    Selected: @(selectedTime3?.ToString("hh:mm tt") ?? "None")
+                    Selected: @(selectedTime4?.ToString("HH:mm") ?? "None")
                 </p>
             </div>
         </section>
@@ -82,33 +102,35 @@
 
             <div class="flex flex-col gap-4">
                 <div>
-                    <TimePicker @bind-SelectedTime="selectedTime4"
+                    <TimePicker @bind-SelectedTime="selectedTime5"
                                MinuteStep="30"
-                               Use24HourFormat="true"
+                               Use12Hour="true"
                                Placeholder="Select time (30 min steps)" />
                 </div>
                 <p class="text-sm text-muted-foreground">
-                    Selected: @(selectedTime4?.ToString("HH:mm") ?? "None")
+                    Selected: @(FormatTime12Hour(selectedTime5))
                 </p>
             </div>
         </section>
 
         <section class="space-y-4">
             <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Custom Format</h2>
+                <h2 class="text-2xl font-semibold">Time Range Constraints</h2>
                 <p class="text-muted-foreground">
-                    Display time with a custom format string.
+                    Time picker with minimum and maximum time constraints (9 AM - 5 PM).
                 </p>
             </div>
 
             <div class="flex flex-col gap-4">
                 <div>
-                    <TimePicker @bind-SelectedTime="selectedTime5"
-                               TimeFormat="h:mm tt"
-                               Placeholder="h:mm AM/PM" />
+                    <TimePicker @bind-SelectedTime="selectedTime6"
+                               MinTime="@(new TimeOnly(9, 0, 0))"
+                               MaxTime="@(new TimeOnly(17, 0, 0))"
+                               Use12Hour="true"
+                               Placeholder="Business hours only" />
                 </div>
                 <p class="text-sm text-muted-foreground">
-                    Selected: @(selectedTime5?.ToString("h:mm tt") ?? "None")
+                    Selected: @(FormatTime12Hour(selectedTime6))
                 </p>
             </div>
         </section>
@@ -126,11 +148,12 @@
                     <FieldLabel>Appointment Time</FieldLabel>
                     <TimePicker @bind-SelectedTime="appointmentTime"
                                MinuteStep="15"
+                               Use12Hour="true"
                                Placeholder="Select appointment time" />
                     <FieldDescription>Select your preferred appointment time.</FieldDescription>
                 </Field>
                 <p class="text-sm text-muted-foreground">
-                    Selected: @(appointmentTime?.ToString("hh:mm tt") ?? "None")
+                    Selected: @(FormatTime12Hour(appointmentTime))
                 </p>
             </div>
         </section>
@@ -148,22 +171,20 @@
                     <FieldLabel>Meeting Start</FieldLabel>
                     <TimePicker @bind-SelectedTime="meetingStart"
                                MinuteStep="15"
-                               Use24HourFormat="true"
                                Placeholder="Start time" />
                 </Field>
                 <Field>
                     <FieldLabel>Meeting End</FieldLabel>
                     <TimePicker @bind-SelectedTime="meetingEnd"
                                MinuteStep="15"
-                               Use24HourFormat="true"
                                Placeholder="End time" />
                 </Field>
                 <p class="text-sm text-muted-foreground">
                     Duration:
                     @if (meetingStart.HasValue && meetingEnd.HasValue)
                     {
-                        var duration = meetingEnd.Value - meetingStart.Value;
-                        <span class="font-medium">@duration.Hours hours @duration.Minutes minutes</span>
+                        var duration = meetingEnd.Value.ToTimeSpan() - meetingStart.Value.ToTimeSpan();
+                        <span class="font-medium">@((int)duration.TotalHours) hours @duration.Minutes minutes</span>
                     }
                     else
                     {
@@ -183,7 +204,7 @@
 
             <div class="flex flex-col gap-4">
                 <div>
-                    <TimePicker @bind-SelectedTime="selectedTime6"
+                    <TimePicker @bind-SelectedTime="selectedTime7"
                                Disabled="true"
                                Placeholder="Disabled picker" />
                 </div>
@@ -199,7 +220,20 @@
     private TimeOnly? selectedTime4;
     private TimeOnly? selectedTime5;
     private TimeOnly? selectedTime6;
+    private TimeOnly? selectedTime7;
     private TimeOnly? appointmentTime;
     private TimeOnly? meetingStart;
     private TimeOnly? meetingEnd;
+
+    private string FormatTime12Hour(TimeOnly? time)
+    {
+        if (!time.HasValue)
+            return "None";
+
+        var t = time.Value;
+        var hour = t.Hour % 12;
+        if (hour == 0) hour = 12;
+        var period = t.Hour >= 12 ? "PM" : "AM";
+        return $"{hour}:{t.Minute:D2} {period}";
+    }
 }

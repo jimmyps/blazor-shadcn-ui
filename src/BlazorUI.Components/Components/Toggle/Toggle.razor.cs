@@ -73,6 +73,17 @@ public partial class Toggle : ComponentBase
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    /// <summary>
+    /// Gets or sets additional HTML attributes to apply to the button element.
+    /// </summary>
+    /// <remarks>
+    /// Captures any unmatched attributes and passes them through to the underlying button element.
+    /// Useful for attributes like title, data-*, etc.
+    /// </remarks>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+
     private async Task OnClickAsync()
     {
         if (!Disabled)

@@ -9,16 +9,17 @@
         <CardHeader Class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
             <div class="grid flex-1 gap-1">
                 <CardTitle Class="text-xl">Area Chart - Interactive</CardTitle>
-                <CardDescription>Showing total visitors for the @(timeRange == "7d" ? "last 7 days" : timeRange == "30d" ? "last 30 days" : "last 3 months")</CardDescription>
+                <CardDescription>Showing total visitors for the @(timeRanges.TryGetValue(timeRange, out var description) ? description.ToLower() : "last 3 months")</CardDescription>
             </div>
-            <Select @bind-Value="@timeRange" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
+            <Select @bind-Value="@timeRange" DisplayTextSelector="@(value => timeRanges.TryGetValue(value, out var text) ? text : value)" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
                 <SelectTrigger>
                     <SelectValue Placeholder="Last 3 months" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem Value="@("90d")" Text="Last 3 months">Last 3 months</SelectItem>
-                    <SelectItem Value="@("30d")" Text="Last 30 days">Last 30 days</SelectItem>
-                    <SelectItem Value="@("7d")" Text="Last 7 days">Last 7 days</SelectItem>
+                    @foreach (var range in timeRanges)
+                    {
+                        <SelectItem Value="@range.Key" Text="@range.Value">@range.Value</SelectItem>
+                    }
                 </SelectContent>
             </Select>
         </CardHeader>
@@ -336,18 +337,15 @@
 </div>
 
 @code {
-    private string timeRange = "90d";
+private string timeRange = "90d";
 
-    private string GetTimeRangeDescription()
-    {
-        return timeRange switch
-        {
-            "7d" => "Showing total visitors for the last 7 days",
-            "30d" => "Showing total visitors for the last 30 days",
-            "90d" => "Showing total visitors for the last 3 months",
-            _ => "Showing total visitors for the last 3 months"
-        };
-    }
+// Time range options - single source of truth for maintainability
+private readonly Dictionary<string, string> timeRanges = new()
+{
+    { "90d", "Last 3 months" },
+    { "30d", "Last 30 days" },
+    { "7d", "Last 7 days" }
+};
 
     private const string dateFormatter = @"
 function (value) {

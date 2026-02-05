@@ -1,4 +1,5 @@
 @namespace BlazorUI.Primitives.Menubar
+@using BlazorUI.Primitives.Constants
 @using BlazorUI.Primitives.Services
 @inject IPositioningService PositioningService
 @inject IJSRuntime JSRuntime
@@ -90,7 +91,7 @@
     /// Default is 50.
     /// </summary>
     [Parameter]
-    public int ZIndex { get; set; } = 50;
+    public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;
 
     private ElementReference _contentRef;
     private IJSObjectReference? _clickOutsideModule;
@@ -501,14 +502,44 @@
     /// </summary>
     internal async Task FocusContainerAsync()
     {
-        try
+        if (_keyboardNavModule != null)
         {
-            await _contentRef.FocusAsync();
-            _focusedItemIndex = -1;
+            try
+            {
+                var focused = await _keyboardNavModule.InvokeAsync<bool>("focusElement", _contentRef);
+                if (!focused)
+                {
+                    // Fallback to C# focus
+                    await _contentRef.FocusAsync();
+                }
+                _focusedItemIndex = -1;
+            }
+            catch
+            {
+                // Fallback to C# focus
+                try
+                {
+                    await _contentRef.FocusAsync();
+                    _focusedItemIndex = -1;
+                }
+                catch
+                {
+                    // Focus failed
+                }
+            }
         }
-        catch
+        else
         {
-            // Focus may fail
+            // JS module not loaded, use C# focus
+            try
+            {
+                await _contentRef.FocusAsync();
+                _focusedItemIndex = -1;
+            }
+            catch
+            {
+                // Focus failed
+            }
         }
     }
 }

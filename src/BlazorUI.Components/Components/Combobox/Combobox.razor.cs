@@ -1,3 +1,4 @@
+using BlazorUI.Components.Command;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorUI.Components.Combobox;
@@ -112,14 +113,32 @@ public partial class Combobox<TItem> : ComponentBase
     /// </summary>
     /// <remarks>
     /// Defaults to "w-[200px]". Can be overridden with Tailwind classes.
+    /// Ignored when MatchTriggerWidth is true.
     /// </remarks>
     [Parameter]
     public string PopoverWidth { get; set; } = "w-[200px]";
 
     /// <summary>
+    /// Gets or sets whether to match the dropdown width to the trigger element width.
+    /// When true, PopoverWidth is ignored.
+    /// </summary>
+    [Parameter]
+    public bool MatchTriggerWidth { get; set; } = false;
+
+    /// <summary>
     /// Tracks whether the popover is currently open.
     /// </summary>
     private bool _isOpen { get; set; } = false;
+
+    /// <summary>
+    /// Reference to the CommandInput for focus management.
+    /// </summary>
+    private CommandInput? _commandInputRef;
+
+    /// <summary>
+    /// Tracks whether focus has been done for the current open.
+    /// </summary>
+    private bool _focusDone = false;
 
     /// <summary>
     /// Gets a unique identifier for this combobox instance.
@@ -170,6 +189,44 @@ public partial class Combobox<TItem> : ComponentBase
     }
 
     /// <summary>
+    /// Handles the popover content ready event to focus the search input.
+    /// This is called when the popover is fully positioned and visible.
+    /// </summary>
+    private async Task HandleContentReady()
+    {
+        // Guard against multiple calls per open
+        if (_focusDone) return;
+        _focusDone = true;
+
+        if (_commandInputRef == null) return;
+
+        try
+        {
+            // Small delay to let browser finish processing DOM changes
+            await Task.Delay(50);
+            await _commandInputRef.FocusAsync();
+        }
+        catch
+        {
+            // Ignore focus errors
+        }
+    }
+
+    /// <summary>
+    /// Handles the open state change of the popover.
+    /// Resets focus tracking when the popover closes.
+    /// </summary>
+    /// <param name="isOpen">Whether the popover is now open.</param>
+    private void HandleOpenChanged(bool isOpen)
+    {
+        _isOpen = isOpen;
+        if (!isOpen)
+        {
+            _focusDone = false; // Reset for next open
+        }
+    }
+
+    /// <summary>
     /// Handles item selection with toggle behavior.
     /// </summary>
     /// <param name="item">The item that was selected.</param>
@@ -184,12 +241,8 @@ public partial class Combobox<TItem> : ComponentBase
         await ValueChanged.InvokeAsync(newValue);
 
         // Close the popover after selection
-        // Use InvokeAsync to ensure this happens after all context state changes complete
-        await InvokeAsync(() =>
-        {
-            _isOpen = false;
-            StateHasChanged();
-        });
+        _isOpen = false;
+        // Note: _focusDone is reset by HandleOpenChanged
     }
 
     /// <summary>

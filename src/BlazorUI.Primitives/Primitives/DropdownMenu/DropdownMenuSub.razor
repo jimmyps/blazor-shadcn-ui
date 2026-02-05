@@ -11,6 +11,9 @@
     [CascadingParameter]
     private DropdownMenuContext? MenuContext { get; set; }
 
+    [CascadingParameter(Name = "ParentSubContext")]
+    private DropdownMenuSubContext? ParentSubContext { get; set; }
+
     /// <summary>
     /// The content to render inside the submenu.
     /// Typically contains DropdownMenuSubTrigger and DropdownMenuSubContent.
@@ -38,6 +41,10 @@
 
     protected override void OnInitialized()
     {
+        // Set depth based on parent submenu depth (for proper z-index stacking)
+        // First-level submenu = depth 0, second-level = depth 1, etc.
+        _context.Depth = ParentSubContext != null ? ParentSubContext.Depth + 1 : 0;
+
         if (Open.HasValue)
         {
             _context.IsOpen = Open.Value;

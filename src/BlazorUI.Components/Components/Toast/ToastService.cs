@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Toast;
+﻿namespace BlazorUI.Components.Toast;
 
 /// <summary>
 /// Service interface for displaying toast notifications.

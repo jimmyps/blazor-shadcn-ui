@@ -1,5 +1,9 @@
 @page "/components/tabs"
 @using BlazorUI.Components.Tabs
+@using BlazorUI.Components.Input
+@using BlazorUI.Components.Label
+@using BlazorUI.Components.Field
+@using BlazorUI.Components.Button
 
 <PageTitle>Tabs Component - BlazorUI</PageTitle>
 
@@ -38,23 +42,21 @@
                         </p>
                     </div>
                     <div class="space-y-4 pt-4">
-                        <div class="space-y-1">
-                            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                Name
-                            </label>
-                            <input class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                   placeholder="Pedro Duarte" />
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                Username
-                            </label>
-                            <input class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                   placeholder="@@peduarte" />
-                        </div>
-                        <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                            Save changes
-                        </button>
+                        <FieldGroup Orientation="FieldGroupOrientation.Vertical">
+                            <Field>
+                                <FieldLabel For="name">Name</FieldLabel>
+                                <FieldContent>
+                                    <Input Id="name" Placeholder="Pedro Duarte" />
+                                </FieldContent>
+                            </Field>
+                            <Field>
+                                <FieldLabel For="username">Username</FieldLabel>
+                                <FieldContent>
+                                    <Input Id="username" Placeholder="@usernamePlaceholder" />
+                                </FieldContent>
+                            </Field>
+                        </FieldGroup>
+                        <Button>Save changes</Button>
                     </div>
                 </div>
             </TabsContent>
@@ -68,23 +70,21 @@
                         </p>
                     </div>
                     <div class="space-y-4 pt-4">
-                        <div class="space-y-1">
-                            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                Current password
-                            </label>
-                            <input type="password"
-                                   class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" />
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                New password
-                            </label>
-                            <input type="password"
-                                   class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" />
-                        </div>
-                        <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                            Save password
-                        </button>
+                        <FieldGroup Orientation="FieldGroupOrientation.Vertical">
+                            <Field>
+                                <FieldLabel For="current-password">Current password</FieldLabel>
+                                <FieldContent>
+                                    <Input Id="current-password" Type="InputType.Password" />
+                                </FieldContent>
+                            </Field>
+                            <Field>
+                                <FieldLabel For="new-password">New password</FieldLabel>
+                                <FieldContent>
+                                    <Input Id="new-password" Type="InputType.Password" />
+                                </FieldContent>
+                            </Field>
+                        </FieldGroup>
+                        <Button>Save password</Button>
                     </div>
                 </div>
             </TabsContent>
@@ -151,18 +151,15 @@
         </p>
 
         <div class="flex gap-2 mb-4">
-            <button @onclick='() => activeTab = "morning"'
-                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+            <Button @onclick='() => activeTab = "morning"' Variant="ButtonVariant.Outline">
                 Show Morning
-            </button>
-            <button @onclick='() => activeTab = "afternoon"'
-                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+            </Button>
+            <Button @onclick='() => activeTab = "afternoon"' Variant="ButtonVariant.Outline">
                 Show Afternoon
-            </button>
-            <button @onclick='() => activeTab = "evening"'
-                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
+            </Button>
+            <Button @onclick='() => activeTab = "evening"' Variant="ButtonVariant.Outline">
                 Show Evening
-            </button>
+            </Button>
         </div>
 
         <p class="text-xs text-muted-foreground mb-2">Current: <strong>@activeTab</strong></p>
@@ -208,4 +205,5 @@
 
 @code {
     private string? activeTab = "morning";
+    private string usernamePlaceholder = "@peduarte";
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using BlazorUI.Demo.Shared.Common;
 
 namespace BlazorUI.Demo.Shared.Common;
 

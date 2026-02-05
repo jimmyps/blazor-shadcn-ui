@@ -1,4 +1,4 @@
-// Resizable panel drag functionality
+﻿// Resizable panel drag functionality
 
 const cleanupRegistry = new Map();
 let cleanupIdCounter = 0;

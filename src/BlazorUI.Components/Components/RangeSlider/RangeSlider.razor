@@ -1,0 +1,79 @@
+@namespace BlazorUI.Components.RangeSlider
+
+<div @ref="_containerRef"
+     id="@Id"
+     class="@ContainerCssClass"
+     role="group"
+     aria-label="@(AriaLabel ?? "Range slider")"
+     @attributes="AdditionalAttributes">
+    
+    @if (ShowLabels)
+    {
+        <div class="@LabelCssClass">
+            <span class="text-xs text-muted-foreground">@Min</span>
+            <span class="text-xs text-muted-foreground">@Max</span>
+        </div>
+    }
+    
+    <div class="@SliderContainerCssClass">
+        @* Track background *@
+        <div class="@TrackCssClass"></div>
+        
+        @* Range fill *@
+        <div class="@RangeCssClass" style="@RangeStyle"></div>
+        
+        @* Tick marks *@
+        @if (ShowTicks && TickInterval.HasValue)
+        {
+            <div class="@TickContainerCssClass">
+                @for (var i = Min; i <= Max; i += TickInterval.Value)
+                {
+                    var position = GetPercentage(i);
+                    <div class="@TickCssClass" style="@GetTickStyle(position)"></div>
+                }
+            </div>
+        }
+        
+        @* Min handle *@
+        <div class="@HandleCssClass"
+             style="@MinHandleStyle"
+             role="slider"
+             aria-label="@(Name != null ? $"{Name} minimum" : "Minimum value")"
+             aria-valuemin="@Min"
+             aria-valuemax="@Max"
+             aria-valuenow="@MinValue"
+             aria-orientation="@(Orientation == SliderOrientation.Horizontal ? "horizontal" : "vertical")"
+             aria-disabled="@Disabled"
+             tabindex="@(Disabled ? -1 : 0)"
+             data-handle="min"
+             @onmousedown="OnMinHandleMouseDown"
+             @ontouchstart="OnMinHandleTouchStart"
+             @onkeydown="@(e => OnHandleKeyDown(e, true))">
+            @if (ShowTooltips)
+            {
+                <div class="@TooltipCssClass">@MinValue.ToString("0.##")</div>
+            }
+        </div>
+        
+        @* Max handle *@
+        <div class="@HandleCssClass"
+             style="@MaxHandleStyle"
+             role="slider"
+             aria-label="@(Name != null ? $"{Name} maximum" : "Maximum value")"
+             aria-valuemin="@Min"
+             aria-valuemax="@Max"
+             aria-valuenow="@MaxValue"
+             aria-orientation="@(Orientation == SliderOrientation.Horizontal ? "horizontal" : "vertical")"
+             aria-disabled="@Disabled"
+             tabindex="@(Disabled ? -1 : 0)"
+             data-handle="max"
+             @onmousedown="OnMaxHandleMouseDown"
+             @ontouchstart="OnMaxHandleTouchStart"
+             @onkeydown="@(e => OnHandleKeyDown(e, false))">
+            @if (ShowTooltips)
+            {
+                <div class="@TooltipCssClass">@MaxValue.ToString("0.##")</div>
+            }
+        </div>
+    </div>
+</div>

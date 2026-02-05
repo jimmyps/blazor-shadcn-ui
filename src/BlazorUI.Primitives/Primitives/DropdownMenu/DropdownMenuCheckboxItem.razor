@@ -2,16 +2,15 @@
 @implements IDropdownMenuItem
 @implements IDisposable
 
-@* DropdownMenuCheckboxItem - a menu item that toggles a boolean state *@
 <div @ref="_itemRef"
      role="menuitemcheckbox"
-     tabindex="-1"
      aria-checked="@Checked.ToString().ToLower()"
      aria-disabled="@Disabled.ToString().ToLower()"
+     data-disabled="@(Disabled ? "true" : null)"
+     data-state="@(Checked ? "checked" : "unchecked")"
      @onclick="HandleClick"
      @onkeydown="HandleKeyDown"
-     data-state="@(Checked ? "checked" : "unchecked")"
-     data-disabled="@(Disabled ? "true" : null)"
+     @onkeydown:preventDefault="true"
      @attributes="AdditionalAttributes">
     @ChildContent
 </div>
@@ -47,7 +46,7 @@
     /// Whether the checkbox is checked.
     /// </summary>
     [Parameter]
-    public bool Checked { get; set; } = false;
+    public bool Checked { get; set; }
 
     /// <summary>
     /// Event callback invoked when the checked state changes.

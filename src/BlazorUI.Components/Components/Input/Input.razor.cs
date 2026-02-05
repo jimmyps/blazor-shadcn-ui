@@ -49,7 +49,8 @@ namespace BlazorUI.Components.Input;
 /// </example>
 public partial class Input : ComponentBase, IAsyncDisposable
 {
-    private static string? _firstInvalidInputId = null;
+    // Key for storing first invalid input ID in EditContext.Properties
+    private static readonly object _firstInvalidInputIdKey = new();
     
     private IJSObjectReference? _validationModule;
     private EditContext? _previousEditContext;
@@ -463,8 +464,11 @@ public partial class Input : ComponentBase, IAsyncDisposable
 
     private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
     {
-        // Reset first invalid input tracking on new validation cycle
-        _firstInvalidInputId = null;
+        // Reset first invalid input tracking for this EditContext on new validation cycle
+        if (EditContext != null)
+        {
+            EditContext.Properties.Remove(_firstInvalidInputIdKey);
+        }
         _hasShownTooltip = false;
 
         InvokeAsync(async () =>
@@ -492,12 +496,18 @@ public partial class Input : ComponentBase, IAsyncDisposable
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    // Determine if this is the first invalid input
-                    var isFirstInvalid = _firstInvalidInputId == null;
+                    // Determine if this is the first invalid input for this EditContext
+                    // Using EditContext.Properties for per-form state storage
+                    string? firstInvalidId = null;
+                    if (EditContext.Properties.TryGetValue(_firstInvalidInputIdKey, out var value))
+                    {
+                        firstInvalidId = value as string;
+                    }
+                    var isFirstInvalid = firstInvalidId == null;
                     
                     if (isFirstInvalid)
                     {
-                        _firstInvalidInputId = Id;
+                        EditContext.Properties[_firstInvalidInputIdKey] = Id;
                     }
 
                     if (isFirstInvalid && !_hasShownTooltip)

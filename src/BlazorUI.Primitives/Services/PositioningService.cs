@@ -62,7 +62,8 @@ public class PositioningService : IPositioningService, IAsyncDisposable
             flip = options.Flip,
             shift = options.Shift,
             padding = options.Padding,
-            strategy = options.Strategy
+            strategy = options.Strategy,
+            matchReferenceWidth = options.MatchReferenceWidth
         };
 
         var result = await module.InvokeAsync<JsonElement>(
@@ -105,13 +106,45 @@ public class PositioningService : IPositioningService, IAsyncDisposable
             flip = options.Flip,
             shift = options.Shift,
             padding = options.Padding,
-            strategy = options.Strategy
+            strategy = options.Strategy,
+            matchReferenceWidth = options.MatchReferenceWidth
         };
 
         var cleanup = await module.InvokeAsync<IJSObjectReference>(
             "autoUpdate", reference, floating, jsOptions);
 
         return new AutoUpdateHandle(cleanup);
+    }
+
+    /// <inheritdoc />
+    public async Task<PositionResult> ApplyCoordinatePositionAsync(
+        ElementReference floating,
+        double x,
+        double y,
+        int padding = 8,
+        bool makeVisible = true)
+    {
+        var module = await GetModuleAsync();
+
+        var jsOptions = new
+        {
+            padding,
+            makeVisible
+        };
+
+        var result = await module.InvokeAsync<JsonElement>(
+            "applyCoordinatePosition", floating, x, y, jsOptions);
+
+        return new PositionResult
+        {
+            X = result.GetProperty("x").GetDouble(),
+            Y = result.GetProperty("y").GetDouble(),
+            TransformOrigin = result.TryGetProperty("transformOrigin", out var origin)
+                ? origin.GetString()
+                : "top left",
+            Placement = "bottom", // Not applicable for coordinate positioning
+            Strategy = "fixed"
+        };
     }
 
     /// <summary>
