@@ -49,7 +49,7 @@ namespace BlazorUI.Components.Input;
 /// </example>
 public partial class Input : ComponentBase, IAsyncDisposable
 {
-    private static string? _firstInvalidInputId = null;
+    private string? _firstInvalidInputId = null;
     
     private IJSObjectReference? _validationModule;
     private EditContext? _previousEditContext;
