@@ -498,14 +498,10 @@ public partial class Input : ComponentBase, IAsyncDisposable
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    // Determine if this is the first invalid input for this EditContext
+                    // Atomically determine if this is the first invalid input for this EditContext
                     var box = _firstInvalidInputIdPerContext.GetOrCreateValue(EditContext);
-                    var isFirstInvalid = box.Value == null;
-                    
-                    if (isFirstInvalid)
-                    {
-                        box.Value = Id;
-                    }
+                    var previousValue = Interlocked.CompareExchange(ref box.Value, Id, null);
+                    var isFirstInvalid = previousValue == null;
 
                     if (isFirstInvalid && !_hasShownTooltip)
                     {
