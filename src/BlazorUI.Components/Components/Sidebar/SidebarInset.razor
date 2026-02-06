@@ -16,18 +16,16 @@
 
 @code {
     private ElementReference _mainElement;
-    private IJSRuntime? _jsRuntime;
-    private NavigationManager? _navigationManager;
     private IJSObjectReference? _module;
 
     [CascadingParameter]
     private SidebarContext? Context { get; set; }
 
     [Inject]
-    private IJSRuntime JSRuntime { get => _jsRuntime!; set => _jsRuntime = value; }
+    private IJSRuntime JSRuntime { get; set; } = null!;
 
     [Inject]
-    private NavigationManager NavigationManager { get => _navigationManager!; set => _navigationManager = value; }
+    private NavigationManager NavigationManager { get; set; } = null!;
 
     /// <summary>
     /// Whether to automatically reset scroll position to top on page navigation.
@@ -56,19 +54,19 @@
 
     protected override void OnInitialized()
     {
-        if (ResetScrollOnNavigation && _navigationManager != null)
+        if (ResetScrollOnNavigation)
         {
-            _navigationManager.LocationChanged += OnLocationChanged;
+            NavigationManager.LocationChanged += OnLocationChanged;
         }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && ResetScrollOnNavigation && _jsRuntime != null)
+        if (firstRender && ResetScrollOnNavigation)
         {
             try
             {
-                _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
+                _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
                     "import", "./_content/NeoBlazorUI.Components/js/sidebar.js");
             }
             catch (JSException)
@@ -139,10 +137,7 @@
 
     public async ValueTask DisposeAsync()
     {
-        if (_navigationManager != null)
-        {
-            _navigationManager.LocationChanged -= OnLocationChanged;
-        }
+        NavigationManager.LocationChanged -= OnLocationChanged;
 
         if (_module != null)
         {
