@@ -54,6 +54,9 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     private CurrencyDefinition? _cachedCurrency;
     private string? _cachedCurrencyCode;
     
+    private IJSObjectReference? _inputModule;
+    private DotNetObjectReference<CurrencyInput<TValue>>? _dotNetRef;
+    private bool _jsInitialized = false;
     private IJSObjectReference? _validationModule;
     private EditContext? _previousEditContext;
     private FieldIdentifier _fieldIdentifier;
@@ -81,6 +84,14 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     /// </remarks>
     [Parameter]
     public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Change;
+
+    /// <summary>
+    /// Gets or sets the debounce delay in milliseconds for Input mode.
+    /// Only applies when UpdateOn=Input. Set to 0 for immediate updates.
+    /// Default: 0 (no debounce)
+    /// </summary>
+    [Parameter]
+    public int DebounceDelay { get; set; } = 0;
 
     /// <summary>
     /// Gets or sets the current value of the input.
@@ -521,6 +532,39 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
+    /// Called from JavaScript when input value changes.
+    /// This is invoked based on UpdateOn mode and debounce settings.
+    /// </summary>
+    [JSInvokable]
+    public async Task OnInputChanged(string? value)
+    {
+        // Parse the value
+        var parsedValue = TryParseValue(value);
+        
+        // Update local state
+        Value = parsedValue;
+
+        // Notify parent component
+        await ValueChanged.InvokeAsync(parsedValue);
+
+        // Trigger EditContext validation if applicable
+        if (EditContext != null && ValueExpression != null)
+        {
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+            EditContext.NotifyFieldChanged(_fieldIdentifier);
+            await UpdateValidationState();
+        }
+    }
+
+    private async Task UpdateValidationState()
+    {
+        if (ShowValidationError && EditContext != null && _validationModule != null)
+        {
+            await UpdateValidationDisplayAsync();
+        }
+    }
+
+    /// <summary>
     /// Handles the focus event.
     /// </summary>
     private void HandleFocus()
@@ -669,6 +713,24 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
         {
             try
             {
+                // Import the input module for event handling
+                _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoBlazorUI.Components/js/input.js");
+
+                // Create DotNetObjectReference for callbacks
+                _dotNetRef = DotNetObjectReference.Create(this);
+
+                // Initialize input event handling with UpdateOn mode and debounce
+                await _inputModule.InvokeVoidAsync(
+                    "initializeInput",
+                    Id,
+                    UpdateOn.ToString().ToLower(),
+                    DebounceDelay,
+                    _dotNetRef
+                );
+
+                _jsInitialized = true;
+
                 if (ShowValidationError)
                 {
                     _validationModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
@@ -763,6 +825,29 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        try
+        {
+            if (_jsInitialized && _inputModule != null)
+            {
+                // Dispose input event handling
+                await _inputModule.InvokeVoidAsync("disposeInput", Id);
+                
+                // Dispose validation tracking
+                if (!string.IsNullOrEmpty(Id))
+                {
+                    await _inputModule.InvokeVoidAsync("disposeValidation", Id);
+                }
+                
+                await _inputModule.DisposeAsync();
+            }
+
+            _dotNetRef?.Dispose();
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore - this happens during hot reload or when navigating away
+        }
+
         DetachValidationStateChangedListener();
         
         if (_validationModule != null)

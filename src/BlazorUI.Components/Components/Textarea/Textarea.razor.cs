@@ -1,6 +1,8 @@
+using BlazorUI.Components.Common;
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 
 namespace BlazorUI.Components.Textarea;
 
@@ -42,8 +44,32 @@ namespace BlazorUI.Components.Textarea;
 /// &lt;Textarea Value="@comment" ValueChanged="HandleCommentChange" Name="comment" MaxLength="500" MinLength="10" Required="true" AriaInvalid="@hasError" /&gt;
 /// </code>
 /// </example>
-public partial class Textarea : ComponentBase
+public partial class Textarea : ComponentBase, IAsyncDisposable
 {
+    private IJSObjectReference? _inputModule;
+    private DotNetObjectReference<Textarea>? _dotNetRef;
+    private bool _jsInitialized = false;
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets when the input should update its bound value.
+    /// </summary>
+    /// <remarks>
+    /// - Input: Updates value immediately on every keystroke
+    /// - Change: Updates value only when input loses focus (default)
+    /// </remarks>
+    [Parameter]
+    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Input;
+
+    /// <summary>
+    /// Gets or sets the debounce delay in milliseconds for Input mode.
+    /// Only applies when UpdateOn=Input. Set to 0 for immediate updates.
+    /// Default: 0 (no debounce)
+    /// </summary>
+    [Parameter]
+    public int DebounceDelay { get; set; } = 0;
     /// <summary>
     /// Gets or sets the current value of the textarea.
     /// </summary>
@@ -311,6 +337,77 @@ public partial class Textarea : ComponentBase
         if (ValueChanged.HasDelegate)
         {
             await ValueChanged.InvokeAsync(newValue);
+        }
+    }
+
+    /// <summary>
+    /// Called from JavaScript when input value changes.
+    /// This is invoked based on UpdateOn mode and debounce settings.
+    /// </summary>
+    [JSInvokable]
+    public async Task OnInputChanged(string? value)
+    {
+        // Update local state
+        Value = value;
+
+        // Notify parent component
+        await ValueChanged.InvokeAsync(value);
+    }
+
+    protected async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // Import the input module for event handling
+                _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoBlazorUI.Components/js/input.js");
+
+                // Create DotNetObjectReference for callbacks
+                _dotNetRef = DotNetObjectReference.Create(this);
+
+                // Initialize input event handling with UpdateOn mode and debounce
+                await _inputModule.InvokeVoidAsync(
+                    "initializeInput",
+                    Id,
+                    UpdateOn.ToString().ToLower(),
+                    DebounceDelay,
+                    _dotNetRef
+                );
+
+                _jsInitialized = true;
+            }
+            catch (JSException)
+            {
+                // JS module not available, fallback to standard event handling
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_jsInitialized && _inputModule != null)
+            {
+                // Dispose input event handling
+                await _inputModule.InvokeVoidAsync("disposeInput", Id);
+                
+                // Dispose validation tracking
+                if (!string.IsNullOrEmpty(Id))
+                {
+                    await _inputModule.InvokeVoidAsync("disposeValidation", Id);
+                }
+                
+                await _inputModule.DisposeAsync();
+            }
+
+            _dotNetRef?.Dispose();
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore - this happens during hot reload or when navigating away
         }
     }
 }
