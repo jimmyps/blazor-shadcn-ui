@@ -1,6 +1,6 @@
 @namespace BlazorUI.Components.Input
 
-<input id="@Id"
+<input id="@EffectiveId"
        name="@EffectiveName"
        type="@HtmlType"
        class="@CssClass"
@@ -22,7 +22,8 @@
        aria-label="@AriaLabel"
        aria-describedby="@AriaDescribedBy"
        aria-invalid="@(EffectiveAriaInvalid?.ToString().ToLower())"
-       @attributes="AdditionalAttributes"
-       @oninput="HandleInput"
-       @onchange="HandleChange" />
+       @attributes="AdditionalAttributes" />
+
+
+
 

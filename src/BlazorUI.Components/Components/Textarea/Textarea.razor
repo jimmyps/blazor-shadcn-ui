@@ -1,7 +1,7 @@
 @namespace BlazorUI.Components.Textarea
 
 <textarea
-    id="@Id"
+    id="@EffectiveId"
     name="@EffectiveName"
     class="@CssClass"
     value="@Value"
@@ -21,6 +21,7 @@
     aria-label="@AriaLabel"
     aria-describedby="@AriaDescribedBy"
     aria-invalid="@(AriaInvalid?.ToString().ToLower())"
-    data-slot="textarea-control"
-    @oninput="HandleInput"></textarea>
+    data-slot="textarea-control"></textarea>
+
+
 
