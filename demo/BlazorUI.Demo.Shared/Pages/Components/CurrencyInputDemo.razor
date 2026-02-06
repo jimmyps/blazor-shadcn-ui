@@ -28,7 +28,7 @@
         </div>
         <div class="max-w-md">
             <CurrencyInput TValue="decimal" @bind-Value="priceUSD" Placeholder="Enter amount..." />
-            <p class="text-xs text-muted-foreground mt-2">Current value: @priceUSD.ToString("C")</p>
+            <p class="text-xs text-muted-foreground mt-2">Current value: @priceUSD</p>
         </div>
     </div>
 
@@ -97,25 +97,25 @@
             <div class="space-y-2">
                 <label class="text-sm font-medium">US Dollar (USD)</label>
                 <CurrencyInput TValue="decimal" @bind-Value="amountUSD" Currency="USD" Placeholder="$0.00" />
-                <p class="text-xs text-muted-foreground">Current value: @amountUSD.ToString("C")</p>
+                <p class="text-xs text-muted-foreground">Current value: @amountUSD</p>
             </div>
             
             <div class="space-y-2">
                 <label class="text-sm font-medium">Euro (EUR)</label>
                 <CurrencyInput TValue="decimal" @bind-Value="amountEUR" Currency="EUR" Placeholder="€0.00" />
-                <p class="text-xs text-muted-foreground">Current value: @amountEUR.ToString("C2") EUR</p>
+                <p class="text-xs text-muted-foreground">Current value: @amountEUR</p>
             </div>
             
             <div class="space-y-2">
                 <label class="text-sm font-medium">British Pound (GBP)</label>
                 <CurrencyInput TValue="decimal" @bind-Value="amountGBP" Currency="GBP" Placeholder="£0.00" />
-                <p class="text-xs text-muted-foreground">Current value: @amountGBP.ToString("C2") GBP</p>
+                <p class="text-xs text-muted-foreground">Current value: @amountGBP</p>
             </div>
             
             <div class="space-y-2">
                 <label class="text-sm font-medium">Japanese Yen (JPY)</label>
                 <CurrencyInput TValue="decimal" @bind-Value="amountJPY" Currency="JPY" Placeholder="¥0" />
-                <p class="text-xs text-muted-foreground">Current value: @amountJPY.ToString("N0") JPY</p>
+                <p class="text-xs text-muted-foreground">Current value: @amountJPY</p>
             </div>
         </div>
     </div>
@@ -132,19 +132,19 @@
             <div class="space-y-2">
                 <label class="text-sm font-medium">EUR with German Culture (de-DE)</label>
                 <CurrencyInput TValue="decimal" @bind-Value="eurDE" Currency="EUR" Culture="de-DE" />
-                <p class="text-xs text-muted-foreground">Uses comma as decimal separator: @eurDE.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("de-DE"))</p>
+                <p class="text-xs text-muted-foreground">Current value: @eurDE</p>
             </div>
             
             <div class="space-y-2">
                 <label class="text-sm font-medium">EUR with French Culture (fr-FR)</label>
                 <CurrencyInput TValue="decimal" @bind-Value="eurFR" Currency="EUR" Culture="fr-FR" />
-                <p class="text-xs text-muted-foreground">French formatting: @eurFR.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("fr-FR"))</p>
+                <p class="text-xs text-muted-foreground">Current value: @eurFR</p>
             </div>
             
             <div class="space-y-2">
                 <label class="text-sm font-medium">EUR with US Culture (en-US)</label>
                 <CurrencyInput TValue="decimal" @bind-Value="eurUS" Currency="EUR" Culture="en-US" />
-                <p class="text-xs text-muted-foreground">US formatting: @eurUS.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</p>
+                <p class="text-xs text-muted-foreground">Current value: @eurUS</p>
             </div>
         </div>
     </div>
@@ -161,10 +161,7 @@
             <div class="space-y-2">
                 <label class="text-sm font-medium">Price with decimals (100.2378)</label>
                 <CurrencyInput TValue="decimal" @bind-Value="precisionValue1" Currency="USD" />
-                <p class="text-xs text-muted-foreground">
-                    <strong>Display:</strong> @precisionValue1.ToString("C") | 
-                    <strong>Native value:</strong> @precisionValue1.ToString("G")
-                </p>
+                <p class="text-xs text-muted-foreground">Current value: @precisionValue1</p>
                 <p class="text-xs text-blue-600 dark:text-blue-400">
                     💡 When focused, shows full precision: <code>100.2378</code><br/>
                     When blurred, shows formatted: <code>$100.24</code>
@@ -174,19 +171,13 @@
             <div class="space-y-2">
                 <label class="text-sm font-medium">Scientific value (0.000123456)</label>
                 <CurrencyInput TValue="decimal" @bind-Value="precisionValue2" Currency="USD" />
-                <p class="text-xs text-muted-foreground">
-                    <strong>Display:</strong> @precisionValue2.ToString("C") | 
-                    <strong>Native value:</strong> @precisionValue2.ToString("G")
-                </p>
+                <p class="text-xs text-muted-foreground">Current value: @precisionValue2</p>
             </div>
             
             <div class="space-y-2">
                 <label class="text-sm font-medium">Many decimals (1234.56789012)</label>
                 <CurrencyInput TValue="decimal" @bind-Value="precisionValue3" Currency="USD" />
-                <p class="text-xs text-muted-foreground">
-                    <strong>Display:</strong> @precisionValue3.ToString("C") | 
-                    <strong>Native value:</strong> @precisionValue3.ToString("G")
-                </p>
+                <p class="text-xs text-muted-foreground">Current value: @precisionValue3</p>
             </div>
         </div>
     </div>
@@ -203,7 +194,7 @@
             <div class="space-y-2">
                 <label class="text-sm font-medium">Amount (no symbol)</label>
                 <CurrencyInput TValue="decimal" @bind-Value="noSymbol" Currency="USD" ShowCurrencySymbol="false" Placeholder="0.00" />
-                <p class="text-xs text-muted-foreground">Current value: @noSymbol.ToString("F2")</p>
+                <p class="text-xs text-muted-foreground">Current value: @noSymbol</p>
             </div>
         </div>
     </div>
@@ -220,7 +211,7 @@
             <div class="space-y-2">
                 <label class="text-sm font-medium">Amount (double)</label>
                 <CurrencyInput TValue="double" @bind-Value="doubleValue" Currency="USD" />
-                <p class="text-xs text-muted-foreground">Current value: @doubleValue.ToString("C")</p>
+                <p class="text-xs text-muted-foreground">Current value: @doubleValue</p>
             </div>
         </div>
     </div>
@@ -237,7 +228,7 @@
             <div class="space-y-2">
                 <label class="text-sm font-medium">Price ($10 - $1000)</label>
                 <CurrencyInput TValue="decimal" @bind-Value="constrainedPrice" Currency="USD" Min="10" Max="1000" Placeholder="Enter price" />
-                <p class="text-xs text-muted-foreground">Value will be clamped between $10 and $1000. Current: @constrainedPrice.ToString("C")</p>
+                <p class="text-xs text-muted-foreground">Value will be clamped between $10 and $1000. Current: @constrainedPrice</p>
             </div>
         </div>
     </div>
@@ -302,7 +293,7 @@
                 <label class="text-sm font-medium">Invalid price</label>
                 <CurrencyInput TValue="decimal" @bind-Value="errorValue" Currency="USD" AriaInvalid="true" Placeholder="This field has an error" />
                 <p class="text-sm text-destructive">
-                    Please enter a valid amount. Current: @errorValue.ToString("C")
+                    Please enter a valid amount. Current: @errorValue
                 </p>
             </div>
         </div>
@@ -649,7 +640,7 @@
     private void HandleValidSubmit()
     {
         var total = (formModel.Price ?? 0) - (formModel.Discount ?? 0) + (formModel.ShippingCost ?? 0);
-        submitMessage = $"Order submitted! Total: {total:C} (Price: {formModel.Price?.ToString("C") ?? "N/A"}, Discount: {formModel.Discount?.ToString("C") ?? "N/A"}, Shipping: {formModel.ShippingCost?.ToString("C") ?? "N/A"})";
+        submitMessage = $"Order submitted! Total: {total} (Price: {formModel.Price?.ToString() ?? "N/A"}, Discount: {formModel.Discount?.ToString() ?? "N/A"}, Shipping: {formModel.ShippingCost?.ToString() ?? "N/A"})";
     }
 
     private void ResetForm()

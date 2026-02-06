@@ -48,18 +48,22 @@ namespace BlazorUI.Components.CurrencyInput;
 /// </example>
 public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
 {
-    private static string? _firstInvalidInputId = null;
+    // Key for storing first invalid input ID in EditContext.Properties
+    private static readonly object _firstInvalidInputIdKey = new();
     
     // Cache for currency definitions to avoid repeated lookups
     private CurrencyDefinition? _cachedCurrency;
     private string? _cachedCurrencyCode;
     
+    private IJSObjectReference? _inputModule;
+    private DotNetObjectReference<CurrencyInput<TValue>>? _dotNetRef;
+    private bool _jsInitialized = false;
     private IJSObjectReference? _validationModule;
     private EditContext? _previousEditContext;
     private FieldIdentifier _fieldIdentifier;
     private string? _currentErrorMessage;
     private bool _hasShownTooltip = false;
-    private ElementReference _inputElement;
+    private string? _generatedId;
     private string? _editingValue;
     private bool _isFocused;
 
@@ -81,6 +85,14 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     /// </remarks>
     [Parameter]
     public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Change;
+
+    /// <summary>
+    /// Gets or sets the debounce delay in milliseconds for Input mode.
+    /// Only applies when UpdateOn=Input. Set to 0 for immediate updates.
+    /// Default: 0 (no debounce)
+    /// </summary>
+    [Parameter]
+    public int DebounceDelay { get; set; } = 0;
 
     /// <summary>
     /// Gets or sets the current value of the input.
@@ -324,6 +336,30 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
         : AriaInvalid;
 
     /// <summary>
+    /// Gets the effective ID, generating a unique ID if none is provided.
+    /// </summary>
+    /// <remarks>
+    /// This ensures JavaScript can always reference the element, even when Id is not explicitly set.
+    /// The generated ID follows the pattern: currency-input-{6-character-guid}.
+    /// </remarks>
+    private string EffectiveId
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Id))
+                return Id;
+
+            if (_generatedId == null)
+            {
+                // Generate a unique 6-character ID using GUID
+                _generatedId = "currency-input-" + Guid.NewGuid().ToString("N")[..6];
+            }
+
+            return _generatedId;
+        }
+    }
+
+    /// <summary>
     /// Gets the computed CSS classes for the input element.
     /// </summary>
     /// <remarks>
@@ -466,57 +502,36 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Handles the input event (fired on every keystroke).
     /// </summary>
-    private async Task HandleInput(ChangeEventArgs args)
+    /// <summary>
+    /// Called from JavaScript when input value changes.
+    /// This is invoked based on UpdateOn mode and debounce settings.
+    /// </summary>
+    [JSInvokable]
+    public async Task OnInputChanged(string? value)
     {
-        var stringValue = args.Value?.ToString();
+        // Parse the value
+        var parsedValue = TryParseValue(value);
         
-        // Store raw input value while editing
-        _editingValue = stringValue;
-        
-        // Only update value if UpdateOn is set to Input
-        if (UpdateOn == InputUpdateMode.Input)
+        // Update local state
+        Value = parsedValue;
+
+        // Notify parent component
+        await ValueChanged.InvokeAsync(parsedValue);
+
+        // Trigger EditContext validation if applicable
+        if (EditContext != null && ValueExpression != null)
         {
-            var parsedValue = TryParseValue(stringValue);
-            Value = parsedValue;
-
-            if (ValueChanged.HasDelegate)
-            {
-                await ValueChanged.InvokeAsync(parsedValue);
-            }
-
-            // Notify EditContext of field change to trigger validation
-            if (ShowValidationError && EditContext != null && ValueExpression != null)
-            {
-                EditContext.NotifyFieldChanged(_fieldIdentifier);
-            }
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+            EditContext.NotifyFieldChanged(_fieldIdentifier);
+            await UpdateValidationState();
         }
     }
 
-    /// <summary>
-    /// Handles the change event (fired when input loses focus).
-    /// </summary>
-    private async Task HandleChange(ChangeEventArgs args)
+    private async Task UpdateValidationState()
     {
-        var stringValue = args.Value?.ToString();
-        
-        // Update value on blur if UpdateOn is set to Change
-        if (UpdateOn == InputUpdateMode.Change)
+        if (ShowValidationError && EditContext != null && _validationModule != null)
         {
-            // Use the editing value if available (more reliable than args.Value)
-            var valueToUse = !string.IsNullOrEmpty(_editingValue) ? _editingValue : stringValue;
-            var parsedValue = TryParseValue(valueToUse);
-            Value = parsedValue;
-
-            if (ValueChanged.HasDelegate)
-            {
-                await ValueChanged.InvokeAsync(parsedValue);
-            }
-
-            // Notify EditContext of field change to trigger validation
-            if (ShowValidationError && EditContext != null && ValueExpression != null)
-            {
-                EditContext.NotifyFieldChanged(_fieldIdentifier);
-            }
+            await UpdateValidationDisplayAsync();
         }
     }
 
@@ -669,10 +684,30 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
         {
             try
             {
+                // Import the input module for event handling
+                _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoBlazorUI.Components/js/input.js");
+
+                // Create DotNetObjectReference for callbacks
+                _dotNetRef = DotNetObjectReference.Create(this);
+
+                // Initialize input event handling with UpdateOn mode and debounce
+                // Use EffectiveId which always has a value (user-provided or generated)
+                await _inputModule.InvokeVoidAsync(
+                    "initializeInput",
+                    EffectiveId,
+                    UpdateOn.ToString().ToLower(),
+                    DebounceDelay,
+                    _dotNetRef
+                );
+
+                _jsInitialized = true;
+
                 if (ShowValidationError)
                 {
-                    _validationModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                        "import", "./_content/NeoBlazorUI.Components/js/input-validation.js");
+                    // Validation functions are in the same input.js module
+                    _validationModule = _inputModule;
+                    await _validationModule.InvokeVoidAsync("initializeValidation", EffectiveId, UpdateOn.ToString().ToLower());
                 }
             }
             catch (JSException)
@@ -690,8 +725,11 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
 
     private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
     {
-        // Reset first invalid input tracking on new validation cycle
-        _firstInvalidInputId = null;
+        // Reset first invalid input tracking for this EditContext on new validation cycle
+        if (EditContext != null)
+        {
+            EditContext.Properties.Remove(_firstInvalidInputIdKey);
+        }
         _hasShownTooltip = false;
 
         InvokeAsync(async () =>
@@ -703,7 +741,7 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
 
     private async Task UpdateValidationDisplayAsync()
     {
-        if (EditContext == null || _validationModule == null || string.IsNullOrEmpty(Id))
+        if (EditContext == null || _validationModule == null)
             return;
 
         try
@@ -719,31 +757,31 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    // Determine if this is the first invalid input
-                    var isFirstInvalid = _firstInvalidInputId == null;
+                    // Determine if this is the first invalid input for this EditContext
+                    // Using EditContext.Properties for per-form state storage
+                    string? firstInvalidId = null;
+                    if (EditContext.Properties.TryGetValue(_firstInvalidInputIdKey, out var value))
+                    {
+                        firstInvalidId = value as string;
+                    }
+                    var isFirstInvalid = firstInvalidId == null;
                     
                     if (isFirstInvalid)
                     {
-                        _firstInvalidInputId = Id;
+                        EditContext.Properties[_firstInvalidInputIdKey] = EffectiveId;
                     }
 
                     // Show tooltip and focus only for the first invalid input
                     if (isFirstInvalid && !_hasShownTooltip)
                     {
-                        await _validationModule.InvokeVoidAsync("showValidationError", Id, errorMessage);
+                        await _validationModule.InvokeVoidAsync("showValidationError", EffectiveId, errorMessage);
                         _hasShownTooltip = true;
                     }
                 }
                 else
                 {
                     // Clear validation error
-                    await _validationModule.InvokeVoidAsync("clearValidationError", Id);
-                    
-                    // Reset first invalid tracking if this was the first invalid input
-                    if (_firstInvalidInputId == Id)
-                    {
-                        _firstInvalidInputId = null;
-                    }
+                    await _validationModule.InvokeVoidAsync("clearValidationError", EffectiveId);
                 }
             }
         }
@@ -763,18 +801,24 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        DetachValidationStateChangedListener();
-        
-        if (_validationModule != null)
+        try
         {
-            try
+            if (_jsInitialized && _inputModule != null)
             {
-                await _validationModule.DisposeAsync();
+                // Dispose input event handling and validation tracking
+                await _inputModule.InvokeVoidAsync("disposeInput", EffectiveId);
+                await _inputModule.InvokeVoidAsync("disposeValidation", EffectiveId);
+                
+                await _inputModule.DisposeAsync();
             }
-            catch (JSDisconnectedException)
-            {
-                // Ignore - this happens during hot reload or when navigating away
-            }
+
+            _dotNetRef?.Dispose();
         }
+        catch (JSDisconnectedException)
+        {
+            // Ignore - this happens during hot reload or when navigating away
+        }
+
+        DetachValidationStateChangedListener();
     }
 }

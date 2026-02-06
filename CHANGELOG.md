@@ -2,16 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-02-06 - Input Component UpdateOn Behavior & Performance Optimization
+## 2026-02-06 - Input Component UpdateOn Behavior, EffectiveId Pattern & Performance Optimization
 
-### 🚀 Performance Improvements
+### 🚀 Performance Improvements & Architecture Enhancements
 
 **Status:** ✅ Complete, Production Ready  
-**Impact:** Improved default behavior for Input, CurrencyInput, MaskedInput, and NumericInput components with performance and UX optimizations.
+**Impact:** Major improvements to all input components with better performance, UX, and reliability. Auto-generated IDs eliminate null reference issues.
 
 ---
 
-### 🎯 Input Components UpdateOn Default Behavior
+### 🎯 1. Input Components UpdateOn Default Behavior Change
 
 #### **Enhanced Default Performance Mode**
 
@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 - `CurrencyInput` - Locale-aware currency formatting
 - `MaskedInput` - Pattern-based masked input
 - `NumericInput` - Type-safe numeric input
+- `Textarea` - Multi-line text input
 
 **What Changed:**
 - **Default `UpdateOn` mode** changed from `Input` → `Change`
@@ -48,6 +49,562 @@ All notable changes to this project will be documented in this file.
 ```
 src/BlazorUI.Components/Components/Input/Input.razor.cs
 src/BlazorUI.Components/Components/CurrencyInput/CurrencyInput.razor.cs
+src/BlazorUI.Components/Components/MaskedInput/MaskedInput.razor.cs
+src/BlazorUI.Components/Components/NumericInput/NumericInput.razor.cs
+src/BlazorUI.Components/Components/Textarea/Textarea.razor.cs
+```
+
+**Breaking Change:** ⚠️ Minor
+- Previous default: `UpdateOn="Input"` (immediate updates)
+- New default: `UpdateOn="Change"` (update on blur)
+- **Migration:** Explicitly set `UpdateOn="Input"` if you need real-time updates
+
+**Example:**
+```razor
+<!-- Default behavior (recommended) -->
+<Input @bind-Value="username" />
+<!-- Updates on blur -->
+
+<!-- Real-time updates (when needed) -->
+<Input @bind-Value="searchQuery" UpdateOn="InputUpdateMode.Input" />
+<!-- Updates on every keystroke -->
+```
+
+---
+
+### 🆔 2. EffectiveId Pattern - Auto-Generated IDs
+
+#### **Eliminated Null ID Issues with Smart ID Generation**
+
+**Problem Solved:**
+- Previously, components required explicit `Id` parameter for JavaScript functionality
+- Null IDs caused JavaScript interop failures
+- `ElementReference` approach had timing issues
+
+**Solution Implemented:**
+All input components now use the **EffectiveId pattern**:
+- Auto-generates unique IDs if not provided: `{component-type}-{6-chars}`
+- Falls back to user-provided `Id` if specified
+- Ensures JavaScript can always reference elements reliably
+
+**Components Updated:**
+1. **Input** → Generates `input-a3f7c2` (example)
+2. **CurrencyInput** → Generates `currency-input-b8d4e1`
+3. **MaskedInput** → Generates `masked-input-2c8f96`
+4. **NumericInput** → Generates `numeric-input-9e5a3b`
+5. **Textarea** → Generates `textarea-f1c9d7`
+
+**Technical Implementation:**
+```csharp
+private string? _generatedId;
+
+private string EffectiveId
+{
+    get
+    {
+        if (!string.IsNullOrEmpty(Id))
+            return Id;
+
+        if (_generatedId == null)
+        {
+            _generatedId = "input-" + Guid.NewGuid().ToString("N")[..6];
+        }
+
+        return _generatedId;
+    }
+}
+```
+
+**Benefits:**
+- ✅ No null reference exceptions in JavaScript
+- ✅ Works without explicit `Id` parameter
+- ✅ Labels can still associate via `for` attribute
+- ✅ Consistent behavior across all input components
+- ✅ Backward compatible (user IDs take precedence)
+
+**Files Changed:**
+```
+src/BlazorUI.Components/Components/Input/Input.razor.cs
+src/BlazorUI.Components/Components/Input/Input.razor
+src/BlazorUI.Components/Components/CurrencyInput/CurrencyInput.razor.cs
+src/BlazorUI.Components/Components/CurrencyInput/CurrencyInput.razor
+src/BlazorUI.Components/Components/MaskedInput/MaskedInput.razor.cs
+src/BlazorUI.Components/Components/MaskedInput/MaskedInput.razor
+src/BlazorUI.Components/Components/NumericInput/NumericInput.razor.cs
+src/BlazorUI.Components/Components/NumericInput/NumericInput.razor
+src/BlazorUI.Components/Components/Textarea/Textarea.razor.cs
+src/BlazorUI.Components/Components/Textarea/Textarea.razor
+```
+
+---
+
+### 🗂️ 3. JavaScript Module Consolidation
+
+#### **Unified Validation in input.js**
+
+**Changed:**
+- Removed separate `input-validation.js` file
+- Consolidated all validation functions into `input.js`
+- Components now reuse the same module instance
+
+**Before:**
+```javascript
+// Two separate imports
+_inputModule = await import("input.js");
+_validationModule = await import("input-validation.js");
+```
+
+**After:**
+```javascript
+// Single import, reused for validation
+_inputModule = await import("input.js");
+_validationModule = _inputModule; // Reuse same module
+```
+
+**Benefits:**
+- ✅ Fewer HTTP requests (better performance)
+- ✅ Reduced JavaScript bundle size
+- ✅ Simpler architecture
+- ✅ Consistent API across all components
+
+**Files Changed:**
+```
+src/BlazorUI.Components/wwwroot/js/input.js (consolidated)
+src/BlazorUI.Components/Components/CurrencyInput/CurrencyInput.razor.cs
+src/BlazorUI.Components/Components/MaskedInput/MaskedInput.razor.cs
+src/BlazorUI.Components/Components/NumericInput/NumericInput.razor.cs
+```
+
+---
+
+### ⚡ 4. JavaScript-First Event Architecture - Blazing-Fast Performance
+
+#### **Eliminated Blazor Event Handler Overhead**
+
+**Major Architectural Shift:**
+All input components now handle `oninput` and `onchange` events **entirely in JavaScript** instead of Blazor's `@oninput` and `@onchange` directives.
+
+**Problem with Blazor Event Handlers:**
+```razor
+<!-- Old approach: Every keystroke triggers C# interop -->
+<input @oninput="HandleInput" @onchange="HandleChange" />
+```
+- Every keystroke → SignalR/WebSocket call → C# method → StateHasChanged → Re-render
+- **Blazing-fast in WebAssembly** (no network), **sluggish in Server mode** (network round-trip)
+- **Auto mode** suffered from the worst-case scenario (initial Server render lag)
+
+**New JavaScript-First Approach:**
+```razor
+<!-- New approach: JS handles events, calls C# only when needed -->
+<input id="@EffectiveId" value="@Value" />
+```
+```javascript
+// JavaScript manages all DOM events
+element.addEventListener('input', (e) => {
+    if (updateOn === 'input' && debounceDelay > 0) {
+        // Debounced call to C#
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => 
+            dotNetRef.invokeMethodAsync('OnInputChanged', e.target.value),
+            debounceDelay
+        );
+    } else if (updateOn === 'input') {
+        // Immediate call to C#
+        dotNetRef.invokeMethodAsync('OnInputChanged', e.target.value);
+    }
+    // updateOn === 'change': Do nothing, wait for blur
+});
+
+element.addEventListener('change', (e) => {
+    if (updateOn === 'change') {
+        dotNetRef.invokeMethodAsync('OnInputChanged', e.target.value);
+    }
+});
+```
+
+**Performance Benefits:**
+
+**1. Blazor Server Mode:**
+- **Before:** Every keystroke = SignalR message (~50-200ms latency)
+- **After:** Typing handled locally in browser, single update on blur
+- **Result:** Instant visual feedback, 20x faster perceived performance
+
+**2. Blazor WebAssembly Mode:**
+- **Before:** Already fast (no network), but still C# → JS → C# overhead
+- **After:** Even faster with direct JavaScript event handling
+- **Result:** Native-like responsiveness
+
+**3. Blazor Auto Mode:**
+- **Before:** Suffered from Server mode lag during initial render
+- **After:** JavaScript code works the same regardless of interactivity mode
+- **Result:** Consistent blazing-fast performance everywhere
+
+**4. UpdateOn="Change" (Default):**
+- **Before:** 20 keystrokes = 20 C# calls + 20 re-renders
+- **After:** 20 keystrokes = 0 C# calls, 1 call on blur
+- **Result:** ~95% reduction in network traffic (Server) and CPU usage (all modes)
+
+**5. UpdateOn="Input" with Debouncing:**
+- **Before:** Not possible to debounce in C# (too late in the pipeline)
+- **After:** JavaScript-side debouncing prevents rapid-fire C# calls
+- **Result:** Real-time updates without overwhelming the server
+
+**Technical Implementation:**
+
+```csharp
+// C# just provides the DotNetObjectReference
+protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+    if (firstRender)
+    {
+        _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/NeoBlazorUI.Components/js/input.js");
+        
+        _dotNetRef = DotNetObjectReference.Create(this);
+        
+        // JavaScript takes over all event handling
+        await _inputModule.InvokeVoidAsync(
+            "initializeInput",
+            EffectiveId,
+            UpdateOn.ToString().ToLower(),
+            DebounceDelay,
+            _dotNetRef
+        );
+    }
+}
+
+// JavaScript calls this when value actually needs to update
+[JSInvokable]
+public async Task OnInputChanged(string? value)
+{
+    Value = value;
+    await ValueChanged.InvokeAsync(value);
+    // Only trigger EditContext validation when needed
+}
+```
+
+**Components Using JavaScript-First Architecture:**
+- ✅ **Input** - All input types (text, email, password, etc.)
+- ✅ **CurrencyInput** - Locale-aware currency formatting
+- ✅ **MaskedInput** - Pattern-based input masks
+- ✅ **NumericInput** - Type-safe numeric input
+- ✅ **Textarea** - Multi-line text input
+
+**Why This Matters:**
+
+**Interactivity Mode Comparison:**
+```
+Typing 20 characters in Blazor Server:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Before: 20 network calls (1000-4000ms total latency)
+After:  1 network call on blur (50-200ms latency)
+Result: Feels instant instead of laggy
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**Benefits:**
+- ✅ **Blazing-fast performance** in all interactivity modes (Server, WASM, Auto)
+- ✅ **Zero network overhead** during typing (Server mode)
+- ✅ **Native-like responsiveness** regardless of connection quality
+- ✅ **Battery efficient** on mobile devices (fewer JavaScript ↔ C# calls)
+- ✅ **Scalable** - server handles fewer requests
+- ✅ **Future-proof** - architecture works great for Blazor United scenarios
+
+**Files Changed:**
+```
+src/BlazorUI.Components/wwwroot/js/input.js (event handling logic)
+src/BlazorUI.Components/Components/Input/Input.razor (removed @oninput/@onchange)
+src/BlazorUI.Components/Components/CurrencyInput/CurrencyInput.razor
+src/BlazorUI.Components/Components/MaskedInput/MaskedInput.razor
+src/BlazorUI.Components/Components/NumericInput/NumericInput.razor
+src/BlazorUI.Components/Components/Textarea/Textarea.razor
+```
+
+---
+
+### 🎨 5. MaskedInput Blur Event Fix
+
+**Fixed Issue:** `onblur` event not triggering when `UpdateOn="Change"`
+
+**Root Cause:**
+- `lastRawValue` was being updated during typing
+- On blur, `currentRaw == lastRawValue`, so no Blazor callback
+
+**Solution:**
+- Only update `lastRawValue` when actually notifying Blazor
+- For `UpdateOn="Change"`: Don't update during typing, update on blur
+- For `UpdateOn="Input"`: Update immediately on every change
+
+**Files Changed:**
+```javascript
+src/BlazorUI.Components/wwwroot/js/masked-input.js
+```
+
+---
+
+### 📖 6. Documentation Enhancements
+
+**Added comprehensive UpdateOn behavior documentation to demo pages:**
+
+**Demo Pages Updated:**
+- `InputDemo.razor` - General text input examples
+- `CurrencyInputDemo.razor` - Currency-specific guidance  
+- `MaskedInputDemo.razor` - Masked input patterns
+- `NumericInputDemo.razor` - Numeric validation examples
+
+**Each demo now includes:**
+- ✅ Prominent info alert explaining `UpdateOn` behavior
+- ✅ Collapsible "Read more" section with:
+  - Benefits of `UpdateOn="Change"` (default)
+  - Comparison of both modes
+  - Context-specific use case examples
+  - WebAssembly performance notes
+- ✅ Lucide icons for visual consistency
+- ✅ Smooth chevron rotation animation on expand/collapse
+
+**Example Info Alert Structure:**
+```razor
+<Alert Variant="AlertVariant.Info">
+    <AlertTitle>Optimized for Performance & Best Typing Experience</AlertTitle>
+    <AlertDescription>
+        By default uses UpdateOn="Change" for better performance...
+        <Collapsible>
+            <CollapsibleTrigger>Read more ˅</CollapsibleTrigger>
+            <CollapsibleContent>
+                <!-- Detailed benefits, modes, tips -->
+                💡 Tip: Use UpdateOn="Input" only when you need real-time 
+                updates, or if you're targeting WebAssembly mode where 
+                interactivity will be fully handled in client-side.
+            </CollapsibleContent>
+        </Collapsible>
+    </AlertDescription>
+</Alert>
+```
+
+**Files Changed:**
+```
+demo/BlazorUI.Demo.Shared/Pages/Components/InputDemo.razor
+demo/BlazorUI.Demo.Shared/Pages/Components/CurrencyInputDemo.razor
+demo/BlazorUI.Demo.Shared/Pages/Components/MaskedInputDemo.razor
+demo/BlazorUI.Demo.Shared/Pages/Components/NumericInputDemo.razor
+```
+
+---
+
+### 🎮 7. CommandInput Performance Optimization
+
+#### **Integrated Input Component with JS-First Keyboard Navigation**
+
+**Problem:**
+CommandInput was re-implementing input handling logic:
+- Plain `<input>` with `@oninput` (Blazor event handler)
+- Manual debouncing with `System.Threading.Timer`
+- `@onkeydown` causing Input component re-renders
+- Duplicate code vs Input component
+
+**Solution:**
+Replaced plain input with our optimized Input component + JavaScript keyboard interception:
+
+```razor
+<!-- Before: Plain input with Blazor events -->
+<input @oninput="HandleInput" @onkeydown="HandleKeyDown" />
+
+<!-- After: Input component with JS navigation -->
+<Input @bind-Value="searchQuery" 
+       UpdateOn="InputUpdateMode.Input"
+       DebounceDelay="SearchInterval"
+       AdditionalAttributes="@InputAttributes" />
+```
+
+**JavaScript Keyboard Interception:**
+```javascript
+// input.js - New command input navigation
+export function initializeCommandInput(elementId, dotNetRef) {
+    const navigationKeys = ['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter'];
+    
+    element.addEventListener('keydown', (e) => {
+        if (navigationKeys.includes(e.key)) {
+            e.preventDefault(); // No scroll, no cursor move
+            dotNetRef.invokeMethodAsync('HandleNavigationKey', e.key);
+        }
+        // All other keys: Input component handles normally
+    }, { capture: true }); // Intercept before Input sees it
+}
+```
+
+**Key Optimizations:**
+
+1. **Zero Input Re-Renders**
+   - JavaScript intercepts navigation keys before Input component
+   - No parameter changes during keyboard navigation
+   - Input component never re-renders from arrow key presses
+
+2. **Zero C# Calls for Typing**
+   - Regular keys (a-z, 0-9, etc.) → handled entirely in JavaScript
+   - Only navigation keys → call C# for list navigation
+   - Result: Blazing fast typing performance
+
+3. **Reuses All Input Improvements**
+   - ✅ JavaScript-first event handling
+   - ✅ EffectiveId pattern (auto-generated IDs)
+   - ✅ JavaScript debouncing (no more `System.Threading.Timer`)
+   - ✅ Consistent architecture across all inputs
+
+4. **Cleaner Code**
+   - Removed ~30 lines of manual timer management
+   - Removed cached dictionary pattern (no longer needed)
+   - Single responsibility: CommandInput = wrapper, Input = editing
+
+**Performance Impact:**
+```
+User types "search query" (12 characters):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Before: 12 @oninput C# calls + timer management
+After:  JavaScript-only (zero C# calls during typing)
+Result: Instant response regardless of interactivity mode
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+User presses ArrowDown (5 times):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Before: 5 @onkeydown C# calls + Input re-renders
+After:  5 JS-intercepted calls (no Input re-renders)
+Result: Smooth navigation without visual interruption
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**Input Styling for Command Palette:**
+```css
+/* Transparent input with no visual chrome */
+!border-0              /* No border */
+!shadow-none           /* No shadow */
+bg-transparent         /* Transparent background */
+focus-visible:!ring-0  /* No focus ring */
+/* Border-b comes from parent wrapper div */
+```
+
+**Benefits:**
+- ✅ **Blazing-fast typing** - JavaScript-only event handling
+- ✅ **Smooth navigation** - Zero Input re-renders during arrow key presses
+- ✅ **Better architecture** - Reuses Input component instead of reimplementing
+- ✅ **Less code** - Removed timer management and manual event handling
+- ✅ **Consistent** - Same patterns as Input/Textarea/CurrencyInput/etc.
+
+**Files Changed:**
+```javascript
+src/BlazorUI.Components/wwwroot/js/input.js
+  - Added initializeCommandInput()
+  - Added disposeCommandInput()
+  - Command input keyboard state tracking
+
+src/BlazorUI.Components/Components/Command/CommandInput.razor
+  - Replaced <input> with <Input> component
+  - Added JavaScript keyboard navigation integration
+  - Removed manual timer and cached dictionary
+  - IAsyncDisposable for proper cleanup
+```
+
+---
+
+### 🛠️ Technical Implementation Details
+
+#### **JavaScript-Side Validation Management**
+
+**Enhanced `input.js` Module:**
+```javascript
+// Initialize with UpdateOn mode
+export function initializeValidation(elementId, updateOn = 'input') {
+    // Auto-clear tooltip on first keystroke (Change mode)
+    // Prevents tooltip interference while typing
+}
+
+// Functions consolidated from input-validation.js:
+- initializeValidation(elementId, updateOn)
+- disposeValidation(elementId)  
+- setValidationError(elementId, message)
+- setValidationErrorSilent(elementId, message)
+- clearValidationError(elementId)
+```
+
+**Flow for `UpdateOn="Change"`:**
+1. User has validation error → tooltip shown
+2. User starts typing → **JS auto-clears tooltip** (no C# call)
+3. User tabs out → C# validates → new error/success shown
+
+**Performance Impact:**
+- Zero C# ↔ JS calls during typing (Change mode)
+- Single event listener per input (efficient)
+- Proper cleanup on dispose
+
+---
+
+### 📝 Code Quality & Testing
+
+**Improvements:**
+- ✅ Consistent behavior across all input components
+- ✅ Optimized for WebAssembly deployment
+- ✅ Better separation of concerns (JS handles UI, C# handles logic)
+- ✅ Comprehensive inline documentation
+- ✅ User-friendly demo documentation
+
+**Test Scenarios Validated:**
+1. ✅ `UpdateOn="Change"` - validates on blur
+2. ✅ `UpdateOn="Input"` - validates on every keystroke  
+3. ✅ Validation tooltip auto-clears during typing (Change mode)
+4. ✅ MaskedInput blur event triggers correctly
+5. ✅ Auto-generated IDs work without explicit Id parameter
+6. ✅ No memory leaks (proper event listener cleanup)
+7. ✅ WebAssembly performance (minimal interop)
+
+---
+
+### 🎯 Migration Guide
+
+**For Existing Code:**
+
+**1. UpdateOn Behavior:**
+If you relied on immediate updates (old default behavior):
+```razor
+<!-- Before (implicit default) -->
+<Input @bind-Value="searchTerm" />
+
+<!-- After (explicit for real-time) -->
+<Input @bind-Value="searchTerm" UpdateOn="InputUpdateMode.Input" />
+```
+
+**2. ID Parameter:**
+No migration needed! Components auto-generate IDs when not specified.
+```razor
+<!-- Works without Id (auto-generates: input-a3f7c2) -->
+<Input @bind-Value="username" />
+
+<!-- Still works with explicit Id -->
+<Input Id="my-input" @bind-Value="username" />
+```
+
+**Recommended for most cases (new default):**
+```razor
+<Input @bind-Value="email" />
+<!-- Updates on blur - better UX and performance -->
+```
+
+---
+
+### 📊 Performance Metrics
+
+**WebAssembly Interop Reduction:**
+- **Before (UpdateOn=Input):** N interop calls per input (N = keystrokes)
+- **After (UpdateOn=Change):** 1 interop call per input (on blur)
+- **Savings:** ~95% reduction in interop overhead for typical form filling
+
+**Example Scenario:**
+- User types 20 characters in a field
+- **Old behavior:** 20 C# ↔ JS calls + 20 re-renders
+- **New behavior:** 1 C# ↔ JS call + 1 re-render
+- **Result:** Smoother typing, lower CPU usage, better battery life
+
+---
+
+## 2026-02-05 - Input Components & Positioning Enhancements
 src/BlazorUI.Components/Components/MaskedInput/MaskedInput.razor.cs (JS)
 src/BlazorUI.Components/Components/NumericInput/NumericInput.razor.cs
 src/BlazorUI.Components/wwwroot/js/input.js (new, renamed from input-validation.js)

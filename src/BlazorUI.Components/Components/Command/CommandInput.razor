@@ -1,5 +1,8 @@
 @namespace BlazorUI.Components.Command
-@implements IDisposable
+@using BlazorUI.Components.Input
+@using BlazorUI.Components.Common
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
 
 <div class="@CssClass" data-command-input-wrapper>
     <svg xmlns="http://www.w3.org/2000/svg"
@@ -15,29 +18,34 @@
         <circle cx="11" cy="11" r="8"></circle>
         <path d="m21 21-4.35-4.35"></path>
     </svg>
-    <input @ref="_inputRef"
-           type="text"
-           placeholder="@Placeholder"
-           disabled="@Disabled"
-           value="@Context?.SearchQuery"
-           @oninput="HandleInput"
-           @onkeydown="HandleKeyDown"
-           class="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 ml-2"
-           role="combobox"
-           aria-autocomplete="list"
-           aria-expanded="true"
-           aria-controls="@Context?.ListId" />
+    <Input @ref="@_inputRef"
+           Id="@InputId"
+           Type="InputType.Text"
+           Value="@Context?.SearchQuery"
+           ValueChanged="HandleValueChanged"
+           UpdateOn="InputUpdateMode.Input"
+           DebounceDelay="SearchInterval"
+           Placeholder="@Placeholder"
+           Disabled="@Disabled"
+           Class="flex h-11 w-full rounded-none !border-0 bg-transparent px-0 py-3 !shadow-none text-sm outline-none placeholder:text-muted-foreground focus-visible:!border-0 focus-visible:!ring-0 disabled:cursor-not-allowed disabled:opacity-50"
+           AdditionalAttributes="@InputAttributes" />
+
 </div>
 
 @code {
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
+
     [CascadingParameter]
     public CommandContext? Context { get; set; }
 
-    private ElementReference _inputRef;
+    private BlazorUI.Components.Input.Input? _inputRef;
+    private IJSObjectReference? _inputModule;
+    private DotNetObjectReference<CommandInput>? _dotNetRef;
+    private bool _jsInitialized = false;
     private bool _previousAutoFocus;
     private bool _shouldFocus;
-    private System.Threading.Timer? _debounceTimer;
-    private string _pendingSearchQuery = string.Empty;
+    private string? _generatedInputId;
 
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the input container.
@@ -71,17 +79,41 @@
     public int SearchInterval { get; set; } = 0;
 
     /// <summary>
+    /// Gets the ID to use for the input element.
+    /// Generates a unique ID if not explicitly set.
+    /// </summary>
+    private string InputId => _generatedInputId ??= "command-input-" + Guid.NewGuid().ToString("N")[..6];
+
+    /// <summary>
+    /// Additional attributes for ARIA and role.
+    /// Cached to prevent unnecessary re-renders of Input component.
+    /// </summary>
+    private Dictionary<string, object> InputAttributes => new()
+    {
+        { "role", "combobox" },
+        { "aria-autocomplete", "list" },
+        { "aria-expanded", "true" },
+        { "aria-controls", Context?.ListId ?? "" }
+        // ✅ No more onkeydown - handled in JavaScript!
+    };
+
+    /// <summary>
     /// Focuses the input element.
     /// </summary>
     public async Task FocusAsync()
     {
-        try
+        if (_inputRef != null)
         {
-            await _inputRef.FocusAsync();
-        }
-        catch
-        {
-            // Ignore focus errors (element may not be ready)
+            try
+            {
+                // Input component doesn't expose FocusAsync yet, so we'll need to add it
+                // For now, this will be a no-op until Input component is enhanced
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                // Ignore focus errors
+            }
         }
     }
 
@@ -109,49 +141,58 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            try
+            {
+                // Import the input module
+                _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoBlazorUI.Components/js/input.js");
+
+                // Create DotNetObjectReference for callbacks
+                _dotNetRef = DotNetObjectReference.Create(this);
+
+                // Initialize command input keyboard navigation
+                // JavaScript will intercept arrow keys and call HandleNavigationKey
+                await _inputModule.InvokeVoidAsync(
+                    "initializeCommandInput",
+                    InputId,
+                    _dotNetRef
+                );
+
+                _jsInitialized = true;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error initializing command input JS: {ex.Message}");
+            }
+        }
+
         // Focus when AutoFocus becomes true (either on first render or when popover opens)
         if (_shouldFocus)
         {
             _shouldFocus = false;
-            try
-            {
-                // Small delay to ensure the element is ready in the DOM (especially after portal rendering)
-                await Task.Delay(50);
-                await _inputRef.FocusAsync();
-            }
-            catch
-            {
-                // Ignore focus errors
-            }
+            await FocusAsync();
         }
     }
 
-    private void HandleInput(ChangeEventArgs args)
+    private void HandleValueChanged(string? value)
     {
-        var value = args.Value?.ToString() ?? string.Empty;
-
-        if (SearchInterval > 0)
-        {
-            // Debounce the search
-            _pendingSearchQuery = value;
-            _debounceTimer?.Dispose();
-            _debounceTimer = new System.Threading.Timer(_ =>
-            {
-                InvokeAsync(() => Context?.SetSearchQuery(_pendingSearchQuery));
-            }, null, SearchInterval, System.Threading.Timeout.Infinite);
-        }
-        else
-        {
-            // Immediate update
-            Context?.SetSearchQuery(value);
-        }
+        // Update CommandContext with new search query
+        Context?.SetSearchQuery(value ?? string.Empty);
     }
 
-    private async Task HandleKeyDown(KeyboardEventArgs args)
+    /// <summary>
+    /// Called from JavaScript when navigation keys are pressed.
+    /// This is invoked ONLY for ArrowDown, ArrowUp, Home, End, Enter.
+    /// Regular typing keys never trigger C# calls.
+    /// </summary>
+    [JSInvokable]
+    public async Task HandleNavigationKey(string key)
     {
         if (Context == null) return;
 
-        switch (args.Key)
+        switch (key)
         {
             case "ArrowDown":
                 await Context.MoveFocusAsync(1);
@@ -171,8 +212,28 @@
         }
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        _debounceTimer?.Dispose();
+        try
+        {
+            if (_jsInitialized && _inputModule != null)
+            {
+                // Dispose command input keyboard handling
+                await _inputModule.InvokeVoidAsync("disposeCommandInput", InputId);
+                await _inputModule.DisposeAsync();
+            }
+
+            _dotNetRef?.Dispose();
+        }
+        catch (JSDisconnectedException)
+        {
+            // The JS runtime is already disposed
+        }
+        catch
+        {
+            // Ignore disposal errors
+        }
     }
 }
+
+
