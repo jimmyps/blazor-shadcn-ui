@@ -602,6 +602,114 @@ No migration needed! Components auto-generate IDs when not specified.
 - **New behavior:** 1 C# ↔ JS call + 1 re-render
 - **Result:** Smoother typing, lower CPU usage, better battery life
 
+- ### 🐛 Bug Fixes
+
+**Status:** ✅ Complete, Production Ready  
+**Impact:** Critical positioning fix and improved navigation UX
+
+---
+
+### 🔧 8. Floating UI Position Revert Fix (PR #114)
+
+**Fixed Issue:** Floating UI positioned elements would revert to original position in Blazor Server interactive mode
+
+**Root Cause:**
+- Custom viewport constraint middleware was interfering with Floating UI's built-in positioning
+- Position calculations were being overridden after Floating UI completed its work
+- Issue only occurred in interactive Server mode due to timing of Blazor re-renders
+
+**Solution:**
+- Renamed middleware from `viewportConstraint` to `blazorViewportConstraint` to follow Floating UI naming conventions
+- Refactored to use proper Floating UI middleware pattern
+- Ensures compatibility with Floating UI's flip and shift middleware
+- Position now persists correctly across all render modes
+
+**Benefits:**
+- ✅ Popovers, dropdowns, and tooltips stay in correct position
+- ✅ Works reliably in Server, WebAssembly, and Auto modes
+- ✅ No visual "jumping" or position reversion
+- ✅ Proper integration with Floating UI architecture
+
+**Files Changed:**
+```
+src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js
+```
+
+---
+
+### 🎯 9. SidebarInset Scroll Reset on Navigation (PR #115)
+
+**Added Feature:** Automatic scroll position reset when navigating between pages
+
+**Problem:**
+- When navigating from a scrolled page to a new page, scroll position persisted
+- Users would land mid-page instead of at the top
+- Common issue in SPA applications with independent scrolling areas
+
+**Solution:**
+- Added `ResetScrollOnNavigation` parameter to SidebarInset component (default: false)
+- Integrates with Blazor's NavigationManager to detect route changes
+- Automatically scrolls to top on navigation when enabled
+- JavaScript helper function for smooth, reliable scroll reset
+
+**Implementation:**
+```razor
+<!-- Enable scroll reset in MainLayout -->
+<SidebarInset ResetScrollOnNavigation="true">
+    @Body
+</SidebarInset>
+```
+
+```csharp
+// SidebarInset.razor.cs
+[Parameter]
+public bool ResetScrollOnNavigation { get; set; }
+
+protected override void OnInitialized()
+{
+    if (ResetScrollOnNavigation && NavigationManager != null)
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+}
+
+private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+{
+    await ResetScrollPositionAsync();
+}
+```
+
+**Benefits:**
+- ✅ Better UX - users always start at top of new pages
+- ✅ Opt-in feature - doesn't affect existing layouts
+- ✅ Works with all Sidebar variants (default, floating, inset)
+- ✅ Smooth scroll behavior via JavaScript
+- ✅ Proper cleanup (unsubscribes on dispose)
+
+**Files Changed:**
+```
+src/BlazorUI.Components/Components/Sidebar/SidebarInset.razor
+src/BlazorUI.Components/Components/Sidebar/SidebarInset.razor.cs
+src/BlazorUI.Components/wwwroot/js/sidebar.js
+demo/BlazorUI.Demo.Shared/Common/MainLayout.razor
+```
+
+---
+
+### 📝 Related Improvements
+
+**SidebarInset Component Enhancements** (from earlier commits):
+- Independent scrolling for sidebar and content areas
+- ScrollArea integration with auto-hide scrollbars
+- Dynamic content height updates via ResizeObserver
+- Production-ready scrolling behavior matching modern apps
+
+**ScrollArea Enhancements:**
+- Auto-hide behavior - scrollbar only visible when content overflows
+- `data-state` attribute (visible/hidden) based on overflow detection
+- ScrollBar hides completely when no overflow
+- Responsive to dynamic content changes (collapsible menus, dynamic lists)
+
 ---
 
 ## 2026-02-05 - Input Components & Positioning Enhancements
