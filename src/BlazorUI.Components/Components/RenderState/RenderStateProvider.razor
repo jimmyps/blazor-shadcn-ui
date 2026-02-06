@@ -87,11 +87,11 @@
             }
             catch (JSException)
             {
-                // Silently handle - JS runtime may not be available
+                // JS execution error - silently handle
             }
             catch (InvalidOperationException)
             {
-                // Silently handle - JS runtime not available
+                // JS runtime not available (e.g., during prerendering) - silently handle
             }
         }
 
