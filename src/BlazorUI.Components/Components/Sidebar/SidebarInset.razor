@@ -93,6 +93,10 @@
             {
                 // JS execution error - silently handle
             }
+            catch (ObjectDisposedException)
+            {
+                // Component disposed during navigation - silently handle
+            }
             catch (InvalidOperationException)
             {
                 // JS runtime not available - silently handle
@@ -137,7 +141,10 @@
 
     public async ValueTask DisposeAsync()
     {
-        NavigationManager.LocationChanged -= OnLocationChanged;
+        if (ResetScrollOnNavigation)
+        {
+            NavigationManager.LocationChanged -= OnLocationChanged;
+        }
 
         if (_module != null)
         {
