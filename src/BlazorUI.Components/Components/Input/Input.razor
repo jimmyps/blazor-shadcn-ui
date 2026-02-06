@@ -18,7 +18,7 @@
        pattern="@Pattern"
        inputmode="@InputMode"
        autofocus="@Autofocus"
-       spellcheck="@(Spellcheck?.ToString().ToLower())"
+       spellcheck="@((Spellcheck ?? false).ToString().ToLower())"
        aria-label="@AriaLabel"
        aria-describedby="@AriaDescribedBy"
        aria-invalid="@(EffectiveAriaInvalid?.ToString().ToLower())"
