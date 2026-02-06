@@ -1,7 +1,9 @@
 @using Microsoft.AspNetCore.Components.Routing
 @using BlazorUI.Components.RenderState
 @using BlazorUI.Components.Motion
+@using Microsoft.JSInterop
 @inject NavigationManager Nav
+@inject IJSRuntime JSRuntime
 @implements IDisposable
 @namespace BlazorUI.Components
 
@@ -128,8 +130,22 @@ else
                         RenderContext?.IsHydrating == false;
     }
 
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
+        // Reset scroll position to top on navigation
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("window.scrollTo", new { top = 0, left = 0, behavior = "instant" });
+        }
+        catch (JSException)
+        {
+            // Silently handle - JS runtime may not be available (e.g., during prerendering)
+        }
+        catch (InvalidOperationException)
+        {
+            // Silently handle - JS runtime not available
+        }
+        
         // Update current URI to trigger re-render with new key
         _currentUri = e.Location;
         
