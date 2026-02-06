@@ -104,6 +104,15 @@ export function clearValidationError(elementId) {
 }
 
 /**
+ * Alias for setValidationError for backwards compatibility
+ * @param {string} elementId - The element ID
+ * @param {string} message - The error message
+ */
+export function showValidationError(elementId, message) {
+    setValidationError(elementId, message);
+}
+
+/**
  * Initialize input event handling for an element
  * @param {string} elementId - The element ID
  * @param {string} updateOn - 'input' or 'change'

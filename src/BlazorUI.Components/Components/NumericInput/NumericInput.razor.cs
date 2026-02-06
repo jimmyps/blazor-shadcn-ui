@@ -48,7 +48,7 @@ namespace BlazorUI.Components.NumericInput;
 /// </example>
 public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
 {
-    private static string? _firstInvalidInputId = null;
+    private string? _firstInvalidInputId = null;
     
     private IJSObjectReference? _inputModule;
     private IJSObjectReference? _validationModule;
@@ -647,11 +647,6 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
                 await _inputModule.DisposeAsync();
             }
 
-            if (_validationModule != null)
-            {
-                await _validationModule.DisposeAsync();
-            }
-            
             if (_cursorModule != null)
             {
                 await _cursorModule.DisposeAsync();

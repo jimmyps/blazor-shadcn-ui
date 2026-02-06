@@ -354,17 +354,6 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
     /// Handles the input event (fired on every keystroke).
     /// </summary>
     /// <param name="args">The change event arguments.</param>
-    private async Task HandleInput(ChangeEventArgs args)
-    {
-        var newValue = args.Value?.ToString();
-        Value = newValue;
-
-        if (ValueChanged.HasDelegate)
-        {
-            await ValueChanged.InvokeAsync(newValue);
-        }
-    }
-
     /// <summary>
     /// Called from JavaScript when input value changes.
     /// This is invoked based on UpdateOn mode and debounce settings.
@@ -379,8 +368,9 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
         await ValueChanged.InvokeAsync(value);
     }
 
-    protected async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {
             try
@@ -417,9 +407,8 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
         {
             if (_jsInitialized && _inputModule != null)
             {
-                // Dispose input event handling and validation tracking
+                // Dispose input event handling
                 await _inputModule.InvokeVoidAsync("disposeInput", EffectiveId);
-                await _inputModule.InvokeVoidAsync("disposeValidation", EffectiveId);
                 
                 await _inputModule.DisposeAsync();
             }

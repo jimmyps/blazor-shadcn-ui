@@ -48,7 +48,7 @@ namespace BlazorUI.Components.CurrencyInput;
 /// </example>
 public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
 {
-    private static string? _firstInvalidInputId = null;
+    private string? _firstInvalidInputId = null;
     
     // Cache for currency definitions to avoid repeated lookups
     private CurrencyDefinition? _cachedCurrency;
@@ -501,60 +501,6 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Handles the input event (fired on every keystroke).
     /// </summary>
-    private async Task HandleInput(ChangeEventArgs args)
-    {
-        var stringValue = args.Value?.ToString();
-        
-        // Store raw input value while editing
-        _editingValue = stringValue;
-        
-        // Only update value if UpdateOn is set to Input
-        if (UpdateOn == InputUpdateMode.Input)
-        {
-            var parsedValue = TryParseValue(stringValue);
-            Value = parsedValue;
-
-            if (ValueChanged.HasDelegate)
-            {
-                await ValueChanged.InvokeAsync(parsedValue);
-            }
-
-            // Notify EditContext of field change to trigger validation
-            if (ShowValidationError && EditContext != null && ValueExpression != null)
-            {
-                EditContext.NotifyFieldChanged(_fieldIdentifier);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Handles the change event (fired when input loses focus).
-    /// </summary>
-    private async Task HandleChange(ChangeEventArgs args)
-    {
-        var stringValue = args.Value?.ToString();
-        
-        // Update value on blur if UpdateOn is set to Change
-        if (UpdateOn == InputUpdateMode.Change)
-        {
-            // Use the editing value if available (more reliable than args.Value)
-            var valueToUse = !string.IsNullOrEmpty(_editingValue) ? _editingValue : stringValue;
-            var parsedValue = TryParseValue(valueToUse);
-            Value = parsedValue;
-
-            if (ValueChanged.HasDelegate)
-            {
-                await ValueChanged.InvokeAsync(parsedValue);
-            }
-
-            // Notify EditContext of field change to trigger validation
-            if (ShowValidationError && EditContext != null && ValueExpression != null)
-            {
-                EditContext.NotifyFieldChanged(_fieldIdentifier);
-            }
-        }
-    }
-
     /// <summary>
     /// Called from JavaScript when input value changes.
     /// This is invoked based on UpdateOn mode and debounce settings.

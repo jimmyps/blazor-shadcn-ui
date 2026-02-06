@@ -38,7 +38,7 @@ namespace BlazorUI.Components.MaskedInput;
 /// </example>
 public partial class MaskedInput : ComponentBase, IAsyncDisposable
 {
-    private static string? _firstInvalidInputId = null;
+    private string? _firstInvalidInputId = null;
     
     private IJSObjectReference? _inputModule;
     private DotNetObjectReference<MaskedInput>? _dotNetRef;
@@ -725,11 +725,11 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         DetachValidationStateChangedListener();
         
         // Clean up masked input JS
-        if (_maskModule != null && _isInitialized && !string.IsNullOrEmpty(Id))
+        if (_maskModule != null && _isInitialized)
         {
             try
             {
-                await _maskModule.InvokeVoidAsync("disposeMaskedInput", Id);
+                await _maskModule.InvokeVoidAsync("disposeMaskedInput", EffectiveId);
             }
             catch (JSException)
             {
