@@ -53,7 +53,9 @@ public partial class Input : ComponentBase, IAsyncDisposable
     // Key for storing first invalid input ID in EditContext.Properties
     private static readonly object _firstInvalidInputIdKey = new();
     
-    private IJSObjectReference? _validationModule;
+    private IJSObjectReference? _inputModule;
+    private DotNetObjectReference<Input>? _dotNetRef;
+    private bool _jsInitialized = false;
     private EditContext? _previousEditContext;
     private FieldIdentifier _fieldIdentifier;
     private string? _currentErrorMessage;
@@ -77,6 +79,14 @@ public partial class Input : ComponentBase, IAsyncDisposable
     /// </remarks>
     [Parameter]
     public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Change;
+
+    /// <summary>
+    /// Gets or sets the debounce delay in milliseconds for Input mode.
+    /// Only applies when UpdateOn=Input. Set to 0 for immediate updates.
+    /// Default: 0 (no debounce)
+    /// </summary>
+    [Parameter]
+    public int DebounceDelay { get; set; } = 0;
 
     /// <summary>
     /// Gets or sets the type of input.
@@ -454,27 +464,39 @@ public partial class Input : ComponentBase, IAsyncDisposable
         {
             try
             {
-                if (ShowValidationError)
-                {
-                    _validationModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                        "import", "./_content/NeoBlazorUI.Components/js/input.js");
+                // Import the input module
+                _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoBlazorUI.Components/js/input.js");
 
-                    // Initialize validation with UpdateOn mode
-                    if (_validationModule != null && !string.IsNullOrEmpty(Id))
-                    {
-                        var updateOnMode = UpdateOn == InputUpdateMode.Input ? "input" : "change";
-                        await _validationModule.InvokeVoidAsync("initializeValidation", Id, updateOnMode);
-                    }
+                // Create DotNetObjectReference for callbacks
+                _dotNetRef = DotNetObjectReference.Create(this);
+
+                // Initialize input event handling with UpdateOn mode and debounce
+                await _inputModule.InvokeVoidAsync(
+                    "initializeInput",
+                    Id,
+                    UpdateOn.ToString().ToLower(),
+                    DebounceDelay,
+                    _dotNetRef
+                );
+
+                _jsInitialized = true;
+
+                // Initialize validation if ShowValidationError is enabled
+                if (ShowValidationError && EditContext != null && ValueExpression != null)
+                {
+                    _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+                    await _inputModule.InvokeVoidAsync("initializeValidation", Id, UpdateOn.ToString().ToLower());
                 }
             }
-            catch (JSException)
+            catch (Exception ex)
             {
-                // JS module not available, validation will still work via HTML5
+                Console.Error.WriteLine($"Error initializing input JS: {ex.Message}");
             }
         }
 
         // Apply validation errors after render
-        if (ShowValidationError && _validationModule != null)
+        if (ShowValidationError && _inputModule != null)
         {
             await UpdateValidationDisplayAsync();
         }
@@ -498,7 +520,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
 
     private async Task UpdateValidationDisplayAsync()
     {
-        if (EditContext == null || _validationModule == null || string.IsNullOrEmpty(Id))
+        if (EditContext == null || _inputModule == null || string.IsNullOrEmpty(Id))
             return;
 
         try
@@ -531,7 +553,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
                     if (isFirstInvalid && !_hasShownTooltip)
                     {
                         // Only the FIRST invalid input shows tooltip and gets focus
-                        await _validationModule.InvokeVoidAsync(
+                        await _inputModule.InvokeVoidAsync(
                             "setValidationError",
                             Id,
                             errorMessage
@@ -542,7 +564,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
                     {
                         // Other invalid inputs just get the custom validity set
                         // (no tooltip, no focus)
-                        await _validationModule.InvokeVoidAsync(
+                        await _inputModule.InvokeVoidAsync(
                             "setValidationErrorSilent",
                             Id,
                             errorMessage
@@ -552,7 +574,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
                 else
                 {
                     // Clear validation error
-                    await _validationModule.InvokeVoidAsync(
+                    await _inputModule.InvokeVoidAsync(
                         "clearValidationError",
                         Id
                     );
@@ -567,6 +589,38 @@ public partial class Input : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Called from JavaScript when input value changes.
+    /// This is invoked based on UpdateOn mode and debounce settings.
+    /// </summary>
+    [JSInvokable]
+    public async Task OnInputChanged(string? value)
+    {
+        // Update local state
+        Value = value;
+
+        // Notify parent component
+        await ValueChanged.InvokeAsync(value);
+
+        // Trigger EditContext validation if applicable
+        if (EditContext != null && ValueExpression != null)
+        {
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+            EditContext.NotifyFieldChanged(_fieldIdentifier);
+            await UpdateValidationState();
+        }
+
+        // CRITICAL: Don't call StateHasChanged() here to avoid re-render during typing!
+    }
+
+    private async Task UpdateValidationState()
+    {
+        if (ShowValidationError && EditContext != null && _inputModule != null)
+        {
+            await UpdateValidationDisplayAsync();
+        }
+    }
+
     private void DetachValidationStateChangedListener()
     {
         if (_previousEditContext != null)
@@ -575,80 +629,35 @@ public partial class Input : ComponentBase, IAsyncDisposable
         }
     }
 
-    /// <summary>
-    /// Handles the input event (fired on every keystroke).
-    /// </summary>
-    /// <param name="args">The change event arguments.</param>
-    private async Task HandleInput(ChangeEventArgs args)
-    {
-        var newValue = args.Value?.ToString();
-        
-        // Only update value if UpdateOn is set to Input
-        if (UpdateOn == InputUpdateMode.Input)
-        {
-            Value = newValue;
-
-            if (ValueChanged.HasDelegate)
-            {
-                await ValueChanged.InvokeAsync(newValue);
-            }
-
-            // Notify EditContext of field change to trigger validation
-            if (ShowValidationError && EditContext != null && ValueExpression != null)
-            {
-                EditContext.NotifyFieldChanged(_fieldIdentifier);
-            }
-        }
-        // Note: When UpdateOn=Change, the JS validation handler (initialized in OnAfterRenderAsync)
-        // automatically clears tooltips on input, so no C# code needed here for performance
-    }
-
-    /// <summary>
-    /// Handles the change event (fired when input loses focus).
-    /// </summary>
-    /// <param name="args">The change event arguments.</param>
-    private async Task HandleChange(ChangeEventArgs args)
-    {
-        var newValue = args.Value?.ToString();
-        
-        // Update value on blur if UpdateOn is set to Change
-        if (UpdateOn == InputUpdateMode.Change)
-        {
-            Value = newValue;
-
-            if (ValueChanged.HasDelegate)
-            {
-                await ValueChanged.InvokeAsync(newValue);
-            }
-
-            // Notify EditContext of field change to trigger validation
-            if (ShowValidationError && EditContext != null && ValueExpression != null)
-            {
-                EditContext.NotifyFieldChanged(_fieldIdentifier);
-            }
-        }
-    }
-
     public async ValueTask DisposeAsync()
     {
-        DetachValidationStateChangedListener();
-
-        if (_validationModule is not null)
+        try
         {
-            try
+            DetachValidationStateChangedListener();
+
+            if (_jsInitialized && _inputModule != null)
             {
-                // Clean up validation tracking
+                // Dispose input event handling
+                await _inputModule.InvokeVoidAsync("disposeInput", Id);
+
+                // Dispose validation tracking
                 if (!string.IsNullOrEmpty(Id))
                 {
-                    await _validationModule.InvokeVoidAsync("disposeValidation", Id);
+                    await _inputModule.InvokeVoidAsync("disposeValidation", Id);
                 }
                 
-                await _validationModule.DisposeAsync();
+                await _inputModule.DisposeAsync();
             }
-            catch (JSDisconnectedException)
-            {
-                // The JS runtime is already disposed
-            }
+
+            _dotNetRef?.Dispose();
+        }
+        catch (JSDisconnectedException)
+        {
+            // The JS runtime is already disposed
+        }
+        catch
+        {
+            // Ignore disposal errors
         }
     }
 }
