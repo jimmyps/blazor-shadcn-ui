@@ -184,20 +184,25 @@ export async function computePosition(reference, floating, options = {}) {
  * @param {HTMLElement} floating - The floating element
  * @param {Object} position - Position result from computePosition
  * @param {boolean} makeVisible - Whether to make the element visible after positioning
+ * @returns {Object} Final position after all adjustments {x, y, strategy}
  */
 export function applyPosition(floating, position, makeVisible = false) {
-if (!floating || !position) return;
+if (!floating || !position) return position;
+
+// Track the initial position before viewport adjustments
+let finalX = position.x;
+let finalY = position.y;
 
 // Apply all positioning styles atomically to prevent flash
-// Use higher z-index for fixed positioning (nested dropdowns) to ensure they appear above parent popovers
+// Use setProperty with 'important' to ensure these styles take precedence over inline styles from Blazor
 const zIndex = position.strategy === 'fixed' ? '9999' : floatingZIndex;
-Object.assign(floating.style, {
-    position: position.strategy || 'absolute',
-    left: `${position.x}px`,
-    top: `${position.y}px`,
-    transformOrigin: position.transformOrigin,
-    zIndex: zIndex
-});
+floating.style.setProperty('position', position.strategy || 'absolute', 'important');
+floating.style.setProperty('left', `${position.x}px`, 'important');
+floating.style.setProperty('top', `${position.y}px`, 'important');
+floating.style.setProperty('z-index', zIndex, 'important');
+if (position.transformOrigin) {
+    floating.style.transformOrigin = position.transformOrigin;
+}
 
     // Set transform-origin on the first child if it exists (for proper animations)
     // Otherwise, set it on the floating element itself
@@ -229,17 +234,20 @@ Object.assign(floating.style, {
             floating.style.overflowY = 'auto';
             // Reposition to ensure it's within bounds
             if (exceedsBottom) {
-                floating.style.top = `${padding}px`;
+                finalY = padding;
+                floating.style.setProperty('top', `${finalY}px`, 'important');
             }
         } else {
             // Content fits in viewport but positioned poorly - just reposition it
             if (exceedsBottom) {
                 // Shift up to fit
                 const newTop = viewportHeight - rect.height - padding;
-                floating.style.top = `${Math.max(padding, newTop)}px`;
+                finalY = Math.max(padding, newTop);
+                floating.style.setProperty('top', `${finalY}px`, 'important');
             } else if (exceedsTop) {
                 // Shift down to fit
-                floating.style.top = `${padding}px`;
+                finalY = padding;
+                floating.style.setProperty('top', `${finalY}px`, 'important');
             }
         }
     }
@@ -252,17 +260,20 @@ Object.assign(floating.style, {
             floating.style.overflowX = 'auto';
             // Reposition to ensure it's within bounds
             if (exceedsRight) {
-                floating.style.left = `${padding}px`;
+                finalX = padding;
+                floating.style.setProperty('left', `${finalX}px`, 'important');
             }
         } else {
             // Content fits in viewport but positioned poorly - just reposition it
             if (exceedsRight) {
                 // Shift left to fit
                 const newLeft = viewportWidth - rect.width - padding;
-                floating.style.left = `${Math.max(padding, newLeft)}px`;
+                finalX = Math.max(padding, newLeft);
+                floating.style.setProperty('left', `${finalX}px`, 'important');
             } else if (exceedsLeft) {
                 // Shift right to fit
-                floating.style.left = `${padding}px`;
+                finalX = padding;
+                floating.style.setProperty('left', `${finalX}px`, 'important');
             }
         }
     }
@@ -284,13 +295,22 @@ Object.assign(floating.style, {
             floating.dispatchEvent(new CustomEvent('blazorui:visible', { bubbles: true }));
         });
     }
+
+    // Return final position after all adjustments so C# can stay in sync
+    return {
+        x: finalX,
+        y: finalY,
+        strategy: position.strategy || 'absolute',
+        placement: position.placement,
+        transformOrigin: position.transformOrigin
+    };
 }
 
 /**
  * Sets up auto-update for dynamic positioning.
  * @param {HTMLElement} reference - Reference element
  * @param {HTMLElement} floating - Floating element
- * @param {Object} options - Positioning options
+ * @param {Object} options - Positioning options (including optional positionSyncCallback)
  * @returns {Object} Disposable object with id and apply() method for cleanup
  */
 export async function autoUpdate(reference, floating, options = {}) {

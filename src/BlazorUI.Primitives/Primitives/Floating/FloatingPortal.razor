@@ -352,14 +352,17 @@
                 _portalContentRef,
                 options);
 
-            // Store position in Blazor state so it survives re-renders
-            _positionLeft = position.X;
-            _positionTop = position.Y;
-
-            // Apply position via JS for initial display
-            await PositioningService.ApplyPositionAsync(_portalContentRef, position, makeVisible: true);
+            // Apply position via JS for initial display and get back the final adjusted position
+            // JS may adjust position for viewport boundaries, so use the returned final position
+            var finalPosition = await PositioningService.ApplyPositionAsync(_portalContentRef, position, makeVisible: true);
+            
+            // Store final position for reference (though we won't apply it via inline styles)
+            _positionLeft = finalPosition.X;
+            _positionTop = finalPosition.Y;
 
             // Set up auto-update for dynamic positioning (scroll, resize)
+            // JS will manage position updates; C# won't overwrite them since GetInitialStyle() 
+            // no longer includes left/top after _isPositioned = true
             _positioningCleanup = await PositioningService.AutoUpdateAsync(
                 anchor,
                 _portalContentRef,
@@ -385,9 +388,11 @@
             return $"position: fixed; z-index: {ZIndex}; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
         }
 
-        // After positioning, include stored position so it survives Blazor re-renders
-        // This prevents the content from "closing" when parent components re-render
-        return $"position: {Strategy}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px; opacity: 1; visibility: visible;";
+        // After initial positioning, DO NOT include left/top in inline styles
+        // This allows JS to fully control positioning without C# server-side re-renders reverting changes
+        // JS applies position via element.style which takes precedence over inline styles during updates
+        // But Blazor re-renders would overwrite element.style if we set inline left/top here
+        return $"position: {Strategy}; z-index: {ZIndex}; opacity: 1; visibility: visible;";
     }
 
     private string GetMergedStyle()

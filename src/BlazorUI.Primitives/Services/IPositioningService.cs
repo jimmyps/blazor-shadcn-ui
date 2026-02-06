@@ -25,7 +25,8 @@ public interface IPositioningService
     /// <param name="floating">The element to position.</param>
     /// <param name="position">The position data to apply.</param>
     /// <param name="makeVisible">Whether to make the element visible after positioning.</param>
-    Task ApplyPositionAsync(ElementReference floating, PositionResult position, bool makeVisible = false);
+    /// <returns>The final position after viewport adjustments.</returns>
+    Task<PositionResult> ApplyPositionAsync(ElementReference floating, PositionResult position, bool makeVisible = false);
 
     /// <summary>
     /// Sets up auto-update for dynamic positioning (e.g., on scroll/resize).

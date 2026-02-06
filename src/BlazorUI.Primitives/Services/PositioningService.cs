@@ -84,10 +84,27 @@ public class PositioningService : IPositioningService, IAsyncDisposable
     }
 
     /// <inheritdoc />
-    public async Task ApplyPositionAsync(ElementReference floating, PositionResult position, bool makeVisible = false)
+    public async Task<PositionResult> ApplyPositionAsync(ElementReference floating, PositionResult position, bool makeVisible = false)
     {
         var module = await GetModuleAsync();
-        await module.InvokeVoidAsync("applyPosition", floating, position, makeVisible);
+        var result = await module.InvokeAsync<JsonElement>("applyPosition", floating, position, makeVisible);
+        
+        // applyPosition now returns the final adjusted position (after viewport constraints)
+        // Update the PositionResult with the final values from JS
+        return new PositionResult
+        {
+            X = result.GetProperty("x").GetDouble(),
+            Y = result.GetProperty("y").GetDouble(),
+            Placement = result.TryGetProperty("placement", out var placement) 
+                ? placement.GetString() ?? position.Placement 
+                : position.Placement,
+            TransformOrigin = result.TryGetProperty("transformOrigin", out var origin)
+                ? origin.GetString()
+                : position.TransformOrigin,
+            Strategy = result.TryGetProperty("strategy", out var strategy)
+                ? strategy.GetString() ?? position.Strategy
+                : position.Strategy
+        };
     }
 
     /// <inheritdoc />
