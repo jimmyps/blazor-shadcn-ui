@@ -48,7 +48,8 @@ namespace BlazorUI.Components.NumericInput;
 /// </example>
 public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
 {
-    private static string? _firstInvalidInputId = null;
+    // Key for storing first invalid input ID in EditContext.Properties
+    private static readonly object _firstInvalidInputIdKey = new();
     
     private IJSObjectReference? _inputModule;
     private IJSObjectReference? _validationModule;
@@ -561,8 +562,11 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
 
     private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
     {
-        // Reset first invalid input tracking on new validation cycle
-        _firstInvalidInputId = null;
+        // Reset first invalid input tracking for this EditContext on new validation cycle
+        if (EditContext != null)
+        {
+            EditContext.Properties.Remove(_firstInvalidInputIdKey);
+        }
         _hasShownTooltip = false;
 
         InvokeAsync(async () =>
@@ -590,12 +594,18 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    // Determine if this is the first invalid input
-                    var isFirstInvalid = _firstInvalidInputId == null;
+                    // Determine if this is the first invalid input for this EditContext
+                    // Using EditContext.Properties for per-form state storage
+                    string? firstInvalidId = null;
+                    if (EditContext.Properties.TryGetValue(_firstInvalidInputIdKey, out var value))
+                    {
+                        firstInvalidId = value as string;
+                    }
+                    var isFirstInvalid = firstInvalidId == null;
                     
                     if (isFirstInvalid)
                     {
-                        _firstInvalidInputId = EffectiveId;
+                        EditContext.Properties[_firstInvalidInputIdKey] = EffectiveId;
                     }
 
                     // Show tooltip and focus only for the first invalid input
@@ -609,12 +619,6 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
                 {
                     // Clear validation error
                     await _validationModule.InvokeVoidAsync("clearValidationError", EffectiveId);
-                    
-                    // Reset first invalid tracking if this was the first invalid input
-                    if (_firstInvalidInputId == EffectiveId)
-                    {
-                        _firstInvalidInputId = null;
-                    }
                 }
             }
         }
@@ -647,11 +651,6 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
                 await _inputModule.DisposeAsync();
             }
 
-            if (_validationModule != null)
-            {
-                await _validationModule.DisposeAsync();
-            }
-            
             if (_cursorModule != null)
             {
                 await _cursorModule.DisposeAsync();

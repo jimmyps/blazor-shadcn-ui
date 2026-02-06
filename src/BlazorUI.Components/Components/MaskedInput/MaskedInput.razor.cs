@@ -38,7 +38,8 @@ namespace BlazorUI.Components.MaskedInput;
 /// </example>
 public partial class MaskedInput : ComponentBase, IAsyncDisposable
 {
-    private static string? _firstInvalidInputId = null;
+    // Key for storing first invalid input ID in EditContext.Properties
+    private static readonly object _firstInvalidInputIdKey = new();
     
     private IJSObjectReference? _inputModule;
     private DotNetObjectReference<MaskedInput>? _dotNetRef;
@@ -638,7 +639,11 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
 
     private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
     {
-        _firstInvalidInputId = null;
+        // Reset first invalid input tracking for this EditContext on new validation cycle
+        if (EditContext != null)
+        {
+            EditContext.Properties.Remove(_firstInvalidInputIdKey);
+        }
         _hasShownTooltip = false;
 
         InvokeAsync(async () =>
@@ -664,11 +669,18 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    var isFirstInvalid = _firstInvalidInputId == null;
+                    // Determine if this is the first invalid input for this EditContext
+                    // Using EditContext.Properties for per-form state storage
+                    string? firstInvalidId = null;
+                    if (EditContext.Properties.TryGetValue(_firstInvalidInputIdKey, out var value))
+                    {
+                        firstInvalidId = value as string;
+                    }
+                    var isFirstInvalid = firstInvalidId == null;
                     
                     if (isFirstInvalid)
                     {
-                        _firstInvalidInputId = EffectiveId;
+                        EditContext.Properties[_firstInvalidInputIdKey] = EffectiveId;
                     }
 
                     if (isFirstInvalid && !_hasShownTooltip)
@@ -680,11 +692,6 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
                 else
                 {
                     await _validationModule.InvokeVoidAsync("clearValidationError", EffectiveId);
-                    
-                    if (_firstInvalidInputId == EffectiveId)
-                    {
-                        _firstInvalidInputId = null;
-                    }
                 }
             }
         }
@@ -725,11 +732,11 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         DetachValidationStateChangedListener();
         
         // Clean up masked input JS
-        if (_maskModule != null && _isInitialized && !string.IsNullOrEmpty(Id))
+        if (_maskModule != null && _isInitialized)
         {
             try
             {
-                await _maskModule.InvokeVoidAsync("disposeMaskedInput", Id);
+                await _maskModule.InvokeVoidAsync("disposeMaskedInput", EffectiveId);
             }
             catch (JSException)
             {
@@ -739,18 +746,6 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
 
         _maskDotNetRef?.Dispose();
         
-        if (_validationModule != null)
-        {
-            try
-            {
-                await _validationModule.DisposeAsync();
-            }
-            catch (JSDisconnectedException)
-            {
-                // Ignore
-            }
-        }
-
         if (_maskModule != null)
         {
             try

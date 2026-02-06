@@ -48,7 +48,8 @@ namespace BlazorUI.Components.CurrencyInput;
 /// </example>
 public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
 {
-    private static string? _firstInvalidInputId = null;
+    // Key for storing first invalid input ID in EditContext.Properties
+    private static readonly object _firstInvalidInputIdKey = new();
     
     // Cache for currency definitions to avoid repeated lookups
     private CurrencyDefinition? _cachedCurrency;
@@ -501,60 +502,6 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Handles the input event (fired on every keystroke).
     /// </summary>
-    private async Task HandleInput(ChangeEventArgs args)
-    {
-        var stringValue = args.Value?.ToString();
-        
-        // Store raw input value while editing
-        _editingValue = stringValue;
-        
-        // Only update value if UpdateOn is set to Input
-        if (UpdateOn == InputUpdateMode.Input)
-        {
-            var parsedValue = TryParseValue(stringValue);
-            Value = parsedValue;
-
-            if (ValueChanged.HasDelegate)
-            {
-                await ValueChanged.InvokeAsync(parsedValue);
-            }
-
-            // Notify EditContext of field change to trigger validation
-            if (ShowValidationError && EditContext != null && ValueExpression != null)
-            {
-                EditContext.NotifyFieldChanged(_fieldIdentifier);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Handles the change event (fired when input loses focus).
-    /// </summary>
-    private async Task HandleChange(ChangeEventArgs args)
-    {
-        var stringValue = args.Value?.ToString();
-        
-        // Update value on blur if UpdateOn is set to Change
-        if (UpdateOn == InputUpdateMode.Change)
-        {
-            // Use the editing value if available (more reliable than args.Value)
-            var valueToUse = !string.IsNullOrEmpty(_editingValue) ? _editingValue : stringValue;
-            var parsedValue = TryParseValue(valueToUse);
-            Value = parsedValue;
-
-            if (ValueChanged.HasDelegate)
-            {
-                await ValueChanged.InvokeAsync(parsedValue);
-            }
-
-            // Notify EditContext of field change to trigger validation
-            if (ShowValidationError && EditContext != null && ValueExpression != null)
-            {
-                EditContext.NotifyFieldChanged(_fieldIdentifier);
-            }
-        }
-    }
-
     /// <summary>
     /// Called from JavaScript when input value changes.
     /// This is invoked based on UpdateOn mode and debounce settings.
@@ -778,8 +725,11 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
 
     private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
     {
-        // Reset first invalid input tracking on new validation cycle
-        _firstInvalidInputId = null;
+        // Reset first invalid input tracking for this EditContext on new validation cycle
+        if (EditContext != null)
+        {
+            EditContext.Properties.Remove(_firstInvalidInputIdKey);
+        }
         _hasShownTooltip = false;
 
         InvokeAsync(async () =>
@@ -807,12 +757,18 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    // Determine if this is the first invalid input
-                    var isFirstInvalid = _firstInvalidInputId == null;
+                    // Determine if this is the first invalid input for this EditContext
+                    // Using EditContext.Properties for per-form state storage
+                    string? firstInvalidId = null;
+                    if (EditContext.Properties.TryGetValue(_firstInvalidInputIdKey, out var value))
+                    {
+                        firstInvalidId = value as string;
+                    }
+                    var isFirstInvalid = firstInvalidId == null;
                     
                     if (isFirstInvalid)
                     {
-                        _firstInvalidInputId = EffectiveId;
+                        EditContext.Properties[_firstInvalidInputIdKey] = EffectiveId;
                     }
 
                     // Show tooltip and focus only for the first invalid input
@@ -826,12 +782,6 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
                 {
                     // Clear validation error
                     await _validationModule.InvokeVoidAsync("clearValidationError", EffectiveId);
-                    
-                    // Reset first invalid tracking if this was the first invalid input
-                    if (_firstInvalidInputId == EffectiveId)
-                    {
-                        _firstInvalidInputId = null;
-                    }
                 }
             }
         }
@@ -870,17 +820,5 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
         }
 
         DetachValidationStateChangedListener();
-        
-        if (_validationModule != null)
-        {
-            try
-            {
-                await _validationModule.DisposeAsync();
-            }
-            catch (JSDisconnectedException)
-            {
-                // Ignore - this happens during hot reload or when navigating away
-            }
-        }
     }
 }
