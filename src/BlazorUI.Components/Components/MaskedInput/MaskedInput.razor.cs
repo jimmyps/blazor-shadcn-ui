@@ -64,11 +64,11 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     /// Gets or sets when the input should update its bound value.
     /// </summary>
     /// <remarks>
-    /// - Input: Updates value immediately on every keystroke (default)
-    /// - Change: Updates value only when input loses focus
+    /// - Input: Updates value immediately on every keystroke
+    /// - Change: Updates value only when input loses focus (default)
     /// </remarks>
     [Parameter]
-    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Input;
+    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Change;
 
     /// <summary>
     /// Gets or sets the current value of the input (unmasked).
@@ -380,23 +380,26 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
             return; // JS handles everything
         }
 
-        // Fallback: Basic masking without advanced features
-        var maskedValue = args.Value?.ToString() ?? string.Empty;
-        var rawValue = ExtractRawValue(maskedValue);
-
-        if (rawValue != _lastRawValue && UpdateOn == InputUpdateMode.Input)
+        if (UpdateOn == InputUpdateMode.Input)
         {
-            _lastRawValue = rawValue;
-            Value = string.IsNullOrEmpty(rawValue) ? null : rawValue;
+            // Fallback: Basic masking without advanced features
+            var maskedValue = args.Value?.ToString() ?? string.Empty;
+            var rawValue = ExtractRawValue(maskedValue);
 
-            if (ValueChanged.HasDelegate)
+            if (rawValue != _lastRawValue)
             {
-                await ValueChanged.InvokeAsync(Value);
-            }
+                _lastRawValue = rawValue;
+                Value = string.IsNullOrEmpty(rawValue) ? null : rawValue;
 
-            if (ShowValidationError && EditContext != null && ValueExpression != null)
-            {
-                EditContext.NotifyFieldChanged(_fieldIdentifier);
+                if (ValueChanged.HasDelegate)
+                {
+                    await ValueChanged.InvokeAsync(Value);
+                }
+
+                if (ShowValidationError && EditContext != null && ValueExpression != null)
+                {
+                    EditContext.NotifyFieldChanged(_fieldIdentifier);
+                }
             }
         }
     }
@@ -496,7 +499,12 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
                 if (_maskModule != null && !string.IsNullOrEmpty(Id) && !string.IsNullOrEmpty(Mask))
                 {
                     _dotNetRef = DotNetObjectReference.Create(this);
-                    await _maskModule.InvokeVoidAsync("initializeMaskedInput", Id, Mask, MaskChar, _dotNetRef);
+                    
+                    // Pass UpdateOn setting to JavaScript ('input' or 'change')
+                    var updateOnMode = UpdateOn == InputUpdateMode.Input ? "input" : "change";
+                    
+                    await _maskModule.InvokeVoidAsync("initializeMaskedInput", 
+                        Id, Mask, MaskChar, _dotNetRef, updateOnMode);
                     _isInitialized = true;
                 }
             }

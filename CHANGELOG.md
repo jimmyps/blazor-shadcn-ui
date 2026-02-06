@@ -2,6 +2,207 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-02-06 - Input Component UpdateOn Behavior & Performance Optimization
+
+### 🚀 Performance Improvements
+
+**Status:** ✅ Complete, Production Ready  
+**Impact:** Improved default behavior for Input, CurrencyInput, MaskedInput, and NumericInput components with performance and UX optimizations.
+
+---
+
+### 🎯 Input Components UpdateOn Default Behavior
+
+#### **Enhanced Default Performance Mode**
+
+**Changed default behavior for all input components:**
+
+**Components Updated:**
+- `Input` - Text/email/password/number inputs
+- `CurrencyInput` - Locale-aware currency formatting
+- `MaskedInput` - Pattern-based masked input
+- `NumericInput` - Type-safe numeric input
+
+**What Changed:**
+- **Default `UpdateOn` mode** changed from `Input` → `Change`
+- **Updates on blur** instead of every keystroke
+- **JavaScript-side validation tooltip management** for optimal performance
+
+**Key Benefits:**
+1. **Better Typing UX**
+   - No interruptions while typing
+   - Validation tooltips cleared automatically during input (when `UpdateOn="Change"`)
+   - Tooltips only show after user completes input (on blur)
+
+2. **Better Performance**
+   - Fewer C# ↔ JS interop calls (critical for WebAssembly)
+   - Reduced re-renders in parent components
+   - Value updates once on blur instead of every keystroke
+
+3. **Blazor WebAssembly Optimized**
+   - Minimizes costly interop overhead
+   - Client-side interactivity remains responsive
+   - Ideal for WASM deployment scenarios
+
+**Files Changed:**
+```
+src/BlazorUI.Components/Components/Input/Input.razor.cs
+src/BlazorUI.Components/Components/CurrencyInput/CurrencyInput.razor.cs
+src/BlazorUI.Components/Components/MaskedInput/MaskedInput.razor.cs (JS)
+src/BlazorUI.Components/Components/NumericInput/NumericInput.razor.cs
+src/BlazorUI.Components/wwwroot/js/input.js (new, renamed from input-validation.js)
+src/BlazorUI.Components/wwwroot/js/masked-input.js
+```
+
+**Breaking Change:** ⚠️ Minor
+- Previous default: `UpdateOn="Input"` (immediate updates)
+- New default: `UpdateOn="Change"` (update on blur)
+- **Migration:** Explicitly set `UpdateOn="Input"` if you need real-time updates
+
+**Example:**
+```razor
+<!-- Default behavior (recommended) -->
+<Input @bind-Value="username" />
+<!-- Updates on blur -->
+
+<!-- Real-time updates (when needed) -->
+<Input @bind-Value="searchQuery" UpdateOn="InputUpdateMode.Input" />
+<!-- Updates on every keystroke -->
+```
+
+---
+
+### 🎨 MaskedInput Blur Event Fix
+
+**Fixed Issue:** `onblur` event not triggering when `UpdateOn="Change"`
+
+**Root Cause:**
+- `lastRawValue` was being updated during typing
+- On blur, `currentRaw == lastRawValue`, so no Blazor callback
+
+**Solution:**
+- Only update `lastRawValue` when actually notifying Blazor
+- For `UpdateOn="Change"`: Don't update during typing, update on blur
+- For `UpdateOn="Input"`: Update immediately on every change
+
+**Files Changed:**
+```javascript
+src/BlazorUI.Components/wwwroot/js/masked-input.js
+```
+
+---
+
+### 📖 Documentation Enhancements
+
+**Added comprehensive UpdateOn behavior documentation:**
+
+**Demo Pages Updated:**
+- `InputDemo.razor` - Info alert with collapsible details
+- `CurrencyInputDemo.razor` - Performance optimization tips
+- `MaskedInputDemo.razor` - Masked input specific guidance
+- `NumericInputDemo.razor` - Numeric validation examples
+
+**Each demo includes:**
+- ✅ Prominent info alert explaining `UpdateOn` behavior
+- ✅ Collapsible "Read more" section with:
+  - Benefits of `UpdateOn="Change"` (default)
+  - Comparison of both modes
+  - Context-specific use case examples
+  - WebAssembly performance notes
+- ✅ Lucide icons for visual consistency
+- ✅ Smooth chevron rotation animation
+
+**Example Info Alert Structure:**
+```razor
+<Alert Variant="AlertVariant.Info">
+    <AlertTitle>Optimized for Performance & Best Typing Experience</AlertTitle>
+    <AlertDescription>
+        By default uses UpdateOn="Change" for better performance...
+        <Collapsible>
+            <CollapsibleTrigger>Read more ˅</CollapsibleTrigger>
+            <CollapsibleContent>
+                <!-- Detailed benefits, modes, tips -->
+            </CollapsibleContent>
+        </Collapsible>
+    </AlertDescription>
+</Alert>
+```
+
+---
+
+### 🛠️ Technical Implementation
+
+#### **JavaScript-Side Validation Management**
+
+**New: `input.js` Module**
+- Renamed from `input-validation.js` for broader scope
+- Manages validation tooltips AND UpdateOn behavior
+- Auto-clears tooltips on input when `UpdateOn="Change"`
+
+**Key Functions:**
+```javascript
+// Initialize with UpdateOn mode
+initializeValidation(elementId, updateOn = 'input')
+
+// Auto-clear tooltip on first keystroke (Change mode)
+// Prevents tooltip interference while typing
+
+// Cleanup
+disposeValidation(elementId)
+```
+
+**Flow for `UpdateOn="Change"`:**
+1. User has validation error → tooltip shown
+2. User starts typing → **JS auto-clears tooltip** (no C# call)
+3. User tabs out → C# validates → new error/success shown
+
+**Performance Impact:**
+- Zero C# ↔ JS calls during typing (Change mode)
+- Single event listener per input (efficient)
+- Proper cleanup on dispose
+
+---
+
+### 📝 Code Quality
+
+**Improvements:**
+- ✅ Consistent behavior across all input components
+- ✅ Optimized for WebAssembly deployment
+- ✅ Better separation of concerns (JS handles UI, C# handles logic)
+- ✅ Comprehensive inline documentation
+- ✅ User-friendly demo documentation
+
+**Test Scenarios Validated:**
+1. ✅ `UpdateOn="Change"` - validates on blur
+2. ✅ `UpdateOn="Input"` - validates on every keystroke  
+3. ✅ Validation tooltip auto-clears during typing (Change mode)
+4. ✅ MaskedInput blur event triggers correctly
+5. ✅ No memory leaks (proper event listener cleanup)
+6. ✅ WebAssembly performance (minimal interop)
+
+---
+
+### 🎯 Migration Guide
+
+**For Existing Code:**
+
+If you relied on immediate updates (old default behavior):
+```razor
+<!-- Before (implicit default) -->
+<Input @bind-Value="searchTerm" />
+
+<!-- After (explicit for real-time) -->
+<Input @bind-Value="searchTerm" UpdateOn="InputUpdateMode.Input" />
+```
+
+**Recommended for most cases (new default):**
+```razor
+<Input @bind-Value="email" />
+<!-- Updates on blur - better UX and performance -->
+```
+
+---
+
 ## 2026-02-05 - Input Components & Positioning Enhancements
 
 ### 🎯 New Components & Major Enhancements

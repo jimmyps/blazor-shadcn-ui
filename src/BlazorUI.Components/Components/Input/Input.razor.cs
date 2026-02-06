@@ -1,3 +1,4 @@
+using BlazorUI.Components.Common;
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -66,6 +67,16 @@ public partial class Input : ComponentBase, IAsyncDisposable
     /// </summary>
     [CascadingParameter]
     private EditContext? EditContext { get; set; }
+
+    /// <summary>
+    /// Gets or sets when the input should update its bound value.
+    /// </summary>
+    /// <remarks>
+    /// - Input: Updates value immediately on every keystroke (default)
+    /// - Change: Updates value only when input loses focus
+    /// </remarks>
+    [Parameter]
+    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Change;
 
     /// <summary>
     /// Gets or sets the type of input.
@@ -446,7 +457,14 @@ public partial class Input : ComponentBase, IAsyncDisposable
                 if (ShowValidationError)
                 {
                     _validationModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                        "import", "./_content/NeoBlazorUI.Components/js/input-validation.js");
+                        "import", "./_content/NeoBlazorUI.Components/js/input.js");
+
+                    // Initialize validation with UpdateOn mode
+                    if (_validationModule != null && !string.IsNullOrEmpty(Id))
+                    {
+                        var updateOnMode = UpdateOn == InputUpdateMode.Input ? "input" : "change";
+                        await _validationModule.InvokeVoidAsync("initializeValidation", Id, updateOnMode);
+                    }
                 }
             }
             catch (JSException)
@@ -564,18 +582,25 @@ public partial class Input : ComponentBase, IAsyncDisposable
     private async Task HandleInput(ChangeEventArgs args)
     {
         var newValue = args.Value?.ToString();
-        Value = newValue;
-
-        if (ValueChanged.HasDelegate)
+        
+        // Only update value if UpdateOn is set to Input
+        if (UpdateOn == InputUpdateMode.Input)
         {
-            await ValueChanged.InvokeAsync(newValue);
-        }
+            Value = newValue;
 
-        // Notify EditContext of field change to trigger validation
-        if (ShowValidationError && EditContext != null && ValueExpression != null)
-        {
-            EditContext.NotifyFieldChanged(_fieldIdentifier);
+            if (ValueChanged.HasDelegate)
+            {
+                await ValueChanged.InvokeAsync(newValue);
+            }
+
+            // Notify EditContext of field change to trigger validation
+            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            {
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
+            }
         }
+        // Note: When UpdateOn=Change, the JS validation handler (initialized in OnAfterRenderAsync)
+        // automatically clears tooltips on input, so no C# code needed here for performance
     }
 
     /// <summary>
@@ -584,9 +609,24 @@ public partial class Input : ComponentBase, IAsyncDisposable
     /// <param name="args">The change event arguments.</param>
     private async Task HandleChange(ChangeEventArgs args)
     {
-        // Change event is already handled by HandleInput for immediate updates
-        // This is here for compatibility and potential future use
-        await Task.CompletedTask;
+        var newValue = args.Value?.ToString();
+        
+        // Update value on blur if UpdateOn is set to Change
+        if (UpdateOn == InputUpdateMode.Change)
+        {
+            Value = newValue;
+
+            if (ValueChanged.HasDelegate)
+            {
+                await ValueChanged.InvokeAsync(newValue);
+            }
+
+            // Notify EditContext of field change to trigger validation
+            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            {
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
+            }
+        }
     }
 
     public async ValueTask DisposeAsync()
@@ -597,6 +637,12 @@ public partial class Input : ComponentBase, IAsyncDisposable
         {
             try
             {
+                // Clean up validation tracking
+                if (!string.IsNullOrEmpty(Id))
+                {
+                    await _validationModule.InvokeVoidAsync("disposeValidation", Id);
+                }
+                
                 await _validationModule.DisposeAsync();
             }
             catch (JSDisconnectedException)

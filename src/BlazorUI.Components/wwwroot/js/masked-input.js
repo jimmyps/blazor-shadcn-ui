@@ -4,7 +4,15 @@
 
 const instances = new Map();
 
-export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper) {
+/**
+ * Initialize a masked input field
+ * @param {string} elementId - The ID of the input element
+ * @param {string} mask - The mask pattern
+ * @param {string} maskChar - The placeholder character for mask positions
+ * @param {object} dotNetHelper - .NET object reference for callbacks
+ * @param {string} updateOn - When to update: 'input' or 'change'
+ */
+export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, updateOn = 'change') {
     const element = document.getElementById(elementId);
     if (!element) return;
 
@@ -35,6 +43,9 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper) {
     // State
     let lastValue = element.value;
     let lastCursorPos = 0;
+    let lastRawValue = ''; // Track last notified raw value
+    const updateOnInput = updateOn.toLowerCase() === 'input';
+    const updateOnChange = updateOn.toLowerCase() === 'change';
 
     // ============ UTILITY FUNCTIONS ============
 
@@ -290,7 +301,7 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper) {
 
     // ============ CORE UPDATE FUNCTION ============
 
-    function updateValue(rawValue, rawCursorPos) {
+    function updateValue(rawValue, rawCursorPos, notifyBlazor = true) {
         // Limit raw value to max editable positions
         const maxRaw = positions.filter(p => p.isEditable).length;
         rawValue = rawValue.slice(0, maxRaw);
@@ -306,8 +317,16 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper) {
         const cursorPos = getCursorPosForRawPos(Math.min(rawCursorPos, rawValue.length));
         setCursor(cursorPos);
 
-        // Notify Blazor
-        dotNetHelper.invokeMethodAsync('OnValueChanged', rawValue);
+        // Notify Blazor based on UpdateOn setting
+        if (notifyBlazor && rawValue !== lastRawValue) {
+            if (updateOnInput) {
+                // Update immediately on every change
+                lastRawValue = rawValue;
+                dotNetHelper.invokeMethodAsync('OnValueChanged', rawValue);
+            }
+            // For updateOnChange, don't update lastRawValue here
+            // It will be updated in handleBlur when we actually notify Blazor
+        }
     }
 
     function setCursor(pos) {
@@ -322,6 +341,17 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper) {
         lastCursorPos = finalPos;
     }
 
+    function handleBlur(e) {
+        // If UpdateOn is Change, notify Blazor on blur
+        if (updateOnChange) {
+            const currentRaw = getRawValue(element.value);
+            if (currentRaw !== lastRawValue) {
+                lastRawValue = currentRaw;
+                dotNetHelper.invokeMethodAsync('OnValueChanged', currentRaw);
+            }
+        }
+    }
+
     // ============ ATTACH LISTENERS ============
 
     element.addEventListener('keydown', handleKeyDown);
@@ -329,16 +359,18 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper) {
     element.addEventListener('paste', handlePaste);
     element.addEventListener('focus', handleFocus);
     element.addEventListener('click', handleClick);
+    element.addEventListener('blur', handleBlur);
 
     // Store for cleanup
     instances.set(elementId, {
         element,
-        handlers: { handleKeyDown, handleInput, handlePaste, handleFocus, handleClick }
+        handlers: { handleKeyDown, handleInput, handlePaste, handleFocus, handleClick, handleBlur }
     });
 
     // Initialize with current value
     if (element.value) {
         const raw = getRawValue(element.value);
+        lastRawValue = raw; // Initialize lastRawValue
         element.value = applyMask(raw);
         lastValue = element.value;
     }
@@ -353,6 +385,7 @@ export function disposeMaskedInput(elementId) {
         element.removeEventListener('paste', handlers.handlePaste);
         element.removeEventListener('focus', handlers.handleFocus);
         element.removeEventListener('click', handlers.handleClick);
+        element.removeEventListener('blur', handlers.handleBlur);
         instances.delete(elementId);
     }
 }

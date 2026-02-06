@@ -1,6 +1,8 @@
 @page "/components/masked-input"
 @using BlazorUI.Components.MaskedInput
 @using BlazorUI.Components.Label
+@using BlazorUI.Components.Alert
+@using BlazorUI.Components.Collapsible
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>MaskedInput Component - BlazorUI</PageTitle>
@@ -36,6 +38,59 @@
             </div>
         </div>
     </div>
+
+        <!-- UpdateOn Behavior Info Alert -->
+    <Alert Variant="AlertVariant.Info">
+        <Icon>
+            <LucideIcon Name="info" Size="16" />
+        </Icon>
+        <ChildContent>
+            <AlertTitle>
+                Optimized for Performance & Best Typing Experience
+            </AlertTitle>
+            <AlertDescription>
+                <p class="mb-3">
+                    By default, MaskedInput uses <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Change"</code> for better performance and UX.
+                </p>
+                
+                <Collapsible>
+                    <CollapsibleTrigger Class="inline-flex items-center gap-1 text-sm font-normal hover:underline [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                        <span>Read more</span>
+                        <LucideIcon Name="chevron-down" Size="14" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <div class="space-y-3 pt-3">
+                            <div>
+                                <p class="font-medium mb-2">Benefits:</p>
+                                <ul class="list-disc list-inside space-y-1 ml-2 text-sm">
+                                    <li><strong>Better typing UX:</strong> No interruptions while typing - validation tooltips won't get in your way</li>
+                                    <li><strong>Better performance:</strong> Value updates and validation only run when you tab away (blur)</li>
+                                    <li><strong>Fewer re-renders:</strong> Your bound value updates once on blur, not on every keystroke</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="font-medium mb-2">UpdateOn Modes:</p>
+                                <div class="grid gap-2 text-sm">
+                                    <div>
+                                        <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Change"</code>
+                                        <span class="text-muted-foreground ml-2">→ Updates on blur (default, recommended)</span>
+                                    </div>
+                                    <div>
+                                        <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Input"</code>
+                                        <span class="text-muted-foreground ml-2">→ Updates on every keystroke</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-muted-foreground flex items-start gap-1.5">
+                                <LucideIcon Name="lightbulb" Size="14" Class="mt-0.5 flex-shrink-0" />
+                                <span><strong>Tip:</strong> Use <code class="px-1 py-0.5 bg-muted rounded">UpdateOn="Input"</code> only when you need real-time updates (e.g., live formatting preview, instant validation), or if you're targeting WebAssembly mode where interactivity will be fully handled in client-side.</span>
+                            </p>
+                        </div>
+                    </CollapsibleContent>
+                </Collapsible>
+            </AlertDescription>
+        </ChildContent>
+    </Alert>
 
     <!-- International Phone -->
     <div class="space-y-4">
