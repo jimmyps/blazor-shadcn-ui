@@ -1,8 +1,7 @@
 @namespace BlazorUI.Components.CurrencyInput
 @typeparam TValue
 
-<input @ref="_inputElement"
-    id="@Id"
+<input id="@EffectiveId"
     name="@EffectiveName"
     type="text"
     inputmode="decimal"
@@ -19,3 +18,4 @@
     @onfocus="HandleFocus"
     @onblur="HandleBlur"
     @attributes="AdditionalAttributes" />
+

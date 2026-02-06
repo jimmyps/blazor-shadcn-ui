@@ -60,6 +60,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
     private FieldIdentifier _fieldIdentifier;
     private string? _currentErrorMessage;
     private bool _hasShownTooltip = false;
+    private string? _generatedId;
 
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
@@ -413,6 +414,30 @@ public partial class Input : ComponentBase, IAsyncDisposable
     private string? EffectiveName => Name ?? Id;
 
     /// <summary>
+    /// Gets the effective ID, generating a unique ID if none is provided.
+    /// </summary>
+    /// <remarks>
+    /// This ensures JavaScript can always reference the element, even when Id is not explicitly set.
+    /// The generated ID follows the pattern: input-{6-character-guid}.
+    /// </remarks>
+    private string EffectiveId
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Id))
+                return Id;
+
+            if (_generatedId == null)
+            {
+                // Generate a unique 6-character ID using GUID
+                _generatedId = "input-" + Guid.NewGuid().ToString("N")[..6];
+            }
+
+            return _generatedId;
+        }
+    }
+
+    /// <summary>
     /// Gets the HTML input type attribute value.
     /// </summary>
     private string HtmlType => Type switch
@@ -472,9 +497,10 @@ public partial class Input : ComponentBase, IAsyncDisposable
                 _dotNetRef = DotNetObjectReference.Create(this);
 
                 // Initialize input event handling with UpdateOn mode and debounce
+                // Use EffectiveId which always has a value (user-provided or generated)
                 await _inputModule.InvokeVoidAsync(
                     "initializeInput",
-                    Id,
+                    EffectiveId,
                     UpdateOn.ToString().ToLower(),
                     DebounceDelay,
                     _dotNetRef
@@ -486,7 +512,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
                 if (ShowValidationError && EditContext != null && ValueExpression != null)
                 {
                     _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
-                    await _inputModule.InvokeVoidAsync("initializeValidation", Id, UpdateOn.ToString().ToLower());
+                    await _inputModule.InvokeVoidAsync("initializeValidation", EffectiveId, UpdateOn.ToString().ToLower());
                 }
             }
             catch (Exception ex)
@@ -520,7 +546,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
 
     private async Task UpdateValidationDisplayAsync()
     {
-        if (EditContext == null || _inputModule == null || string.IsNullOrEmpty(Id))
+        if (EditContext == null || _inputModule == null)
             return;
 
         try
@@ -547,7 +573,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
                     
                     if (isFirstInvalid)
                     {
-                        EditContext.Properties[_firstInvalidInputIdKey] = Id;
+                        EditContext.Properties[_firstInvalidInputIdKey] = EffectiveId;
                     }
 
                     if (isFirstInvalid && !_hasShownTooltip)
@@ -555,7 +581,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
                         // Only the FIRST invalid input shows tooltip and gets focus
                         await _inputModule.InvokeVoidAsync(
                             "setValidationError",
-                            Id,
+                            EffectiveId,
                             errorMessage
                         );
                         _hasShownTooltip = true;
@@ -566,7 +592,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
                         // (no tooltip, no focus)
                         await _inputModule.InvokeVoidAsync(
                             "setValidationErrorSilent",
-                            Id,
+                            EffectiveId,
                             errorMessage
                         );
                     }
@@ -576,7 +602,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
                     // Clear validation error
                     await _inputModule.InvokeVoidAsync(
                         "clearValidationError",
-                        Id
+                        EffectiveId
                     );
                     
                     _hasShownTooltip = false;
@@ -637,14 +663,9 @@ public partial class Input : ComponentBase, IAsyncDisposable
 
             if (_jsInitialized && _inputModule != null)
             {
-                // Dispose input event handling
-                await _inputModule.InvokeVoidAsync("disposeInput", Id);
-
-                // Dispose validation tracking
-                if (!string.IsNullOrEmpty(Id))
-                {
-                    await _inputModule.InvokeVoidAsync("disposeValidation", Id);
-                }
+                // Dispose input event handling and validation tracking
+                await _inputModule.InvokeVoidAsync("disposeInput", EffectiveId);
+                await _inputModule.InvokeVoidAsync("disposeValidation", EffectiveId);
                 
                 await _inputModule.DisposeAsync();
             }

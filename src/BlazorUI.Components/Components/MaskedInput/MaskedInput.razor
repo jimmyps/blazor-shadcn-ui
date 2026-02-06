@@ -1,8 +1,7 @@
 @namespace BlazorUI.Components.MaskedInput
 
 <input
-    @ref="inputElement"
-    id="@Id"
+    id="@EffectiveId"
     name="@EffectiveName"
     type="text"
     class="@CssClass"
@@ -19,3 +18,4 @@
     @attributes="AdditionalAttributes"
     @onkeydown="HandleKeyDown"
     @onpaste="HandlePaste" />
+

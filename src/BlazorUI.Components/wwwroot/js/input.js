@@ -103,11 +103,6 @@ export function clearValidationError(elementId) {
     }
 }
 
-// Legacy function name for backwards compatibility
-export function showValidationError(elementId, message) {
-    setValidationError(elementId, message);
-}
-
 /**
  * Initialize input event handling for an element
  * @param {string} elementId - The element ID
@@ -240,3 +235,5 @@ export function disposeInput(elementId) {
 
     inputState.delete(elementId);
 }
+
+

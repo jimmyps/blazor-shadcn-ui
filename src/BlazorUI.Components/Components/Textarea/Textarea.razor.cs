@@ -49,6 +49,7 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
     private IJSObjectReference? _inputModule;
     private DotNetObjectReference<Textarea>? _dotNetRef;
     private bool _jsInitialized = false;
+    private string? _generatedId;
 
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
@@ -291,6 +292,30 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
     private string? EffectiveName => Name ?? Id;
 
     /// <summary>
+    /// Gets the effective ID, generating a unique ID if none is provided.
+    /// </summary>
+    /// <remarks>
+    /// This ensures JavaScript can always reference the element, even when Id is not explicitly set.
+    /// The generated ID follows the pattern: textarea-{6-character-guid}.
+    /// </remarks>
+    private string EffectiveId
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Id))
+                return Id;
+
+            if (_generatedId == null)
+            {
+                // Generate a unique 6-character ID using GUID
+                _generatedId = "textarea-" + Guid.NewGuid().ToString("N")[..6];
+            }
+
+            return _generatedId;
+        }
+    }
+
+    /// <summary>
     /// Gets the computed CSS classes for the textarea element.
     /// </summary>
     /// <remarks>
@@ -368,9 +393,10 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
                 _dotNetRef = DotNetObjectReference.Create(this);
 
                 // Initialize input event handling with UpdateOn mode and debounce
+                // Use EffectiveId which always has a value (user-provided or generated)
                 await _inputModule.InvokeVoidAsync(
                     "initializeInput",
-                    Id,
+                    EffectiveId,
                     UpdateOn.ToString().ToLower(),
                     DebounceDelay,
                     _dotNetRef
@@ -391,14 +417,9 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
         {
             if (_jsInitialized && _inputModule != null)
             {
-                // Dispose input event handling
-                await _inputModule.InvokeVoidAsync("disposeInput", Id);
-                
-                // Dispose validation tracking
-                if (!string.IsNullOrEmpty(Id))
-                {
-                    await _inputModule.InvokeVoidAsync("disposeValidation", Id);
-                }
+                // Dispose input event handling and validation tracking
+                await _inputModule.InvokeVoidAsync("disposeInput", EffectiveId);
+                await _inputModule.InvokeVoidAsync("disposeValidation", EffectiveId);
                 
                 await _inputModule.DisposeAsync();
             }

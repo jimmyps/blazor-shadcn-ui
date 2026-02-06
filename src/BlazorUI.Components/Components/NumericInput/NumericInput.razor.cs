@@ -59,7 +59,7 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
     private FieldIdentifier _fieldIdentifier;
     private string? _currentErrorMessage;
     private bool _hasShownTooltip = false;
-    private ElementReference _inputElement;
+    private string? _generatedId;
 
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
@@ -359,6 +359,30 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
     private string? EffectiveName => Name ?? Id;
 
     /// <summary>
+    /// Gets the effective ID, generating a unique ID if none is provided.
+    /// </summary>
+    /// <remarks>
+    /// This ensures JavaScript can always reference the element, even when Id is not explicitly set.
+    /// The generated ID follows the pattern: numeric-input-{6-character-guid}.
+    /// </remarks>
+    private string EffectiveId
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Id))
+                return Id;
+
+            if (_generatedId == null)
+            {
+                // Generate a unique 6-character ID using GUID
+                _generatedId = "numeric-input-" + Guid.NewGuid().ToString("N")[..6];
+            }
+
+            return _generatedId;
+        }
+    }
+
+    /// <summary>
     /// Gets the current value as a string for binding to the input element.
     /// </summary>
     private string? CurrentValueAsString
@@ -500,9 +524,10 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
                 _dotNetRef = DotNetObjectReference.Create(this);
 
                 // Initialize input event handling with UpdateOn mode and debounce
+                // Use EffectiveId which always has a value (user-provided or generated)
                 await _inputModule.InvokeVoidAsync(
                     "initializeInput",
-                    Id,
+                    EffectiveId,
                     UpdateOn.ToString().ToLower(),
                     DebounceDelay,
                     _dotNetRef
@@ -512,11 +537,9 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
 
                 if (ShowValidationError)
                 {
-                    _validationModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                        "import", "./_content/NeoBlazorUI.Components/js/input.js");
-                    
-                    // Initialize validation with UpdateOn mode
-                    await _validationModule.InvokeVoidAsync("initializeValidation", Id, UpdateOn.ToString().ToLower());
+                    // Validation functions are in the same input.js module
+                    _validationModule = _inputModule;
+                    await _validationModule.InvokeVoidAsync("initializeValidation", EffectiveId, UpdateOn.ToString().ToLower());
                 }
                 
                 // Load cursor position module (still needed for programmatic updates)
@@ -551,7 +574,7 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
 
     private async Task UpdateValidationDisplayAsync()
     {
-        if (EditContext == null || _validationModule == null || string.IsNullOrEmpty(Id))
+        if (EditContext == null || _validationModule == null)
             return;
 
         try
@@ -572,23 +595,23 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
                     
                     if (isFirstInvalid)
                     {
-                        _firstInvalidInputId = Id;
+                        _firstInvalidInputId = EffectiveId;
                     }
 
                     // Show tooltip and focus only for the first invalid input
                     if (isFirstInvalid && !_hasShownTooltip)
                     {
-                        await _validationModule.InvokeVoidAsync("showValidationError", Id, errorMessage);
+                        await _validationModule.InvokeVoidAsync("showValidationError", EffectiveId, errorMessage);
                         _hasShownTooltip = true;
                     }
                 }
                 else
                 {
                     // Clear validation error
-                    await _validationModule.InvokeVoidAsync("clearValidationError", Id);
+                    await _validationModule.InvokeVoidAsync("clearValidationError", EffectiveId);
                     
                     // Reset first invalid tracking if this was the first invalid input
-                    if (_firstInvalidInputId == Id)
+                    if (_firstInvalidInputId == EffectiveId)
                     {
                         _firstInvalidInputId = null;
                     }
@@ -617,14 +640,9 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
 
             if (_jsInitialized && _inputModule != null)
             {
-                // Dispose input event handling
-                await _inputModule.InvokeVoidAsync("disposeInput", Id);
-                
-                // Dispose validation tracking
-                if (!string.IsNullOrEmpty(Id))
-                {
-                    await _inputModule.InvokeVoidAsync("disposeValidation", Id);
-                }
+                // Dispose input event handling and validation tracking
+                await _inputModule.InvokeVoidAsync("disposeInput", EffectiveId);
+                await _inputModule.InvokeVoidAsync("disposeValidation", EffectiveId);
                 
                 await _inputModule.DisposeAsync();
             }
