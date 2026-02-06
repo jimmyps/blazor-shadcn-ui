@@ -18,6 +18,7 @@
     private ElementReference _mainElement;
     private IJSRuntime? _jsRuntime;
     private NavigationManager? _navigationManager;
+    private IJSObjectReference? _module;
 
     [CascadingParameter]
     private SidebarContext? Context { get; set; }
@@ -61,14 +62,34 @@
         }
     }
 
-    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Reset scroll position to top on navigation
-        if (_jsRuntime != null)
+        if (firstRender && ResetScrollOnNavigation && _jsRuntime != null)
         {
             try
             {
-                await _jsRuntime.InvokeVoidAsync("eval", "arguments[0].scrollTo(0, 0)", _mainElement);
+                _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoBlazorUI.Components/js/sidebar.js");
+            }
+            catch (JSException)
+            {
+                // Module loading error - silently handle
+            }
+            catch (InvalidOperationException)
+            {
+                // JS runtime not available - silently handle
+            }
+        }
+    }
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        // Reset scroll position to top on navigation
+        if (_module != null)
+        {
+            try
+            {
+                await _module.InvokeVoidAsync("resetScrollPosition", _mainElement);
             }
             catch (JSException)
             {
@@ -76,7 +97,7 @@
             }
             catch (InvalidOperationException)
             {
-                // JS runtime not available (e.g., during prerendering) - silently handle
+                // JS runtime not available - silently handle
             }
         }
     }
@@ -121,6 +142,18 @@
         if (_navigationManager != null)
         {
             _navigationManager.LocationChanged -= OnLocationChanged;
+        }
+
+        if (_module != null)
+        {
+            try
+            {
+                await _module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // JS runtime already disconnected - silently handle
+            }
         }
     }
 }

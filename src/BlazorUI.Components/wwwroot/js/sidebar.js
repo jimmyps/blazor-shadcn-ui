@@ -185,3 +185,13 @@ export function cleanup() {
     dotNetRef = null;
     cookieKey = null;
 }
+
+/**
+ * Reset scroll position of an element to top
+ * @param {HTMLElement} element - The element to scroll to top
+ */
+export function resetScrollPosition(element) {
+    if (element) {
+        element.scrollTo(0, 0);
+    }
+}
