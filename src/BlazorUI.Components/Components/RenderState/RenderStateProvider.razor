@@ -1,7 +1,5 @@
 @using Microsoft.AspNetCore.Components.Routing
-@using Microsoft.JSInterop
 @inject NavigationManager Nav
-@inject IJSRuntime JSRuntime
 @implements IDisposable
 @namespace BlazorUI.Components.RenderState
 
@@ -14,18 +12,11 @@
     - When the app becomes interactive (hydration finished)
     - When the app is in hydration phase
     - Whether navigation is enhanced (SPA) vs full reload
-    - Automatically resets scroll position to top on navigation (configurable)
     
     Usage:
     Wrap your app's body or layout content with this provider:
     
     <RenderStateProvider>
-        @Body
-    </RenderStateProvider>
-    
-    To disable scroll reset on navigation:
-    
-    <RenderStateProvider ResetScrollOnNavigation="false">
         @Body
     </RenderStateProvider>
     
@@ -41,13 +32,6 @@
 @code {
     private readonly AppRenderContext _context = new();
     private string? _lastUri;
-
-    /// <summary>
-    /// Whether to automatically reset scroll position to top on page navigation.
-    /// Default is true.
-    /// </summary>
-    [Parameter]
-    public bool ResetScrollOnNavigation { get; set; } = true;
 
     /// <summary>
     /// The content to wrap with the render state context.
@@ -76,25 +60,8 @@
         _context.MarkHydrationComplete();
     }
 
-    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        // Reset scroll position to top on navigation
-        if (ResetScrollOnNavigation && _context.IsInteractive)
-        {
-            try
-            {
-                await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
-            }
-            catch (JSException)
-            {
-                // JS execution error - silently handle
-            }
-            catch (InvalidOperationException)
-            {
-                // JS runtime not available (e.g., during prerendering) - silently handle
-            }
-        }
-
         // If runtime did not restart, this is enhanced nav
         if (_context.IsInteractive && _lastUri != null)
         {
