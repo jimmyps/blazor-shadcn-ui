@@ -207,7 +207,9 @@
              @attributes="GetAttributesWithoutStyle()"
              data-state="open"
              style="@GetMergedStyle()">
-            @ChildContent
+            <CascadingValue Value="@Context">
+                @ChildContent
+            </CascadingValue>
         </div>
     };
 
