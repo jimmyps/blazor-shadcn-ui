@@ -2,6 +2,7 @@
 @using BlazorUI.Primitives.Services
 @using BlazorUI.Primitives.Constants
 @using System.Collections.Concurrent
+@using System.Text.Json
 @inject IPositioningService PositioningService
 @inject IPortalService PortalService
 @inject IJSRuntime JSRuntime
@@ -238,6 +239,40 @@
         {
             await CleanupAsync();
         }
+        else if (_isPositioned && IsOpen)
+        {
+            // CRITICAL: Before re-render, sync position from DOM to prevent JS changes from being lost
+            // This intercepts the re-render and preserves the current JS-managed position
+            await SyncPositionFromDomAsync();
+        }
+    }
+
+    /// <summary>
+    /// Syncs the current position from the DOM element back to C# state.
+    /// This prevents Blazor re-renders from reverting JS-applied position changes.
+    /// </summary>
+    private async Task SyncPositionFromDomAsync()
+    {
+        try
+        {
+            var module = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/element-utils.js");
+            
+            var position = await module.InvokeAsync<JsonElement>("getElementPosition", _portalContentRef);
+            
+            if (position.TryGetProperty("left", out var left) && position.TryGetProperty("top", out var top))
+            {
+                _positionLeft = left.GetDouble();
+                _positionTop = top.GetDouble();
+            }
+            
+            await module.DisposeAsync();
+        }
+        catch (Exception ex)
+        {
+            // Silently fail - element may not be ready or may be disposing
+            Console.WriteLine($"Failed to sync position from DOM: {ex.Message}");
+        }
     }
 
     /// <summary>
@@ -388,11 +423,10 @@
             return $"position: fixed; z-index: {ZIndex}; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
         }
 
-        // After initial positioning, DO NOT include left/top in inline styles
-        // This allows JS to fully control positioning without C# server-side re-renders reverting changes
-        // JS applies position via element.style which takes precedence over inline styles during updates
-        // But Blazor re-renders would overwrite element.style if we set inline left/top here
-        return $"position: {Strategy}; z-index: {ZIndex}; opacity: 1; visibility: visible;";
+        // After positioning, include stored position so it survives Blazor re-renders
+        // _positionLeft/_positionTop are synced from DOM before each re-render via SyncPositionFromDomAsync
+        // This ensures we preserve JS-applied position changes during server re-renders
+        return $"position: {Strategy}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px; opacity: 1; visibility: visible;";
     }
 
     private string GetMergedStyle()

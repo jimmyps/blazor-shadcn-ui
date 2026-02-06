@@ -187,7 +187,17 @@ export async function computePosition(reference, floating, options = {}) {
  * @returns {Object} Final position after all adjustments {x, y, strategy}
  */
 export function applyPosition(floating, position, makeVisible = false) {
-if (!floating || !position) return position;
+    // Handle null/undefined cases - return a safe default position object
+    if (!floating || !position) {
+        console.warn('applyPosition: invalid floating element or position');
+        return {
+            x: 0,
+            y: 0,
+            strategy: 'absolute',
+            placement: 'bottom',
+            transformOrigin: 'center'
+        };
+    }
 
 // Track the initial position before viewport adjustments
 let finalX = position.x;

@@ -42,3 +42,23 @@ export function focusElement(elementId) {
         element.focus();
     }
 }
+
+/**
+ * Gets the current computed position of an element from its inline styles.
+ * Used to sync JS-applied position changes back to C# before re-renders.
+ * @param {HTMLElement} element - The element to get position from
+ * @returns {Object} Position object with left and top in pixels
+ */
+export function getElementPosition(element) {
+    if (!element) {
+        return { left: 0, top: 0 };
+    }
+    
+    // Parse left and top from computed or inline styles
+    const computedStyle = window.getComputedStyle(element);
+    const left = parseFloat(computedStyle.left) || 0;
+    const top = parseFloat(computedStyle.top) || 0;
+    
+    return { left, top };
+}
+
