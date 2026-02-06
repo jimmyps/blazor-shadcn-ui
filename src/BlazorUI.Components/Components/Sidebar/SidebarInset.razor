@@ -1,18 +1,39 @@
 @namespace BlazorUI.Components.Sidebar
 @using BlazorUI.Components.Utilities
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
 
 @*
     SidebarInset component that provides the main content area.
     Automatically adjusts margins based on sidebar state and variant.
+    Supports automatic scroll reset on navigation.
 *@
 
-<main class="@GetClasses()" @attributes="AdditionalAttributes">
+<main @ref="_mainElement" class="@GetClasses()" @attributes="AdditionalAttributes">
     @ChildContent
 </main>
 
 @code {
+    private ElementReference _mainElement;
+    private IJSRuntime? _jsRuntime;
+    private NavigationManager? _navigationManager;
+
     [CascadingParameter]
     private SidebarContext? Context { get; set; }
+
+    [Inject]
+    private IJSRuntime JSRuntime { get => _jsRuntime!; set => _jsRuntime = value; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get => _navigationManager!; set => _navigationManager = value; }
+
+    /// <summary>
+    /// Whether to automatically reset scroll position to top on page navigation.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool ResetScrollOnNavigation { get; set; } = true;
 
     /// <summary>
     /// The main content to render.
@@ -31,6 +52,34 @@
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (ResetScrollOnNavigation && _navigationManager != null)
+        {
+            _navigationManager.LocationChanged += OnLocationChanged;
+        }
+    }
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        // Reset scroll position to top on navigation
+        if (_jsRuntime != null)
+        {
+            try
+            {
+                await _jsRuntime.InvokeVoidAsync("eval", "arguments[0].scrollTo(0, 0)", _mainElement);
+            }
+            catch (JSException)
+            {
+                // JS execution error - silently handle
+            }
+            catch (InvalidOperationException)
+            {
+                // JS runtime not available (e.g., during prerendering) - silently handle
+            }
+        }
+    }
 
     private string GetClasses()
     {
@@ -65,5 +114,13 @@
             insetRoundingClasses,
             Class
         );
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_navigationManager != null)
+        {
+            _navigationManager.LocationChanged -= OnLocationChanged;
+        }
     }
 }

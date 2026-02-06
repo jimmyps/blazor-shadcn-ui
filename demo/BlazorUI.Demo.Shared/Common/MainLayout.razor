@@ -6,9 +6,6 @@
 @using BlazorUI.Components.Toast
 @using BlazorUI.Components.DialogHost
 @using BlazorUI.Components.RenderState
-@using Microsoft.AspNetCore.Components.Routing
-@using Microsoft.JSInterop
-@implements IDisposable
 
 <PageTitle>BlazorUI Demo</PageTitle>
 
@@ -649,23 +646,11 @@
     [Inject]
     private IKeyboardShortcutService KeyboardShortcuts { get; set; } = null!;
     
-    [Inject]
-    private NavigationManager Navigation { get; set; } = null!;
-    
-    [Inject]
-    private IJSRuntime JSRuntime { get; set; } = null!;
-    
     // Reference to the SpotlightCommandPalette component
     private SpotlightCommandPalette? _spotlightRef;
 
     // Platform-specific modifier key (⌘ for Mac, Ctrl for others)
     private string _modifierKey = "Ctrl";
-
-    protected override void OnInitialized()
-    {
-        // Subscribe to navigation events for scroll reset
-        Navigation.LocationChanged += OnLocationChanged;
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -684,30 +669,8 @@
         }
     }
 
-    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        // Reset scroll position to top on navigation
-        try
-        {
-            await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
-        }
-        catch (JSException)
-        {
-            // JS execution error - silently handle
-        }
-        catch (InvalidOperationException)
-        {
-            // JS runtime not available (e.g., during prerendering) - silently handle
-        }
-    }
-
     private void OpenSpotlight()
     {
         _spotlightRef?.Open();
-    }
-
-    public void Dispose()
-    {
-        Navigation.LocationChanged -= OnLocationChanged;
     }
 }
