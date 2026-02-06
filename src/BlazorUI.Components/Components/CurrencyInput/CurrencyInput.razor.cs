@@ -870,17 +870,5 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
         }
 
         DetachValidationStateChangedListener();
-        
-        if (_validationModule != null)
-        {
-            try
-            {
-                await _validationModule.DisposeAsync();
-            }
-            catch (JSDisconnectedException)
-            {
-                // Ignore - this happens during hot reload or when navigating away
-            }
-        }
     }
 }

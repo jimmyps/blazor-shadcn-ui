@@ -739,18 +739,6 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
 
         _maskDotNetRef?.Dispose();
         
-        if (_validationModule != null)
-        {
-            try
-            {
-                await _validationModule.DisposeAsync();
-            }
-            catch (JSDisconnectedException)
-            {
-                // Ignore
-            }
-        }
-
         if (_maskModule != null)
         {
             try
