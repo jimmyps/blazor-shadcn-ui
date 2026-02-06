@@ -163,17 +163,19 @@ export async function computePosition(reference, floating, options = {}) {
     // Add viewport constraint middleware to ensure element stays within viewport bounds
     // This runs after flip/shift to handle any remaining viewport overflow
     middleware.push({
-        name: 'viewportConstraint',
+        name: 'blazorViewportConstraint',
         fn(state) {
             const { x, y, rects } = state;
             const floatingWidth = rects.floating.width;
             const floatingHeight = rects.floating.height;
             const viewportHeight = window.innerHeight;
             const viewportWidth = window.innerWidth;
+            // Use padding from options (default 8px) for viewport boundary calculations
             const viewportPadding = padding;
             
             let adjustedX = x;
             let adjustedY = y;
+            const data = {};
             
             // Check if element extends beyond viewport boundaries
             const exceedsBottom = y + floatingHeight > viewportHeight - viewportPadding;
@@ -186,8 +188,8 @@ export async function computePosition(reference, floating, options = {}) {
                 const maxHeight = viewportHeight - (viewportPadding * 2);
                 if (floatingHeight > maxHeight) {
                     // Content is larger than viewport - signal need for scrollbar
-                    floating.dataset.needsVerticalScroll = 'true';
-                    floating.dataset.maxHeight = maxHeight.toString();
+                    data.needsVerticalScroll = true;
+                    data.maxHeight = maxHeight;
                     // Position at top of viewport with padding
                     adjustedY = viewportPadding;
                 } else {
@@ -208,8 +210,8 @@ export async function computePosition(reference, floating, options = {}) {
                 const maxWidth = viewportWidth - (viewportPadding * 2);
                 if (floatingWidth > maxWidth) {
                     // Content is wider than viewport - signal need for scrollbar
-                    floating.dataset.needsHorizontalScroll = 'true';
-                    floating.dataset.maxWidth = maxWidth.toString();
+                    data.needsHorizontalScroll = true;
+                    data.maxWidth = maxWidth;
                     // Position at left edge of viewport with padding
                     adjustedX = viewportPadding;
                 } else {
@@ -225,7 +227,11 @@ export async function computePosition(reference, floating, options = {}) {
                 }
             }
             
-            return { x: adjustedX, y: adjustedY };
+            return { 
+                x: adjustedX, 
+                y: adjustedY,
+                data
+            };
         }
     });
 
@@ -240,7 +246,8 @@ export async function computePosition(reference, floating, options = {}) {
             y: result.y,
             placement: result.placement,
             transformOrigin: getTransformOrigin(result.placement),
-            strategy: result.strategy || strategy
+            strategy: result.strategy || strategy,
+            middlewareData: result.middlewareData
         };
     } catch (error) {
         console.error('Failed to compute position:', error);
@@ -276,18 +283,17 @@ Object.assign(floating.style, {
     }
 
     // Apply scrollbar constraints if needed (set by viewport constraint middleware)
-    if (floating.dataset.needsVerticalScroll === 'true') {
-        floating.style.maxHeight = `${floating.dataset.maxHeight}px`;
-        floating.style.overflowY = 'auto';
-        delete floating.dataset.needsVerticalScroll;
-        delete floating.dataset.maxHeight;
-    }
-    
-    if (floating.dataset.needsHorizontalScroll === 'true') {
-        floating.style.maxWidth = `${floating.dataset.maxWidth}px`;
-        floating.style.overflowX = 'auto';
-        delete floating.dataset.needsHorizontalScroll;
-        delete floating.dataset.maxWidth;
+    const viewportData = position.middlewareData?.blazorViewportConstraint;
+    if (viewportData) {
+        if (viewportData.needsVerticalScroll) {
+            floating.style.maxHeight = `${viewportData.maxHeight}px`;
+            floating.style.overflowY = 'auto';
+        }
+        
+        if (viewportData.needsHorizontalScroll) {
+            floating.style.maxWidth = `${viewportData.maxWidth}px`;
+            floating.style.overflowX = 'auto';
+        }
     }
 
     // If makeVisible is true, show the element after positioning
