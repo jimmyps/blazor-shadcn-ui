@@ -83,7 +83,7 @@
         {
             try
             {
-                await JSRuntime.InvokeVoidAsync("window.scrollTo", new { top = 0, left = 0, behavior = "instant" });
+                await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
             }
             catch (JSException)
             {
