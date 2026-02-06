@@ -391,6 +391,120 @@ demo/BlazorUI.Demo.Shared/Pages/Components/NumericInputDemo.razor
 
 ---
 
+### 🎮 7. CommandInput Performance Optimization
+
+#### **Integrated Input Component with JS-First Keyboard Navigation**
+
+**Problem:**
+CommandInput was re-implementing input handling logic:
+- Plain `<input>` with `@oninput` (Blazor event handler)
+- Manual debouncing with `System.Threading.Timer`
+- `@onkeydown` causing Input component re-renders
+- Duplicate code vs Input component
+
+**Solution:**
+Replaced plain input with our optimized Input component + JavaScript keyboard interception:
+
+```razor
+<!-- Before: Plain input with Blazor events -->
+<input @oninput="HandleInput" @onkeydown="HandleKeyDown" />
+
+<!-- After: Input component with JS navigation -->
+<Input @bind-Value="searchQuery" 
+       UpdateOn="InputUpdateMode.Input"
+       DebounceDelay="SearchInterval"
+       AdditionalAttributes="@InputAttributes" />
+```
+
+**JavaScript Keyboard Interception:**
+```javascript
+// input.js - New command input navigation
+export function initializeCommandInput(elementId, dotNetRef) {
+    const navigationKeys = ['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter'];
+    
+    element.addEventListener('keydown', (e) => {
+        if (navigationKeys.includes(e.key)) {
+            e.preventDefault(); // No scroll, no cursor move
+            dotNetRef.invokeMethodAsync('HandleNavigationKey', e.key);
+        }
+        // All other keys: Input component handles normally
+    }, { capture: true }); // Intercept before Input sees it
+}
+```
+
+**Key Optimizations:**
+
+1. **Zero Input Re-Renders**
+   - JavaScript intercepts navigation keys before Input component
+   - No parameter changes during keyboard navigation
+   - Input component never re-renders from arrow key presses
+
+2. **Zero C# Calls for Typing**
+   - Regular keys (a-z, 0-9, etc.) → handled entirely in JavaScript
+   - Only navigation keys → call C# for list navigation
+   - Result: Blazing fast typing performance
+
+3. **Reuses All Input Improvements**
+   - ✅ JavaScript-first event handling
+   - ✅ EffectiveId pattern (auto-generated IDs)
+   - ✅ JavaScript debouncing (no more `System.Threading.Timer`)
+   - ✅ Consistent architecture across all inputs
+
+4. **Cleaner Code**
+   - Removed ~30 lines of manual timer management
+   - Removed cached dictionary pattern (no longer needed)
+   - Single responsibility: CommandInput = wrapper, Input = editing
+
+**Performance Impact:**
+```
+User types "search query" (12 characters):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Before: 12 @oninput C# calls + timer management
+After:  JavaScript-only (zero C# calls during typing)
+Result: Instant response regardless of interactivity mode
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+User presses ArrowDown (5 times):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Before: 5 @onkeydown C# calls + Input re-renders
+After:  5 JS-intercepted calls (no Input re-renders)
+Result: Smooth navigation without visual interruption
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**Input Styling for Command Palette:**
+```css
+/* Transparent input with no visual chrome */
+!border-0              /* No border */
+!shadow-none           /* No shadow */
+bg-transparent         /* Transparent background */
+focus-visible:!ring-0  /* No focus ring */
+/* Border-b comes from parent wrapper div */
+```
+
+**Benefits:**
+- ✅ **Blazing-fast typing** - JavaScript-only event handling
+- ✅ **Smooth navigation** - Zero Input re-renders during arrow key presses
+- ✅ **Better architecture** - Reuses Input component instead of reimplementing
+- ✅ **Less code** - Removed timer management and manual event handling
+- ✅ **Consistent** - Same patterns as Input/Textarea/CurrencyInput/etc.
+
+**Files Changed:**
+```javascript
+src/BlazorUI.Components/wwwroot/js/input.js
+  - Added initializeCommandInput()
+  - Added disposeCommandInput()
+  - Command input keyboard state tracking
+
+src/BlazorUI.Components/Components/Command/CommandInput.razor
+  - Replaced <input> with <Input> component
+  - Added JavaScript keyboard navigation integration
+  - Removed manual timer and cached dictionary
+  - IAsyncDisposable for proper cleanup
+```
+
+---
+
 ### 🛠️ Technical Implementation Details
 
 #### **JavaScript-Side Validation Management**

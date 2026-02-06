@@ -236,4 +236,61 @@ export function disposeInput(elementId) {
     inputState.delete(elementId);
 }
 
+// Track command input keyboard handlers
+const commandInputState = new Map();
+
+/**
+ * Initialize keyboard navigation for command palette input
+ * Intercepts arrow keys, Home, End, Enter and calls C# for navigation
+ * All other keys pass through to Input component without C# overhead
+ * @param {string} elementId - The input element ID
+ * @param {object} dotNetRef - DotNetObjectReference for callbacks
+ */
+export function initializeCommandInput(elementId, dotNetRef) {
+    const element = document.getElementById(elementId);
+    if (!element) {
+        console.warn(`Command input element with id '${elementId}' not found`);
+        return;
+    }
+
+    // Clean up any existing handler
+    disposeCommandInput(elementId);
+
+    // Navigation keys that trigger C# callbacks
+    const navigationKeys = ['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter'];
+
+    const keydownHandler = (e) => {
+        if (navigationKeys.includes(e.key)) {
+            // Prevent default for navigation keys (no scroll, no text cursor move)
+            e.preventDefault();
+            
+            // Call C# only for navigation
+            dotNetRef.invokeMethodAsync('HandleNavigationKey', e.key);
+        }
+        // All other keys: do nothing, let Input component handle normally
+    };
+
+    // Attach with capture: true to intercept before Input component sees it
+    element.addEventListener('keydown', keydownHandler, { capture: true });
+
+    commandInputState.set(elementId, { keydownHandler });
+}
+
+/**
+ * Dispose command input keyboard handling
+ * @param {string} elementId - The input element ID
+ */
+export function disposeCommandInput(elementId) {
+    const state = commandInputState.get(elementId);
+    if (!state) return;
+
+    const element = document.getElementById(elementId);
+    if (element && state.keydownHandler) {
+        element.removeEventListener('keydown', state.keydownHandler, { capture: true });
+    }
+
+    commandInputState.delete(elementId);
+}
+
+
 
