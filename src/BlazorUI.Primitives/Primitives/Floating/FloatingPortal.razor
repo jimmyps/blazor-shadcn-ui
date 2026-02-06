@@ -388,16 +388,16 @@
                 options);
 
             // Apply position via JS for initial display and get back the final adjusted position
-            // JS may adjust position for viewport boundaries, so use the returned final position
+            // JS may adjust position for viewport boundaries, so capture the returned final position
             var finalPosition = await PositioningService.ApplyPositionAsync(_portalContentRef, position, makeVisible: true);
             
-            // Store final position for reference (though we won't apply it via inline styles)
+            // Store final position in C# state - this will be used in inline styles during re-renders
+            // SyncPositionFromDomAsync will keep these values in sync with JS changes before each re-render
             _positionLeft = finalPosition.X;
             _positionTop = finalPosition.Y;
 
             // Set up auto-update for dynamic positioning (scroll, resize)
-            // JS will manage position updates; C# won't overwrite them since GetInitialStyle() 
-            // no longer includes left/top after _isPositioned = true
+            // JS will manage position updates; SyncPositionFromDomAsync keeps C# state in sync
             _positioningCleanup = await PositioningService.AutoUpdateAsync(
                 anchor,
                 _portalContentRef,

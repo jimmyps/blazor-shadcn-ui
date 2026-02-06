@@ -199,7 +199,7 @@ export function applyPosition(floating, position, makeVisible = false) {
         };
     }
 
-// Track the initial position before viewport adjustments
+// Track position - will be updated if viewport adjustments are needed
 let finalX = position.x;
 let finalY = position.y;
 
