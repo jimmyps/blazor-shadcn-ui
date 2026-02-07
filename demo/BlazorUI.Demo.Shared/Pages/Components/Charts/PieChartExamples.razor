@@ -1,4 +1,4 @@
-@page "/components/charts/pie"
+@page "/components/chart/pie"
 @using BlazorUI.Components.Card
 @using BlazorUI.Components.Chart
 
@@ -10,16 +10,17 @@
         <CardHeader Class="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
             <div class="grid flex-1 gap-1">
                 <CardTitle>Pie Chart - Interactive</CardTitle>
-                <CardDescription>Browser usage statistics for @(selectedMonth == "jan" ? "January" : selectedMonth == "feb" ? "February" : "March")</CardDescription>
+                <CardDescription>Showing browser usage statistics for @(monthDescriptions.TryGetValue(selectedMonth, out var description) ? description.ToLower() : "January")</CardDescription>
             </div>
-            <Select @bind-Value="@selectedMonth" Class="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
+            <Select @bind-Value="@selectedMonth" DisplayTextSelector="@(value => monthDescriptions.TryGetValue(value, out var text) ? text : value)" Class="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
                 <SelectTrigger>
                     <SelectValue Placeholder="January" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem Value="@("jan")" Text="January">January</SelectItem>
-                    <SelectItem Value="@("feb")" Text="February">February</SelectItem>
-                    <SelectItem Value="@("mar")" Text="March">March</SelectItem>
+                    @foreach (var month in monthDescriptions)
+                    {
+                        <SelectItem Value="@month.Key" Text="@month.Value">@month.Value</SelectItem>
+                    }
                 </SelectContent>
             </Select>
         </CardHeader>
@@ -250,9 +251,17 @@
 </div>
 
 @code {
-    private string selectedMonth = "jan";
+private string selectedMonth = "jan";
 
-    // Monthly browser usage statistics
+// Month descriptions for display
+private Dictionary<string, string> monthDescriptions = new()
+{
+    { "jan", "January" },
+    { "feb", "February" },
+    { "mar", "March" }
+};
+
+// Monthly browser usage statistics
     private List<BrowserMonthData> browserMonthlyData = new()
     {
         // January

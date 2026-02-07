@@ -102,13 +102,11 @@
     /// </summary>
     public async Task FocusAsync()
     {
-        if (_inputRef != null)
+        if (_jsInitialized && _inputModule != null)
         {
             try
             {
-                // Input component doesn't expose FocusAsync yet, so we'll need to add it
-                // For now, this will be a no-op until Input component is enhanced
-                await Task.CompletedTask;
+                await _inputModule.InvokeVoidAsync("focusCommandInput", InputId);
             }
             catch
             {
@@ -154,10 +152,12 @@
 
                 // Initialize command input keyboard navigation
                 // JavaScript will intercept arrow keys and call HandleNavigationKey
+                // Pass AutoFocus so JS can handle focusing the input
                 await _inputModule.InvokeVoidAsync(
                     "initializeCommandInput",
                     InputId,
-                    _dotNetRef
+                    _dotNetRef,
+                    AutoFocus
                 );
 
                 _jsInitialized = true;
@@ -167,12 +167,18 @@
                 Console.Error.WriteLine($"Error initializing command input JS: {ex.Message}");
             }
         }
-
-        // Focus when AutoFocus becomes true (either on first render or when popover opens)
-        if (_shouldFocus)
+        else if (_shouldFocus && _jsInitialized && _inputModule != null)
         {
+            // Focus when AutoFocus becomes true after initial render (e.g., when popover opens)
             _shouldFocus = false;
-            await FocusAsync();
+            try
+            {
+                await _inputModule.InvokeVoidAsync("focusCommandInput", InputId);
+            }
+            catch
+            {
+                // Ignore focus errors
+            }
         }
     }
 

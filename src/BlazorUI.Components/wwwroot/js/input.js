@@ -254,8 +254,9 @@ const commandInputState = new Map();
  * All other keys pass through to Input component without C# overhead
  * @param {string} elementId - The input element ID
  * @param {object} dotNetRef - DotNetObjectReference for callbacks
+ * @param {boolean} autoFocus - Whether to automatically focus the input on initialization
  */
-export function initializeCommandInput(elementId, dotNetRef) {
+export function initializeCommandInput(elementId, dotNetRef, autoFocus = false) {
     const element = document.getElementById(elementId);
     if (!element) {
         console.warn(`Command input element with id '${elementId}' not found`);
@@ -283,6 +284,26 @@ export function initializeCommandInput(elementId, dotNetRef) {
     element.addEventListener('keydown', keydownHandler, { capture: true });
 
     commandInputState.set(elementId, { keydownHandler });
+
+    // Focus the input if autoFocus is true
+    if (autoFocus) {
+      // Use requestAnimationFrame to ensure DOM is ready
+      setTimeout(() =>
+        requestAnimationFrame(() => {
+            element.focus();
+        }), 10);
+    }
+}
+
+/**
+ * Focus a command input element
+ * @param {string} elementId - The input element ID
+ */
+export function focusCommandInput(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.focus();
+    }
 }
 
 /**

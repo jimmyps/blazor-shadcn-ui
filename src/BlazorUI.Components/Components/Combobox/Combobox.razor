@@ -31,7 +31,7 @@
             </PopoverTrigger>
             <PopoverContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" MatchTriggerWidth="@MatchTriggerWidth" OnContentReady="@HandleContentReady" Class="@(MatchTriggerWidth ? "!p-0" : $"{PopoverWidth} !p-0")">
                 <Command>
-                    <CommandInput @ref="_commandInputRef" Placeholder="@SearchPlaceholder" />
+                    <CommandInput @ref="_commandInputRef" AutoFocus="true" Placeholder="@SearchPlaceholder" />
                     <CommandList>
                         <CommandEmpty>@EmptyMessage</CommandEmpty>
                         <CommandGroup>

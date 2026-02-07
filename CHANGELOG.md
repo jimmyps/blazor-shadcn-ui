@@ -2,6 +2,141 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-02-07 - Navigation Enhancement, Component Styling Improvements & Demo Standardization
+
+### 🎨 UI/UX Enhancements & Demo Improvements
+
+**Status:** ✅ Complete, Production Ready  
+**Impact:** Enhanced navigation structure, improved component styling consistency, and standardized demo documentation across Grid examples.
+
+---
+
+### 🎯 1. Enhanced Navigation Structure
+
+#### **Chart and Grid Root-Level Navigation**
+
+**Added dedicated navigation sections for Chart and Grid components:**
+
+**Changes:**
+- Added Chart section with collapsible submenu in MainLayout
+  - Area Chart, Bar Chart, Line Chart, Pie Chart, Scatter Chart, Radar Chart, Composed Chart
+- Added Grid section with collapsible submenu in MainLayout
+  - Basic, Templating, Selection, Transactions, Sorting & Filtering, State, Server-Side, Advanced, Theming
+- Replaced all custom SVG icons with LucideIcon components for consistency
+- Fixed Chart and Grid routing - updated hrefs from hash fragments to proper routes
+
+**Benefits:**
+- ✅ Chart and Grid components get extra visibility with dedicated navigation
+- ✅ Direct access to specific chart types and grid features
+- ✅ Consistent icon system throughout navigation
+- ✅ Proper Blazor routing with bookmarkable URLs
+- ✅ Better SEO with individual page routes
+
+---
+
+### 🎯 2. Component Styling Enhancements
+
+#### **SelectTrigger and MultiSelect Styling Improvements**
+
+**Enhanced focus, outline, and transitions to match native select behavior:**
+
+**SelectTrigger Improvements:**
+- Added smooth 200ms color transitions (`transition-colors`)
+- Enhanced hover states (`hover:bg-accent hover:text-accent-foreground`)
+- Improved focus states with both `focus:` and `focus-visible:` for better accessibility
+- Added open state ring indicator (`data-[state=open]:ring-2`)
+- Disabled state protection (`disabled:hover:bg-background`)
+
+**MultiSelect Improvements:**
+- Applied same styling enhancements as SelectTrigger
+- Added cache tracking for open state to optimize performance
+- Dynamic ring styling when dropdown is expanded
+- Adjusted popover max height
+
+**Benefits:**
+- ✅ Native-like user experience with smooth transitions
+- ✅ Better accessibility with proper focus indicators
+- ✅ Visual feedback for open/closed states
+- ✅ Consistent styling across select components
+
+---
+
+### 🎯 3. CommandInput AutoFocus Enhancement
+
+#### **JavaScript-Powered Auto-Focus Implementation**
+
+**Enhanced CommandInput to properly handle auto-focus via JavaScript:**
+
+**Changes:**
+- Added `autoFocus` parameter to `initializeCommandInput` JavaScript function
+- Implemented `focusCommandInput` utility function
+- Updated `FocusAsync()` method to use JavaScript module
+- Proper focus handling for initial render and dynamic focus changes
+
+**Benefits:**
+- ✅ Reliable auto-focus on component initialization
+- ✅ Programmatic focus control via `FocusAsync()`
+- ✅ Works correctly in popovers and dialogs
+- ✅ Uses `requestAnimationFrame` for DOM readiness
+
+---
+
+### 🎯 4. Chart Demo Improvements
+
+#### **DisplayTextSelector Pattern Implementation**
+
+**Implemented data-driven select pattern in PieChartExamples:**
+
+**Changes:**
+- Added `monthDescriptions` dictionary for month display text
+- Implemented `DisplayTextSelector` for proper value-to-text mapping
+- Refactored description text to use dictionary lookup with `TryGetValue`
+- Dynamic `SelectItem` generation using `@foreach`
+
+**Files Changed:**
+```
+demo/BlazorUI.Demo.Shared/Pages/Components/Charts/PieChartExamples.razor
+```
+
+**Benefits:**
+- ✅ Maintainable - Easy to add more months
+- ✅ Type-safe dictionary lookup
+- ✅ Consistent with AreaChartExamples pattern
+- ✅ Clean, DRY code
+
+---
+
+### 🎯 5. Grid Demo Documentation Standardization
+
+#### **Standardized Information Boxes with Alert Component**
+
+**Replaced all custom info boxes with standardized Alert components across Grid demos:**
+
+**Alert Variants Used:**
+- `Info` - Instructional/informational content (default for most boxes)
+- `Warning` - Important notices (AG Grid Enterprise license)
+- `Muted` - Subtle information (TMDb API key input)
+
+---
+
+### 📊 Summary
+
+**Components Enhanced:** 4 (SelectTrigger, MultiSelect, CommandInput, PieChartExamples)  
+**Navigation Improvements:** Chart and Grid root-level sections with 16 new navigation links  
+**Demo Pages Standardized:** 3 Grid demo pages with 11 Alert components  
+**Icons Standardized:** All navigation icons now use LucideIcon  
+**Routing Fixed:** 13 chart/grid pages with proper @page directives  
+
+**Impact:**
+- Enhanced user experience with smoother transitions and better visual feedback
+- Improved navigation structure for easier component discovery
+- Consistent, professional documentation across Grid examples
+- Better accessibility and maintainability
+
+---
+
+
+
 ## 2026-02-06 - Input Component UpdateOn Behavior, EffectiveId Pattern & Performance Optimization
 
 ### 🚀 Performance Improvements & Architecture Enhancements

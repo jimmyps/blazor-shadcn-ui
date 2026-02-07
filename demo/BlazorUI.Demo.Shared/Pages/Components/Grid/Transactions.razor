@@ -2,6 +2,7 @@
 @using BlazorUI.Components.Grid
 @using BlazorUI.Components.Button
 @using BlazorUI.Components.Badge
+@using BlazorUI.Components.Alert
 @using BlazorUI.Demo.Shared.Data
 @using System.Collections.ObjectModel
 
@@ -24,20 +25,22 @@
             </p>
         </div>
 
-        <div class="rounded-lg border bg-green-50 dark:bg-green-950/20 p-4 text-sm">
-            <div class="flex gap-2">
-                <div class="text-green-600 dark:text-green-400">✨</div>
-                <div>
-                    <p class="font-semibold mb-2">When to use AddRowsAsync():</p>
-                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+        <Alert Variant="AlertVariant.Info">
+            <Icon>
+                <LucideIcon Name="sparkles" Size="16" />
+            </Icon>
+            <ChildContent>
+                <AlertTitle>When to use AddRowsAsync()</AlertTitle>
+                <AlertDescription>
+                    <ul class="list-disc list-inside space-y-1">
                         <li>Adding new rows from API responses</li>
                         <li>Real-time data feeds (WebSocket, SignalR)</li>
                         <li>Optimistic UI updates after create operations</li>
                         <li>When you control the data source manually (not ObservableCollection)</li>
                     </ul>
-                </div>
-            </div>
-        </div>
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
 
         <div class="flex gap-2 mb-4">
             <Button Size="ButtonSize.Small" OnClick="AddSingleRow">
@@ -108,20 +111,22 @@
             </p>
         </div>
 
-        <div class="rounded-lg border bg-blue-50 dark:bg-blue-950/20 p-4 text-sm">
-            <div class="flex gap-2">
-                <div class="text-blue-600 dark:text-blue-400">🔄</div>
-                <div>
-                    <p class="font-semibold mb-2">When to use UpdateRowsAsync():</p>
-                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+        <Alert Variant="AlertVariant.Info">
+            <Icon>
+                <LucideIcon Name="refresh-cw" Size="16" />
+            </Icon>
+            <ChildContent>
+                <AlertTitle>When to use UpdateRowsAsync()</AlertTitle>
+                <AlertDescription>
+                    <ul class="list-disc list-inside space-y-1">
                         <li>Updating rows after API PATCH/PUT responses</li>
                         <li>Real-time updates from WebSocket messages</li>
                         <li>Optimistic UI updates after edit operations</li>
                         <li>Batch status updates (e.g., mark as "Shipped")</li>
                     </ul>
-                </div>
-            </div>
-        </div>
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
 
         <div class="flex gap-2 mb-4">
             <Button Size="ButtonSize.Small" OnClick="UpdateRandomRow">
@@ -208,20 +213,22 @@
             </p>
         </div>
 
-        <div class="rounded-lg border bg-red-50 dark:bg-red-950/20 p-4 text-sm">
-            <div class="flex gap-2">
-                <div class="text-red-600 dark:text-red-400">🗑️</div>
-                <div>
-                    <p class="font-semibold mb-2">When to use RemoveRowsAsync():</p>
-                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+        <Alert Variant="AlertVariant.Info">
+            <Icon>
+                <LucideIcon Name="trash-2" Size="16" />
+            </Icon>
+            <ChildContent>
+                <AlertTitle>When to use RemoveRowsAsync()</AlertTitle>
+                <AlertDescription>
+                    <ul class="list-disc list-inside space-y-1">
                         <li>After successful DELETE API calls</li>
                         <li>Removing expired/invalid rows</li>
                         <li>Bulk delete operations</li>
                         <li>When you manually manage the data list (not ObservableCollection)</li>
                     </ul>
-                </div>
-            </div>
-        </div>
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
 
         <div class="flex gap-2 mb-4">
             <Button Size="ButtonSize.Small" Variant="ButtonVariant.Destructive" OnClick="RemoveRandomRow">
@@ -296,20 +303,22 @@
             </p>
         </div>
 
-        <div class="rounded-lg border bg-purple-50 dark:bg-purple-950/20 p-4 text-sm">
-            <div class="flex gap-2">
-                <div class="text-purple-600 dark:text-purple-400">⚡</div>
-                <div>
-                    <p class="font-semibold mb-2">Real-world Combined Operations:</p>
-                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+        <Alert Variant="AlertVariant.Info">
+            <Icon>
+                <LucideIcon Name="zap" Size="16" />
+            </Icon>
+            <ChildContent>
+                <AlertTitle>Real-world Combined Operations</AlertTitle>
+                <AlertDescription>
+                    <ul class="list-disc list-inside space-y-1">
                         <li><strong>Order Processing:</strong> Ship pending (update), archive delivered (remove), add new orders</li>
                         <li><strong>Inventory Sync:</strong> Add new products, update prices, remove discontinued items</li>
                         <li><strong>User Management:</strong> Activate new users, update roles, remove inactive accounts</li>
                         <li><strong>All in one efficient operation</strong> - Single grid transaction, minimal DOM updates</li>
                     </ul>
-                </div>
-            </div>
-        </div>
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
 
         <div class="flex gap-2 mb-4">
             <Button Size="ButtonSize.Small" OnClick="ProcessOrders">
@@ -398,20 +407,22 @@ await grid.RemoveRowsAsync(order);
             </div>
         </div>
 
-        <div class="rounded-lg border bg-yellow-50 dark:bg-yellow-950/20 p-4 text-sm">
-            <div class="flex gap-2">
-                <div class="text-yellow-600 dark:text-yellow-400">💡</div>
-                <div>
-                    <p class="font-semibold mb-2">Best Practices:</p>
-                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+        <Alert Variant="AlertVariant.Info">
+            <Icon>
+                <LucideIcon Name="lightbulb" Size="16" />
+            </Icon>
+            <ChildContent>
+                <AlertTitle>Best Practices</AlertTitle>
+                <AlertDescription>
+                    <ul class="list-disc list-inside space-y-1">
                         <li><strong>Use ObservableCollection</strong> when you own the data source (simplest)</li>
                         <li><strong>Use Transaction APIs</strong> when integrating with external data sources (APIs, SignalR)</li>
                         <li><strong>Batch operations</strong> when possible (e.g., AddRowsAsync([...]) instead of multiple AddRowsAsync())</li>
                         <li><strong>Avoid full refresh</strong> when only a few rows changed</li>
                     </ul>
-                </div>
-            </div>
-        </div>
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
     </section>
 </div>
 

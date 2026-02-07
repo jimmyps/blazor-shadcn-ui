@@ -1,6 +1,8 @@
+@page "/components/grid/selection"
 @using BlazorUI.Components.Grid
 @using BlazorUI.Components.Button
 @using BlazorUI.Components.Badge
+@using BlazorUI.Components.Alert
 @using BlazorUI.Demo.Shared.Data
 @using System.Collections.ObjectModel
 
@@ -17,20 +19,22 @@
             </p>
         </div>
 
-        <div class="rounded-lg border bg-amber-50 dark:bg-amber-950/20 p-4 text-sm">
-            <div class="flex gap-2">
-                <div class="text-amber-600 dark:text-amber-400">ℹ️</div>
-                <div>
-                    <p class="font-semibold mb-2">Why IdField Matters:</p>
-                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+        <Alert Variant="AlertVariant.Info">
+            <Icon>
+                <LucideIcon Name="info" Size="16" />
+            </Icon>
+            <ChildContent>
+                <AlertTitle>Why IdField Matters</AlertTitle>
+                <AlertDescription>
+                    <ul class="list-disc list-inside space-y-1">
                         <li>Selection persists across data updates and pagination</li>
                         <li>Rows maintain stable identity during sorting/filtering</li>
                         <li>Default is "Id" (C# convention) - works with most models</li>
                         <li>Customize for models with different primary key names</li>
                     </ul>
-                </div>
-            </div>
-        </div>
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
 
         <div class="flex gap-2 mb-4">
             <Button Size="ButtonSize.Small" OnClick="UpdateProductData">
@@ -303,21 +307,23 @@ public class Product
             </p>
         </div>
 
-        <div class="rounded-lg border bg-blue-50 dark:bg-blue-950/20 p-4 text-sm">
-            <div class="flex gap-2">
-                <div class="text-blue-600 dark:text-blue-400">⚡</div>
-                <div>
-                    <p class="font-semibold mb-2">Performance Benefits:</p>
-                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+        <Alert Variant="AlertVariant.Info">
+            <Icon>
+                <LucideIcon Name="zap" Size="16" />
+            </Icon>
+            <ChildContent>
+                <AlertTitle>Performance Benefits</AlertTitle>
+                <AlertDescription>
+                    <ul class="list-disc list-inside space-y-1">
                         <li><strong>Delta Updates:</strong> Only modified rows are re-rendered (not entire grid)</li>
                         <li><strong>Selection Preserved:</strong> Row selection survives data changes automatically</li>
                         <li><strong>Natural Mutations:</strong> Modify items directly, then call NotifyItemsChanged()</li>
                         <li><strong>Batching:</strong> Multiple rapid changes are batched together (100ms window)</li>
                         <li><strong>Efficient:</strong> Uses AG Grid's transaction API for minimal DOM updates</li>
                     </ul>
-                </div>
-            </div>
-        </div>
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
 
         <div class="flex gap-2 mb-4">
             <Button Size="ButtonSize.Small" OnClick="DeleteSelectedObservable">
