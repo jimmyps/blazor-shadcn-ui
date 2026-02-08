@@ -116,6 +116,13 @@ jobs:
           echo "Tailwind CSS standalone CLI installed"
           ./tools/tailwindcss-linux --help | head -1
 
+      - name: Pre-generate Tailwind CSS
+        if: steps.package-info.outputs.package == 'components'
+        run: |
+          echo "Pre-generating Tailwind CSS so it exists before dotnet build evaluates the project..."
+          ./tools/tailwindcss-linux -i src/BlazorBlueprint.Components/wwwroot/css/blazorblueprint-input.css -o src/BlazorBlueprint.Components/wwwroot/blazorblueprint.css --minify
+          echo "Generated blazorblueprint.css ($(wc -c < src/BlazorBlueprint.Components/wwwroot/blazorblueprint.css) bytes)"
+
       - name: Restore dependencies
         run: |
           # For components package, use NuGet package references instead of project references
