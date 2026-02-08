@@ -2,6 +2,112 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-02-08 - NumericInput Validation & Infrastructure Improvements
+
+### 🎯 Core Features
+
+#### **NumericInput Component Enhancements**
+
+**Added Min/Max validation with automatic value clamping:**
+
+**New Features:**
+- Added `MaxLength` parameter for character limit enforcement on number inputs
+- Implemented automatic Min/Max value clamping on blur for both UpdateOn modes
+- Added type-safe clamping support for all numeric types (int, decimal, double, float, long, short)
+- DOM value now updates immediately when clamping occurs (no stale values)
+
+**Technical Details:**
+- `ClampToRange()`: Type-safe method that clamps values to Min/Max bounds
+- `ValidateAndClamp()`: JS-invokable method for UpdateOn=Input mode blur validation
+- Calls `updateValue()` JS function to update DOM when value is clamped
+- Works seamlessly with ColorPicker RGB inputs (0-255 range enforcement)
+
+**Behavior:**
+- **UpdateOn=Change**: Clamps on blur via `OnInputChanged()`
+- **UpdateOn=Input**: Defers clamping to blur via `ValidateAndClamp()` to avoid interrupting typing
+- **MaxLength**: Enforced in real-time during typing (blocks 4th character, etc.)
+
+---
+
+### 🔧 JavaScript Infrastructure Improvements (input.js)
+
+**Critical bug fixes and architectural improvements:**
+
+**1. Fixed Race Condition - Dual Blur Handlers**
+- **Problem**: UpdateOn=Input + Min/Max created two competing blur handlers
+- **Solution**: Merged into single unified handler with `enableBlurValidation` flag
+- **Impact**: Eliminated race conditions, guaranteed execution order
+
+**2. Fixed Event Propagation - MaxLength Enforcement**
+- **Problem**: `stopPropagation()` blocked other input handlers (validation, etc.)
+- **Solution**: Use capture phase + dispatch new event after truncation
+- **Impact**: MaxLength now runs first, other handlers see truncated value
+
+**3. Fixed Memory Leak - Debounce Timer**
+- **Problem**: Timer could invoke disposed DotNetObjectReference
+- **Solution**: Check state exists before invoking in timer callback
+- **Impact**: No more errors after rapid disposal
+
+**4. Added Consistent Error Handling**
+- **New**: `safeInvoke()` helper for all JS interop calls
+- **Handles**: Disposed objects gracefully, logs real errors, ignores disposal errors
+- **Impact**: Robust error handling across all input components
+
+**5. Fixed Validation Cleanup**
+- **Problem**: `customValidity` persisted after disposal
+- **Solution**: Clear `setCustomValidity('')` in `disposeValidation()`
+- **Impact**: Clean disposal, no validation state leaks
+
+**6. Removed Duplicate Functions**
+- Removed separate `initializeBlurValidation()` / `disposeBlurValidation()`
+- Merged blur validation into main `initializeInput()` flow
+- Cleaner API, less code duplication
+
+---
+
+### 🏗️ Architecture - MenubarContent Refactoring
+
+**Migrated to FloatingPortal for positioning infrastructure:**
+
+**Changes:**
+- Replaced manual positioning logic with `FloatingPortal` component
+- Re-established cascading values (MenubarContext, MenubarMenuContext) inside portal
+- Removed ~150 lines of duplicate positioning code
+- Now consistent with PopoverContent, DropdownMenuContent, SelectContent
+
+**Benefits:**
+- ✅ Centralized positioning logic (one source of truth)
+- ✅ Automatic portal rendering to document body
+- ✅ No z-index stacking issues
+- ✅ Easier maintenance (positioning bugs fixed in one place)
+- ✅ Follows established component pattern
+
+---
+
+### 🚀 Impact Summary
+
+**Stability:**
+- ✅ Fixed 3 critical bugs (race condition, event blocking, memory leak)
+- ✅ Added comprehensive error handling via `safeInvoke()`
+- ✅ Eliminated code duplication (150+ lines removed)
+
+**Functionality:**
+- ✅ NumericInput now enforces Min/Max/MaxLength correctly
+- ✅ Works across all UpdateOn modes
+- ✅ Immediate DOM feedback on clamping
+
+**Compatibility:**
+- ✅ No breaking changes to existing components
+- ✅ Input, CurrencyInput, MaskedInput unaffected
+- ✅ Backward compatible JS API (optional parameters)
+
+**Code Quality:**
+- ✅ Consistent patterns across floating components
+- ✅ Type-safe numeric clamping
+- ✅ Production-ready error handling
+
+---
+
 ## 2026-02-07 - Navigation Enhancement, Component Styling Improvements & Demo Standardization
 
 ### 🎨 UI/UX Enhancements & Demo Improvements

@@ -2,6 +2,8 @@
 @using BlazorUI.Components.Button
 @using BlazorUI.Components.Popover
 @using BlazorUI.Components.Input
+@using BlazorUI.Components.MaskedInput
+@using BlazorUI.Components.NumericInput
 @using BlazorUI.Primitives.Services
 
 <Popover @bind-Open="_isOpen">
@@ -9,10 +11,10 @@
         <Button Variant="ButtonVariant.Outline"
                 Class="@TriggerCssClass"
                 Disabled="@Disabled">
-            <div class="h-5 w-5 rounded border border-input mr-2"
+            <div class="h-5 w-5 rounded border border-input mr-1"
                  style="background-color: @CurrentColorString;">
             </div>
-            <span class="font-mono text-sm">@CurrentColorString</span>
+            <span class="text-sm text-muted-foreground">@CurrentColorString</span>
         </Button>
     </PopoverTrigger>
 
@@ -56,13 +58,14 @@
             @* Color Preview + Hex Input *@
             <div class="flex items-center gap-2">
                 <div class="h-10 w-10 rounded border border-input shadow-sm flex-shrink-0"
-                     style="background-color: @CurrentColorString;">
+                     style="background-color: @CurrentColorString">
                 </div>
-                <Input Type="InputType.Text"
-                       Value="@CurrentColorString"
-                       ValueChanged="HandleHexInputChange"
-                       Class="font-mono text-sm"
-                       Placeholder="#000000" />
+                <MaskedInput Value="@CurrentColorString"
+                             ValueChanged="HandleHexInputChange"
+                             Mask="@(ShowAlpha ? "#********" : "#******")"
+                             MaskChar="@(' ')"
+                             Class="text-sm uppercase"
+                             Placeholder="@(ShowAlpha ? "#000000FF" : "#000000")" />
             </div>
 
             @* RGB Inputs *@
@@ -71,30 +74,30 @@
                 <div class="grid grid-cols-3 gap-2">
                     <div class="space-y-1">
                         <label class="text-xs text-muted-foreground">R</label>
-                        <Input Type="InputType.Number"
-                               Value="@_red.ToString()"
-                               ValueChanged="HandleRedChange"
-                               Min="0"
-                               Max="255"
-                               Class="text-center" />
+                        <NumericInput TValue="int"
+                                      Value="@_red"
+                                      Min="0" Max="255"
+                                      ValueChanged="@HandleRedChange"
+                                      MaxLength="3"
+                                      Class="text-center" />
                     </div>
                     <div class="space-y-1">
                         <label class="text-xs text-muted-foreground">G</label>
-                        <Input Type="InputType.Number"
-                               Value="@_green.ToString()"
-                               ValueChanged="HandleGreenChange"
-                               Min="0"
-                               Max="255"
-                               Class="text-center" />
+                        <NumericInput TValue="int"
+                                      Value="@_green"
+                                      Min="0" Max="255"
+                                      ValueChanged="@HandleGreenChange"
+                                      MaxLength="3"
+                                      Class="text-center" />
                     </div>
                     <div class="space-y-1">
                         <label class="text-xs text-muted-foreground">B</label>
-                        <Input Type="InputType.Number"
-                               Value="@_blue.ToString()"
-                               ValueChanged="HandleBlueChange"
-                               Min="0"
-                               Max="255"
-                               Class="text-center" />
+                        <NumericInput TValue="int"
+                                      Value="@_blue"
+                                      Min="0" Max="255"
+                                      ValueChanged="@HandleBlueChange"
+                                      MaxLength="3"
+                                      Class="text-center" />
                     </div>
                 </div>
             }

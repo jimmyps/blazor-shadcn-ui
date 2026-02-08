@@ -1,28 +1,37 @@
 @namespace BlazorUI.Primitives.Menubar
 @using BlazorUI.Primitives.Constants
-@using BlazorUI.Primitives.Services
-@inject IPositioningService PositioningService
+@using BlazorUI.Primitives.Floating
 @inject IJSRuntime JSRuntime
 @implements IAsyncDisposable
 
-@* MenubarContent - the dropdown content for a menu entry *@
+@* MenubarContent - uses FloatingPortal for positioning infrastructure *@
 
-@if (MenuContext.IsOpen)
-{
-    <div @ref="_contentRef"
-         id="@MenuContext.ContentId"
-         role="menu"
-         tabindex="-1"
-         @onkeydown="HandleKeyDown"
-         @attributes="GetAttributesWithoutStyle()"
-         data-state="open"
-         aria-labelledby="@MenuContext.TriggerId"
-         style="@GetMergedStyle()">
-        <CascadingValue Value="this" IsFixed="false">
-            @ChildContent
+<FloatingPortal PortalId="@MenuContext.ContentId"
+                IsOpen="@MenuContext.IsOpen"
+                AnchorElement="@MenuContext.TriggerElement"
+                Side="@Side"
+                Align="@Align"
+                Offset="@Offset"
+                ZIndex="@ZIndex"
+                OnReady="@HandlePortalReady">
+    @* Re-establish cascading values that were lost due to portal rendering to body *@
+    <CascadingValue Value="Context" IsFixed="true">
+        <CascadingValue Value="MenuContext" IsFixed="true">
+            <CascadingValue Value="this" IsFixed="false">
+                <div @ref="_contentRef"
+                     id="@MenuContext.ContentId"
+                     role="menu"
+                     tabindex="-1"
+                     @onkeydown="HandleKeyDown"
+                     @attributes="AdditionalAttributes"
+                     data-state="open"
+                     aria-labelledby="@MenuContext.TriggerId">
+                    @ChildContent
+                </div>
+            </CascadingValue>
         </CascadingValue>
-    </div>
-}
+    </CascadingValue>
+</FloatingPortal>
 
 @code {
     [CascadingParameter]
@@ -99,8 +108,6 @@
     private IJSObjectReference? _keyboardNavModule;
     private IJSObjectReference? _keyboardNavCleanup;
     private DotNetObjectReference<MenubarContent>? _dotNetRef;
-    private IAsyncDisposable? _positioningCleanup;
-    private bool _isInitialized = false;
 
     // Track menu items for keyboard navigation
     private readonly List<IMenubarItem> _menuItems = new();
@@ -124,79 +131,26 @@
         Context.OnStateChanged += HandleContextStateChanged;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    // Called by FloatingPortal when content is positioned and visible
+    private async Task HandlePortalReady()
     {
-        if (MenuContext.IsOpen && !_isInitialized)
+        // Set up click-outside detection
+        if (CloseOnClickOutside)
         {
-            _isInitialized = true;
-
-            // Set up positioning
-            await SetupPositioningAsync();
-
-            // Set up click-outside detection
-            if (CloseOnClickOutside)
-            {
-                await SetupClickOutsideAsync();
-            }
-
-            // Set up keyboard navigation (prevents scroll on arrow keys)
-            await SetupKeyboardNavAsync();
-
-            // Focus the content container for keyboard navigation
-            try
-            {
-                await _contentRef.FocusAsync();
-            }
-            catch
-            {
-                // Focus may fail in some scenarios, continue anyway
-            }
-        }
-        else if (!MenuContext.IsOpen && _isInitialized)
-        {
-            await CleanupAsync();
-        }
-    }
-
-    private async Task SetupPositioningAsync()
-    {
-        if (MenuContext.TriggerElement == null)
-        {
-            Console.WriteLine("Warning: MenubarContent - TriggerElement is null, positioning may not work correctly");
-            return;
+            await SetupClickOutsideAsync();
         }
 
+        // Set up keyboard navigation (prevents scroll on arrow keys)
+        await SetupKeyboardNavAsync();
+
+        // Focus the content container for keyboard navigation
         try
         {
-            // Construct placement string from Side and Align
-            var placement = Align == PopoverAlign.Center ? Side.ToValue() : $"{Side.ToValue()}-{Align.ToValue()}";
-
-            var options = new PositioningOptions
-            {
-                Placement = placement,
-                Offset = Offset,
-                Strategy = "absolute"
-            };
-
-            // Compute and apply position
-            var position = await PositioningService.ComputePositionAsync(
-                MenuContext.TriggerElement.Value,
-                _contentRef,
-                options);
-
-            // Apply position and make visible (enables pointer-events)
-            // CSS animations handle the fade-in via animate-in classes
-            await PositioningService.ApplyPositionAsync(_contentRef, position, makeVisible: true);
-
-            // Set up auto-update for dynamic positioning
-            _positioningCleanup = await PositioningService.AutoUpdateAsync(
-                MenuContext.TriggerElement.Value,
-                _contentRef,
-                options);
+            await _contentRef.FocusAsync();
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine($"Failed to set up positioning: {ex.Message}");
+            // Focus may fail in some scenarios, continue anyway
         }
     }
 
@@ -250,53 +204,9 @@
         return Task.CompletedTask;
     }
 
-    private string GetInitialStyle()
-    {
-        var baseStyle = $"z-index: {ZIndex};";
-
-        // Position offscreen initially - JavaScript will reposition
-        // Don't set opacity here - let CSS animations handle fade-in via animate-in classes
-        baseStyle += " position: absolute; top: -9999px; left: -9999px; pointer-events: none;";
-
-        return baseStyle;
-    }
-
-    private string GetMergedStyle()
-    {
-        var baseStyle = GetInitialStyle();
-
-        if (AdditionalAttributes != null && AdditionalAttributes.TryGetValue("style", out var userStyle))
-        {
-            return $"{userStyle}; {baseStyle}";
-        }
-
-        return baseStyle;
-    }
-
-    private Dictionary<string, object>? GetAttributesWithoutStyle()
-    {
-        if (AdditionalAttributes == null) return null;
-
-        var attributes = new Dictionary<string, object>(AdditionalAttributes);
-        attributes.Remove("style");
-
-        return attributes.Count > 0 ? attributes : null;
-    }
-
     private async void HandleContextStateChanged()
     {
-        if (!MenuContext.IsOpen && _isInitialized)
-        {
-            await InvokeAsync(async () =>
-            {
-                await CleanupAsync();
-                StateHasChanged();
-            });
-        }
-        else
-        {
-            await InvokeAsync(StateHasChanged);
-        }
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task HandleKeyDown(KeyboardEventArgs args)
@@ -418,12 +328,6 @@
 
     private async Task CleanupAsync()
     {
-        if (_positioningCleanup != null)
-        {
-            await _positioningCleanup.DisposeAsync();
-            _positioningCleanup = null;
-        }
-
         if (_clickOutsideCleanup != null)
         {
             try
@@ -452,7 +356,6 @@
             _keyboardNavCleanup = null;
         }
 
-        _isInitialized = false;
         _focusedItemIndex = -1;
     }
 

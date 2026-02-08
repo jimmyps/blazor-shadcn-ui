@@ -1,7 +1,6 @@
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
@@ -138,7 +137,7 @@ public partial class ColorPicker : ComponentBase, IAsyncDisposable
         : PresetColors;
 
     private string TriggerCssClass => ClassNames.cn(
-        "flex items-center justify-between w-full rounded-md border border-input shadow-xs",
+        "flex justify-start items-center w-full rounded-md border border-input shadow-xs",
         "bg-background px-3 py-2 text-sm",
         "hover:bg-accent hover:text-accent-foreground",
         "focus:outline-none focus:ring-ring focus:ring-[2px] focus:ring-ring/50",
@@ -267,33 +266,33 @@ public partial class ColorPicker : ComponentBase, IAsyncDisposable
         }
     }
 
-    private async Task HandleRedChange(string value)
+    private async Task HandleRedChange(int value)
     {
-        if (int.TryParse(value, out var r) && r >= 0 && r <= 255)
+        if (value >= 0 && value <= 255)
         {
-            _red = r;
+            _red = value;
             UpdateHslFromRgb();
             await UpdateCanvas();
             await NotifyColorChanged();
         }
     }
 
-    private async Task HandleGreenChange(string value)
+    private async Task HandleGreenChange(int value)
     {
-        if (int.TryParse(value, out var g) && g >= 0 && g <= 255)
+        if (value >= 0 && value <= 255)
         {
-            _green = g;
+            _green = value;
             UpdateHslFromRgb();
             await UpdateCanvas();
             await NotifyColorChanged();
         }
     }
 
-    private async Task HandleBlueChange(string value)
+    private async Task HandleBlueChange(int value)
     {
-        if (int.TryParse(value, out var b) && b >= 0 && b <= 255)
+        if (value >= 0 && value <= 255)
         {
-            _blue = b;
+            _blue = value;
             UpdateHslFromRgb();
             await UpdateCanvas();
             await NotifyColorChanged();

@@ -161,6 +161,16 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
     public bool Readonly { get; set; }
 
     /// <summary>
+    /// Gets or sets the maximum number of characters allowed.
+    /// </summary>
+    /// <remarks>
+    /// When set, prevents users from entering more characters via JavaScript enforcement.
+    /// Works on type="number" inputs (unlike the maxlength HTML attribute which is ignored on number inputs).
+    /// </remarks>
+    [Parameter]
+    public int? MaxLength { get; set; }
+
+    /// <summary>
     /// Gets or sets the minimum value for number inputs.
     /// </summary>
     /// <remarks>
@@ -406,6 +416,21 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
     public async Task OnInputChanged(string? value)
     {
         var parsedValue = TryParseValue(value);
+        var originalValue = parsedValue;
+        
+        // Clamp to min/max ONLY when UpdateOn=Change (on blur)
+        // For UpdateOn=Input, clamping happens separately on blur via ValidateAndClamp
+        if (UpdateOn == InputUpdateMode.Change)
+        {
+            parsedValue = ClampToRange(parsedValue);
+            
+            // If value was clamped, update the DOM input element via JS
+            if (!EqualityComparer<TValue>.Default.Equals(originalValue, parsedValue) && _inputModule != null)
+            {
+                var clampedString = Convert.ToString(parsedValue, CultureInfo.InvariantCulture);
+                await _inputModule.InvokeVoidAsync("updateValue", EffectiveId, clampedString);
+            }
+        }
         
         // Update local state
         Value = parsedValue;
@@ -420,8 +445,6 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
             EditContext.NotifyFieldChanged(_fieldIdentifier);
             await UpdateValidationState();
         }
-
-        // CRITICAL: Don't call StateHasChanged() here to avoid re-render during typing!
     }
 
     private async Task UpdateValidationState()
@@ -430,6 +453,109 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
         {
             await UpdateValidationDisplayAsync();
         }
+    }
+
+    /// <summary>
+    /// Called from JavaScript on blur when UpdateOn=Input to validate and clamp value.
+    /// </summary>
+    [JSInvokable]
+    public async Task ValidateAndClamp()
+    {
+        if (Value == null)
+            return;
+
+        var clampedValue = ClampToRange(Value);
+        
+        // Only update if value was clamped
+        if (!EqualityComparer<TValue>.Default.Equals(Value, clampedValue))
+        {
+            Value = clampedValue;
+            await ValueChanged.InvokeAsync(clampedValue);
+            
+            if (EditContext != null && ValueExpression != null)
+            {
+                _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+                EditContext.NotifyFieldChanged(_fieldIdentifier);
+            }
+            
+            // Update DOM input element with clamped value via JS
+            if (_inputModule != null)
+            {
+                var clampedString = Convert.ToString(clampedValue, CultureInfo.InvariantCulture);
+                await _inputModule.InvokeVoidAsync("updateValue", EffectiveId, clampedString);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Clamps the value to the Min/Max range if specified.
+    /// </summary>
+    private TValue? ClampToRange(TValue? value)
+    {
+        if (value == null)
+            return value;
+
+        var targetType = typeof(TValue);
+        var underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+        // Parse Min and Max values
+        var minValue = TryParseValue(Min);
+        var maxValue = TryParseValue(Max);
+
+        if (minValue == null && maxValue == null)
+            return value; // No clamping needed
+
+        // Clamp based on type
+        if (underlyingType == typeof(int))
+        {
+            var intValue = (int)(object)value;
+            if (minValue != null && intValue < (int)(object)minValue)
+                return minValue;
+            if (maxValue != null && intValue > (int)(object)maxValue)
+                return maxValue;
+        }
+        else if (underlyingType == typeof(decimal))
+        {
+            var decValue = (decimal)(object)value;
+            if (minValue != null && decValue < (decimal)(object)minValue)
+                return minValue;
+            if (maxValue != null && decValue > (decimal)(object)maxValue)
+                return maxValue;
+        }
+        else if (underlyingType == typeof(double))
+        {
+            var dblValue = (double)(object)value;
+            if (minValue != null && dblValue < (double)(object)minValue)
+                return minValue;
+            if (maxValue != null && dblValue > (double)(object)maxValue)
+                return maxValue;
+        }
+        else if (underlyingType == typeof(float))
+        {
+            var fltValue = (float)(object)value;
+            if (minValue != null && fltValue < (float)(object)minValue)
+                return minValue;
+            if (maxValue != null && fltValue > (float)(object)maxValue)
+                return maxValue;
+        }
+        else if (underlyingType == typeof(long))
+        {
+            var longValue = (long)(object)value;
+            if (minValue != null && longValue < (long)(object)minValue)
+                return minValue;
+            if (maxValue != null && longValue > (long)(object)maxValue)
+                return maxValue;
+        }
+        else if (underlyingType == typeof(short))
+        {
+            var shortValue = (short)(object)value;
+            if (minValue != null && shortValue < (short)(object)minValue)
+                return minValue;
+            if (maxValue != null && shortValue > (short)(object)maxValue)
+                return maxValue;
+        }
+
+        return value;
     }
 
     /// <summary>
@@ -524,15 +650,28 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
                 // Create DotNetObjectReference for callbacks
                 _dotNetRef = DotNetObjectReference.Create(this);
 
-                // Initialize input event handling with UpdateOn mode and debounce
-                // Use EffectiveId which always has a value (user-provided or generated)
+                // Determine if blur validation is needed (UpdateOn=Input + Min/Max)
+                bool needsBlurValidation = UpdateOn == InputUpdateMode.Input && (Min != null || Max != null);
+
+                // Initialize input event handling with UpdateOn mode, debounce, and blur validation flag
                 await _inputModule.InvokeVoidAsync(
                     "initializeInput",
                     EffectiveId,
                     UpdateOn.ToString().ToLower(),
                     DebounceDelay,
-                    _dotNetRef
+                    _dotNetRef,
+                    needsBlurValidation  // Pass blur validation flag
                 );
+
+                // Initialize MaxLength enforcement if specified
+                if (MaxLength.HasValue)
+                {
+                    await _inputModule.InvokeVoidAsync(
+                        "enforceMaxLength",
+                        EffectiveId,
+                        MaxLength.Value
+                    );
+                }
 
                 _jsInitialized = true;
 
@@ -644,9 +783,15 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
 
             if (_jsInitialized && _inputModule != null)
             {
-                // Dispose input event handling and validation tracking
+                // Dispose input event handling (now includes blur validation)
                 await _inputModule.InvokeVoidAsync("disposeInput", EffectiveId);
                 await _inputModule.InvokeVoidAsync("disposeValidation", EffectiveId);
+                
+                // Dispose maxlength enforcement if it was initialized
+                if (MaxLength.HasValue)
+                {
+                    await _inputModule.InvokeVoidAsync("disposeMaxLength", EffectiveId);
+                }
                 
                 await _inputModule.DisposeAsync();
             }

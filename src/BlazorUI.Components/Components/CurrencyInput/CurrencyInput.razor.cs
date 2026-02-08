@@ -2,7 +2,6 @@ using BlazorUI.Components.Common;
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System.Globalization;
 using System.Linq.Expressions;
@@ -192,6 +191,16 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     /// </remarks>
     [Parameter]
     public bool Readonly { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum number of characters allowed.
+    /// </summary>
+    /// <remarks>
+    /// When set, the browser will prevent users from entering more characters.
+    /// Useful for limiting very large currency amounts or budget constraints.
+    /// </remarks>
+    [Parameter]
+    public int? MaxLength { get; set; }
 
     /// <summary>
     /// Gets or sets the minimum value for validation.

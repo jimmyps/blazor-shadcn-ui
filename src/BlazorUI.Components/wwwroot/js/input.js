@@ -8,6 +8,31 @@ const inputState = new Map();
 const validationState = new Map();
 
 /**
+ * Safely invoke a .NET method with consistent error handling
+ * @param {object} dotNetRef - The DotNetObjectReference
+ * @param {string} methodName - The method name to invoke
+ * @param  {...any} args - Arguments to pass to the method
+ * @returns {Promise} - The result of the invocation or undefined on error
+ */
+async function safeInvoke(dotNetRef, methodName, ...args) {
+    if (!dotNetRef) {
+        console.warn(`Cannot invoke ${methodName}: dotNetRef is null`);
+        return;
+    }
+    
+    try {
+        return await dotNetRef.invokeMethodAsync(methodName, ...args);
+    } catch (err) {
+        // Ignore disposed object errors (normal during component disposal)
+        if (err.message?.includes('disposed') || err.message?.includes('released')) {
+            return;
+        }
+        console.error(`Error invoking ${methodName}:`, err);
+        throw err;
+    }
+}
+
+/**
  * Initialize validation tracking for an element
  * @param {string} elementId - The element ID
  * @param {string} updateOn - 'input' or 'change'
@@ -45,13 +70,19 @@ export function initializeValidation(elementId, updateOn = 'input') {
  * @param {string} elementId - The element ID
  */
 export function disposeValidation(elementId) {
+    const element = document.getElementById(elementId);
     const state = validationState.get(elementId);
-    if (state && state.inputHandler) {
-        const element = document.getElementById(elementId);
-        if (element) {
+    
+    if (element) {
+        // Clear validation state from element
+        element.setCustomValidity('');
+        
+        // Remove event listener
+        if (state && state.inputHandler) {
             element.removeEventListener('input', state.inputHandler);
         }
     }
+    
     validationState.delete(elementId);
 }
 
@@ -118,8 +149,9 @@ export function showValidationError(elementId, message) {
  * @param {string} updateOn - 'input' or 'change'
  * @param {number} debounceDelay - Debounce delay in milliseconds (only for 'input' mode)
  * @param {object} dotNetRef - DotNetObjectReference for callbacks
+ * @param {boolean} enableBlurValidation - Whether to call ValidateAndClamp on blur (for UpdateOn=Input + Min/Max)
  */
-export function initializeInput(elementId, updateOn = 'change', debounceDelay = 0, dotNetRef = null) {
+export function initializeInput(elementId, updateOn = 'change', debounceDelay = 0, dotNetRef = null, enableBlurValidation = false) {
     const element = document.getElementById(elementId);
     if (!element) {
         console.warn(`Input element with id '${elementId}' not found`);
@@ -133,6 +165,7 @@ export function initializeInput(elementId, updateOn = 'change', debounceDelay = 
         updateOn: updateOn.toLowerCase(),
         debounceDelay: debounceDelay,
         dotNetRef: dotNetRef,
+        enableBlurValidation: enableBlurValidation,
         debounceTimer: null,
         inputHandler: null,
         changeHandler: null,
@@ -151,13 +184,19 @@ export function initializeInput(elementId, updateOn = 'change', debounceDelay = 
                     clearTimeout(state.debounceTimer);
                 }
                 
-                // Set new timer
+                // Set new timer with state check
                 state.debounceTimer = setTimeout(() => {
-                    dotNetRef.invokeMethodAsync('OnInputChanged', value);
+                    // Check if state still exists before invoking
+                    const currentState = inputState.get(elementId);
+                    if (currentState && currentState.dotNetRef) {
+                        // Just invoke - no DOM update during typing (clamping deferred to blur)
+                        safeInvoke(currentState.dotNetRef, 'OnInputChanged', value);
+                    }
                 }, state.debounceDelay);
             } else {
                 // No debounce - immediate call
-                dotNetRef.invokeMethodAsync('OnInputChanged', value);
+                // No DOM update during typing - would interfere with user input
+                safeInvoke(dotNetRef, 'OnInputChanged', value);
             }
         };
         element.addEventListener('input', state.inputHandler);
@@ -170,13 +209,13 @@ export function initializeInput(elementId, updateOn = 'change', debounceDelay = 
             
             // Only call C# for change events when updateOn='change'
             if (state.updateOn === 'change') {
-                dotNetRef.invokeMethodAsync('OnInputChanged', value);
+                // C# will call updateValue() if value gets clamped
+                safeInvoke(dotNetRef, 'OnInputChanged', value);
             }
-            // For updateOn='input', change event is just for final sync (handled by blur)
         };
         element.addEventListener('change', state.changeHandler);
 
-        // Blur event for final value sync in all modes
+        // Unified blur handler with conditional logic
         state.blurHandler = (e) => {
             const value = e.target.value;
             
@@ -186,9 +225,15 @@ export function initializeInput(elementId, updateOn = 'change', debounceDelay = 
                 state.debounceTimer = null;
             }
             
-            // Final sync on blur (helps with validation state)
-            if (state.updateOn === 'input') {
-                dotNetRef.invokeMethodAsync('OnInputChanged', value);
+            // Handle validation clamping FIRST if enabled (UpdateOn=Input + Min/Max)
+            if (state.enableBlurValidation) {
+                // C# will call updateValue() if value gets clamped
+                safeInvoke(dotNetRef, 'ValidateAndClamp');
+            }
+            // Final sync for UpdateOn=Input without blur validation
+            // Just syncing state - no transformation expected
+            else if (state.updateOn === 'input') {
+                safeInvoke(dotNetRef, 'OnInputChanged', value);
             }
         };
         element.addEventListener('blur', state.blurHandler);
@@ -275,7 +320,7 @@ export function initializeCommandInput(elementId, dotNetRef, autoFocus = false) 
             e.preventDefault();
             
             // Call C# only for navigation
-            dotNetRef.invokeMethodAsync('HandleNavigationKey', e.key);
+            safeInvoke(dotNetRef, 'HandleNavigationKey', e.key);
         }
         // All other keys: do nothing, let Input component handle normally
     };
@@ -321,6 +366,66 @@ export function disposeCommandInput(elementId) {
 
     commandInputState.delete(elementId);
 }
+
+// Track elements with maxlength enforcement
+const maxLengthState = new Map();
+
+/**
+ * Enforce maxlength on input elements (works for type="number" which doesn't support maxlength attribute)
+ * @param {string} elementId - The input element ID
+ * @param {number} maxLength - Maximum number of characters allowed
+ */
+export function enforceMaxLength(elementId, maxLength) {
+    const element = document.getElementById(elementId);
+    if (!element) {
+        console.warn(`Element with id '${elementId}' not found for maxLength enforcement`);
+        return;
+    }
+
+    // Clean up any existing handler
+    disposeMaxLength(elementId);
+
+    const inputHandler = (e) => {
+        const value = e.target.value;
+        
+        // If value exceeds maxLength, truncate it
+        if (value.length > maxLength) {
+            // Truncate to maxLength
+            e.target.value = value.slice(0, maxLength);
+            
+            // Create and dispatch a new input event so other handlers see truncated value
+            const newEvent = new Event('input', { bubbles: true });
+            e.target.dispatchEvent(newEvent);
+            
+            // Stop the ORIGINAL event from propagating further
+            e.stopImmediatePropagation();
+        }
+    };
+
+    // Use capture phase to run BEFORE other input handlers
+    element.addEventListener('input', inputHandler, { capture: true });
+
+    maxLengthState.set(elementId, { inputHandler });
+}
+
+/**
+ * Dispose maxlength enforcement for an element
+ * @param {string} elementId - The input element ID
+ */
+export function disposeMaxLength(elementId) {
+    const state = maxLengthState.get(elementId);
+    if (!state) return;
+
+    const element = document.getElementById(elementId);
+    if (element && state.inputHandler) {
+        element.removeEventListener('input', state.inputHandler, { capture: true });
+    }
+
+    maxLengthState.delete(elementId);
+}
+
+
+
 
 
 
