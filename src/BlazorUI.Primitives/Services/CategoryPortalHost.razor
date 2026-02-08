@@ -31,8 +31,6 @@
 
     private HashSet<string> _renderedThisCycle = new();
     private IJSObjectReference? _portalModule;
-    private IReadOnlyDictionary<string, RenderFragment> _previousPortals = 
-        new Dictionary<string, RenderFragment>();
 
     protected override void OnInitialized()
     {
