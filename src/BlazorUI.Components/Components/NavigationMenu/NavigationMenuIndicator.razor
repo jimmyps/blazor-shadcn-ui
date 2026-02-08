@@ -1,4 +1,5 @@
-﻿@namespace BlazorUI.Components.NavigationMenu
+@namespace BlazorUI.Components.NavigationMenu
+@using BlazorUI.Components.Utilities
 
 @* NavigationMenuIndicator - visual indicator for active item *@
 <div class="@GetClass()">
@@ -18,10 +19,13 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private string GetClass()
-    {
-        var baseClass = "top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden " +
-                       "data-[state=visible]:animate-in data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:fade-in";
-        return string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
-    }
+    private string GetClass() =>
+        ClassNames.cn(
+            // Base positioning and layout
+            "top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden",
+            // Animation states
+            "data-[state=visible]:animate-in data-[state=hidden]:animate-out",
+            "data-[state=hidden]:fade-out data-[state=visible]:fade-in",
+            Class
+        );
 }

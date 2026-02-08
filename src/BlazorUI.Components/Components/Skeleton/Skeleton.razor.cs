@@ -1,5 +1,5 @@
+using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
-using System.Text;
 
 namespace BlazorUI.Components.Skeleton;
 
@@ -95,26 +95,17 @@ public partial class Skeleton : ComponentBase
     /// <item>Custom classes: Any classes provided via the <see cref="Class"/> parameter</item>
     /// </list>
     /// </remarks>
-    private string CssClass
-    {
-        get
-        {
-            var builder = new StringBuilder();
-            builder.Append("animate-pulse bg-muted ");
-
-            builder.Append(Shape switch
+    private string CssClass =>
+        ClassNames.cn(
+            // Base skeleton styles
+            "animate-pulse bg-muted",
+            // Shape variants
+            Shape switch
             {
-                SkeletonShape.Circular => "rounded-full ",
-                SkeletonShape.Rectangular => "rounded-md ",
-                _ => "rounded-md "
-            });
-
-            if (!string.IsNullOrWhiteSpace(Class))
-            {
-                builder.Append(Class);
-            }
-
-            return builder.ToString().Trim();
-        }
-    }
+                SkeletonShape.Circular => "rounded-full",
+                SkeletonShape.Rectangular => "rounded-md",
+                _ => "rounded-md"
+            },
+            Class
+        );
 }

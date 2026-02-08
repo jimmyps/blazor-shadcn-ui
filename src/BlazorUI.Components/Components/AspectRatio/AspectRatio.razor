@@ -1,4 +1,5 @@
-﻿@namespace BlazorUI.Components.AspectRatio
+@namespace BlazorUI.Components.AspectRatio
+@using BlazorUI.Components.Utilities
 
 @* AspectRatio - maintains a fixed aspect ratio for its children *@
 <div @attributes="GetAttributes()" style="@GetStyle()">
@@ -46,9 +47,11 @@
 
     private Dictionary<string, object>? GetAttributes()
     {
-        var classValue = string.IsNullOrEmpty(Class) 
-            ? "relative w-full" 
-            : $"relative w-full {Class}";
+        var classValue = ClassNames.cn(
+            // Base aspect ratio container styles
+            "relative w-full",
+            Class
+        );
 
         var attributes = new Dictionary<string, object> { ["class"] = classValue };
 

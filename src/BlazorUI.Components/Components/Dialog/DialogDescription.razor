@@ -1,4 +1,5 @@
 @namespace BlazorUI.Components.Dialog
+@using BlazorUI.Components.Utilities
 @using BlazorUI.Primitives.Dialog
 
 @*
@@ -28,19 +29,10 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private string GetClassNames()
-    {
-        var classes = new List<string>
-        {
-            "text-sm",
-            "text-muted-foreground"
-        };
-
-        if (!string.IsNullOrWhiteSpace(Class))
-        {
-            classes.Add(Class);
-        }
-
-        return string.Join(" ", classes);
-    }
+    private string GetClassNames() =>
+        ClassNames.cn(
+            // Base description styles
+            "text-sm text-muted-foreground",
+            Class
+        );
 }

@@ -1,4 +1,5 @@
 @namespace BlazorUI.Components.Accordion
+@using BlazorUI.Components.Utilities
 @using BlazorUI.Primitives.Accordion
 
 @*
@@ -38,5 +39,5 @@
     public string? Class { get; set; }
 
     private string CssClass =>
-        $"border-b {Class}".Trim();
+        ClassNames.cn("border-b", Class);
 }

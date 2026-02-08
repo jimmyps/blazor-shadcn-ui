@@ -1,4 +1,5 @@
-﻿@namespace BlazorUI.Components.NavigationMenu
+@namespace BlazorUI.Components.NavigationMenu
+@using BlazorUI.Components.Utilities
 
 @* NavigationMenuList - styled list container *@
 <BlazorUI.Primitives.NavigationMenu.NavigationMenuList class="@GetClass()" @attributes="AdditionalAttributes">
@@ -24,9 +25,10 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private string GetClass()
-    {
-        var baseClass = "group flex flex-1 list-none items-center justify-center space-x-1";
-        return string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
-    }
+    private string GetClass() =>
+        ClassNames.cn(
+            // Base list layout
+            "group flex flex-1 list-none items-center justify-center space-x-1",
+            Class
+        );
 }

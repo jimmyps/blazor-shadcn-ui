@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-02-08 - NumericInput Validation & Infrastructure Improvements
+## 2026-02-08 - Various Input Components Enhancements & Infrastructure Improvements
 
 ### 🎯 Core Features
 
@@ -107,6 +107,94 @@ All notable changes to this project will be documented in this file.
 - ✅ Production-ready error handling
 
 ---
+
+### 🎨 Code Quality Improvements
+
+#### **Standardized CSS Class Merging Across All Components**
+
+**Migrated all components to use `ClassNames.cn()` for CSS class merging:**
+
+**Changes:**
+- Updated 14 component files to replace non-standard class merging patterns
+- Added `@using BlazorUI.Components.Utilities` directive to all affected components
+- Grouped CSS classes by intent/purpose following Input component pattern
+- Removed legacy patterns: `StringBuilder`, `List<string>`, manual string concatenation
+
+**Components Updated:**
+1. **ContextMenu** (3 files):
+   - ContextMenuSubContent.razor
+   - ContextMenuContent.razor
+   - ContextMenuLabel.razor
+
+2. **Toast** (2 files):
+   - ToastClose.razor
+   - ToastAction.razor
+
+3. **Accordion** (2 files):
+   - Accordion.razor
+   - AccordionItem.razor
+
+4. **NavigationMenu** (2 files):
+   - NavigationMenuIndicator.razor
+   - NavigationMenuList.razor
+
+5. **Other Components** (5 files):
+   - CarouselItem.razor
+   - Skeleton.razor.cs
+   - TooltipContent.razor
+   - DialogDescription.razor
+   - AspectRatio.razor
+
+**Old Patterns Replaced:**
+```csharp
+// ❌ String interpolation with Trim()
+$"{Class}".Trim()
+$"border-b {Class}".Trim()
+
+// ❌ Ternary operators with concatenation
+string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}"
+
+// ❌ StringBuilder for building classes
+var builder = new StringBuilder();
+builder.Append("animate-pulse bg-muted ");
+builder.Append(Class);
+return builder.ToString().Trim();
+
+// ❌ List with string.Join
+var classes = new List<string> { "text-sm", "text-muted-foreground" };
+if (!string.IsNullOrWhiteSpace(Class)) classes.Add(Class);
+return string.Join(" ", classes);
+```
+
+**NeoBlazorUI Standard Pattern:**
+```csharp
+// ✅ ClassNames.cn() with grouped classes by intent
+ClassNames.cn(
+    // Base styles
+    "px-2 py-1.5 text-sm font-semibold text-foreground",
+    // Interaction states
+    "hover:text-foreground focus:opacity-100",
+    // Custom classes
+    Class
+)
+```
+
+**Benefits:**
+- ✅ Consistent code style across entire codebase
+- ✅ Automatic null/empty string handling
+- ✅ Tailwind CSS conflict resolution via TailwindMerge
+- ✅ Better readability with intent-based grouping
+- ✅ Easier maintenance and debugging
+- ✅ Reduced code duplication
+
+**Pattern Details:**
+- Classes grouped by purpose: "Base styles", "Animation states", "Interaction states", etc.
+- Comments indicate intent of each group
+- Related classes on same line for better readability
+- Follows established pattern from Input component
+
+---
+
 
 ## 2026-02-07 - Navigation Enhancement, Component Styling Improvements & Demo Standardization
 
