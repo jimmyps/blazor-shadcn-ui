@@ -1,7 +1,10 @@
 @namespace BlazorBlueprint.Components.NativeSelect
 @typeparam TValue
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Linq.Expressions
 
 <select class="@CssClass"
+        name="@EffectiveName"
         value="@Value"
         disabled="@Disabled"
         @onchange="HandleChange">
@@ -13,6 +16,12 @@
 </select>
 
 @code {
+    private FieldIdentifier _fieldIdentifier;
+    private EditContext? _editContext;
+
+    [CascadingParameter]
+    private EditContext? CascadedEditContext { get; set; }
+
     /// <summary>
     /// The currently selected value.
     /// </summary>
@@ -24,6 +33,22 @@
     /// </summary>
     [Parameter]
     public EventCallback<TValue?> ValueChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the HTML name attribute for the select element.
+    /// </summary>
+    /// <remarks>
+    /// When inside an EditForm and not explicitly set, the name is automatically
+    /// derived from the ValueExpression (FieldIdentifier) to support SSR form postback.
+    /// </remarks>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    [Parameter]
+    public Expression<Func<TValue?>>? ValueExpression { get; set; }
 
     /// <summary>
     /// Placeholder text shown when no value is selected.
@@ -55,6 +80,17 @@
     [Parameter]
     public NativeSelectSize Size { get; set; } = NativeSelectSize.Default;
 
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (CascadedEditContext != null && ValueExpression != null)
+        {
+            _editContext = CascadedEditContext;
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+        }
+    }
+
     private async Task HandleChange(ChangeEventArgs e)
     {
         var stringValue = e.Value?.ToString();
@@ -75,7 +111,17 @@
                 await ValueChanged.InvokeAsync(default);
             }
         }
+
+        if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
+        {
+            _editContext.NotifyFieldChanged(_fieldIdentifier);
+        }
     }
+
+    /// <summary>
+    /// Gets the effective name attribute, falling back to the FieldIdentifier name when inside an EditForm.
+    /// </summary>
+    private string? EffectiveName => Name ?? (_editContext != null && _fieldIdentifier.FieldName != null ? _fieldIdentifier.FieldName : null);
 
     private string SizeClasses => Size switch
     {

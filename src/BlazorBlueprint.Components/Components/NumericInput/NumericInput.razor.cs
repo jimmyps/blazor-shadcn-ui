@@ -1,7 +1,9 @@
 using BlazorBlueprint.Components.Utilities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Numerics;
 
 namespace BlazorBlueprint.Components.NumericInput;
@@ -15,7 +17,15 @@ public partial class NumericInput<TValue> : ComponentBase, IDisposable where TVa
     private ElementReference _inputRef;
     private string _editingValue = string.Empty;
     private bool _isEditing;
+    private FieldIdentifier _fieldIdentifier;
+    private EditContext? _editContext;
     private CancellationTokenSource? _debounceCts;
+
+    /// <summary>
+    /// Gets or sets the cascaded EditContext from a parent EditForm.
+    /// </summary>
+    [CascadingParameter]
+    private EditContext? CascadedEditContext { get; set; }
 
     /// <summary>
     /// Gets or sets the current value.
@@ -114,6 +124,57 @@ public partial class NumericInput<TValue> : ComponentBase, IDisposable where TVa
     public bool? AriaInvalid { get; set; }
 
     /// <summary>
+    /// Gets or sets the HTML name attribute for the input element.
+    /// </summary>
+    /// <remarks>
+    /// When inside an EditForm and not explicitly set, the name is automatically
+    /// derived from the ValueExpression (FieldIdentifier) to support SSR form postback.
+    /// </remarks>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    [Parameter]
+    public Expression<Func<TValue>>? ValueExpression { get; set; }
+
+    /// <summary>
+    /// Gets whether the input is in an invalid state based on EditContext validation.
+    /// </summary>
+    private bool IsInvalid
+    {
+        get
+        {
+            if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
+            {
+                return _editContext.GetValidationMessages(_fieldIdentifier).Any();
+            }
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Gets the effective aria-invalid value combining manual AriaInvalid and EditContext validation.
+    /// </summary>
+    private string? EffectiveAriaInvalid
+    {
+        get
+        {
+            if (AriaInvalid == true || IsInvalid)
+            {
+                return "true";
+            }
+            return AriaInvalid?.ToString().ToLowerInvariant();
+        }
+    }
+
+    /// <summary>
+    /// Gets the effective name attribute, falling back to the FieldIdentifier name when inside an EditForm.
+    /// </summary>
+    private string? EffectiveName => Name ?? (_editContext != null && _fieldIdentifier.FieldName != null ? _fieldIdentifier.FieldName : null);
+
+    /// <summary>
     /// Gets or sets the format string for displaying the value.
     /// </summary>
     [Parameter]
@@ -130,6 +191,26 @@ public partial class NumericInput<TValue> : ComponentBase, IDisposable where TVa
     /// </summary>
     [Parameter]
     public int DebounceInterval { get; set; } = 500;
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (CascadedEditContext != null && ValueExpression != null)
+        {
+            _editContext = CascadedEditContext;
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+        }
+    }
+
+    private void NotifyFieldChanged()
+    {
+        if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
+        {
+            _editContext.NotifyFieldChanged(_fieldIdentifier);
+        }
+    }
 
     private TValue StepValue => Step ?? TValue.One;
 
@@ -214,6 +295,8 @@ public partial class NumericInput<TValue> : ComponentBase, IDisposable where TVa
                 {
                     DebounceValueChanged(clampedValue);
                 }
+
+                NotifyFieldChanged();
             }
         }
     }
@@ -237,6 +320,7 @@ public partial class NumericInput<TValue> : ComponentBase, IDisposable where TVa
             }
             // Always fire on blur to ensure parent is in sync
             ValueChanged.InvokeAsync(clampedValue);
+            NotifyFieldChanged();
         }
 
         StateHasChanged();
@@ -329,6 +413,7 @@ public partial class NumericInput<TValue> : ComponentBase, IDisposable where TVa
             Value = clampedValue;
             _editingValue = clampedValue.ToString() ?? string.Empty;
             await ValueChanged.InvokeAsync(clampedValue);
+            NotifyFieldChanged();
         }
     }
 

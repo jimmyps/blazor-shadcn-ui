@@ -6,6 +6,7 @@
 <input
     @ref="_inputRef"
     id="@Id"
+    name="@EffectiveName"
     type="text"
     inputmode="@InputMode"
     class="@CssClass"
@@ -16,6 +17,6 @@
     required="@Required"
     aria-label="@AriaLabel"
     aria-describedby="@AriaDescribedBy"
-    aria-invalid="@(AriaInvalid?.ToString().ToLower())"
+    aria-invalid="@EffectiveAriaInvalid"
     @onfocus="HandleFocus"
     @onblur="HandleBlur" />

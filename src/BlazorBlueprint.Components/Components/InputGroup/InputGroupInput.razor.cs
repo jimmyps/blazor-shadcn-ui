@@ -1,7 +1,9 @@
 using BlazorBlueprint.Components.Input;
 using BlazorBlueprint.Components.Utilities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using System.Linq.Expressions;
 
 namespace BlazorBlueprint.Components.InputGroup;
 
@@ -33,7 +35,15 @@ namespace BlazorBlueprint.Components.InputGroup;
 public partial class InputGroupInput : ComponentBase, IDisposable
 {
     private ElementReference _inputRef;
+    private FieldIdentifier _fieldIdentifier;
+    private EditContext? _editContext;
     private CancellationTokenSource? _debounceCts;
+
+    /// <summary>
+    /// Gets or sets the cascaded EditContext from a parent EditForm.
+    /// </summary>
+    [CascadingParameter]
+    private EditContext? CascadedEditContext { get; set; }
 
     /// <summary>
     /// Gets or sets the type of input.
@@ -102,6 +112,22 @@ public partial class InputGroupInput : ComponentBase, IDisposable
     public bool? AriaInvalid { get; set; }
 
     /// <summary>
+    /// Gets or sets the HTML name attribute for the input element.
+    /// </summary>
+    /// <remarks>
+    /// When inside an EditForm and not explicitly set, the name is automatically
+    /// derived from the ValueExpression (FieldIdentifier) to support SSR form postback.
+    /// </remarks>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    [Parameter]
+    public Expression<Func<string?>>? ValueExpression { get; set; }
+
+    /// <summary>
     /// Gets or sets when <see cref="ValueChanged"/> fires.
     /// </summary>
     [Parameter]
@@ -112,6 +138,35 @@ public partial class InputGroupInput : ComponentBase, IDisposable
     /// </summary>
     [Parameter]
     public int DebounceInterval { get; set; } = 500;
+
+    private bool IsInvalid
+    {
+        get
+        {
+            if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
+            {
+                return _editContext.GetValidationMessages(_fieldIdentifier).Any();
+            }
+            return false;
+        }
+    }
+
+    private string? EffectiveAriaInvalid
+    {
+        get
+        {
+            if (AriaInvalid == true || IsInvalid)
+            {
+                return "true";
+            }
+            return AriaInvalid?.ToString().ToLowerInvariant();
+        }
+    }
+
+    /// <summary>
+    /// Gets the effective name attribute, falling back to the FieldIdentifier name when inside an EditForm.
+    /// </summary>
+    private string? EffectiveName => Name ?? (_editContext != null && _fieldIdentifier.FieldName != null ? _fieldIdentifier.FieldName : null);
 
     /// <summary>
     /// Gets or sets additional attributes.
@@ -166,6 +221,18 @@ public partial class InputGroupInput : ComponentBase, IDisposable
         _ => "text"
     };
 
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (CascadedEditContext != null && ValueExpression != null)
+        {
+            _editContext = CascadedEditContext;
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+        }
+    }
+
     /// <summary>
     /// Handles the input event (fired on every keystroke).
     /// </summary>
@@ -194,6 +261,11 @@ public partial class InputGroupInput : ComponentBase, IDisposable
             case UpdateTiming.Debounced:
                 DebounceValueChanged(newValue);
                 break;
+        }
+
+        if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
+        {
+            _editContext.NotifyFieldChanged(_fieldIdentifier);
         }
     }
 

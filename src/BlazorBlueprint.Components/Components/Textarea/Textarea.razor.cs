@@ -1,7 +1,9 @@
 using BlazorBlueprint.Components.Input;
 using BlazorBlueprint.Components.Utilities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using System.Linq.Expressions;
 
 namespace BlazorBlueprint.Components.Textarea;
 
@@ -37,7 +39,16 @@ namespace BlazorBlueprint.Components.Textarea;
 /// </example>
 public partial class Textarea : ComponentBase, IDisposable
 {
+    private FieldIdentifier _fieldIdentifier;
+    private EditContext? _editContext;
     private CancellationTokenSource? _debounceCts;
+
+    /// <summary>
+    /// Gets or sets the cascaded EditContext from a parent EditForm.
+    /// </summary>
+    [CascadingParameter]
+    private EditContext? CascadedEditContext { get; set; }
+
     /// <summary>
     /// Gets or sets the current value of the textarea.
     /// </summary>
@@ -151,6 +162,22 @@ public partial class Textarea : ComponentBase, IDisposable
     public bool? AriaInvalid { get; set; }
 
     /// <summary>
+    /// Gets or sets the HTML name attribute for the textarea element.
+    /// </summary>
+    /// <remarks>
+    /// When inside an EditForm and not explicitly set, the name is automatically
+    /// derived from the ValueExpression (FieldIdentifier) to support SSR form postback.
+    /// </remarks>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    [Parameter]
+    public Expression<Func<string?>>? ValueExpression { get; set; }
+
+    /// <summary>
     /// Gets or sets when <see cref="ValueChanged"/> fires.
     /// </summary>
     /// <remarks>
@@ -171,6 +198,41 @@ public partial class Textarea : ComponentBase, IDisposable
     /// </remarks>
     [Parameter]
     public int DebounceInterval { get; set; } = 500;
+
+    /// <summary>
+    /// Gets whether the textarea is in an invalid state based on EditContext validation.
+    /// </summary>
+    private bool IsInvalid
+    {
+        get
+        {
+            if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
+            {
+                return _editContext.GetValidationMessages(_fieldIdentifier).Any();
+            }
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Gets the effective name attribute, falling back to the FieldIdentifier name when inside an EditForm.
+    /// </summary>
+    private string? EffectiveName => Name ?? (_editContext != null && _fieldIdentifier.FieldName != null ? _fieldIdentifier.FieldName : null);
+
+    /// <summary>
+    /// Gets the effective aria-invalid value combining manual AriaInvalid and EditContext validation.
+    /// </summary>
+    private string? EffectiveAriaInvalid
+    {
+        get
+        {
+            if (AriaInvalid == true || IsInvalid)
+            {
+                return "true";
+            }
+            return AriaInvalid?.ToString().ToLowerInvariant();
+        }
+    }
 
     /// <summary>
     /// Gets the computed CSS classes for the textarea element.
@@ -207,6 +269,18 @@ public partial class Textarea : ComponentBase, IDisposable
         Class
     );
 
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (CascadedEditContext != null && ValueExpression != null)
+        {
+            _editContext = CascadedEditContext;
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+        }
+    }
+
     /// <summary>
     /// Handles the input event (fired on every keystroke).
     /// </summary>
@@ -236,6 +310,11 @@ public partial class Textarea : ComponentBase, IDisposable
             case UpdateTiming.Debounced:
                 DebounceValueChanged(newValue);
                 break;
+        }
+
+        if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
+        {
+            _editContext.NotifyFieldChanged(_fieldIdentifier);
         }
     }
 

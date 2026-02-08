@@ -4,6 +4,7 @@
 <input
     @ref="_inputRef"
     id="@Id"
+    name="@EffectiveName"
     type="@HtmlType"
     data-slot="input-group-control"
     class="@CssClass"
@@ -13,7 +14,7 @@
     required="@Required"
     aria-label="@AriaLabel"
     aria-describedby="@AriaDescribedBy"
-    aria-invalid="@(AriaInvalid?.ToString().ToLower())"
+    aria-invalid="@EffectiveAriaInvalid"
     @oninput="HandleInput"
     @onchange="HandleChange"
     @attributes="AdditionalAttributes" />

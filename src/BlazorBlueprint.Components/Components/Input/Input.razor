@@ -3,6 +3,7 @@
 
 <input
     id="@Id"
+    name="@EffectiveName"
     type="@HtmlType"
     class="@CssClass"
     value="@Value"
@@ -11,6 +12,6 @@
     required="@Required"
     aria-label="@AriaLabel"
     aria-describedby="@AriaDescribedBy"
-    aria-invalid="@(AriaInvalid?.ToString().ToLower())"
+    aria-invalid="@EffectiveAriaInvalid"
     @oninput="HandleInput"
     @onchange="HandleChange" />

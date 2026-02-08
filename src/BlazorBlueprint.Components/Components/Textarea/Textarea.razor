@@ -3,6 +3,7 @@
 
 <textarea
     id="@Id"
+    name="@EffectiveName"
     class="@CssClass"
     value="@Value"
     placeholder="@Placeholder"
@@ -11,7 +12,7 @@
     maxlength="@MaxLength"
     aria-label="@AriaLabel"
     aria-describedby="@AriaDescribedBy"
-    aria-invalid="@(AriaInvalid?.ToString().ToLower())"
+    aria-invalid="@EffectiveAriaInvalid"
     data-slot="textarea-control"
     @oninput="HandleInput"
     @onchange="HandleChange"></textarea>

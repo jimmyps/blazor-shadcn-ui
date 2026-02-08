@@ -1,7 +1,9 @@
 using BlazorBlueprint.Components.Utilities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace BlazorBlueprint.Components.CurrencyInput;
 
@@ -15,7 +17,15 @@ public partial class CurrencyInput : ComponentBase, IDisposable
     private bool _isEditing;
     private CurrencyDefinition? _currency;
     private CultureInfo? _cultureInfo;
+    private FieldIdentifier _fieldIdentifier;
+    private EditContext? _editContext;
     private CancellationTokenSource? _debounceCts;
+
+    /// <summary>
+    /// Gets or sets the cascaded EditContext from a parent EditForm.
+    /// </summary>
+    [CascadingParameter]
+    private EditContext? CascadedEditContext { get; set; }
 
     /// <summary>
     /// Gets or sets the current value.
@@ -108,6 +118,54 @@ public partial class CurrencyInput : ComponentBase, IDisposable
     public bool? AriaInvalid { get; set; }
 
     /// <summary>
+    /// Gets or sets the HTML name attribute for the input element.
+    /// </summary>
+    /// <remarks>
+    /// When inside an EditForm and not explicitly set, the name is automatically
+    /// derived from the ValueExpression (FieldIdentifier) to support SSR form postback.
+    /// </remarks>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    [Parameter]
+    public Expression<Func<decimal>>? ValueExpression { get; set; }
+
+    /// <summary>
+    /// Gets whether the input is in an invalid state based on EditContext validation.
+    /// </summary>
+    private bool IsInvalid
+    {
+        get
+        {
+            if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
+            {
+                return _editContext.GetValidationMessages(_fieldIdentifier).Any();
+            }
+            return false;
+        }
+    }
+
+    private string? EffectiveAriaInvalid
+    {
+        get
+        {
+            if (AriaInvalid == true || IsInvalid)
+            {
+                return "true";
+            }
+            return AriaInvalid?.ToString().ToLowerInvariant();
+        }
+    }
+
+    /// <summary>
+    /// Gets the effective name attribute, falling back to the FieldIdentifier name when inside an EditForm.
+    /// </summary>
+    private string? EffectiveName => Name ?? (_editContext != null && _fieldIdentifier.FieldName != null ? _fieldIdentifier.FieldName : null);
+
+    /// <summary>
     /// Gets or sets whether to use thousand separators in display mode.
     /// </summary>
     [Parameter]
@@ -153,6 +211,20 @@ public partial class CurrencyInput : ComponentBase, IDisposable
         {
             _currency = null;
             _cultureInfo = null;
+        }
+
+        if (CascadedEditContext != null && ValueExpression != null)
+        {
+            _editContext = CascadedEditContext;
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+        }
+    }
+
+    private void NotifyFieldChanged()
+    {
+        if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
+        {
+            _editContext.NotifyFieldChanged(_fieldIdentifier);
         }
     }
 
@@ -223,6 +295,8 @@ public partial class CurrencyInput : ComponentBase, IDisposable
                 {
                     DebounceValueChanged(clampedValue);
                 }
+
+                NotifyFieldChanged();
             }
         }
     }
@@ -246,6 +320,7 @@ public partial class CurrencyInput : ComponentBase, IDisposable
             }
             // Always fire on blur to ensure parent is in sync
             ValueChanged.InvokeAsync(clampedValue);
+            NotifyFieldChanged();
         }
 
         StateHasChanged();
@@ -287,6 +362,7 @@ public partial class CurrencyInput : ComponentBase, IDisposable
             Value = clampedValue;
             _editingValue = clampedValue.ToString($"F{Currency.DecimalPlaces}", CultureInfo.InvariantCulture);
             await ValueChanged.InvokeAsync(clampedValue);
+            NotifyFieldChanged();
         }
     }
 

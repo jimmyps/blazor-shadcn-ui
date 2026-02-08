@@ -1,7 +1,13 @@
 @namespace BlazorBlueprint.Components.InputOTP
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Linq.Expressions
 @inject IJSRuntime JSRuntime
 
 <div class="@ContainerClass" @onpaste="HandlePaste">
+    @if (EffectiveName != null)
+    {
+        <input type="hidden" name="@EffectiveName" value="@Value" />
+    }
     @for (int i = 0; i < Length; i++)
     {
         var index = i;
@@ -32,6 +38,12 @@
 </div>
 
 @code {
+    private FieldIdentifier _fieldIdentifier;
+    private EditContext? _editContext;
+
+    [CascadingParameter]
+    private EditContext? CascadedEditContext { get; set; }
+
     /// <summary>
     /// The number of OTP digits.
     /// </summary>
@@ -49,6 +61,23 @@
     /// </summary>
     [Parameter]
     public EventCallback<string> ValueChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the HTML name attribute for the input elements.
+    /// </summary>
+    /// <remarks>
+    /// When inside an EditForm and not explicitly set, the name is automatically
+    /// derived from the ValueExpression (FieldIdentifier) to support SSR form postback.
+    /// Individual digit inputs will use the name with an index suffix.
+    /// </remarks>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    [Parameter]
+    public Expression<Func<string?>>? ValueExpression { get; set; }
 
     /// <summary>
     /// Event callback when all digits are filled.
@@ -124,6 +153,12 @@
                 _values[i] = i < Value.Length ? Value[i].ToString() : "";
             }
         }
+
+        if (CascadedEditContext != null && ValueExpression != null)
+        {
+            _editContext = CascadedEditContext;
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+        }
     }
 
     private string GetValueAt(int index)
@@ -145,6 +180,11 @@
 
         var newValue = string.Join("", _values);
         await ValueChanged.InvokeAsync(newValue);
+
+        if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
+        {
+            _editContext.NotifyFieldChanged(_fieldIdentifier);
+        }
 
         // Move to next input if value entered
         if (!string.IsNullOrEmpty(_values[index]) && index < Length - 1)
@@ -204,6 +244,11 @@
             }
         }
     }
+
+    /// <summary>
+    /// Gets the effective name attribute, falling back to the FieldIdentifier name when inside an EditForm.
+    /// </summary>
+    private string? EffectiveName => Name ?? (_editContext != null && _fieldIdentifier.FieldName != null ? _fieldIdentifier.FieldName : null);
 
     private string SizeClasses => Size switch
     {
