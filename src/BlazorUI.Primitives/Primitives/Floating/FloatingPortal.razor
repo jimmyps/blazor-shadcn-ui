@@ -1,7 +1,6 @@
 @namespace BlazorUI.Primitives.Floating
 @using BlazorUI.Primitives.Services
 @using BlazorUI.Primitives.Constants
-@using System.Collections.Concurrent
 @inject IPositioningService PositioningService
 @inject IPortalService PortalService
 @inject IJSRuntime JSRuntime
@@ -129,12 +128,6 @@
     private double _positionLeft = 0;
     private double _positionTop = 0;
 
-    // Rate limiting to prevent infinite loops with nested portals
-    // ConcurrentDictionary + ConcurrentQueue = lock-free thread-safe access
-    private static readonly ConcurrentDictionary<string, ConcurrentQueue<DateTime>> _refreshAttemptsByPortal = new();
-    private const int MaxRefreshAttempts = 3;
-    private const int RefreshWindowMs = 100;
-
     protected override void OnInitialized()
     {
         if (string.IsNullOrEmpty(PortalId))
@@ -160,42 +153,11 @@
     {
         base.OnParametersSet();
 
-        // Only refresh if portal is initialized and open
-        if (!_isInitialized || !IsOpen || string.IsNullOrEmpty(PortalId))
-            return;
-
-        // Rate limiting: Track refresh attempts per PortalId to detect infinite loops
-        // Get or create the concurrent queue for this PortalId (thread-safe, no lock needed)
-        var attempts = _refreshAttemptsByPortal.GetOrAdd(PortalId, _ => new ConcurrentQueue<DateTime>());
-
-        // Remove attempts older than the time window  
-        var now = DateTime.UtcNow;
-        var cutoff = now.AddMilliseconds(-RefreshWindowMs);
-        
-        while (attempts.TryPeek(out var oldest) && oldest < cutoff)
+        // Refresh portal content when parameters change and portal is open
+        if (_isInitialized && IsOpen && !string.IsNullOrEmpty(PortalId))
         {
-            attempts.TryDequeue(out _);
+            PortalService.RefreshPortal(PortalId);
         }
-
-        // Count current attempts within the time window
-        var currentCount = attempts.Count;
-
-        // If we've hit the limit within the time window for THIS PortalId, we're in a loop - exit
-        if (currentCount >= MaxRefreshAttempts)
-        {
-            // Log warning once when limit is first hit
-            if (currentCount == MaxRefreshAttempts)
-            {
-                Console.WriteLine($"Warning: Portal '{PortalId}' refresh rate limit hit - possible infinite loop with nested portals");
-            }
-            return;
-        }
-
-        // Record this attempt for this PortalId
-        attempts.Enqueue(now);
-        
-        // Refresh the portal to pick up parameter changes
-        PortalService.RefreshPortal(PortalId);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -209,7 +171,7 @@
             _portalReadyTcs = new TaskCompletionSource<bool>();
 
             // Register content through portal - this triggers PortalHost to re-render
-            PortalService.RegisterPortal(PortalId, RenderPortalContent());
+            PortalService.RegisterPortal(PortalId, PortalCategory.Overlay, RenderPortalContent());
 
             // Wait for PortalHost to signal it's done rendering our portal
             // Use timeout to prevent hanging if something goes wrong
