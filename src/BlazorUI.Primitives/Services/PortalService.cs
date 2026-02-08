@@ -89,12 +89,13 @@ public class PortalService : IPortalService
     /// <inheritdoc />
     public void RefreshPortal(string id)
     {
-        if (_portals.ContainsKey(id))
+        if (_portals.TryGetValue(id, out var entry))
         {
             // Notify PortalHost to re-render WITHOUT replacing the RenderFragment
             // This allows the existing fragment to pick up new captured values
             // without creating new DOM elements (which would break ElementReference)
             OnPortalsChanged?.Invoke();
+            OnPortalsCategoryChanged?.Invoke(entry.Category);
         }
     }
 
