@@ -58,6 +58,15 @@
     public string PortalId { get; set; } = "";
 
     /// <summary>
+    /// Parent portal ID to append this portal's content to.
+    /// When set, this portal's content will be rendered inside the parent's portal
+    /// instead of creating a new separate portal. Useful for submenus and nested overlays.
+    /// Default is null (creates independent portal).
+    /// </summary>
+    [Parameter]
+    public string? ParentPortalId { get; set; }
+
+    /// <summary>
     /// Preferred side for positioning.
     /// Default is Bottom.
     /// </summary>
@@ -167,25 +176,36 @@
             _isInitialized = true;
             _isPositioned = false;
 
-            // Create completion source BEFORE registering portal
-            _portalReadyTcs = new TaskCompletionSource<bool>();
-
             // Register content through portal - this triggers PortalHost to re-render
-            PortalService.RegisterPortal(PortalId, PortalCategory.Overlay, RenderPortalContent());
-
-            // Wait for PortalHost to signal it's done rendering our portal
-            // Use timeout to prevent hanging if something goes wrong
-            var timeoutTask = Task.Delay(500);
-            var completedTask = await Task.WhenAny(_portalReadyTcs.Task, timeoutTask);
-
-            if (completedTask == timeoutTask)
+            if (!string.IsNullOrEmpty(ParentPortalId))
             {
-                Console.WriteLine($"Warning: Portal {PortalId} render timeout");
+                // Child: Append to parent's portal scope
+                PortalService.AppendToPortal(ParentPortalId, PortalId, RenderPortalContent());
+                
+                // Children don't need to wait for notification - they're part of parent's render cycle
+                // Just yield to ensure the composite render completes
+                await Task.Yield();
             }
+            else
+            {
+                // Root: Create new independent portal and wait for PortalHost notification
+                _portalReadyTcs = new TaskCompletionSource<bool>();
+                
+                PortalService.RegisterPortal(PortalId, PortalCategory.Overlay, RenderPortalContent());
 
-            // Yield to ensure any pending re-renders complete and _portalContentRef is up-to-date
-            // This is critical when multiple portals are opening/closing simultaneously
-            await Task.Yield();
+                // Wait for PortalHost to signal it's done rendering our portal
+                // Use timeout to prevent hanging if something goes wrong
+                var timeoutTask = Task.Delay(500);
+                var completedTask = await Task.WhenAny(_portalReadyTcs.Task, timeoutTask);
+
+                if (completedTask == timeoutTask)
+                {
+                    Console.WriteLine($"Warning: Portal {PortalId} render timeout");
+                }
+
+                // Yield to ensure any pending re-renders complete and _portalContentRef is up-to-date
+                await Task.Yield();
+            }
 
             // Check if still open (user might have closed during wait)
             if (!IsOpen)
@@ -386,7 +406,16 @@
         // Unregister portal when content closes
         if (!string.IsNullOrEmpty(PortalId))
         {
-            PortalService.UnregisterPortal(PortalId);
+            if (!string.IsNullOrEmpty(ParentPortalId))
+            {
+                // Child: Remove from parent's scope
+                PortalService.RemoveFromPortal(ParentPortalId, PortalId);
+            }
+            else
+            {
+                // Root: Unregister portal entirely
+                PortalService.UnregisterPortal(PortalId);
+            }
         }
 
         _isInitialized = false;

@@ -61,6 +61,23 @@ public interface IPortalService
     void RefreshPortal(string id);
 
     /// <summary>
+    /// Appends a child portal to a parent portal's scope.
+    /// The child content will be rendered within the parent's portal, not as a separate portal.
+    /// This prevents cascading re-renders and improves performance for hierarchical UI like submenus.
+    /// </summary>
+    /// <param name="parentPortalId">The parent portal ID to append to.</param>
+    /// <param name="childPortalId">Unique identifier for the child content.</param>
+    /// <param name="content">Content to append to the parent portal.</param>
+    void AppendToPortal(string parentPortalId, string childPortalId, RenderFragment content);
+
+    /// <summary>
+    /// Removes a child from a parent portal's scope.
+    /// </summary>
+    /// <param name="parentPortalId">The parent portal ID to remove from.</param>
+    /// <param name="childPortalId">The child ID to remove.</param>
+    void RemoveFromPortal(string parentPortalId, string childPortalId);
+
+    /// <summary>
     /// Gets all registered portals.
     /// </summary>
     /// <returns>Dictionary of portal IDs to their render fragments.</returns>
