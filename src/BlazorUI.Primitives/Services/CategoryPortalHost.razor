@@ -1,0 +1,100 @@
+@namespace BlazorUI.Primitives.Services
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IPortalService PortalService
+@inject IJSRuntime JSRuntime
+
+@*
+    CategoryPortalHost - Base component for category-specific portal rendering.
+    Only re-renders when portals in its assigned category change.
+    This prevents render cascades across different portal types.
+*@
+
+@{
+    // Track which portals are being rendered in this cycle
+    _renderedThisCycle.Clear();
+}
+@foreach (var portal in PortalService.GetPortals(Category))
+{
+    _renderedThisCycle.Add(portal.Key);
+    <div @key="portal.Key" data-portal-id="@portal.Key" data-category="@Category.ToString().ToLower()" class="blazorui-portal" style="display: contents;">
+        @portal.Value
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// The portal category this host renders.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public PortalCategory Category { get; set; }
+
+    private HashSet<string> _renderedThisCycle = new();
+    private IJSObjectReference? _portalModule;
+    private IReadOnlyDictionary<string, RenderFragment> _previousPortals = 
+        new Dictionary<string, RenderFragment>();
+
+    protected override void OnInitialized()
+    {
+        PortalService.OnPortalsCategoryChanged += HandlePortalsCategoryChanged;
+    }
+
+    /// <summary>
+    /// Handles portal category changes by triggering a re-render only for this category.
+    /// This optimization prevents render cascades across different portal categories.
+    /// </summary>
+    private void HandlePortalsCategoryChanged(PortalCategory category)
+    {
+        // Only re-render if the changed category matches this host's category
+        if (category == Category)
+        {
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Load portal.js to initialize the auto-focus observer
+            // This ensures elements with data-autofocus are automatically focused when rendered
+            try
+            {
+                _portalModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/portal.js");
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnect in Blazor Server
+            }
+            catch (InvalidOperationException)
+            {
+                // JS interop not available during prerendering - safe to ignore
+            }
+        }
+
+        // Notify all portals that were rendered this cycle
+        // This signals to content components that their ElementRef is now valid
+        foreach (var portalId in _renderedThisCycle)
+        {
+            PortalService.NotifyPortalRendered(portalId);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        PortalService.OnPortalsCategoryChanged -= HandlePortalsCategoryChanged;
+
+        if (_portalModule != null)
+        {
+            try
+            {
+                await _portalModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnect
+            }
+        }
+    }
+}
