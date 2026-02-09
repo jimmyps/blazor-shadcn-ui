@@ -17,7 +17,7 @@
 @foreach (var portal in PortalService.GetPortals(Category))
 {
     _renderedThisCycle.Add(portal.Key);
-    <div @key="portal.Key" data-portal-id="@portal.Key" data-category="@Category.ToString().ToLower()" class="blazorui-portal" style="display: contents;">
+    <div @key="portal.Key" data-portal-id="@portal.Key" data-category="@Category.ToString().ToLowerInvariant()" class="blazorui-portal" style="display: contents;">
         @portal.Value
     </div>
 }
