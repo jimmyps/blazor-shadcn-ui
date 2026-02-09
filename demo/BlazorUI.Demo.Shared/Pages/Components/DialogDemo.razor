@@ -1,6 +1,20 @@
 @page "/components/dialog"
 @using BlazorUI.Components.Dialog
 @using BlazorUI.Components.Combobox
+@using BlazorUI.Components.Input
+@using BlazorUI.Components.MaskedInput
+@using BlazorUI.Components.DatePicker
+@using BlazorUI.Components.ColorPicker
+@using BlazorUI.Components.Textarea
+@using BlazorUI.Components.Slider
+@using BlazorUI.Components.MultiSelect
+@using BlazorUI.Components.NumericInput
+@using BlazorUI.Components.RangeSlider
+@using BlazorUI.Components.Rating
+@using BlazorUI.Components.CurrencyInput
+@using BlazorUI.Components.Alert
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
 
 <PageTitle>Dialog Component - BlazorUI</PageTitle>
 
@@ -321,6 +335,824 @@
         </Dialog>
     </div>
 
+    <!-- ========================================= -->
+    <!-- ADVANCED DIALOG DEMOS -->
+    <!-- ========================================= -->
+    <div class="space-y-8 mt-16 pt-12 border-t-2">
+        <div class="space-y-4">
+            <div class="flex items-center gap-3">
+                <LucideIcon Name="sparkles" Size="32" Class="text-primary" />
+                <h2 class="text-3xl font-bold tracking-tight">Advanced Dialog Demos</h2>
+            </div>
+            <Alert Variant="AlertVariant.Default" Class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-blue-200 dark:border-blue-800">
+                <Icon>
+                    <LucideIcon Name="info" Size="16" />
+                </Icon>
+                <ChildContent>
+                    <AlertDescription Class="text-sm ml-2">
+                        <strong>Real-world examples:</strong> These demos showcase complex forms with multiple input components, 
+                        validation, dynamic calculations, and nested dialogs. Perfect for testing component integration and benchmarking against React.
+                    </AlertDescription>
+                </ChildContent>
+            </Alert>
+        </div>
+
+        <!-- Grid of trigger buttons -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Demo 1: User Profile Settings -->
+            <button @onclick="() => showUserProfileDialog = true"
+                    class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 border-input bg-background hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
+                <LucideIcon Name="user-cog" Size="32" Class="text-primary group-hover:scale-110 transition-transform" />
+                <div class="text-center">
+                    <div class="font-semibold">User Profile Settings</div>
+                    <div class="text-xs text-muted-foreground">Comprehensive form validation</div>
+                </div>
+            </button>
+
+            <!-- Demo 2: Subscription Plan Selection -->
+            <button @onclick="() => showSubscriptionDialog = true"
+                    class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 border-input bg-background hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
+                <LucideIcon Name="credit-card" Size="32" Class="text-primary group-hover:scale-110 transition-transform" />
+                <div class="text-center">
+                    <div class="font-semibold">Subscription Plan</div>
+                    <div class="text-xs text-muted-foreground">Dynamic pricing calculator</div>
+                </div>
+            </button>
+
+            <!-- Demo 3: Team Member Invite -->
+            <button @onclick="() => showTeamInviteDialog = true"
+                    class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 border-input bg-background hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
+                <LucideIcon Name="user-plus" Size="32" Class="text-primary group-hover:scale-110 transition-transform" />
+                <div class="text-center">
+                    <div class="font-semibold">Team Member Invite</div>
+                    <div class="text-xs text-muted-foreground">Role-based access control</div>
+                </div>
+            </button>
+
+            <!-- Demo 4: Product Configuration -->
+            <button @onclick="() => showProductConfigDialog = true"
+                    class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 border-input bg-background hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
+                <LucideIcon Name="package" Size="32" Class="text-primary group-hover:scale-110 transition-transform" />
+                <div class="text-center">
+                    <div class="font-semibold">Product Configuration</div>
+                    <div class="text-xs text-muted-foreground">E-commerce customization</div>
+                </div>
+            </button>
+
+            <!-- Demo 5: Nested Dialog -->
+            <button @onclick="() => showProjectDialog = true"
+                    class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 border-input bg-background hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
+                <LucideIcon Name="layers" Size="32" Class="text-primary group-hover:scale-110 transition-transform" />
+                <div class="text-center">
+                    <div class="font-semibold">Create Project</div>
+                    <div class="text-xs text-muted-foreground">Nested dialog behavior</div>
+                </div>
+            </button>
+        </div>
+
+        <!-- Demo 1: User Profile Settings Dialog -->
+        <Dialog @bind-Open="showUserProfileDialog">
+            <DialogContent Class="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle>
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="user-cog" Size="20" />
+                            User Profile Settings
+                        </div>
+                    </DialogTitle>
+                    <DialogDescription>
+                        Update your profile information and preferences.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <div class="space-y-6 py-4">
+                    <!-- Personal Information Section -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Personal Information</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <Label For="profile-name">Full Name *</Label>
+                                <Input @bind-Value="userProfileModel.Name" 
+                                       ShowValidationError="true"
+                                       Id="profile-name" 
+                                       Placeholder="Enter your full name" />
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <Label For="profile-username">Username</Label>
+                                <Input @bind-Value="userProfileModel.Username" 
+                                       ShowValidationError="true"
+                                       Id="profile-username" 
+                                       Placeholder="username" />
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <Label For="profile-email">Email Address *</Label>
+                            <Input @bind-Value="userProfileModel.Email" 
+                                   ShowValidationError="true"
+                                   Type="InputType.Email"
+                                   Id="profile-email" 
+                                   Placeholder="your@email.com" />
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <Label For="profile-phone">Phone Number</Label>
+                                <MaskedInput @bind-Value="userProfileModel.PhoneNumber"
+                                            Mask="@MaskedInput.Masks.PhoneUS"
+                                            Id="profile-phone"
+                                            ShowMask="true"
+                                            Placeholder="(000) 000-0000" />
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <Label For="profile-dob">Date of Birth</Label>
+                                <DatePicker @bind-Value="userProfileModel.DateOfBirth"
+                                           Id="profile-dob"
+                                           Placeholder="Pick a date" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <Separator />
+
+                    <!-- Preferences Section -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Preferences</h3>
+                        
+                        <div class="space-y-2">
+                            <Label For="profile-theme-color">Theme Color</Label>
+                            <ColorPicker @bind-Value="userProfileModel.ThemeColor"
+                                        Id="profile-theme-color"
+                                        ShowLabel="false" />
+                        </div>
+
+                        <div class="space-y-2">
+                            <Label For="profile-bio">Bio</Label>
+                            <Textarea @bind-Value="userProfileModel.Bio"
+                                     Id="profile-bio"
+                                     Placeholder="Tell us about yourself..."
+                                     Rows="3" />
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="space-y-0.5">
+                                    <Label For="profile-email-notif">Email Notifications</Label>
+                                    <p class="text-sm text-muted-foreground">Receive email about your account activity</p>
+                                </div>
+                                <Switch @bind-Checked="userProfileModel.EmailNotifications" Id="profile-email-notif" />
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div class="space-y-0.5">
+                                    <Label For="profile-marketing">Marketing Emails</Label>
+                                    <p class="text-sm text-muted-foreground">Receive emails about new products and offers</p>
+                                </div>
+                                <Switch @bind-Checked="userProfileModel.MarketingEmails" Id="profile-marketing" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <DialogFooter>
+                    <Button Variant="ButtonVariant.Outline" OnClick="() => showUserProfileDialog = false">Cancel</Button>
+                    <Button OnClick="SaveUserProfile">Save Changes</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
+        <!-- State Display for Demo 1 -->
+        <div class="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
+            <p class="text-xs font-medium text-muted-foreground mb-2">User Profile Form State:</p>
+            <pre class="text-xs overflow-x-auto">@JsonSerializer.Serialize(userProfileModel, new JsonSerializerOptions { WriteIndented = true })</pre>
+        </div>
+
+        <!-- Demo 2: Subscription Plan Selection Dialog -->
+        <Dialog @bind-Open="showSubscriptionDialog">
+            <DialogContent Class="max-w-3xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle>
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="credit-card" Size="20" />
+                            Choose Your Plan
+                        </div>
+                    </DialogTitle>
+                    <DialogDescription>
+                        Select the perfect plan for your needs. Switch between monthly and annual billing.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <div class="space-y-6 py-4">
+                    <!-- Billing Toggle -->
+                    <div class="flex items-center justify-center gap-3 p-4 bg-muted/30 rounded-lg">
+                        <span class="text-sm font-medium @(subscriptionModel.IsAnnual ? "text-muted-foreground" : "")">Monthly</span>
+                        <Switch @bind-Checked="subscriptionModel.IsAnnual" Id="billing-toggle" />
+                        <span class="text-sm font-medium @(subscriptionModel.IsAnnual ? "" : "text-muted-foreground")">
+                            Annual
+                            <Badge Variant="BadgeVariant.Secondary" Class="ml-2">Save 20%</Badge>
+                        </span>
+                    </div>
+
+                    <!-- Plan Selection -->
+                    <div class="space-y-2">
+                        <Label>Select Plan</Label>
+                        <RadioGroup @bind-Value="subscriptionModel.SelectedPlan" AriaLabel="Select subscription plan">
+                            <div @onclick="@(() => subscriptionModel.SelectedPlan = "starter")"
+                                 class="@($"flex items-start space-x-3 rounded-lg border-2 p-4 cursor-pointer transition-all duration-200 {(subscriptionModel.SelectedPlan == "starter" ? "border-primary bg-primary/5" : "border-input")}")">
+                                <div @onclick:stopPropagation class="mt-0.5">
+                                    <RadioGroupItem Value="@("starter")" Id="plan-starter" />
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-base font-semibold">Starter</div>
+                                        <div class="text-xl font-bold">$@(subscriptionModel.IsAnnual ? "8" : "10")<span class="text-sm font-normal text-muted-foreground">/mo</span></div>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground mt-1.5">Perfect for individuals and small projects</p>
+                                    <ul class="mt-3 space-y-1 text-sm">
+                                        <li class="flex items-center gap-2"><LucideIcon Name="check" Size="14" Class="text-green-600" /> Up to 3 projects</li>
+                                        <li class="flex items-center gap-2"><LucideIcon Name="check" Size="14" Class="text-green-600" /> 5 GB storage</li>
+                                        <li class="flex items-center gap-2"><LucideIcon Name="check" Size="14" Class="text-green-600" /> Email support</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div @onclick="@(() => subscriptionModel.SelectedPlan = "pro")"
+                                 class="@($"flex items-start space-x-3 rounded-lg border-2 p-4 cursor-pointer transition-all duration-200 {(subscriptionModel.SelectedPlan == "pro" ? "border-primary bg-primary/5" : "border-input")}")">
+                                <div @onclick:stopPropagation class="mt-0.5">
+                                    <RadioGroupItem Value="@("pro")" Id="plan-pro" />
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <div class="text-base font-semibold">Pro</div>
+                                            <Badge Variant="BadgeVariant.Default">Popular</Badge>
+                                        </div>
+                                        <div class="text-xl font-bold">$@(subscriptionModel.IsAnnual ? "24" : "30")<span class="text-sm font-normal text-muted-foreground">/mo</span></div>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground mt-1.5">For professionals and growing teams</p>
+                                    <ul class="mt-3 space-y-1 text-sm">
+                                        <li class="flex items-center gap-2"><LucideIcon Name="check" Size="14" Class="text-green-600" /> Unlimited projects</li>
+                                        <li class="flex items-center gap-2"><LucideIcon Name="check" Size="14" Class="text-green-600" /> 100 GB storage</li>
+                                        <li class="flex items-center gap-2"><LucideIcon Name="check" Size="14" Class="text-green-600" /> Priority support</li>
+                                        <li class="flex items-center gap-2"><LucideIcon Name="check" Size="14" Class="text-green-600" /> Advanced analytics</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div @onclick="@(() => subscriptionModel.SelectedPlan = "enterprise")"
+                                 class="@($"flex items-start space-x-3 rounded-lg border-2 p-4 cursor-pointer transition-all duration-200 {(subscriptionModel.SelectedPlan == "enterprise" ? "border-primary bg-primary/5" : "border-input")}")">
+                                <div @onclick:stopPropagation class="mt-0.5">
+                                    <RadioGroupItem Value="@("enterprise")" Id="plan-enterprise" />
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-base font-semibold">Enterprise</div>
+                                        <div class="text-xl font-bold">$@(subscriptionModel.IsAnnual ? "80" : "100")<span class="text-sm font-normal text-muted-foreground">/mo</span></div>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground mt-1.5">For large organizations with advanced needs</p>
+                                    <ul class="mt-3 space-y-1 text-sm">
+                                        <li class="flex items-center gap-2"><LucideIcon Name="check" Size="14" Class="text-green-600" /> Everything in Pro</li>
+                                        <li class="flex items-center gap-2"><LucideIcon Name="check" Size="14" Class="text-green-600" /> Unlimited storage</li>
+                                        <li class="flex items-center gap-2"><LucideIcon Name="check" Size="14" Class="text-green-600" /> 24/7 phone support</li>
+                                        <li class="flex items-center gap-2"><LucideIcon Name="check" Size="14" Class="text-green-600" /> Custom integrations</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </RadioGroup>
+                    </div>
+
+                    <Separator />
+
+                    <!-- Team Size Slider -->
+                    <div class="space-y-2">
+                        <Label For="team-size">Team Size: @((int)subscriptionModel.TeamSize) members</Label>
+                        <Slider @bind-Value="subscriptionModel.TeamSize"
+                               Id="team-size"
+                               Min="1"
+                               Max="50"
+                               Step="1" />
+                        <p class="text-xs text-muted-foreground">Additional $5/member for teams larger than 10</p>
+                    </div>
+
+                    <!-- Promo Code -->
+                    <div class="space-y-2">
+                        <Label For="promo-code">Promo Code (Optional)</Label>
+                        <Input @bind-Value="subscriptionModel.PromoCode"
+                               Id="promo-code"
+                               Placeholder="Enter promo code" />
+                    </div>
+
+                    <!-- Auto-renew -->
+                    <div class="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                        <div class="space-y-0.5">
+                            <Label For="auto-renew">Auto-renew subscription</Label>
+                            <p class="text-sm text-muted-foreground">Automatically renew at the end of billing period</p>
+                        </div>
+                        <Switch @bind-Checked="subscriptionModel.AutoRenew" Id="auto-renew" />
+                    </div>
+
+                    <!-- Total Calculation -->
+                    <div class="p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border-2 border-primary/20">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-sm text-muted-foreground">Total</div>
+                                <div class="text-xs text-muted-foreground mt-1">
+                                    @(subscriptionModel.IsAnnual ? "Billed annually" : "Billed monthly")
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold">${CalculateSubscriptionTotal()}</div>
+                                @if (subscriptionModel.IsAnnual)
+                                {
+                                    <div class="text-xs text-green-600 font-medium">Save $@(CalculateAnnualSavings())/year</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <DialogFooter>
+                    <Button Variant="ButtonVariant.Outline" OnClick="() => showSubscriptionDialog = false">Cancel</Button>
+                    <Button OnClick="() => showSubscriptionDialog = false">Subscribe Now</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
+        <!-- State Display for Demo 2 -->
+        <div class="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
+            <p class="text-xs font-medium text-muted-foreground mb-2">Subscription Form State:</p>
+            <pre class="text-xs overflow-x-auto">@JsonSerializer.Serialize(subscriptionModel, new JsonSerializerOptions { WriteIndented = true })</pre>
+        </div>
+
+        <!-- Demo 3: Team Member Invite Dialog -->
+        <Dialog @bind-Open="showTeamInviteDialog">
+            <DialogContent Class="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle>
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="user-plus" Size="20" />
+                            Invite Team Member
+                        </div>
+                    </DialogTitle>
+                    <DialogDescription>
+                        Send an invitation to join your team workspace.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <div class="space-y-6 py-4">
+                    <!-- Email Input -->
+                    <div class="space-y-2">
+                        <Label For="invite-email">Email Address *</Label>
+                        <Input @bind-Value="teamInviteModel.Email"
+                               ShowValidationError="true"
+                               Type="InputType.Email"
+                               Id="invite-email"
+                               Placeholder="colleague@company.com" />
+                    </div>
+
+                    <!-- Role Selection -->
+                    <div class="space-y-2">
+                        <Label>Role *</Label>
+                        <RadioGroup @bind-Value="teamInviteModel.Role" AriaLabel="Select role">
+                            <div @onclick="@(() => teamInviteModel.Role = "admin")"
+                                 class="@($"flex items-start space-x-3 rounded-lg border p-4 cursor-pointer transition-colors {(teamInviteModel.Role == "admin" ? "border-primary bg-primary/5" : "border-input")}")">
+                                <div @onclick:stopPropagation class="mt-0.5">
+                                    <RadioGroupItem Value="@("admin")" Id="role-admin" />
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <LucideIcon Name="shield" Size="16" Class="text-orange-600" />
+                                        <div class="text-sm font-medium leading-none">Admin</div>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground mt-1.5">Full access to all workspace features and settings</p>
+                                </div>
+                            </div>
+
+                            <div @onclick="@(() => teamInviteModel.Role = "member")"
+                                 class="@($"flex items-start space-x-3 rounded-lg border p-4 cursor-pointer transition-colors {(teamInviteModel.Role == "member" ? "border-primary bg-primary/5" : "border-input")}")">
+                                <div @onclick:stopPropagation class="mt-0.5">
+                                    <RadioGroupItem Value="@("member")" Id="role-member" />
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <LucideIcon Name="user" Size="16" Class="text-blue-600" />
+                                        <div class="text-sm font-medium leading-none">Member</div>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground mt-1.5">Can create and edit projects, limited admin features</p>
+                                </div>
+                            </div>
+
+                            <div @onclick="@(() => teamInviteModel.Role = "viewer")"
+                                 class="@($"flex items-start space-x-3 rounded-lg border p-4 cursor-pointer transition-colors {(teamInviteModel.Role == "viewer" ? "border-primary bg-primary/5" : "border-input")}")">
+                                <div @onclick:stopPropagation class="mt-0.5">
+                                    <RadioGroupItem Value="@("viewer")" Id="role-viewer" />
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <LucideIcon Name="eye" Size="16" Class="text-green-600" />
+                                        <div class="text-sm font-medium leading-none">Viewer</div>
+                                    </div>
+                                    <p class="text-sm text-muted-foreground mt-1.5">Read-only access to view projects and reports</p>
+                                </div>
+                            </div>
+                        </RadioGroup>
+                    </div>
+
+                    <Separator />
+
+                    <!-- Department Selection -->
+                    <div class="space-y-2">
+                        <Label For="invite-department">Department</Label>
+                        <Select @bind-Value="teamInviteModel.Department"
+                               Id="invite-department"
+                               Placeholder="Select department">
+                            <SelectItem Value="@("engineering")">Engineering</SelectItem>
+                            <SelectItem Value="@("design")">Design</SelectItem>
+                            <SelectItem Value="@("marketing")">Marketing</SelectItem>
+                            <SelectItem Value="@("sales")">Sales</SelectItem>
+                            <SelectItem Value="@("support")">Support</SelectItem>
+                            <SelectItem Value="@("hr")">Human Resources</SelectItem>
+                        </Select>
+                    </div>
+
+                    <!-- Project Assignment -->
+                    <div class="space-y-2">
+                        <Label For="invite-projects">Assign to Projects (Optional)</Label>
+                        <MultiSelect TItem="Project"
+                                    @bind-Values="teamInviteModel.AssignedProjects"
+                                    Id="invite-projects"
+                                    Placeholder="Select projects"
+                                    Items="availableProjects"
+                                    ValueSelector="@(p => p.Name)"
+                                    DisplaySelector="@(p => p.Name)" />
+                    </div>
+
+                    <!-- Access Expiry -->
+                    <div class="space-y-2">
+                        <Label For="invite-expires">Access Expires On (Optional)</Label>
+                        <DatePicker @bind-Value="teamInviteModel.AccessExpiresOn"
+                                   Id="invite-expires"
+                                   Placeholder="No expiration" />
+                    </div>
+
+                    <!-- Send Email Toggle -->
+                    <div class="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                        <div class="space-y-0.5">
+                            <Label For="send-email">Send invitation email immediately</Label>
+                            <p class="text-sm text-muted-foreground">User will receive an email with invitation link</p>
+                        </div>
+                        <Switch @bind-Checked="teamInviteModel.SendEmailImmediately" Id="send-email" />
+                    </div>
+                </div>
+
+                <DialogFooter>
+                    <Button Variant="ButtonVariant.Outline" OnClick="() => showTeamInviteDialog = false">Cancel</Button>
+                    <Button OnClick="() => showTeamInviteDialog = false">Send Invitation</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
+        <!-- State Display for Demo 3 -->
+        <div class="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
+            <p class="text-xs font-medium text-muted-foreground mb-2">Team Invite Form State:</p>
+            <pre class="text-xs overflow-x-auto">@JsonSerializer.Serialize(teamInviteModel, new JsonSerializerOptions { WriteIndented = true })</pre>
+        </div>
+
+        <!-- Demo 4: E-commerce Product Configuration Dialog -->
+        <Dialog @bind-Open="showProductConfigDialog">
+            <DialogContent Class="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle>
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="package" Size="20" />
+                            Configure Product
+                        </div>
+                    </DialogTitle>
+                    <DialogDescription>
+                        Customize your product options and pricing.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <div class="space-y-6 py-4">
+                    <!-- Product Name -->
+                    <div class="space-y-2">
+                        <Label For="product-name">Product Name</Label>
+                        <Input @bind-Value="productConfigModel.ProductName"
+                               Id="product-name"
+                               Placeholder="Enter product name" />
+                    </div>
+
+                    <!-- Color and Size -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <Label For="product-color">Product Color</Label>
+                            <ColorPicker @bind-Value="productConfigModel.ProductColor"
+                                        Id="product-color"
+                                        ShowLabel="false" />
+                        </div>
+
+                        <div class="space-y-2">
+                            <Label For="product-size">Size</Label>
+                            <Select @bind-Value="productConfigModel.Size"
+                                   Id="product-size"
+                                   Placeholder="Select size">
+                                <SelectItem Value="@("S")">Small (S)</SelectItem>
+                                <SelectItem Value="@("M")">Medium (M)</SelectItem>
+                                <SelectItem Value="@("L")">Large (L)</SelectItem>
+                                <SelectItem Value="@("XL")">Extra Large (XL)</SelectItem>
+                            </Select>
+                        </div>
+                    </div>
+
+                    <Separator />
+
+                    <!-- Quantity and Rating -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <Label For="product-quantity">Quantity</Label>
+                            <NumericInput @bind-Value="productConfigModel.Quantity"
+                                         Id="product-quantity"
+                                         Min="1"
+                                         Max="999"
+                                         ShowStepper="true" />
+                        </div>
+
+                        <div class="space-y-2">
+                            <Label For="product-rating">Initial Rating</Label>
+                            <Rating @bind-Value="productConfigModel.Rating"
+                                   Id="product-rating"
+                                   AllowHalf="true"
+                                   Count="5" />
+                        </div>
+                    </div>
+
+                    <!-- Price Range for Bulk Orders -->
+                    <div class="space-y-2">
+                        <Label For="price-range">Price Range for Bulk Orders</Label>
+                        <RangeSlider @bind-Value="productConfigModel.PriceRange"
+                                    Id="price-range"
+                                    Min="10"
+                                    Max="500"
+                                    Step="10" />
+                        <p class="text-xs text-muted-foreground">
+                            Range: $@productConfigModel.PriceRange[0] - $@productConfigModel.PriceRange[1]
+                        </p>
+                    </div>
+
+                    <!-- Custom Offer Price -->
+                    <div class="space-y-2">
+                        <Label For="offer-price">Custom Offer Price</Label>
+                        <CurrencyInput @bind-Value="productConfigModel.CustomOfferPrice"
+                                      Id="offer-price"
+                                      Currency="USD"
+                                      Placeholder="0.00" />
+                    </div>
+
+                    <!-- Special Instructions -->
+                    <div class="space-y-2">
+                        <Label For="special-instructions">Special Instructions</Label>
+                        <Textarea @bind-Value="productConfigModel.SpecialInstructions"
+                                 Id="special-instructions"
+                                 Placeholder="Add any special requests..."
+                                 Rows="3" />
+                    </div>
+
+                    <Separator />
+
+                    <!-- Additional Options -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="space-y-0.5">
+                                <Label For="gift-wrap">Gift Wrap</Label>
+                                <p class="text-sm text-muted-foreground">Add gift wrapping (+$5.00)</p>
+                            </div>
+                            <Switch @bind-Checked="productConfigModel.GiftWrap" Id="gift-wrap" />
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="space-y-0.5">
+                                <Label For="priority-shipping">Priority Shipping</Label>
+                                <p class="text-sm text-muted-foreground">2-day delivery (+$15.00)</p>
+                            </div>
+                            <Switch @bind-Checked="productConfigModel.PriorityShipping" Id="priority-shipping" />
+                        </div>
+                    </div>
+                </div>
+
+                <DialogFooter>
+                    <Button Variant="ButtonVariant.Outline" OnClick="() => showProductConfigDialog = false">Cancel</Button>
+                    <Button OnClick="() => showProductConfigDialog = false">Add to Cart</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
+        <!-- State Display for Demo 4 -->
+        <div class="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
+            <p class="text-xs font-medium text-muted-foreground mb-2">Product Configuration Form State:</p>
+            <pre class="text-xs overflow-x-auto">@JsonSerializer.Serialize(productConfigModel, new JsonSerializerOptions { WriteIndented = true })</pre>
+        </div>
+
+        <!-- Demo 5: Nested Dialog - Create Project with Advanced Settings -->
+        <Dialog @bind-Open="showProjectDialog">
+            <DialogContent Class="max-w-xl">
+                <DialogHeader>
+                    <DialogTitle>
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="folder-plus" Size="20" />
+                            Quick Project Setup
+                        </div>
+                    </DialogTitle>
+                    <DialogDescription>
+                        Create a new project with your preferred template and framework.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <div class="space-y-6 py-4">
+                    <!-- Project Name -->
+                    <div class="space-y-2">
+                        <Label For="project-name">Project Name *</Label>
+                        <Input @bind-Value="projectModel.ProjectName"
+                               ShowValidationError="true"
+                               Id="project-name"
+                               Placeholder="my-awesome-project" />
+                    </div>
+
+                    <!-- Template Selection -->
+                    <div class="space-y-2">
+                        <Label For="project-template">Template</Label>
+                        <Select @bind-Value="projectModel.Template"
+                               Id="project-template"
+                               Placeholder="Select template">
+                            <SelectItem Value="@("nextjs")">Next.js</SelectItem>
+                            <SelectItem Value="@("vite")">Vite</SelectItem>
+                            <SelectItem Value="@("nuxt")">Nuxt</SelectItem>
+                        </Select>
+                    </div>
+
+                    <!-- Framework Selection -->
+                    <div class="space-y-2">
+                        <Label>Framework</Label>
+                        <RadioGroup @bind-Value="projectModel.Framework" AriaLabel="Select framework">
+                            <div @onclick="@(() => projectModel.Framework = "react")"
+                                 class="@($"flex items-center space-x-3 rounded-lg border p-3 cursor-pointer transition-colors {(projectModel.Framework == "react" ? "border-primary bg-primary/5" : "border-input")}")">
+                                <div @onclick:stopPropagation>
+                                    <RadioGroupItem Value="@("react")" Id="fw-react" />
+                                </div>
+                                <Label For="fw-react" Class="cursor-pointer">React</Label>
+                            </div>
+
+                            <div @onclick="@(() => projectModel.Framework = "vue")"
+                                 class="@($"flex items-center space-x-3 rounded-lg border p-3 cursor-pointer transition-colors {(projectModel.Framework == "vue" ? "border-primary bg-primary/5" : "border-input")}")">
+                                <div @onclick:stopPropagation>
+                                    <RadioGroupItem Value="@("vue")" Id="fw-vue" />
+                                </div>
+                                <Label For="fw-vue" Class="cursor-pointer">Vue</Label>
+                            </div>
+
+                            <div @onclick="@(() => projectModel.Framework = "svelte")"
+                                 class="@($"flex items-center space-x-3 rounded-lg border p-3 cursor-pointer transition-colors {(projectModel.Framework == "svelte" ? "border-primary bg-primary/5" : "border-input")}")">
+                                <div @onclick:stopPropagation>
+                                    <RadioGroupItem Value="@("svelte")" Id="fw-svelte" />
+                                </div>
+                                <Label For="fw-svelte" Class="cursor-pointer">Svelte</Label>
+                            </div>
+                        </RadioGroup>
+                    </div>
+
+                    <!-- Advanced Settings Button -->
+                    <Button Variant="ButtonVariant.Outline" 
+                            OnClick="OpenAdvancedSettings"
+                            Class="w-full">
+                        <LucideIcon Name="settings" Size="16" />
+                        Advanced Settings
+                    </Button>
+                </div>
+
+                <DialogFooter>
+                    <Button Variant="ButtonVariant.Outline" OnClick="() => showProjectDialog = false">Cancel</Button>
+                    <Button OnClick="() => showProjectDialog = false">Create Project</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
+        <!-- Nested Dialog B - Advanced Configuration -->
+        <Dialog @bind-Open="showAdvancedSettingsDialog">
+            <DialogContent Class="max-w-xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                    <DialogTitle>
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="settings" Size="20" />
+                            Advanced Configuration
+                        </div>
+                    </DialogTitle>
+                    <DialogDescription>
+                        Configure advanced deployment and build settings.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <div class="space-y-6 py-4">
+                    <!-- Build Command -->
+                    <div class="space-y-2">
+                        <Label For="build-command">Build Command</Label>
+                        <Input @bind-Value="advancedSettingsModel.BuildCommand"
+                               Id="build-command"
+                               Placeholder="npm run build" />
+                    </div>
+
+                    <!-- Region -->
+                    <div class="space-y-2">
+                        <Label For="region">Region</Label>
+                        <Select @bind-Value="advancedSettingsModel.Region"
+                               Id="region"
+                               Placeholder="Select region">
+                            <SelectItem Value="@("us-east")">US East</SelectItem>
+                            <SelectItem Value="@("us-west")">US West</SelectItem>
+                            <SelectItem Value="@("eu")">Europe</SelectItem>
+                            <SelectItem Value="@("asia")">Asia Pacific</SelectItem>
+                        </Select>
+                    </div>
+
+                    <Separator />
+
+                    <!-- Timeout and Memory -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <Label For="timeout">Timeout (seconds)</Label>
+                            <NumericInput @bind-Value="advancedSettingsModel.TimeoutSeconds"
+                                         Id="timeout"
+                                         Min="30"
+                                         Max="3600"
+                                         ShowStepper="true" />
+                        </div>
+
+                        <div class="space-y-2">
+                            <Label For="memory">Memory Limit (MB)</Label>
+                            <NumericInput @bind-Value="advancedSettingsModel.MemoryLimitMB"
+                                         Id="memory"
+                                         Min="128"
+                                         Max="8192"
+                                         Step="128"
+                                         ShowStepper="true" />
+                        </div>
+                    </div>
+
+                    <Separator />
+
+                    <!-- Feature Toggles -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="space-y-0.5">
+                                <Label For="enable-cdn">Enable CDN</Label>
+                                <p class="text-sm text-muted-foreground">Serve assets via global CDN</p>
+                            </div>
+                            <Switch @bind-Checked="advancedSettingsModel.EnableCDN" Id="enable-cdn" />
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="space-y-0.5">
+                                <Label For="enable-analytics">Enable Analytics</Label>
+                                <p class="text-sm text-muted-foreground">Track page views and performance</p>
+                            </div>
+                            <Switch @bind-Checked="advancedSettingsModel.EnableAnalytics" Id="enable-analytics" />
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="space-y-0.5">
+                                <Label For="auto-deploy">Enable Auto-Deploy</Label>
+                                <p class="text-sm text-muted-foreground">Deploy on every push to main</p>
+                            </div>
+                            <Switch @bind-Checked="advancedSettingsModel.EnableAutoDeploy" Id="auto-deploy" />
+                        </div>
+                    </div>
+
+                    <!-- Environment Variables -->
+                    <div class="space-y-2">
+                        <Label For="env-vars">Environment Variables</Label>
+                        <Textarea @bind-Value="advancedSettingsModel.EnvironmentVariables"
+                                 Id="env-vars"
+                                 Placeholder="KEY=value&#10;API_KEY=your_key_here"
+                                 Rows="4" />
+                        <p class="text-xs text-muted-foreground">One variable per line in KEY=value format</p>
+                    </div>
+                </div>
+
+                <DialogFooter>
+                    <Button Variant="ButtonVariant.Outline" OnClick="CloseAdvancedSettings">Cancel</Button>
+                    <Button OnClick="CloseAdvancedSettings">Save Settings</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+
+        <!-- State Display for Demo 5 -->
+        <div class="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
+            <p class="text-xs font-medium text-muted-foreground mb-2">Project & Advanced Settings Form State:</p>
+            <pre class="text-xs overflow-x-auto">@JsonSerializer.Serialize(new { Project = projectModel, AdvancedSettings = advancedSettingsModel }, new JsonSerializerOptions { WriteIndented = true })</pre>
+        </div>
+    </div>
+
     <div class="space-y-4">
         <h2 class="text-2xl font-semibold">Features</h2>
         <ul class="list-disc list-inside space-y-2 text-sm">
@@ -391,5 +1223,173 @@
     {
         public required string Value { get; set; }
         public required string Label { get; set; }
+    }
+
+    // ========================================
+    // Advanced Dialog Demos - State Management
+    // ========================================
+
+    // Demo 1: User Profile Settings
+    private bool showUserProfileDialog = false;
+    private UserProfileModel userProfileModel = new();
+
+    private class UserProfileModel
+    {
+        [Required(ErrorMessage = "Name is required")]
+        public string? Name { get; set; }
+
+        public string? Username { get; set; }
+
+        [Required, EmailAddress]
+        public string? Email { get; set; }
+
+        [Phone]
+        public string? PhoneNumber { get; set; }
+
+        public DateOnly? DateOfBirth { get; set; }
+        public string? ThemeColor { get; set; } = "#3b82f6";
+        public string? Bio { get; set; }
+        public bool EmailNotifications { get; set; } = true;
+        public bool MarketingEmails { get; set; } = false;
+    }
+
+    private void SaveUserProfile()
+    {
+        showUserProfileDialog = false;
+    }
+
+    // Demo 2: Subscription Plan Selection
+    private bool showSubscriptionDialog = false;
+    private SubscriptionModel subscriptionModel = new();
+
+    private class SubscriptionModel
+    {
+        public string SelectedPlan { get; set; } = "pro";
+        public bool IsAnnual { get; set; } = true;
+        public double TeamSize { get; set; } = 5;
+        public string? PromoCode { get; set; }
+        public bool AutoRenew { get; set; } = true;
+    }
+
+    private decimal CalculateSubscriptionTotal()
+    {
+        var basePrice = subscriptionModel.SelectedPlan switch
+        {
+            "starter" => subscriptionModel.IsAnnual ? 8 : 10,
+            "pro" => subscriptionModel.IsAnnual ? 24 : 30,
+            "enterprise" => subscriptionModel.IsAnnual ? 80 : 100,
+            _ => 0
+        };
+
+        // Add extra cost for team members over 10
+        var teamCost = subscriptionModel.TeamSize > 10 ? ((int)subscriptionModel.TeamSize - 10) * 5 : 0;
+
+        return basePrice + teamCost;
+    }
+
+    private decimal CalculateAnnualSavings()
+    {
+        var monthlyTotal = subscriptionModel.SelectedPlan switch
+        {
+            "starter" => 10,
+            "pro" => 30,
+            "enterprise" => 100,
+            _ => 0
+        };
+
+        var annualTotal = subscriptionModel.SelectedPlan switch
+        {
+            "starter" => 8,
+            "pro" => 24,
+            "enterprise" => 80,
+            _ => 0
+        };
+
+        return (monthlyTotal - annualTotal) * 12;
+    }
+
+    // Demo 3: Team Member Invite
+    private bool showTeamInviteDialog = false;
+    private TeamInviteModel teamInviteModel = new();
+    private readonly List<Project> availableProjects = new() 
+    { 
+        new Project { Name = "Project Alpha" }, 
+        new Project { Name = "Project Beta" }, 
+        new Project { Name = "Project Gamma" }, 
+        new Project { Name = "Project Delta" } 
+    };
+
+    private class TeamInviteModel
+    {
+        [Required, EmailAddress]
+        public string? Email { get; set; }
+
+        [Required]
+        public string Role { get; set; } = "member";
+
+        public string? Department { get; set; }
+        public IEnumerable<string> AssignedProjects { get; set; } = new List<string>();
+        public DateOnly? AccessExpiresOn { get; set; }
+        public bool SendEmailImmediately { get; set; } = true;
+    }
+
+    private class Project
+    {
+        public required string Name { get; set; }
+    }
+
+    // Demo 4: E-commerce Product Configuration
+    private bool showProductConfigDialog = false;
+    private ProductConfigModel productConfigModel = new();
+
+    private class ProductConfigModel
+    {
+        public string? ProductName { get; set; }
+        public string ProductColor { get; set; } = "#3b82f6";
+        public string? Size { get; set; } = "M";
+        public int Quantity { get; set; } = 1;
+        public double Rating { get; set; } = 4.5;
+        public int[] PriceRange { get; set; } = new[] { 50, 200 };
+        public decimal? CustomOfferPrice { get; set; }
+        public string? SpecialInstructions { get; set; }
+        public bool GiftWrap { get; set; } = false;
+        public bool PriorityShipping { get; set; } = false;
+    }
+
+    // Demo 5: Nested Dialog - Create Project with Advanced Settings
+    private bool showProjectDialog = false;
+    private bool showAdvancedSettingsDialog = false;
+    private ProjectModel projectModel = new();
+    private AdvancedSettingsModel advancedSettingsModel = new();
+
+    private class ProjectModel
+    {
+        [Required(ErrorMessage = "Project name is required")]
+        public string? ProjectName { get; set; }
+
+        public string? Template { get; set; } = "nextjs";
+        public string Framework { get; set; } = "react";
+    }
+
+    private class AdvancedSettingsModel
+    {
+        public string BuildCommand { get; set; } = "npm run build";
+        public string? Region { get; set; } = "us-east";
+        public int TimeoutSeconds { get; set; } = 300;
+        public int MemoryLimitMB { get; set; } = 512;
+        public bool EnableCDN { get; set; } = true;
+        public bool EnableAnalytics { get; set; } = false;
+        public bool EnableAutoDeploy { get; set; } = true;
+        public string? EnvironmentVariables { get; set; }
+    }
+
+    private void OpenAdvancedSettings()
+    {
+        showAdvancedSettingsDialog = true;
+    }
+
+    private void CloseAdvancedSettings()
+    {
+        showAdvancedSettingsDialog = false;
     }
 }
