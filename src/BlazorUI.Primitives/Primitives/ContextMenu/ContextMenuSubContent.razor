@@ -1,28 +1,28 @@
 @namespace BlazorUI.Primitives.ContextMenu
-@using BlazorUI.Primitives.Services
-@inject IPositioningService PositioningService
+@using BlazorUI.Primitives.Constants
+@using BlazorUI.Primitives.Floating
 @inject IJSRuntime JSRuntime
 @implements IAsyncDisposable
 
-@* ContextMenuSubContent - the content panel for a submenu *@
+@*
+    ContextMenuSubContent - the content panel for a submenu
+    Uses FloatingPortal for positioning infrastructure.
+*@
 
-@if (SubContext.IsOpen)
+@if (SubContext.IsOpen && SubContext.TriggerElement.HasValue)
 {
-    <div @ref="_contentRef"
-         role="menu"
-         tabindex="-1"
-         @onkeydown="HandleKeyDown"
-         @onkeydown:stopPropagation="true"
-         @onmouseleave="HandleMouseLeave"
-         @attributes="GetAttributesWithoutStyle()"
-         data-state="open"
-         style="@GetMergedStyle()">
-        <CascadingValue Value="@this" IsFixed="false">
-            <CascadingValue Value="@SubContext" Name="ParentSubContext" IsFixed="false">
-                @ChildContent
-            </CascadingValue>
-        </CascadingValue>
-    </div>
+    <FloatingPortal IsOpen="true"
+                    AnchorElement="@SubContext.TriggerElement"
+                    PortalId="@_portalId"
+                    ParentPortalId="@GetParentPortalId()"
+                    Side="PopoverSide.Right"
+                    Align="PopoverAlign.Start"
+                    Offset="@Offset"
+                    Strategy="fixed"
+                    ZIndex="@ZIndex"
+                    OnReady="@HandleFloatingReady">
+        @RenderSubMenuContent()
+    </FloatingPortal>
 }
 
 @code {
@@ -32,9 +32,11 @@
     [CascadingParameter]
     private ContextMenuSubContext SubContext { get; set; } = null!;
 
+    [CascadingParameter(Name = "ParentSubContext")]
+    private ContextMenuSubContext? ParentSubContext { get; set; }
+
     private ElementReference _contentRef;
-    private IAsyncDisposable? _positioningCleanup;
-    private bool _isInitialized = false;
+    private string _portalId = "";
 
     // Track menu items for keyboard navigation
     private readonly List<IContextMenuItem> _menuItems = new();
@@ -81,62 +83,54 @@
                 "ContextMenuSubContent must be used within a ContextMenuSub component.");
         }
 
+        _portalId = $"contextmenu-submenu-{SubContext.GetHashCode()}";
         SubContext.OnStateChanged += HandleContextStateChanged;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    /// <summary>
+    /// Gets the parent portal ID for hierarchical portal nesting.
+    /// ALL children append to the root portal, regardless of nesting depth.
+    /// This ensures only one portal exists for the entire menu hierarchy.
+    /// </summary>
+    private string? GetParentPortalId()
     {
-        if (SubContext.IsOpen && !_isInitialized)
-        {
-            _isInitialized = true;
-
-            // Set up positioning
-            await SetupPositioningAsync();
-
-            // Focus the content container
-            try
-            {
-                await _contentRef.FocusAsync();
-            }
-            catch
-            {
-                // Focus may fail
-            }
-        }
-        else if (!SubContext.IsOpen && _isInitialized)
-        {
-            await CleanupAsync();
-        }
+        // Always append to root portal, even if this is a nested submenu
+        // The parent-child UI relationship is maintained through composite rendering,
+        // but all children are siblings in the portal scope
+        return MenuContext != null ? $"contextmenu-portal-{MenuContext.ContentId}" : null;
     }
 
-    private async Task SetupPositioningAsync()
+    private RenderFragment RenderSubMenuContent() => __builder =>
     {
-        if (SubContext.TriggerElement == null) return;
+        <div @ref="_contentRef"
+             role="menu"
+             tabindex="-1"
+             @onkeydown="HandleKeyDown"
+             @onkeydown:stopPropagation="true"
+             @onmouseleave="HandleMouseLeave"
+             @attributes="AdditionalAttributes"
+             data-state="open">
+            @* Re-cascade MenuContext since FloatingPortal breaks cascading chain *@
+            <CascadingValue Value="MenuContext" IsFixed="false">
+                <CascadingValue Value="@this" IsFixed="false">
+                    <CascadingValue Value="@SubContext" Name="ParentSubContext" IsFixed="false">
+                        @ChildContent
+                    </CascadingValue>
+                </CascadingValue>
+            </CascadingValue>
+        </div>
+    };
 
+    private async Task HandleFloatingReady()
+    {
+        // Focus the submenu content
         try
         {
-            var options = new PositioningOptions
-            {
-                Placement = "right-start",
-                Offset = Offset,
-                Strategy = "fixed"
-            };
-
-            var position = await PositioningService.ComputePositionAsync(
-                SubContext.TriggerElement.Value,
-                _contentRef,
-                options);
-
-            await PositioningService.ApplyPositionAsync(_contentRef, position, makeVisible: true);
-
-            _positioningCleanup = await PositioningService.AutoUpdateAsync(
-                SubContext.TriggerElement.Value,
-                _contentRef,
-                options);
+            await _contentRef.FocusAsync();
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine($"Failed to set up submenu positioning: {ex.Message}");
+            // Focus may fail
         }
     }
 
@@ -271,49 +265,8 @@
         // This prevents the submenu from closing when moving mouse to its own items
     }
 
-    private string GetInitialStyle()
-    {
-        var baseStyle = $"z-index: {ZIndex};";
-        baseStyle += " position: fixed; top: -9999px; left: -9999px; pointer-events: none;";
-        return baseStyle;
-    }
-
-    private string GetMergedStyle()
-    {
-        var baseStyle = GetInitialStyle();
-
-        if (AdditionalAttributes != null && AdditionalAttributes.TryGetValue("style", out var userStyle))
-        {
-            return $"{userStyle}; {baseStyle}";
-        }
-
-        return baseStyle;
-    }
-
-    private Dictionary<string, object>? GetAttributesWithoutStyle()
-    {
-        if (AdditionalAttributes == null) return null;
-
-        var attributes = new Dictionary<string, object>(AdditionalAttributes);
-        attributes.Remove("style");
-
-        return attributes.Count > 0 ? attributes : null;
-    }
-
-    private async Task CleanupAsync()
-    {
-        if (_positioningCleanup != null)
-        {
-            await _positioningCleanup.DisposeAsync();
-            _positioningCleanup = null;
-        }
-
-        _isInitialized = false;
-    }
-
     public async ValueTask DisposeAsync()
     {
-        await CleanupAsync();
         SubContext.OnStateChanged -= HandleContextStateChanged;
     }
 

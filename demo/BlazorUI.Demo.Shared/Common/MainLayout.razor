@@ -740,7 +740,10 @@
 <ToastViewport Position="ToastPosition.BottomRight" />
 <SpotlightCommandPalette @ref="_spotlightRef" />
 <DialogHost />
-<PortalHost />
+
+@* Use separate portal hosts for better performance (prevents render cascades) *@
+<ContainerPortalHost />
+<OverlayPortalHost />
 
 @code
 {
