@@ -29,7 +29,7 @@
     [Parameter, EditorRequired]
     public PortalCategory Category { get; set; }
 
-    private HashSet<string> _renderedThisCycle = new();
+    private readonly HashSet<string> _renderedThisCycle = new();
     private IJSObjectReference? _portalModule;
 
     protected override void OnInitialized()
