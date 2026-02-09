@@ -763,15 +763,18 @@
                     <!-- Department Selection -->
                     <div class="space-y-2">
                         <Label For="invite-department">Department</Label>
-                        <Select @bind-Value="teamInviteModel.Department"
-                               Id="invite-department"
-                               Placeholder="Select department">
-                            <SelectItem Value="@("engineering")">Engineering</SelectItem>
-                            <SelectItem Value="@("design")">Design</SelectItem>
-                            <SelectItem Value="@("marketing")">Marketing</SelectItem>
-                            <SelectItem Value="@("sales")">Sales</SelectItem>
-                            <SelectItem Value="@("support")">Support</SelectItem>
-                            <SelectItem Value="@("hr")">Human Resources</SelectItem>
+                        <Select @bind-Value="teamInviteModel.Department" TValue="string">
+                            <SelectTrigger>
+                                <SelectValue Placeholder="Select department" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem Value="@("engineering")" TValue="string">Engineering</SelectItem>
+                                <SelectItem Value="@("design")" TValue="string">Design</SelectItem>
+                                <SelectItem Value="@("marketing")" TValue="string">Marketing</SelectItem>
+                                <SelectItem Value="@("sales")" TValue="string">Sales</SelectItem>
+                                <SelectItem Value="@("support")" TValue="string">Support</SelectItem>
+                                <SelectItem Value="@("hr")" TValue="string">Human Resources</SelectItem>
+                            </SelectContent>
                         </Select>
                     </div>
 
@@ -780,7 +783,6 @@
                         <Label For="invite-projects">Assign to Projects (Optional)</Label>
                         <MultiSelect TItem="Project"
                                     @bind-Values="teamInviteModel.AssignedProjects"
-                                    Id="invite-projects"
                                     Placeholder="Select projects"
                                     Items="availableProjects"
                                     ValueSelector="@(p => p.Name)"
@@ -850,13 +852,16 @@
 
                         <div class="space-y-2">
                             <Label For="product-size">Size</Label>
-                            <Select @bind-Value="productConfigModel.Size"
-                                   Id="product-size"
-                                   Placeholder="Select size">
-                                <SelectItem Value="@("S")">Small (S)</SelectItem>
-                                <SelectItem Value="@("M")">Medium (M)</SelectItem>
-                                <SelectItem Value="@("L")">Large (L)</SelectItem>
-                                <SelectItem Value="@("XL")">Extra Large (XL)</SelectItem>
+                            <Select @bind-Value="productConfigModel.Size" TValue="string">
+                                <SelectTrigger>
+                                    <SelectValue Placeholder="Select size" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem Value="@("S")" TValue="string">Small (S)</SelectItem>
+                                    <SelectItem Value="@("M")" TValue="string">Medium (M)</SelectItem>
+                                    <SelectItem Value="@("L")" TValue="string">Large (L)</SelectItem>
+                                    <SelectItem Value="@("XL")" TValue="string">Extra Large (XL)</SelectItem>
+                                </SelectContent>
                             </Select>
                         </div>
                     </div>
@@ -977,12 +982,15 @@
                     <!-- Template Selection -->
                     <div class="space-y-2">
                         <Label For="project-template">Template</Label>
-                        <Select @bind-Value="projectModel.Template"
-                               Id="project-template"
-                               Placeholder="Select template">
-                            <SelectItem Value="@("nextjs")">Next.js</SelectItem>
-                            <SelectItem Value="@("vite")">Vite</SelectItem>
-                            <SelectItem Value="@("nuxt")">Nuxt</SelectItem>
+                        <Select @bind-Value="projectModel.Template" TValue="string">
+                            <SelectTrigger>
+                                <SelectValue Placeholder="Select template" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem Value="@("nextjs")" TValue="string">Next.js</SelectItem>
+                                <SelectItem Value="@("vite")" TValue="string">Vite</SelectItem>
+                                <SelectItem Value="@("nuxt")" TValue="string">Nuxt</SelectItem>
+                            </SelectContent>
                         </Select>
                     </div>
 
@@ -1059,13 +1067,16 @@
                     <!-- Region -->
                     <div class="space-y-2">
                         <Label For="region">Region</Label>
-                        <Select @bind-Value="advancedSettingsModel.Region"
-                               Id="region"
-                               Placeholder="Select region">
-                            <SelectItem Value="@("us-east")">US East</SelectItem>
-                            <SelectItem Value="@("us-west")">US West</SelectItem>
-                            <SelectItem Value="@("eu")">Europe</SelectItem>
-                            <SelectItem Value="@("asia")">Asia Pacific</SelectItem>
+                        <Select @bind-Value="advancedSettingsModel.Region" TValue="string">
+                            <SelectTrigger>
+                                <SelectValue Placeholder="Select region" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem Value="@("us-east")" TValue="string">US East</SelectItem>
+                                <SelectItem Value="@("us-west")" TValue="string">US West</SelectItem>
+                                <SelectItem Value="@("eu")" TValue="string">Europe</SelectItem>
+                                <SelectItem Value="@("asia")" TValue="string">Asia Pacific</SelectItem>
+                            </SelectContent>
                         </Select>
                     </div>
 
