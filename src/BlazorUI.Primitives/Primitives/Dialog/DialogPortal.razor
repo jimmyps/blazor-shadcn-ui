@@ -85,7 +85,7 @@
     {
         if (!_isRegistered && ChildContent != null)
         {
-            PortalService.RegisterPortal(_portalId, GetPortalContent());
+            PortalService.RegisterPortal(_portalId, PortalCategory.Container, GetPortalContent());
             _isRegistered = true;
         }
     }

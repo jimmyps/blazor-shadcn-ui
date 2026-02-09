@@ -115,7 +115,7 @@
         }
     }
 
-    private async void HandleMouseEnter(MouseEventArgs args)
+    private async Task HandleMouseEnter(MouseEventArgs args)
     {
         if (Disabled) return;
 
@@ -138,6 +138,11 @@
                 MenuContext.ActiveSubMenu = SubContext;
             }
         }
+
+        // Small delay to allow close state to propagate through Blazor's render pipeline
+        // before opening the new submenu. Without this, the fast portal rendering can cause
+        // the close to execute after the open, making the submenu appear closed.
+        await Task.Delay(30);
 
         // Open submenu on hover
         SubContext.Open(_triggerRef);

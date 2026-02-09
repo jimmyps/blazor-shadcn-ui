@@ -39,7 +39,7 @@ dotnet add package NeoBlazorUI.Icons.Feather     # 286 icons - minimalist, strok
 
 2. **Add PortalHost to your layout:**
 
-   For overlay components (Dialog, Sheet, Popover, etc.) to work correctly, add `<PortalHost />` to your root layout:
+   For overlay components (Dialog, Sheet, Popover, etc.) to work correctly, add portal hosts to your root layout:
 
 ```razor
 @inherits LayoutComponentBase
@@ -49,7 +49,12 @@ dotnet add package NeoBlazorUI.Icons.Feather     # 286 icons - minimalist, strok
     @Body
 </div>
 
-<PortalHost />
+@* RECOMMENDED: Use separate portal hosts for better performance *@
+<ContainerPortalHost />
+<OverlayPortalHost />
+
+@* OR: Use legacy single host (backward compatible) *@
+@* <PortalHost /> *@
 ```
 
 3. **Add CSS to your `App.razor`:**

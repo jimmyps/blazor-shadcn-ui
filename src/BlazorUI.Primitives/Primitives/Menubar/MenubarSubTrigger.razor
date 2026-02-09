@@ -28,10 +28,10 @@
 
     [CascadingParameter]
     private MenubarContent? ContentContext { get; set; }
-    
+
     [CascadingParameter(Name = "ParentSubContext")]
     private MenubarSubContext? ParentSubContext { get; set; }
-    
+
     [CascadingParameter]
     private MenubarSubContent? SubContentContext { get; set; }
 
@@ -74,11 +74,11 @@
         {
             ContentContext?.RegisterMenuItem(this);
         }
-        
+
         // Subscribe to state changes to update aria-expanded when submenu is closed externally
         SubContext.OnStateChanged += HandleStateChanged;
     }
-    
+
     private void HandleStateChanged()
     {
         InvokeAsync(StateHasChanged);
@@ -115,13 +115,13 @@
         }
     }
 
-    private async void HandleMouseEnter(MouseEventArgs args)
+    private async Task HandleMouseEnter(MouseEventArgs args)
     {
         if (Disabled) return;
 
         // Track if there was an active submenu that we're closing
         bool hadActiveSubmenu = false;
-        
+
         // Close any other active submenu first (either from root menu or parent submenu)
         if (ParentSubContext != null)
         {
@@ -138,6 +138,11 @@
                 MenuContext.ActiveSubMenu = SubContext;
             }
         }
+
+        // Small delay to allow close state to propagate through Blazor's render pipeline
+        // before opening the new submenu. Without this, the fast portal rendering can cause
+        // the close to execute after the open, making the submenu appear closed.
+        await Task.Delay(30);
 
         // Open submenu on hover
         SubContext.Open(_triggerRef);

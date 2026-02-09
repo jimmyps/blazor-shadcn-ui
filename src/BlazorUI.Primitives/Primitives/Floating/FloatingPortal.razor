@@ -1,7 +1,6 @@
 @namespace BlazorUI.Primitives.Floating
 @using BlazorUI.Primitives.Services
 @using BlazorUI.Primitives.Constants
-@using System.Collections.Concurrent
 @inject IPositioningService PositioningService
 @inject IPortalService PortalService
 @inject IJSRuntime JSRuntime
@@ -57,6 +56,15 @@
     /// </summary>
     [Parameter]
     public string PortalId { get; set; } = "";
+
+    /// <summary>
+    /// Parent portal ID to append this portal's content to.
+    /// When set, this portal's content will be rendered inside the parent's portal
+    /// instead of creating a new separate portal. Useful for submenus and nested overlays.
+    /// Default is null (creates independent portal).
+    /// </summary>
+    [Parameter]
+    public string? ParentPortalId { get; set; }
 
     /// <summary>
     /// Preferred side for positioning.
@@ -129,12 +137,6 @@
     private double _positionLeft = 0;
     private double _positionTop = 0;
 
-    // Rate limiting to prevent infinite loops with nested portals
-    // ConcurrentDictionary + ConcurrentQueue = lock-free thread-safe access
-    private static readonly ConcurrentDictionary<string, ConcurrentQueue<DateTime>> _refreshAttemptsByPortal = new();
-    private const int MaxRefreshAttempts = 3;
-    private const int RefreshWindowMs = 100;
-
     protected override void OnInitialized()
     {
         if (string.IsNullOrEmpty(PortalId))
@@ -160,42 +162,11 @@
     {
         base.OnParametersSet();
 
-        // Only refresh if portal is initialized and open
-        if (!_isInitialized || !IsOpen || string.IsNullOrEmpty(PortalId))
-            return;
-
-        // Rate limiting: Track refresh attempts per PortalId to detect infinite loops
-        // Get or create the concurrent queue for this PortalId (thread-safe, no lock needed)
-        var attempts = _refreshAttemptsByPortal.GetOrAdd(PortalId, _ => new ConcurrentQueue<DateTime>());
-
-        // Remove attempts older than the time window  
-        var now = DateTime.UtcNow;
-        var cutoff = now.AddMilliseconds(-RefreshWindowMs);
-        
-        while (attempts.TryPeek(out var oldest) && oldest < cutoff)
+        // Refresh portal content when parameters change and portal is open
+        if (_isInitialized && IsOpen && !string.IsNullOrEmpty(PortalId))
         {
-            attempts.TryDequeue(out _);
+            PortalService.RefreshPortal(PortalId);
         }
-
-        // Count current attempts within the time window
-        var currentCount = attempts.Count;
-
-        // If we've hit the limit within the time window for THIS PortalId, we're in a loop - exit
-        if (currentCount >= MaxRefreshAttempts)
-        {
-            // Log warning once when limit is first hit
-            if (currentCount == MaxRefreshAttempts)
-            {
-                Console.WriteLine($"Warning: Portal '{PortalId}' refresh rate limit hit - possible infinite loop with nested portals");
-            }
-            return;
-        }
-
-        // Record this attempt for this PortalId
-        attempts.Enqueue(now);
-        
-        // Refresh the portal to pick up parameter changes
-        PortalService.RefreshPortal(PortalId);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -205,25 +176,36 @@
             _isInitialized = true;
             _isPositioned = false;
 
-            // Create completion source BEFORE registering portal
-            _portalReadyTcs = new TaskCompletionSource<bool>();
-
             // Register content through portal - this triggers PortalHost to re-render
-            PortalService.RegisterPortal(PortalId, RenderPortalContent());
-
-            // Wait for PortalHost to signal it's done rendering our portal
-            // Use timeout to prevent hanging if something goes wrong
-            var timeoutTask = Task.Delay(500);
-            var completedTask = await Task.WhenAny(_portalReadyTcs.Task, timeoutTask);
-
-            if (completedTask == timeoutTask)
+            if (!string.IsNullOrEmpty(ParentPortalId))
             {
-                Console.WriteLine($"Warning: Portal {PortalId} render timeout");
+                // Child: Append to parent's portal scope
+                PortalService.AppendToPortal(ParentPortalId, PortalId, RenderPortalContent());
+                
+                // Children don't need to wait for notification - they're part of parent's render cycle
+                // Just yield to ensure the composite render completes
+                await Task.Yield();
             }
+            else
+            {
+                // Root: Create new independent portal and wait for PortalHost notification
+                _portalReadyTcs = new TaskCompletionSource<bool>();
+                
+                PortalService.RegisterPortal(PortalId, PortalCategory.Overlay, RenderPortalContent());
 
-            // Yield to ensure any pending re-renders complete and _portalContentRef is up-to-date
-            // This is critical when multiple portals are opening/closing simultaneously
-            await Task.Yield();
+                // Wait for PortalHost to signal it's done rendering our portal
+                // Use timeout to prevent hanging if something goes wrong
+                var timeoutTask = Task.Delay(500);
+                var completedTask = await Task.WhenAny(_portalReadyTcs.Task, timeoutTask);
+
+                if (completedTask == timeoutTask)
+                {
+                    Console.WriteLine($"Warning: Portal {PortalId} render timeout");
+                }
+
+                // Yield to ensure any pending re-renders complete and _portalContentRef is up-to-date
+                await Task.Yield();
+            }
 
             // Check if still open (user might have closed during wait)
             if (!IsOpen)
@@ -424,7 +406,16 @@
         // Unregister portal when content closes
         if (!string.IsNullOrEmpty(PortalId))
         {
-            PortalService.UnregisterPortal(PortalId);
+            if (!string.IsNullOrEmpty(ParentPortalId))
+            {
+                // Child: Remove from parent's scope
+                PortalService.RemoveFromPortal(ParentPortalId, PortalId);
+            }
+            else
+            {
+                // Root: Unregister portal entirely
+                PortalService.UnregisterPortal(PortalId);
+            }
         }
 
         _isInitialized = false;

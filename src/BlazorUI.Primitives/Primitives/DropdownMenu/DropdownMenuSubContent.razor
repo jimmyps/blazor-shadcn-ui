@@ -14,6 +14,7 @@
     <FloatingPortal IsOpen="true"
                     AnchorElement="@SubContext.TriggerElement"
                     PortalId="@_portalId"
+                    ParentPortalId="@GetParentPortalId()"
                     Side="PopoverSide.Right"
                     Align="PopoverAlign.Start"
                     Offset="@Offset"
@@ -25,19 +26,22 @@
 }
 
 @code {
-    [CascadingParameter]
-    private DropdownMenuContext? MenuContext { get; set; }
+[CascadingParameter]
+private DropdownMenuContext? MenuContext { get; set; }
 
-    [CascadingParameter]
-    private DropdownMenuSubContext SubContext { get; set; } = null!;
+[CascadingParameter]
+private DropdownMenuSubContext SubContext { get; set; } = null!;
 
-    private ElementReference _contentRef;
-    private string _portalId = "";
-    private IJSObjectReference? _keyboardNavModule;
-    private IJSObjectReference? _keyboardNavCleanup;
+[CascadingParameter(Name = "ParentSubContext")]
+private DropdownMenuSubContext? ParentSubContext { get; set; }
 
-    // Track menu items for keyboard navigation (still needed for registration)
-    private readonly List<IDropdownMenuItem> _menuItems = new();
+private ElementReference _contentRef;
+private string _portalId = "";
+private IJSObjectReference? _keyboardNavModule;
+private IJSObjectReference? _keyboardNavCleanup;
+
+// Track menu items for keyboard navigation (still needed for registration)
+private readonly List<IDropdownMenuItem> _menuItems = new();
 
     /// <summary>
     /// The content to render inside the submenu.
@@ -88,6 +92,19 @@
 
         _portalId = $"dropdown-submenu-{SubContext.GetHashCode()}";
         SubContext.OnStateChanged += HandleContextStateChanged;
+    }
+
+    /// <summary>
+    /// Gets the parent portal ID for hierarchical portal nesting.
+    /// ALL children append to the root portal, regardless of nesting depth.
+    /// This ensures only one portal exists for the entire menu hierarchy.
+    /// </summary>
+    private string? GetParentPortalId()
+    {
+        // Always append to root portal, even if this is a nested submenu
+        // The parent-child UI relationship is maintained through composite rendering,
+        // but all children are siblings in the portal scope
+        return MenuContext != null ? $"dropdown-portal-{MenuContext.ContentId}" : null;
     }
 
     private RenderFragment RenderSubMenuContent() => __builder =>
