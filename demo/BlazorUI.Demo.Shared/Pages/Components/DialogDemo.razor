@@ -469,8 +469,7 @@
                             
                             <div class="space-y-2">
                                 <Label For="profile-dob">Date of Birth</Label>
-                                <DatePicker @bind-Value="userProfileModel.DateOfBirth"
-                                           Id="profile-dob"
+                                <DatePicker @bind-SelectedDate="userProfileModel.DateOfBirth"
                                            Placeholder="Pick a date" />
                             </div>
                         </div>
@@ -484,9 +483,7 @@
                         
                         <div class="space-y-2">
                             <Label For="profile-theme-color">Theme Color</Label>
-                            <ColorPicker @bind-Value="userProfileModel.ThemeColor"
-                                        Id="profile-theme-color"
-                                        ShowLabel="false" />
+                            <ColorPicker @bind-Color="userProfileModel.ThemeColor" />
                         </div>
 
                         <div class="space-y-2">
@@ -793,8 +790,7 @@
                     <!-- Access Expiry -->
                     <div class="space-y-2">
                         <Label For="invite-expires">Access Expires On (Optional)</Label>
-                        <DatePicker @bind-Value="teamInviteModel.AccessExpiresOn"
-                                   Id="invite-expires"
+                        <DatePicker @bind-SelectedDate="teamInviteModel.AccessExpiresOn"
                                    Placeholder="No expiration" />
                     </div>
 
@@ -849,9 +845,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="space-y-2">
                             <Label For="product-color">Product Color</Label>
-                            <ColorPicker @bind-Value="productConfigModel.ProductColor"
-                                        Id="product-color"
-                                        ShowLabel="false" />
+                            <ColorPicker @bind-Color="productConfigModel.ProductColor" />
                         </div>
 
                         <div class="space-y-2">
