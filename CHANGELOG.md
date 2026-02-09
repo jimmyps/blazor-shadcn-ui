@@ -146,7 +146,7 @@ private string? GetParentPortalId()
 
 ---
 
-## 2026-02-09 - Two-Layer Portal Architecture: Categorized Hosts + Hierarchical Scopes
+## 2026-02-08 - Two-Layer Portal Architecture: Categorized Hosts + Hierarchical Scopes
 
 ### 🎯 Core Features
 
