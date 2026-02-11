@@ -63,7 +63,7 @@ public partial class SelectableList<TItem>
     /// Default is false.
     /// </summary>
     [Parameter]
-    public bool ShowSearch { get; set; } = false;
+    public bool ShowSearch { get; set; }
 
     /// <summary>
     /// Gets or sets the placeholder text for the search input.

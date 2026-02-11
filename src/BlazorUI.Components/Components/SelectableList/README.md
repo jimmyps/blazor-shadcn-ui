@@ -228,7 +228,7 @@ An elegant, declarative component for creating styled selectable lists with buil
                     GroupSelector="@(s => s.Category)"
                     @bind-SelectedValue="@selectedSetting"
                     ContainerClass="border rounded-lg"
-                    OnSelectedValueChanged="@OnSettingChanged">
+                    SelectedValueChanged="@OnSettingChanged">
         <ItemTemplate Context="setting">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
