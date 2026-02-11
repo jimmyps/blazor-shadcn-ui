@@ -1,0 +1,413 @@
+@page "/components/date-input"
+@using BlazorUI.Components.DateInput
+@using BlazorUI.Components.Button
+@using BlazorUI.Components.Alert
+@using BlazorUI.Components.Collapsible
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Globalization
+
+<PageTitle>DateInput Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+        <h1 class="text-4xl font-bold tracking-tight">DateInput Component</h1>
+        <p class="text-xl text-muted-foreground">
+            A masked date input component with optional calendar picker for efficient date entry.
+        </p>
+        </div>
+    </div>
+
+    <!-- Basic Example -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic Usage</h2>
+            <p class="text-sm text-muted-foreground">
+                Default date input with culture-aware formatting and calendar picker.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <DateInput @bind-Value="basicDate" Placeholder="Select a date" />
+            <p class="text-xs text-muted-foreground mt-2">Current value: @basicDate?.ToString("D")</p>
+        </div>
+    </div>
+
+    <!-- UpdateOn Behavior Info Alert -->
+    <Alert Variant="AlertVariant.Info">
+        <Icon>
+            <LucideIcon Name="info" Size="16" />
+        </Icon>
+        <ChildContent>
+            <AlertTitle>
+                Optimized for Performance & Best Typing Experience
+            </AlertTitle>
+            <AlertDescription>
+                <p class="mb-3">
+                    By default, DateInput uses <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Change"</code> for better performance and UX.
+                </p>
+                
+                <Collapsible>
+                    <CollapsibleTrigger Class="inline-flex items-center gap-1 text-sm font-normal hover:underline [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                        <span>Read more</span>
+                        <LucideIcon Name="chevron-down" Size="14" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <div class="space-y-3 pt-3">
+                            <div>
+                                <p class="font-medium mb-2">Benefits:</p>
+                                <ul class="list-disc list-inside space-y-1 ml-2 text-sm">
+                                    <li><strong>Better typing UX:</strong> No interruptions while typing - validation tooltips won't get in your way</li>
+                                    <li><strong>Better performance:</strong> Value updates and validation only run when you tab away (blur)</li>
+                                    <li><strong>Fewer re-renders:</strong> Your bound value updates once on blur, not on every keystroke</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="font-medium mb-2">UpdateOn Modes:</p>
+                                <div class="grid gap-2 text-sm">
+                                    <div>
+                                        <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Change"</code>
+                                        <span class="text-muted-foreground ml-2">→ Updates on blur (default, recommended)</span>
+                                    </div>
+                                    <div>
+                                        <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Input"</code>
+                                        <span class="text-muted-foreground ml-2">→ Updates on every keystroke</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-muted-foreground flex items-start gap-1.5">
+                                <LucideIcon Name="lightbulb" Size="14" Class="mt-0.5 flex-shrink-0" />
+                                <span><strong>Tip:</strong> Use <code class="px-1 py-0.5 bg-muted rounded">UpdateOn="Input"</code> only when you need real-time updates (e.g., live validation, instant feedback), or if you're targeting WebAssembly mode where interactivity will be fully handled in client-side.</span>
+                            </p>
+                        </div>
+                    </CollapsibleContent>
+                </Collapsible>
+            </AlertDescription>
+        </ChildContent>
+    </Alert>
+
+    <!-- Format Constants -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Format Constants</h2>
+            <p class="text-sm text-muted-foreground">
+                Using predefined format constants from DateFormats class.
+            </p>
+        </div>
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">ISO Format (yyyy-MM-dd)</label>
+                <DateInput @bind-Value="isoDate" Format="@DateFormats.ISO" Placeholder="YYYY-MM-DD" />
+                <p class="text-xs text-muted-foreground">Current value: @isoDate</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">US Format (MM/dd/yyyy)</label>
+                <DateInput @bind-Value="usDate" Format="@DateFormats.US" Placeholder="MM/DD/YYYY" />
+                <p class="text-xs text-muted-foreground">Current value: @usDate</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">European Format (dd/MM/yyyy)</label>
+                <DateInput @bind-Value="euDate" Format="@DateFormats.EU" Placeholder="DD/MM/YYYY" />
+                <p class="text-xs text-muted-foreground">Current value: @euDate</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Abbreviated Format (dd-MMM-yyyy)</label>
+                <DateInput @bind-Value="abbrevDate" Format="@DateFormats.Abbreviated" Placeholder="DD-MMM-YYYY" />
+                <p class="text-xs text-muted-foreground">Current value: @abbrevDate</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Format -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Format String</h2>
+            <p class="text-sm text-muted-foreground">
+                Use any .NET date format pattern for custom formatting.
+            </p>
+        </div>
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Custom: "dd MMMM yyyy"</label>
+                <DateInput @bind-Value="customDate" Format="dd MMMM yyyy" Placeholder="DD Month YYYY" />
+                <p class="text-xs text-muted-foreground">Current value: @customDate</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Culture Support -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Culture-Aware Formatting</h2>
+            <p class="text-sm text-muted-foreground">
+                Format dates according to different cultures.
+            </p>
+        </div>
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">French Culture (fr-FR)</label>
+                <DateInput @bind-Value="frenchDate" Format="@DateFormats.Long" Culture="@(new CultureInfo("fr-FR"))" />
+                <p class="text-xs text-muted-foreground">Current value: @frenchDate?.ToString("D", new CultureInfo("fr-FR"))</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">German Culture (de-DE)</label>
+                <DateInput @bind-Value="germanDate" Format="@DateFormats.Long" Culture="@(new CultureInfo("de-DE"))" />
+                <p class="text-xs text-muted-foreground">Current value: @germanDate?.ToString("D", new CultureInfo("de-DE"))</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- No Picker (Text Input Only) -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Text Input Only (No Picker)</h2>
+            <p class="text-sm text-muted-foreground">
+                For data entry workflows, disable the calendar picker with ShowPicker="false".
+            </p>
+        </div>
+        <div class="max-w-md">
+            <DateInput @bind-Value="textOnlyDate" Format="@DateFormats.US" ShowPicker="false" Placeholder="MM/DD/YYYY" />
+            <p class="text-xs text-muted-foreground mt-2">Current value: @textOnlyDate</p>
+        </div>
+    </div>
+
+    <!-- With Constraints -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">With Date Constraints</h2>
+            <p class="text-sm text-muted-foreground">
+                Restrict date selection with MinDate, MaxDate, and custom disable functions.
+            </p>
+        </div>
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Future Dates Only (MinDate=Today)</label>
+                <DateInput @bind-Value="futureDate" MinDate="@DateOnly.FromDateTime(DateTime.Today)" />
+                <p class="text-xs text-muted-foreground">Current value: @futureDate</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Date Range (Last 30 days)</label>
+                <DateInput @bind-Value="rangeDate" 
+                           MinDate="@DateOnly.FromDateTime(DateTime.Today.AddDays(-30))"
+                           MaxDate="@DateOnly.FromDateTime(DateTime.Today)" />
+                <p class="text-xs text-muted-foreground">Current value: @rangeDate</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Weekdays Only (No Weekends)</label>
+                <DateInput @bind-Value="weekdayDate" 
+                           IsDateDisabled="@((date) => date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)" />
+                <p class="text-xs text-muted-foreground">Current value: @weekdayDate</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Year-Based Constraints -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Year-Based Constraints</h2>
+            <p class="text-sm text-muted-foreground">
+                Convenient year offset parameters for common scenarios. No manual date calculation needed!
+            </p>
+        </div>
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Date of Birth (5-80 years ago)</label>
+                <DateInput @bind-Value="dobDate" 
+                           MinYearsFromToday="-80" 
+                           MaxYearsFromToday="-5"
+                           Format="@DateFormats.US" />
+                <p class="text-xs text-muted-foreground">Current value: @dobDate</p>
+                <p class="text-xs text-muted-foreground italic">MinYearsFromToday="-80" MaxYearsFromToday="-5"</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Future Appointment (Today to 2 years ahead)</label>
+                <DateInput @bind-Value="appointmentDate" 
+                           MinYearsFromToday="0" 
+                           MaxYearsFromToday="2" />
+                <p class="text-xs text-muted-foreground">Current value: @appointmentDate</p>
+                <p class="text-xs text-muted-foreground italic">MinYearsFromToday="0" MaxYearsFromToday="2"</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Recent Event (Past year to today)</label>
+                <DateInput @bind-Value="recentEventDate" 
+                           MinYearsFromToday="-1" 
+                           MaxYearsFromToday="0" />
+                <p class="text-xs text-muted-foreground">Current value: @recentEventDate</p>
+                <p class="text-xs text-muted-foreground italic">MinYearsFromToday="-1" MaxYearsFromToday="0"</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Historical Date (50-100 years ago)</label>
+                <DateInput @bind-Value="historicalDate" 
+                           MinYearsFromToday="-100" 
+                           MaxYearsFromToday="-50" />
+                <p class="text-xs text-muted-foreground">Current value: @historicalDate</p>
+                <p class="text-xs text-muted-foreground italic">MinYearsFromToday="-100" MaxYearsFromToday="-50"</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">License Expiry (Today to 10 years ahead)</label>
+                <DateInput @bind-Value="licenseExpiryDate" 
+                           MinYearsFromToday="0" 
+                           MaxYearsFromToday="10"
+                           Format="@DateFormats.ISO" />
+                <p class="text-xs text-muted-foreground">Current value: @licenseExpiryDate</p>
+                <p class="text-xs text-muted-foreground italic">MinYearsFromToday="0" MaxYearsFromToday="10"</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- With Validation -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Form Validation</h2>
+            <p class="text-sm text-muted-foreground">
+                Integration with Blazor's EditForm and data annotations.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <EditForm Model="validationModel" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Birth Date *</label>
+                        <DateInput @bind-Value="validationModel.BirthDate" 
+                                   Format="@DateFormats.US"
+                                   MaxDate="@DateOnly.FromDateTime(DateTime.Today)"
+                                   Required="true" />
+                        <ValidationMessage For="@(() => validationModel.BirthDate)" />
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Start Date *</label>
+                        <DateInput @bind-Value="validationModel.StartDate" 
+                                   Format="@DateFormats.ISO"
+                                   Required="true" />
+                        <ValidationMessage For="@(() => validationModel.StartDate)" />
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">End Date</label>
+                        <DateInput @bind-Value="validationModel.EndDate" 
+                                   Format="@DateFormats.ISO"
+                                   MinDate="@validationModel.StartDate" />
+                        <ValidationMessage For="@(() => validationModel.EndDate)" />
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90">
+                            Submit
+                        </button>
+                        <Button Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</Button>
+                    </div>
+                    
+                    @if (submitMessage != null)
+                    {
+                        <Alert Variant="AlertVariant.Success">
+                            <Icon>
+                                <LucideIcon Name="check-circle" Size="16" />
+                            </Icon>
+                            <ChildContent>
+                                <AlertTitle>Form Submitted Successfully</AlertTitle>
+                                <AlertDescription>@submitMessage</AlertDescription>
+                            </ChildContent>
+                        </Alert>
+                    }
+                </div>
+            </EditForm>
+        </div>
+    </div>
+
+    <!-- States -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">States</h2>
+            <p class="text-sm text-muted-foreground">
+                Different input states including disabled and readonly.
+            </p>
+        </div>
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Disabled</label>
+                <DateInput @bind-Value="disabledDate" Disabled="true" />
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Readonly</label>
+                <DateInput @bind-Value="readonlyDate" Readonly="true" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    // Basic
+    private DateOnly? basicDate = DateOnly.FromDateTime(DateTime.Today);
+    
+    // Format constants
+    private DateOnly? isoDate = new DateOnly(2024, 3, 15);
+    private DateOnly? usDate = new DateOnly(2024, 3, 15);
+    private DateOnly? euDate = new DateOnly(2024, 3, 15);
+    private DateOnly? abbrevDate = new DateOnly(2024, 3, 15);
+    
+    // Custom format
+    private DateOnly? customDate;
+    
+    // Culture
+    private DateOnly? frenchDate = new DateOnly(2024, 7, 14); // Bastille Day
+    private DateOnly? germanDate = new DateOnly(2024, 10, 3); // German Unity Day
+    
+    // No picker
+    private DateOnly? textOnlyDate;
+    
+    // Constraints
+    private DateOnly? futureDate;
+    private DateOnly? rangeDate;
+    private DateOnly? weekdayDate;
+    
+    // Year-based constraints
+    private DateOnly? dobDate;
+    private DateOnly? appointmentDate;
+    private DateOnly? recentEventDate;
+    private DateOnly? historicalDate;
+    private DateOnly? licenseExpiryDate;
+    
+    // States
+    private DateOnly? disabledDate = DateOnly.FromDateTime(DateTime.Today);
+    private DateOnly? readonlyDate = DateOnly.FromDateTime(DateTime.Today);
+    
+    // Validation
+    private ValidationModel validationModel = new();
+    private string? submitMessage;
+    
+    public class ValidationModel
+    {
+        [Required(ErrorMessage = "Birth date is required")]
+        public DateOnly? BirthDate { get; set; }
+        
+        [Required(ErrorMessage = "Start date is required")]
+        public DateOnly? StartDate { get; set; }
+        
+        public DateOnly? EndDate { get; set; }
+    }
+    
+    private void HandleValidSubmit()
+    {
+        submitMessage = $"Birth Date: {validationModel.BirthDate}, Start: {validationModel.StartDate}, End: {validationModel.EndDate?.ToString() ?? "N/A"}";
+    }
+    
+    private void ResetForm()
+    {
+        validationModel = new ValidationModel();
+        submitMessage = null;
+    }
+}
