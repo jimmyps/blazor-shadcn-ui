@@ -2,6 +2,7 @@
 @namespace BlazorUI.Components.Select
 @using BlazorUI.Primitives.Select
 @using BlazorUI.Primitives.Constants
+@attribute [CascadingTypeParameter(nameof(TValue))]
 
 @* Styled SelectContent wrapper around SelectContent primitive *@
 <BlazorUI.Primitives.Select.SelectContent TValue="TValue"

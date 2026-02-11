@@ -109,8 +109,8 @@ public class SelectContext<TValue> : PrimitiveContextWithEvents<SelectState<TVal
     {
         if (State.Disabled) return;
 
-        // Clear items so they can re-register when the dropdown opens
-        ClearItems();
+        // Don't clear items on open - keep eager registered items
+        // Items will only re-register if they mount (first open after eager registration removed hidden div)
 
         UpdateState(state =>
         {
@@ -130,6 +130,11 @@ public class SelectContext<TValue> : PrimitiveContextWithEvents<SelectState<TVal
             state.IsOpen = false;
             state.FocusedIndex = -1;
         });
+        
+        // Clear items so they re-register on next open
+        // With ForceMount: Items stay in DOM and will re-register immediately
+        // Without ForceMount: Items unmount and will re-register when portal re-mounts
+        ClearItems();
     }
 
     /// <summary>

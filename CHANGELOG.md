@@ -2,6 +2,102 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-02-11 - Added ForceMount to FloatingPortal, Improved Select Component Reliability
+
+### ✨ Feature - ForceMount for Select Components
+
+**Implemented ForceMount pattern to keep portal content mounted when closed, eliminating the need for DisplayTextSelector and improving performance.**
+
+Select component now sets ForceMount to true by default. You can disable the behavior by setting SelectContent's ForceMount property to false.
+
+**Key Benefits:**
+- ✅ **No more DisplayTextSelector needed** - Items register immediately, DisplayText resolves automatically
+- ✅ **Better performance** - No re-mounting/unmounting on each open/close
+- ✅ **Smoother animations** - Content stays in DOM, only visibility toggles
+- ✅ **Persistent handlers** - Click-outside and keyboard navigation handlers stay active
+- ✅ **Cleaner API** - Less configuration required for common use cases
+- ✅ **Reliable Select in modals** - DisplayText and value management work consistently in Dialog/AlertDialog contexts
+
+**Major Infrastructure Improvements:**
+
+1. **FloatingPortal ForceMount Support:**
+   - Added `ForceMount` parameter to keep portal mounted when closed (opt-in, default: false)
+   - Portal stays registered with PortalService, content remains in DOM but hidden
+   - On open: `showFloating()` toggles `data-state="open"` and visibility styles
+   - On close: `hideFloating()` toggles `data-state="closed"` and hides content
+   - Features that continue to work:
+     - ✅ CSS animations triggered by `data-state` transitions
+     - ✅ Event handlers persist (click-outside, keyboard navigation)
+     - ✅ Item registration survives across open/close cycles
+     - ✅ Positioning auto-update continues to track reference element
+   - SelectContent uses ForceMount by default (ForceMount="true")
+   - Eliminates re-mounting overhead and enables DisplayText resolution without DisplayTextSelector
+
+2. **Select Value/DisplayText Reliability:**
+   - Fixed DisplayText resolution across standalone and modal contexts
+   - Items now register on mount (with ForceMount), DisplayText available immediately
+   - Eliminated race conditions between item registration and value display
+   - ClearItems() on close ensures dynamic item updates work correctly
+   - No more stale parameter values - automatic restoration from context in OnParametersSet
+   - Proper focus management on every open (scroll + keyboard navigation)
+
+**Implementation:**
+
+1. **ForceMount Parameter:**
+   - Added to `FloatingPortal` (default: false, opt-in)
+   - Added to `SelectContent` (default: true, enabled by default for Selects)
+   - Portal stays registered when closed, content hidden via CSS
+
+2. **Visibility Management:**
+   - Added `showFloating()` and `hideFloating()` to positioning.js
+   - Toggles `data-state` attribute for CSS animations
+   - Uses `requestAnimationFrame` for smooth transitions
+   - Added `ShowFloatingAsync()` and `HideFloatingAsync()` to IPositioningService
+
+3. **Focus Management:**
+   - Keyboard handlers setup once, persist across opens
+   - `focusContent()` called on every open for proper keyboard navigation
+   - Scroll position restored to selected item on each open
+
+4. **Item Registration:**
+   - Items mount immediately with ForceMount
+   - Register with SelectContext on mount
+   - DisplayText resolved from registered items automatically
+   - Items cleared on close, re-register on next open (supports dynamic items)
+
+5. **State Tracking:**
+   - `_previousIsOpen` flag prevents redundant visibility updates
+   - `_isKeyboardSetup` and `_isClickOutsideSetup` prevent duplicate handlers
+   - Cleanup only on component disposal (not on close)
+
+6. **Select in Modals:**
+   - Fixed parameter restoration when Select used in Dialog/AlertDialog
+   - OnParametersSet ensures controlled value stays in sync with context
+   - DisplayText remains stable across dialog open/close cycles
+   - No more flickering or stale values when dialog reopens
+
+**Breaking Changes:**
+- None - ForceMount is opt-in for FloatingPortal, opt-out for Select
+
+**Migration:**
+- Remove `DisplayTextSelector` from Select components (no longer needed)
+- All demo pages updated to remove DisplayTextSelector
+- Backward compatible - DisplayTextSelector still works as fallback
+
+**Files Changed:**
+- `src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor` - ForceMount implementation
+- `src/BlazorUI.Primitives/Primitives/Select/SelectContent.razor` - ForceMount enabled by default
+- `src/BlazorUI.Primitives/Primitives/Select/SelectContext.cs` - Item registration with ClearItems
+- `src/BlazorUI.Primitives/Primitives/Select/Select.razor` - OnParametersSet value restoration for modals
+- `src/BlazorUI.Primitives/Primitives/Select/SelectValue.razor` - Direct DisplayText reading (removed caching)
+- `src/BlazorUI.Primitives/Services/IPositioningService.cs` - Show/Hide methods
+- `src/BlazorUI.Primitives/Services/PositioningService.cs` - Show/Hide implementation
+- `src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js` - showFloating/hideFloating with data-state toggle
+- `src/BlazorUI.Primitives/wwwroot/js/primitives/select.js` - focusContent for repeated opens
+- Demo pages: Removed DisplayTextSelector from SelectPrimitiveDemo, AreaChart, BarChart, LineChart, PieChart examples
+
+---
+
 ## 2026-02-09 - Two-Layer Portal Architecture: Categorized Hosts + Hierarchical Scopes
 
 ### 🏗️ Architecture - Two-Layer Portal System

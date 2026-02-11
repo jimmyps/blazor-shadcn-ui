@@ -1,6 +1,7 @@
 @typeparam TValue
 @namespace BlazorUI.Components.Select
 @using BlazorUI.Primitives.Select
+@attribute [CascadingTypeParameter(nameof(TValue))]
 
 @* Styled SelectTrigger wrapper around SelectTrigger primitive *@
 <BlazorUI.Primitives.Select.SelectTrigger TValue="TValue"

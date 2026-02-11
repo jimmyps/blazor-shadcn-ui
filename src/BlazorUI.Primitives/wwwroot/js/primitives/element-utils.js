@@ -17,6 +17,20 @@ export function showElement(elementId) {
 }
 
 /**
+ * Hides an element by setting opacity and pointer-events.
+ * Used with ForceMount to hide content while keeping it in DOM.
+ * @param {string} elementId - The ID of the element to hide
+ */
+export function hideElement(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.style.opacity = '0';
+        element.style.pointerEvents = 'none';
+        element.style.visibility = 'hidden';
+    }
+}
+
+/**
  * Scrolls an element into view with configurable options.
  * @param {string} elementId - The ID of the element to scroll into view
  * @param {string} block - The block alignment ('nearest', 'start', 'center', 'end')

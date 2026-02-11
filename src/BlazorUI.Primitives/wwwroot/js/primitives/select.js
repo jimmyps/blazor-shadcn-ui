@@ -277,8 +277,10 @@ export function cleanupKeyboardNavigation(contentId) {
  */
 export function focusContent(contentId) {
     const contentElement = document.getElementById(contentId);
-    if (contentElement) {
+  if (contentElement) {
+      setTimeout(() => {
         contentElement.focus({ preventScroll: true });
+      }, 10);
     }
 }
 

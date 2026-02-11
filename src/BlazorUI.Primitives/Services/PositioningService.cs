@@ -148,6 +148,24 @@ public class PositioningService : IPositioningService, IAsyncDisposable
     }
 
     /// <summary>
+    /// Shows a floating element with proper visibility and animation support.
+    /// </summary>
+    public async Task ShowFloatingAsync(ElementReference floating)
+    {
+        var module = await GetModuleAsync();
+        await module.InvokeVoidAsync("showFloating", floating);
+    }
+
+    /// <summary>
+    /// Hides a floating element while keeping it in the DOM.
+    /// </summary>
+    public async Task HideFloatingAsync(ElementReference floating)
+    {
+        var module = await GetModuleAsync();
+        await module.InvokeVoidAsync("hideFloating", floating);
+    }
+
+    /// <summary>
     /// Disposes the positioning service, releasing JavaScript module resources.
     /// </summary>
     public async ValueTask DisposeAsync()

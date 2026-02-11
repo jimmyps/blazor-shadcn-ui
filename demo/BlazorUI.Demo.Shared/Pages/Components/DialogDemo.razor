@@ -627,7 +627,6 @@
                     <div class="space-y-2">
                         <Label For="team-size">Team Size: @((int)subscriptionModel.TeamSize) members</Label>
                         <Slider @bind-Value="subscriptionModel.TeamSize"
-                               Id="team-size"
                                Min="1"
                                Max="50"
                                Step="1" />
@@ -768,12 +767,12 @@
                                 <SelectValue Placeholder="Select department" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem Value="@("engineering")" TValue="string">Engineering</SelectItem>
-                                <SelectItem Value="@("design")" TValue="string">Design</SelectItem>
-                                <SelectItem Value="@("marketing")" TValue="string">Marketing</SelectItem>
-                                <SelectItem Value="@("sales")" TValue="string">Sales</SelectItem>
-                                <SelectItem Value="@("support")" TValue="string">Support</SelectItem>
-                                <SelectItem Value="@("hr")" TValue="string">Human Resources</SelectItem>
+                                <SelectItem Value="@("engineering")" Text="Engineering" />
+                                <SelectItem Value="@("design")" Text="Design" />
+                                <SelectItem Value="@("marketing")" Text="Marketing" />
+                                <SelectItem Value="@("sales")" Text="Sales" />
+                                <SelectItem Value="@("support")" Text="Support" />
+                                <SelectItem Value="@("hr")" Text="Human Resources" />
                             </SelectContent>
                         </Select>
                     </div>
@@ -856,12 +855,12 @@
                                 <SelectTrigger>
                                     <SelectValue Placeholder="Select size" />
                                 </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem Value="@("S")" TValue="string">Small (S)</SelectItem>
-                                    <SelectItem Value="@("M")" TValue="string">Medium (M)</SelectItem>
-                                    <SelectItem Value="@("L")" TValue="string">Large (L)</SelectItem>
-                                    <SelectItem Value="@("XL")" TValue="string">Extra Large (XL)</SelectItem>
-                                </SelectContent>
+                            <SelectContent>
+                                <SelectItem Value="@("S")" Text="Small (S)" TValue="string" />
+                                <SelectItem Value="@("M")" Text="Medium (M)" TValue="string" />
+                                <SelectItem Value="@("L")" Text="Large (L)" TValue="string" />
+                                <SelectItem Value="@("XL")" Text="Extra Large (XL)" TValue="string" />
+                            </SelectContent>
                             </Select>
                         </div>
                     </div>
@@ -884,7 +883,7 @@
                             <Rating @bind-Value="productConfigModel.Rating"
                                    Id="product-rating"
                                    AllowHalf="true"
-                                   Count="5" />
+                                   MaxRating="5" />
                         </div>
                     </div>
 
@@ -986,11 +985,11 @@
                             <SelectTrigger>
                                 <SelectValue Placeholder="Select template" />
                             </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem Value="@("nextjs")" TValue="string">Next.js</SelectItem>
-                                <SelectItem Value="@("vite")" TValue="string">Vite</SelectItem>
-                                <SelectItem Value="@("nuxt")" TValue="string">Nuxt</SelectItem>
-                            </SelectContent>
+                                <SelectContent>
+                                    <SelectItem Value="@("nextjs")" Text="Next.js" TValue="string" />
+                                    <SelectItem Value="@("vite")" Text="Vite" TValue="string" />
+                                    <SelectItem Value="@("nuxt")" Text="Nuxt" TValue="string" />
+                                </SelectContent>
                         </Select>
                     </div>
 
@@ -1071,12 +1070,12 @@
                             <SelectTrigger>
                                 <SelectValue Placeholder="Select region" />
                             </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem Value="@("us-east")" TValue="string">US East</SelectItem>
-                                <SelectItem Value="@("us-west")" TValue="string">US West</SelectItem>
-                                <SelectItem Value="@("eu")" TValue="string">Europe</SelectItem>
-                                <SelectItem Value="@("asia")" TValue="string">Asia Pacific</SelectItem>
-                            </SelectContent>
+                                    <SelectContent>
+                                        <SelectItem Value="@("us-east")" Text="US East" TValue="string" />
+                                        <SelectItem Value="@("us-west")" Text="US West" TValue="string" />
+                                        <SelectItem Value="@("eu")" Text="Europe" TValue="string" />
+                                        <SelectItem Value="@("asia")" Text="Asia Pacific" TValue="string" />
+                                    </SelectContent>
                         </Select>
                     </div>
 
@@ -1334,6 +1333,7 @@
         public string Role { get; set; } = "member";
 
         public string? Department { get; set; }
+
         public IEnumerable<string> AssignedProjects { get; set; } = new List<string>();
         public DateOnly? AccessExpiresOn { get; set; }
         public bool SendEmailImmediately { get; set; } = true;
