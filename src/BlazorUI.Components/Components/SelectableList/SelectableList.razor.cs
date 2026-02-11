@@ -14,7 +14,7 @@ public partial class SelectableList<TItem>
     /// Required when using automatic rendering (not using ChildContent).
     /// </summary>
     [Parameter]
-    public IEnumerable<TItem> Items { get; set; } = Enumerable.Empty<TItem>();
+    public IEnumerable<TItem>? Items { get; set; }
 
     /// <summary>
     /// Gets or sets the function to extract the value from an item.
@@ -115,9 +115,9 @@ public partial class SelectableList<TItem>
     /// </summary>
     private RenderFragment RenderItem(TItem item) => builder =>
     {
-        if (ValueSelector == null || ItemTemplate == null)
+        if (Items == null || ValueSelector == null || ItemTemplate == null)
         {
-            throw new InvalidOperationException("ValueSelector and ItemTemplate are required when using automatic rendering.");
+            throw new InvalidOperationException("Items, ValueSelector, and ItemTemplate are required when using automatic rendering (not using ChildContent).");
         }
 
         var value = ValueSelector(item);

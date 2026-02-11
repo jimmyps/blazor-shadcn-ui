@@ -16,7 +16,7 @@
             @* Manual composition mode - render user-provided content directly *@
             @ChildContent
         }
-        else if (GroupSelector != null)
+        else if (Items != null && GroupSelector != null)
         {
             @* Automatic mode with grouping *@
             @foreach (var group in Items.GroupBy(GroupSelector))
@@ -29,7 +29,7 @@
                 </CommandGroup>
             }
         }
-        else
+        else if (Items != null)
         {
             @* Automatic mode without grouping *@
             <CommandGroup>
