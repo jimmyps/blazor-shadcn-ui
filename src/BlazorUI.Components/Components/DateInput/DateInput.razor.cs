@@ -150,7 +150,8 @@ public partial class DateInput : ComponentBase, IAsyncDisposable
     /// Minimum years offset from today for date selection.
     /// Negative values = past years, positive = future years, 0 = today.
     /// Example: -80 means 80 years ago.
-    /// When set, this takes precedence over MinDate.
+    /// When set, this parameter takes precedence over MinDate, and MinDate is completely ignored.
+    /// Useful for scenarios like Date of Birth where you want "5-80 years ago" without manual date calculation.
     /// </summary>
     [Parameter]
     public int? MinYearsFromToday { get; set; }
@@ -159,7 +160,8 @@ public partial class DateInput : ComponentBase, IAsyncDisposable
     /// Maximum years offset from today for date selection.
     /// Negative values = past years, positive = future years, 0 = today.
     /// Example: -5 means 5 years ago.
-    /// When set, this takes precedence over MaxDate.
+    /// When set, this parameter takes precedence over MaxDate, and MaxDate is completely ignored.
+    /// Useful for scenarios like appointments where you want "today to 2 years from now" without manual date calculation.
     /// </summary>
     [Parameter]
     public int? MaxYearsFromToday { get; set; }
