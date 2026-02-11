@@ -10,7 +10,8 @@
 {
     <!-- Input + Picker Button Layout -->
     <div class="relative inline-flex items-center w-full">
-        <MaskedInput @bind-Value="_inputValue"
+        <MaskedInput Value="_inputValue"
+                     ValueChanged="OnInputValueChanged"
                      Mask="@GetMaskPattern(Format)"
                      Placeholder="@GetEffectivePlaceholder()"
                      UpdateOn="@UpdateOn"
@@ -22,7 +23,6 @@
                      Id="@EffectiveId"
                      Name="@Name"
                      ShowValidationError="@ShowValidationError"
-                     ValueExpression="@(() => _inputValue)"
                      AriaLabel="@AriaLabel"
                      AriaDescribedBy="@AriaDescribedBy"
                      AriaInvalid="@EffectiveAriaInvalid"
@@ -39,7 +39,8 @@
                 </Button>
             </PopoverTrigger>
             <PopoverContent Class="w-auto p-0">
-                <Calendar @bind-SelectedDate="_calendarValue"
+                <Calendar SelectedDate="_calendarValue"
+                          SelectedDateChanged="OnCalendarValueChanged"
                           MinDate="@MinDate"
                           MaxDate="@MaxDate"
                           IsDateDisabled="@IsDateDisabled"
@@ -51,7 +52,8 @@
 else
 {
     <!-- Text Input Only -->
-    <MaskedInput @bind-Value="_inputValue"
+    <MaskedInput Value="_inputValue"
+                 ValueChanged="OnInputValueChanged"
                  Mask="@GetMaskPattern(Format)"
                  Placeholder="@GetEffectivePlaceholder()"
                  UpdateOn="@UpdateOn"
@@ -63,7 +65,6 @@ else
                  Id="@EffectiveId"
                  Name="@Name"
                  ShowValidationError="@ShowValidationError"
-                 ValueExpression="@(() => _inputValue)"
                  AriaLabel="@AriaLabel"
                  AriaDescribedBy="@AriaDescribedBy"
                  AriaInvalid="@EffectiveAriaInvalid"

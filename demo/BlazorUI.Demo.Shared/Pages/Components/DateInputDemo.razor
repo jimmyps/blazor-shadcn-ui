@@ -149,13 +149,13 @@
         <div class="max-w-md space-y-4">
             <div class="space-y-2">
                 <label class="text-sm font-medium">French Culture (fr-FR)</label>
-                <DateInput @bind-Value="frenchDate" Format="@DateFormats.Long" Culture="new CultureInfo("fr-FR")" />
+                <DateInput @bind-Value="frenchDate" Format="@DateFormats.Long" Culture="@(new CultureInfo("fr-FR"))" />
                 <p class="text-xs text-muted-foreground">Current value: @frenchDate?.ToString("D", new CultureInfo("fr-FR"))</p>
             </div>
             
             <div class="space-y-2">
                 <label class="text-sm font-medium">German Culture (de-DE)</label>
-                <DateInput @bind-Value="germanDate" Format="@DateFormats.Long" Culture="new CultureInfo("de-DE")" />
+                <DateInput @bind-Value="germanDate" Format="@DateFormats.Long" Culture="@(new CultureInfo("de-DE"))" />
                 <p class="text-xs text-muted-foreground">Current value: @germanDate?.ToString("D", new CultureInfo("de-DE"))</p>
             </div>
         </div>
@@ -246,8 +246,10 @@
                     </div>
                     
                     <div class="flex gap-2">
-                        <Button Type="submit">Submit</Button>
-                        <Button Type="button" Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</Button>
+                        <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90">
+                            Submit
+                        </button>
+                        <Button Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</Button>
                     </div>
                     
                     @if (submitMessage != null)
