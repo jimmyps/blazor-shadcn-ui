@@ -1,0 +1,43 @@
+@typeparam TItem
+@namespace BlazorUI.Components.SelectableList
+@using BlazorUI.Components.Command
+
+<Command Value="@SelectedValue"
+         OnValueChange="@HandleValueChanged"
+         CloseOnSelect="false"
+         Class="@ContainerClass">
+    @if (ShowSearch)
+    {
+        <CommandInput Placeholder="@SearchPlaceholder" />
+    }
+    <CommandList>
+        @if (ChildContent != null)
+        {
+            @* Manual composition mode - render user-provided content directly *@
+            @ChildContent
+        }
+        else if (Items != null && GroupSelector != null)
+        {
+            @* Automatic mode with grouping *@
+            @foreach (var group in Items.GroupBy(GroupSelector))
+            {
+                <CommandGroup Heading="@group.Key">
+                    @foreach (var item in group)
+                    {
+                        @RenderItem(item)
+                    }
+                </CommandGroup>
+            }
+        }
+        else if (Items != null)
+        {
+            @* Automatic mode without grouping *@
+            <CommandGroup>
+                @foreach (var item in Items)
+                {
+                    @RenderItem(item)
+                }
+            </CommandGroup>
+        }
+    </CommandList>
+</Command>
