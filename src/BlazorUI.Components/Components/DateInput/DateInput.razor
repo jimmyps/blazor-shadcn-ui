@@ -1,0 +1,71 @@
+@namespace BlazorUI.Components.DateInput
+@using BlazorUI.Components.MaskedInput
+@using BlazorUI.Components.Popover
+@using BlazorUI.Components.Calendar
+@using BlazorUI.Components.Button
+@using BlazorUI.Icons.Lucide.Components
+@using System.Globalization
+
+@if (ShowPicker)
+{
+    <!-- Input + Picker Button Layout -->
+    <div class="relative inline-flex items-center w-full">
+        <MaskedInput @bind-Value="_inputValue"
+                     Mask="@GetMaskPattern(Format)"
+                     Placeholder="@GetEffectivePlaceholder()"
+                     UpdateOn="@UpdateOn"
+                     DebounceDelay="@DebounceDelay"
+                     Disabled="@Disabled"
+                     Required="@Required"
+                     Readonly="@Readonly"
+                     Class="@CssClass"
+                     Id="@EffectiveId"
+                     Name="@Name"
+                     ShowValidationError="@ShowValidationError"
+                     ValueExpression="@(() => _inputValue)"
+                     AriaLabel="@AriaLabel"
+                     AriaDescribedBy="@AriaDescribedBy"
+                     AriaInvalid="@EffectiveAriaInvalid"
+                     AdditionalAttributes="@AdditionalAttributes" />
+        
+        <!-- Calendar Picker Button -->
+        <Popover @bind-Open="_pickerOpen">
+            <PopoverTrigger AsChild="true">
+                <Button Variant="ButtonVariant.Ghost" 
+                        Size="ButtonSize.Icon"
+                        Class="absolute right-0 h-full px-3"
+                        Disabled="@Disabled">
+                    <LucideIcon Name="calendar" Class="h-4 w-4" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent Class="w-auto p-0">
+                <Calendar @bind-SelectedDate="_calendarValue"
+                          MinDate="@MinDate"
+                          MaxDate="@MaxDate"
+                          IsDateDisabled="@IsDateDisabled"
+                          Culture="@GetEffectiveCulture()" />
+            </PopoverContent>
+        </Popover>
+    </div>
+}
+else
+{
+    <!-- Text Input Only -->
+    <MaskedInput @bind-Value="_inputValue"
+                 Mask="@GetMaskPattern(Format)"
+                 Placeholder="@GetEffectivePlaceholder()"
+                 UpdateOn="@UpdateOn"
+                 DebounceDelay="@DebounceDelay"
+                 Disabled="@Disabled"
+                 Required="@Required"
+                 Readonly="@Readonly"
+                 Class="@Class"
+                 Id="@EffectiveId"
+                 Name="@Name"
+                 ShowValidationError="@ShowValidationError"
+                 ValueExpression="@(() => _inputValue)"
+                 AriaLabel="@AriaLabel"
+                 AriaDescribedBy="@AriaDescribedBy"
+                 AriaInvalid="@EffectiveAriaInvalid"
+                 AdditionalAttributes="@AdditionalAttributes" />
+}
