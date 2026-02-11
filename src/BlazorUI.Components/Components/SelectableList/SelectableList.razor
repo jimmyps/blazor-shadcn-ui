@@ -1,0 +1,36 @@
+@typeparam TItem
+@namespace BlazorUI.Components.SelectableList
+@using BlazorUI.Components.Command
+
+<Command Value="@SelectedValue"
+         OnValueChange="@HandleValueChanged"
+         CloseOnSelect="false"
+         Class="@ContainerClass">
+    @if (ShowSearch)
+    {
+        <CommandInput Placeholder="@SearchPlaceholder" />
+    }
+    <CommandList>
+        @if (GroupSelector != null)
+        {
+            @foreach (var group in Items.GroupBy(GroupSelector))
+            {
+                <CommandGroup Heading="@group.Key">
+                    @foreach (var item in group)
+                    {
+                        @RenderItem(item)
+                    }
+                </CommandGroup>
+            }
+        }
+        else
+        {
+            <CommandGroup>
+                @foreach (var item in Items)
+                {
+                    @RenderItem(item)
+                }
+            </CommandGroup>
+        }
+    </CommandList>
+</Command>
