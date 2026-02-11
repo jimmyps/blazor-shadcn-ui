@@ -422,16 +422,6 @@ public partial class DateInput : ComponentBase, IAsyncDisposable
         }
     }
 
-    private void HandleFocus()
-    {
-        // No special handling needed for focus
-    }
-
-    private void HandleBlur()
-    {
-        // No special handling needed for blur
-    }
-
     #endregion
 
     #region Lifecycle Methods
