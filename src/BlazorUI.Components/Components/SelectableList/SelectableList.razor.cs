@@ -11,18 +11,18 @@ public partial class SelectableList<TItem>
 {
     /// <summary>
     /// Gets or sets the collection of items to display.
+    /// Required when using automatic rendering (not using ChildContent).
     /// </summary>
     [Parameter]
-    [EditorRequired]
     public IEnumerable<TItem> Items { get; set; } = Enumerable.Empty<TItem>();
 
     /// <summary>
     /// Gets or sets the function to extract the value from an item.
     /// This value is used for selection tracking.
+    /// Required when using automatic rendering (not using ChildContent).
     /// </summary>
     [Parameter]
-    [EditorRequired]
-    public Func<TItem, string> ValueSelector { get; set; } = default!;
+    public Func<TItem, string>? ValueSelector { get; set; }
 
     /// <summary>
     /// Gets or sets the currently selected value.
@@ -46,10 +46,18 @@ public partial class SelectableList<TItem>
     /// <summary>
     /// Gets or sets the template for rendering each item.
     /// The context is the item itself.
+    /// Required when using automatic rendering (not using ChildContent).
     /// </summary>
     [Parameter]
-    [EditorRequired]
-    public RenderFragment<TItem> ItemTemplate { get; set; } = default!;
+    public RenderFragment<TItem>? ItemTemplate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the child content for manual composition.
+    /// When provided, Items, ValueSelector, ItemTemplate, and GroupSelector are ignored.
+    /// Use CommandGroup and CommandItem directly within this content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the function to group items.
@@ -107,6 +115,11 @@ public partial class SelectableList<TItem>
     /// </summary>
     private RenderFragment RenderItem(TItem item) => builder =>
     {
+        if (ValueSelector == null || ItemTemplate == null)
+        {
+            throw new InvalidOperationException("ValueSelector and ItemTemplate are required when using automatic rendering.");
+        }
+
         var value = ValueSelector(item);
         var searchText = SearchTextSelector?.Invoke(item) ?? value;
         var isDisabled = IsDisabled?.Invoke(item) ?? false;

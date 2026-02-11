@@ -1,5 +1,6 @@
 @page "/components/selectable-list"
 @using BlazorUI.Components.SelectableList
+@using BlazorUI.Components.Command
 @using BlazorUI.Icons.Lucide.Components
 
 <PageTitle>SelectableList Component - BlazorUI</PageTitle>
@@ -188,6 +189,107 @@
             Selected pricing plan: <strong>@(selectedPricingPlan ?? "none")</strong>
         </p>
     </div>
+
+    <!-- Manual Composition -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Manual Composition</h2>
+            <p class="text-sm text-muted-foreground">
+                Use CommandGroup and CommandItem directly for full control over structure.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <SelectableList TItem="object" @bind-SelectedValue="@selectedManualAction" ContainerClass="border rounded-lg">
+                <CommandGroup Heading="Actions">
+                    <CommandItem Value="new-file">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="file-plus" Size="16" />
+                            <span>New File</span>
+                        </div>
+                    </CommandItem>
+                    <CommandItem Value="new-folder">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="folder-plus" Size="16" />
+                            <span>New Folder</span>
+                        </div>
+                    </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+                <CommandGroup Heading="Edit">
+                    <CommandItem Value="copy">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="copy" Size="16" />
+                            <span>Copy</span>
+                        </div>
+                    </CommandItem>
+                    <CommandItem Value="paste">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="clipboard" Size="16" />
+                            <span>Paste</span>
+                        </div>
+                    </CommandItem>
+                </CommandGroup>
+            </SelectableList>
+        </div>
+        <p class="text-sm text-muted-foreground">
+            Selected action: <strong>@(selectedManualAction ?? "none")</strong>
+        </p>
+    </div>
+
+    <!-- Manual Composition with Search -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Manual Composition with Search</h2>
+            <p class="text-sm text-muted-foreground">
+                Combine manual composition with search functionality for advanced use cases.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <SelectableList TItem="object" @bind-SelectedValue="@selectedCommand" 
+                            ShowSearch="true" 
+                            SearchPlaceholder="Search commands..."
+                            ContainerClass="border rounded-lg">
+                <CommandGroup Heading="Suggestions">
+                    <CommandItem Value="calendar" SearchText="calendar schedule events">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="calendar" Size="16" />
+                            <span>Calendar</span>
+                        </div>
+                    </CommandItem>
+                    <CommandItem Value="calculator" SearchText="calculator math compute">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="calculator" Size="16" />
+                            <span>Calculator</span>
+                        </div>
+                    </CommandItem>
+                    <CommandItem Value="emoji" SearchText="emoji smile face">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="smile" Size="16" />
+                            <span>Search Emoji</span>
+                        </div>
+                    </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+                <CommandGroup Heading="Settings">
+                    <CommandItem Value="profile-manual" SearchText="profile user account settings">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="user" Size="16" />
+                            <span>Profile</span>
+                        </div>
+                    </CommandItem>
+                    <CommandItem Value="security-manual" SearchText="security privacy password">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="shield" Size="16" />
+                            <span>Security</span>
+                        </div>
+                    </CommandItem>
+                </CommandGroup>
+            </SelectableList>
+        </div>
+        <p class="text-sm text-muted-foreground">
+            Selected command: <strong>@(selectedCommand ?? "none")</strong>
+        </p>
+    </div>
 </div>
 
 @code {
@@ -196,6 +298,8 @@
     private string? selectedSetting = "profile";
     private string? selectedFeature = "basic";
     private string? selectedPricingPlan = "pro";
+    private string? selectedManualAction;
+    private string? selectedCommand;
 
     private class Plan
     {

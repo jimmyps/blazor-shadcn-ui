@@ -4,6 +4,7 @@ An elegant, declarative component for creating styled selectable lists with buil
 
 ## Features
 
+- **Two Usage Modes**: Automatic data-driven rendering or manual composition
 - **Declarative API**: Clean, simple component-based approach
 - **Keyboard Navigation**: Built-in arrow key navigation and selection
 - **Optional Search**: Toggle search input for filtering items
@@ -11,6 +12,48 @@ An elegant, declarative component for creating styled selectable lists with buil
 - **Fully Customizable**: Custom item templates and styling
 - **Accessibility**: Proper listbox semantics and ARIA attributes
 - **Type-Safe**: Generic component works with any data type
+
+## Usage Modes
+
+SelectableList supports two distinct usage patterns:
+
+### Mode 1: Automatic Rendering (Data-Driven)
+
+Best for: Simple lists where items come from a data source
+
+```razor
+<SelectableList Items="plans"
+                ValueSelector="p => p.Id"
+                @bind-SelectedValue="selectedPlan">
+    <ItemTemplate Context="plan">
+        <div>@plan.Name - @plan.Price</div>
+    </ItemTemplate>
+</SelectableList>
+```
+
+### Mode 2: Manual Composition (Direct Command Components)
+
+Best for: Complex layouts, mixed content, or when you need full control
+
+```razor
+<SelectableList @bind-SelectedValue="selected">
+    <CommandGroup Heading="Suggestions">
+        <CommandItem Value="calendar">
+            <LucideIcon Name="calendar" Size="16" Class="mr-2" />
+            Calendar
+        </CommandItem>
+        <CommandItem Value="calculator">
+            <LucideIcon Name="calculator" Size="16" Class="mr-2" />
+            Calculator
+        </CommandItem>
+    </CommandGroup>
+    <CommandSeparator />
+    <CommandGroup Heading="Settings">
+        <CommandItem Value="profile">Profile</CommandItem>
+        <CommandItem Value="settings">Settings</CommandItem>
+    </CommandGroup>
+</SelectableList>
+```
 
 ## Advantages Over RadioGroup Pattern
 
@@ -48,7 +91,9 @@ An elegant, declarative component for creating styled selectable lists with buil
 
 ## Basic Usage
 
-### Simple List
+### Mode 1: Automatic Rendering
+
+#### Simple List
 
 ```razor
 @using BlazorUI.Components.SelectableList
@@ -76,7 +121,7 @@ An elegant, declarative component for creating styled selectable lists with buil
 }
 ```
 
-### With Search
+#### With Search
 
 ```razor
 <SelectableList Items="@options"
@@ -90,7 +135,7 @@ An elegant, declarative component for creating styled selectable lists with buil
 </SelectableList>
 ```
 
-### With Grouping
+#### With Grouping
 
 ```razor
 <SelectableList Items="@settings"
@@ -119,7 +164,7 @@ An elegant, declarative component for creating styled selectable lists with buil
 }
 ```
 
-### Disabled Items
+#### Disabled Items
 
 ```razor
 <SelectableList Items="@features"
@@ -138,7 +183,7 @@ An elegant, declarative component for creating styled selectable lists with buil
 </SelectableList>
 ```
 
-### Custom Search Text
+#### Custom Search Text
 
 ```razor
 <SelectableList Items="@users"
@@ -152,6 +197,87 @@ An elegant, declarative component for creating styled selectable lists with buil
             <div class="text-sm text-muted-foreground">@user.Email</div>
         </div>
     </ItemTemplate>
+</SelectableList>
+```
+
+### Mode 2: Manual Composition
+
+#### With Command Components Directly
+
+Use this mode when you need full control over the structure, want to mix different content types, or have complex requirements.
+
+```razor
+@using BlazorUI.Components.SelectableList
+@using BlazorUI.Components.Command
+
+<SelectableList @bind-SelectedValue="@selectedAction">
+    <CommandGroup Heading="Actions">
+        <CommandItem Value="new-file">
+            <LucideIcon Name="file-plus" Size="16" Class="mr-2" />
+            New File
+        </CommandItem>
+        <CommandItem Value="new-folder">
+            <LucideIcon Name="folder-plus" Size="16" Class="mr-2" />
+            New Folder
+        </CommandItem>
+    </CommandGroup>
+    <CommandSeparator />
+    <CommandGroup Heading="Edit">
+        <CommandItem Value="copy">
+            <LucideIcon Name="copy" Size="16" Class="mr-2" />
+            Copy
+        </CommandItem>
+        <CommandItem Value="paste">
+            <LucideIcon Name="clipboard" Size="16" Class="mr-2" />
+            Paste
+        </CommandItem>
+    </CommandGroup>
+</SelectableList>
+
+@code {
+    private string? selectedAction;
+}
+```
+
+#### With Search in Manual Mode
+
+```razor
+<SelectableList @bind-SelectedValue="@selected" ShowSearch="true" SearchPlaceholder="Search commands...">
+    <CommandGroup Heading="Suggestions">
+        <CommandItem Value="calendar" SearchText="calendar schedule">
+            <LucideIcon Name="calendar" Size="16" Class="mr-2" />
+            Calendar
+        </CommandItem>
+        <CommandItem Value="calculator" SearchText="calculator math">
+            <LucideIcon Name="calculator" Size="16" Class="mr-2" />
+            Calculator
+        </CommandItem>
+    </CommandGroup>
+    <CommandGroup Heading="Settings">
+        <CommandItem Value="profile" SearchText="profile user account">
+            <LucideIcon Name="user" Size="16" Class="mr-2" />
+            Profile
+        </CommandItem>
+    </CommandGroup>
+</SelectableList>
+```
+
+#### Disabled Items in Manual Mode
+
+```razor
+<SelectableList @bind-SelectedValue="@selected">
+    <CommandGroup Heading="Available">
+        <CommandItem Value="option1">Option 1</CommandItem>
+        <CommandItem Value="option2">Option 2</CommandItem>
+    </CommandGroup>
+    <CommandGroup Heading="Coming Soon">
+        <CommandItem Value="option3" Disabled="true">
+            Option 3 (Coming Soon)
+        </CommandItem>
+        <CommandItem Value="option4" Disabled="true">
+            Option 4 (Coming Soon)
+        </CommandItem>
+    </CommandGroup>
 </SelectableList>
 ```
 
@@ -199,18 +325,28 @@ An elegant, declarative component for creating styled selectable lists with buil
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `Items` | `IEnumerable<TItem>` | Yes | - | Collection of items to display |
-| `ValueSelector` | `Func<TItem, string>` | Yes | - | Function to extract the value from an item |
+| `Items` | `IEnumerable<TItem>` | Conditional* | - | Collection of items to display (automatic mode) |
+| `ValueSelector` | `Func<TItem, string>?` | Conditional* | - | Function to extract the value from an item (automatic mode) |
+| `ItemTemplate` | `RenderFragment<TItem>?` | Conditional* | - | Template for rendering each item (automatic mode) |
+| `ChildContent` | `RenderFragment?` | Conditional** | `null` | Manual composition content using CommandGroup/CommandItem |
 | `SelectedValue` | `string?` | No | `null` | Currently selected value |
 | `SelectedValueChanged` | `EventCallback<string>` | No | - | Callback invoked when selection changes |
-| `SearchTextSelector` | `Func<TItem, string>?` | No | `null` | Function to extract search text. If not provided, uses `ValueSelector` |
-| `ItemTemplate` | `RenderFragment<TItem>` | Yes | - | Template for rendering each item |
-| `GroupSelector` | `Func<TItem, string>?` | No | `null` | Function to group items. If provided, items are grouped with headings |
+| `SearchTextSelector` | `Func<TItem, string>?` | No | `null` | Function to extract search text (automatic mode). If not provided, uses `ValueSelector` |
+| `GroupSelector` | `Func<TItem, string>?` | No | `null` | Function to group items (automatic mode). If provided, items are grouped with headings |
 | `ShowSearch` | `bool` | No | `false` | Whether to show the search input |
 | `SearchPlaceholder` | `string` | No | `"Search..."` | Placeholder text for the search input |
 | `ContainerClass` | `string?` | No | `null` | Additional CSS classes for the container |
-| `ItemClass` | `string?` | No | `null` | Additional CSS classes for each item |
-| `IsDisabled` | `Func<TItem, bool>?` | No | `null` | Function that determines if an item is disabled |
+| `ItemClass` | `string?` | No | `null` | Additional CSS classes for each item (automatic mode only) |
+| `IsDisabled` | `Func<TItem, bool>?` | No | `null` | Function that determines if an item is disabled (automatic mode only) |
+
+\* Required when using automatic mode (not using `ChildContent`)  
+\*\* Required when not using automatic mode parameters (`Items`, `ValueSelector`, `ItemTemplate`)
+
+### Usage Modes
+
+**Automatic Mode**: Provide `Items`, `ValueSelector`, and `ItemTemplate`. The component automatically renders CommandGroup and CommandItem.
+
+**Manual Mode**: Provide `ChildContent` with CommandGroup and CommandItem directly. Gives full control over structure.
 
 ## Examples
 

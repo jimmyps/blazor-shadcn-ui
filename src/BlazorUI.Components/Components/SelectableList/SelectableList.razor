@@ -11,8 +11,14 @@
         <CommandInput Placeholder="@SearchPlaceholder" />
     }
     <CommandList>
-        @if (GroupSelector != null)
+        @if (ChildContent != null)
         {
+            @* Manual composition mode - render user-provided content directly *@
+            @ChildContent
+        }
+        else if (GroupSelector != null)
+        {
+            @* Automatic mode with grouping *@
             @foreach (var group in Items.GroupBy(GroupSelector))
             {
                 <CommandGroup Heading="@group.Key">
@@ -25,6 +31,7 @@
         }
         else
         {
+            @* Automatic mode without grouping *@
             <CommandGroup>
                 @foreach (var item in Items)
                 {
