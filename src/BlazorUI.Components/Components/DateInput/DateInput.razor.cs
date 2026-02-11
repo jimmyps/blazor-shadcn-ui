@@ -146,6 +146,24 @@ public partial class DateInput : ComponentBase, IAsyncDisposable
     [Parameter]
     public Func<DateOnly, bool>? IsDateDisabled { get; set; }
 
+    /// <summary>
+    /// Minimum years offset from today for date selection.
+    /// Negative values = past years, positive = future years, 0 = today.
+    /// Example: -80 means 80 years ago.
+    /// When set, this takes precedence over MinDate.
+    /// </summary>
+    [Parameter]
+    public int? MinYearsFromToday { get; set; }
+
+    /// <summary>
+    /// Maximum years offset from today for date selection.
+    /// Negative values = past years, positive = future years, 0 = today.
+    /// Example: -5 means 5 years ago.
+    /// When set, this takes precedence over MaxDate.
+    /// </summary>
+    [Parameter]
+    public int? MaxYearsFromToday { get; set; }
+
     #endregion
 
     #region Update Behavior
@@ -289,6 +307,37 @@ public partial class DateInput : ComponentBase, IAsyncDisposable
         ShowPicker ? "pr-10" : null,
         Class
     );
+
+    /// <summary>
+    /// Gets the effective minimum date, calculated from MinYearsFromToday if set, otherwise MinDate.
+    /// </summary>
+    private DateOnly? EffectiveMinDate
+    {
+        get
+        {
+            if (MinYearsFromToday.HasValue)
+            {
+                return DateOnly.FromDateTime(DateTime.Today.AddYears(MinYearsFromToday.Value));
+            }
+            return MinDate;
+        }
+    }
+
+    /// <summary>
+    /// Gets the effective maximum date, calculated from MaxYearsFromToday if set, otherwise MaxDate.
+    /// </summary>
+    private DateOnly? EffectiveMaxDate
+    {
+        get
+        {
+            if (MaxYearsFromToday.HasValue)
+            {
+                return DateOnly.FromDateTime(DateTime.Today.AddYears(MaxYearsFromToday.Value));
+            }
+            return MaxDate;
+        }
+    }
+
 
     #endregion
 

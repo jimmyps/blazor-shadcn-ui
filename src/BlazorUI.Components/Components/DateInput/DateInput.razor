@@ -41,8 +41,8 @@
             <PopoverContent Class="w-auto p-0">
                 <Calendar SelectedDate="_calendarValue"
                           SelectedDateChanged="OnCalendarValueChanged"
-                          MinDate="@MinDate"
-                          MaxDate="@MaxDate"
+                          MinDate="@EffectiveMinDate"
+                          MaxDate="@EffectiveMaxDate"
                           IsDateDisabled="@IsDateDisabled"
                           Culture="@GetEffectiveCulture()" />
             </PopoverContent>

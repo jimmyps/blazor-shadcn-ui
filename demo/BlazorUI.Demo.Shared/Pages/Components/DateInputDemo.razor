@@ -207,6 +207,64 @@
         </div>
     </div>
 
+    <!-- Year-Based Constraints -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Year-Based Constraints</h2>
+            <p class="text-sm text-muted-foreground">
+                Convenient year offset parameters for common scenarios. No manual date calculation needed!
+            </p>
+        </div>
+        <div class="max-w-md space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Date of Birth (5-80 years ago)</label>
+                <DateInput @bind-Value="dobDate" 
+                           MinYearsFromToday="-80" 
+                           MaxYearsFromToday="-5"
+                           Format="@DateFormats.US" />
+                <p class="text-xs text-muted-foreground">Current value: @dobDate</p>
+                <p class="text-xs text-muted-foreground italic">MinYearsFromToday="-80" MaxYearsFromToday="-5"</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Future Appointment (Today to 2 years ahead)</label>
+                <DateInput @bind-Value="appointmentDate" 
+                           MinYearsFromToday="0" 
+                           MaxYearsFromToday="2" />
+                <p class="text-xs text-muted-foreground">Current value: @appointmentDate</p>
+                <p class="text-xs text-muted-foreground italic">MinYearsFromToday="0" MaxYearsFromToday="2"</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Recent Event (Past year to today)</label>
+                <DateInput @bind-Value="recentEventDate" 
+                           MinYearsFromToday="-1" 
+                           MaxYearsFromToday="0" />
+                <p class="text-xs text-muted-foreground">Current value: @recentEventDate</p>
+                <p class="text-xs text-muted-foreground italic">MinYearsFromToday="-1" MaxYearsFromToday="0"</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Historical Date (50-100 years ago)</label>
+                <DateInput @bind-Value="historicalDate" 
+                           MinYearsFromToday="-100" 
+                           MaxYearsFromToday="-50" />
+                <p class="text-xs text-muted-foreground">Current value: @historicalDate</p>
+                <p class="text-xs text-muted-foreground italic">MinYearsFromToday="-100" MaxYearsFromToday="-50"</p>
+            </div>
+            
+            <div class="space-y-2">
+                <label class="text-sm font-medium">License Expiry (Today to 10 years ahead)</label>
+                <DateInput @bind-Value="licenseExpiryDate" 
+                           MinYearsFromToday="0" 
+                           MaxYearsFromToday="10"
+                           Format="@DateFormats.ISO" />
+                <p class="text-xs text-muted-foreground">Current value: @licenseExpiryDate</p>
+                <p class="text-xs text-muted-foreground italic">MinYearsFromToday="0" MaxYearsFromToday="10"</p>
+            </div>
+        </div>
+    </div>
+
     <!-- With Validation -->
     <div class="space-y-4">
         <div class="space-y-2">
@@ -315,6 +373,13 @@
     private DateOnly? futureDate;
     private DateOnly? rangeDate;
     private DateOnly? weekdayDate;
+    
+    // Year-based constraints
+    private DateOnly? dobDate;
+    private DateOnly? appointmentDate;
+    private DateOnly? recentEventDate;
+    private DateOnly? historicalDate;
+    private DateOnly? licenseExpiryDate;
     
     // States
     private DateOnly? disabledDate = DateOnly.FromDateTime(DateTime.Today);
