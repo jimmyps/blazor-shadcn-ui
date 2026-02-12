@@ -1,5 +1,6 @@
 @typeparam TValue
 @namespace BlazorUI.Components.RadioGroup
+@using BlazorUI.Icons.Lucide.Components
 @using BlazorUI.Primitives.RadioGroup
 
 <BlazorUI.Primitives.RadioGroup.RadioGroupItem TValue="TValue"
@@ -9,7 +10,17 @@
     Id="@Id"
     AriaLabel="@AriaLabel"
     class="@CssClass">
-    <span class="@CircleIndicatorClass"></span>
+    @if (Variant == RadioGroupItemVariant.Check)
+    {
+        @if (IsChecked)
+        {
+            <LucideIcon Name="check" Size="16" Class="h-4 w-4" />
+        }
+    }
+    else
+    {
+        <span class="@CircleIndicatorClass"></span>
+    }
 </BlazorUI.Primitives.RadioGroup.RadioGroupItem>
 
 @* Hidden native radio input for form submission *@

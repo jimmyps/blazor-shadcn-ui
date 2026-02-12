@@ -1,8 +1,24 @@
 using Microsoft.AspNetCore.Components;
-using System.Text;
 using BlazorUI.Primitives.RadioGroup;
+using BlazorUI.Components.Utilities;
 
 namespace BlazorUI.Components.RadioGroup;
+
+/// <summary>
+/// Defines the visual style variant for a radio group item.
+/// </summary>
+public enum RadioGroupItemVariant
+{
+    /// <summary>
+    /// Circle with inner dot when selected (default shadcn/ui style).
+    /// </summary>
+    Radio,
+
+    /// <summary>
+    /// Checkmark icon when selected (modern card-style selection).
+    /// </summary>
+    Check
+}
 
 /// <summary>
 /// A radio button item that can be selected within a RadioGroup.
@@ -82,6 +98,16 @@ public partial class RadioGroupItem<TValue> : ComponentBase
     public string? Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the visual style variant for the radio item.
+    /// </summary>
+    /// <remarks>
+    /// Radio (default): Shows a circle with inner dot when selected.
+    /// Check: Shows a checkmark icon when selected.
+    /// </remarks>
+    [Parameter]
+    public RadioGroupItemVariant Variant { get; set; } = RadioGroupItemVariant.Radio;
+
+    /// <summary>
     /// Gets whether this radio item is checked.
     /// </summary>
     private bool IsChecked
@@ -105,24 +131,32 @@ public partial class RadioGroupItem<TValue> : ComponentBase
     {
         get
         {
-            var builder = new StringBuilder();
-
-            // Base radio button styles (from shadcn/ui)
-            builder.Append("aspect-square h-4 w-4 rounded-full border border-primary ");
-            builder.Append("text-primary ring-offset-background ");
-            builder.Append("focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ");
-            builder.Append("disabled:cursor-not-allowed disabled:opacity-50 ");
-
-            // Layout for centering the inner circle
-            builder.Append("flex items-center justify-center ");
-
-            // Custom classes (if provided)
-            if (!string.IsNullOrWhiteSpace(Class))
+            if (Variant == RadioGroupItemVariant.Check)
             {
-                builder.Append(Class);
+                return ClassNames.cn(
+                    // Base checkmark variant styles
+                    "aspect-square h-4 w-4",
+                    "text-primary",
+                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                    "disabled:cursor-not-allowed disabled:opacity-50",
+                    // Layout for centering the checkmark icon
+                    "flex items-center justify-center",
+                    // Custom classes (if provided)
+                    Class
+                );
             }
 
-            return builder.ToString().Trim();
+            return ClassNames.cn(
+                // Base radio button styles (from shadcn/ui)
+                "aspect-square h-4 w-4 rounded-full border border-primary",
+                "text-primary ring-offset-background",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                "disabled:cursor-not-allowed disabled:opacity-50",
+                // Layout for centering the inner circle
+                "flex items-center justify-center",
+                // Custom classes (if provided)
+                Class
+            );
         }
     }
 
@@ -133,21 +167,14 @@ public partial class RadioGroupItem<TValue> : ComponentBase
     {
         get
         {
-            var builder = new StringBuilder();
-
-            // Inner circle that appears when selected
-            builder.Append("h-2.5 w-2.5 rounded-full bg-current ");
-
-            // Only visible when checked
-            if (!IsChecked)
-            {
-                builder.Append("scale-0 ");
-            }
-
-            // Transition for smooth appearance
-            builder.Append("transition-transform duration-100");
-
-            return builder.ToString().Trim();
+            return ClassNames.cn(
+                // Inner circle that appears when selected
+                "h-2.5 w-2.5 rounded-full bg-current",
+                // Transition for smooth appearance
+                "transition-transform duration-100",
+                // Only visible when checked
+                !IsChecked ? "scale-0" : null
+            );
         }
     }
 

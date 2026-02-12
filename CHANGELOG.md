@@ -2,6 +2,59 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-02-11 - UI Consistency Improvements for Select, Combobox, MultiSelect, and RadioGroup
+
+### 🎨 UI/UX Improvements
+
+**Enhanced visual consistency across form components and improved RadioGroup check variant behavior.**
+
+**Key Changes:**
+
+1. **RadioGroup Check Variant - Clean Unselected State:**
+   - RadioGroupItem with Check variant now shows nothing when unselected (previously showed a circle)
+   - Selected state displays a checkmark icon as expected
+   - Creates cleaner, more modern UI for card-style radio selections
+   - Matches design patterns from shadcn/ui and modern UI libraries
+
+2. **Form Component Font Weight Consistency:**
+   - Removed `font-medium` from MultiSelect trigger CSS
+   - Removed `font-medium` from Combobox trigger CSS
+   - All form controls (Select, MultiSelect, Combobox, Input, etc.) now have consistent font weight
+   - Creates more uniform appearance across all form elements
+
+3. **Select Hover Behavior Fix:**
+   - Added `[&[aria-expanded=true]]:hover:bg-background` to SelectTrigger
+   - Disables hover styling when Select popup is open
+   - Matches correct behavior of MultiSelect and Combobox
+   - Prevents confusing visual feedback during interaction
+
+4. **DateRangePicker File Organization:**
+   - Moved DateRangePicker from DatePicker folder to dedicated DateRangePicker folder
+   - Removed duplicate DateRangePicker.razor from DatePicker directory
+   - Better component organization and clearer separation of concerns
+
+5. **ScrollArea Component Enhancements:**
+   - Added new FillContainer setting to support usage in form featuring automatic height calculation by excluding header and footer area
+   - Enhanced scroll-area.js for better dynamic content handling
+
+6. **Combobox Component Updates:**
+   - Refined Combobox.razor template structure
+   - Font weight consistency applied (font-medium removed from trigger)
+
+**Component Changes:**
+- `src/BlazorUI.Components/Components/RadioGroup/RadioGroupItem.razor` - Check variant unselected state
+- `src/BlazorUI.Components/Components/RadioGroup/RadioGroupItem.razor.cs` - Check variant logic
+- `src/BlazorUI.Components/Components/MultiSelect/MultiSelect.razor.cs` - Removed font-medium
+- `src/BlazorUI.Components/Components/Combobox/Combobox.razor.cs` - Removed font-medium
+- `src/BlazorUI.Components/Components/Combobox/Combobox.razor` - Template refinements
+- `src/BlazorUI.Components/Components/Select/SelectTrigger.razor` - Hover behavior when open
+- `src/BlazorUI.Components/Components/DatePicker/DatePicker.razor` - Minor updates
+- `src/BlazorUI.Components/Components/DateRangePicker/DateRangePicker.razor` - File reorganization
+- `src/BlazorUI.Components/Components/ScrollArea/ScrollArea.razor` - Enhanced behavior
+- `src/BlazorUI.Components/wwwroot/js/scroll-area.js` - Dynamic content improvements
+- `src/BlazorUI.Components/wwwroot/blazorui.css` - Scrolling styles
+
+
 ## 2026-02-11 - Added ForceMount to FloatingPortal, Improved Select Component Reliability
 
 ### ✨ Feature - ForceMount for Select Components

@@ -17,8 +17,15 @@ export function initialize(scrollAreaElement, options) {
 
     const config = {
         enableShadows: options?.enableShadows ?? true,
+        fillContainer: options?.fillContainer ?? false,
         ...options
     };
+
+    // Auto-height calculation for fillContainer mode
+    let fillContainerCleanup = null;
+    if (config.fillContainer) {
+        fillContainerCleanup = initializeFillContainer(scrollAreaElement);
+    }
 
     // Find scrollbar elements
     const verticalScrollbar = scrollAreaElement.querySelector('[data-scrollbar][data-orientation="vertical"]');
@@ -339,6 +346,12 @@ export function initialize(scrollAreaElement, options) {
             viewport.removeEventListener('scroll', handleScroll);
             resizeObserver.disconnect();
             
+            // Clean up fillContainer if active
+            if (fillContainerCleanup) {
+                fillContainerCleanup();
+                fillContainerCleanup = null;
+            }
+            
             // Clean up vertical drag handlers
             if (verticalDragHandlers && verticalThumb) {
                 verticalThumb.removeEventListener('mousedown', verticalDragHandlers.start);
@@ -389,4 +402,96 @@ export function dispose(instance) {
     if (instance && typeof instance.dispose === 'function') {
         instance.dispose();
     }
+}
+
+/**
+ * Initialize auto-height calculation for fillContainer mode
+ * Automatically calculates and sets height based on parent container and sibling elements
+ */
+function initializeFillContainer(scrollAreaElement) {
+    const parent = scrollAreaElement.parentElement;
+    if (!parent) {
+        console.warn('ScrollArea FillContainer: No parent element found');
+        return null;
+    }
+
+    let rafId = null;
+    let lastCalculatedHeight = null;
+
+    // Calculate available height
+    const calculateHeight = () => {
+        if (rafId) return;
+
+        rafId = requestAnimationFrame(() => {
+            // Get parent dimensions
+            const parentStyle = window.getComputedStyle(parent);
+            const parentHeight = parent.clientHeight;
+            const parentPaddingTop = parseFloat(parentStyle.paddingTop) || 0;
+            const parentPaddingBottom = parseFloat(parentStyle.paddingBottom) || 0;
+            const availableParentHeight = parentHeight - parentPaddingTop - parentPaddingBottom;
+
+            // Calculate total height of sibling elements
+            const siblings = Array.from(parent.children).filter(el => el !== scrollAreaElement);
+            let siblingsHeight = 0;
+
+            siblings.forEach(sibling => {
+                const siblingStyle = window.getComputedStyle(sibling);
+                const marginTop = parseFloat(siblingStyle.marginTop) || 0;
+                const marginBottom = parseFloat(siblingStyle.marginBottom) || 0;
+                siblingsHeight += sibling.offsetHeight + marginTop + marginBottom;
+            });
+
+            // Account for gap in flex/grid containers
+            const gap = parseFloat(parentStyle.gap) || parseFloat(parentStyle.rowGap) || 0;
+            const totalGap = gap * Math.max(0, siblings.length);
+
+            // Calculate available height for scroll area
+            const availableHeight = Math.max(0, availableParentHeight - siblingsHeight - totalGap);
+
+            // Only update if height actually changed (prevents infinite loops)
+            if (lastCalculatedHeight !== availableHeight) {
+                lastCalculatedHeight = availableHeight;
+                scrollAreaElement.style.height = `${availableHeight}px`;
+            }
+
+            rafId = null;
+        });
+    };
+
+    // Initial calculation
+    calculateHeight();
+
+    // Watch for sibling changes (additions/removals)
+    const mutationObserver = new MutationObserver(() => {
+        // Update sibling observers when siblings change
+        siblingResizeObserver.disconnect();
+        const currentSiblings = Array.from(parent.children).filter(el => el !== scrollAreaElement);
+        currentSiblings.forEach(sibling => siblingResizeObserver.observe(sibling));
+        calculateHeight();
+    });
+    mutationObserver.observe(parent, {
+        childList: true,
+        subtree: false,
+        attributes: false
+    });
+
+    // Watch sibling size changes (NOT parent size to avoid feedback loops)
+    const siblingResizeObserver = new ResizeObserver(() => {
+        calculateHeight();
+    });
+    
+    const initialSiblings = Array.from(parent.children).filter(el => el !== scrollAreaElement);
+    initialSiblings.forEach(sibling => siblingResizeObserver.observe(sibling));
+
+    // Return cleanup function
+    return () => {
+        if (rafId) {
+            cancelAnimationFrame(rafId);
+        }
+        mutationObserver.disconnect();
+        siblingResizeObserver.disconnect();
+        
+        // Reset height
+        scrollAreaElement.style.height = '';
+    };
 }
