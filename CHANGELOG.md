@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-02-11 - Nested Dialog, Variant and Enhanced Portal Management
+
+### ✨ Feature - Dialog Variants & Nested Dialog Support
+
+**Added DialogContentVariant system and improved portal z-index management for better nested dialog behavior.**
+
+**Key Changes:**
+
+1. **Dialog Variant System:**
+   - Added `DialogContentVariant` enum with `Default` and `Form` variants
+   - Added `Variant` parameter to `DialogContent` component for flexible background styling
+   - **Default variant:** Uses `bg-background` for simple, neutral dialogs (maintains original behavior)
+   - **Form variant:** Uses `bg-card` with `--scroll-shadow-bg:var(--card)` CSS variable
+   - Form variant ensures `ScrollArea` scroll shadows match dialog background color
+   - Backward compatible - Default is the default variant value
+
+2. **Enhanced Portal System (Primitives):**
+   - Enhanced `IPortalService` with portal type tracking and z-index management
+   - Extracted `ZIndexLevels` to dedicated service class in `Services` namespace
+   - Implemented automatic z-index layering: Dialogs (100) > Menus (70) > Floating (50)
+   - Improved portal registration with unique IDs and automatic lifecycle management
+   - Better disposal and cleanup to prevent memory leaks
+
+3. **Nested Dialog Support:**
+   - Proper z-index management ensures nested dialogs appear above parent dialogs
+   - Portal type tracking provides predictable visual layering
+   - Fixed stacking issues when multiple dialogs are open simultaneously
+
+4. **Portal-Based Component Updates:**
+   - Updated `DialogPortal` with enhanced portal management including automatic refresh on state changes
+   - Updated `FloatingPortal` with portal type support
+   - Updated all menu/popover components to use new portal service API:
+     - `PopoverContent`
+     - `DropdownMenuContent`, `DropdownMenuSubContent`
+     - `ContextMenuContent`, `ContextMenuSubContent`
+     - `MenubarContent`, `MenubarSubContent`
+     - `SelectContent`
+     - `TooltipContent`
+     - `AlertDialogContent`
+
+**Breaking Changes:**
+- **Moved ZIndexLevels** from `BlazorUI.Primitives.Constants` to `BlazorUI.Primitives.Services`
+  - **Migration**: Update `using` statements from `BlazorUI.Primitives.Constants` to `BlazorUI.Primitives.Services`
+
 ## 2026-02-11 - UI Consistency Improvements for Select, Combobox, MultiSelect, and RadioGroup
 
 ### 🎨 UI/UX Improvements
