@@ -16,8 +16,11 @@
 @using BlazorUI.Components.Field
 @using BlazorUI.Components.Separator
 @using BlazorUI.Components.ScrollArea
+@using BlazorUI.Components.Collapsible
+@using BlazorUI.Components.Toast
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
+@inject IToastService ToastService
 
 <PageTitle>Dialog Component - BlazorUI</PageTitle>
 
@@ -415,7 +418,7 @@
 
         <!-- Demo 1: User Profile Settings Dialog -->
         <Dialog @bind-Open="showUserProfileDialog">
-            <DialogContent Class="p-4 max-w-2xl max-h-[90vh] flex flex-col">
+            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-2xl max-h-[90vh] flex flex-col">
                 <DialogHeader Class="flex-shrink-0">
                     <DialogTitle>
                         <div class="flex items-center gap-2">
@@ -429,127 +432,139 @@
                 </DialogHeader>
 
                 <ScrollArea FillContainer="true" EnableScrollShadows="true">
-                    <FieldGroup Orientation="FieldGroupOrientation.Vertical" Class="mx-1">
-                        <!-- Personal Information Section -->
-                        <h3 class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Personal Information</h3>
+                    <EditForm EditContext="userProfileEditContext">
+                        <DataAnnotationsValidator />
+                        <FieldGroup Orientation="FieldGroupOrientation.Vertical" Class="mx-1">
+                            <!-- Personal Information Section -->
+                            <h3 class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Personal Information</h3>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Field>
+                                    <FieldLabel For="profile-name">Full Name *</FieldLabel>
+                                    <FieldContent>
+                                        <Input Id="profile-name"
+                                               @bind-Value="userProfileModel.Name"
+                                               ShowValidationError="true"
+                                               Placeholder="Enter your full name" />
+                                    </FieldContent>
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel For="profile-username">Username</FieldLabel>
+                                    <FieldContent>
+                                        <Input Id="profile-username"
+                                               @bind-Value="userProfileModel.Username"
+                                               ShowValidationError="true"
+                                               Placeholder="username" />
+                                    </FieldContent>
+                                </Field>
+                            </div>
+
                             <Field>
-                                <FieldLabel For="profile-name">Full Name *</FieldLabel>
+                                <FieldLabel For="profile-email">Email Address *</FieldLabel>
                                 <FieldContent>
-                                    <Input Id="profile-name"
-                                           @bind-Value="userProfileModel.Name"
+                                    <Input Id="profile-email"
+                                           @bind-Value="userProfileModel.Email"
                                            ShowValidationError="true"
-                                           Placeholder="Enter your full name" />
+                                           Type="InputType.Email"
+                                           Placeholder="your@email.com" />
+                                </FieldContent>
+                            </Field>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Field>
+                                    <FieldLabel For="profile-phone">Phone Number</FieldLabel>
+                                    <FieldContent>
+                                        <MaskedInput Id="profile-phone"
+                                                     @bind-Value="userProfileModel.PhoneNumber"
+                                                     Mask="@MaskedInput.Masks.PhoneUS"
+                                                     ShowMask="true"
+                                                     Placeholder="(000) 000-0000" />
+                                    </FieldContent>
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel For="profile-dob">Date of Birth</FieldLabel>
+                                    <FieldContent>
+                                        <DatePicker @bind-SelectedDate="userProfileModel.DateOfBirth"
+                                                    Placeholder="Pick a date" ButtonSize="ButtonSize.Small" />
+                                    </FieldContent>
+                                </Field>
+                            </div>
+
+                            <Separator />
+
+                            <!-- Preferences Section -->
+                            <h3 class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Preferences</h3>
+
+                            <Field>
+                                <FieldLabel For="profile-theme-color">Theme Color</FieldLabel>
+                                <FieldContent>
+                                    <ColorPicker @bind-Color="userProfileModel.ThemeColor" />
                                 </FieldContent>
                             </Field>
 
                             <Field>
-                                <FieldLabel For="profile-username">Username</FieldLabel>
+                                <FieldLabel For="profile-bio">Bio</FieldLabel>
                                 <FieldContent>
-                                    <Input Id="profile-username"
-                                           @bind-Value="userProfileModel.Username"
-                                           ShowValidationError="true"
-                                           Placeholder="username" />
-                                </FieldContent>
-                            </Field>
-                        </div>
-
-                        <Field>
-                            <FieldLabel For="profile-email">Email Address *</FieldLabel>
-                            <FieldContent>
-                                <Input Id="profile-email"
-                                       @bind-Value="userProfileModel.Email"
-                                       ShowValidationError="true"
-                                       Type="InputType.Email"
-                                       Placeholder="your@email.com" />
-                            </FieldContent>
-                        </Field>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Field>
-                                <FieldLabel For="profile-phone">Phone Number</FieldLabel>
-                                <FieldContent>
-                                    <MaskedInput Id="profile-phone"
-                                                 @bind-Value="userProfileModel.PhoneNumber"
-                                                 Mask="@MaskedInput.Masks.PhoneUS"
-                                                 ShowMask="true"
-                                                 Placeholder="(000) 000-0000" />
+                                    <Textarea Id="profile-bio"
+                                              @bind-Value="userProfileModel.Bio"
+                                              Placeholder="Tell us about yourself..."
+                                              Rows="3" />
+                                    <FieldDescription>Brief description for your profile. Maximum 500 characters.</FieldDescription>
                                 </FieldContent>
                             </Field>
 
-                            <Field>
-                                <FieldLabel For="profile-dob">Date of Birth</FieldLabel>
-                                <FieldContent>
-                                    <DatePicker @bind-SelectedDate="userProfileModel.DateOfBirth"
-                                                Placeholder="Pick a date" ButtonSize="ButtonSize.Small" />
-                                </FieldContent>
-                            </Field>
-                        </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Field Orientation="FieldOrientation.Horizontal">
+                                    <FieldContent Class="flex flex-row justify-between gap-4">
+                                        <div class="flex-1">
+                                            <FieldLabel For="profile-email-notif">Email Notifications</FieldLabel>
+                                            <FieldDescription Class="text-wrap">Receive email updates about your account activity, security, and important changes</FieldDescription>
+                                        </div>
+                                        <Switch @bind-Checked="userProfileModel.EmailNotifications" Class="flex-shrink-0 mt-2 mr-2" />
+                                    </FieldContent>
+                                </Field>
 
-                        <Separator />
-
-                        <!-- Preferences Section -->
-                        <h3 class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Preferences</h3>
-
-                        <Field>
-                            <FieldLabel For="profile-theme-color">Theme Color</FieldLabel>
-                            <FieldContent>
-                                <ColorPicker @bind-Color="userProfileModel.ThemeColor" />
-                            </FieldContent>
-                        </Field>
-
-                        <Field>
-                            <FieldLabel For="profile-bio">Bio</FieldLabel>
-                            <FieldContent>
-                                <Textarea Id="profile-bio"
-                                          @bind-Value="userProfileModel.Bio"
-                                          Placeholder="Tell us about yourself..."
-                                          Rows="3" />
-                                <FieldDescription>Brief description for your profile. Maximum 500 characters.</FieldDescription>
-                            </FieldContent>
-                        </Field>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Field Orientation="FieldOrientation.Horizontal">
-                                <FieldContent Class="flex flex-row justify-between gap-4">
-                                    <div class="flex-1">
-                                        <FieldLabel For="profile-email-notif">Email Notifications</FieldLabel>
-                                        <FieldDescription Class="text-wrap">Receive email updates about your account activity, security, and important changes</FieldDescription>
-                                    </div>
-                                    <Switch @bind-Checked="userProfileModel.EmailNotifications" Class="flex-shrink-0 mt-2 mr-2" />
-                                </FieldContent>
-                            </Field>
-
-                            <Field Orientation="FieldOrientation.Horizontal">
-                                <FieldContent Class="flex flex-row justify-between gap-4">
-                                    <div class="flex-1">
-                                        <FieldLabel For="profile-marketing">Marketing Emails</FieldLabel>
-                                        <FieldDescription Class="text-wrap">Receive emails about new products, special offers, and exclusive promotions</FieldDescription>
-                                    </div>
-                                    <Switch @bind-Checked="userProfileModel.MarketingEmails" Class="flex-shrink-0 mt-2 mr-2" />
-                                </FieldContent>
-                            </Field>
-                        </div>
+                                <Field Orientation="FieldOrientation.Horizontal">
+                                    <FieldContent Class="flex flex-row justify-between gap-4">
+                                        <div class="flex-1">
+                                            <FieldLabel For="profile-marketing">Marketing Emails</FieldLabel>
+                                            <FieldDescription Class="text-wrap">Receive emails about new products, special offers, and exclusive promotions</FieldDescription>
+                                        </div>
+                                        <Switch @bind-Checked="userProfileModel.MarketingEmails" Class="flex-shrink-0 mt-2 mr-2" />
+                                    </FieldContent>
+                                </Field>
+                            </div>
                     </FieldGroup>
+                    </EditForm>
                 </ScrollArea>
 
                 <DialogFooter Class="flex-shrink-0 mt-auto pt-3 border-t">
-                    <Button Variant="ButtonVariant.Outline" OnClick="() => showUserProfileDialog = false">Cancel</Button>
+                    <Button Variant="ButtonVariant.Outline" OnClick="CancelUserProfile">Cancel</Button>
                     <Button OnClick="SaveUserProfile">Save Changes</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
 
         <!-- State Display for Demo 1 -->
-        <div class="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
-            <p class="text-xs font-medium text-muted-foreground mb-2">User Profile Form State:</p>
-            <pre class="text-xs overflow-x-auto">@JsonSerializer.Serialize(userProfileModel, new JsonSerializerOptions { WriteIndented = true })</pre>
-        </div>
+        <Collapsible Class="mt-4 mb-2 border rounded-lg">
+            <div class="px-4 py-3">
+                <CollapsibleTrigger Class="flex w-full items-center justify-between text-left [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                    <span class="text-sm font-medium">User Profile Form State (JSON)</span>
+                    <LucideIcon Name="chevron-down" Size="16" />
+                </CollapsibleTrigger>
+            </div>
+            <CollapsibleContent Class="px-4 pb-4 border-t">
+                <div class="pt-4">
+                    <pre class="text-xs overflow-x-auto bg-muted/50 p-3 rounded">@JsonSerializer.Serialize(userProfileModel, new JsonSerializerOptions { WriteIndented = true })</pre>
+                </div>
+            </CollapsibleContent>
+        </Collapsible>
 
         <!-- Demo 2: Subscription Plan Selection Dialog -->
         <Dialog @bind-Open="showSubscriptionDialog">
-            <DialogContent Class="p-4 max-w-3xl max-h-[90vh] flex flex-col">
+            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-3xl max-h-[90vh] flex flex-col">
                 <DialogHeader Class="flex-shrink-0">
                     <DialogTitle>
                         <div class="flex items-center gap-2">
@@ -583,7 +598,7 @@
                                 <RadioGroup @bind-Value="subscriptionModel.SelectedPlan" AriaLabel="Select subscription plan">
                                     <label for="plan-starter"
                                            class="@($"flex items-start space-x-3 rounded-lg border-2 p-4 cursor-pointer transition-all duration-200 {(subscriptionModel.SelectedPlan == "starter" ? "border-primary bg-primary/5" : "border-input")}")">
-                                        <div @onclick:stopPropagation class="mt-0.5">
+                                        <div @onclick:stopPropagation class="mt-2">
                                             <RadioGroupItem Value="@("starter")" Id="plan-starter" />
                                         </div>
                                         <div class="flex-1">
@@ -602,7 +617,7 @@
 
                                     <label for="plan-pro"
                                            class="@($"flex items-start space-x-3 rounded-lg border-2 p-4 cursor-pointer transition-all duration-200 {(subscriptionModel.SelectedPlan == "pro" ? "border-primary bg-primary/5" : "border-input")}")">
-                                        <div @onclick:stopPropagation class="mt-0.5">
+                                        <div @onclick:stopPropagation class="mt-2">
                                             <RadioGroupItem Value="@("pro")" Id="plan-pro" />
                                         </div>
                                         <div class="flex-1">
@@ -625,7 +640,7 @@
 
                                     <label for="plan-enterprise"
                                            class="@($"flex items-start space-x-3 rounded-lg border-2 p-4 cursor-pointer transition-all duration-200 {(subscriptionModel.SelectedPlan == "enterprise" ? "border-primary bg-primary/5" : "border-input")}")">
-                                        <div @onclick:stopPropagation class="mt-0.5">
+                                        <div @onclick:stopPropagation class="mt-2">
                                             <RadioGroupItem Value="@("enterprise")" Id="plan-enterprise" />
                                         </div>
                                         <div class="flex-1">
@@ -682,42 +697,58 @@
                         </Field>
 
                         <!-- Total Calculation -->
-                        <div class="p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border-2 border-primary/20">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <div class="text-sm text-muted-foreground">Total</div>
-                                    <div class="text-xs text-muted-foreground mt-1">
-                                        @(subscriptionModel.IsAnnual ? "Billed annually" : "Billed monthly")
+                        <Alert Variant="AlertVariant.Info">
+                            <Icon>
+                                <LucideIcon Name="info" Size="16" />
+                            </Icon>
+                            <ChildContent>
+                                <AlertTitle Class="mb-1">Subscription Total</AlertTitle>
+                                <AlertDescription>
+                                    <div class="flex items-center justify-between gap-4">
+                                        <div class="flex-1">
+                                            <div class="text-sm">
+                                                @(subscriptionModel.IsAnnual ? "Billed annually" : "Billed monthly")
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-2xl font-bold">$@CalculateSubscriptionTotal()</div>
+                                            @if (subscriptionModel.IsAnnual)
+                                            {
+                                                <div class="text-xs text-green-600 font-medium mt-0.5">Save $@(CalculateAnnualSavings())/year</div>
+                                            }
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-2xl font-bold">$@CalculateSubscriptionTotal()</div>
-                                    @if (subscriptionModel.IsAnnual)
-                                    {
-                                        <div class="text-xs text-green-600 font-medium">Save $@(CalculateAnnualSavings())/year</div>
-                                    }
-                                </div>
-                            </div>
-                        </div>
+                                </AlertDescription>
+                            </ChildContent>
+                        </Alert>
                     </FieldGroup>
                 </ScrollArea>
 
                 <DialogFooter Class="flex-shrink-0 mt-auto pt-3 border-t">
-                    <Button Variant="ButtonVariant.Outline" OnClick="() => showSubscriptionDialog = false">Cancel</Button>
-                    <Button OnClick="() => showSubscriptionDialog = false">Subscribe Now</Button>
+                    <Button Variant="ButtonVariant.Outline" OnClick="CancelSubscription">Cancel</Button>
+                    <Button OnClick="SaveSubscription">Subscribe Now</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
 
         <!-- State Display for Demo 2 -->
-        <div class="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
-            <p class="text-xs font-medium text-muted-foreground mb-2">Subscription Form State:</p>
-            <pre class="text-xs overflow-x-auto">@JsonSerializer.Serialize(subscriptionModel, new JsonSerializerOptions { WriteIndented = true })</pre>
-        </div>
+        <Collapsible Class="mt-4 mb-2 border rounded-lg">
+            <div class="px-4 py-3">
+                <CollapsibleTrigger Class="flex w-full items-center justify-between text-left [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                    <span class="text-sm font-medium">Subscription Form State (JSON)</span>
+                    <LucideIcon Name="chevron-down" Size="16" />
+                </CollapsibleTrigger>
+            </div>
+            <CollapsibleContent Class="px-4 pb-4 border-t">
+                <div class="pt-4">
+                    <pre class="text-xs overflow-x-auto bg-muted/50 p-3 rounded">@JsonSerializer.Serialize(subscriptionModel, new JsonSerializerOptions { WriteIndented = true })</pre>
+                </div>
+            </CollapsibleContent>
+        </Collapsible>
 
         <!-- Demo 3: Team Member Invite Dialog -->
         <Dialog @bind-Open="showTeamInviteDialog">
-            <DialogContent Class="p-4 max-w-2xl max-h-[90vh] flex flex-col">
+            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-2xl max-h-[90vh] flex flex-col">
                 <DialogHeader Class="flex-shrink-0">
                     <DialogTitle>
                         <div class="flex items-center gap-2">
@@ -731,9 +762,11 @@
                 </DialogHeader>
 
                 <ScrollArea FillContainer="true" EnableScrollShadows="true">
-                    <FieldGroup Orientation="FieldGroupOrientation.Vertical" Class="mx-1">
-                        <!-- Email Input -->
-                        <Field>
+                    <EditForm EditContext="teamInviteEditContext">
+                        <DataAnnotationsValidator />
+                        <FieldGroup Orientation="FieldGroupOrientation.Vertical" Class="mx-1">
+                            <!-- Email Input -->
+                            <Field>
                             <FieldLabel For="invite-email">Email Address *</FieldLabel>
                             <FieldContent>
                                 <Input Id="invite-email"
@@ -847,24 +880,34 @@
                             </Field>
                         </div>
                     </FieldGroup>
+                    </EditForm>
                 </ScrollArea>
 
                 <DialogFooter Class="flex-shrink-0 mt-auto pt-3 border-t">
-                    <Button Variant="ButtonVariant.Outline" OnClick="() => showTeamInviteDialog = false">Cancel</Button>
-                    <Button OnClick="() => showTeamInviteDialog = false">Send Invitation</Button>
+                    <Button Variant="ButtonVariant.Outline" OnClick="CancelTeamInvite">Cancel</Button>
+                    <Button OnClick="SaveTeamInvite">Send Invitation</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
 
         <!-- State Display for Demo 3 -->
-        <div class="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
-            <p class="text-xs font-medium text-muted-foreground mb-2">Team Invite Form State:</p>
-            <pre class="text-xs overflow-x-auto">@JsonSerializer.Serialize(teamInviteModel, new JsonSerializerOptions { WriteIndented = true })</pre>
-        </div>
+        <Collapsible Class="mt-4 mb-2 border rounded-lg">
+            <div class="px-4 py-3">
+                <CollapsibleTrigger Class="flex w-full items-center justify-between text-left [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                    <span class="text-sm font-medium">Team Invite Form State (JSON)</span>
+                    <LucideIcon Name="chevron-down" Size="16" />
+                </CollapsibleTrigger>
+            </div>
+            <CollapsibleContent Class="px-4 pb-4 border-t">
+                <div class="pt-4">
+                    <pre class="text-xs overflow-x-auto bg-muted/50 p-3 rounded">@JsonSerializer.Serialize(teamInviteModel, new JsonSerializerOptions { WriteIndented = true })</pre>
+                </div>
+            </CollapsibleContent>
+        </Collapsible>
 
         <!-- Demo 4: E-commerce Product Configuration Dialog -->
         <Dialog @bind-Open="showProductConfigDialog">
-            <DialogContent Class="p-4 max-w-2xl max-h-[90vh] flex flex-col">
+            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-2xl max-h-[90vh] flex flex-col">
                 <DialogHeader Class="flex-shrink-0">
                     <DialogTitle>
                         <div class="flex items-center gap-2">
@@ -894,7 +937,9 @@
                             <Field>
                                 <FieldLabel For="product-color">Product Color</FieldLabel>
                                 <FieldContent>
-                                    <ColorPicker @bind-Color="productConfigModel.ProductColor" />
+                                    <ColorPicker @bind-Color="productConfigModel.ProductColor"
+                                        Size="ColorPickerSize.Compact" ShowPresets="false"
+                                        ShowInputs="false"/>
                                 </FieldContent>
                             </Field>
 
@@ -932,9 +977,9 @@
 
                             <Field>
                                 <FieldLabel For="product-rating">Initial Rating</FieldLabel>
-                                <FieldContent Class="flex items-center pt-2">
+                                <FieldContent Class="flex-row items-center pt-2">
                                     <Rating @bind-Value="productConfigModel.Rating"
-                                            AllowHalf="true"
+                                            AllowHalf="true" Size="RatingSize.Small"
                                             MaxRating="5" />
                                 </FieldContent>
                             </Field>
@@ -943,13 +988,12 @@
                         <!-- Price Range for Bulk Orders -->
                         <Field>
                             <FieldLabel For="price-range">Price Range for Bulk Orders</FieldLabel>
-                            <FieldContent>
-                                <RangeSlider @bind-Value="productConfigModel.PriceRange"
-                                             Min="10"
-                                             Max="500"
-                                             Step="10" />
+                            <FieldContent Class="p-2">
+                                <RangeSlider @bind-MinValue="productConfigModel.MinPrice"
+                                             @bind-MaxValue="productConfigModel.MaxPrice"
+                                             Class="my-3" Min="10" Max="500" Step="10" />
                                 <FieldDescription>
-                                    Range: $@productConfigModel.PriceRange[0] - $@productConfigModel.PriceRange[1]
+                                    Range: $@productConfigModel.MinPrice - $@productConfigModel.MaxPrice
                                 </FieldDescription>
                             </FieldContent>
                         </Field>
@@ -1004,21 +1048,30 @@
                 </ScrollArea>
 
                 <DialogFooter Class="flex-shrink-0 mt-auto pt-3 border-t">
-                    <Button Variant="ButtonVariant.Outline" OnClick="() => showProductConfigDialog = false">Cancel</Button>
-                    <Button OnClick="() => showProductConfigDialog = false">Add to Cart</Button>
+                    <Button Variant="ButtonVariant.Outline" OnClick="CancelProductConfig">Cancel</Button>
+                    <Button OnClick="SaveProductConfig">Add to Cart</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
 
         <!-- State Display for Demo 4 -->
-        <div class="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
-            <p class="text-xs font-medium text-muted-foreground mb-2">Product Configuration Form State:</p>
-            <pre class="text-xs overflow-x-auto">@JsonSerializer.Serialize(productConfigModel, new JsonSerializerOptions { WriteIndented = true })</pre>
-        </div>
+        <Collapsible Class="mt-4 mb-2 border rounded-lg">
+            <div class="px-4 py-3">
+                <CollapsibleTrigger Class="flex w-full items-center justify-between text-left [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                    <span class="text-sm font-medium">Product Configuration Form State (JSON)</span>
+                    <LucideIcon Name="chevron-down" Size="16" />
+                </CollapsibleTrigger>
+            </div>
+            <CollapsibleContent Class="px-4 pb-4 border-t">
+                <div class="pt-4">
+                    <pre class="text-xs overflow-x-auto bg-muted/50 p-3 rounded">@JsonSerializer.Serialize(productConfigModel, new JsonSerializerOptions { WriteIndented = true })</pre>
+                </div>
+            </CollapsibleContent>
+        </Collapsible>
 
         <!-- Demo 5: Nested Dialog - Create Project with Advanced Settings -->
         <Dialog @bind-Open="showProjectDialog">
-            <DialogContent Class="p-4 max-w-2xl max-h-[90vh] flex flex-col">
+            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-2xl max-h-[90vh] flex flex-col">
                 <DialogHeader Class="flex-shrink-0">
                     <DialogTitle>
                         <div class="flex items-center gap-2">
@@ -1032,9 +1085,11 @@
                 </DialogHeader>
 
                 <ScrollArea FillContainer="true" EnableScrollShadows="true">
-                    <FieldGroup Orientation="FieldGroupOrientation.Vertical" Class="mx-1">
-                        <!-- Project Name -->
-                        <Field>
+                    <EditForm EditContext="projectEditContext">
+                        <DataAnnotationsValidator />
+                        <FieldGroup Orientation="FieldGroupOrientation.Vertical" Class="mx-1">
+                            <!-- Project Name -->
+                            <Field>
                             <FieldLabel For="project-name">Project Name *</FieldLabel>
                             <FieldContent>
                                 <Input Id="project-name"
@@ -1094,18 +1149,19 @@
                             Advanced Settings
                         </Button>
                     </FieldGroup>
+                    </EditForm>
                 </ScrollArea>
 
                 <DialogFooter Class="flex-shrink-0 mt-auto pt-3 border-t">
-                    <Button Variant="ButtonVariant.Outline" OnClick="() => showProjectDialog = false">Cancel</Button>
-                    <Button OnClick="() => showProjectDialog = false">Create Project</Button>
+                    <Button Variant="ButtonVariant.Outline" OnClick="CancelProject">Cancel</Button>
+                    <Button OnClick="SaveProject">Create Project</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
 
         <!-- Nested Dialog B - Advanced Configuration -->
         <Dialog @bind-Open="showAdvancedSettingsDialog">
-            <DialogContent Class="p-4 max-w-xl max-h-[90vh] flex flex-col">
+            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-xl max-h-[90vh] flex flex-col">
                 <DialogHeader Class="flex-shrink-0">
                     <DialogTitle>
                         <div class="flex items-center gap-2">
@@ -1224,17 +1280,26 @@
                 </ScrollArea>
 
                 <DialogFooter Class="flex-shrink-0 mt-auto pt-3 border-t">
-                    <Button Variant="ButtonVariant.Outline" OnClick="CloseAdvancedSettings">Cancel</Button>
-                    <Button OnClick="CloseAdvancedSettings">Save Settings</Button>
+                    <Button Variant="ButtonVariant.Outline" OnClick="CancelAdvancedSettings">Cancel</Button>
+                    <Button OnClick="SaveAdvancedSettings">Save Settings</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
 
         <!-- State Display for Demo 5 -->
-        <div class="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
-            <p class="text-xs font-medium text-muted-foreground mb-2">Project & Advanced Settings Form State:</p>
-            <pre class="text-xs overflow-x-auto">@JsonSerializer.Serialize(new { Project = projectModel, AdvancedSettings = advancedSettingsModel }, new JsonSerializerOptions { WriteIndented = true })</pre>
-        </div>
+        <Collapsible Class="mt-4 mb-2 border rounded-lg">
+            <div class="px-4 py-3">
+                <CollapsibleTrigger Class="flex w-full items-center justify-between text-left [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                    <span class="text-sm font-medium">Project & Advanced Settings Form State (JSON)</span>
+                    <LucideIcon Name="chevron-down" Size="16" />
+                </CollapsibleTrigger>
+            </div>
+            <CollapsibleContent Class="px-4 pb-4 border-t">
+                <div class="pt-4">
+                    <pre class="text-xs overflow-x-auto bg-muted/50 p-3 rounded">@JsonSerializer.Serialize(new { Project = projectModel, AdvancedSettings = advancedSettingsModel }, new JsonSerializerOptions { WriteIndented = true })</pre>
+                </div>
+            </CollapsibleContent>
+        </Collapsible>
     </div>
 
     <div class="space-y-4">
@@ -1316,6 +1381,14 @@
     // Demo 1: User Profile Settings
     private bool showUserProfileDialog = false;
     private UserProfileModel userProfileModel = new();
+    private EditContext userProfileEditContext = null!;
+
+    protected override void OnInitialized()
+    {
+        userProfileEditContext = new EditContext(userProfileModel);
+        teamInviteEditContext = new EditContext(teamInviteModel);
+        projectEditContext = new EditContext(projectModel);
+    }
 
     private class UserProfileModel
     {
@@ -1339,7 +1412,20 @@
 
     private void SaveUserProfile()
     {
+        if (!userProfileEditContext.Validate())
+        {
+            ToastService.Error("Validation failed", "Please fix the errors before saving");
+            return;
+        }
+
         showUserProfileDialog = false;
+        ToastService.Success("Changes saved", "See the output form JSON below");
+    }
+
+    private void CancelUserProfile()
+    {
+        showUserProfileDialog = false;
+        ToastService.Show("Changes cancelled");
     }
 
     // Demo 2: Subscription Plan Selection
@@ -1392,9 +1478,22 @@
         return (monthlyTotal - annualTotal) * 12;
     }
 
+    private void SaveSubscription()
+    {
+        showSubscriptionDialog = false;
+        ToastService.Success("Subscription confirmed", "See the output form JSON below");
+    }
+
+    private void CancelSubscription()
+    {
+        showSubscriptionDialog = false;
+        ToastService.Show("Subscription cancelled");
+    }
+
     // Demo 3: Team Member Invite
     private bool showTeamInviteDialog = false;
     private TeamInviteModel teamInviteModel = new();
+    private EditContext teamInviteEditContext = null!;
     private readonly List<Project> availableProjects = new()
     {
         new Project { Name = "Project Alpha" },
@@ -1419,6 +1518,24 @@
         public bool SendEmailImmediately { get; set; } = true;
     }
 
+    private void SaveTeamInvite()
+    {
+        if (!teamInviteEditContext.Validate())
+        {
+            ToastService.Error("Validation failed", "Please fix the errors before sending the invitation");
+            return;
+        }
+
+        showTeamInviteDialog = false;
+        ToastService.Success("Invitation sent", "See the output form JSON below");
+    }
+
+    private void CancelTeamInvite()
+    {
+        showTeamInviteDialog = false;
+        ToastService.Show("Invitation cancelled");
+    }
+
     private class Project
     {
         public required string Name { get; set; }
@@ -1435,17 +1552,31 @@
         public string? Size { get; set; } = "M";
         public int Quantity { get; set; } = 1;
         public double Rating { get; set; } = 4.5;
-        public int[] PriceRange { get; set; } = new[] { 50, 200 };
+        public double MinPrice { get; set; } = 50;
+        public double MaxPrice { get; set; } = 200;
         public decimal? CustomOfferPrice { get; set; }
         public string? SpecialInstructions { get; set; }
         public bool GiftWrap { get; set; } = false;
         public bool PriorityShipping { get; set; } = false;
     }
 
+    private void SaveProductConfig()
+    {
+        showProductConfigDialog = false;
+        ToastService.Success("Product added to cart", "See the output form JSON below");
+    }
+
+    private void CancelProductConfig()
+    {
+        showProductConfigDialog = false;
+        ToastService.Show("Product configuration cancelled");
+    }
+
     // Demo 5: Nested Dialog - Create Project with Advanced Settings
     private bool showProjectDialog = false;
     private bool showAdvancedSettingsDialog = false;
     private ProjectModel projectModel = new();
+    private EditContext projectEditContext = null!;
     private AdvancedSettingsModel advancedSettingsModel = new();
 
     private class ProjectModel
@@ -1489,8 +1620,33 @@
         showAdvancedSettingsDialog = true;
     }
 
-    private void CloseAdvancedSettings()
+    private void SaveAdvancedSettings()
     {
         showAdvancedSettingsDialog = false;
+        ToastService.Success("Advanced settings saved", "Configuration applied successfully");
+    }
+
+    private void CancelAdvancedSettings()
+    {
+        showAdvancedSettingsDialog = false;
+        ToastService.Show("Advanced settings cancelled");
+    }
+
+    private void SaveProject()
+    {
+        if (!projectEditContext.Validate())
+        {
+            ToastService.Error("Validation failed", "Please fix the errors before creating the project");
+            return;
+        }
+
+        showProjectDialog = false;
+        ToastService.Success("Project created", "See the output form JSON below");
+    }
+
+    private void CancelProject()
+    {
+        showProjectDialog = false;
+        ToastService.Show("Project creation cancelled");
     }
 }
