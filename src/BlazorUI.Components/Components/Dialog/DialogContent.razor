@@ -126,7 +126,10 @@
 
     /// <summary>
     /// Calculates the z-index for the dialog overlay based on nesting depth.
-    /// Formula: Base overlay z-index + (depth * 2)
+    /// Formula: Max(Base overlay z-index, previous content z-index) + (depth * 2)
+    /// For depth 0: Max(DialogOverlay, DialogContent - 2) + 0
+    /// For depth 1: Max(DialogOverlay, DialogContent) + 2
+    /// This ensures each nested dialog's overlay appears above the previous dialog's content.
     /// </summary>
     private int GetEffectiveOverlayZIndex()
     {
