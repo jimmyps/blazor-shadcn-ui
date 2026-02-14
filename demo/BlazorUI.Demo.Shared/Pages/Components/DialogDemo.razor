@@ -18,6 +18,7 @@
 @using BlazorUI.Components.ScrollArea
 @using BlazorUI.Components.Collapsible
 @using BlazorUI.Components.Toast
+@using BlazorUI.Components.Extensions
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 @inject IToastService ToastService
@@ -581,12 +582,12 @@
                     <FieldGroup Orientation="FieldGroupOrientation.Vertical" Class="mx-1">
                         <!-- Billing Toggle -->
                         <Field Orientation="FieldOrientation.Horizontal">
-                            <FieldContent Class="flex items-center justify-center gap-3 p-4 bg-muted/30 rounded-lg">
+                            <FieldContent Class="flex flex-row justify-center gap-3 p-4 bg-muted/30 rounded-lg">
                                 <span class="text-sm font-medium @(subscriptionModel.IsAnnual ? "text-muted-foreground" : "")">Monthly</span>
                                 <Switch @bind-Checked="subscriptionModel.IsAnnual" />
                                 <span class="text-sm font-medium @(subscriptionModel.IsAnnual ? "" : "text-muted-foreground")">
                                     Annual
-                                    <Badge Variant="BadgeVariant.Secondary" Class="ml-2">Save 20%</Badge>
+                                    <Badge Variant="BadgeVariant.Secondary" Class="ml-2 bg-green-800 hover:bg-green-800/80 text-white dark:bg-green-600">Save 20%</Badge>
                                 </span>
                             </FieldContent>
                         </Field>
@@ -668,7 +669,7 @@
                             <FieldLabel For="team-size">Team Size: @((int)subscriptionModel.TeamSize) members</FieldLabel>
                             <FieldContent>
                                 <Slider @bind-Value="subscriptionModel.TeamSize"
-                                        Min="1"
+                                        Class="my-2" Min="1"
                                         Max="50"
                                         Step="1" />
                                 <FieldDescription>Additional $5/member for teams larger than 10</FieldDescription>
@@ -1349,15 +1350,15 @@
     private string? selectedComboboxFramework;
 
     private readonly List<ComboboxFramework> comboboxFrameworks = new()
-    {
-        new ComboboxFramework { Value = "blazor", Label = "Blazor" },
-        new ComboboxFramework { Value = "react", Label = "React" },
-        new ComboboxFramework { Value = "vue", Label = "Vue" },
-        new ComboboxFramework { Value = "angular", Label = "Angular" },
-        new ComboboxFramework { Value = "svelte", Label = "Svelte" },
-        new ComboboxFramework { Value = "nextjs", Label = "Next.js" },
-        new ComboboxFramework { Value = "nuxt", Label = "Nuxt" }
-    };
+{
+    new ComboboxFramework { Value = "blazor", Label = "Blazor" },
+    new ComboboxFramework { Value = "react", Label = "React" },
+    new ComboboxFramework { Value = "vue", Label = "Vue" },
+    new ComboboxFramework { Value = "angular", Label = "Angular" },
+    new ComboboxFramework { Value = "svelte", Label = "Svelte" },
+    new ComboboxFramework { Value = "nextjs", Label = "Next.js" },
+    new ComboboxFramework { Value = "nuxt", Label = "Nuxt" }
+};
 
     private void HandleSave()
     {
@@ -1412,6 +1413,9 @@
 
     private void SaveUserProfile()
     {
+        // Set request focus on the first invalid input
+        userProfileEditContext.RequestFocusFirstInvalidInput();
+
         if (!userProfileEditContext.Validate())
         {
             ToastService.Error("Validation failed", "Please fix the errors before saving");
@@ -1520,6 +1524,9 @@
 
     private void SaveTeamInvite()
     {
+        // Set request focus on the first invalid input
+        teamInviteEditContext.RequestFocusFirstInvalidInput();
+
         if (!teamInviteEditContext.Validate())
         {
             ToastService.Error("Validation failed", "Please fix the errors before sending the invitation");
@@ -1636,6 +1643,8 @@
     {
         if (!projectEditContext.Validate())
         {
+            // Request focus on the first invalid input
+            projectEditContext.RequestFocusFirstInvalidInput();
             ToastService.Error("Validation failed", "Please fix the errors before creating the project");
             return;
         }
