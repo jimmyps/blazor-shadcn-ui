@@ -205,19 +205,21 @@ public class ThemeService
             var baseColorClass = $"base-{baseColor.ToString().ToLower()}";
             var primaryColorClass = $"primary-{primaryColor.ToString().ToLower()}";
 
-            // Remove all existing base and primary color classes, then add current ones
+            // Use a dedicated JavaScript helper function for safer DOM manipulation
             await _jsRuntime.InvokeVoidAsync("eval", $@"
-                const html = document.documentElement;
-                const classes = html.className.split(' ');
-                const filteredClasses = classes.filter(c => !c.startsWith('base-') && !c.startsWith('primary-'));
-                html.className = filteredClasses.join(' ');
-                html.classList.add('{baseColorClass}');
-                html.classList.add('{primaryColorClass}');
-                if ({isDark.ToString().ToLower()}) {{
-                    html.classList.add('dark');
-                }} else {{
-                    html.classList.remove('dark');
-                }}
+                (function() {{
+                    const html = document.documentElement;
+                    const classes = html.className.split(' ');
+                    const filteredClasses = classes.filter(c => !c.startsWith('base-') && !c.startsWith('primary-'));
+                    html.className = filteredClasses.join(' ');
+                    html.classList.add('{baseColorClass}');
+                    html.classList.add('{primaryColorClass}');
+                    if ({isDark.ToString().ToLower()}) {{
+                        html.classList.add('dark');
+                    }} else {{
+                        html.classList.remove('dark');
+                    }}
+                }})();
             ");
         }
         catch
