@@ -1381,7 +1381,7 @@
 
     // Demo 1: User Profile Settings
     private bool showUserProfileDialog = false;
-    private UserProfileModel userProfileModel = new();
+    private readonly UserProfileModel userProfileModel = new();
     private EditContext userProfileEditContext = null!;
 
     protected override void OnInitialized()
@@ -1434,7 +1434,7 @@
 
     // Demo 2: Subscription Plan Selection
     private bool showSubscriptionDialog = false;
-    private SubscriptionModel subscriptionModel = new();
+    private readonly SubscriptionModel subscriptionModel = new();
 
     private class SubscriptionModel
     {
@@ -1465,21 +1465,21 @@
     {
         var monthlyTotal = subscriptionModel.SelectedPlan switch
         {
-            "starter" => 10,
-            "pro" => 30,
-            "enterprise" => 100,
-            _ => 0
+            "starter" => 10m,
+            "pro" => 30m,
+            "enterprise" => 100m,
+            _ => 0m
         };
 
         var annualTotal = subscriptionModel.SelectedPlan switch
         {
-            "starter" => 8,
-            "pro" => 24,
-            "enterprise" => 80,
-            _ => 0
+            "starter" => 8m,
+            "pro" => 24m,
+            "enterprise" => 80m,
+            _ => 0m
         };
 
-        return (monthlyTotal - annualTotal) * 12;
+        return (monthlyTotal - annualTotal) * 12m;
     }
 
     private void SaveSubscription()
@@ -1496,7 +1496,7 @@
 
     // Demo 3: Team Member Invite
     private bool showTeamInviteDialog = false;
-    private TeamInviteModel teamInviteModel = new();
+    private readonly TeamInviteModel teamInviteModel = new();
     private EditContext teamInviteEditContext = null!;
     private readonly List<Project> availableProjects = new()
     {
@@ -1550,7 +1550,7 @@
 
     // Demo 4: E-commerce Product Configuration
     private bool showProductConfigDialog = false;
-    private ProductConfigModel productConfigModel = new();
+    private readonly ProductConfigModel productConfigModel = new();
 
     private class ProductConfigModel
     {
@@ -1582,9 +1582,9 @@
     // Demo 5: Nested Dialog - Create Project with Advanced Settings
     private bool showProjectDialog = false;
     private bool showAdvancedSettingsDialog = false;
-    private ProjectModel projectModel = new();
+    private readonly ProjectModel projectModel = new();
     private EditContext projectEditContext = null!;
-    private AdvancedSettingsModel advancedSettingsModel = new();
+    private readonly AdvancedSettingsModel advancedSettingsModel = new();
 
     private class ProjectModel
     {

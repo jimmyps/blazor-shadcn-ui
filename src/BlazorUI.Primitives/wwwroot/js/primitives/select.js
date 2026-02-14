@@ -278,6 +278,8 @@ export function cleanupKeyboardNavigation(contentId) {
 export function focusContent(contentId) {
     const contentElement = document.getElementById(contentId);
   if (contentElement) {
+      // Delay to ensure Blazor render cycle completes and DOM is fully updated
+      // before attempting to focus, preventing focus race conditions
       setTimeout(() => {
         contentElement.focus({ preventScroll: true });
       }, 10);
