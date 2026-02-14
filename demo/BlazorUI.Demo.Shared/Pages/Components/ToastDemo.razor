@@ -1,4 +1,4 @@
-﻿@page "/components/toast"
+@page "/components/toast"
 @using BlazorUI.Components.Toast
 @inject IToastService ToastService
 
@@ -23,59 +23,7 @@
                 </p>
             </div>
 
-            <Button @onclick="ShowDefaultToast">Show Toast</Button>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Success Toast</h2>
-                <p class="text-muted-foreground">
-                    Indicate a successful operation.
-                </p>
-            </div>
-
-            <Button Variant="ButtonVariant.Outline" @onclick="ShowSuccessToast" Class="bg-green-600 text-white hover:bg-green-700">
-                Show Success
-            </Button>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Error Toast</h2>
-                <p class="text-muted-foreground">
-                    Alert the user to an error.
-                </p>
-            </div>
-
-            <Button Variant="ButtonVariant.Destructive" @onclick="ShowErrorToast">
-                Show Error
-            </Button>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Warning Toast</h2>
-                <p class="text-muted-foreground">
-                    Warn the user about something.
-                </p>
-            </div>
-
-            <Button Variant="ButtonVariant.Outline" @onclick="ShowWarningToast" Class="bg-yellow-500 text-white hover:bg-yellow-600">
-                Show Warning
-            </Button>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Info Toast</h2>
-                <p class="text-muted-foreground">
-                    Provide informational message.
-                </p>
-            </div>
-
-            <Button Variant="ButtonVariant.Outline" @onclick="ShowInfoToast" Class="bg-blue-500 text-white hover:bg-blue-600">
-                Show Info
-            </Button>
+            <Button Variant="ButtonVariant.Outline" @onclick="ShowDefaultToast">Show Toast</Button>
         </section>
 
         <section class="space-y-4">
@@ -152,10 +100,80 @@
 
         <section class="space-y-4">
             <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Toast Sizes</h2>
+                <p class="text-muted-foreground">
+                    Choose between default and compact sizes.
+                </p>
+            </div>
+
+            <div class="flex gap-2">
+                <Button Variant="ButtonVariant.Outline" @onclick="ShowDefaultSizeToast">
+                    Default Size
+                </Button>
+                <Button Variant="ButtonVariant.Outline" @onclick="ShowCompactSizeToast">
+                    Compact Size
+                </Button>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Variant Icons</h2>
+                <p class="text-muted-foreground">
+                    Toasts automatically show icons based on variant. You can disable them if needed.
+                </p>
+            </div>
+
+            <div class="flex gap-2 flex-wrap">
+                <Button Variant="ButtonVariant.Outline" @onclick="ShowToastWithIcon">
+                    With Icon (Default)
+                </Button>
+                <Button Variant="ButtonVariant.Outline" @onclick="ShowToastWithoutIcon">
+                    Without Icon
+                </Button>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Pause on Hover</h2>
+                <p class="text-muted-foreground">
+                    Toasts pause auto-dismiss when you hover over them. Try hovering to read the message!
+                </p>
+            </div>
+
+            <div class="flex gap-2">
+                <Button Variant="ButtonVariant.Outline" @onclick="ShowPauseableToast">
+                    Show with Pause (Default)
+                </Button>
+                <Button Variant="ButtonVariant.Outline" @onclick="ShowNonPauseableToast">
+                    Show without Pause
+                </Button>
+            </div>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Advanced Customization</h2>
+                <p class="text-muted-foreground">
+                    Combine multiple options for granular control.
+                </p>
+            </div>
+
+            <Button Variant="ButtonVariant.Outline" @onclick="ShowCustomizedToast">
+                Show Customized Toast
+            </Button>
+        </section>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
                 <h2 class="text-2xl font-semibold">Features</h2>
             </div>
             <ul class="list-disc list-inside space-y-2 text-sm">
                 <li>Multiple variants: Default, Success, Warning, Error, Info</li>
+                <li>Two sizes: Default and Compact</li>
+                <li>Auto variant icons (Success ✓, Error ✗, Warning ⚠, Info ℹ)</li>
+                <li>Pause on hover (prevents auto-dismiss while reading)</li>
                 <li>Programmatic API via IToastService</li>
                 <li>Auto-dismiss with configurable duration</li>
                 <li>Optional action buttons</li>
@@ -206,11 +224,30 @@
 &lt;Button @@onclick="ShowToast"&gt;Show Toast&lt;/Button&gt;
 
 @@code {
+    // Simple usage with service methods
     private void ShowToast()
     {
         Toasts.Success("Saved!", "Your changes have been saved.");
     }
 
+    // Using static factory methods
+    private void ShowWithFactory()
+    {
+        Toasts.Show(ToastOptions.Success("Saved!", "Your changes have been saved."));
+    }
+
+    // Compact toast for dialogs
+    private void ShowInDialog()
+    {
+        Toasts.Show(ToastOptions.Compact(
+            "Changes saved",
+            "Your profile has been updated",
+            ToastVariant.Success,
+            ToastPosition.BottomCenter
+        ));
+    }
+
+    // With action button
     private void ShowWithAction()
     {
         Toasts.Show(new ToastOptions
@@ -219,6 +256,21 @@
             Description = "Your meeting has been scheduled.",
             ActionLabel = "Undo",
             OnAction = () => Console.WriteLine("Undo clicked!")
+        });
+    }
+
+    // Advanced customization
+    private void ShowCustomized()
+    {
+        Toasts.Show(new ToastOptions
+        {
+            Title = "Custom Toast",
+            Description = "Fully customized with all options.",
+            Variant = ToastVariant.Success,
+            Size = ToastSize.Compact,
+            ShowIcon = true,
+            PauseOnHover = true,
+            Duration = TimeSpan.FromSeconds(8)
         });
     }
 }</code></pre>
@@ -287,4 +339,90 @@
     {
         ToastService.DismissAll();
     }
+
+    // New feature demos
+    private void ShowDefaultSizeToast()
+    {
+        ToastService.Show(new ToastOptions
+        {
+            Title = "Default Size",
+            Description = "This toast uses the default size with normal padding.",
+            Variant = ToastVariant.Success,
+            Size = ToastSize.Default
+        });
+    }
+
+    private void ShowCompactSizeToast()
+    {
+        ToastService.Show(new ToastOptions
+        {
+            Title = "Compact Size",
+            Description = "This toast uses compact size with reduced padding for denser UI.",
+            Variant = ToastVariant.Info,
+            Size = ToastSize.Compact
+        });
+    }
+
+    private void ShowToastWithIcon()
+    {
+        ToastService.Show(new ToastOptions
+        {
+            Title = "With Icon",
+            Description = "Icons are shown by default based on the variant.",
+            Variant = ToastVariant.Success,
+            ShowIcon = true  // Default behavior
+        });
+    }
+
+    private void ShowToastWithoutIcon()
+    {
+        ToastService.Show(new ToastOptions
+        {
+            Title = "Without Icon",
+            Description = "You can disable the icon if needed.",
+            Variant = ToastVariant.Warning,
+            ShowIcon = false
+        });
+    }
+
+    private void ShowPauseableToast()
+    {
+        ToastService.Show(new ToastOptions
+        {
+            Title = "Pause on Hover",
+            Description = "Hover over this toast and it will pause the auto-dismiss timer! Move your mouse away and it will resume counting down.",
+            Variant = ToastVariant.Info,
+            PauseOnHover = true,  // Default behavior
+            Duration = TimeSpan.FromSeconds(5)
+        });
+    }
+
+    private void ShowNonPauseableToast()
+    {
+        ToastService.Show(new ToastOptions
+        {
+            Title = "No Pause",
+            Description = "This toast will auto-dismiss even if you hover over it.",
+            Variant = ToastVariant.Warning,
+            PauseOnHover = false,
+            Duration = TimeSpan.FromSeconds(5)
+        });
+    }
+
+    private void ShowCustomizedToast()
+    {
+        ToastService.Show(new ToastOptions
+        {
+            Title = "Fully Customized",
+            Description = "This toast combines compact size, custom icon setting, pause on hover, and action button.",
+            Variant = ToastVariant.Success,
+            Size = ToastSize.Compact,
+            ShowIcon = true,
+            PauseOnHover = true,
+            ActionLabel = "View Details",
+            OnAction = () => ToastService.Info("Details", "Action button clicked!"),
+            Duration = TimeSpan.FromSeconds(8)
+        });
+    }
 }
+

@@ -39,7 +39,7 @@
             </div>
             <div class="rounded-lg border border-border bg-card p-6">
                 <div class="w-[280px]">
-                    <BlazorUI.Primitives.Select.Select TValue="string" @bind-Value="basicValue" DisplayTextSelector="@GetFruitDisplayText" style="position: relative;">
+                    <BlazorUI.Primitives.Select.Select TValue="string" @bind-Value="basicValue" style="position: relative;">
                         <BlazorUI.Primitives.Select.SelectTrigger TValue="string" class="flex items-center justify-between w-full px-3 py-2 border border-input rounded-md bg-background">
                             <span>Selected: @GetFruitDisplayText(basicValue)</span>
                             <span>▼</span>

@@ -644,7 +644,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
             var builder = new StringBuilder();
 
             // Base button styles
-            builder.Append("inline-flex items-center justify-between rounded-md text-sm font-medium ");
+            builder.Append("inline-flex items-center justify-between rounded-md text-sm ");
             builder.Append("ring-offset-background ");
             
             // Transition styles - smooth 200ms transitions

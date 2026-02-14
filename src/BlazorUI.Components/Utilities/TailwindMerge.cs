@@ -130,9 +130,13 @@ public static class TailwindMerge
     private static readonly Regex SpacingRegex = new(@"^(p|px|py|pt|pr|pb|pl|m|mx|my|mt|mr|mb|ml)-(\d+\.?\d*|auto)$", RegexOptions.Compiled);
     private static readonly Regex SizingRegex = new(@"^(w|h|min-w|min-h|max-w|max-h)-(.+)$", RegexOptions.Compiled);
     private static readonly Regex GapRegex = new(@"^(gap|gap-x|gap-y)-(\d+\.?\d*)$", RegexOptions.Compiled);
-    private static readonly Regex TextColorRegex = new(@"^text-([a-z]+)(?:-(\d+))?$", RegexOptions.Compiled);
-    private static readonly Regex BgColorRegex = new(@"^bg-([a-z]+)(?:-(\d+))?$", RegexOptions.Compiled);
-    private static readonly Regex BorderColorRegex = new(@"^border-([a-z]+)(?:-(\d+))?$", RegexOptions.Compiled);
+    
+    // Color regexes updated to support opacity modifiers (e.g., bg-blue-500/80, text-red-500/50)
+    // and arbitrary values (e.g., bg-[#fff], text-[rgb(255,0,0)])
+    private static readonly Regex TextColorRegex = new(@"^text-([a-z]+(?:-\d+)?|\[[^\]]+\])(?:/\d+)?$", RegexOptions.Compiled);
+    private static readonly Regex BgColorRegex = new(@"^bg-([a-z]+(?:-\d+)?|\[[^\]]+\])(?:/\d+)?$", RegexOptions.Compiled);
+    private static readonly Regex BorderColorRegex = new(@"^border-([a-z]+(?:-\d+)?|\[[^\]]+\])(?:/\d+)?$", RegexOptions.Compiled);
+    
     private static readonly Regex BorderWidthRegex = new(@"^border(-\d+)?$", RegexOptions.Compiled);
     private static readonly Regex OpacityRegex = new(@"^opacity-(\d+)$", RegexOptions.Compiled);
     private static readonly Regex ZIndexRegex = new(@"^z-(\d+|auto)$", RegexOptions.Compiled);
@@ -238,115 +242,174 @@ public static class TailwindMerge
     }
 
     /// <summary>
+    /// Ref struct to hold modifier extraction results without allocations.
+    /// </summary>
+    private ref struct ModifierExtraction
+    {
+        public ReadOnlySpan<char> Modifiers;
+        public ReadOnlySpan<char> BaseClass;
+    }
+
+    /// <summary>
+    /// Extracts modifiers and base class from a Tailwind class name.
+    /// Uses ReadOnlySpan to minimize memory allocations.
+    /// Supports multiple modifiers (e.g., "dark:hover:bg-blue-500").
+    /// </summary>
+    /// <param name="className">The class name as a span</param>
+    /// <returns>ModifierExtraction struct containing modifiers and base class spans</returns>
+    private static ModifierExtraction ExtractModifiers(ReadOnlySpan<char> className)
+    {
+        var lastColonIndex = className.LastIndexOf(':');
+        
+        if (lastColonIndex == -1)
+            return new ModifierExtraction 
+            { 
+                Modifiers = ReadOnlySpan<char>.Empty, 
+                BaseClass = className 
+            };
+        
+        // Everything before last colon = modifiers (e.g., "dark:hover")
+        // Everything after last colon = base class (e.g., "bg-blue-500")
+        return new ModifierExtraction
+        {
+            Modifiers = className[..lastColonIndex],
+            BaseClass = className[(lastColonIndex + 1)..]
+        };
+    }
+
+    /// <summary>
+    /// Combines modifiers with a base group, only allocating if modifiers exist.
+    /// </summary>
+    private static string CombineModifiersWithGroup(ReadOnlySpan<char> modifiers, string baseGroup)
+    {
+        return modifiers.IsEmpty ? baseGroup : $"{modifiers}:{baseGroup}";
+    }
+
+    /// <summary>
     /// Computes the utility group for a class name.
     /// This is the uncached implementation called by GetUtilityGroup.
+    /// Supports modifier prefixes like hover:, dark:, focus:, etc.
     /// </summary>
     private static string? ComputeUtilityGroup(string className)
     {
+        // Extract modifiers using spans (no allocations until we need the final string)
+        var extraction = ExtractModifiers(className.AsSpan());
+        var modifiers = extraction.Modifiers;
+        var baseClassSpan = extraction.BaseClass;
+        
+        // Convert base class span to string for lookups
+        var baseClass = baseClassSpan.ToString();
+        
         // Check exact matches first (display, position, etc.)
-        if (TailwindGroups.TryGetValue(className, out var group))
-            return group;
+        if (TailwindGroups.TryGetValue(baseClass, out var group))
+            return CombineModifiersWithGroup(modifiers, group);
 
         // Check spacing utilities (padding, margin) - use Match directly to avoid double evaluation
-        var spacingMatch = SpacingRegex.Match(className);
+        var spacingMatch = SpacingRegex.Match(baseClass);
         if (spacingMatch.Success)
         {
             var prefix = spacingMatch.Groups[1].Value;
-            return TailwindGroups.TryGetValue(prefix, out var spacingGroup) ? spacingGroup : null;
+            if (TailwindGroups.TryGetValue(prefix, out var spacingGroup))
+                return CombineModifiersWithGroup(modifiers, spacingGroup);
+            return null;
         }
 
         // Check sizing utilities (width, height, min/max)
-        var sizingMatch = SizingRegex.Match(className);
+        var sizingMatch = SizingRegex.Match(baseClass);
         if (sizingMatch.Success)
         {
             var prefix = sizingMatch.Groups[1].Value;
-            return TailwindGroups.TryGetValue(prefix, out var sizingGroup) ? sizingGroup : null;
+            if (TailwindGroups.TryGetValue(prefix, out var sizingGroup))
+                return CombineModifiersWithGroup(modifiers, sizingGroup);
+            return null;
         }
 
         // Check gap utilities
-        var gapMatch = GapRegex.Match(className);
+        var gapMatch = GapRegex.Match(baseClass);
         if (gapMatch.Success)
         {
             var prefix = gapMatch.Groups[1].Value;
-            return TailwindGroups.TryGetValue(prefix, out var gapGroup) ? gapGroup : null;
+            if (TailwindGroups.TryGetValue(prefix, out var gapGroup))
+                return CombineModifiersWithGroup(modifiers, gapGroup);
+            return null;
         }
 
         // Check text colors
-        if (TextColorRegex.IsMatch(className))
-            return "text-color";
+        if (TextColorRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "text-color");
 
         // Check background colors
-        if (BgColorRegex.IsMatch(className))
-            return "background-color";
+        if (BgColorRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "background-color");
 
         // Check border colors
-        if (BorderColorRegex.IsMatch(className))
-            return "border-color";
+        if (BorderColorRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "border-color");
 
         // Check border width
-        if (BorderWidthRegex.IsMatch(className))
-            return "border-width";
+        if (BorderWidthRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "border-width");
 
         // Check opacity
-        if (OpacityRegex.IsMatch(className))
-            return "opacity";
+        if (OpacityRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "opacity");
 
         // Check z-index
-        if (ZIndexRegex.IsMatch(className))
-            return "z-index";
+        if (ZIndexRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "z-index");
 
         // Check grid columns
-        if (GridColsRegex.IsMatch(className))
-            return "grid-cols";
+        if (GridColsRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "grid-cols");
 
         // Check grid rows
-        if (GridRowsRegex.IsMatch(className))
-            return "grid-rows";
+        if (GridRowsRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "grid-rows");
 
         // Check animation duration
-        if (DurationRegex.IsMatch(className))
-            return "animation-duration";
+        if (DurationRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "animation-duration");
 
         // Check animation delay
-        if (DelayRegex.IsMatch(className))
-            return "animation-delay";
+        if (DelayRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "animation-delay");
 
         // Check animation duration (both duration-* and animate-duration-*)
-        if (AnimateDurationRegex.IsMatch(className))
-            return "animate-duration";
+        if (AnimateDurationRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "animate-duration");
 
         // Check animation easing (animate-ease-*)
-        if (AnimateEaseRegex.IsMatch(className))
-            return "animate-ease";
+        if (AnimateEaseRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "animate-ease");
 
         // Check animation timing function (ease-*)
-        if (EasingRegex.IsMatch(className))
-            return "animation-timing-function";
+        if (EasingRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "animation-timing-function");
 
         // Check named animations (animate-in, animate-out, animate-spin, etc.)
         // This must come AFTER the more specific animate-duration and animate-ease checks
-        if (AnimateNameRegex.IsMatch(className))
-            return "animation-name";
+        if (AnimateNameRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "animation-name");
 
         // Check translate utilities (translate-x, translate-y, translate)
-        if (TranslateRegex.IsMatch(className))
+        if (TranslateRegex.IsMatch(baseClass))
         {
-            var match = TranslateRegex.Match(className);
+            var match = TranslateRegex.Match(baseClass);
             var prefix = match.Groups[1].Value;
-            return prefix; // Returns "translate-x", "translate-y", or "translate"
+            return CombineModifiersWithGroup(modifiers, prefix); // Returns "translate-x", "translate-y", or "translate"
         }
 
         // Check position utilities (top, right, bottom, left, inset, inset-x, inset-y)
-        if (PositionRegex.IsMatch(className))
+        if (PositionRegex.IsMatch(baseClass))
         {
-            var match = PositionRegex.Match(className);
+            var match = PositionRegex.Match(baseClass);
             var prefix = match.Groups[1].Value;
-            return prefix; // Returns "top", "right", "bottom", "left", "inset", "inset-x", or "inset-y"
+            return CombineModifiersWithGroup(modifiers, prefix); // Returns "top", "right", "bottom", "left", "inset", "inset-x", or "inset-y"
         }
 
         // Check shadow utilities (shadow, shadow-sm, shadow-md, shadow-lg, shadow-xl, shadow-2xl, shadow-inner, shadow-none)
-        if (ShadowRegex.IsMatch(className))
-            return "box-shadow";
+        if (ShadowRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "box-shadow");
 
         // Unknown utility
         return null;

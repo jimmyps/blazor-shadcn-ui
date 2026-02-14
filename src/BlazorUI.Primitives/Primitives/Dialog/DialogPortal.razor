@@ -65,10 +65,10 @@
             {
                 RegisterPortal();
             }
-            // Note: We do NOT call UpdatePortal() here because it would cause infinite loops
-            // when nested portals (like Combobox inside Dialog) are used. The RenderFragment
-            // returned by GetPortalContent() captures ChildContent by reference, so when
-            // PortalHost renders, it will always use the latest content.
+            else
+            {
+                PortalService.RefreshPortal(_portalId);
+            }
         }
         else
         {
@@ -94,7 +94,7 @@
     {
         builder.OpenComponent<CascadingValue<DialogContext>>(0);
         builder.AddAttribute(1, "Value", Context);
-        builder.AddAttribute(2, "IsFixed", false);
+        builder.AddAttribute(2, "IsFixed", false);  // Must be false to allow re-evaluation of bindings
         builder.AddAttribute(3, "ChildContent", ChildContent);
         builder.CloseComponent();
     };

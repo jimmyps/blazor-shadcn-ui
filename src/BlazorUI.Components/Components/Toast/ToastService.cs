@@ -1,4 +1,4 @@
-﻿namespace BlazorUI.Components.Toast;
+namespace BlazorUI.Components.Toast;
 
 /// <summary>
 /// Service interface for displaying toast notifications.
@@ -76,6 +76,10 @@ public interface IToastService
 public class ToastService : IToastService
 {
     private readonly List<ToastOptions> _toasts = new();
+    private readonly Dictionary<string, CancellationTokenSource> _dismissTimers = new();
+    private readonly Dictionary<string, DateTime> _timerStartTimes = new();
+    private readonly Dictionary<string, TimeSpan> _originalDurations = new();
+    private readonly Dictionary<string, bool> _isPaused = new();
     private readonly object _lock = new();
 
     /// <inheritdoc />
@@ -102,7 +106,11 @@ public class ToastService : IToastService
         }
         OnChange?.Invoke();
 
-        if (options.Duration.HasValue)
+        if (options.Duration.HasValue && options.PauseOnHover)
+        {
+            _ = DismissAfterDelayWithPause(options.Id, options.Duration.Value);
+        }
+        else if (options.Duration.HasValue)
         {
             _ = DismissAfterDelay(options.Id, options.Duration.Value);
         }
@@ -181,5 +189,114 @@ public class ToastService : IToastService
     {
         await Task.Delay(delay);
         Dismiss(id);
+    }
+
+    private async Task DismissAfterDelayWithPause(string id, TimeSpan delay)
+    {
+        var cts = new CancellationTokenSource();
+        
+        lock (_lock)
+        {
+            _dismissTimers[id] = cts;
+            _timerStartTimes[id] = DateTime.UtcNow;
+            _originalDurations[id] = delay;
+            _isPaused[id] = false;
+        }
+
+        try
+        {
+            await Task.Delay(delay, cts.Token);
+            
+            // Timer completed without being cancelled
+            Dismiss(id);
+            
+            // Clean up on successful completion
+            lock (_lock)
+            {
+                _dismissTimers.Remove(id);
+                _timerStartTimes.Remove(id);
+                _originalDurations.Remove(id);
+                _isPaused.Remove(id);
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            // Timer was cancelled (either paused or dismissed)
+            // Check if it was just paused
+            lock (_lock)
+            {
+                if (_isPaused.GetValueOrDefault(id))
+                {
+                    // Toast is paused, keep state for resume
+                    // Don't clean up - state is needed for resume
+                    return;
+                }
+                else
+                {
+                    // Toast was dismissed, clean up
+                    _dismissTimers.Remove(id);
+                    _timerStartTimes.Remove(id);
+                    _originalDurations.Remove(id);
+                    _isPaused.Remove(id);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Sets the hover state for a toast (for pause-on-hover functionality).
+    /// </summary>
+    /// <param name="id">The toast ID.</param>
+    /// <param name="isHovered">True if hovered, false otherwise.</param>
+    public void SetToastHoverState(string id, bool isHovered)
+    {
+        lock (_lock)
+        {
+            if (!_dismissTimers.TryGetValue(id, out var cts))
+            {
+                return; // No active timer for this toast
+            }
+
+            if (isHovered)
+            {
+                // Pause the timer
+                if (!_isPaused.GetValueOrDefault(id))
+                {
+                    _isPaused[id] = true;
+                    
+                    // Calculate elapsed time
+                    var startTime = _timerStartTimes[id];
+                    var elapsed = DateTime.UtcNow - startTime;
+                    var originalDuration = _originalDurations[id];
+                    var remaining = originalDuration - elapsed;
+                    
+                    // Store the remaining duration for resume
+                    _originalDurations[id] = remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
+                    
+                    // Cancel the current timer
+                    cts.Cancel();
+                }
+            }
+            else
+            {
+                // Resume the timer
+                if (_isPaused.GetValueOrDefault(id))
+                {
+                    _isPaused[id] = false;
+                    
+                    var remaining = _originalDurations[id];
+                    if (remaining > TimeSpan.Zero)
+                    {
+                        // Start a new timer with remaining duration
+                        _ = DismissAfterDelayWithPause(id, remaining);
+                    }
+                    else
+                    {
+                        // Time's up, dismiss immediately
+                        Dismiss(id);
+                    }
+                }
+            }
+        }
     }
 }

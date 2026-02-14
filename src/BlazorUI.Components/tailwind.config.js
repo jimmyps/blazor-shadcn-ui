@@ -19,6 +19,8 @@ module.exports = {
     'z-55',
     'z-60',
     'z-70',
+    'z-100',
+    'z-200',
   ],
   theme: {
     extend: {

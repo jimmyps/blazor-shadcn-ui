@@ -1,6 +1,5 @@
 @namespace BlazorUI.Primitives.Floating
 @using BlazorUI.Primitives.Services
-@using BlazorUI.Primitives.Constants
 @inject IPositioningService PositioningService
 @inject IPortalService PortalService
 @inject IJSRuntime JSRuntime
@@ -115,6 +114,15 @@
     public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;
 
     /// <summary>
+    /// Whether to keep the portal mounted when closed.
+    /// When true, portal stays registered and content stays in DOM (but hidden).
+    /// Useful for maintaining state or avoiding re-registration overhead.
+    /// Default is false.
+    /// </summary>
+    [Parameter]
+    public bool ForceMount { get; set; } = false;
+
+    /// <summary>
     /// Event callback invoked when the floating content is positioned and visible.
     /// Use this to set up keyboard navigation, focus management, etc.
     /// </summary>
@@ -130,6 +138,8 @@
     private IAsyncDisposable? _positioningCleanup;
     private bool _isInitialized = false;
     private bool _isPositioned = false;
+    private bool _previousIsOpen = false;
+    private bool _isUpdatingVisibility = false; // Guard against re-entrant async calls during ForceMount visibility updates
     private ElementReference _portalContentRef;
     private TaskCompletionSource<bool>? _portalReadyTcs;
 
@@ -171,10 +181,14 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (IsOpen && !_isInitialized)
+        // Setup when opening OR when ForceMount is enabled and not yet initialized
+        if ((IsOpen || ForceMount) && !_isInitialized)
         {
             _isInitialized = true;
             _isPositioned = false;
+            
+            // Initialize tracking IMMEDIATELY to prevent loop in visibility update path
+            _previousIsOpen = IsOpen;
 
             // Register content through portal - this triggers PortalHost to re-render
             if (!string.IsNullOrEmpty(ParentPortalId))
@@ -207,18 +221,33 @@
                 await Task.Yield();
             }
 
-            // Check if still open (user might have closed during wait)
-            if (!IsOpen)
-            {
+            // Check if still open OR ForceMount (user might have closed during wait)
+            if (!IsOpen && !ForceMount)
                 return;
-            }
 
             // NOW _portalContentRef is guaranteed to be valid!
-            await SetupAsync();
+            // Only position if actually opening (not just ForceMount closed)
+            if (IsOpen)
+            {
+                await SetupAsync();
+            }
         }
-        else if (!IsOpen && _isInitialized)
+        // Only cleanup if not ForceMount and closed
+        else if (!IsOpen && _isInitialized && !ForceMount)
         {
             await CleanupAsync();
+        }
+        // Update visibility ONLY when IsOpen actually changes (ForceMount)
+        // Use guard to prevent re-entrant calls during async operations
+        else if (_isInitialized && ForceMount && IsOpen != _previousIsOpen && !_isUpdatingVisibility)
+        {
+            // Update tracking BEFORE async call to prevent re-entrant loops during await
+            _isUpdatingVisibility = true;
+            _previousIsOpen = IsOpen;
+            
+            await UpdateVisibilityAsync();
+            
+            _isUpdatingVisibility = false;
         }
     }
 
@@ -236,7 +265,7 @@
             _isPositioned = true;
 
             // Notify consumers that content is ready (for focus management, keyboard handlers, etc.)
-            if (OnReady.HasDelegate)
+            if (OnReady.HasDelegate && IsOpen)
             {
                 await OnReady.InvokeAsync();
             }
@@ -244,16 +273,44 @@
         catch (Exception ex)
         {
             Console.WriteLine($"FloatingPortal setup failed: {ex.Message}");
-            // Mark as positioned and show via JS even if setup fails
-            _isPositioned = true;
-            try
+        }
+    }
+
+    /// <summary>
+    /// Updates visibility when ForceMount is enabled and IsOpen changes.
+    /// </summary>
+    private async Task UpdateVisibilityAsync()
+    {
+        try
+        {
+            if (IsOpen)
             {
-                var elementUtilsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/element-utils.js");
-                await elementUtilsModule.InvokeVoidAsync("showElement", PortalId);
-                await elementUtilsModule.DisposeAsync();
+                // If opening for first time with ForceMount, run full setup
+                if (!_isPositioned)
+                {
+                    await SetupAsync();
+                }
+                else
+                {
+                    // Already positioned, just show
+                    await PositioningService.ShowFloatingAsync(_portalContentRef);
+                    
+                    // CRITICAL: Trigger OnReady for focus management and keyboard nav
+                    if (OnReady.HasDelegate)
+                    {
+                        await OnReady.InvokeAsync();
+                    }
+                }
             }
-            catch { /* ignore */ }
+            else
+            {
+                // Hide using dedicated visibility function (ForceMount keeps it mounted)
+                await PositioningService.HideFloatingAsync(_portalContentRef);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"FloatingPortal visibility update failed: {ex.Message}");
         }
     }
 
@@ -420,6 +477,7 @@
 
         _isInitialized = false;
         _isPositioned = false;
+        _isUpdatingVisibility = false;
     }
 
     public async ValueTask DisposeAsync()

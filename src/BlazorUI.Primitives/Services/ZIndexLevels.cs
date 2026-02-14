@@ -1,4 +1,4 @@
-namespace BlazorUI.Primitives.Constants;
+namespace BlazorUI.Primitives.Services;
 
 /// <summary>
 /// Defines the z-index hierarchy for portal-based components.
@@ -23,9 +23,14 @@ public static class ZIndexLevels
     public const int PopoverContent = 60;
 
     /// <summary>
+    /// Topmost content of container type such as AlertDialog
+    /// </summary>
+    public const int TopmostDialogContent = 100;
+
+    /// <summary>
     /// Tooltip content - always on top.
     /// </summary>
-    public const int TooltipContent = 70;
+    public const int TooltipContent = 200;
 
     /// <summary>
     /// Gets the recommended z-index for a given portal type.
@@ -43,30 +48,4 @@ public static class ZIndexLevels
             _ => PopoverContent // Default to popover level
         };
     }
-}
-
-/// <summary>
-/// Enum representing the different types of portals in the system.
-/// </summary>
-public enum PortalType
-{
-    /// <summary>
-    /// Dialog overlay/backdrop
-    /// </summary>
-    DialogOverlay,
-
-    /// <summary>
-    /// Dialog content container
-    /// </summary>
-    DialogContent,
-
-    /// <summary>
-    /// Popover, Select, DropdownMenu, ContextMenu content
-    /// </summary>
-    PopoverContent,
-
-    /// <summary>
-    /// Tooltip content
-    /// </summary>
-    TooltipContent
 }

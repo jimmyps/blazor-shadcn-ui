@@ -268,7 +268,7 @@ public partial class Combobox<TItem> : ComponentBase
         get
         {
             // Base button styles matching Button component
-            var baseStyles = "inline-flex items-center justify-between rounded-md text-sm font-medium " +
+            var baseStyles = "inline-flex items-center justify-between rounded-md text-sm " +
                            "transition-colors focus-visible:outline-none focus-visible:ring-2 " +
                            "focus-visible:ring-ring focus-visible:ring-offset-2 " +
                            "disabled:opacity-50 disabled:pointer-events-none ";

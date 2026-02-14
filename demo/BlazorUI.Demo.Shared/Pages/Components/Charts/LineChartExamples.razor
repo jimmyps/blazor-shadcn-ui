@@ -12,7 +12,7 @@
                 <CardTitle Class="text-xl">Line Chart - Interactive</CardTitle>
                 <CardDescription>Showing trends for the @(timeRanges.TryGetValue(timeRange, out var description) ? description.ToLower() : "last 3 months")</CardDescription>
             </div>
-            <Select @bind-Value="@timeRange" TValue="string" DisplayTextSelector="@(value => timeRanges.TryGetValue(value, out var text) ? text : value)" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
+            <Select @bind-Value="@timeRange" TValue="string" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
                 <SelectTrigger>
                     <SelectValue Placeholder="Last 3 months" />
                 </SelectTrigger>

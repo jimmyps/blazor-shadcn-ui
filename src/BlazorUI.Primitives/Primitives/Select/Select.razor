@@ -4,7 +4,7 @@
 @inject BlazorUI.Primitives.Services.DropdownManagerService? DropdownManager
 
 @* Select root component - headless, unstyled behavior only *@
-<CascadingValue Value="@_context" IsFixed="false">
+<CascadingValue Value="@_context" IsFixed="true">
     <div @attributes="AdditionalAttributes">
         @ChildContent
     </div>
@@ -131,14 +131,17 @@
             _context.SetDisabled(Disabled);
         }
 
-        // Update controlled value if it changed
+        // CRITICAL: Context state is the source of truth
+        // If parameter has stale value from parent, restore from context
         if (_state.IsControlled)
         {
+            if (!EqualityComparer<TValue?>.Default.Equals(Value, _context.State.Value))
+            {
+                // Restore Value parameter from context state
+                Value = _context.State.Value;
+            }
+            
             _state.ControlledValue = Value;
-            _context.State.Value = Value;
-            // Update DisplayText - try to look up from registered items first,
-            // then use DisplayTextSelector if provided, finally fall back to Value.ToString()
-            _context.State.DisplayText = _context.GetDisplayTextForValue(Value) ?? GetDisplayText(Value);
         }
 
         // Handle controlled open state

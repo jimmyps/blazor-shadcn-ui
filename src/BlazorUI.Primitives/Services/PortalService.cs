@@ -72,6 +72,19 @@ public class PortalService : IPortalService
     }
 
     /// <inheritdoc />
+    public int GetPortalDepth(string id)
+    {
+        if (_portals.TryGetValue(id, out var entry))
+        {
+            // Count how many Container category portals were registered before this one
+            return _portals.Values
+                .Where(p => p.Category == PortalCategory.Container && p.Order < entry.Order)
+                .Count();
+        }
+        return -1;
+    }
+
+    /// <inheritdoc />
     public void UnregisterPortal(string id)
     {
         if (_portals.TryRemove(id, out var entry))

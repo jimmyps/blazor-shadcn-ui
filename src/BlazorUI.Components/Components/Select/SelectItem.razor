@@ -17,7 +17,18 @@
         </span>
     }
     <span class="@(IsSelected ? "pr-6" : "")">
-        @ChildContent
+        @if (ChildContent != null)
+        {
+            @ChildContent
+        }
+        else if (!string.IsNullOrEmpty(Text))
+        {
+            @Text
+        }
+        else
+        {
+            @Value?.ToString()
+        }
     </span>
 </BlazorUI.Primitives.Select.SelectItem>
 

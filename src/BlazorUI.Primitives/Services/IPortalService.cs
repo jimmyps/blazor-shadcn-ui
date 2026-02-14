@@ -96,4 +96,12 @@ public interface IPortalService
     /// <param name="id">The portal ID.</param>
     /// <returns>The portal category, or null if the portal is not registered.</returns>
     PortalCategory? GetPortalCategory(string id);
+
+    /// <summary>
+    /// Gets the depth/nesting level of a portal based on registration order.
+    /// Used for calculating z-index in nested dialogs.
+    /// </summary>
+    /// <param name="id">The portal ID.</param>
+    /// <returns>The zero-based depth (0 for first portal, 1 for second, etc.), or -1 if not registered.</returns>
+    int GetPortalDepth(string id);
 }

@@ -55,6 +55,20 @@ public interface IPositioningService
         double y,
         int padding = 8,
         bool makeVisible = true);
+
+    /// <summary>
+    /// Shows a floating element with proper visibility and animation support.
+    /// Used with ForceMount to make hidden elements visible.
+    /// </summary>
+    /// <param name="floating">The floating element to show.</param>
+    Task ShowFloatingAsync(ElementReference floating);
+
+    /// <summary>
+    /// Hides a floating element while keeping it in the DOM.
+    /// Used with ForceMount to hide elements without unmounting them.
+    /// </summary>
+    /// <param name="floating">The floating element to hide.</param>
+    Task HideFloatingAsync(ElementReference floating);
 }
 
 /// <summary>
