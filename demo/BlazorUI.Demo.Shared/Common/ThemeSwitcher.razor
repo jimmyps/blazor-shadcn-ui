@@ -3,42 +3,56 @@
 @inject ThemeService ThemeService
 @implements IDisposable
 
-<div class="space-y-6 p-4 border rounded-lg bg-card">
-    <div class="space-y-2">
-        <div class="flex items-center justify-between">
-            <h3 class="text-sm font-semibold">Theme Settings</h3>
-            <DarkModeToggle />
-        </div>
-    </div>
+<Popover>
+    <PopoverTrigger AsChild>
+        <Button Variant="ButtonVariant.Outline" 
+                Size="ButtonSize.Icon"
+                Class="@GetTriggerButtonClass()"
+                AriaLabel="Change theme">
+            <div class="size-4 rounded-full" style="@GetTriggerFillStyle()"></div>
+        </Button>
+    </PopoverTrigger>
+    <PopoverContent Class="w-80" Align="PopoverAlign.End">
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-semibold">Theme Settings</h3>
+                    <DarkModeToggle />
+                </div>
+            </div>
 
-    <div class="space-y-2">
-        <label class="text-xs font-medium text-muted-foreground">Base Color</label>
-        <div class="flex flex-wrap gap-2">
-            @foreach (var color in Enum.GetValues<BaseColor>())
-            {
-                <button @onclick="() => OnBaseColorSelected(color)"
-                        class="@GetBaseColorButtonClass(color)"
-                        title="@color">
-                    <span class="sr-only">@color</span>
-                </button>
-            }
-        </div>
-    </div>
+            <div class="space-y-3">
+                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Base Color</h4>
+                <div class="grid grid-cols-5 gap-2">
+                    @foreach (var color in Enum.GetValues<BaseColor>())
+                    {
+                        <button @onclick="() => OnBaseColorSelected(color)"
+                                class="@GetBaseColorOptionClass(color)"
+                                title="@color">
+                            <div class="@GetBaseColorVisualClass(color)"></div>
+                            <span class="text-xs mt-1">@color</span>
+                        </button>
+                    }
+                </div>
+            </div>
 
-    <div class="space-y-2">
-        <label class="text-xs font-medium text-muted-foreground">Primary Color</label>
-        <div class="flex flex-wrap gap-2">
-            @foreach (var color in Enum.GetValues<PrimaryColor>())
-            {
-                <button @onclick="() => OnPrimaryColorSelected(color)"
-                        class="@GetPrimaryColorButtonClass(color)"
-                        title="@color">
-                    <span class="sr-only">@color</span>
-                </button>
-            }
+            <div class="space-y-3">
+                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Theme Color</h4>
+                <div class="grid grid-cols-5 gap-2">
+                    @foreach (var color in Enum.GetValues<PrimaryColor>())
+                    {
+                        <button @onclick="() => OnPrimaryColorSelected(color)"
+                                class="@GetPrimaryColorOptionClass(color)"
+                                title="@color">
+                            <div class="@GetPrimaryColorVisualClass(color)"></div>
+                            <span class="text-xs mt-1 truncate">@GetShortColorName(color)</span>
+                        </button>
+                    }
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+    </PopoverContent>
+</Popover>
 
 @code {
     private BaseColor _currentBaseColor;
@@ -72,29 +86,87 @@
         InvokeAsync(StateHasChanged);
     }
 
-    private string GetBaseColorButtonClass(BaseColor color)
+    private string GetTriggerButtonClass()
+    {
+        return "relative overflow-hidden";
+    }
+
+    private string GetTriggerFillStyle()
+    {
+        var baseColorValue = _currentBaseColor switch
+        {
+            BaseColor.Zinc => "#27272a",
+            BaseColor.Slate => "#1e293b",
+            BaseColor.Gray => "#374151",
+            BaseColor.Neutral => "#262626",
+            BaseColor.Stone => "#292524",
+            _ => "#27272a"
+        };
+
+        var primaryColorValue = _currentPrimaryColor switch
+        {
+            PrimaryColor.Red => "#dc2626",
+            PrimaryColor.Rose => "#e11d48",
+            PrimaryColor.Orange => "#ea580c",
+            PrimaryColor.Amber => "#d97706",
+            PrimaryColor.Yellow => "#ca8a04",
+            PrimaryColor.Lime => "#65a30d",
+            PrimaryColor.Green => "#16a34a",
+            PrimaryColor.Emerald => "#059669",
+            PrimaryColor.Teal => "#0d9488",
+            PrimaryColor.Cyan => "#0891b2",
+            PrimaryColor.Sky => "#0284c7",
+            PrimaryColor.Blue => "#2563eb",
+            PrimaryColor.Indigo => "#4f46e5",
+            PrimaryColor.Violet => "#7c3aed",
+            PrimaryColor.Purple => "#9333ea",
+            PrimaryColor.Fuchsia => "#c026d3",
+            PrimaryColor.Pink => "#db2777",
+            _ => "#2563eb"
+        };
+
+        return $"background: {baseColorValue}; border: 2px solid {primaryColorValue};";
+    }
+
+    private string GetBaseColorOptionClass(BaseColor color)
     {
         var isSelected = _currentBaseColor == color;
-        var baseClass = "h-8 w-8 rounded-md border-2 transition-all";
+        var baseClass = "flex flex-col items-center gap-1 p-2 rounded-md hover:bg-accent transition-colors cursor-pointer";
+        var selectedClass = isSelected ? "bg-accent" : "";
+        return $"{baseClass} {selectedClass}";
+    }
+
+    private string GetBaseColorVisualClass(BaseColor color)
+    {
+        var isSelected = _currentBaseColor == color;
+        var baseClass = "size-6 rounded-full border-2 transition-all";
         var selectedClass = isSelected ? "ring-2 ring-ring ring-offset-2" : "";
         
         var colorClass = color switch
         {
-            BaseColor.Zinc => "bg-zinc-900 dark:bg-zinc-50",
-            BaseColor.Slate => "bg-slate-900 dark:bg-slate-50",
-            BaseColor.Gray => "bg-gray-900 dark:bg-gray-50",
-            BaseColor.Neutral => "bg-neutral-900 dark:bg-neutral-50",
-            BaseColor.Stone => "bg-stone-900 dark:bg-stone-50",
+            BaseColor.Zinc => "bg-zinc-900 dark:bg-zinc-50 border-zinc-300 dark:border-zinc-700",
+            BaseColor.Slate => "bg-slate-900 dark:bg-slate-50 border-slate-300 dark:border-slate-700",
+            BaseColor.Gray => "bg-gray-900 dark:bg-gray-50 border-gray-300 dark:border-gray-700",
+            BaseColor.Neutral => "bg-neutral-900 dark:bg-neutral-50 border-neutral-300 dark:border-neutral-700",
+            BaseColor.Stone => "bg-stone-900 dark:bg-stone-50 border-stone-300 dark:border-stone-700",
             _ => "bg-zinc-900"
         };
 
         return $"{baseClass} {colorClass} {selectedClass}";
     }
 
-    private string GetPrimaryColorButtonClass(PrimaryColor color)
+    private string GetPrimaryColorOptionClass(PrimaryColor color)
     {
         var isSelected = _currentPrimaryColor == color;
-        var baseClass = "h-8 w-8 rounded-md border-2 transition-all";
+        var baseClass = "flex flex-col items-center gap-1 p-2 rounded-md hover:bg-accent transition-colors cursor-pointer";
+        var selectedClass = isSelected ? "bg-accent" : "";
+        return $"{baseClass} {selectedClass}";
+    }
+
+    private string GetPrimaryColorVisualClass(PrimaryColor color)
+    {
+        var isSelected = _currentPrimaryColor == color;
+        var baseClass = "size-6 rounded-full border-2 border-background transition-all";
         var selectedClass = isSelected ? "ring-2 ring-ring ring-offset-2" : "";
         
         var colorClass = color switch
@@ -120,6 +192,12 @@
         };
 
         return $"{baseClass} {colorClass} {selectedClass}";
+    }
+
+    private string GetShortColorName(PrimaryColor color)
+    {
+        // Shorten long color names for better display in grid
+        return color.ToString();
     }
 
     public void Dispose()
