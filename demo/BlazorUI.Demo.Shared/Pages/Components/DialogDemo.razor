@@ -1418,18 +1418,31 @@
 
         if (!userProfileEditContext.Validate())
         {
-            ToastService.Error("Validation failed", "Please fix the errors before saving");
+            ToastService.Show(ToastOptions.Compact(
+                "Validation failed", 
+                "Please fix the errors before saving",
+                ToastVariant.Destructive,
+                ToastPosition.BottomCenter
+            ));
             return;
         }
 
         showUserProfileDialog = false;
-        ToastService.Success("Changes saved", "See the output form JSON below");
+        ToastService.Show(ToastOptions.Compact(
+            "Changes saved", 
+            "See the output form JSON below",
+            ToastVariant.Success,
+            ToastPosition.BottomCenter
+        ));
     }
 
     private void CancelUserProfile()
     {
         showUserProfileDialog = false;
-        ToastService.Show("Changes cancelled");
+        ToastService.Show(ToastOptions.Compact(
+            "Changes cancelled",
+            position: ToastPosition.BottomCenter
+        ));
     }
 
     // Demo 2: Subscription Plan Selection
@@ -1485,13 +1498,21 @@
     private void SaveSubscription()
     {
         showSubscriptionDialog = false;
-        ToastService.Success("Subscription confirmed", "See the output form JSON below");
+        ToastService.Show(ToastOptions.Compact(
+            "Subscription confirmed", 
+            "See the output form JSON below",
+            ToastVariant.Success,
+            ToastPosition.BottomCenter
+        ));
     }
 
     private void CancelSubscription()
     {
         showSubscriptionDialog = false;
-        ToastService.Show("Subscription cancelled");
+        ToastService.Show(ToastOptions.Compact(
+            "Subscription cancelled",
+            position: ToastPosition.BottomCenter
+        ));
     }
 
     // Demo 3: Team Member Invite
@@ -1527,20 +1548,34 @@
         // Set request focus on the first invalid input
         teamInviteEditContext.RequestFocusFirstInvalidInput();
 
+
         if (!teamInviteEditContext.Validate())
         {
-            ToastService.Error("Validation failed", "Please fix the errors before sending the invitation");
+            ToastService.Show(ToastOptions.Compact(
+                "Validation failed", 
+                "Please fix the errors before sending the invitation",
+                ToastVariant.Destructive,
+                ToastPosition.BottomCenter
+            ));
             return;
         }
 
         showTeamInviteDialog = false;
-        ToastService.Success("Invitation sent", "See the output form JSON below");
+        ToastService.Show(ToastOptions.Compact(
+            "Invitation sent", 
+            "See the output form JSON below",
+            ToastVariant.Success,
+            ToastPosition.BottomCenter
+        ));
     }
 
     private void CancelTeamInvite()
     {
         showTeamInviteDialog = false;
-        ToastService.Show("Invitation cancelled");
+        ToastService.Show(ToastOptions.Compact(
+            "Invitation cancelled",
+            position: ToastPosition.BottomCenter
+        ));
     }
 
     private class Project
@@ -1570,13 +1605,21 @@
     private void SaveProductConfig()
     {
         showProductConfigDialog = false;
-        ToastService.Success("Product added to cart", "See the output form JSON below");
+        ToastService.Show(ToastOptions.Compact(
+            "Product added to cart", 
+            "See the output form JSON below",
+            ToastVariant.Success,
+            ToastPosition.BottomCenter
+        ));
     }
 
     private void CancelProductConfig()
     {
         showProductConfigDialog = false;
-        ToastService.Show("Product configuration cancelled");
+        ToastService.Show(ToastOptions.Compact(
+            "Product configuration cancelled",
+            position: ToastPosition.BottomCenter
+        ));
     }
 
     // Demo 5: Nested Dialog - Create Project with Advanced Settings
@@ -1630,13 +1673,21 @@
     private void SaveAdvancedSettings()
     {
         showAdvancedSettingsDialog = false;
-        ToastService.Success("Advanced settings saved", "Configuration applied successfully");
+        ToastService.Show(ToastOptions.Compact(
+            "Advanced settings saved", 
+            "Configuration applied successfully",
+            ToastVariant.Success,
+            ToastPosition.BottomCenter
+        ));
     }
 
     private void CancelAdvancedSettings()
     {
         showAdvancedSettingsDialog = false;
-        ToastService.Show("Advanced settings cancelled");
+        ToastService.Show(ToastOptions.Compact(
+            "Advanced settings cancelled",
+            position: ToastPosition.BottomCenter
+        ));
     }
 
     private void SaveProject()
@@ -1645,17 +1696,30 @@
         {
             // Request focus on the first invalid input
             projectEditContext.RequestFocusFirstInvalidInput();
-            ToastService.Error("Validation failed", "Please fix the errors before creating the project");
+            ToastService.Show(ToastOptions.Compact(
+                "Validation failed", 
+                "Please fix the errors before creating the project",
+                ToastVariant.Destructive,
+                ToastPosition.BottomCenter
+            ));
             return;
         }
 
         showProjectDialog = false;
-        ToastService.Success("Project created", "See the output form JSON below");
+        ToastService.Show(ToastOptions.Compact(
+            "Project created", 
+            "See the output form JSON below",
+            ToastVariant.Success,
+            ToastPosition.BottomCenter
+        ));
     }
 
     private void CancelProject()
     {
         showProjectDialog = false;
-        ToastService.Show("Project creation cancelled");
+        ToastService.Show(ToastOptions.Compact(
+            "Project creation cancelled",
+            position: ToastPosition.BottomCenter
+        ));
     }
 }

@@ -1,18 +1,33 @@
 @namespace BlazorUI.Components.Toast
+@using BlazorUI.Icons.Lucide.Components
 @inject IJSRuntime JSRuntime
 @implements IAsyncDisposable
 
 @* Toast - individual toast notification *@
-<div id="@_elementId" @attributes="GetAttributes()" style="opacity: 0; transform: translateY(0.5rem); pointer-events: none;">
+<div id="@_elementId" 
+     @attributes="GetAttributes()" 
+     style="opacity: 0; transform: translateY(0.5rem); pointer-events: none;"
+     @onmouseenter="HandleMouseEnter"
+     @onmouseleave="HandleMouseLeave">
     <div class="grid gap-1">
-        @if (!string.IsNullOrEmpty(Title))
-        {
-            <ToastTitle>@Title</ToastTitle>
-        }
-        @if (!string.IsNullOrEmpty(Description))
-        {
-            <ToastDescription>@Description</ToastDescription>
-        }
+        <div class="flex items-start gap-2">
+            @if (ShowIcon && GetVariantIcon() != null)
+            {
+                <div class="@GetIconClass()">
+                    @GetVariantIcon()
+                </div>
+            }
+            <div class="flex-1 grid gap-1">
+                @if (!string.IsNullOrEmpty(Title))
+                {
+                    <ToastTitle>@Title</ToastTitle>
+                }
+                @if (!string.IsNullOrEmpty(Description))
+                {
+                    <ToastDescription>@Description</ToastDescription>
+                }
+            </div>
+        </div>
     </div>
     @if (!string.IsNullOrEmpty(ActionLabel))
     {
@@ -47,6 +62,24 @@ public string? Description { get; set; }
 public ToastVariant Variant { get; set; } = ToastVariant.Default;
 
 /// <summary>
+/// The size of the toast.
+/// </summary>
+[Parameter]
+public ToastSize Size { get; set; } = ToastSize.Default;
+
+/// <summary>
+/// Whether to show the variant icon.
+/// </summary>
+[Parameter]
+public bool ShowIcon { get; set; } = true;
+
+/// <summary>
+/// Whether to pause auto-dismiss when hovering.
+/// </summary>
+[Parameter]
+public bool PauseOnHover { get; set; } = true;
+
+/// <summary>
 /// The label for the action button.
 /// </summary>
 [Parameter]
@@ -63,6 +96,12 @@ public Action? OnAction { get; set; }
 /// </summary>
 [Parameter]
 public Action? OnDismiss { get; set; }
+
+/// <summary>
+/// Callback when hover state changes (for pause-on-hover).
+/// </summary>
+[Parameter]
+public Action<bool>? OnHoverChanged { get; set; }
 
 /// <summary>
 /// Additional CSS classes to apply to the toast.
@@ -105,6 +144,22 @@ protected override async Task OnAfterRenderAsync(bool firstRender)
     }
 }
 
+private void HandleMouseEnter()
+{
+    if (PauseOnHover)
+    {
+        OnHoverChanged?.Invoke(true);
+    }
+}
+
+private void HandleMouseLeave()
+{
+    if (PauseOnHover)
+    {
+        OnHoverChanged?.Invoke(false);
+    }
+}
+
 private void HandleAction()
 {
     OnAction?.Invoke();
@@ -143,11 +198,45 @@ public async ValueTask DisposeAsync()
         };
     }
 
+    private string GetSizeClass()
+    {
+        return Size switch
+        {
+            ToastSize.Compact => "px-3 py-2 pr-6",
+            _ => "px-4 py-3 pr-8"
+        };
+    }
+
+    private RenderFragment? GetVariantIcon()
+    {
+        return Variant switch
+        {
+            ToastVariant.Success => @<LucideIcon Name="check" Class="h-5 w-5" />,
+            ToastVariant.Warning => @<LucideIcon Name="triangle-alert" Class="h-5 w-5" />,
+            ToastVariant.Destructive => @<LucideIcon Name="circle-x" Class="h-5 w-5" />,
+            ToastVariant.Info => @<LucideIcon Name="info" Class="h-5 w-5" />,
+            _ => null
+        };
+    }
+
+    private string GetIconClass()
+    {
+        var baseClass = "flex-shrink-0";
+        return Variant switch
+        {
+            ToastVariant.Success => $"{baseClass} text-green-600 dark:text-green-400",
+            ToastVariant.Warning => $"{baseClass} text-yellow-600 dark:text-yellow-400",
+            ToastVariant.Destructive => $"{baseClass} text-destructive-foreground",
+            ToastVariant.Info => $"{baseClass} text-blue-600 dark:text-blue-400",
+            _ => $"{baseClass} text-muted-foreground"
+        };
+    }
+
     private Dictionary<string, object> GetAttributes()
     {
         // Animation state is now managed entirely by JS, not Blazor
         // No data-state attribute here - JS will set it
-        var baseClass = "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border px-4 py-3 pr-8 shadow-lg " +
+        var baseClass = "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border shadow-lg " +
                        "data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] " +
                        "data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none " +
                        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out " +
@@ -155,10 +244,11 @@ public async ValueTask DisposeAsync()
                        "data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-4 data-[state=open]:sm:slide-in-from-bottom-4 " +
                        "animate-duration-500 animate-ease-in-out";
 
+        var sizeClass = GetSizeClass();
         var variantClass = GetVariantClass();
         var classValue = string.IsNullOrEmpty(Class) 
-            ? $"{baseClass} {variantClass}" 
-            : $"{baseClass} {variantClass} {Class}";
+            ? $"{baseClass} {sizeClass} {variantClass}" 
+            : $"{baseClass} {sizeClass} {variantClass} {Class}";
 
         var attributes = new Dictionary<string, object>
         {

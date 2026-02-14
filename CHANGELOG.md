@@ -2,7 +2,66 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-02-14 - Input Validation Architecture Refactoring & Dialog Performance Optimization
+## 2026-02-14 - Toast Component Enhancements & Input Validation Refactoring
+
+### 🎨 Toast Component - Granular Customization & UX Improvements
+
+**Added comprehensive customization options to Toast component with size control, auto icons, pause-on-hover, and per-toast positioning.**
+
+**Key Features:**
+
+1. **ToastSize Enum - Default & Compact Sizes:**
+   - `ToastSize.Default` - Standard padding (px-4 py-3 pr-8) for regular notifications
+   - `ToastSize.Compact` - Reduced padding (px-3 py-2 pr-6) for dialogs and dense UI
+   - Per-toast size control via `ToastOptions.Size` property
+
+2. **Auto Variant Icons using LucideIcon:**
+   - ✅ Success - `check` icon (green)
+   - ✗ Error/Destructive - `x` icon (red)
+   - ⚠ Warning - `alert-triangle` icon (yellow)
+   - ℹ Info - `info` icon (blue)
+   - Icons enabled by default, can be toggled via `ShowIcon` property
+   - Replaced inline SVG with LucideIcon for consistency
+
+3. **Pause on Hover Functionality:**
+   - Timer pauses when user hovers over toast
+   - Accurately tracks elapsed time before pause
+   - Resumes with correct remaining duration on mouse leave
+   - Stable timer management with proper state tracking
+   - Enabled by default, can be disabled via `PauseOnHover` property
+
+4. **Per-Toast Position Override:**
+   - Added `Position` property to `ToastOptions`
+   - Toasts grouped by position and rendered in separate viewports
+   - Falls back to `ToastProvider`'s default position if not specified
+   - Supports all 6 positions: TopLeft, TopCenter, TopRight, BottomLeft, BottomCenter, BottomRight
+
+5. **Convenient Constructors & Factory Methods:**
+   - Traditional constructors: `new ToastOptions(title, description)`, `new ToastOptions(title, description, variant)`
+   - Static factory methods:
+     - `ToastOptions.Success(title, description)`
+     - `ToastOptions.Error(title, description)`
+     - `ToastOptions.Warning(title, description)`
+     - `ToastOptions.Info(title, description)`
+     - `ToastOptions.Compact(title, description, variant, position)` - Pre-configured for dialogs
+   - Cleaner, more readable API
+
+**Demo Updates:**
+- **ToastDemo** - Added examples for Size, Icons, Pause-on-Hover, Position override
+- **DialogDemo** - All 12 toast notifications now use `ToastOptions.Compact()` with `BottomCenter` position
+- Enhanced usage examples showing factory methods and advanced customization
+
+**Benefits:**
+- ✅ **Granular control** - Size, position, icons, pause behavior all customizable per-toast
+- ✅ **Better UX** - Pause-on-hover prevents accidental dismissal while reading
+- ✅ **Dialog-friendly** - Compact size and bottom-center positioning perfect for dialog notifications
+- ✅ **Developer-friendly API** - Fluent factory methods reduce boilerplate
+- ✅ **Consistent design** - LucideIcon integration matches component library standards
+- ✅ **Production-ready** - Stable timer management with accurate pause/resume
+
+---
+
+## 2026-02-13 - Input Validation Architecture Refactoring & Dialog Performance Optimization
 
 ### 🏗️ Architecture - Input Validation Behavior Centralization
 
