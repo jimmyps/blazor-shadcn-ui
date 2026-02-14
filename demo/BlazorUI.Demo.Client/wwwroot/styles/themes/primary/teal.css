@@ -1,0 +1,21 @@
+/* Teal Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-teal {
+    --primary: oklch(0.5900 0.1420 180.7280);
+    --primary-foreground: oklch(0.9850 0.0080 192.3340);
+    --ring: oklch(0.5900 0.1420 180.7280);
+    --sidebar-primary: oklch(0.5900 0.1420 180.7280);
+    --sidebar-primary-foreground: oklch(0.9850 0.0080 192.3340);
+    --sidebar-ring: oklch(0.5900 0.1420 180.7280);
+  }
+
+  :root.primary-teal.dark {
+    --primary: oklch(0.7090 0.1180 184.7040);
+    --primary-foreground: oklch(0.2050 0.0700 128.9340);
+    --ring: oklch(0.7090 0.1180 184.7040);
+    --sidebar-primary: oklch(0.7090 0.1180 184.7040);
+    --sidebar-primary-foreground: oklch(0.2050 0.0700 128.9340);
+    --sidebar-ring: oklch(0.7090 0.1180 184.7040);
+  }
+}

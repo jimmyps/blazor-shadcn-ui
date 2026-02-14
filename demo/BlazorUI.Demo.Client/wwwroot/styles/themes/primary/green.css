@@ -1,0 +1,21 @@
+/* Green Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-green {
+    --primary: oklch(0.5500 0.2000 142.0000);
+    --primary-foreground: oklch(0.9850 0.0090 142.4950);
+    --ring: oklch(0.5500 0.2000 142.0000);
+    --sidebar-primary: oklch(0.5500 0.2000 142.0000);
+    --sidebar-primary-foreground: oklch(0.9850 0.0090 142.4950);
+    --sidebar-ring: oklch(0.5500 0.2000 142.0000);
+  }
+
+  :root.primary-green.dark {
+    --primary: oklch(0.6740 0.1650 149.5790);
+    --primary-foreground: oklch(0.2050 0.0700 128.9340);
+    --ring: oklch(0.6740 0.1650 149.5790);
+    --sidebar-primary: oklch(0.6740 0.1650 149.5790);
+    --sidebar-primary-foreground: oklch(0.2050 0.0700 128.9340);
+    --sidebar-ring: oklch(0.6740 0.1650 149.5790);
+  }
+}

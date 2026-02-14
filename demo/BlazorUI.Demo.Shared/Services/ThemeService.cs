@@ -3,13 +3,51 @@ using Microsoft.JSInterop;
 namespace BlazorUI.Demo.Services;
 
 /// <summary>
-/// Service for managing dark mode theme state.
+/// Base color options for the theme system.
+/// </summary>
+public enum BaseColor
+{
+    Zinc,
+    Slate,
+    Gray,
+    Neutral,
+    Stone
+}
+
+/// <summary>
+/// Primary color options for the theme system.
+/// </summary>
+public enum PrimaryColor
+{
+    Red,
+    Rose,
+    Orange,
+    Amber,
+    Yellow,
+    Lime,
+    Green,
+    Emerald,
+    Teal,
+    Cyan,
+    Sky,
+    Blue,
+    Indigo,
+    Violet,
+    Purple,
+    Fuchsia,
+    Pink
+}
+
+/// <summary>
+/// Service for managing theme state including dark mode, base colors, and primary colors.
 /// Handles toggling between light and dark themes with localStorage persistence.
 /// </summary>
 public class ThemeService
 {
     private readonly IJSRuntime _jsRuntime;
     private bool _isDarkMode;
+    private BaseColor _baseColor = BaseColor.Zinc;
+    private PrimaryColor _primaryColor = PrimaryColor.Blue;
     private bool _isInitialized;
 
     /// <summary>
@@ -21,6 +59,16 @@ public class ThemeService
     /// Gets whether dark mode is currently enabled.
     /// </summary>
     public bool IsDarkMode => _isDarkMode;
+
+    /// <summary>
+    /// Gets the current base color.
+    /// </summary>
+    public BaseColor CurrentBaseColor => _baseColor;
+
+    /// <summary>
+    /// Gets the current primary color.
+    /// </summary>
+    public PrimaryColor CurrentPrimaryColor => _primaryColor;
 
     public ThemeService(IJSRuntime jsRuntime)
     {
@@ -39,16 +87,33 @@ public class ThemeService
         {
             // Try to load saved preference from localStorage
             var savedTheme = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", "theme");
+            var savedBaseColor = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", "baseColor");
+            var savedPrimaryColor = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", "primaryColor");
 
             _isDarkMode = savedTheme == "dark";
-            await ApplyThemeAsync(_isDarkMode);
+            
+            // Parse base color
+            if (!string.IsNullOrEmpty(savedBaseColor) && Enum.TryParse<BaseColor>(savedBaseColor, true, out var baseColor))
+            {
+                _baseColor = baseColor;
+            }
+            
+            // Parse primary color
+            if (!string.IsNullOrEmpty(savedPrimaryColor) && Enum.TryParse<PrimaryColor>(savedPrimaryColor, true, out var primaryColor))
+            {
+                _primaryColor = primaryColor;
+            }
+
+            await ApplyThemeAsync(_isDarkMode, _baseColor, _primaryColor);
 
             _isInitialized = true;
         }
         catch
         {
-            // If localStorage is not available (SSR), default to light mode
+            // If localStorage is not available (SSR), use defaults
             _isDarkMode = false;
+            _baseColor = BaseColor.Zinc;
+            _primaryColor = PrimaryColor.Blue;
             _isInitialized = true;
         }
     }
@@ -59,7 +124,7 @@ public class ThemeService
     public async Task ToggleThemeAsync()
     {
         _isDarkMode = !_isDarkMode;
-        await ApplyThemeAsync(_isDarkMode);
+        await ApplyThemeAsync(_isDarkMode, _baseColor, _primaryColor);
         await SaveThemeAsync(_isDarkMode);
 
         OnThemeChanged?.Invoke();
@@ -74,29 +139,86 @@ public class ThemeService
         if (_isDarkMode == isDark) return;
 
         _isDarkMode = isDark;
-        await ApplyThemeAsync(_isDarkMode);
+        await ApplyThemeAsync(_isDarkMode, _baseColor, _primaryColor);
         await SaveThemeAsync(_isDarkMode);
 
         OnThemeChanged?.Invoke();
     }
 
     /// <summary>
-    /// Applies the theme by adding or removing the 'dark' class on the HTML element.
+    /// Sets the base color of the theme.
     /// </summary>
-    private async Task ApplyThemeAsync(bool isDark)
+    /// <param name="baseColor">The base color to apply.</param>
+    public async Task SetBaseColorAsync(BaseColor baseColor)
+    {
+        if (_baseColor == baseColor) return;
+
+        _baseColor = baseColor;
+        await ApplyThemeAsync(_isDarkMode, _baseColor, _primaryColor);
+        await SaveBaseColorAsync(_baseColor);
+
+        OnThemeChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// Sets the primary color of the theme.
+    /// </summary>
+    /// <param name="primaryColor">The primary color to apply.</param>
+    public async Task SetPrimaryColorAsync(PrimaryColor primaryColor)
+    {
+        if (_primaryColor == primaryColor) return;
+
+        _primaryColor = primaryColor;
+        await ApplyThemeAsync(_isDarkMode, _baseColor, _primaryColor);
+        await SavePrimaryColorAsync(_primaryColor);
+
+        OnThemeChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// Sets the complete theme (base color, primary color, and dark mode).
+    /// </summary>
+    /// <param name="baseColor">The base color to apply.</param>
+    /// <param name="primaryColor">The primary color to apply.</param>
+    /// <param name="isDark">True for dark mode, false for light mode.</param>
+    public async Task SetThemeAsync(BaseColor baseColor, PrimaryColor primaryColor, bool isDark)
+    {
+        _baseColor = baseColor;
+        _primaryColor = primaryColor;
+        _isDarkMode = isDark;
+
+        await ApplyThemeAsync(_isDarkMode, _baseColor, _primaryColor);
+        await SaveThemeAsync(_isDarkMode);
+        await SaveBaseColorAsync(_baseColor);
+        await SavePrimaryColorAsync(_primaryColor);
+
+        OnThemeChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// Applies the theme by adding or removing CSS classes on the HTML element.
+    /// </summary>
+    private async Task ApplyThemeAsync(bool isDark, BaseColor baseColor, PrimaryColor primaryColor)
     {
         try
         {
-            if (isDark)
-            {
-                await _jsRuntime.InvokeVoidAsync("eval",
-                    "document.documentElement.classList.add('dark')");
-            }
-            else
-            {
-                await _jsRuntime.InvokeVoidAsync("eval",
-                    "document.documentElement.classList.remove('dark')");
-            }
+            var baseColorClass = $"base-{baseColor.ToString().ToLower()}";
+            var primaryColorClass = $"primary-{primaryColor.ToString().ToLower()}";
+
+            // Remove all existing base and primary color classes, then add current ones
+            await _jsRuntime.InvokeVoidAsync("eval", $@"
+                const html = document.documentElement;
+                const classes = html.className.split(' ');
+                const filteredClasses = classes.filter(c => !c.startsWith('base-') && !c.startsWith('primary-'));
+                html.className = filteredClasses.join(' ');
+                html.classList.add('{baseColorClass}');
+                html.classList.add('{primaryColorClass}');
+                if ({isDark.ToString().ToLower()}) {{
+                    html.classList.add('dark');
+                }} else {{
+                    html.classList.remove('dark');
+                }}
+            ");
         }
         catch
         {
@@ -113,6 +235,36 @@ public class ThemeService
         {
             var theme = isDark ? "dark" : "light";
             await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "theme", theme);
+        }
+        catch
+        {
+            // Ignore errors if localStorage is not available
+        }
+    }
+
+    /// <summary>
+    /// Saves the base color preference to localStorage.
+    /// </summary>
+    private async Task SaveBaseColorAsync(BaseColor baseColor)
+    {
+        try
+        {
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "baseColor", baseColor.ToString());
+        }
+        catch
+        {
+            // Ignore errors if localStorage is not available
+        }
+    }
+
+    /// <summary>
+    /// Saves the primary color preference to localStorage.
+    /// </summary>
+    private async Task SavePrimaryColorAsync(PrimaryColor primaryColor)
+    {
+        try
+        {
+            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "primaryColor", primaryColor.ToString());
         }
         catch
         {

@@ -11,6 +11,32 @@
     
     <!-- Assets from Client project's wwwroot now served from root -->
     <link rel="stylesheet" href="@Assets["css/app.css"]" />
+    
+    <!-- Base color themes -->
+    <link rel="stylesheet" href="@Assets["styles/themes/base/zinc.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/base/slate.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/base/gray.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/base/neutral.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/base/stone.css"]" />
+    
+    <!-- Primary color themes -->
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/red.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/rose.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/orange.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/amber.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/yellow.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/lime.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/green.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/emerald.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/teal.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/cyan.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/sky.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/blue.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/indigo.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/violet.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/purple.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/fuchsia.css"]" />
+    <link rel="stylesheet" href="@Assets["styles/themes/primary/pink.css"]" />
     <ImportMap />
     <!-- AG Grid Enterprise imports -->
     <GridImportMap />
@@ -21,9 +47,21 @@
         // Initialize theme before Blazor loads to prevent FOUC
         (function() {
             const savedTheme = localStorage.getItem('theme');
+            const savedBaseColor = localStorage.getItem('baseColor') || 'Zinc';
+            const savedPrimaryColor = localStorage.getItem('primaryColor') || 'Blue';
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            const html = document.documentElement;
+            
+            // Apply base color class
+            html.classList.add('base-' + savedBaseColor.toLowerCase());
+            
+            // Apply primary color class
+            html.classList.add('primary-' + savedPrimaryColor.toLowerCase());
+            
+            // Apply dark mode if set
             if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-                document.documentElement.classList.add('dark');
+                html.classList.add('dark');
             }
         })();
     </script>

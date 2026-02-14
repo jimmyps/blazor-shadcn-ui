@@ -1,0 +1,129 @@
+@using BlazorUI.Demo.Services
+@using BlazorUI.Icons.Lucide.Components
+@inject ThemeService ThemeService
+@implements IDisposable
+
+<div class="space-y-6 p-4 border rounded-lg bg-card">
+    <div class="space-y-2">
+        <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold">Theme Settings</h3>
+            <DarkModeToggle />
+        </div>
+    </div>
+
+    <div class="space-y-2">
+        <label class="text-xs font-medium text-muted-foreground">Base Color</label>
+        <div class="flex flex-wrap gap-2">
+            @foreach (var color in Enum.GetValues<BaseColor>())
+            {
+                <button @onclick="() => OnBaseColorSelected(color)"
+                        class="@GetBaseColorButtonClass(color)"
+                        title="@color">
+                    <span class="sr-only">@color</span>
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="space-y-2">
+        <label class="text-xs font-medium text-muted-foreground">Primary Color</label>
+        <div class="flex flex-wrap gap-2">
+            @foreach (var color in Enum.GetValues<PrimaryColor>())
+            {
+                <button @onclick="() => OnPrimaryColorSelected(color)"
+                        class="@GetPrimaryColorButtonClass(color)"
+                        title="@color">
+                    <span class="sr-only">@color</span>
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private BaseColor _currentBaseColor;
+    private PrimaryColor _currentPrimaryColor;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Initialize theme service
+        await ThemeService.InitializeAsync();
+        _currentBaseColor = ThemeService.CurrentBaseColor;
+        _currentPrimaryColor = ThemeService.CurrentPrimaryColor;
+
+        // Subscribe to theme changes
+        ThemeService.OnThemeChanged += HandleThemeChanged;
+    }
+
+    private async Task OnBaseColorSelected(BaseColor baseColor)
+    {
+        await ThemeService.SetBaseColorAsync(baseColor);
+    }
+
+    private async Task OnPrimaryColorSelected(PrimaryColor primaryColor)
+    {
+        await ThemeService.SetPrimaryColorAsync(primaryColor);
+    }
+
+    private void HandleThemeChanged()
+    {
+        _currentBaseColor = ThemeService.CurrentBaseColor;
+        _currentPrimaryColor = ThemeService.CurrentPrimaryColor;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private string GetBaseColorButtonClass(BaseColor color)
+    {
+        var isSelected = _currentBaseColor == color;
+        var baseClass = "h-8 w-8 rounded-md border-2 transition-all";
+        var selectedClass = isSelected ? "ring-2 ring-ring ring-offset-2" : "";
+        
+        var colorClass = color switch
+        {
+            BaseColor.Zinc => "bg-zinc-900 dark:bg-zinc-50",
+            BaseColor.Slate => "bg-slate-900 dark:bg-slate-50",
+            BaseColor.Gray => "bg-gray-900 dark:bg-gray-50",
+            BaseColor.Neutral => "bg-neutral-900 dark:bg-neutral-50",
+            BaseColor.Stone => "bg-stone-900 dark:bg-stone-50",
+            _ => "bg-zinc-900"
+        };
+
+        return $"{baseClass} {colorClass} {selectedClass}";
+    }
+
+    private string GetPrimaryColorButtonClass(PrimaryColor color)
+    {
+        var isSelected = _currentPrimaryColor == color;
+        var baseClass = "h-8 w-8 rounded-md border-2 transition-all";
+        var selectedClass = isSelected ? "ring-2 ring-ring ring-offset-2" : "";
+        
+        var colorClass = color switch
+        {
+            PrimaryColor.Red => "bg-red-600",
+            PrimaryColor.Rose => "bg-rose-600",
+            PrimaryColor.Orange => "bg-orange-600",
+            PrimaryColor.Amber => "bg-amber-600",
+            PrimaryColor.Yellow => "bg-yellow-500",
+            PrimaryColor.Lime => "bg-lime-500",
+            PrimaryColor.Green => "bg-green-600",
+            PrimaryColor.Emerald => "bg-emerald-600",
+            PrimaryColor.Teal => "bg-teal-600",
+            PrimaryColor.Cyan => "bg-cyan-600",
+            PrimaryColor.Sky => "bg-sky-600",
+            PrimaryColor.Blue => "bg-blue-600",
+            PrimaryColor.Indigo => "bg-indigo-600",
+            PrimaryColor.Violet => "bg-violet-600",
+            PrimaryColor.Purple => "bg-purple-600",
+            PrimaryColor.Fuchsia => "bg-fuchsia-600",
+            PrimaryColor.Pink => "bg-pink-600",
+            _ => "bg-blue-600"
+        };
+
+        return $"{baseClass} {colorClass} {selectedClass}";
+    }
+
+    public void Dispose()
+    {
+        ThemeService.OnThemeChanged -= HandleThemeChanged;
+    }
+}

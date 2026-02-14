@@ -1,0 +1,21 @@
+/* Rose Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-rose {
+    --primary: oklch(0.5900 0.2080 10.0000);
+    --primary-foreground: oklch(0.9850 0.0070 12.9210);
+    --ring: oklch(0.5900 0.2080 10.0000);
+    --sidebar-primary: oklch(0.5900 0.2080 10.0000);
+    --sidebar-primary-foreground: oklch(0.9850 0.0070 12.9210);
+    --sidebar-ring: oklch(0.5900 0.2080 10.0000);
+  }
+
+  :root.primary-rose.dark {
+    --primary: oklch(0.7160 0.1570 8.5280);
+    --primary-foreground: oklch(0.9850 0.0070 12.9210);
+    --ring: oklch(0.7160 0.1570 8.5280);
+    --sidebar-primary: oklch(0.7160 0.1570 8.5280);
+    --sidebar-primary-foreground: oklch(0.9850 0.0070 12.9210);
+    --sidebar-ring: oklch(0.7160 0.1570 8.5280);
+  }
+}

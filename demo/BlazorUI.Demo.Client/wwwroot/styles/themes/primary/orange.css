@@ -1,0 +1,21 @@
+/* Orange Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-orange {
+    --primary: oklch(0.6810 0.1770 41.1160);
+    --primary-foreground: oklch(0.9850 0.0070 75.5590);
+    --ring: oklch(0.6810 0.1770 41.1160);
+    --sidebar-primary: oklch(0.6810 0.1770 41.1160);
+    --sidebar-primary-foreground: oklch(0.9850 0.0070 75.5590);
+    --sidebar-ring: oklch(0.6810 0.1770 41.1160);
+  }
+
+  :root.primary-orange.dark {
+    --primary: oklch(0.7680 0.1510 52.1950);
+    --primary-foreground: oklch(0.2910 0.0620 43.5720);
+    --ring: oklch(0.7680 0.1510 52.1950);
+    --sidebar-primary: oklch(0.7680 0.1510 52.1950);
+    --sidebar-primary-foreground: oklch(0.2910 0.0620 43.5720);
+    --sidebar-ring: oklch(0.7680 0.1510 52.1950);
+  }
+}

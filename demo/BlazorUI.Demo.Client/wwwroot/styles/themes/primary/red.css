@@ -1,0 +1,21 @@
+/* Red Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-red {
+    --primary: oklch(0.5770 0.2450 27.3250);
+    --primary-foreground: oklch(0.9850 0.0050 17.3810);
+    --ring: oklch(0.5770 0.2450 27.3250);
+    --sidebar-primary: oklch(0.5770 0.2450 27.3250);
+    --sidebar-primary-foreground: oklch(0.9850 0.0050 17.3810);
+    --sidebar-ring: oklch(0.5770 0.2450 27.3250);
+  }
+
+  :root.primary-red.dark {
+    --primary: oklch(0.7040 0.1910 22.2160);
+    --primary-foreground: oklch(0.9850 0.0050 17.3810);
+    --ring: oklch(0.7040 0.1910 22.2160);
+    --sidebar-primary: oklch(0.7040 0.1910 22.2160);
+    --sidebar-primary-foreground: oklch(0.9850 0.0050 17.3810);
+    --sidebar-ring: oklch(0.7040 0.1910 22.2160);
+  }
+}
