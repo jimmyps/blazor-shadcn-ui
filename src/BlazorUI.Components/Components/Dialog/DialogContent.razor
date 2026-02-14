@@ -1,8 +1,9 @@
 @namespace BlazorUI.Components.Dialog
 @using BlazorUI.Components.Utilities
 @using BlazorUI.Primitives.Dialog
-@using BlazorUI.Primitives.Constants
+@using BlazorUI.Primitives.Services
 @using BlazorUI.Icons.Lucide.Components
+@inject IPortalService PortalService
 
 @*
     Styled DialogContent component with shadcn/ui classes.
@@ -10,28 +11,32 @@
 *@
 
 <DialogPortal>
-    <DialogOverlay class="@GetOverlayClass()" />
+    <DialogOverlay class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
 
     <BlazorUI.Primitives.Dialog.DialogContent
         class="@GetClassNames()"
+        style="@($"z-index: {GetEffectiveContentZIndex()}")"
         CloseOnEscape="@CloseOnEscape"
         TrapFocus="@TrapFocus"
         LockScroll="@LockScroll"
         OnEscapeKeyDown="@OnEscapeKeyDown"
         @attributes="AdditionalAttributes">
-        @ChildContent
+            @ChildContent
 
-        @if (ShowClose)
-        {
-            <BlazorUI.Primitives.Dialog.DialogClose class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-                <LucideIcon Name="x" Class="h-4 w-4" />
-                <span class="sr-only">Close</span>
-            </BlazorUI.Primitives.Dialog.DialogClose>
-        }
-    </BlazorUI.Primitives.Dialog.DialogContent>
+            @if (ShowClose)
+            {
+                <BlazorUI.Primitives.Dialog.DialogClose class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                    <LucideIcon Name="x" Class="h-4 w-4" />
+                    <span class="sr-only">Close</span>
+                </BlazorUI.Primitives.Dialog.DialogClose>
+            }
+        </BlazorUI.Primitives.Dialog.DialogContent>
 </DialogPortal>
 
 @code {
+    [CascadingParameter]
+    private DialogContext Context { get; set; } = null!;
+
     /// <summary>
     /// The content to render inside the dialog.
     /// </summary>
@@ -50,6 +55,14 @@
     /// </summary>
     [Parameter]
     public string? OverlayClass { get; set; }
+
+    /// <summary>
+    /// The visual variant for the dialog content.
+    /// Default uses bg-background for simple dialogs.
+    /// Form uses bg-card with scroll shadow customization for form-heavy dialogs.
+    /// </summary>
+    [Parameter]
+    public DialogContentVariant Variant { get; set; } = DialogContentVariant.Default;
 
     /// <summary>
     /// When true, do not include default animation-related classes
@@ -99,6 +112,43 @@
     public EventCallback<KeyboardEventArgs> OnEscapeKeyDown { get; set; }
 
     /// <summary>
+    /// Gets the nesting depth of this dialog based on portal registration order.
+    /// Returns 0 for the first dialog, 1 for a dialog nested within it, etc.
+    /// </summary>
+    private int GetDialogDepth()
+    {
+        if (Context == null) return 0;
+
+        var portalId = $"{Context.Id}-portal";
+        var depth = PortalService.GetPortalDepth(portalId);
+        return Math.Max(0, depth);
+    }
+
+    /// <summary>
+    /// Calculates the z-index for the dialog overlay based on nesting depth.
+    /// Formula: Max(Base overlay z-index, previous content z-index) + (depth * 2)
+    /// For depth 0: Max(DialogOverlay, DialogContent - 2) + 0
+    /// For depth 1: Max(DialogOverlay, DialogContent) + 2
+    /// This ensures each nested dialog's overlay appears above the previous dialog's content.
+    /// </summary>
+    private int GetEffectiveOverlayZIndex()
+    {
+        var depth = GetDialogDepth();
+        var lastContentZIndex = ZIndexLevels.DialogContent + ((depth - 1) * 2);
+        return Math.Max(ZIndexLevels.DialogOverlay, lastContentZIndex) + (depth * 2);
+    }
+
+    /// <summary>
+    /// Calculates the z-index for the dialog content based on nesting depth.
+    /// Formula: Base content z-index + (depth * 2)
+    /// Content is always overlay z-index + 1 to appear above its overlay.
+    /// </summary>
+    private int GetEffectiveContentZIndex()
+    {
+        return GetEffectiveOverlayZIndex() + 1;
+    }
+
+    /// <summary>
     /// Gets the computed CSS classes for the dialog content.
     /// Uses the cn() utility for intelligent class merging and Tailwind conflict resolution.
     /// </summary>
@@ -106,10 +156,22 @@
     {
         var baseClasses = new List<string>
         {
-            $"fixed left-[50%] top-[50%] z-{ZIndexLevels.DialogContent} grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
-            "gap-4 border bg-background p-6 shadow-lg backdrop-blur-sm",
+            "fixed p-6 gap-4 left-[50%] top-[50%] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
+            "border border-border/60 dark:border-border/40 dark:ring-1 dark:ring-white/10",
+            "shadow-xl dark:shadow-2xl",
             "sm:rounded-lg"
         };
+
+        // Apply variant-specific background and scroll shadow styling
+        if (Variant == DialogContentVariant.Form)
+        {
+            baseClasses.Add("bg-card");
+            baseClasses.Add("[--scroll-shadow-bg:var(--card)]"); // Match ScrollArea shadows to card background
+        }
+        else
+        {
+            baseClasses.Add("bg-background");
+        }
 
         if (!UseCustomAnimations)
         {
@@ -133,7 +195,7 @@
     {
         var baseClasses = new List<string>
         {
-            $"fixed inset-0 z-{ZIndexLevels.DialogOverlay} bg-black/40"
+            "fixed inset-0 bg-black/40 backdrop-blur-sm"
         };
 
         if (!UseCustomAnimations)

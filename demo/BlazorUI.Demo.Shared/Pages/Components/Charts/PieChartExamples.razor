@@ -12,7 +12,7 @@
                 <CardTitle>Pie Chart - Interactive</CardTitle>
                 <CardDescription>Showing browser usage statistics for @(monthDescriptions.TryGetValue(selectedMonth, out var description) ? description.ToLower() : "January")</CardDescription>
             </div>
-            <Select @bind-Value="@selectedMonth" DisplayTextSelector="@(value => monthDescriptions.TryGetValue(value, out var text) ? text : value)" Class="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
+            <Select @bind-Value="@selectedMonth" Class="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
                 <SelectTrigger>
                     <SelectValue Placeholder="January" />
                 </SelectTrigger>

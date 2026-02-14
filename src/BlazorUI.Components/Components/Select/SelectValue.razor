@@ -1,8 +1,11 @@
+@typeparam TValue
 @namespace BlazorUI.Components.Select
+@using BlazorUI.Primitives.Select
+@implements IDisposable
 
-@if (!string.IsNullOrWhiteSpace(GetSelectedText()))
+@if (!string.IsNullOrWhiteSpace(SelectContext?.DisplayText))
 {
-    @GetSelectedText()
+    @SelectContext.DisplayText
 }
 else
 {
@@ -11,7 +14,7 @@ else
 
 @code {
     [CascadingParameter]
-    private dynamic? SelectContext { get; set; }
+    private SelectContext<TValue>? SelectContext { get; set; }
 
     /// <summary>
     /// Gets or sets the placeholder text to display when no value is selected.
@@ -19,5 +22,31 @@ else
     [Parameter]
     public string? Placeholder { get; set; }
 
-    private string? GetSelectedText() => SelectContext?.DisplayText;
+    private bool _isSubscribed = false;
+
+    protected override void OnParametersSet()
+    {
+        // Subscribe to context state changes for re-rendering
+        // Context DisplayText is the source of truth - no caching needed
+        if (SelectContext != null && !_isSubscribed)
+        {
+            SelectContext.OnStateChanged += HandleStateChanged;
+            _isSubscribed = true;
+        }
+    }
+
+    private void HandleStateChanged()
+    {
+        // Context DisplayText changed, trigger re-render
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        if (SelectContext != null && _isSubscribed)
+        {
+            SelectContext.OnStateChanged -= HandleStateChanged;
+            _isSubscribed = false;
+        }
+    }
 }

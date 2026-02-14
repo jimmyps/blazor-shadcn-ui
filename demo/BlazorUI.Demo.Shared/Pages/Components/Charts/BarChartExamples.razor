@@ -12,7 +12,7 @@
                 <CardTitle Class="text-xl">Bar Chart - Interactive</CardTitle>
                 <CardDescription>Showing sales data for the @(timeRanges.TryGetValue(timeRange, out var description) ? description.ToLower() : "last 30 days")</CardDescription>
             </div>
-            <Select @bind-Value="@timeRange" DisplayTextSelector="@(value => timeRanges.TryGetValue(value, out var text) ? text : value)" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
+            <Select @bind-Value="@timeRange" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
                 <SelectTrigger>
                     <SelectValue Placeholder="Last 30 days" />
                 </SelectTrigger>
