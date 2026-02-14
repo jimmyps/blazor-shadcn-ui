@@ -9,7 +9,7 @@
 @* DatePicker - Date selection with Calendar in Popover *@
 
 <Popover @bind-Open="_isOpen">
-    <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
+    <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()" @onclick="OnTriggerClick">
         @if (ShowIcon)
         {
             <LucideIcon Name="calendar" Class="@GetIconClass()" />
@@ -33,13 +33,13 @@
 </Popover>
 
 @code {
-    private Calendar? _calendar;
-    private bool _isOpen;
-    private DateOnly? _selectedDate;
-    private DateOnly? _lastNotifiedDate;
+private Calendar? _calendar;
+private bool _isOpen;
+private DateOnly? _selectedDate;
+private DateOnly? _lastNotifiedDate;
 
-    private System.Globalization.CultureInfo EffectiveCulture =>
-        Culture ?? System.Globalization.CultureInfo.CurrentCulture;
+private System.Globalization.CultureInfo EffectiveCulture =>
+    Culture ?? System.Globalization.CultureInfo.CurrentCulture;
 
     /// <summary>
     /// The selected date.
@@ -186,10 +186,11 @@
 
     private async Task OnTriggerClick()
     {
-        // Allow Popover to toggle open; then focus calendar after render
-        await Task.Yield();
-
-        if (_calendar is not null)
+        // Wait for popover to open and calendar to render
+        // The delay ensures the calendar DOM is available before focusing
+        await Task.Delay(100);
+        
+        if (_isOpen && _calendar is not null)
         {
             await _calendar.FocusAsync();
         }

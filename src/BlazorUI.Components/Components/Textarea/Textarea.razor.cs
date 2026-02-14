@@ -1,8 +1,11 @@
 using BlazorUI.Components.Common;
 using BlazorUI.Components.Utilities;
+using BlazorUI.Components.Validation;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using System.Linq.Expressions;
 
 namespace BlazorUI.Components.Textarea;
 
@@ -49,10 +52,17 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
     private IJSObjectReference? _inputModule;
     private DotNetObjectReference<Textarea>? _dotNetRef;
     private bool _jsInitialized = false;
+    private InputValidationBehavior? _validationBehavior;
     private string? _generatedId;
 
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
+
+    /// <summary>
+    /// Gets the cascaded EditContext from an EditForm.
+    /// </summary>
+    [CascadingParameter]
+    private EditContext? EditContext { get; set; }
 
     /// <summary>
     /// Gets or sets when the input should update its bound value.
@@ -284,6 +294,65 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
     public bool? AriaInvalid { get; set; }
 
     /// <summary>
+    /// Gets or sets whether to automatically show validation errors from EditContext.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When true and used within an EditForm, automatically:
+    /// - Displays validation errors in a native browser tooltip
+    /// - Focuses the first invalid input
+    /// - Sets AriaInvalid to true for error styling (red border/ring)
+    /// </para>
+    /// <para>
+    /// Only the FIRST invalid input will show the tooltip and receive focus.
+    /// All invalid inputs will get the destructive border/ring styling via aria-invalid.
+    /// </para>
+    /// <para>
+    /// Requires ValueExpression to be set (automatically set when using @bind-Value).
+    /// Best used together with ValidationMessage for persistent error display.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// &lt;Textarea Id="description"
+    ///        @bind-Value="model.Description"
+    ///        ShowValidationError="true" /&gt;
+    /// &lt;ValidationMessage For="@(() => model.Description)" /&gt;
+    /// </code>
+    /// </example>
+    [Parameter]
+    public bool ShowValidationError { get; set; }
+
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    /// <remarks>
+    /// This is automatically set when using @bind-Value syntax.
+    /// Required for ShowValidationError to work with EditContext validation.
+    /// </remarks>
+    [Parameter]
+    public Expression<Func<string?>>? ValueExpression { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional attributes to be applied to the textarea element.
+    /// </summary>
+    /// <remarks>
+    /// Captures any HTML attributes not explicitly defined as parameters.
+    /// This allows for maximum flexibility while maintaining type safety for common attributes.
+    /// Examples: data-* attributes, form, list, size, title, tabindex, etc.
+    /// </remarks>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Gets the effective AriaInvalid value.
+    /// When ShowValidationError is true, this is automatically set based on validation state.
+    /// Otherwise, uses the manually set AriaInvalid parameter.
+    /// </summary>
+    private bool? EffectiveAriaInvalid => 
+        _validationBehavior?.EffectiveAriaInvalid ?? AriaInvalid;
+
+    /// <summary>
     /// Gets the effective name attribute, falling back to Id if Name is not specified.
     /// </summary>
     /// <remarks>
@@ -351,10 +420,6 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
     );
 
     /// <summary>
-    /// Handles the input event (fired on every keystroke).
-    /// </summary>
-    /// <param name="args">The change event arguments.</param>
-    /// <summary>
     /// Called from JavaScript when input value changes.
     /// This is invoked based on UpdateOn mode and debounce settings.
     /// </summary>
@@ -366,6 +431,59 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
 
         // Notify parent component
         await ValueChanged.InvokeAsync(value);
+
+        // Trigger EditContext validation if applicable
+        if (_validationBehavior != null)
+        {
+            await _validationBehavior.NotifyFieldChangedAsync();
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        
+        if (ShowValidationError)
+        {
+            _validationBehavior = new InputValidationBehavior(
+                owner: this,
+                getEffectiveId: () => EffectiveId,
+                getEditContext: () => EditContext,
+                shouldShowValidation: () => ShowValidationError,
+                getJsModule: () => _inputModule
+            );
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_validationBehavior != null)
+        {
+            _validationBehavior.OnParametersSet(ValueExpression);
+            
+            // Subscribe to EditContext validation state changes
+            if (EditContext != null)
+            {
+                EditContext.OnValidationStateChanged -= OnValidationStateChanged;
+                EditContext.OnValidationStateChanged += OnValidationStateChanged;
+            }
+        }
+    }
+
+    private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
+    {
+        if (_validationBehavior == null) return;
+        
+        InvokeAsync(async () =>
+        {
+            var shouldRender = await _validationBehavior.HandleValidationStateChangedAsync();
+            if (shouldRender)
+            {
+                StateHasChanged();
+            }
+        });
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -393,6 +511,18 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
                 );
 
                 _jsInitialized = true;
+
+                // Initialize validation if ShowValidationError is enabled
+                if (ShowValidationError && EditContext != null && ValueExpression != null)
+                {
+                    await _inputModule.InvokeVoidAsync("initializeValidation", EffectiveId, UpdateOn.ToString().ToLower());
+                }
+
+                // Apply initial validation state after first render
+                if (ShowValidationError && _validationBehavior != null)
+                {
+                    await _validationBehavior.UpdateValidationDisplayAsync();
+                }
             }
             catch (JSException)
             {
@@ -405,10 +535,22 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
     {
         try
         {
+            // Unsubscribe from EditContext event
+            if (EditContext != null)
+            {
+                EditContext.OnValidationStateChanged -= OnValidationStateChanged;
+            }
+            
+            if (_validationBehavior != null)
+            {
+                await _validationBehavior.DisposeAsync();
+            }
+
             if (_jsInitialized && _inputModule != null)
             {
-                // Dispose input event handling
+                // Dispose input event handling and validation tracking
                 await _inputModule.InvokeVoidAsync("disposeInput", EffectiveId);
+                await _inputModule.InvokeVoidAsync("disposeValidation", EffectiveId);
                 
                 await _inputModule.DisposeAsync();
             }

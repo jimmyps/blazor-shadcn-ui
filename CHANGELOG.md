@@ -2,6 +2,99 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-02-14 - Input Validation Architecture Refactoring & Dialog Performance Optimization
+
+### 🏗️ Architecture - Input Validation Behavior Centralization
+
+**Refactored all input components to use a centralized validation behavior pattern, eliminating ~410 lines of duplicated code and improving consistency.**
+
+**Key Changes:**
+
+1. **New InputValidationBehavior Class (Shared Validation Logic):**
+   - Created `src/BlazorUI.Components/Validation/InputValidationBehavior.cs` (212 lines)
+   - Encapsulates all validation logic: error display, focus management, first-invalid tracking
+   - Reusable across all input components via composition pattern
+   - Handles EditContext integration, validation state changes, and ARIA attributes
+   - Provides clean API: `OnParametersSet()`, `UpdateValidationDisplayAsync()`, `HandleValidationStateChangedAsync()`, `NotifyFieldChangedAsync()`
+   - Eliminates ~410 lines of duplicated validation code across 5 components (48% code reduction)
+
+2. **Refactored Input Components (Using InputValidationBehavior):**
+   - **Input component** - Complete refactoring (reference implementation)
+   - **Textarea component** - Added validation support with behavior pattern
+   - **CurrencyInput, MaskedInput and NumericInput component** - Refactored validation logic
+
+3. **Validation UX Improvements:**
+   - Added `shouldFocus` parameter (3rd param) to `setValidationError()` JS function
+   - **Smart focus behavior:** Only steal focus when explicitly requested (form submit validation)
+   - **Natural tab navigation:** Validation errors show without disrupting user's tab flow
+   - **Better UX:** Error tooltip appears without forcing focus back to invalid field during natural navigation
+   - `input.js` updated to accept optional `shouldFocus` parameter (default: true for backward compatibility)
+
+4. **Dialog Performance Optimization:**
+   - **Critical Fix:** Moved `@onkeydown` event handling from C# to JavaScript in DialogContent
+   - Created `src/BlazorUI.Primitives/wwwroot/js/primitives/dialog.js` keyboard handler
+   - **Performance gain:** Zero C# roundtrips for regular typing (only Escape key triggers C# callback)
+   - **Before:** Every keystroke in dialog caused C# interop → parent re-render → all inputs re-render
+   - **After:** JavaScript intercepts all keydown events, only calls C# for Escape key
+   - Eliminates massive performance bottleneck when typing in dialog forms
+
+5. **Bug Fixes:**
+   - **Textarea component:** Fixed `aria-invalid` attribute using `AriaInvalid` instead of `EffectiveAriaInvalid`
+   - Validation errors now correctly display red border styling on Textarea
+   - All refactored components verified to use `EffectiveAriaInvalid` in markup
+
+6. **FloatingPortal Stability & Rendering Efficiency Improvements:**
+   - **Re-entrant Call Prevention:** Added `_isUpdatingVisibility` guard flag to prevent infinite loops during ForceMount async visibility updates (WebAssembly)
+   - **Smart State Tracking:** Updates `_previousIsOpen` and guard flag BEFORE async operations to prevent race conditions
+   - **Efficient Refresh Pattern:** `RefreshPortal()` triggers re-render WITHOUT replacing RenderFragment (preserves captured values and ElementReference)
+   - **Conditional Updates:** Only updates visibility when `IsOpen` actually changes and not already updating
+   - **Result:** Eliminated flickering, prevented portal content duplication, and fixed timing-sensitive focus issues
+
+7. **TailwindMerge Arbitrary Value Support Enhancement:**
+   - **Support Modifiers Grouping:** TailwindMerge now correctly groups modifiers (hover:, focus:, data-state=) with arbitrary values
+   - **Enhanced Regex Patterns:** Updated color regexes to support arbitrary values with commas and spaces
+
+8. **Toast Animation Perfection (JavaScript-Delegated with RAF):**
+   - **Problem Solved:** Blazor re-renders were interfering with CSS transitions causing "jumpy" animations
+   - **JavaScript-First Approach:** Created `toast-animation.js` module to handle animation state entirely in JS
+   - **Benefits:**
+     - ✅ **Smooth entrance animations** - No flicker or jump during initial render
+     - ✅ **Blazor-agnostic timing** - RAF ensures proper paint cycles regardless of C# timing
+     - ✅ **Graceful fallback** - Toast still visible if JS fails (no animation, but functional)
+     - ✅ **Zero re-render interference** - JS manages `data-state`, Blazor manages content
+
+**Code Metrics:**
+- **Removed:** ~410 lines of duplicated validation code (across 5 components)
+- **Added:** ~337 lines total (212 shared behavior class + 50 JS dialog handler + 75 component overhead)
+- **Net reduction:** ~73 lines
+- **Duplicated validation logic:** 410 lines → 212 shared lines (48% reduction)
+- **Consistency:** 100% - All input components now follow identical validation pattern
+
+**Technical Details:**
+
+**Per Component Changes:**
+- Removed manual validation fields: `_firstInvalidInputIdKey`, `_validationModule`, `_previousEditContext`, `_fieldIdentifier`, `_currentErrorMessage`, `_hasShownTooltip`
+- Replaced with single field: `private InputValidationBehavior? _validationBehavior;`
+- Standardized lifecycle methods: `OnInitialized()`, `OnParametersSet()`, `OnValidationStateChanged()`, `OnAfterRenderAsync()`, `DisposeAsync()`
+- All components use `EffectiveAriaInvalid` property delegating to behavior
+- Consistent EditContext subscription/unsubscription pattern
+
+**Component-Specific Preservation:**
+- **NumericInput:** Preserved `ValidateAndClamp()`, blur validation, and MaxLength enforcement
+- **MaskedInput:** Preserved masking logic, `OnValueChanged()` callback, and fallback handling
+- **CurrencyInput:** Preserved currency formatting, focus/blur handlers, and culture handling
+
+**Benefits:**
+- ✅ **Single source of truth** for validation logic
+- ✅ **Consistent behavior** across all input components
+- ✅ **Easier maintenance** - validation fixes apply to all components
+- ✅ **Better testability** - validation logic isolated in behavior class
+- ✅ **Performance** - Dialog typing no longer triggers re-renders
+- ✅ **Better UX** - Smart focus behavior during validation
+- ✅ **Stable Portals** - No flickering, no duplicate content, no race conditions
+- ✅ **Full Tailwind Support** - Arbitrary values with complex CSS functions work correctly
+- ✅ **Smooth Toast Animations** - Professional entrance animations without jumps or flicker
+
 ## 2026-02-11 - Nested Dialog, Variant and Enhanced Portal Management
 
 ### ✨ Feature - Dialog Variants & Nested Dialog Support

@@ -1,5 +1,6 @@
 using BlazorUI.Components.Common;
 using BlazorUI.Components.Utilities;
+using BlazorUI.Components.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
@@ -38,18 +39,11 @@ namespace BlazorUI.Components.MaskedInput;
 /// </example>
 public partial class MaskedInput : ComponentBase, IAsyncDisposable
 {
-    // Key for storing first invalid input ID in EditContext.Properties
-    private static readonly object _firstInvalidInputIdKey = new();
-    
     private IJSObjectReference? _inputModule;
     private DotNetObjectReference<MaskedInput>? _dotNetRef;
     private bool _jsInitialized = false;
-    private IJSObjectReference? _validationModule;
+    private InputValidationBehavior? _validationBehavior;
     private IJSObjectReference? _maskModule;
-    private EditContext? _previousEditContext;
-    private FieldIdentifier _fieldIdentifier;
-    private string? _currentErrorMessage;
-    private bool _hasShownTooltip = false;
     private string? _generatedId;
     private string? _lastRawValue;
     private DotNetObjectReference<MaskedInput>? _maskDotNetRef;
@@ -241,9 +235,8 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         public const string ZIP4 = "00000-0000";
     }
 
-    private bool? EffectiveAriaInvalid => ShowValidationError && EditContext != null
-        ? !string.IsNullOrEmpty(_currentErrorMessage)
-        : AriaInvalid;
+    private bool? EffectiveAriaInvalid => 
+        _validationBehavior?.EffectiveAriaInvalid ?? AriaInvalid;
 
     /// <summary>
     /// Gets the effective ID, generating a unique ID if none is provided.
@@ -432,9 +425,9 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
                     await ValueChanged.InvokeAsync(Value);
                 }
 
-                if (ShowValidationError && EditContext != null && ValueExpression != null)
+                if (_validationBehavior != null)
                 {
-                    EditContext.NotifyFieldChanged(_fieldIdentifier);
+                    await _validationBehavior.NotifyFieldChangedAsync();
                 }
             }
         }
@@ -460,9 +453,9 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
                 await ValueChanged.InvokeAsync(Value);
             }
 
-            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            if (_validationBehavior != null)
             {
-                EditContext.NotifyFieldChanged(_fieldIdentifier);
+                await _validationBehavior.NotifyFieldChangedAsync();
             }
         }
     }
@@ -486,20 +479,10 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
             await ValueChanged.InvokeAsync(Value);
 
             // Trigger EditContext validation if applicable
-            if (EditContext != null && ValueExpression != null)
+            if (_validationBehavior != null)
             {
-                _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
-                EditContext.NotifyFieldChanged(_fieldIdentifier);
-                await UpdateValidationState();
+                await _validationBehavior.NotifyFieldChangedAsync();
             }
-        }
-    }
-
-    private async Task UpdateValidationState()
-    {
-        if (ShowValidationError && EditContext != null && _validationModule != null)
-        {
-            await UpdateValidationDisplayAsync();
         }
     }
 
@@ -534,21 +517,51 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         await Task.CompletedTask;
     }
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        
+        if (ShowValidationError)
+        {
+            _validationBehavior = new InputValidationBehavior(
+                owner: this,
+                getEffectiveId: () => EffectiveId,
+                getEditContext: () => EditContext,
+                shouldShowValidation: () => ShowValidationError,
+                getJsModule: () => _inputModule
+            );
+        }
+    }
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
 
-        if (ShowValidationError && ValueExpression != null)
+        if (_validationBehavior != null)
         {
-            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
-
-            if (EditContext != _previousEditContext)
+            _validationBehavior.OnParametersSet(ValueExpression);
+            
+            // Subscribe to EditContext validation state changes
+            if (EditContext != null)
             {
-                DetachValidationStateChangedListener();
-                EditContext?.OnValidationStateChanged += OnValidationStateChanged;
-                _previousEditContext = EditContext;
+                EditContext.OnValidationStateChanged -= OnValidationStateChanged;
+                EditContext.OnValidationStateChanged += OnValidationStateChanged;
             }
         }
+    }
+
+    private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
+    {
+        if (_validationBehavior == null) return;
+        
+        InvokeAsync(async () =>
+        {
+            var shouldRender = await _validationBehavior.HandleValidationStateChangedAsync();
+            if (shouldRender)
+            {
+                StateHasChanged();
+            }
+        });
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -576,11 +589,10 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
 
                 _jsInitialized = true;
 
-                if (ShowValidationError)
+                // Initialize validation if ShowValidationError is enabled
+                if (ShowValidationError && EditContext != null && ValueExpression != null)
                 {
-                    // Validation functions are in the same input.js module
-                    _validationModule = _inputModule;
-                    await _validationModule.InvokeVoidAsync("initializeValidation", EffectiveId, UpdateOn.ToString().ToLower());
+                    await _inputModule.InvokeVoidAsync("initializeValidation", EffectiveId, UpdateOn.ToString().ToLower());
                 }
 
                 // Load mask module
@@ -599,16 +611,17 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
                         EffectiveId, Mask, MaskChar, _maskDotNetRef, updateOnMode);
                     _isInitialized = true;
                 }
+
+                // Apply initial validation state after first render
+                if (ShowValidationError && _validationBehavior != null)
+                {
+                    await _validationBehavior.UpdateValidationDisplayAsync();
+                }
             }
             catch (JSException)
             {
                 // JS modules not available, component will work without advanced features
             }
-        }
-
-        if (ShowValidationError && _validationModule != null)
-        {
-            await UpdateValidationDisplayAsync();
         }
     }
 
@@ -628,84 +641,12 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
                 await ValueChanged.InvokeAsync(Value);
             }
 
-            if (ShowValidationError && EditContext != null && ValueExpression != null)
+            if (_validationBehavior != null)
             {
-                EditContext.NotifyFieldChanged(_fieldIdentifier);
+                await _validationBehavior.NotifyFieldChangedAsync();
             }
 
             StateHasChanged();
-        }
-    }
-
-    private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
-    {
-        // Reset first invalid input tracking for this EditContext on new validation cycle
-        if (EditContext != null)
-        {
-            EditContext.Properties.Remove(_firstInvalidInputIdKey);
-        }
-        _hasShownTooltip = false;
-
-        InvokeAsync(async () =>
-        {
-            await UpdateValidationDisplayAsync();
-            StateHasChanged();
-        });
-    }
-
-    private async Task UpdateValidationDisplayAsync()
-    {
-        if (EditContext == null || _validationModule == null)
-            return;
-
-        try
-        {
-            var messages = EditContext.GetValidationMessages(_fieldIdentifier).ToList();
-            var errorMessage = messages.FirstOrDefault();
-
-            if (errorMessage != _currentErrorMessage)
-            {
-                _currentErrorMessage = errorMessage;
-
-                if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    // Determine if this is the first invalid input for this EditContext
-                    // Using EditContext.Properties for per-form state storage
-                    string? firstInvalidId = null;
-                    if (EditContext.Properties.TryGetValue(_firstInvalidInputIdKey, out var value))
-                    {
-                        firstInvalidId = value as string;
-                    }
-                    var isFirstInvalid = firstInvalidId == null;
-                    
-                    if (isFirstInvalid)
-                    {
-                        EditContext.Properties[_firstInvalidInputIdKey] = EffectiveId;
-                    }
-
-                    if (isFirstInvalid && !_hasShownTooltip)
-                    {
-                        await _validationModule.InvokeVoidAsync("showValidationError", EffectiveId, errorMessage);
-                        _hasShownTooltip = true;
-                    }
-                }
-                else
-                {
-                    await _validationModule.InvokeVoidAsync("clearValidationError", EffectiveId);
-                }
-            }
-        }
-        catch (JSException)
-        {
-            // Ignore JS errors
-        }
-    }
-
-    private void DetachValidationStateChangedListener()
-    {
-        if (_previousEditContext != null)
-        {
-            _previousEditContext.OnValidationStateChanged -= OnValidationStateChanged;
         }
     }
 
@@ -713,6 +654,17 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     {
         try
         {
+            // Unsubscribe from EditContext event
+            if (EditContext != null)
+            {
+                EditContext.OnValidationStateChanged -= OnValidationStateChanged;
+            }
+            
+            if (_validationBehavior != null)
+            {
+                await _validationBehavior.DisposeAsync();
+            }
+
             if (_jsInitialized && _inputModule != null)
             {
                 // Dispose input event handling and validation tracking
@@ -728,8 +680,6 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         {
             // Ignore - this happens during hot reload or when navigating away
         }
-
-        DetachValidationStateChangedListener();
         
         // Clean up masked input JS
         if (_maskModule != null && _isInitialized)

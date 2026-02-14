@@ -139,6 +139,7 @@
     private bool _isInitialized = false;
     private bool _isPositioned = false;
     private bool _previousIsOpen = false;
+    private bool _isUpdatingVisibility = false; // Guard against re-entrant async calls during ForceMount visibility updates
     private ElementReference _portalContentRef;
     private TaskCompletionSource<bool>? _portalReadyTcs;
 
@@ -185,6 +186,9 @@
         {
             _isInitialized = true;
             _isPositioned = false;
+            
+            // Initialize tracking IMMEDIATELY to prevent loop in visibility update path
+            _previousIsOpen = IsOpen;
 
             // Register content through portal - this triggers PortalHost to re-render
             if (!string.IsNullOrEmpty(ParentPortalId))
@@ -227,9 +231,6 @@
             {
                 await SetupAsync();
             }
-            
-            // Initialize previous state tracking
-            _previousIsOpen = IsOpen;
         }
         // Only cleanup if not ForceMount and closed
         else if (!IsOpen && _isInitialized && !ForceMount)
@@ -237,12 +238,16 @@
             await CleanupAsync();
         }
         // Update visibility ONLY when IsOpen actually changes (ForceMount)
-        else if (_isInitialized && ForceMount && IsOpen != _previousIsOpen)
+        // Use guard to prevent re-entrant calls during async operations
+        else if (_isInitialized && ForceMount && IsOpen != _previousIsOpen && !_isUpdatingVisibility)
         {
+            // Update tracking BEFORE async call to prevent re-entrant loops during await
+            _isUpdatingVisibility = true;
+            _previousIsOpen = IsOpen;
+            
             await UpdateVisibilityAsync();
             
-            // Update tracking AFTER visibility change completes
-            _previousIsOpen = IsOpen;
+            _isUpdatingVisibility = false;
         }
     }
 
@@ -472,6 +477,7 @@
 
         _isInitialized = false;
         _isPositioned = false;
+        _isUpdatingVisibility = false;
     }
 
     public async ValueTask DisposeAsync()

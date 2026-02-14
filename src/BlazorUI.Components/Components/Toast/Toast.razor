@@ -1,7 +1,9 @@
-﻿@namespace BlazorUI.Components.Toast
+@namespace BlazorUI.Components.Toast
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
 
 @* Toast - individual toast notification *@
-<div @attributes="GetAttributes()">
+<div id="@_elementId" @attributes="GetAttributes()" style="opacity: 0; transform: translateY(0.5rem); pointer-events: none;">
     <div class="grid gap-1">
         @if (!string.IsNullOrEmpty(Title))
         {
@@ -20,69 +22,114 @@
 </div>
 
 @code {
-    /// <summary>
-    /// The unique identifier for this toast.
-    /// </summary>
-    [Parameter]
-    public string? Id { get; set; }
+/// <summary>
+/// The unique identifier for this toast.
+/// </summary>
+[Parameter]
+public string? Id { get; set; }
 
-    /// <summary>
-    /// The title of the toast.
-    /// </summary>
-    [Parameter]
-    public string? Title { get; set; }
+/// <summary>
+/// The title of the toast.
+/// </summary>
+[Parameter]
+public string? Title { get; set; }
 
-    /// <summary>
-    /// The description of the toast.
-    /// </summary>
-    [Parameter]
-    public string? Description { get; set; }
+/// <summary>
+/// The description of the toast.
+/// </summary>
+[Parameter]
+public string? Description { get; set; }
 
-    /// <summary>
-    /// The variant/style of the toast.
-    /// </summary>
-    [Parameter]
-    public ToastVariant Variant { get; set; } = ToastVariant.Default;
+/// <summary>
+/// The variant/style of the toast.
+/// </summary>
+[Parameter]
+public ToastVariant Variant { get; set; } = ToastVariant.Default;
 
-    /// <summary>
-    /// The label for the action button.
-    /// </summary>
-    [Parameter]
-    public string? ActionLabel { get; set; }
+/// <summary>
+/// The label for the action button.
+/// </summary>
+[Parameter]
+public string? ActionLabel { get; set; }
 
-    /// <summary>
-    /// Callback when action button is clicked.
-    /// </summary>
-    [Parameter]
-    public Action? OnAction { get; set; }
+/// <summary>
+/// Callback when action button is clicked.
+/// </summary>
+[Parameter]
+public Action? OnAction { get; set; }
 
-    /// <summary>
-    /// Callback when the toast is dismissed.
-    /// </summary>
-    [Parameter]
-    public Action? OnDismiss { get; set; }
+/// <summary>
+/// Callback when the toast is dismissed.
+/// </summary>
+[Parameter]
+public Action? OnDismiss { get; set; }
 
-    /// <summary>
-    /// Additional CSS classes to apply to the toast.
-    /// </summary>
-    [Parameter]
-    public string? Class { get; set; }
+/// <summary>
+/// Additional CSS classes to apply to the toast.
+/// </summary>
+[Parameter]
+public string? Class { get; set; }
 
-    /// <summary>
-    /// Additional attributes to apply to the toast element.
-    /// </summary>
-    [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+/// <summary>
+/// Additional attributes to apply to the toast element.
+/// </summary>
+[Parameter(CaptureUnmatchedValues = true)]
+public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private void HandleAction()
+private string _elementId = "";
+private IJSObjectReference? _jsModule;
+
+protected override void OnInitialized()
+{
+    _elementId = $"toast-{Id ?? Guid.NewGuid().ToString()}";
+}
+
+protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+    if (firstRender)
     {
-        OnAction?.Invoke();
-    }
+        try
+        {
+            // Load JS module
+            _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/NeoBlazorUI.Components/js/toast-animation.js");
 
-    private void HandleDismiss()
-    {
-        OnDismiss?.Invoke();
+            // Let JS completely handle the animation (initial state + transition to open)
+            await _jsModule.InvokeVoidAsync("initializeToastAnimation", _elementId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Toast animation initialization failed: {ex.Message}");
+            // Animation will fail gracefully - toast still visible but without animation
+        }
     }
+}
+
+private void HandleAction()
+{
+    OnAction?.Invoke();
+}
+
+private void HandleDismiss()
+{
+    OnDismiss?.Invoke();
+}
+
+public async ValueTask DisposeAsync()
+{
+    if (_jsModule != null)
+    {
+        try
+        {
+            await _jsModule.InvokeVoidAsync("cleanupToastAnimation", _elementId);
+            await _jsModule.DisposeAsync();
+        }
+        catch
+        {
+            // Cleanup may fail if element is already gone
+        }
+    }
+}
 
     private string GetVariantClass()
     {
@@ -98,12 +145,15 @@
 
     private Dictionary<string, object> GetAttributes()
     {
-        var baseClass = "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all " +
+        // Animation state is now managed entirely by JS, not Blazor
+        // No data-state attribute here - JS will set it
+        var baseClass = "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border px-4 py-3 pr-8 shadow-lg " +
                        "data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] " +
                        "data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none " +
                        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out " +
-                       "data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full " +
-                       "data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full";
+                       "data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-96 " +
+                       "data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-4 data-[state=open]:sm:slide-in-from-bottom-4 " +
+                       "animate-duration-500 animate-ease-in-out";
 
         var variantClass = GetVariantClass();
         var classValue = string.IsNullOrEmpty(Class) 
@@ -115,8 +165,8 @@
             ["class"] = classValue,
             ["role"] = "status",
             ["aria-live"] = "polite",
-            ["aria-atomic"] = "true",
-            ["data-state"] = "open"
+            ["aria-atomic"] = "true"
+            // No data-state here - JS manages it
         };
 
         if (!string.IsNullOrEmpty(Id))
@@ -126,7 +176,7 @@
 
         if (AdditionalAttributes != null)
         {
-            foreach (var kvp in AdditionalAttributes.Where(kvp => kvp.Key != "class"))
+            foreach (var kvp in AdditionalAttributes.Where(kvp => kvp.Key != "class" && kvp.Key != "style"))
             {
                 attributes[kvp.Key] = kvp.Value;
             }

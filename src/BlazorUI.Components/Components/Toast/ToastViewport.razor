@@ -65,19 +65,19 @@
     {
         return Position switch
         {
-            ToastPosition.TopLeft => "top-0 left-0",
-            ToastPosition.TopCenter => "top-0 left-1/2 -translate-x-1/2",
-            ToastPosition.TopRight => "top-0 right-0",
-            ToastPosition.BottomLeft => "bottom-0 left-0",
-            ToastPosition.BottomCenter => "bottom-0 left-1/2 -translate-x-1/2",
-            ToastPosition.BottomRight => "bottom-0 right-0",
-            _ => "bottom-0 right-0"
+            ToastPosition.TopLeft => "top-4 left-4",
+            ToastPosition.TopCenter => "top-4 left-1/2 -translate-x-1/2",
+            ToastPosition.TopRight => "top-4 right-4",
+            ToastPosition.BottomLeft => "bottom-4 left-4",
+            ToastPosition.BottomCenter => "bottom-4 left-1/2 -translate-x-1/2",
+            ToastPosition.BottomRight => "bottom-4 right-4",
+            _ => "bottom-4 right-4"
         };
     }
 
     private Dictionary<string, object> GetAttributes()
     {
-        var baseClass = $"fixed z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:flex-col md:max-w-[420px] gap-2 {GetPositionClass()}";
+        var baseClass = $"fixed z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:flex-col md:max-w-[420px] gap-4 {GetPositionClass()}";
         var classValue = string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
 
         var attributes = new Dictionary<string, object>
