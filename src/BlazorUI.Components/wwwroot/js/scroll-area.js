@@ -443,7 +443,7 @@ function initializeFillContainer(scrollAreaElement) {
 
             // Account for gap in flex/grid containers
             const gap = parseFloat(parentStyle.gap) || parseFloat(parentStyle.rowGap) || 0;
-            const totalGap = gap * Math.max(0, siblings.length);
+            const totalGap = gap * Math.max(0, siblings.length - 1);
 
             // Calculate available height for scroll area
             const availableHeight = Math.max(0, availableParentHeight - siblingsHeight - totalGap);
