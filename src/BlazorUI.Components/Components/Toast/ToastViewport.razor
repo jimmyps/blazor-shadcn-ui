@@ -1,20 +1,27 @@
 @namespace BlazorUI.Components.Toast
 @implements IDisposable
 
-@* ToastViewport - container that displays active toasts *@
-<div @attributes="GetAttributes()">
-    @foreach (var toast in GetVisibleToasts())
-    {
-        <Toast 
-            Id="@toast.Id"
-            Title="@toast.Title"
-            Description="@toast.Description"
-            Variant="@toast.Variant"
-            ActionLabel="@toast.ActionLabel"
-            OnAction="@toast.OnAction"
-            OnDismiss="@(() => ToastService.Dismiss(toast.Id))" />
-    }
-</div>
+@* ToastViewport - container that displays active toasts grouped by position *@
+@foreach (var positionGroup in GetToastsByPosition())
+{
+    <div @attributes="GetAttributes(positionGroup.Key)">
+        @foreach (var toast in positionGroup.Value)
+        {
+            <Toast 
+                Id="@toast.Id"
+                Title="@toast.Title"
+                Description="@toast.Description"
+                Variant="@toast.Variant"
+                Size="@toast.Size"
+                ShowIcon="@toast.ShowIcon"
+                PauseOnHover="@toast.PauseOnHover"
+                ActionLabel="@toast.ActionLabel"
+                OnAction="@toast.OnAction"
+                OnDismiss="@(() => ToastService.Dismiss(toast.Id))"
+                OnHoverChanged="@((isHovered) => HandleToastHoverChanged(toast.Id, isHovered))" />
+        }
+    </div>
+}
 
 @code {
     [Inject]
@@ -56,34 +63,63 @@
         InvokeAsync(StateHasChanged);
     }
 
+    private void HandleToastHoverChanged(string toastId, bool isHovered)
+    {
+        if (ToastService is ToastService service)
+        {
+            service.SetToastHoverState(toastId, isHovered);
+        }
+    }
+
+    private Dictionary<ToastPosition, List<ToastOptions>> GetToastsByPosition()
+    {
+        var grouped = new Dictionary<ToastPosition, List<ToastOptions>>();
+        
+        foreach (var toast in GetVisibleToasts())
+        {
+            // Use toast's position override if set, otherwise use viewport's default position
+            var position = toast.Position ?? Position;
+            
+            if (!grouped.ContainsKey(position))
+            {
+                grouped[position] = new List<ToastOptions>();
+            }
+            
+            grouped[position].Add(toast);
+        }
+        
+        return grouped;
+    }
+
     private IEnumerable<ToastOptions> GetVisibleToasts()
     {
         return ToastService.Toasts.Take(MaxToasts);
     }
 
-    private string GetPositionClass()
+    private string GetPositionClass(ToastPosition position)
     {
-        return Position switch
+        return position switch
         {
-            ToastPosition.TopLeft => "top-0 left-0",
-            ToastPosition.TopCenter => "top-0 left-1/2 -translate-x-1/2",
-            ToastPosition.TopRight => "top-0 right-0",
-            ToastPosition.BottomLeft => "bottom-0 left-0",
-            ToastPosition.BottomCenter => "bottom-0 left-1/2 -translate-x-1/2",
-            ToastPosition.BottomRight => "bottom-0 right-0",
-            _ => "bottom-0 right-0"
+            ToastPosition.TopLeft => "top-4 left-4",
+            ToastPosition.TopCenter => "top-4 left-1/2 -translate-x-1/2",
+            ToastPosition.TopRight => "top-4 right-4",
+            ToastPosition.BottomLeft => "bottom-4 left-4",
+            ToastPosition.BottomCenter => "bottom-4 left-1/2 -translate-x-1/2",
+            ToastPosition.BottomRight => "bottom-4 right-4",
+            _ => "bottom-4 right-4"
         };
     }
 
-    private Dictionary<string, object> GetAttributes()
+    private Dictionary<string, object> GetAttributes(ToastPosition position)
     {
-        var baseClass = $"fixed z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:flex-col md:max-w-[420px] gap-2 {GetPositionClass()}";
+        var baseClass = $"fixed z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:flex-col md:max-w-[420px] gap-4 {GetPositionClass(position)}";
         var classValue = string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
 
         var attributes = new Dictionary<string, object>
         {
             ["class"] = classValue,
-            ["data-toast-viewport"] = ""
+            ["data-toast-viewport"] = "",
+            ["data-position"] = position.ToString()
         };
 
         if (AdditionalAttributes != null)

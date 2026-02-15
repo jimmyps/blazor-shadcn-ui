@@ -86,18 +86,27 @@ export function disposeValidation(elementId) {
     validationState.delete(elementId);
 }
 
-export function setValidationError(elementId, message) {
+/**
+ * Set validation error on an input element with optional focus
+ * @param {string} elementId - The element ID
+ * @param {string} message - The error message
+ * @param {boolean} shouldFocus - Whether to focus the element (default: true for backwards compatibility)
+ */
+export function setValidationError(elementId, message, shouldFocus = true) {
     const element = document.getElementById(elementId);
     if (!element) return;
 
     // Set custom validity for native browser tooltip
     element.setCustomValidity(message);
     
-    // Report validity to show the tooltip
-    element.reportValidity();
-    
-    // Focus the element to ensure visibility
-    element.focus();
+    // Only focus if explicitly requested (avoids stealing focus during natural field navigation)
+    if (shouldFocus) {
+      requestAnimationFrame(() => {
+        // Report validity to show the tooltip
+        element.reportValidity();
+        element.focus();
+      });
+    }
 
     // Mark that this element has an error
     const state = validationState.get(elementId);

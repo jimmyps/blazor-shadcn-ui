@@ -1,18 +1,19 @@
 @namespace BlazorUI.Components.AlertDialog
 @using BlazorUI.Components.Utilities
 @using BlazorUI.Primitives.Dialog
+@using BlazorUI.Primitives.Services
 
 @*
     AlertDialog content with alert-specific styling.
     By default, prevents dismissal via click-outside for standard alert dialog behavior.
-    Escape key dismissal is configurable via CloseOnEscape parameter.
 *@
 
 <DialogPortal>
-    <DialogOverlay CloseOnClick="@CloseOnClickOutside" class="@GetOverlayClass()" />
+    <DialogOverlay CloseOnClick="@CloseOnClickOutside" class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
 
     <BlazorUI.Primitives.Dialog.DialogContent
         class="@GetClassNames()"
+        style="@($"z-index: {GetEffectiveContentZIndex()}")"
         CloseOnEscape="@CloseOnEscape"
         TrapFocus="true"
         LockScroll="true"
@@ -55,8 +56,20 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Gets the z-index for the alert dialog overlay.
+    /// AlertDialogs use the topmost z-index to ensure they appear above regular dialogs.
+    /// </summary>
+    private int GetEffectiveOverlayZIndex() => ZIndexLevels.TopmostDialogContent;
+
+    /// <summary>
+    /// Gets the z-index for the alert dialog content.
+    /// Content is always 1 level above its overlay.
+    /// </summary>
+    private int GetEffectiveContentZIndex() => ZIndexLevels.TopmostDialogContent + 1;
+
     private string GetOverlayClass() => ClassNames.cn(
-        "fixed inset-0 z-50 bg-black/50",
+        "fixed inset-0 bg-black/40 backdrop-blur-sm",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "animate-duration-200 animate-ease-out"
@@ -64,8 +77,9 @@
 
     private string GetClassNames() => ClassNames.cn(
         // Base positioning and sizing
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
-        "gap-4 border bg-background p-6 shadow-lg",
+        "fixed gap-4 p-6 left-[50%] top-[50%] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
+        "bg-background border border-border/60 dark:border-border/40 dark:ring-1 dark:ring-white/10",
+        "shadow-xl dark:shadow-2xl",
 
         // Animation states with smooth easing
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
