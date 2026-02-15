@@ -4,404 +4,404 @@
 const SCROLL_THRESHOLD = 1;
 
 export function initialize(scrollAreaElement, options) {
-    if (!scrollAreaElement) {
-        console.error('ScrollArea: Element reference is null');
-        return null;
+  if (!scrollAreaElement) {
+    console.error('ScrollArea: Element reference is null');
+    return null;
+  }
+
+  const viewport = scrollAreaElement.querySelector('[data-scroll-viewport]');
+  if (!viewport) {
+    console.error('ScrollArea: Viewport element not found');
+    return null;
+  }
+
+  const config = {
+    enableShadows: options?.enableShadows ?? true,
+    fillContainer: options?.fillContainer ?? false,
+    ...options
+  };
+
+  // Auto-height calculation for fillContainer mode
+  let fillContainerCleanup = null;
+  if (config.fillContainer) {
+    fillContainerCleanup = initializeFillContainer(scrollAreaElement);
+  }
+
+  // Find scrollbar elements
+  const verticalScrollbar = scrollAreaElement.querySelector('[data-scrollbar][data-orientation="vertical"]');
+  const horizontalScrollbar = scrollAreaElement.querySelector('[data-scrollbar][data-orientation="horizontal"]');
+  const verticalThumb = verticalScrollbar?.querySelector('[data-scrollbar-thumb]');
+  const horizontalThumb = horizontalScrollbar?.querySelector('[data-scrollbar-thumb]');
+
+  let rafId = null;
+  let isDisposed = false;
+  let isDragging = false;
+  let dragStartY = 0;
+  let dragStartX = 0;
+  let dragStartScrollTop = 0;
+  let dragStartScrollLeft = 0;
+
+  // Update scrollbar thumb size and position based on scroll state
+  function updateScrollbars() {
+    if (isDisposed) return;
+
+    const { scrollTop, scrollLeft, scrollHeight, scrollWidth, clientHeight, clientWidth } = viewport;
+
+    // Update vertical scrollbar
+    if (verticalThumb && verticalScrollbar) {
+      const scrollableHeight = scrollHeight - clientHeight;
+      if (scrollableHeight > 0) {
+        // Show scrollbar when content overflows
+        verticalScrollbar.setAttribute('data-state', 'visible');
+
+        // Calculate thumb height as a ratio of viewport to content
+        const thumbHeightRatio = clientHeight / scrollHeight;
+        const thumbHeight = Math.max(thumbHeightRatio * clientHeight, 20); // Minimum 20px
+
+        // Calculate thumb position
+        const scrollRatio = scrollTop / scrollableHeight;
+        const maxThumbOffset = clientHeight - thumbHeight;
+        const thumbOffset = scrollRatio * maxThumbOffset;
+
+        verticalThumb.style.height = `${thumbHeight}px`;
+        verticalThumb.style.transform = `translateY(${thumbOffset}px)`;
+      } else {
+        // Hide scrollbar when no overflow
+        verticalScrollbar.setAttribute('data-state', 'hidden');
+      }
     }
 
-    const viewport = scrollAreaElement.querySelector('[data-scroll-viewport]');
-    if (!viewport) {
-        console.error('ScrollArea: Viewport element not found');
-        return null;
+    // Update horizontal scrollbar
+    if (horizontalThumb && horizontalScrollbar) {
+      const scrollableWidth = scrollWidth - clientWidth;
+      if (scrollableWidth > 0) {
+        // Show scrollbar when content overflows
+        horizontalScrollbar.setAttribute('data-state', 'visible');
+
+        // Calculate thumb width as a ratio of viewport to content
+        const thumbWidthRatio = clientWidth / scrollWidth;
+        const thumbWidth = Math.max(thumbWidthRatio * clientWidth, 20); // Minimum 20px
+
+        // Calculate thumb position
+        const scrollRatio = scrollLeft / scrollableWidth;
+        const maxThumbOffset = clientWidth - thumbWidth;
+        const thumbOffset = scrollRatio * maxThumbOffset;
+
+        horizontalThumb.style.width = `${thumbWidth}px`;
+        horizontalThumb.style.transform = `translateX(${thumbOffset}px)`;
+      } else {
+        // Hide scrollbar when no overflow
+        horizontalScrollbar.setAttribute('data-state', 'hidden');
+      }
     }
+  }
 
-    const config = {
-        enableShadows: options?.enableShadows ?? true,
-        fillContainer: options?.fillContainer ?? false,
-        ...options
-    };
+  // Update shadow visibility based on scroll position
+  function updateShadows() {
+    if (isDisposed || !config.enableShadows) return;
 
-    // Auto-height calculation for fillContainer mode
-    let fillContainerCleanup = null;
-    if (config.fillContainer) {
-        fillContainerCleanup = initializeFillContainer(scrollAreaElement);
-    }
+    const { scrollTop, scrollLeft, scrollHeight, scrollWidth, clientHeight, clientWidth } = viewport;
 
-    // Find scrollbar elements
-    const verticalScrollbar = scrollAreaElement.querySelector('[data-scrollbar][data-orientation="vertical"]');
-    const horizontalScrollbar = scrollAreaElement.querySelector('[data-scrollbar][data-orientation="horizontal"]');
-    const verticalThumb = verticalScrollbar?.querySelector('[data-scrollbar-thumb]');
-    const horizontalThumb = horizontalScrollbar?.querySelector('[data-scrollbar-thumb]');
+    // Calculate shadow visibility using threshold
+    const canScrollTop = scrollTop > SCROLL_THRESHOLD;
+    const canScrollBottom = scrollTop < scrollHeight - clientHeight - SCROLL_THRESHOLD;
+    const canScrollLeft = scrollLeft > SCROLL_THRESHOLD;
+    const canScrollRight = scrollLeft < scrollWidth - clientWidth - SCROLL_THRESHOLD;
 
-    let rafId = null;
-    let isDisposed = false;
-    let isDragging = false;
-    let dragStartY = 0;
-    let dragStartX = 0;
-    let dragStartScrollTop = 0;
-    let dragStartScrollLeft = 0;
+    // Update data attributes for CSS-based shadows
+    scrollAreaElement.setAttribute('data-scroll-top', canScrollTop ? 'true' : 'false');
+    scrollAreaElement.setAttribute('data-scroll-bottom', canScrollBottom ? 'true' : 'false');
+    scrollAreaElement.setAttribute('data-scroll-left', canScrollLeft ? 'true' : 'false');
+    scrollAreaElement.setAttribute('data-scroll-right', canScrollRight ? 'true' : 'false');
+  }
 
-    // Update scrollbar thumb size and position based on scroll state
-    function updateScrollbars() {
-        if (isDisposed) return;
+  // Combined update function
+  function updateAll() {
+    updateScrollbars();
+    updateShadows();
+  }
 
-        const { scrollTop, scrollLeft, scrollHeight, scrollWidth, clientHeight, clientWidth } = viewport;
+  // Throttled scroll handler using requestAnimationFrame
+  function handleScroll() {
+    if (rafId) return;
 
-        // Update vertical scrollbar
-        if (verticalThumb && verticalScrollbar) {
-            const scrollableHeight = scrollHeight - clientHeight;
-            if (scrollableHeight > 0) {
-                // Show scrollbar when content overflows
-                verticalScrollbar.setAttribute('data-state', 'visible');
-                
-                // Calculate thumb height as a ratio of viewport to content
-                const thumbHeightRatio = clientHeight / scrollHeight;
-                const thumbHeight = Math.max(thumbHeightRatio * clientHeight, 20); // Minimum 20px
-                
-                // Calculate thumb position
-                const scrollRatio = scrollTop / scrollableHeight;
-                const maxThumbOffset = clientHeight - thumbHeight;
-                const thumbOffset = scrollRatio * maxThumbOffset;
-                
-                verticalThumb.style.height = `${thumbHeight}px`;
-                verticalThumb.style.transform = `translateY(${thumbOffset}px)`;
-            } else {
-                // Hide scrollbar when no overflow
-                verticalScrollbar.setAttribute('data-state', 'hidden');
-            }
-        }
-
-        // Update horizontal scrollbar
-        if (horizontalThumb && horizontalScrollbar) {
-            const scrollableWidth = scrollWidth - clientWidth;
-            if (scrollableWidth > 0) {
-                // Show scrollbar when content overflows
-                horizontalScrollbar.setAttribute('data-state', 'visible');
-                
-                // Calculate thumb width as a ratio of viewport to content
-                const thumbWidthRatio = clientWidth / scrollWidth;
-                const thumbWidth = Math.max(thumbWidthRatio * clientWidth, 20); // Minimum 20px
-                
-                // Calculate thumb position
-                const scrollRatio = scrollLeft / scrollableWidth;
-                const maxThumbOffset = clientWidth - thumbWidth;
-                const thumbOffset = scrollRatio * maxThumbOffset;
-                
-                horizontalThumb.style.width = `${thumbWidth}px`;
-                horizontalThumb.style.transform = `translateX(${thumbOffset}px)`;
-            } else {
-                // Hide scrollbar when no overflow
-                horizontalScrollbar.setAttribute('data-state', 'hidden');
-            }
-        }
-    }
-
-    // Update shadow visibility based on scroll position
-    function updateShadows() {
-        if (isDisposed || !config.enableShadows) return;
-
-        const { scrollTop, scrollLeft, scrollHeight, scrollWidth, clientHeight, clientWidth } = viewport;
-
-        // Calculate shadow visibility using threshold
-        const canScrollTop = scrollTop > SCROLL_THRESHOLD;
-        const canScrollBottom = scrollTop < scrollHeight - clientHeight - SCROLL_THRESHOLD;
-        const canScrollLeft = scrollLeft > SCROLL_THRESHOLD;
-        const canScrollRight = scrollLeft < scrollWidth - clientWidth - SCROLL_THRESHOLD;
-
-        // Update data attributes for CSS-based shadows
-        scrollAreaElement.setAttribute('data-scroll-top', canScrollTop ? 'true' : 'false');
-        scrollAreaElement.setAttribute('data-scroll-bottom', canScrollBottom ? 'true' : 'false');
-        scrollAreaElement.setAttribute('data-scroll-left', canScrollLeft ? 'true' : 'false');
-        scrollAreaElement.setAttribute('data-scroll-right', canScrollRight ? 'true' : 'false');
-    }
-
-    // Combined update function
-    function updateAll() {
-        updateScrollbars();
-        updateShadows();
-    }
-
-    // Throttled scroll handler using requestAnimationFrame
-    function handleScroll() {
-        if (rafId) return;
-        
-        rafId = requestAnimationFrame(() => {
-            updateAll();
-            rafId = null;
-        });
-    }
-
-    // Attach scroll listener
-    viewport.addEventListener('scroll', handleScroll, { passive: true });
-
-    // Initial updates
-    updateAll();
-
-    // Observe content size changes (throttled for performance)
-    // Watch both the viewport and its child content wrapper
-    let resizeRafId = null;
-    const resizeObserver = new ResizeObserver(() => {
-        if (isDisposed) return;
-        
-        if (resizeRafId) return;
-        
-        resizeRafId = requestAnimationFrame(() => {
-            updateAll();
-            resizeRafId = null;
-        });
+    rafId = requestAnimationFrame(() => {
+      updateAll();
+      rafId = null;
     });
-    
-    // Observe the viewport itself
-    resizeObserver.observe(viewport);
-    
-    // Also observe the content wrapper (first child of viewport) for content height changes
-    const contentWrapper = viewport.firstElementChild;
-    if (contentWrapper) {
-        resizeObserver.observe(contentWrapper);
-    }
+  }
 
-    // Drag functionality for vertical scrollbar
-    let verticalDragHandlers = null;
-    if (verticalThumb) {
-        const handleVerticalDragMove = (e) => {
-            if (!isDragging) return;
-            
-            const clientY = e.clientY || e.touches?.[0]?.clientY || 0;
-            const deltaY = clientY - dragStartY;
-            
-            const { scrollHeight, clientHeight } = viewport;
-            const scrollableHeight = scrollHeight - clientHeight;
-            const thumbHeightRatio = clientHeight / scrollHeight;
-            const thumbHeight = Math.max(thumbHeightRatio * clientHeight, 20);
-            const maxThumbOffset = clientHeight - thumbHeight;
-            
-            // Convert thumb movement to scroll position
-            const scrollDelta = (deltaY / maxThumbOffset) * scrollableHeight;
-            viewport.scrollTop = dragStartScrollTop + scrollDelta;
-            
-            e.preventDefault();
-        };
+  // Attach scroll listener
+  viewport.addEventListener('scroll', handleScroll, { passive: true });
 
-        const handleVerticalDragEnd = () => {
-            if (!isDragging) return;
-            isDragging = false;
-            
-            document.removeEventListener('mousemove', handleVerticalDragMove);
-            document.removeEventListener('touchmove', handleVerticalDragMove);
-            document.removeEventListener('mouseup', handleVerticalDragEnd);
-            document.removeEventListener('touchend', handleVerticalDragEnd);
-        };
+  // Initial updates
+  updateAll();
 
-        const handleVerticalDragStart = (e) => {
-            isDragging = true;
-            dragStartY = e.clientY || e.touches?.[0]?.clientY || 0;
-            dragStartScrollTop = viewport.scrollTop;
-            
-            document.addEventListener('mousemove', handleVerticalDragMove);
-            document.addEventListener('touchmove', handleVerticalDragMove, { passive: false });
-            document.addEventListener('mouseup', handleVerticalDragEnd);
-            document.addEventListener('touchend', handleVerticalDragEnd);
-            
-            e.preventDefault();
-        };
+  // Observe content size changes (throttled for performance)
+  // Watch both the viewport and its child content wrapper
+  let resizeRafId = null;
+  const resizeObserver = new ResizeObserver(() => {
+    if (isDisposed) return;
 
-        verticalThumb.addEventListener('mousedown', handleVerticalDragStart);
-        verticalThumb.addEventListener('touchstart', handleVerticalDragStart, { passive: false });
-        
-        // Store handlers for cleanup
-        verticalDragHandlers = {
-            start: handleVerticalDragStart,
-            move: handleVerticalDragMove,
-            end: handleVerticalDragEnd
-        };
-    }
+    if (resizeRafId) return;
 
-    // Drag functionality for horizontal scrollbar
-    let horizontalDragHandlers = null;
-    if (horizontalThumb) {
-        const handleHorizontalDragMove = (e) => {
-            if (!isDragging) return;
-            
-            const clientX = e.clientX || e.touches?.[0]?.clientX || 0;
-            const deltaX = clientX - dragStartX;
-            
-            const { scrollWidth, clientWidth } = viewport;
-            const scrollableWidth = scrollWidth - clientWidth;
-            const thumbWidthRatio = clientWidth / scrollWidth;
-            const thumbWidth = Math.max(thumbWidthRatio * clientWidth, 20);
-            const maxThumbOffset = clientWidth - thumbWidth;
-            
-            // Convert thumb movement to scroll position
-            const scrollDelta = (deltaX / maxThumbOffset) * scrollableWidth;
-            viewport.scrollLeft = dragStartScrollLeft + scrollDelta;
-            
-            e.preventDefault();
-        };
+    resizeRafId = requestAnimationFrame(() => {
+      updateAll();
+      resizeRafId = null;
+    });
+  });
 
-        const handleHorizontalDragEnd = () => {
-            if (!isDragging) return;
-            isDragging = false;
-            
-            document.removeEventListener('mousemove', handleHorizontalDragMove);
-            document.removeEventListener('touchmove', handleHorizontalDragMove);
-            document.removeEventListener('mouseup', handleHorizontalDragEnd);
-            document.removeEventListener('touchend', handleHorizontalDragEnd);
-        };
+  // Observe the viewport itself
+  resizeObserver.observe(viewport);
 
-        const handleHorizontalDragStart = (e) => {
-            isDragging = true;
-            dragStartX = e.clientX || e.touches?.[0]?.clientX || 0;
-            dragStartScrollLeft = viewport.scrollLeft;
-            
-            document.addEventListener('mousemove', handleHorizontalDragMove);
-            document.addEventListener('touchmove', handleHorizontalDragMove, { passive: false });
-            document.addEventListener('mouseup', handleHorizontalDragEnd);
-            document.addEventListener('touchend', handleHorizontalDragEnd);
-            
-            e.preventDefault();
-        };
+  // Also observe the content wrapper (first child of viewport) for content height changes
+  const contentWrapper = viewport.firstElementChild;
+  if (contentWrapper) {
+    resizeObserver.observe(contentWrapper);
+  }
 
-        horizontalThumb.addEventListener('mousedown', handleHorizontalDragStart);
-        horizontalThumb.addEventListener('touchstart', handleHorizontalDragStart, { passive: false });
-        
-        // Store handlers for cleanup
-        horizontalDragHandlers = {
-            start: handleHorizontalDragStart,
-            move: handleHorizontalDragMove,
-            end: handleHorizontalDragEnd
-        };
-    }
+  // Drag functionality for vertical scrollbar
+  let verticalDragHandlers = null;
+  if (verticalThumb) {
+    const handleVerticalDragMove = (e) => {
+      if (!isDragging) return;
 
-    // Track click functionality for vertical scrollbar
-    if (verticalScrollbar && verticalThumb) {
-        const handleVerticalTrackClick = (e) => {
-            // Don't handle if clicking on thumb
-            if (e.target === verticalThumb || verticalThumb.contains(e.target)) {
-                return;
-            }
-            
-            const trackRect = verticalScrollbar.getBoundingClientRect();
-            const clickY = e.clientY - trackRect.top;
-            
-            const { scrollHeight, clientHeight } = viewport;
-            const scrollableHeight = scrollHeight - clientHeight;
-            const thumbHeightRatio = clientHeight / scrollHeight;
-            const thumbHeight = Math.max(thumbHeightRatio * clientHeight, 20);
-            
-            // Calculate target scroll position
-            // Click position minus half thumb height to center thumb on click
-            const targetThumbPosition = clickY - (thumbHeight / 2);
-            const maxThumbOffset = clientHeight - thumbHeight;
-            const scrollRatio = Math.max(0, Math.min(1, targetThumbPosition / maxThumbOffset));
-            
-            viewport.scrollTop = scrollRatio * scrollableHeight;
-        };
-        
-        verticalScrollbar.addEventListener('mousedown', handleVerticalTrackClick);
-    }
+      const clientY = e.clientY || e.touches?.[0]?.clientY || 0;
+      const deltaY = clientY - dragStartY;
 
-    // Track click functionality for horizontal scrollbar
-    if (horizontalScrollbar && horizontalThumb) {
-        const handleHorizontalTrackClick = (e) => {
-            // Don't handle if clicking on thumb
-            if (e.target === horizontalThumb || horizontalThumb.contains(e.target)) {
-                return;
-            }
-            
-            const trackRect = horizontalScrollbar.getBoundingClientRect();
-            const clickX = e.clientX - trackRect.left;
-            
-            const { scrollWidth, clientWidth } = viewport;
-            const scrollableWidth = scrollWidth - clientWidth;
-            const thumbWidthRatio = clientWidth / scrollWidth;
-            const thumbWidth = Math.max(thumbWidthRatio * clientWidth, 20);
-            
-            // Calculate target scroll position
-            // Click position minus half thumb width to center thumb on click
-            const targetThumbPosition = clickX - (thumbWidth / 2);
-            const maxThumbOffset = clientWidth - thumbWidth;
-            const scrollRatio = Math.max(0, Math.min(1, targetThumbPosition / maxThumbOffset));
-            
-            viewport.scrollLeft = scrollRatio * scrollableWidth;
-        };
-        
-        horizontalScrollbar.addEventListener('mousedown', handleHorizontalTrackClick);
-    }
+      const { scrollHeight, clientHeight } = viewport;
+      const scrollableHeight = scrollHeight - clientHeight;
+      const thumbHeightRatio = clientHeight / scrollHeight;
+      const thumbHeight = Math.max(thumbHeightRatio * clientHeight, 20);
+      const maxThumbOffset = clientHeight - thumbHeight;
 
-    // Return instance with cleanup method
-    return {
-        dispose: () => {
-            isDisposed = true;
-            
-            if (rafId) {
-                cancelAnimationFrame(rafId);
-                rafId = null;
-            }
+      // Convert thumb movement to scroll position
+      const scrollDelta = (deltaY / maxThumbOffset) * scrollableHeight;
+      viewport.scrollTop = dragStartScrollTop + scrollDelta;
 
-            if (resizeRafId) {
-                cancelAnimationFrame(resizeRafId);
-                resizeRafId = null;
-            }
-
-            viewport.removeEventListener('scroll', handleScroll);
-            resizeObserver.disconnect();
-            
-            // Clean up fillContainer if active
-            if (fillContainerCleanup) {
-                fillContainerCleanup();
-                fillContainerCleanup = null;
-            }
-            
-            // Clean up vertical drag handlers
-            if (verticalDragHandlers && verticalThumb) {
-                verticalThumb.removeEventListener('mousedown', verticalDragHandlers.start);
-                verticalThumb.removeEventListener('touchstart', verticalDragHandlers.start);
-                // Also ensure move/end listeners are removed in case drag is in progress
-                document.removeEventListener('mousemove', verticalDragHandlers.move);
-                document.removeEventListener('touchmove', verticalDragHandlers.move);
-                document.removeEventListener('mouseup', verticalDragHandlers.end);
-                document.removeEventListener('touchend', verticalDragHandlers.end);
-            }
-            
-            // Clean up horizontal drag handlers
-            if (horizontalDragHandlers && horizontalThumb) {
-                horizontalThumb.removeEventListener('mousedown', horizontalDragHandlers.start);
-                horizontalThumb.removeEventListener('touchstart', horizontalDragHandlers.start);
-                // Also ensure move/end listeners are removed in case drag is in progress
-                document.removeEventListener('mousemove', horizontalDragHandlers.move);
-                document.removeEventListener('touchmove', horizontalDragHandlers.move);
-                document.removeEventListener('mouseup', horizontalDragHandlers.end);
-                document.removeEventListener('touchend', horizontalDragHandlers.end);
-            }
-        },
-        
-        scrollTo: (options) => {
-            viewport.scrollTo(options);
-        },
-        
-        scrollToTop: () => {
-            viewport.scrollTo({ top: 0, behavior: 'smooth' });
-        },
-        
-        scrollToBottom: () => {
-            viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
-        },
-
-        getScrollPosition: () => ({
-            scrollTop: viewport.scrollTop,
-            scrollLeft: viewport.scrollLeft,
-            scrollHeight: viewport.scrollHeight,
-            scrollWidth: viewport.scrollWidth,
-            clientHeight: viewport.clientHeight,
-            clientWidth: viewport.clientWidth
-        })
+      e.preventDefault();
     };
+
+    const handleVerticalDragEnd = () => {
+      if (!isDragging) return;
+      isDragging = false;
+
+      document.removeEventListener('mousemove', handleVerticalDragMove);
+      document.removeEventListener('touchmove', handleVerticalDragMove);
+      document.removeEventListener('mouseup', handleVerticalDragEnd);
+      document.removeEventListener('touchend', handleVerticalDragEnd);
+    };
+
+    const handleVerticalDragStart = (e) => {
+      isDragging = true;
+      dragStartY = e.clientY || e.touches?.[0]?.clientY || 0;
+      dragStartScrollTop = viewport.scrollTop;
+
+      document.addEventListener('mousemove', handleVerticalDragMove);
+      document.addEventListener('touchmove', handleVerticalDragMove, { passive: false });
+      document.addEventListener('mouseup', handleVerticalDragEnd);
+      document.addEventListener('touchend', handleVerticalDragEnd);
+
+      e.preventDefault();
+    };
+
+    verticalThumb.addEventListener('mousedown', handleVerticalDragStart);
+    verticalThumb.addEventListener('touchstart', handleVerticalDragStart, { passive: false });
+
+    // Store handlers for cleanup
+    verticalDragHandlers = {
+      start: handleVerticalDragStart,
+      move: handleVerticalDragMove,
+      end: handleVerticalDragEnd
+    };
+  }
+
+  // Drag functionality for horizontal scrollbar
+  let horizontalDragHandlers = null;
+  if (horizontalThumb) {
+    const handleHorizontalDragMove = (e) => {
+      if (!isDragging) return;
+
+      const clientX = e.clientX || e.touches?.[0]?.clientX || 0;
+      const deltaX = clientX - dragStartX;
+
+      const { scrollWidth, clientWidth } = viewport;
+      const scrollableWidth = scrollWidth - clientWidth;
+      const thumbWidthRatio = clientWidth / scrollWidth;
+      const thumbWidth = Math.max(thumbWidthRatio * clientWidth, 20);
+      const maxThumbOffset = clientWidth - thumbWidth;
+
+      // Convert thumb movement to scroll position
+      const scrollDelta = (deltaX / maxThumbOffset) * scrollableWidth;
+      viewport.scrollLeft = dragStartScrollLeft + scrollDelta;
+
+      e.preventDefault();
+    };
+
+    const handleHorizontalDragEnd = () => {
+      if (!isDragging) return;
+      isDragging = false;
+
+      document.removeEventListener('mousemove', handleHorizontalDragMove);
+      document.removeEventListener('touchmove', handleHorizontalDragMove);
+      document.removeEventListener('mouseup', handleHorizontalDragEnd);
+      document.removeEventListener('touchend', handleHorizontalDragEnd);
+    };
+
+    const handleHorizontalDragStart = (e) => {
+      isDragging = true;
+      dragStartX = e.clientX || e.touches?.[0]?.clientX || 0;
+      dragStartScrollLeft = viewport.scrollLeft;
+
+      document.addEventListener('mousemove', handleHorizontalDragMove);
+      document.addEventListener('touchmove', handleHorizontalDragMove, { passive: false });
+      document.addEventListener('mouseup', handleHorizontalDragEnd);
+      document.addEventListener('touchend', handleHorizontalDragEnd);
+
+      e.preventDefault();
+    };
+
+    horizontalThumb.addEventListener('mousedown', handleHorizontalDragStart);
+    horizontalThumb.addEventListener('touchstart', handleHorizontalDragStart, { passive: false });
+
+    // Store handlers for cleanup
+    horizontalDragHandlers = {
+      start: handleHorizontalDragStart,
+      move: handleHorizontalDragMove,
+      end: handleHorizontalDragEnd
+    };
+  }
+
+  // Track click functionality for vertical scrollbar
+  if (verticalScrollbar && verticalThumb) {
+    const handleVerticalTrackClick = (e) => {
+      // Don't handle if clicking on thumb
+      if (e.target === verticalThumb || verticalThumb.contains(e.target)) {
+        return;
+      }
+
+      const trackRect = verticalScrollbar.getBoundingClientRect();
+      const clickY = e.clientY - trackRect.top;
+
+      const { scrollHeight, clientHeight } = viewport;
+      const scrollableHeight = scrollHeight - clientHeight;
+      const thumbHeightRatio = clientHeight / scrollHeight;
+      const thumbHeight = Math.max(thumbHeightRatio * clientHeight, 20);
+
+      // Calculate target scroll position
+      // Click position minus half thumb height to center thumb on click
+      const targetThumbPosition = clickY - (thumbHeight / 2);
+      const maxThumbOffset = clientHeight - thumbHeight;
+      const scrollRatio = Math.max(0, Math.min(1, targetThumbPosition / maxThumbOffset));
+
+      viewport.scrollTop = scrollRatio * scrollableHeight;
+    };
+
+    verticalScrollbar.addEventListener('mousedown', handleVerticalTrackClick);
+  }
+
+  // Track click functionality for horizontal scrollbar
+  if (horizontalScrollbar && horizontalThumb) {
+    const handleHorizontalTrackClick = (e) => {
+      // Don't handle if clicking on thumb
+      if (e.target === horizontalThumb || horizontalThumb.contains(e.target)) {
+        return;
+      }
+
+      const trackRect = horizontalScrollbar.getBoundingClientRect();
+      const clickX = e.clientX - trackRect.left;
+
+      const { scrollWidth, clientWidth } = viewport;
+      const scrollableWidth = scrollWidth - clientWidth;
+      const thumbWidthRatio = clientWidth / scrollWidth;
+      const thumbWidth = Math.max(thumbWidthRatio * clientWidth, 20);
+
+      // Calculate target scroll position
+      // Click position minus half thumb width to center thumb on click
+      const targetThumbPosition = clickX - (thumbWidth / 2);
+      const maxThumbOffset = clientWidth - thumbWidth;
+      const scrollRatio = Math.max(0, Math.min(1, targetThumbPosition / maxThumbOffset));
+
+      viewport.scrollLeft = scrollRatio * scrollableWidth;
+    };
+
+    horizontalScrollbar.addEventListener('mousedown', handleHorizontalTrackClick);
+  }
+
+  // Return instance with cleanup method
+  return {
+    dispose: () => {
+      isDisposed = true;
+
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+
+      if (resizeRafId) {
+        cancelAnimationFrame(resizeRafId);
+        resizeRafId = null;
+      }
+
+      viewport.removeEventListener('scroll', handleScroll);
+      resizeObserver.disconnect();
+
+      // Clean up fillContainer if active
+      if (fillContainerCleanup) {
+        fillContainerCleanup();
+        fillContainerCleanup = null;
+      }
+
+      // Clean up vertical drag handlers
+      if (verticalDragHandlers && verticalThumb) {
+        verticalThumb.removeEventListener('mousedown', verticalDragHandlers.start);
+        verticalThumb.removeEventListener('touchstart', verticalDragHandlers.start);
+        // Also ensure move/end listeners are removed in case drag is in progress
+        document.removeEventListener('mousemove', verticalDragHandlers.move);
+        document.removeEventListener('touchmove', verticalDragHandlers.move);
+        document.removeEventListener('mouseup', verticalDragHandlers.end);
+        document.removeEventListener('touchend', verticalDragHandlers.end);
+      }
+
+      // Clean up horizontal drag handlers
+      if (horizontalDragHandlers && horizontalThumb) {
+        horizontalThumb.removeEventListener('mousedown', horizontalDragHandlers.start);
+        horizontalThumb.removeEventListener('touchstart', horizontalDragHandlers.start);
+        // Also ensure move/end listeners are removed in case drag is in progress
+        document.removeEventListener('mousemove', horizontalDragHandlers.move);
+        document.removeEventListener('touchmove', horizontalDragHandlers.move);
+        document.removeEventListener('mouseup', horizontalDragHandlers.end);
+        document.removeEventListener('touchend', horizontalDragHandlers.end);
+      }
+    },
+
+    scrollTo: (options) => {
+      viewport.scrollTo(options);
+    },
+
+    scrollToTop: () => {
+      viewport.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    scrollToBottom: () => {
+      viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
+    },
+
+    getScrollPosition: () => ({
+      scrollTop: viewport.scrollTop,
+      scrollLeft: viewport.scrollLeft,
+      scrollHeight: viewport.scrollHeight,
+      scrollWidth: viewport.scrollWidth,
+      clientHeight: viewport.clientHeight,
+      clientWidth: viewport.clientWidth
+    })
+  };
 }
 
 export function dispose(instance) {
-    if (instance && typeof instance.dispose === 'function') {
-        instance.dispose();
-    }
+  if (instance && typeof instance.dispose === 'function') {
+    instance.dispose();
+  }
 }
 
 /**
@@ -409,89 +409,69 @@ export function dispose(instance) {
  * Automatically calculates and sets height based on parent container and sibling elements
  */
 function initializeFillContainer(scrollAreaElement) {
-    const parent = scrollAreaElement.parentElement;
-    if (!parent) {
-        console.warn('ScrollArea FillContainer: No parent element found');
-        return null;
-    }
+  const parent = scrollAreaElement.parentElement;
+  if (!parent) {
+    console.warn('ScrollArea FillContainer: No parent element found');
+    return null;
+  }
 
-    let rafId = null;
-    let lastCalculatedHeight = null;
+  let rafId = null;
+  let lastCalculatedHeight = null;
 
-    // Calculate available height
-    const calculateHeight = () => {
-        if (rafId) return;
+  // Calculate available height
+  const calculateHeight = () => {
+    if (rafId) return;
 
-        rafId = requestAnimationFrame(() => {
-            // Get parent dimensions
-            const parentStyle = window.getComputedStyle(parent);
-            const parentHeight = parent.clientHeight;
-            const parentPaddingTop = parseFloat(parentStyle.paddingTop) || 0;
-            const parentPaddingBottom = parseFloat(parentStyle.paddingBottom) || 0;
-            const availableParentHeight = parentHeight - parentPaddingTop - parentPaddingBottom;
+    rafId = requestAnimationFrame(() => {
 
-            // Calculate total height of sibling elements
-            const siblings = Array.from(parent.children).filter(el => el !== scrollAreaElement);
-            let siblingsHeight = 0;
+      // Use offsetHeight of parent to get available height, which accounts for padding and borders
+      // Ezpecting the container already used flexbox or similar layout to fill available space, so offsetHeight should reflect the correct height
+      const availableHeight = scrollAreaElement.offsetHeight;
 
-            siblings.forEach(sibling => {
-                const siblingStyle = window.getComputedStyle(sibling);
-                const marginTop = parseFloat(siblingStyle.marginTop) || 0;
-                const marginBottom = parseFloat(siblingStyle.marginBottom) || 0;
-                siblingsHeight += sibling.offsetHeight + marginTop + marginBottom;
-            });
+      // Only update if height actually changed (prevents infinite loops)
+      if (lastCalculatedHeight !== availableHeight) {
+        lastCalculatedHeight = availableHeight;
+        scrollAreaElement.style.height = `${availableHeight}px`;
+      }
 
-            // Account for gap in flex/grid containers
-            const gap = parseFloat(parentStyle.gap) || parseFloat(parentStyle.rowGap) || 0;
-            const totalGap = gap * Math.max(0, siblings.length - 1);
+      rafId = null;
+    });
+  };
 
-            // Calculate available height for scroll area
-            const availableHeight = Math.max(0, availableParentHeight - siblingsHeight - totalGap);
+  // Initial calculation
+  calculateHeight();
 
-            // Only update if height actually changed (prevents infinite loops)
-            if (lastCalculatedHeight !== availableHeight) {
-                lastCalculatedHeight = availableHeight;
-                scrollAreaElement.style.height = `${availableHeight}px`;
-            }
-
-            rafId = null;
-        });
-    };
-
-    // Initial calculation
+  // Watch for sibling changes (additions/removals)
+  const mutationObserver = new MutationObserver(() => {
+    // Update sibling observers when siblings change
+    siblingResizeObserver.disconnect();
+    const currentSiblings = Array.from(parent.children).filter(el => el !== scrollAreaElement);
+    currentSiblings.forEach(sibling => siblingResizeObserver.observe(sibling));
     calculateHeight();
+  });
+  mutationObserver.observe(parent, {
+    childList: true,
+    subtree: false,
+    attributes: false
+  });
 
-    // Watch for sibling changes (additions/removals)
-    const mutationObserver = new MutationObserver(() => {
-        // Update sibling observers when siblings change
-        siblingResizeObserver.disconnect();
-        const currentSiblings = Array.from(parent.children).filter(el => el !== scrollAreaElement);
-        currentSiblings.forEach(sibling => siblingResizeObserver.observe(sibling));
-        calculateHeight();
-    });
-    mutationObserver.observe(parent, {
-        childList: true,
-        subtree: false,
-        attributes: false
-    });
+  // Watch sibling size changes (NOT parent size to avoid feedback loops)
+  const siblingResizeObserver = new ResizeObserver(() => {
+    calculateHeight();
+  });
 
-    // Watch sibling size changes (NOT parent size to avoid feedback loops)
-    const siblingResizeObserver = new ResizeObserver(() => {
-        calculateHeight();
-    });
-    
-    const initialSiblings = Array.from(parent.children).filter(el => el !== scrollAreaElement);
-    initialSiblings.forEach(sibling => siblingResizeObserver.observe(sibling));
+  const initialSiblings = Array.from(parent.children).filter(el => el !== scrollAreaElement);
+  initialSiblings.forEach(sibling => siblingResizeObserver.observe(sibling));
 
-    // Return cleanup function
-    return () => {
-        if (rafId) {
-            cancelAnimationFrame(rafId);
-        }
-        mutationObserver.disconnect();
-        siblingResizeObserver.disconnect();
-        
-        // Reset height
-        scrollAreaElement.style.height = '';
-    };
+  // Return cleanup function
+  return () => {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+    }
+    mutationObserver.disconnect();
+    siblingResizeObserver.disconnect();
+
+    // Reset height
+    scrollAreaElement.style.height = '';
+  };
 }
