@@ -419,7 +419,7 @@
 
         <!-- Demo 1: User Profile Settings Dialog -->
         <Dialog @bind-Open="showUserProfileDialog">
-            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-2xl flex flex-col">
+            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-2xl max-h-[90vh] flex flex-col">
                 <DialogHeader Class="flex-shrink-0">
                     <DialogTitle>
                         <div class="flex items-center gap-2">
@@ -432,7 +432,7 @@
                     </DialogDescription>
                 </DialogHeader>
 
-                <ScrollArea Class="h-[350px] max-h-[60vh]" EnableScrollShadows="true">
+                <ScrollArea FillContainer="true" EnableScrollShadows="true">
                     <EditForm EditContext="userProfileEditContext">
                         <DataAnnotationsValidator />
                         <FieldGroup Orientation="FieldGroupOrientation.Vertical" Class="mx-1">
@@ -565,7 +565,7 @@
 
         <!-- Demo 2: Subscription Plan Selection Dialog -->
         <Dialog @bind-Open="showSubscriptionDialog">
-            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-3xl flex flex-col">
+            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-3xl max-h-[90vh] flex flex-col">
                 <DialogHeader Class="flex-shrink-0">
                     <DialogTitle>
                         <div class="flex items-center gap-2">
@@ -578,7 +578,7 @@
                     </DialogDescription>
                 </DialogHeader>
 
-                <ScrollArea Class="h-[350px] max-h-[60vh]" EnableScrollShadows="true">
+                <ScrollArea FillContainer="true" EnableScrollShadows="true">
                     <FieldGroup Orientation="FieldGroupOrientation.Vertical" Class="mx-1">
                         <!-- Billing Toggle -->
                         <Field Orientation="FieldOrientation.Horizontal">
@@ -749,7 +749,7 @@
 
         <!-- Demo 3: Team Member Invite Dialog -->
         <Dialog @bind-Open="showTeamInviteDialog">
-            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-2xl flex flex-col">
+            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-2xl max-h-[90vh] flex flex-col">
                 <DialogHeader Class="flex-shrink-0">
                     <DialogTitle>
                         <div class="flex items-center gap-2">
@@ -762,7 +762,7 @@
                 </DialogDescription>
             </DialogHeader>
 
-            <ScrollArea Class="h-[350px] max-h-[60vh]" EnableScrollShadows="true">
+            <ScrollArea FillContainer="true" EnableScrollShadows="true">
                 <EditForm EditContext="teamInviteEditContext">
                     <DataAnnotationsValidator />
                         <FieldGroup Orientation="FieldGroupOrientation.Vertical" Class="mx-1">
@@ -908,7 +908,7 @@
 
         <!-- Demo 4: E-commerce Product Configuration Dialog -->
         <Dialog @bind-Open="showProductConfigDialog">
-            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-2xl flex flex-col">
+            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-2xl max-h-[90vh] flex flex-col">
                 <DialogHeader Class="flex-shrink-0">
                     <DialogTitle>
                         <div class="flex items-center gap-2">
@@ -921,7 +921,7 @@
                     </DialogDescription>
                 </DialogHeader>
 
-                <ScrollArea Class="h-[350px] max-h-[60vh]" EnableScrollShadows="true">
+                <ScrollArea FillContainer="true" EnableScrollShadows="true">
                     <FieldGroup Orientation="FieldGroupOrientation.Vertical" Class="mx-1">
                         <!-- Product Name -->
                         <Field>
@@ -1162,7 +1162,7 @@
 
         <!-- Nested Dialog B - Advanced Configuration -->
         <Dialog @bind-Open="showAdvancedSettingsDialog">
-            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-xl flex flex-col">
+            <DialogContent Variant="DialogContentVariant.Form" Class="p-4 max-w-xl max-h-[90vh] flex flex-col">
                 <DialogHeader Class="flex-shrink-0">
                     <DialogTitle>
                         <div class="flex items-center gap-2">
@@ -1175,7 +1175,7 @@
                 </DialogDescription>
             </DialogHeader>
 
-            <ScrollArea Class="h-[350px] max-h-[60vh]" EnableScrollShadows="true">
+            <ScrollArea FillContainer="true" EnableScrollShadows="true">
                 <FieldGroup Orientation="FieldGroupOrientation.Vertical" Class="mx-1">
                     <!-- Build Command -->
                         <Field>
