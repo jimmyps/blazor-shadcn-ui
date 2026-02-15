@@ -1,0 +1,21 @@
+/* Lime Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-lime {
+    --primary: oklch(0.7690 0.1880 128.6360);
+    --primary-foreground: oklch(0.2050 0.0700 128.9340);
+    --ring: oklch(0.7690 0.1880 128.6360);
+    --sidebar-primary: oklch(0.7690 0.1880 128.6360);
+    --sidebar-primary-foreground: oklch(0.2050 0.0700 128.9340);
+    --sidebar-ring: oklch(0.7690 0.1880 128.6360);
+  }
+
+  :root.primary-lime.dark {
+    --primary: oklch(0.7690 0.1880 128.6360);
+    --primary-foreground: oklch(0.2050 0.0700 128.9340);
+    --ring: oklch(0.7690 0.1880 128.6360);
+    --sidebar-primary: oklch(0.7690 0.1880 128.6360);
+    --sidebar-primary-foreground: oklch(0.2050 0.0700 128.9340);
+    --sidebar-ring: oklch(0.7690 0.1880 128.6360);
+  }
+}

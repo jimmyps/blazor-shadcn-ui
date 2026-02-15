@@ -1,0 +1,21 @@
+/* Indigo Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-indigo {
+    --primary: oklch(0.5100 0.2200 274.0000);
+    --primary-foreground: oklch(0.9850 0.0110 274.6780);
+    --ring: oklch(0.5100 0.2200 274.0000);
+    --sidebar-primary: oklch(0.5100 0.2200 274.0000);
+    --sidebar-primary-foreground: oklch(0.9850 0.0110 274.6780);
+    --sidebar-ring: oklch(0.5100 0.2200 274.0000);
+  }
+
+  :root.primary-indigo.dark {
+    --primary: oklch(0.6670 0.1820 274.6780);
+    --primary-foreground: oklch(0.9850 0.0110 274.6780);
+    --ring: oklch(0.6670 0.1820 274.6780);
+    --sidebar-primary: oklch(0.6670 0.1820 274.6780);
+    --sidebar-primary-foreground: oklch(0.9850 0.0110 274.6780);
+    --sidebar-ring: oklch(0.6670 0.1820 274.6780);
+  }
+}

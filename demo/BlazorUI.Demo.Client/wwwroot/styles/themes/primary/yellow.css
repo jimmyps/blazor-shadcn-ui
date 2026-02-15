@@ -1,0 +1,21 @@
+/* Yellow Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-yellow {
+    --primary: oklch(0.8430 0.1540 95.4780);
+    --primary-foreground: oklch(0.2910 0.0620 43.5720);
+    --ring: oklch(0.8430 0.1540 95.4780);
+    --sidebar-primary: oklch(0.8430 0.1540 95.4780);
+    --sidebar-primary-foreground: oklch(0.2910 0.0620 43.5720);
+    --sidebar-ring: oklch(0.8430 0.1540 95.4780);
+  }
+
+  :root.primary-yellow.dark {
+    --primary: oklch(0.8430 0.1540 95.4780);
+    --primary-foreground: oklch(0.2910 0.0620 43.5720);
+    --ring: oklch(0.8430 0.1540 95.4780);
+    --sidebar-primary: oklch(0.8430 0.1540 95.4780);
+    --sidebar-primary-foreground: oklch(0.2910 0.0620 43.5720);
+    --sidebar-ring: oklch(0.8430 0.1540 95.4780);
+  }
+}
