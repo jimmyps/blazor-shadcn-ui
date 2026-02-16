@@ -2,6 +2,91 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-02-15 - Multi-Color Theme System with Dynamic Theming
+
+### 🎨 Features - Dynamic Theme System
+
+**Implemented a comprehensive theme customization system with live theme switching:**
+
+**Key Features:**
+- **Base Color Selection** - 5 base color options (Zinc, Slate, Gray, Neutral, Stone) for foundational UI colors
+- **Primary Color Selection** - 17 primary color options (Red, Rose, Orange, Amber, Yellow, Lime, Green, Emerald, Teal, Cyan, Sky, Blue, Indigo, Violet, Purple, Fuchsia, Pink)
+- **Dark/Light Mode Toggle** - Seamless switching between dark and light themes
+- **Live Theme Preview** - Real-time theme changes without page reload
+- **LocalStorage Persistence** - Theme preferences saved and restored across sessions
+- **CSP-Compliant** - Uses named JavaScript functions instead of eval for Content Security Policy compliance
+
+---
+
+### 🏗️ Implementation Details
+
+**1. ThemeService (demo\BlazorUI.Demo.Shared\Services\ThemeService.cs):**
+```csharp
+// Core service managing theme state
+- BaseColor enum: Zinc, Slate, Gray, Neutral, Stone
+- PrimaryColor enum: 17 color options
+- Methods: ToggleThemeAsync(), SetBaseColorAsync(), SetPrimaryColorAsync()
+- Event-driven updates: OnThemeChanged event
+- LocalStorage integration for persistence
+- SSR-safe initialization
+```
+
+**2. Theme UI Components:**
+
+**ThemeSwitcher (demo\BlazorUI.Demo.Shared\Common\ThemeSwitcher.razor):**
+- Popover-based theme configuration panel
+- Visual color pickers with preview swatches
+- Grid layout for base colors (5 options) and primary colors (17 options)
+- Selected state indicators with ring highlights
+- Integrated DarkModeToggle
+- Tooltip showing current theme selection (e.g., "Zinc / Blue")
+
+**DarkModeToggle (demo\BlazorUI.Demo.Shared\Common\DarkModeToggle.razor):**
+- Switch component with sun/moon icons
+- Real-time dark/light mode switching
+- Visual feedback of current mode
+
+**3. JavaScript Integration (demo\BlazorUI.Demo.Client\wwwroot\js\theme.js):**
+```javascript
+window.theme = {
+    apply: function(config) { /* Applies theme classes dynamically */ },
+    isDark: function() { /* Checks current theme mode */ }
+}
+```
+
+**4. CSS Theme System (demo\BlazorUI.Demo.Client\wwwroot\styles\theme.css):**
+- OKLCH color space for perceptually uniform colors
+- Comprehensive CSS custom properties for all theme variables
+- Separate light/dark mode definitions
+- Support for dynamic base and primary color classes
+
+---
+
+### 🎯 User Experience
+
+**Theme Switcher Features:**
+- **Visual Color Representation** - Each base color displays with its distinctive hue (500 shade)
+- **Clear Selection State** - Selected colors highlighted with accent background and ring indicator
+- **Organized Layout** - Separate sections for Base Color and Theme Color
+- **Accessible** - Proper ARIA labels and keyboard navigation support
+- **Tooltip Feedback** - Hover over theme switcher to see current selection
+
+**Persistence:**
+- Theme preferences stored in localStorage
+- Automatic restoration on page reload
+- Syncs with system prefers-color-scheme on first visit
+
+**Benefits:**
+- ✅ Complete theme customization without code changes
+- ✅ Live preview of all theme combinations
+- ✅ Persistent user preferences
+- ✅ SSR-compatible initialization
+- ✅ CSP-compliant implementation
+- ✅ Accessible and keyboard-navigable UI
+- ✅ 85 total theme combinations (5 base × 17 primary colors)
+
+---
+
 ## 2026-02-09 - Two-Layer Portal Architecture: Categorized Hosts + Hierarchical Scopes
 
 ### 🏗️ Architecture - Two-Layer Portal System

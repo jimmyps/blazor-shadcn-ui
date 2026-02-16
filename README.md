@@ -221,6 +221,40 @@ NeoBlazorUI supports all standard shadcn/ui CSS variables:
 
 NeoBlazorUI automatically supports dark mode by applying the `.dark` class to the `<html>` element. All components will automatically switch to dark mode colors when this class is present.
 
+### 🎨 Dynamic Theme Customization (NEW)
+
+NeoBlazorUI now includes a **complete theme customization system** that allows users to dynamically switch between different color combinations at runtime:
+
+**Features:**
+- **5 Base Colors** - Zinc, Slate, Gray, Neutral, Stone (foundational UI colors)
+- **17 Primary Colors** - Red, Rose, Orange, Amber, Yellow, Lime, Green, Emerald, Teal, Cyan, Sky, Blue, Indigo, Violet, Purple, Fuchsia, Pink
+- **85 Theme Combinations** (5 base × 17 primary colors)
+- **Live Theme Preview** - Changes apply instantly without page reload
+- **LocalStorage Persistence** - User preferences saved and restored across sessions
+- **Dark/Light Mode Toggle** - Seamless switching between themes
+- **CSP-Compliant** - Uses named JavaScript functions for Content Security Policy compatibility
+
+The theme system includes:
+- **ThemeSwitcher Component** - Visual color picker with preview swatches in a popover panel
+- **DarkModeToggle Component** - Switch with sun/moon icons for theme mode
+- **ThemeService** - C# service for programmatic theme management
+- **Tooltip Support** - Shows current theme selection on hover
+
+Example usage:
+```razor
+@inject ThemeService ThemeService
+
+<!-- Add theme switcher to your layout -->
+<ThemeSwitcher />
+
+<!-- Or control programmatically -->
+<Button @onclick="async () => await ThemeService.SetPrimaryColorAsync(PrimaryColor.Purple)">
+    Purple Theme
+</Button>
+```
+
+See the [CHANGELOG](CHANGELOG.md) for complete implementation details.
+
 ## 💅 Styling
 
 ### NeoBlazorUI.Components (Pre-styled)
@@ -469,7 +503,7 @@ NeoBlazorUI is an independent project and is not affiliated with or endorsed by 
 
 ## 📊 Version Information
 
-- **Current Version**: 1.0.15
+- **Current Version**: 2.4.0
 - **Target Framework**: .NET 10
 - **Package IDs**: 
   - `NeoBlazorUI.Components`
