@@ -49,7 +49,7 @@
 
   <ItemGroup Condition="'$(UsePackageReferences)' == 'true'">
     <PackageReference Include="NeoBlazorUI.Icons.Lucide" Version="2.0.0" />
-    <PackageReference Include="NeoBlazorUI.Primitives" Version="2.0.0" />
+    <PackageReference Include="NeoBlazorUI.Primitives" Version="2.4.0" />
   </ItemGroup>
 
   <ItemGroup>
