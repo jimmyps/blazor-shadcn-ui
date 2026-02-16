@@ -138,7 +138,7 @@ public partial class ColorPicker : ComponentBase, IAsyncDisposable
 
     private string TriggerCssClass => ClassNames.cn(
         "flex justify-start items-center w-full rounded-md border border-input shadow-xs",
-        "bg-background px-3 py-2 text-sm",
+        "bg-background h-9 px-2 py-2 text-sm",
         "hover:bg-accent hover:text-accent-foreground",
         "focus:outline-none focus:ring-ring focus:ring-[2px] focus:ring-ring/50",
         "disabled:cursor-not-allowed disabled:opacity-50",

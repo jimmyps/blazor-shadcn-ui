@@ -1,6 +1,7 @@
 @typeparam TValue
 @namespace BlazorUI.Components.Select
 @using BlazorUI.Primitives.Select
+@attribute [CascadingTypeParameter(nameof(TValue))]
 
 @* Styled SelectTrigger wrapper around SelectTrigger primitive *@
 <BlazorUI.Primitives.Select.SelectTrigger TValue="TValue"
@@ -51,6 +52,7 @@
         "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-background",
         "data-[state=open]:ring-2 data-[state=open]:ring-ring/50",
         "[&[aria-expanded=true]]:ring-2 [&[aria-expanded=true]]:ring-ring/50",
+        "[&[aria-expanded=true]]:hover:bg-background",
         Class
     );
 }

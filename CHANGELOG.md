@@ -87,6 +87,351 @@ window.theme = {
 
 ---
 
+## 2026-02-14 - Toast Component Enhancements & Input Validation Refactoring
+
+### 🎨 Toast Component - Granular Customization & UX Improvements
+
+**Added comprehensive customization options to Toast component with size control, auto icons, pause-on-hover, and per-toast positioning.**
+
+**Key Features:**
+
+1. **ToastSize Enum - Default & Compact Sizes:**
+   - `ToastSize.Default` - Standard padding (px-4 py-3 pr-8) for regular notifications
+   - `ToastSize.Compact` - Reduced padding (px-3 py-2 pr-6) for dialogs and dense UI
+   - Per-toast size control via `ToastOptions.Size` property
+
+2. **Auto Variant Icons using LucideIcon:**
+   - ✅ Success - `check` icon (green)
+   - ✗ Error/Destructive - `x` icon (red)
+   - ⚠ Warning - `alert-triangle` icon (yellow)
+   - ℹ Info - `info` icon (blue)
+   - Icons enabled by default, can be toggled via `ShowIcon` property
+   - Replaced inline SVG with LucideIcon for consistency
+
+3. **Pause on Hover Functionality:**
+   - Timer pauses when user hovers over toast
+   - Accurately tracks elapsed time before pause
+   - Resumes with correct remaining duration on mouse leave
+   - Stable timer management with proper state tracking
+   - Enabled by default, can be disabled via `PauseOnHover` property
+
+4. **Per-Toast Position Override:**
+   - Added `Position` property to `ToastOptions`
+   - Toasts grouped by position and rendered in separate viewports
+   - Falls back to `ToastProvider`'s default position if not specified
+   - Supports all 6 positions: TopLeft, TopCenter, TopRight, BottomLeft, BottomCenter, BottomRight
+
+5. **Convenient Constructors & Factory Methods:**
+   - Traditional constructors: `new ToastOptions(title, description)`, `new ToastOptions(title, description, variant)`
+   - Static factory methods:
+     - `ToastOptions.Success(title, description)`
+     - `ToastOptions.Error(title, description)`
+     - `ToastOptions.Warning(title, description)`
+     - `ToastOptions.Info(title, description)`
+     - `ToastOptions.Compact(title, description, variant, position)` - Pre-configured for dialogs
+   - Cleaner, more readable API
+
+**Demo Updates:**
+- **ToastDemo** - Added examples for Size, Icons, Pause-on-Hover, Position override
+- **DialogDemo** - All 12 toast notifications now use `ToastOptions.Compact()` with `BottomCenter` position
+- Enhanced usage examples showing factory methods and advanced customization
+
+**Benefits:**
+- ✅ **Granular control** - Size, position, icons, pause behavior all customizable per-toast
+- ✅ **Better UX** - Pause-on-hover prevents accidental dismissal while reading
+- ✅ **Dialog-friendly** - Compact size and bottom-center positioning perfect for dialog notifications
+- ✅ **Developer-friendly API** - Fluent factory methods reduce boilerplate
+- ✅ **Consistent design** - LucideIcon integration matches component library standards
+- ✅ **Production-ready** - Stable timer management with accurate pause/resume
+
+---
+
+## 2026-02-13 - Input Validation Architecture Refactoring & Dialog Performance Optimization
+
+### 🏗️ Architecture - Input Validation Behavior Centralization
+
+**Refactored all input components to use a centralized validation behavior pattern, eliminating ~410 lines of duplicated code and improving consistency.**
+
+**Key Changes:**
+
+1. **New InputValidationBehavior Class (Shared Validation Logic):**
+   - Created `src/BlazorUI.Components/Validation/InputValidationBehavior.cs` (212 lines)
+   - Encapsulates all validation logic: error display, focus management, first-invalid tracking
+   - Reusable across all input components via composition pattern
+   - Handles EditContext integration, validation state changes, and ARIA attributes
+   - Provides clean API: `OnParametersSet()`, `UpdateValidationDisplayAsync()`, `HandleValidationStateChangedAsync()`, `NotifyFieldChangedAsync()`
+   - Eliminates ~410 lines of duplicated validation code across 5 components (48% code reduction)
+
+2. **Refactored Input Components (Using InputValidationBehavior):**
+   - **Input component** - Complete refactoring (reference implementation)
+   - **Textarea component** - Added validation support with behavior pattern
+   - **CurrencyInput, MaskedInput and NumericInput component** - Refactored validation logic
+
+3. **Validation UX Improvements:**
+   - Added `shouldFocus` parameter (3rd param) to `setValidationError()` JS function
+   - **Smart focus behavior:** Only steal focus when explicitly requested (form submit validation)
+   - **Natural tab navigation:** Validation errors show without disrupting user's tab flow
+   - **Better UX:** Error tooltip appears without forcing focus back to invalid field during natural navigation
+   - `input.js` updated to accept optional `shouldFocus` parameter (default: true for backward compatibility)
+
+4. **Dialog Performance Optimization:**
+   - **Critical Fix:** Moved `@onkeydown` event handling from C# to JavaScript in DialogContent
+   - Created `src/BlazorUI.Primitives/wwwroot/js/primitives/dialog.js` keyboard handler
+   - **Performance gain:** Zero C# roundtrips for regular typing (only Escape key triggers C# callback)
+   - **Before:** Every keystroke in dialog caused C# interop → parent re-render → all inputs re-render
+   - **After:** JavaScript intercepts all keydown events, only calls C# for Escape key
+   - Eliminates massive performance bottleneck when typing in dialog forms
+
+5. **Bug Fixes:**
+   - **Textarea component:** Fixed `aria-invalid` attribute using `AriaInvalid` instead of `EffectiveAriaInvalid`
+   - Validation errors now correctly display red border styling on Textarea
+   - All refactored components verified to use `EffectiveAriaInvalid` in markup
+
+6. **FloatingPortal Stability & Rendering Efficiency Improvements:**
+   - **Re-entrant Call Prevention:** Added `_isUpdatingVisibility` guard flag to prevent infinite loops during ForceMount async visibility updates (WebAssembly)
+   - **Smart State Tracking:** Updates `_previousIsOpen` and guard flag BEFORE async operations to prevent race conditions
+   - **Efficient Refresh Pattern:** `RefreshPortal()` triggers re-render WITHOUT replacing RenderFragment (preserves captured values and ElementReference)
+   - **Conditional Updates:** Only updates visibility when `IsOpen` actually changes and not already updating
+   - **Result:** Eliminated flickering, prevented portal content duplication, and fixed timing-sensitive focus issues
+
+7. **TailwindMerge Arbitrary Value Support Enhancement:**
+   - **Support Modifiers Grouping:** TailwindMerge now correctly groups modifiers (hover:, focus:, data-state=) with arbitrary values
+   - **Enhanced Regex Patterns:** Updated color regexes to support arbitrary values with commas and spaces
+
+8. **Toast Animation Perfection (JavaScript-Delegated with RAF):**
+   - **Problem Solved:** Blazor re-renders were interfering with CSS transitions causing "jumpy" animations
+   - **JavaScript-First Approach:** Created `toast-animation.js` module to handle animation state entirely in JS
+   - **Benefits:**
+     - ✅ **Smooth entrance animations** - No flicker or jump during initial render
+     - ✅ **Blazor-agnostic timing** - RAF ensures proper paint cycles regardless of C# timing
+     - ✅ **Graceful fallback** - Toast still visible if JS fails (no animation, but functional)
+     - ✅ **Zero re-render interference** - JS manages `data-state`, Blazor manages content
+
+**Code Metrics:**
+- **Removed:** ~410 lines of duplicated validation code (across 5 components)
+- **Added:** ~337 lines total (212 shared behavior class + 50 JS dialog handler + 75 component overhead)
+- **Net reduction:** ~73 lines
+- **Duplicated validation logic:** 410 lines → 212 shared lines (48% reduction)
+- **Consistency:** 100% - All input components now follow identical validation pattern
+
+**Technical Details:**
+
+**Per Component Changes:**
+- Removed manual validation fields: `_firstInvalidInputIdKey`, `_validationModule`, `_previousEditContext`, `_fieldIdentifier`, `_currentErrorMessage`, `_hasShownTooltip`
+- Replaced with single field: `private InputValidationBehavior? _validationBehavior;`
+- Standardized lifecycle methods: `OnInitialized()`, `OnParametersSet()`, `OnValidationStateChanged()`, `OnAfterRenderAsync()`, `DisposeAsync()`
+- All components use `EffectiveAriaInvalid` property delegating to behavior
+- Consistent EditContext subscription/unsubscription pattern
+
+**Component-Specific Preservation:**
+- **NumericInput:** Preserved `ValidateAndClamp()`, blur validation, and MaxLength enforcement
+- **MaskedInput:** Preserved masking logic, `OnValueChanged()` callback, and fallback handling
+- **CurrencyInput:** Preserved currency formatting, focus/blur handlers, and culture handling
+
+**Benefits:**
+- ✅ **Single source of truth** for validation logic
+- ✅ **Consistent behavior** across all input components
+- ✅ **Easier maintenance** - validation fixes apply to all components
+- ✅ **Better testability** - validation logic isolated in behavior class
+- ✅ **Performance** - Dialog typing no longer triggers re-renders
+- ✅ **Better UX** - Smart focus behavior during validation
+- ✅ **Stable Portals** - No flickering, no duplicate content, no race conditions
+- ✅ **Full Tailwind Support** - Arbitrary values with complex CSS functions work correctly
+- ✅ **Smooth Toast Animations** - Professional entrance animations without jumps or flicker
+
+## 2026-02-11 - Nested Dialog, Variant and Enhanced Portal Management
+
+### ✨ Feature - Dialog Variants & Nested Dialog Support
+
+**Added DialogContentVariant system and improved portal z-index management for better nested dialog behavior.**
+
+**Key Changes:**
+
+1. **Dialog Variant System:**
+   - Added `DialogContentVariant` enum with `Default` and `Form` variants
+   - Added `Variant` parameter to `DialogContent` component for flexible background styling
+   - **Default variant:** Uses `bg-background` for simple, neutral dialogs (maintains original behavior)
+   - **Form variant:** Uses `bg-card` with `--scroll-shadow-bg:var(--card)` CSS variable
+   - Form variant ensures `ScrollArea` scroll shadows match dialog background color
+   - Backward compatible - Default is the default variant value
+
+2. **Enhanced Portal System (Primitives):**
+   - Enhanced `IPortalService` with portal type tracking and z-index management
+   - Extracted `ZIndexLevels` to dedicated service class in `Services` namespace
+   - Implemented automatic z-index layering: Dialogs (100) > Menus (70) > Floating (50)
+   - Improved portal registration with unique IDs and automatic lifecycle management
+   - Better disposal and cleanup to prevent memory leaks
+
+3. **Nested Dialog Support:**
+   - Proper z-index management ensures nested dialogs appear above parent dialogs
+   - Portal type tracking provides predictable visual layering
+   - Fixed stacking issues when multiple dialogs are open simultaneously
+
+4. **Portal-Based Component Updates:**
+   - Updated `DialogPortal` with enhanced portal management including automatic refresh on state changes
+   - Updated `FloatingPortal` with portal type support
+   - Updated all menu/popover components to use new portal service API:
+     - `PopoverContent`
+     - `DropdownMenuContent`, `DropdownMenuSubContent`
+     - `ContextMenuContent`, `ContextMenuSubContent`
+     - `MenubarContent`, `MenubarSubContent`
+     - `SelectContent`
+     - `TooltipContent`
+     - `AlertDialogContent`
+
+**Breaking Changes:**
+- **Moved ZIndexLevels** from `BlazorUI.Primitives.Constants` to `BlazorUI.Primitives.Services`
+  - **Migration**: Update `using` statements from `BlazorUI.Primitives.Constants` to `BlazorUI.Primitives.Services`
+
+## 2026-02-11 - UI Consistency Improvements for Select, Combobox, MultiSelect, and RadioGroup
+
+### 🎨 UI/UX Improvements
+
+**Enhanced visual consistency across form components and improved RadioGroup check variant behavior.**
+
+**Key Changes:**
+
+1. **RadioGroup Check Variant - Clean Unselected State:**
+   - RadioGroupItem with Check variant now shows nothing when unselected (previously showed a circle)
+   - Selected state displays a checkmark icon as expected
+   - Creates cleaner, more modern UI for card-style radio selections
+   - Matches design patterns from shadcn/ui and modern UI libraries
+
+2. **Form Component Font Weight Consistency:**
+   - Removed `font-medium` from MultiSelect trigger CSS
+   - Removed `font-medium` from Combobox trigger CSS
+   - All form controls (Select, MultiSelect, Combobox, Input, etc.) now have consistent font weight
+   - Creates more uniform appearance across all form elements
+
+3. **Select Hover Behavior Fix:**
+   - Added `[&[aria-expanded=true]]:hover:bg-background` to SelectTrigger
+   - Disables hover styling when Select popup is open
+   - Matches correct behavior of MultiSelect and Combobox
+   - Prevents confusing visual feedback during interaction
+
+4. **DateRangePicker File Organization:**
+   - Moved DateRangePicker from DatePicker folder to dedicated DateRangePicker folder
+   - Removed duplicate DateRangePicker.razor from DatePicker directory
+   - Better component organization and clearer separation of concerns
+
+5. **ScrollArea Component Enhancements:**
+   - Added new FillContainer setting to support usage in form featuring automatic height calculation by excluding header and footer area
+   - Enhanced scroll-area.js for better dynamic content handling
+
+6. **Combobox Component Updates:**
+   - Refined Combobox.razor template structure
+   - Font weight consistency applied (font-medium removed from trigger)
+
+**Component Changes:**
+- `src/BlazorUI.Components/Components/RadioGroup/RadioGroupItem.razor` - Check variant unselected state
+- `src/BlazorUI.Components/Components/RadioGroup/RadioGroupItem.razor.cs` - Check variant logic
+- `src/BlazorUI.Components/Components/MultiSelect/MultiSelect.razor.cs` - Removed font-medium
+- `src/BlazorUI.Components/Components/Combobox/Combobox.razor.cs` - Removed font-medium
+- `src/BlazorUI.Components/Components/Combobox/Combobox.razor` - Template refinements
+- `src/BlazorUI.Components/Components/Select/SelectTrigger.razor` - Hover behavior when open
+- `src/BlazorUI.Components/Components/DatePicker/DatePicker.razor` - Minor updates
+- `src/BlazorUI.Components/Components/DateRangePicker/DateRangePicker.razor` - File reorganization
+- `src/BlazorUI.Components/Components/ScrollArea/ScrollArea.razor` - Enhanced behavior
+- `src/BlazorUI.Components/wwwroot/js/scroll-area.js` - Dynamic content improvements
+- `src/BlazorUI.Components/wwwroot/blazorui.css` - Scrolling styles
+
+
+## 2026-02-11 - Added ForceMount to FloatingPortal, Improved Select Component Reliability
+
+### ✨ Feature - ForceMount for Select Components
+
+**Implemented ForceMount pattern to keep portal content mounted when closed, eliminating the need for DisplayTextSelector and improving performance.**
+
+Select component now sets ForceMount to true by default. You can disable the behavior by setting SelectContent's ForceMount property to false.
+
+**Key Benefits:**
+- ✅ **No more DisplayTextSelector needed** - Items register immediately, DisplayText resolves automatically
+- ✅ **Better performance** - No re-mounting/unmounting on each open/close
+- ✅ **Smoother animations** - Content stays in DOM, only visibility toggles
+- ✅ **Persistent handlers** - Click-outside and keyboard navigation handlers stay active
+- ✅ **Cleaner API** - Less configuration required for common use cases
+- ✅ **Reliable Select in modals** - DisplayText and value management work consistently in Dialog/AlertDialog contexts
+
+**Major Infrastructure Improvements:**
+
+1. **FloatingPortal ForceMount Support:**
+   - Added `ForceMount` parameter to keep portal mounted when closed (opt-in, default: false)
+   - Portal stays registered with PortalService, content remains in DOM but hidden
+   - On open: `showFloating()` toggles `data-state="open"` and visibility styles
+   - On close: `hideFloating()` toggles `data-state="closed"` and hides content
+   - Features that continue to work:
+     - ✅ CSS animations triggered by `data-state` transitions
+     - ✅ Event handlers persist (click-outside, keyboard navigation)
+     - ✅ Item registration survives across open/close cycles
+     - ✅ Positioning auto-update continues to track reference element
+   - SelectContent uses ForceMount by default (ForceMount="true")
+   - Eliminates re-mounting overhead and enables DisplayText resolution without DisplayTextSelector
+
+2. **Select Value/DisplayText Reliability:**
+   - Fixed DisplayText resolution across standalone and modal contexts
+   - Items now register on mount (with ForceMount), DisplayText available immediately
+   - Eliminated race conditions between item registration and value display
+   - ClearItems() on close ensures dynamic item updates work correctly
+   - No more stale parameter values - automatic restoration from context in OnParametersSet
+   - Proper focus management on every open (scroll + keyboard navigation)
+
+**Implementation:**
+
+1. **ForceMount Parameter:**
+   - Added to `FloatingPortal` (default: false, opt-in)
+   - Added to `SelectContent` (default: true, enabled by default for Selects)
+   - Portal stays registered when closed, content hidden via CSS
+
+2. **Visibility Management:**
+   - Added `showFloating()` and `hideFloating()` to positioning.js
+   - Toggles `data-state` attribute for CSS animations
+   - Uses `requestAnimationFrame` for smooth transitions
+   - Added `ShowFloatingAsync()` and `HideFloatingAsync()` to IPositioningService
+
+3. **Focus Management:**
+   - Keyboard handlers setup once, persist across opens
+   - `focusContent()` called on every open for proper keyboard navigation
+   - Scroll position restored to selected item on each open
+
+4. **Item Registration:**
+   - Items mount immediately with ForceMount
+   - Register with SelectContext on mount
+   - DisplayText resolved from registered items automatically
+   - Items cleared on close, re-register on next open (supports dynamic items)
+
+5. **State Tracking:**
+   - `_previousIsOpen` flag prevents redundant visibility updates
+   - `_isKeyboardSetup` and `_isClickOutsideSetup` prevent duplicate handlers
+   - Cleanup only on component disposal (not on close)
+
+6. **Select in Modals:**
+   - Fixed parameter restoration when Select used in Dialog/AlertDialog
+   - OnParametersSet ensures controlled value stays in sync with context
+   - DisplayText remains stable across dialog open/close cycles
+   - No more flickering or stale values when dialog reopens
+
+**Breaking Changes:**
+- None - ForceMount is opt-in for FloatingPortal, opt-out for Select
+
+**Migration:**
+- Remove `DisplayTextSelector` from Select components (no longer needed)
+- All demo pages updated to remove DisplayTextSelector
+- Backward compatible - DisplayTextSelector still works as fallback
+
+**Files Changed:**
+- `src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor` - ForceMount implementation
+- `src/BlazorUI.Primitives/Primitives/Select/SelectContent.razor` - ForceMount enabled by default
+- `src/BlazorUI.Primitives/Primitives/Select/SelectContext.cs` - Item registration with ClearItems
+- `src/BlazorUI.Primitives/Primitives/Select/Select.razor` - OnParametersSet value restoration for modals
+- `src/BlazorUI.Primitives/Primitives/Select/SelectValue.razor` - Direct DisplayText reading (removed caching)
+- `src/BlazorUI.Primitives/Services/IPositioningService.cs` - Show/Hide methods
+- `src/BlazorUI.Primitives/Services/PositioningService.cs` - Show/Hide implementation
+- `src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js` - showFloating/hideFloating with data-state toggle
+- `src/BlazorUI.Primitives/wwwroot/js/primitives/select.js` - focusContent for repeated opens
+- Demo pages: Removed DisplayTextSelector from SelectPrimitiveDemo, AreaChart, BarChart, LineChart, PieChart examples
+
+---
+
 ## 2026-02-09 - Two-Layer Portal Architecture: Categorized Hosts + Hierarchical Scopes
 
 ### 🏗️ Architecture - Two-Layer Portal System

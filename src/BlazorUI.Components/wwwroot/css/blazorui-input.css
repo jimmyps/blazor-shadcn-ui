@@ -77,28 +77,16 @@
     --chart-up: oklch(0.646 0.222 41.116); /* Green for upward movement */
     --chart-down: oklch(0.628 0.258 29.234); /* Red for downward movement */
     --chart-neutral: oklch(0.5 0 0); /* Gray for no change */
-    /* Optional axis/opacity helpers – not used by Tailwind by default */
-    --shadow-x: 0;
-    --shadow-y: 0;
-    --shadow-blur: 0;
-    --shadow-spread: 0;
-    --shadow-opacity: 0.1;
-    --shadow-color: rgba(0, 0, 0, 1);
     /* Map to Tailwind's default boxShadow scale */
-    /* Tailwind sm */
     --shadow-2xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    /* Tailwind DEFAULT */
     --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.10), 0 1px 2px -1px rgba(0, 0, 0, 0.10);
-    /* Tailwind md */
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.10), 0 2px 4px -2px rgba(0, 0, 0, 0.10);
-    /* Tailwind lg */
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.10), 0 4px 6px -4px rgba(0, 0, 0, 0.10);
-    /* Tailwind xl */
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.10), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    /* Tailwind 2xl */
     --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --blur-sm: 4px;
   }
 
   .dark {
@@ -107,15 +95,8 @@
     --chart-3: oklch(0.769 0.188 70.08);
     --chart-4: oklch(0.627 0.265 303.9);
     --chart-5: oklch(0.645 0.246 16.439);
-    /* helpers if you need them */
-    --shadow-x: 0;
-    --shadow-y: 0;
-    --shadow-blur: 0;
-    --shadow-spread: 0;
-    --shadow-opacity: 0.25;
-    --shadow-color: rgba(0, 0, 0, 1);
-    /* Dark-mode tuned shadows (optional) */
 
+    /* Dark-mode tuned shadows (optional) */
     --shadow-2xs: 0 1px 2px 0 rgba(0, 0, 0, 0.20);
     --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.20);
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
@@ -167,7 +148,7 @@
     left: 0;
     right: 0;
     height: 60px;
-    background: linear-gradient(to bottom, var(--background) 0%, transparent 100%);
+    background: linear-gradient(to bottom, var(--scroll-shadow-bg, var(--background)) 0%, transparent 100%);
   }
 
   .scroll-shadow-bottom {
@@ -175,7 +156,7 @@
     left: 0;
     right: 0;
     height: 60px;
-    background: linear-gradient(to top, var(--background) 0%, transparent 100%);
+    background: linear-gradient(to top, var(--scroll-shadow-bg, var(--background)) 0%, transparent 100%);
   }
 
   .scroll-shadow-left {
@@ -183,7 +164,7 @@
     bottom: 0;
     left: 0;
     width: 60px;
-    background: linear-gradient(to right, var(--background) 0%, transparent 100%);
+    background: linear-gradient(to right, var(--scroll-shadow-bg, var(--background)) 0%, transparent 100%);
   }
 
   .scroll-shadow-right {
@@ -191,7 +172,7 @@
     bottom: 0;
     right: 0;
     width: 60px;
-    background: linear-gradient(to left, var(--background) 0%, transparent 100%);
+    background: linear-gradient(to left, var(--scroll-shadow-bg, var(--background)) 0%, transparent 100%);
   }
 
   /* Show shadows when scrollable */

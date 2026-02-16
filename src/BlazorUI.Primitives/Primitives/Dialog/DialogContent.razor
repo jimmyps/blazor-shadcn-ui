@@ -17,7 +17,6 @@
          aria-labelledby="@Context.TitleId"
          aria-describedby="@Context.DescriptionId"
          tabindex="-1"
-         @onkeydown="HandleKeyDown"
          @attributes="AdditionalAttributes"
          data-state="open">
         @ChildContent
@@ -70,7 +69,9 @@
     private ElementReference _contentRef;
     private IAsyncDisposable? _focusTrap;
     private IJSObjectReference? _portalModule;
+    private IJSObjectReference? _dialogModule;
     private IJSObjectReference? _scrollLockCleanup;
+    private DotNetObjectReference<DialogContent>? _dotNetRef;
     private bool _isInitialized = false;
 
     protected override void OnInitialized()
@@ -91,6 +92,25 @@
         if (Context.IsOpen && !_isInitialized)
         {
             _isInitialized = true;
+
+            // Create DotNetObjectReference for JS callbacks
+            _dotNetRef = DotNetObjectReference.Create(this);
+
+            // Set up keyboard handling in JavaScript (avoids C# roundtrip on every keystroke)
+            try
+            {
+                _dialogModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/dialog.js");
+                await _dialogModule.InvokeVoidAsync(
+                    "initializeKeyboardHandler",
+                    Context.ContentId,
+                    CloseOnEscape,
+                    _dotNetRef);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to set up keyboard handling: {ex.Message}");
+            }
 
             // Set up focus trap
             if (TrapFocus)
@@ -140,26 +160,40 @@
         StateHasChanged();
     }
 
-    private async Task HandleKeyDown(KeyboardEventArgs args)
+    /// <summary>
+    /// Called from JavaScript when Escape key is pressed.
+    /// </summary>
+    [JSInvokable]
+    public async Task HandleEscapeKey()
     {
-        if (args.Key == "Escape")
+        // Invoke custom handler if provided
+        if (OnEscapeKeyDown.HasDelegate)
         {
-            // Invoke custom handler if provided
-            if (OnEscapeKeyDown.HasDelegate)
-            {
-                await OnEscapeKeyDown.InvokeAsync(args);
-            }
+            await OnEscapeKeyDown.InvokeAsync(new KeyboardEventArgs { Key = "Escape" });
+        }
 
-            // Close dialog if configured
-            if (CloseOnEscape)
-            {
-                Context.Close();
-            }
+        // Close dialog if configured
+        if (CloseOnEscape)
+        {
+            Context.Close();
         }
     }
 
     private async Task CleanupAsync()
     {
+        // Dispose keyboard handler
+        if (_dialogModule != null)
+        {
+            try
+            {
+                await _dialogModule.InvokeVoidAsync("disposeKeyboardHandler", Context.ContentId);
+            }
+            catch
+            {
+                // Cleanup may already be disposed
+            }
+        }
+
         // Dispose focus trap
         if (_focusTrap != null)
         {
@@ -181,12 +215,21 @@
             _scrollLockCleanup = null;
         }
 
+        // Dispose DotNetObjectReference
+        _dotNetRef?.Dispose();
+        _dotNetRef = null;
+
         _isInitialized = false;
     }
 
     public async ValueTask DisposeAsync()
     {
         await CleanupAsync();
+
+        if (_dialogModule != null)
+        {
+            await _dialogModule.DisposeAsync();
+        }
 
         if (_portalModule != null)
         {

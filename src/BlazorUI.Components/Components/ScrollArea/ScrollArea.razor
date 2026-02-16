@@ -1,4 +1,4 @@
-﻿@namespace BlazorUI.Components.ScrollArea
+@namespace BlazorUI.Components.ScrollArea
 @using Microsoft.JSInterop
 @using Microsoft.Extensions.Logging
 @implements IAsyncDisposable
@@ -88,6 +88,14 @@
     public bool EnableScrollShadows { get; set; } = false;
 
     /// <summary>
+    /// When true, automatically calculates height to fill parent container minus sibling elements.
+    /// Useful in flex/grid layouts where the ScrollArea should take remaining space.
+    /// Default is false.
+    /// </summary>
+    [Parameter]
+    public bool FillContainer { get; set; } = false;
+
+    /// <summary>
     /// Additional CSS classes to apply to the root element.
     /// </summary>
     [Parameter]
@@ -111,7 +119,7 @@
                 _scrollAreaInstance = await _module.InvokeAsync<IJSObjectReference>(
                     "initialize",
                     _scrollAreaRef,
-                    new { enableShadows = EnableScrollShadows });
+                    new { enableShadows = EnableScrollShadows, fillContainer = FillContainer });
             }
             catch (JSException ex)
             {
