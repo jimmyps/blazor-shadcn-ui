@@ -1,4 +1,5 @@
 using BlazorUI.Demo;
+using BlazorUI.Demo.Services;
 using BlazorUI.Primitives.Extensions;
 using BlazorUI.Components.Extensions;
 using BlazorUI.Components.Toast;
