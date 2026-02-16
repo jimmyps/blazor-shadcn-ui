@@ -1,0 +1,219 @@
+@using BlazorUI.Components.Popover
+@using BlazorUI.Components.Tooltip
+@using BlazorUI.Demo.Services
+@using BlazorUI.Icons.Lucide.Components
+@using BlazorUI.Primitives.Services
+@inject ThemeService ThemeService
+@implements IDisposable
+
+<TooltipProvider>
+    <Popover>
+        <Tooltip>
+            <TooltipTrigger>
+                <PopoverTrigger AsChild>
+                    <Button Variant="ButtonVariant.Outline" 
+                            Size="ButtonSize.Icon"
+                            Class="@GetTriggerButtonClass()"
+                            AriaLabel="Change theme">
+                        <div class="size-4 rounded-full" style="@GetTriggerFillStyle()"></div>
+                    </Button>
+                </PopoverTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>@_currentBaseColor / @_currentPrimaryColor</p>
+            </TooltipContent>
+        </Tooltip>
+    <PopoverContent Class="w-80" Align="PopoverAlign.End">
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-semibold">Theme Settings</h3>
+                    <DarkModeToggle />
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Base Color</h4>
+                <div class="grid grid-cols-5 gap-2">
+                    @foreach (var color in Enum.GetValues<BaseColor>())
+                    {
+                        <button @onclick="() => OnBaseColorSelected(color)"
+                                class="@GetBaseColorOptionClass(color)"
+                                title="@color">
+                            <div class="@GetBaseColorVisualClass(color)"></div>
+                            <span class="text-xs mt-1">@color</span>
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Theme Color</h4>
+                <div class="grid grid-cols-5 gap-2">
+                    @foreach (var color in Enum.GetValues<PrimaryColor>())
+                    {
+                        <button @onclick="() => OnPrimaryColorSelected(color)"
+                                class="@GetPrimaryColorOptionClass(color)"
+                                title="@color">
+                            <div class="@GetPrimaryColorVisualClass(color)"></div>
+                            <span class="text-xs mt-1 truncate">@GetShortColorName(color)</span>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </PopoverContent>
+    </Popover>
+</TooltipProvider>
+
+@code {
+    private BaseColor _currentBaseColor;
+    private PrimaryColor _currentPrimaryColor;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Initialize theme service
+        await ThemeService.InitializeAsync();
+        _currentBaseColor = ThemeService.CurrentBaseColor;
+        _currentPrimaryColor = ThemeService.CurrentPrimaryColor;
+
+        // Subscribe to theme changes
+        ThemeService.OnThemeChanged += HandleThemeChanged;
+    }
+
+    private async Task OnBaseColorSelected(BaseColor baseColor)
+    {
+        await ThemeService.SetBaseColorAsync(baseColor);
+    }
+
+    private async Task OnPrimaryColorSelected(PrimaryColor primaryColor)
+    {
+        await ThemeService.SetPrimaryColorAsync(primaryColor);
+    }
+
+    private void HandleThemeChanged()
+    {
+        _currentBaseColor = ThemeService.CurrentBaseColor;
+        _currentPrimaryColor = ThemeService.CurrentPrimaryColor;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private string GetTriggerButtonClass()
+    {
+        return "relative overflow-hidden h-9 w-9";
+    }
+
+    private string GetTriggerFillStyle()
+    {
+        var baseColorValue = _currentBaseColor switch
+        {
+            BaseColor.Zinc => "#27272a",
+            BaseColor.Slate => "#1e293b",
+            BaseColor.Gray => "#374151",
+            BaseColor.Neutral => "#262626",
+            BaseColor.Stone => "#292524",
+            _ => "#27272a"
+        };
+
+        var primaryColorValue = _currentPrimaryColor switch
+        {
+            PrimaryColor.Red => "#dc2626",
+            PrimaryColor.Rose => "#e11d48",
+            PrimaryColor.Orange => "#ea580c",
+            PrimaryColor.Amber => "#d97706",
+            PrimaryColor.Yellow => "#ca8a04",
+            PrimaryColor.Lime => "#65a30d",
+            PrimaryColor.Green => "#16a34a",
+            PrimaryColor.Emerald => "#059669",
+            PrimaryColor.Teal => "#0d9488",
+            PrimaryColor.Cyan => "#0891b2",
+            PrimaryColor.Sky => "#0284c7",
+            PrimaryColor.Blue => "#2563eb",
+            PrimaryColor.Indigo => "#4f46e5",
+            PrimaryColor.Violet => "#7c3aed",
+            PrimaryColor.Purple => "#9333ea",
+            PrimaryColor.Fuchsia => "#c026d3",
+            PrimaryColor.Pink => "#db2777",
+            _ => "#2563eb"
+        };
+
+        return $"background: {baseColorValue}; border: 2px solid {primaryColorValue};";
+    }
+
+    private string GetBaseColorOptionClass(BaseColor color)
+    {
+        var isSelected = _currentBaseColor == color;
+        var baseClass = "flex flex-col items-center gap-1 p-2 rounded-md hover:bg-accent transition-colors cursor-pointer";
+        var selectedClass = isSelected ? "bg-accent" : "";
+        return $"{baseClass} {selectedClass}";
+    }
+
+    private string GetBaseColorVisualClass(BaseColor color)
+    {
+        var isSelected = _currentBaseColor == color;
+        var baseClass = "size-6 rounded-full border-2 border-border transition-all";
+        var selectedClass = isSelected ? "ring-2 ring-ring ring-offset-2" : "";
+
+        var colorClass = color switch
+        {
+            BaseColor.Zinc => "bg-zinc-500",
+            BaseColor.Slate => "bg-slate-500",
+            BaseColor.Gray => "bg-gray-500",
+            BaseColor.Neutral => "bg-neutral-500",
+            BaseColor.Stone => "bg-stone-500",
+            _ => "bg-zinc-500"
+        };
+
+        return $"{baseClass} {colorClass} {selectedClass}";
+    }
+
+    private string GetPrimaryColorOptionClass(PrimaryColor color)
+    {
+        var isSelected = _currentPrimaryColor == color;
+        var baseClass = "flex flex-col items-center gap-1 p-2 rounded-md hover:bg-accent transition-colors cursor-pointer";
+        var selectedClass = isSelected ? "bg-accent" : "";
+        return $"{baseClass} {selectedClass}";
+    }
+
+    private string GetPrimaryColorVisualClass(PrimaryColor color)
+    {
+        var isSelected = _currentPrimaryColor == color;
+        var baseClass = "size-6 rounded-full border-2 border-background transition-all";
+        var selectedClass = isSelected ? "ring-2 ring-ring ring-offset-2" : "";
+        
+        var colorClass = color switch
+        {
+            PrimaryColor.Red => "bg-red-600",
+            PrimaryColor.Rose => "bg-rose-600",
+            PrimaryColor.Orange => "bg-orange-600",
+            PrimaryColor.Amber => "bg-amber-600",
+            PrimaryColor.Yellow => "bg-yellow-500",
+            PrimaryColor.Lime => "bg-lime-500",
+            PrimaryColor.Green => "bg-green-600",
+            PrimaryColor.Emerald => "bg-emerald-600",
+            PrimaryColor.Teal => "bg-teal-600",
+            PrimaryColor.Cyan => "bg-cyan-600",
+            PrimaryColor.Sky => "bg-sky-600",
+            PrimaryColor.Blue => "bg-blue-600",
+            PrimaryColor.Indigo => "bg-indigo-600",
+            PrimaryColor.Violet => "bg-violet-600",
+            PrimaryColor.Purple => "bg-purple-600",
+            PrimaryColor.Fuchsia => "bg-fuchsia-600",
+            PrimaryColor.Pink => "bg-pink-600",
+            _ => "bg-blue-600"
+        };
+
+        return $"{baseClass} {colorClass} {selectedClass}";
+    }
+
+    private string GetShortColorName(PrimaryColor color)
+    {
+        // Shorten long color names for better display in grid
+        return color.ToString();
+    }
+
+    public void Dispose()
+    {
+        ThemeService.OnThemeChanged -= HandleThemeChanged;
+    }
+}

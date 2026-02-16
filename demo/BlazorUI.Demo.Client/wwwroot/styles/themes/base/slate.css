@@ -1,0 +1,47 @@
+/* Slate Base Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.base-slate {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.1870 0.0108 249.0780);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.1870 0.0108 249.0780);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.1870 0.0108 249.0780);
+    --secondary: oklch(0.9650 0.0030 255.8390);
+    --secondary-foreground: oklch(0.2050 0.0120 252.5460);
+    --muted: oklch(0.9650 0.0030 255.8390);
+    --muted-foreground: oklch(0.5390 0.0190 254.6040);
+    --accent: oklch(0.9650 0.0030 255.8390);
+    --accent-foreground: oklch(0.2050 0.0120 252.5460);
+    --border: oklch(0.9160 0.0040 256.8480);
+    --input: oklch(0.9160 0.0040 256.8480);
+    --sidebar: oklch(0.9850 0 0);
+    --sidebar-foreground: oklch(0.1870 0.0108 249.0780);
+    --sidebar-accent: oklch(0.9650 0.0030 255.8390);
+    --sidebar-accent-foreground: oklch(0.2050 0.0120 252.5460);
+    --sidebar-border: oklch(0.9160 0.0040 256.8480);
+  }
+
+  :root.base-slate.dark {
+    --background: oklch(0.1520 0.0108 256.8480);
+    --foreground: oklch(0.9850 0.0030 264.5420);
+    --card: oklch(0.2180 0.0100 255.2650);
+    --card-foreground: oklch(0.9850 0.0030 264.5420);
+    --popover: oklch(0.2810 0.0090 255.2650);
+    --popover-foreground: oklch(0.9850 0.0030 264.5420);
+    --secondary: oklch(0.2810 0.0090 255.2650);
+    --secondary-foreground: oklch(0.9850 0.0030 264.5420);
+    --muted: oklch(0.2810 0.0090 255.2650);
+    --muted-foreground: oklch(0.6860 0.0130 257.5350);
+    --accent: oklch(0.3710 0.0130 255.5260);
+    --accent-foreground: oklch(0.9850 0.0030 264.5420);
+    --border: oklch(0.2810 0.0090 255.2650);
+    --input: oklch(0.3250 0.0110 255.2650);
+    --sidebar: oklch(0.2180 0.0100 255.2650);
+    --sidebar-foreground: oklch(0.9850 0.0030 264.5420);
+    --sidebar-accent: oklch(0.2810 0.0090 255.2650);
+    --sidebar-accent-foreground: oklch(0.9850 0.0030 264.5420);
+    --sidebar-border: oklch(0.2810 0.0090 255.2650);
+  }
+}

@@ -1,0 +1,21 @@
+/* Violet Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-violet {
+    --primary: oklch(0.5400 0.2420 293.0000);
+    --primary-foreground: oklch(0.9850 0.0150 293.5710);
+    --ring: oklch(0.5400 0.2420 293.0000);
+    --sidebar-primary: oklch(0.5400 0.2420 293.0000);
+    --sidebar-primary-foreground: oklch(0.9850 0.0150 293.5710);
+    --sidebar-ring: oklch(0.5400 0.2420 293.0000);
+  }
+
+  :root.primary-violet.dark {
+    --primary: oklch(0.6860 0.2030 293.5710);
+    --primary-foreground: oklch(0.9850 0.0150 293.5710);
+    --ring: oklch(0.6860 0.2030 293.5710);
+    --sidebar-primary: oklch(0.6860 0.2030 293.5710);
+    --sidebar-primary-foreground: oklch(0.9850 0.0150 293.5710);
+    --sidebar-ring: oklch(0.6860 0.2030 293.5710);
+  }
+}

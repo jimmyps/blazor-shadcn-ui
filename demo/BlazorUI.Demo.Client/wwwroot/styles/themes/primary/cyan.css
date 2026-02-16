@@ -1,0 +1,21 @@
+/* Cyan Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-cyan {
+    --primary: oklch(0.7110 0.1430 196.2760);
+    --primary-foreground: oklch(0.1870 0.0550 192.3340);
+    --ring: oklch(0.7110 0.1430 196.2760);
+    --sidebar-primary: oklch(0.7110 0.1430 196.2760);
+    --sidebar-primary-foreground: oklch(0.1870 0.0550 192.3340);
+    --sidebar-ring: oklch(0.7110 0.1430 196.2760);
+  }
+
+  :root.primary-cyan.dark {
+    --primary: oklch(0.7850 0.1120 199.1130);
+    --primary-foreground: oklch(0.1870 0.0550 192.3340);
+    --ring: oklch(0.7850 0.1120 199.1130);
+    --sidebar-primary: oklch(0.7850 0.1120 199.1130);
+    --sidebar-primary-foreground: oklch(0.1870 0.0550 192.3340);
+    --sidebar-ring: oklch(0.7850 0.1120 199.1130);
+  }
+}
