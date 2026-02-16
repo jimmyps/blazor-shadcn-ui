@@ -100,9 +100,7 @@ public class ThemeService
             {
                 // No saved theme; align with the current DOM theme (set by App.razor using prefers-color-scheme)
                 // This reads whether the <html> element currently has the "dark" class
-                _isDarkMode = await _jsRuntime.InvokeAsync<bool>(
-                    "eval",
-                    "document.documentElement.classList.contains('dark')");
+                _isDarkMode = await _jsRuntime.InvokeAsync<bool>("theme.isDark");
             }
             
             // Parse base color

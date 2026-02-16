@@ -28,5 +28,13 @@ window.theme = {
         } else {
             html.classList.remove('dark');
         }
+    },
+
+    /**
+     * Checks if dark mode is currently active
+     * @returns {boolean} True if the 'dark' class is present on the html element
+     */
+    isDark: function() {
+        return document.documentElement.classList.contains('dark');
     }
 };
