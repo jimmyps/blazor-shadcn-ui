@@ -90,7 +90,20 @@ public class ThemeService
             var savedBaseColor = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", "baseColor");
             var savedPrimaryColor = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", "primaryColor");
 
-            _isDarkMode = savedTheme == "dark";
+            // Determine dark mode state
+            if (!string.IsNullOrEmpty(savedTheme))
+            {
+                // Use the explicitly saved theme preference
+                _isDarkMode = savedTheme == "dark";
+            }
+            else
+            {
+                // No saved theme; align with the current DOM theme (set by App.razor using prefers-color-scheme)
+                // This reads whether the <html> element currently has the "dark" class
+                _isDarkMode = await _jsRuntime.InvokeAsync<bool>(
+                    "eval",
+                    "document.documentElement.classList.contains('dark')");
+            }
             
             // Parse base color
             if (!string.IsNullOrEmpty(savedBaseColor) && Enum.TryParse<BaseColor>(savedBaseColor, true, out var baseColor))
@@ -114,6 +127,17 @@ public class ThemeService
             _isDarkMode = false;
             _baseColor = BaseColor.Zinc;
             _primaryColor = PrimaryColor.Blue;
+            
+            try
+            {
+                // Attempt to apply the default theme; ignore failures so we can retry later
+                await ApplyThemeAsync(_isDarkMode, _baseColor, _primaryColor);
+            }
+            catch
+            {
+                // Swallow exceptions here; JS/localStorage may not yet be available (e.g., SSR or disabled)
+            }
+            
             _isInitialized = true;
         }
     }
@@ -202,25 +226,16 @@ public class ThemeService
     {
         try
         {
-            var baseColorClass = $"base-{baseColor.ToString().ToLower()}";
-            var primaryColorClass = $"primary-{primaryColor.ToString().ToLower()}";
+            var baseColorClass = $"base-{baseColor.ToString().ToLowerInvariant()}";
+            var primaryColorClass = $"primary-{primaryColor.ToString().ToLowerInvariant()}";
 
-            // Use a dedicated JavaScript helper function for safer DOM manipulation
-            await _jsRuntime.InvokeVoidAsync("eval", $@"
-                (function() {{
-                    const html = document.documentElement;
-                    const classes = html.className.split(' ');
-                    const filteredClasses = classes.filter(c => !c.startsWith('base-') && !c.startsWith('primary-'));
-                    html.className = filteredClasses.join(' ');
-                    html.classList.add('{baseColorClass}');
-                    html.classList.add('{primaryColorClass}');
-                    if ({isDark.ToString().ToLower()}) {{
-                        html.classList.add('dark');
-                    }} else {{
-                        html.classList.remove('dark');
-                    }}
-                }})();
-            ");
+            // Use named JavaScript function instead of eval for CSP compatibility
+            await _jsRuntime.InvokeVoidAsync("theme.apply", new
+            {
+                @base = baseColorClass,
+                primary = primaryColorClass,
+                dark = isDark
+            });
         }
         catch
         {

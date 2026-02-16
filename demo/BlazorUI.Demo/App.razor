@@ -43,21 +43,63 @@
     <link rel="icon" type="image/png" href="@Assets["favicon.png"]" />
     <HeadOutlet />
 
+    <!-- Theme management JavaScript -->
+    <script src="@Assets["js/theme.js"]"></script>
+
     <script>
         // Initialize theme before Blazor loads to prevent FOUC
         (function() {
-            const savedTheme = localStorage.getItem('theme');
-            const savedBaseColor = localStorage.getItem('baseColor') || 'Zinc';
-            const savedPrimaryColor = localStorage.getItem('primaryColor') || 'Blue';
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
+            // Defaults
+            let savedTheme = null;
+            let savedBaseColor = 'Zinc';
+            let savedPrimaryColor = 'Blue';
+
+            // Safely read from localStorage (may throw in some environments)
+            try {
+                if (typeof window !== 'undefined' && window.localStorage) {
+                    const themeFromStorage = window.localStorage.getItem('theme');
+                    const baseFromStorage = window.localStorage.getItem('baseColor');
+                    const primaryFromStorage = window.localStorage.getItem('primaryColor');
+
+                    if (themeFromStorage) {
+                        savedTheme = themeFromStorage;
+                    }
+                    if (baseFromStorage) {
+                        savedBaseColor = baseFromStorage;
+                    }
+                    if (primaryFromStorage) {
+                        savedPrimaryColor = primaryFromStorage;
+                    }
+                }
+            } catch (e) {
+                // If access to localStorage is blocked, fall back to defaults
+            }
+
+            const prefersDark = window.matchMedia &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches;
+
             const html = document.documentElement;
-            
+
+            // Whitelists of allowed theme names
+            const allowedBaseColors = ['Zinc', 'Slate', 'Gray', 'Neutral', 'Stone'];
+            const allowedPrimaryColors = [
+                'Red', 'Rose', 'Orange', 'Amber', 'Yellow', 'Lime', 'Green', 'Emerald',
+                'Teal', 'Cyan', 'Sky', 'Blue', 'Indigo', 'Violet', 'Purple', 'Fuchsia', 'Pink'
+            ];
+
+            // Normalize and validate base color
+            const normalizedBase = savedBaseColor && savedBaseColor.toString();
+            const validBaseColor = allowedBaseColors.find(c => c.toLowerCase() === normalizedBase.toLowerCase()) || 'Zinc';
+
+            // Normalize and validate primary color
+            const normalizedPrimary = savedPrimaryColor && savedPrimaryColor.toString();
+            const validPrimaryColor = allowedPrimaryColors.find(c => c.toLowerCase() === normalizedPrimary.toLowerCase()) || 'Blue';
+
             // Apply base color class
-            html.classList.add('base-' + savedBaseColor.toLowerCase());
-            
+            html.classList.add('base-' + validBaseColor.toLowerCase());
+
             // Apply primary color class
-            html.classList.add('primary-' + savedPrimaryColor.toLowerCase());
+            html.classList.add('primary-' + validPrimaryColor.toLowerCase());
             
             // Apply dark mode if set
             if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
