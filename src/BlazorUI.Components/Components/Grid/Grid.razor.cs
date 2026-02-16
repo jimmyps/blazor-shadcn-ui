@@ -2,6 +2,7 @@ using BlazorUI.Components.Services.Grid;
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 using System.Reflection;
 using System.Collections.Specialized;
 
@@ -221,6 +222,13 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public EventCallback<IReadOnlyCollection<TItem>> OnSelectionChanged { get; set; }
 
     /// <summary>
+    /// Gets or sets the callback invoked when the grid is ready (initialized and rendered).
+    /// This is called after grid initialization completes, useful for performing actions that depend on the grid being fully loaded.
+    /// </summary>
+    [Parameter]
+    public Action? OnGridReady { get; set; }
+
+    /// <summary>
     /// Gets or sets the selected items in the grid.
     /// </summary>
     [Parameter]
@@ -392,7 +400,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             if (!_columnsRegistered)
             {
                 _columnsRegistered = true;
-                StateHasChanged();
+                StateHasChanged(); // This is needed to render the second time after columns register
                 return;
             }
         }
@@ -427,7 +435,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             try
             {
                 await InitializeGridAsync();
-                _initialized = true;
+                // Do NOT call StateHasChanged() here - let JavaScript control loader hiding via OnGridReadyInternal
             }
             catch (Exception ex)
             {
@@ -1274,6 +1282,41 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         styles.Add($"width: {width}");
 
         return string.Join("; ", styles);
+    }
+    
+    private string GetLoaderStyle()
+    {
+        // Loader styles: absolute positioning over grid with white background
+        // Initially visible (display: flex), will be hidden via JavaScript when grid is ready
+        var styles = new List<string>
+        {
+            "position: absolute",
+            "top: 0",
+            "left: 0",
+            "right: 0",
+            "bottom: 0",
+            "z-index: 10",
+            "background: hsl(var(--background))",
+            "display: flex",
+            "align-items: center",
+            "justify-content: center"
+        };
+
+        return string.Join("; ", styles);
+    }
+    
+    /// <summary>
+    /// Internal JSInvokable method called when grid initialization is complete.
+    /// Updates internal state without triggering Blazor re-render.
+    /// </summary>
+    [JSInvokable]
+    public void OnGridReadyInternal()
+    {
+        // Update internal state silently - no StateHasChanged() call
+        _initialized = true;
+        
+        // Invoke user-facing callback if needed
+        OnGridReady?.Invoke();
     }
 }
 

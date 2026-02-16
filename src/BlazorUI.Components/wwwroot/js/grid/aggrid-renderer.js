@@ -292,6 +292,24 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
         // Create AG Grid instance - returns the API directly
         const gridApi = agCreateGrid(element, gridOptions);
         
+        // Hide the loader when grid is ready
+        // Look for .grid-loader in the parent container
+        const loaderElement = element.parentElement?.querySelector('.grid-loader');
+        if (loaderElement) {
+            // Hide loader via DOM manipulation (no Blazor re-render)
+            loaderElement.style.display = 'none';
+        }
+        
+        // Notify Blazor that grid is ready (without triggering StateHasChanged)
+        if (dotNetRef && typeof dotNetRef.invokeMethodAsync === 'function') {
+            try {
+                await dotNetRef.invokeMethodAsync('OnGridReadyInternal');
+            } catch (err) {
+                // Silently handle if method doesn't exist (backward compatibility)
+                console.debug('[AG Grid] OnGridReadyInternal not found, skipping callback');
+            }
+        }
+        
         // Return wrapper object with API methods
         return {
             setRowData: (data) => {
