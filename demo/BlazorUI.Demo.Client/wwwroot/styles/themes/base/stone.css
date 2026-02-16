@@ -1,0 +1,47 @@
+/* Stone Base Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.base-stone {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.2240 0.0050 56.3660);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.2240 0.0050 56.3660);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.2240 0.0050 56.3660);
+    --secondary: oklch(0.9700 0.0020 106.4240);
+    --secondary-foreground: oklch(0.2430 0.0060 49.5480);
+    --muted: oklch(0.9700 0.0020 106.4240);
+    --muted-foreground: oklch(0.5750 0.0100 56.3660);
+    --accent: oklch(0.9700 0.0020 106.4240);
+    --accent-foreground: oklch(0.2430 0.0060 49.5480);
+    --border: oklch(0.9220 0.0030 49.5480);
+    --input: oklch(0.9220 0.0030 49.5480);
+    --sidebar: oklch(0.9850 0 0);
+    --sidebar-foreground: oklch(0.2240 0.0050 56.3660);
+    --sidebar-accent: oklch(0.9700 0.0020 106.4240);
+    --sidebar-accent-foreground: oklch(0.2430 0.0060 49.5480);
+    --sidebar-border: oklch(0.9220 0.0030 49.5480);
+  }
+
+  :root.base-stone.dark {
+    --background: oklch(0.2240 0.0050 56.3660);
+    --foreground: oklch(0.9850 0.0020 106.4240);
+    --card: oklch(0.2870 0.0060 56.3660);
+    --card-foreground: oklch(0.9850 0.0020 106.4240);
+    --popover: oklch(0.3470 0.0070 60.0540);
+    --popover-foreground: oklch(0.9850 0.0020 106.4240);
+    --secondary: oklch(0.3470 0.0070 60.0540);
+    --secondary-foreground: oklch(0.9850 0.0020 106.4240);
+    --muted: oklch(0.3470 0.0070 60.0540);
+    --muted-foreground: oklch(0.7350 0.0090 60.0540);
+    --accent: oklch(0.4300 0.0080 60.0540);
+    --accent-foreground: oklch(0.9850 0.0020 106.4240);
+    --border: oklch(0.3470 0.0070 60.0540);
+    --input: oklch(0.3910 0.0070 60.0540);
+    --sidebar: oklch(0.2870 0.0060 56.3660);
+    --sidebar-foreground: oklch(0.9850 0.0020 106.4240);
+    --sidebar-accent: oklch(0.3470 0.0070 60.0540);
+    --sidebar-accent-foreground: oklch(0.9850 0.0020 106.4240);
+    --sidebar-border: oklch(0.3470 0.0070 60.0540);
+  }
+}

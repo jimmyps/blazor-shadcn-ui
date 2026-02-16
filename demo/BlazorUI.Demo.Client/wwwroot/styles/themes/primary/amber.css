@@ -1,0 +1,21 @@
+/* Amber Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-amber {
+    --primary: oklch(0.7590 0.1530 70.0800);
+    --primary-foreground: oklch(0.2910 0.0620 43.5720);
+    --ring: oklch(0.7590 0.1530 70.0800);
+    --sidebar-primary: oklch(0.7590 0.1530 70.0800);
+    --sidebar-primary-foreground: oklch(0.2910 0.0620 43.5720);
+    --sidebar-ring: oklch(0.7590 0.1530 70.0800);
+  }
+
+  :root.primary-amber.dark {
+    --primary: oklch(0.8280 0.1890 84.4290);
+    --primary-foreground: oklch(0.2910 0.0620 43.5720);
+    --ring: oklch(0.8280 0.1890 84.4290);
+    --sidebar-primary: oklch(0.8280 0.1890 84.4290);
+    --sidebar-primary-foreground: oklch(0.2910 0.0620 43.5720);
+    --sidebar-ring: oklch(0.8280 0.1890 84.4290);
+  }
+}

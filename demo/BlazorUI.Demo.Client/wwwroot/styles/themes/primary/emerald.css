@@ -1,0 +1,21 @@
+/* Emerald Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-emerald {
+    --primary: oklch(0.6200 0.1900 162.0000);
+    --primary-foreground: oklch(0.9850 0.0090 166.1140);
+    --ring: oklch(0.6200 0.1900 162.0000);
+    --sidebar-primary: oklch(0.6200 0.1900 162.0000);
+    --sidebar-primary-foreground: oklch(0.9850 0.0090 166.1140);
+    --sidebar-ring: oklch(0.6200 0.1900 162.0000);
+  }
+
+  :root.primary-emerald.dark {
+    --primary: oklch(0.7140 0.1490 166.1140);
+    --primary-foreground: oklch(0.2050 0.0700 128.9340);
+    --ring: oklch(0.7140 0.1490 166.1140);
+    --sidebar-primary: oklch(0.7140 0.1490 166.1140);
+    --sidebar-primary-foreground: oklch(0.2050 0.0700 128.9340);
+    --sidebar-ring: oklch(0.7140 0.1490 166.1140);
+  }
+}

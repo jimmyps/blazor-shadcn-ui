@@ -1,0 +1,21 @@
+/* Sky Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-sky {
+    --primary: oklch(0.6600 0.1820 235.5200);
+    --primary-foreground: oklch(0.9850 0.0070 236.6200);
+    --ring: oklch(0.6600 0.1820 235.5200);
+    --sidebar-primary: oklch(0.6600 0.1820 235.5200);
+    --sidebar-primary-foreground: oklch(0.9850 0.0070 236.6200);
+    --sidebar-ring: oklch(0.6600 0.1820 235.5200);
+  }
+
+  :root.primary-sky.dark {
+    --primary: oklch(0.7390 0.1430 236.6200);
+    --primary-foreground: oklch(0.1870 0.0550 192.3340);
+    --ring: oklch(0.7390 0.1430 236.6200);
+    --sidebar-primary: oklch(0.7390 0.1430 236.6200);
+    --sidebar-primary-foreground: oklch(0.1870 0.0550 192.3340);
+    --sidebar-ring: oklch(0.7390 0.1430 236.6200);
+  }
+}

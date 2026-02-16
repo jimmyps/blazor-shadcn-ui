@@ -1,0 +1,21 @@
+/* Purple Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-purple {
+    --primary: oklch(0.5400 0.2200 305.0000);
+    --primary-foreground: oklch(0.9850 0.0150 308.3360);
+    --ring: oklch(0.5400 0.2200 305.0000);
+    --sidebar-primary: oklch(0.5400 0.2200 305.0000);
+    --sidebar-primary-foreground: oklch(0.9850 0.0150 308.3360);
+    --sidebar-ring: oklch(0.5400 0.2200 305.0000);
+  }
+
+  :root.primary-purple.dark {
+    --primary: oklch(0.6930 0.1850 308.3360);
+    --primary-foreground: oklch(0.9850 0.0150 308.3360);
+    --ring: oklch(0.6930 0.1850 308.3360);
+    --sidebar-primary: oklch(0.6930 0.1850 308.3360);
+    --sidebar-primary-foreground: oklch(0.9850 0.0150 308.3360);
+    --sidebar-ring: oklch(0.6930 0.1850 308.3360);
+  }
+}

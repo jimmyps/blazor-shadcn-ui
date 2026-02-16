@@ -1,0 +1,21 @@
+/* Pink Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-pink {
+    --primary: oklch(0.6500 0.2140 349.7600);
+    --primary-foreground: oklch(0.9850 0.0120 3.3770);
+    --ring: oklch(0.6500 0.2140 349.7600);
+    --sidebar-primary: oklch(0.6500 0.2140 349.7600);
+    --sidebar-primary-foreground: oklch(0.9850 0.0120 3.3770);
+    --sidebar-ring: oklch(0.6500 0.2140 349.7600);
+  }
+
+  :root.primary-pink.dark {
+    --primary: oklch(0.7610 0.1700 3.3770);
+    --primary-foreground: oklch(0.9850 0.0120 3.3770);
+    --ring: oklch(0.7610 0.1700 3.3770);
+    --sidebar-primary: oklch(0.7610 0.1700 3.3770);
+    --sidebar-primary-foreground: oklch(0.9850 0.0120 3.3770);
+    --sidebar-ring: oklch(0.7610 0.1700 3.3770);
+  }
+}
