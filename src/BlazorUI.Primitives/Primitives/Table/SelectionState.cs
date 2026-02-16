@@ -11,8 +11,9 @@ public class SelectionState<TData> where TData : class
 
     /// <summary>
     /// Gets the collection of selected items.
+    /// Returns a read-only copy to prevent external modification of internal state.
     /// </summary>
-    public IReadOnlyCollection<TData> SelectedItems => selectedItems;
+    public IReadOnlyCollection<TData> SelectedItems => selectedItems.ToList().AsReadOnly();
 
     /// <summary>
     /// Gets or sets the selection mode.
