@@ -1,17 +1,28 @@
+@using BlazorUI.Components.Popover
+@using BlazorUI.Components.Tooltip
 @using BlazorUI.Demo.Services
 @using BlazorUI.Icons.Lucide.Components
+@using BlazorUI.Primitives.Services
 @inject ThemeService ThemeService
 @implements IDisposable
 
-<Popover>
-    <PopoverTrigger AsChild>
-        <Button Variant="ButtonVariant.Outline" 
-                Size="ButtonSize.Icon"
-                Class="@GetTriggerButtonClass()"
-                AriaLabel="Change theme">
-            <div class="size-4 rounded-full" style="@GetTriggerFillStyle()"></div>
-        </Button>
-    </PopoverTrigger>
+<TooltipProvider>
+    <Popover>
+        <Tooltip>
+            <TooltipTrigger>
+                <PopoverTrigger AsChild>
+                    <Button Variant="ButtonVariant.Outline" 
+                            Size="ButtonSize.Icon"
+                            Class="@GetTriggerButtonClass()"
+                            AriaLabel="Change theme">
+                        <div class="size-4 rounded-full" style="@GetTriggerFillStyle()"></div>
+                    </Button>
+                </PopoverTrigger>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>@_currentBaseColor / @_currentPrimaryColor</p>
+            </TooltipContent>
+        </Tooltip>
     <PopoverContent Class="w-80" Align="PopoverAlign.End">
         <div class="space-y-4">
             <div class="space-y-2">
@@ -52,7 +63,8 @@
             </div>
         </div>
     </PopoverContent>
-</Popover>
+    </Popover>
+</TooltipProvider>
 
 @code {
     private BaseColor _currentBaseColor;
@@ -88,7 +100,7 @@
 
     private string GetTriggerButtonClass()
     {
-        return "relative overflow-hidden";
+        return "relative overflow-hidden h-9 w-9";
     }
 
     private string GetTriggerFillStyle()
@@ -139,17 +151,17 @@
     private string GetBaseColorVisualClass(BaseColor color)
     {
         var isSelected = _currentBaseColor == color;
-        var baseClass = "size-6 rounded-full border-2 transition-all";
+        var baseClass = "size-6 rounded-full border-2 border-border transition-all";
         var selectedClass = isSelected ? "ring-2 ring-ring ring-offset-2" : "";
-        
+
         var colorClass = color switch
         {
-            BaseColor.Zinc => "bg-zinc-900 dark:bg-zinc-50 border-zinc-300 dark:border-zinc-700",
-            BaseColor.Slate => "bg-slate-900 dark:bg-slate-50 border-slate-300 dark:border-slate-700",
-            BaseColor.Gray => "bg-gray-900 dark:bg-gray-50 border-gray-300 dark:border-gray-700",
-            BaseColor.Neutral => "bg-neutral-900 dark:bg-neutral-50 border-neutral-300 dark:border-neutral-700",
-            BaseColor.Stone => "bg-stone-900 dark:bg-stone-50 border-stone-300 dark:border-stone-700",
-            _ => "bg-zinc-900"
+            BaseColor.Zinc => "bg-zinc-500",
+            BaseColor.Slate => "bg-slate-500",
+            BaseColor.Gray => "bg-gray-500",
+            BaseColor.Neutral => "bg-neutral-500",
+            BaseColor.Stone => "bg-stone-500",
+            _ => "bg-zinc-500"
         };
 
         return $"{baseClass} {colorClass} {selectedClass}";
