@@ -19,6 +19,7 @@ public enum BaseColor
 /// </summary>
 public enum PrimaryColor
 {
+    Default,
     Red,
     Rose,
     Orange,
@@ -47,7 +48,7 @@ public class ThemeService
     private readonly IJSRuntime _jsRuntime;
     private bool _isDarkMode;
     private BaseColor _baseColor = BaseColor.Zinc;
-    private PrimaryColor _primaryColor = PrimaryColor.Blue;
+    private PrimaryColor _primaryColor = PrimaryColor.Default;
     private bool _isInitialized;
 
     /// <summary>
@@ -124,8 +125,8 @@ public class ThemeService
             // If localStorage is not available (SSR), use defaults
             _isDarkMode = false;
             _baseColor = BaseColor.Zinc;
-            _primaryColor = PrimaryColor.Blue;
-            
+            _primaryColor = PrimaryColor.Default;
+
             try
             {
                 // Attempt to apply the default theme; ignore failures so we can retry later
@@ -135,7 +136,7 @@ public class ThemeService
             {
                 // Swallow exceptions here; JS/localStorage may not yet be available (e.g., SSR or disabled)
             }
-            
+
             _isInitialized = true;
         }
     }

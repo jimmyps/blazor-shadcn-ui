@@ -117,6 +117,7 @@
 
         var primaryColorValue = _currentPrimaryColor switch
         {
+            PrimaryColor.Default => baseColorValue,
             PrimaryColor.Red => "#dc2626",
             PrimaryColor.Rose => "#e11d48",
             PrimaryColor.Orange => "#ea580c",
@@ -134,7 +135,7 @@
             PrimaryColor.Purple => "#9333ea",
             PrimaryColor.Fuchsia => "#c026d3",
             PrimaryColor.Pink => "#db2777",
-            _ => "#2563eb"
+            _ => baseColorValue
         };
 
         return $"background: {baseColorValue}; border: 2px solid {primaryColorValue};";
@@ -183,6 +184,7 @@
         
         var colorClass = color switch
         {
+            PrimaryColor.Default => "bg-gray-600",
             PrimaryColor.Red => "bg-red-600",
             PrimaryColor.Rose => "bg-rose-600",
             PrimaryColor.Orange => "bg-orange-600",
@@ -200,7 +202,7 @@
             PrimaryColor.Purple => "bg-purple-600",
             PrimaryColor.Fuchsia => "bg-fuchsia-600",
             PrimaryColor.Pink => "bg-pink-600",
-            _ => "bg-blue-600"
+            _ => "bg-gray-600"
         };
 
         return $"{baseClass} {colorClass} {selectedClass}";
