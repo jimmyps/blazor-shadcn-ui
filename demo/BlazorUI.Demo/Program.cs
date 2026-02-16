@@ -1,5 +1,4 @@
 using BlazorUI.Demo;
-using BlazorUI.Demo.Services;
 using BlazorUI.Primitives.Extensions;
 using BlazorUI.Components.Extensions;
 using BlazorUI.Components.Toast;
@@ -22,9 +21,6 @@ builder.Services.AddBlazorUIPrimitives();
 
 // Add BlazorUI.Components services (includes Grid renderer and CollapsibleStateService)
 builder.Services.AddBlazorUIComponents();
-
-// Add theme service for dark mode management (scoped because it depends on IJSRuntime)
-builder.Services.AddScoped<ThemeService>();
 
 // Add mock data service for generating demo data
 builder.Services.AddSingleton<MockDataService>();
