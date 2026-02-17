@@ -44,39 +44,155 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// </summary>
     public class ColumnData
     {
+        /// <summary>
+        /// Gets or sets the unique identifier for the column.
+        /// </summary>
         public string Id { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the header text displayed for this column.
+        /// </summary>
         public string Header { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the property accessor function that retrieves the column value from a data item.
+        /// </summary>
         public Func<TData, object> Property { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets whether the column can be sorted.
+        /// </summary>
         public bool Sortable { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the column is included in global search filtering.
+        /// </summary>
         public bool Filterable { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the column is currently visible.
+        /// </summary>
         public bool Visible { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the width CSS value for the column (e.g., "200px", "20%").
+        /// </summary>
         public string? Width { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum width CSS value for the column.
+        /// </summary>
         public string? MinWidth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum width CSS value for the column.
+        /// </summary>
         public string? MaxWidth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the custom render template for cells in this column.
+        /// </summary>
         public RenderFragment<TData>? CellTemplate { get; set; }
+
+        /// <summary>
+        /// Gets or sets additional CSS classes to apply to cells in this column.
+        /// </summary>
         public string? CellClass { get; set; }
+
+        /// <summary>
+        /// Gets or sets additional CSS classes to apply to the column header.
+        /// </summary>
         public string? HeaderClass { get; set; }
+
+        /// <summary>
+        /// Gets or sets the horizontal alignment for the column content.
+        /// </summary>
         public ColumnAlignment Alignment { get; set; } = ColumnAlignment.Left;
     }
 
+    /// <summary>
+    /// Stores the list of registered column definitions.
+    /// </summary>
     private List<ColumnData> _columns = new();
+
+    /// <summary>
+    /// Maintains the table state including sorting, filtering, pagination, and selection.
+    /// </summary>
     private TableState<TData> _tableState = new();
+
+    /// <summary>
+    /// Contains the final processed data after filtering, sorting, and pagination.
+    /// </summary>
     private IEnumerable<TData> _processedData = Array.Empty<TData>();
+
+    /// <summary>
+    /// Contains the data after filtering but before pagination.
+    /// </summary>
     private IEnumerable<TData> _filteredData = Array.Empty<TData>();
+
+    /// <summary>
+    /// Stores the current global search filter value.
+    /// </summary>
     private string _globalSearchValue = string.Empty;
+
+    /// <summary>
+    /// Version counter for column visibility changes to track render dependencies.
+    /// </summary>
     private int _columnsVersion = 0;
+
+    /// <summary>
+    /// Tracks whether the select-all dropdown is currently open.
+    /// </summary>
     private bool _selectAllDropdownOpen = false;
 
-    // ShouldRender tracking fields
+    /// <summary>
+    /// Cached reference to the last data collection for ShouldRender optimization.
+    /// </summary>
     private IEnumerable<TData>? _lastData;
+
+    /// <summary>
+    /// Cached selection mode for ShouldRender optimization.
+    /// </summary>
     private DataTableSelectionMode _lastSelectionMode;
+
+    /// <summary>
+    /// Cached loading state for ShouldRender optimization.
+    /// </summary>
     private bool _lastIsLoading;
+
+    /// <summary>
+    /// Cached columns version for ShouldRender optimization.
+    /// </summary>
     private int _lastColumnsVersion;
+
+    /// <summary>
+    /// Cached global search value for ShouldRender optimization.
+    /// </summary>
     private string _lastGlobalSearchValue = string.Empty;
+
+    /// <summary>
+    /// Version counter for selection changes to track render dependencies.
+    /// </summary>
     private int _selectionVersion = 0;
+
+    /// <summary>
+    /// Cached selection version for ShouldRender optimization.
+    /// </summary>
     private int _lastSelectionVersion = 0;
+
+    /// <summary>
+    /// Cached selected items collection for parameter change detection.
+    /// </summary>
     private IReadOnlyCollection<TData>? _lastSelectedItems;
+
+    /// <summary>
+    /// Version counter for pagination changes to track render dependencies.
+    /// </summary>
     private int _paginationVersion = 0;
+
+    /// <summary>
+    /// Cached pagination version for ShouldRender optimization.
+    /// </summary>
     private int _lastPaginationVersion = 0;
 
     /// <summary>
@@ -182,34 +298,35 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     public IReadOnlyCollection<TData> SelectedItems { get; set; } = Array.Empty<TData>();
 
     /// <summary>
-    /// Event callback invoked when the selected items change.
+    /// Event callback invoked when the selected items change due to user interaction.
+    /// Used for two-way binding with @bind-SelectedItems.
     /// </summary>
     [Parameter]
     public EventCallback<IReadOnlyCollection<TData>> SelectedItemsChanged { get; set; }
 
     /// <summary>
-    /// Event callback invoked when sorting changes.
-    /// Use for custom sorting logic (hybrid mode).
+    /// Event callback invoked when the user changes the sort column or direction.
+    /// Provides the column ID and sort direction for implementing custom sorting logic.
     /// </summary>
     [Parameter]
     public EventCallback<(string ColumnId, SortDirection Direction)> OnSort { get; set; }
 
     /// <summary>
-    /// Event callback invoked when the global search value changes.
-    /// Use for custom filtering logic (hybrid mode).
+    /// Event callback invoked when the user changes the global search filter value.
+    /// Provides the search text for implementing custom filtering logic.
     /// </summary>
     [Parameter]
     public EventCallback<string?> OnFilter { get; set; }
 
     /// <summary>
-    /// Gets or sets a function to preprocess data before automatic processing.
-    /// Use for custom transformations or server-side data fetching.
+    /// Gets or sets a custom function to preprocess data before filtering, sorting, and pagination.
+    /// Use this to transform data, apply server-side operations, or fetch additional details.
     /// </summary>
     [Parameter]
     public Func<IEnumerable<TData>, Task<IEnumerable<TData>>>? PreprocessData { get; set; }
 
     /// <summary>
-    /// Gets the computed CSS classes for the container.
+    /// Gets the computed CSS classes for the outer container element.
     /// </summary>
     private string ContainerCssClass => ClassNames.cn(
         "w-full space-y-4",
@@ -217,7 +334,7 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     );
 
     /// <summary>
-    /// Gets the computed CSS classes for the table container.
+    /// Gets the computed CSS classes for the table container element.
     /// </summary>
     private string TableContainerCssClass => ClassNames.cn(
         "rounded-md border"
@@ -230,6 +347,9 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         "w-full caption-bottom text-sm"
     );
 
+    /// <summary>
+    /// Initializes the component and sets up default pagination and selection state.
+    /// </summary>
     protected override void OnInitialized()
     {
         _tableState.Pagination.PageSize = InitialPageSize;
@@ -238,6 +358,9 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         _tableState.Selection.Mode = GetPrimitiveSelectionMode();
     }
 
+    /// <summary>
+    /// Synchronizes parameters with internal state and processes the data.
+    /// </summary>
     protected override async Task OnParametersSetAsync()
     {
         // Keep selection mode in sync with parameter
@@ -261,9 +384,11 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Registers a column with the data table.
-    /// Called by DataTableColumn during initialization.
+    /// Registers a column with the data table during component initialization.
+    /// Called internally by DataTableColumn components when they are initialized.
     /// </summary>
+    /// <typeparam name="TValue">The type of the column's property value.</typeparam>
+    /// <param name="column">The column component to register.</param>
     internal void RegisterColumn<TValue>(DataTableColumn<TData, TValue> column) where TValue : notnull
     {
         // Create internal column data structure (avoids BL0005 component parameter warnings)
@@ -292,7 +417,8 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Processes the data through filtering, sorting, and pagination pipelines.
+    /// Processes the data through the complete pipeline: preprocessing, filtering, sorting, and pagination.
+    /// Updates both the filtered and final processed data collections.
     /// </summary>
     private async Task ProcessDataAsync()
     {
@@ -321,8 +447,11 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Applies global search filtering to the data.
+    /// Applies global search filtering across all filterable columns.
+    /// Returns the filtered data collection.
     /// </summary>
+    /// <param name="data">The data to filter.</param>
+    /// <returns>The filtered data matching the global search criteria.</returns>
     private IEnumerable<TData> ApplyFiltering(IEnumerable<TData> data)
     {
         if (string.IsNullOrWhiteSpace(_globalSearchValue))
@@ -344,9 +473,13 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Checks if an item matches the search criteria across the specified columns.
-    /// Extracted method to reduce closure overhead and improve JIT optimization.
+    /// Checks if a data item matches the search value in any of the specified columns.
+    /// Uses case-insensitive string comparison.
     /// </summary>
+    /// <param name="item">The data item to check.</param>
+    /// <param name="searchValue">The search text to match against.</param>
+    /// <param name="columns">The columns to search within.</param>
+    /// <returns>True if the item matches the search value in any column; otherwise, false.</returns>
     private static bool MatchesSearch(TData item, string searchValue, List<ColumnData> columns)
     {
         foreach (var column in columns)
@@ -372,8 +505,11 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Applies sorting to the data based on current sort state.
+    /// Applies sorting to the data based on the current sort column and direction.
+    /// Returns the data unchanged if no sorting is active.
     /// </summary>
+    /// <param name="data">The data to sort.</param>
+    /// <returns>The sorted data collection.</returns>
     private IEnumerable<TData> ApplySorting(IEnumerable<TData> data)
     {
         if (_tableState.Sorting.Direction == SortDirection.None)
@@ -391,8 +527,10 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Handles sort change events from the table primitive.
+    /// Handles sort change events triggered by column header clicks.
+    /// Invokes the OnSort callback and reprocesses the data.
     /// </summary>
+    /// <param name="sortInfo">The column ID and sort direction.</param>
     private async Task HandleSortChange((string ColumnId, SortDirection Direction) sortInfo)
     {
         // Invoke custom callback if provided
@@ -407,8 +545,10 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Handles global search value changes.
+    /// Handles changes to the global search input.
+    /// Resets pagination to the first page and reprocesses the data.
     /// </summary>
+    /// <param name="value">The new search value.</param>
     private async Task HandleGlobalSearchChanged(string value)
     {
         _globalSearchValue = value;
@@ -427,8 +567,11 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Handles column visibility changes.
+    /// Handles column visibility toggle events from the column visibility menu.
+    /// Updates the column's visibility state and triggers a re-render.
     /// </summary>
+    /// <param name="columnId">The ID of the column to toggle.</param>
+    /// <param name="visible">The new visibility state.</param>
     private void HandleColumnVisibilityChanged(string columnId, bool visible)
     {
         var column = _columns.FirstOrDefault(c => c.Id == columnId);
@@ -444,8 +587,10 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Handles selection change events from the table primitive.
+    /// Handles selection changes from the underlying table primitive.
+    /// Invokes the SelectedItemsChanged callback with a defensive copy of the selection.
     /// </summary>
+    /// <param name="selectedItems">The collection of currently selected items.</param>
     private async Task HandleSelectionChange(IReadOnlyCollection<TData> selectedItems)
     {
         if (SelectedItemsChanged.HasDelegate)
@@ -457,24 +602,27 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Determines whether to show the select-all dropdown prompt.
-    /// Returns true when total items exceed the current page count.
+    /// Determines whether to show the select-all dropdown menu.
+    /// Returns true when there are more items in the dataset than currently visible on the page.
     /// </summary>
+    /// <returns>True if the select-all dropdown should be shown; otherwise, false.</returns>
     private bool ShouldShowSelectAllPrompt()
     {
         return _tableState.Pagination.TotalItems > _processedData.Count();
     }
 
     /// <summary>
-    /// Gets the total count of filtered items across all pages.
+    /// Gets the total count of items after filtering but before pagination.
+    /// This represents all items matching the current filter criteria.
     /// </summary>
+    /// <returns>The total filtered item count.</returns>
     private int GetTotalFilteredItemCount()
     {
         return _filteredData.Count();
     }
 
     /// <summary>
-    /// Opens the select-all dropdown menu.
+    /// Opens the select-all dropdown menu that allows choosing between selecting current page or all items.
     /// </summary>
     private void OpenSelectAllDropdown()
     {
@@ -483,9 +631,10 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Handles select all checkbox changes.
-    /// When multiple pages exist, opens a dropdown for user to choose scope.
+    /// Handles the select-all checkbox state change.
+    /// Opens the dropdown menu if multiple pages exist, otherwise selects all items on the current page.
     /// </summary>
+    /// <param name="isChecked">True if the checkbox was checked; false if unchecked.</param>
     private async Task HandleSelectAllChanged(bool isChecked)
     {
         if (!isChecked)
@@ -505,7 +654,7 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Selects all items on the current page only.
+    /// Selects all items visible on the current page and closes the select-all dropdown.
     /// </summary>
     private async Task HandleSelectAllOnCurrentPage()
     {
@@ -520,7 +669,7 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Selects all items across all pages (entire filtered dataset).
+    /// Selects all items in the entire filtered dataset across all pages and closes the select-all dropdown.
     /// </summary>
     private async Task HandleSelectAllItems()
     {
@@ -535,7 +684,7 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Clears all selected items.
+    /// Clears all selected items and closes the select-all dropdown.
     /// </summary>
     private async Task HandleClearSelection()
     {
@@ -547,8 +696,11 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Handles individual row selection changes.
+    /// Handles individual row checkbox state changes.
+    /// Selects or deselects the item based on the checkbox state.
     /// </summary>
+    /// <param name="item">The data item associated with the row.</param>
+    /// <param name="isChecked">True if the checkbox was checked; false if unchecked.</param>
     private async Task HandleRowSelectionChanged(TData item, bool isChecked)
     {
         if (isChecked)
@@ -566,8 +718,10 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Checks if all rows on the current page are selected.
+    /// Determines if all items on the current page are selected.
+    /// Returns false if there are no items on the page.
     /// </summary>
+    /// <returns>True if all current page items are selected; otherwise, false.</returns>
     private bool IsAllSelected()
     {
         if (!_processedData.Any())
@@ -577,9 +731,10 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Checks if some (but not all) rows on the current page are selected.
-    /// Used for the indeterminate state of the select-all checkbox.
+    /// Determines if some (but not all) items on the current page are selected.
+    /// Used to set the indeterminate state of the select-all checkbox.
     /// </summary>
+    /// <returns>True if some but not all items are selected; otherwise, false.</returns>
     private bool IsSomeSelected()
     {
         if (!_processedData.Any())
@@ -590,8 +745,11 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Gets the column width style attribute.
+    /// Builds the inline style attribute for column width constraints.
+    /// Returns null if no width constraints are specified.
     /// </summary>
+    /// <param name="column">The column to get width styles for.</param>
+    /// <returns>A CSS style string or null if no width is specified.</returns>
     private string? GetColumnWidthStyle(ColumnData column)
     {
         var styles = new List<string>();
@@ -609,8 +767,9 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Converts DataTableSelectionMode to primitive SelectionMode.
+    /// Converts the DataTable's selection mode to the underlying table primitive's selection mode enum.
     /// </summary>
+    /// <returns>The corresponding primitive selection mode.</returns>
     private SelectionMode GetPrimitiveSelectionMode()
     {
         return SelectionMode switch
@@ -623,8 +782,10 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Handles page change events from pagination component.
+    /// Handles page navigation events from the pagination component.
+    /// Reprocesses the data to display the new page.
     /// </summary>
+    /// <param name="newPage">The new page number (1-based index).</param>
     private async Task HandlePageChanged(int newPage)
     {
         _paginationVersion++;  // Track pagination change for ShouldRender
@@ -633,8 +794,10 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Handles page size change events from pagination component.
+    /// Handles page size selection events from the pagination component.
+    /// Reprocesses the data with the new page size.
     /// </summary>
+    /// <param name="newPageSize">The new page size.</param>
     private async Task HandlePageSizeChanged(int newPageSize)
     {
         _paginationVersion++;  // Track pagination change for ShouldRender
@@ -643,9 +806,10 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Determines whether the component should re-render based on tracked state changes.
-    /// This optimization reduces unnecessary render cycles for complex tables.
+    /// Optimizes rendering by detecting which state has changed.
+    /// Prevents unnecessary re-renders when no relevant state has been modified.
     /// </summary>
+    /// <returns>True if the component should re-render; otherwise, false.</returns>
     protected override bool ShouldRender()
     {
         var dataChanged = !ReferenceEquals(_lastData, Data);
