@@ -439,6 +439,9 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Initializes the component and sets up validation behavior if enabled.
+    /// </summary>
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -455,6 +458,9 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Updates validation behavior when parameters change and subscribes to EditContext events.
+    /// </summary>
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -486,6 +492,10 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
         });
     }
 
+    /// <summary>
+    /// Initializes JavaScript module and validation after the component first renders.
+    /// Sets up input event handling based on UpdateOn mode and debounce settings.
+    /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
@@ -531,6 +541,9 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Disposes JavaScript module, event handlers, and object references.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
         try

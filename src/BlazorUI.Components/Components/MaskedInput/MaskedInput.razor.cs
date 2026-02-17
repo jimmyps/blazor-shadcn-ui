@@ -39,16 +39,54 @@ namespace BlazorUI.Components.MaskedInput;
 /// </example>
 public partial class MaskedInput : ComponentBase, IAsyncDisposable
 {
+    /// <summary>
+    /// JavaScript module for input event handling and validation.
+    /// </summary>
     private IJSObjectReference? _inputModule;
+    
+    /// <summary>
+    /// DotNet object reference for JavaScript callbacks.
+    /// </summary>
     private DotNetObjectReference<MaskedInput>? _dotNetRef;
+    
+    /// <summary>
+    /// Tracks whether JavaScript input module has been initialized.
+    /// </summary>
     private bool _jsInitialized = false;
+    
+    /// <summary>
+    /// Validation behavior handler for EditContext integration.
+    /// </summary>
     private InputValidationBehavior? _validationBehavior;
+    
+    /// <summary>
+    /// JavaScript module for mask formatting and cursor management.
+    /// </summary>
     private IJSObjectReference? _maskModule;
+    
+    /// <summary>
+    /// Auto-generated ID when user doesn't provide one.
+    /// </summary>
     private string? _generatedId;
+    
+    /// <summary>
+    /// Tracks the last raw (unmasked) value to prevent duplicate updates.
+    /// </summary>
     private string? _lastRawValue;
+    
+    /// <summary>
+    /// DotNet object reference for mask-specific JavaScript callbacks.
+    /// </summary>
     private DotNetObjectReference<MaskedInput>? _maskDotNetRef;
+    
+    /// <summary>
+    /// Tracks whether mask module has been initialized.
+    /// </summary>
     private bool _isInitialized = false;
 
+    /// <summary>
+    /// JavaScript runtime for invoking JavaScript functions.
+    /// </summary>
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
@@ -235,6 +273,9 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         public const string ZIP4 = "00000-0000";
     }
 
+    /// <summary>
+    /// Gets the effective AriaInvalid value from validation behavior or parameter.
+    /// </summary>
     private bool? EffectiveAriaInvalid => 
         _validationBehavior?.EffectiveAriaInvalid ?? AriaInvalid;
 
@@ -262,6 +303,9 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the computed CSS classes for the input element.
+    /// </summary>
     private string CssClass => ClassNames.cn(
         "flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-base shadow-xs",
         "placeholder:text-muted-foreground",
@@ -274,10 +318,19 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         Class
     );
 
+    /// <summary>
+    /// Gets the effective name attribute, falling back to Id if Name is not specified.
+    /// </summary>
     private string? EffectiveName => Name ?? Id;
 
+    /// <summary>
+    /// Gets the effective placeholder, hidden when ShowMask is enabled.
+    /// </summary>
     private string? EffectivePlaceholder => !ShowMask || string.IsNullOrEmpty(Mask) ? Placeholder : null;
 
+    /// <summary>
+    /// Gets the current masked display value shown to the user.
+    /// </summary>
     private string CurrentDisplayValue
     {
         get
@@ -292,6 +345,9 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Generates an empty mask display with placeholder characters.
+    /// </summary>
     private string GenerateEmptyMask()
     {
         var result = new char[Mask.Length];
@@ -302,11 +358,17 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         return new string(result);
     }
 
+    /// <summary>
+    /// Determines if a mask character is a literal (not a placeholder).
+    /// </summary>
     private bool IsLiteral(char maskChar)
     {
         return maskChar != '0' && maskChar != '9' && maskChar != 'A' && maskChar != 'a' && maskChar != '*';
     }
 
+    /// <summary>
+    /// Checks if an input character matches the mask pattern at the current position.
+    /// </summary>
     private bool MatchesMaskChar(char input, char maskChar)
     {
         return maskChar switch
@@ -320,6 +382,9 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         };
     }
 
+    /// <summary>
+    /// Applies the mask pattern to raw input value.
+    /// </summary>
     private string ApplyMask(string rawValue)
     {
         if (string.IsNullOrEmpty(Mask))
@@ -366,6 +431,9 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         return new string(result.ToArray());
     }
 
+    /// <summary>
+    /// Extracts the raw (unmasked) value from a masked input string.
+    /// </summary>
     private string ExtractRawValue(string maskedValue)
     {
         if (string.IsNullOrEmpty(Mask))
@@ -400,6 +468,9 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         return new string(result.ToArray());
     }
 
+    /// <summary>
+    /// Handles input events when JavaScript is unavailable (fallback).
+    /// </summary>
     private async Task HandleInput(ChangeEventArgs args)
     {
         // When JS module is loaded, it handles all the masking
@@ -433,6 +504,9 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Handles change events when JavaScript is unavailable (fallback).
+    /// </summary>
     private async Task HandleChange(ChangeEventArgs args)
     {
         if (_jsInitialized)
@@ -486,6 +560,9 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Calculates the new cursor position, skipping literal characters in the mask.
+    /// </summary>
     private int CalculateNewCursorPosition(string maskedValue, int currentPos)
     {
         // Skip over literal characters
@@ -497,6 +574,9 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         return currentPos;
     }
 
+    /// <summary>
+    /// Handles keyboard events for navigation and editing.
+    /// </summary>
     private async Task HandleKeyDown(KeyboardEventArgs args)
     {
         // Allow navigation and editing keys
@@ -511,12 +591,18 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Handles paste events, delegated to oninput event handler.
+    /// </summary>
     private async Task HandlePaste(ClipboardEventArgs args)
     {
         // Paste will be handled by oninput event
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Initializes the component and sets up validation behavior if enabled.
+    /// </summary>
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -533,6 +619,9 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Updates validation behavior when parameters change and subscribes to EditContext events.
+    /// </summary>
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -550,6 +639,9 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Handles EditContext validation state changes and updates the component display.
+    /// </summary>
     private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
     {
         if (_validationBehavior == null) return;
@@ -564,6 +656,10 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         });
     }
 
+    /// <summary>
+    /// Initializes JavaScript modules after the component first renders.
+    /// Sets up input event handling, mask formatting, and validation.
+    /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -626,7 +722,8 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// JavaScript callback when value changes from JS side
+    /// Called from JavaScript when the masked value changes.
+    /// Receives the raw (unmasked) value and updates the component state.
     /// </summary>
     [JSInvokable]
     public async Task OnValueChanged(string? rawValue)
@@ -650,6 +747,9 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Disposes JavaScript modules, event handlers, and object references.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
         try
