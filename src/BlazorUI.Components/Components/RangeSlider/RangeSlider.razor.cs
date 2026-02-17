@@ -54,6 +54,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
     private FieldIdentifier _minFieldIdentifier;
     private FieldIdentifier _maxFieldIdentifier;
 
+    /// <summary>
+    /// Gets or sets the JavaScript runtime for interop operations.
+    /// </summary>
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
@@ -189,17 +192,26 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         Class
     );
 
+    /// <summary>
+    /// Gets the CSS class for the label container.
+    /// </summary>
     private string LabelCssClass => ClassNames.cn(
         "flex justify-between mb-2",
         Orientation == SliderOrientation.Vertical ? "flex-col-reverse gap-2" : ""
     );
 
+    /// <summary>
+    /// Gets the CSS class for the slider container.
+    /// </summary>
     private string SliderContainerCssClass => ClassNames.cn(
         "relative flex items-center",
         Orientation == SliderOrientation.Horizontal ? "w-full h-5" : "h-full w-5 flex-col",
         Disabled ? "cursor-not-allowed" : "cursor-pointer"
     );
 
+    /// <summary>
+    /// Gets the CSS class for the slider track.
+    /// </summary>
     private string TrackCssClass => ClassNames.cn(
         "absolute bg-secondary rounded-full",
         Orientation == SliderOrientation.Horizontal 
@@ -207,6 +219,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
             : "h-full w-2 bottom-0"
     );
 
+    /// <summary>
+    /// Gets the CSS class for the selected range indicator.
+    /// </summary>
     private string RangeCssClass => ClassNames.cn(
         "absolute bg-primary rounded-full transition-all",
         Orientation == SliderOrientation.Horizontal 
@@ -214,6 +229,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
             : "w-2"
     );
 
+    /// <summary>
+    /// Gets the CSS class for the draggable handle.
+    /// </summary>
     private string HandleCssClass => ClassNames.cn(
         "absolute z-10 h-5 w-5 rounded-full border-2 border-primary bg-background",
         "ring-offset-background transition-colors",
@@ -221,6 +239,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         !Disabled ? "hover:bg-accent cursor-grab active:cursor-grabbing" : "cursor-not-allowed opacity-50"
     );
 
+    /// <summary>
+    /// Gets the CSS class for the value tooltip.
+    /// </summary>
     private string TooltipCssClass => ClassNames.cn(
         "absolute px-2 py-1 text-xs font-medium text-primary-foreground bg-primary rounded",
         "pointer-events-none whitespace-nowrap",
@@ -229,6 +250,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
             : "-right-10 top-1/2 -translate-y-1/2"
     );
 
+    /// <summary>
+    /// Gets the CSS class for the tick marks container.
+    /// </summary>
     private string TickContainerCssClass => ClassNames.cn(
         "absolute",
         Orientation == SliderOrientation.Horizontal 
@@ -236,6 +260,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
             : "h-full w-2 bottom-0"
     );
 
+    /// <summary>
+    /// Gets the CSS class for individual tick marks.
+    /// </summary>
     private string TickCssClass => ClassNames.cn(
         "absolute bg-border",
         Orientation == SliderOrientation.Horizontal 
@@ -243,6 +270,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
             : "h-px w-2"
     );
 
+    /// <summary>
+    /// Gets the inline style for the range indicator positioning and size.
+    /// </summary>
     private string RangeStyle
     {
         get
@@ -261,6 +291,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the inline style for the minimum value handle positioning.
+    /// </summary>
     private string MinHandleStyle
     {
         get
@@ -277,6 +310,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the inline style for the maximum value handle positioning.
+    /// </summary>
     private string MaxHandleStyle
     {
         get
@@ -293,12 +329,18 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Calculates the percentage position of a value within the min-max range.
+    /// </summary>
     private double GetPercentage(double value)
     {
         if (Max <= Min) return 0;
         return ((value - Min) / (Max - Min)) * 100;
     }
 
+    /// <summary>
+    /// Gets the inline style for positioning a tick mark at the given percentage.
+    /// </summary>
     private string GetTickStyle(double percent)
     {
         if (Orientation == SliderOrientation.Horizontal)
@@ -311,12 +353,18 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Snaps a value to the nearest step increment.
+    /// </summary>
     private double SnapToStep(double value)
     {
         var steps = Math.Round((value - Min) / Step);
         return Math.Max(Min, Math.Min(Max, Min + steps * Step));
     }
 
+    /// <summary>
+    /// Updates the minimum value ensuring it doesn't exceed the maximum value.
+    /// </summary>
     private async Task UpdateMinValue(double newValue)
     {
         if (Disabled) return;
@@ -343,6 +391,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Updates the maximum value ensuring it doesn't go below the minimum value.
+    /// </summary>
     private async Task UpdateMaxValue(double newValue)
     {
         if (Disabled) return;
@@ -369,6 +420,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Handles mouse down event on the minimum value handle.
+    /// </summary>
     private void OnMinHandleMouseDown(MouseEventArgs e)
     {
         if (Disabled) return;
@@ -376,6 +430,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         _isDraggingMin = true;
     }
 
+    /// <summary>
+    /// Handles mouse down event on the maximum value handle.
+    /// </summary>
     private void OnMaxHandleMouseDown(MouseEventArgs e)
     {
         if (Disabled) return;
@@ -383,6 +440,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         _isDraggingMin = false;
     }
 
+    /// <summary>
+    /// Handles touch start event on the minimum value handle.
+    /// </summary>
     private void OnMinHandleTouchStart(TouchEventArgs e)
     {
         if (Disabled) return;
@@ -390,6 +450,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         _isDraggingMin = true;
     }
 
+    /// <summary>
+    /// Handles touch start event on the maximum value handle.
+    /// </summary>
     private void OnMaxHandleTouchStart(TouchEventArgs e)
     {
         if (Disabled) return;
@@ -397,6 +460,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         _isDraggingMin = false;
     }
 
+    /// <summary>
+    /// Handles keyboard navigation on slider handles.
+    /// </summary>
     private async Task OnHandleKeyDown(KeyboardEventArgs e, bool isMin)
     {
         if (Disabled) return;
@@ -440,6 +506,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Called from JavaScript when a handle is being dragged.
+    /// </summary>
     [JSInvokable]
     public async Task OnDragMove(double clientX, double clientY)
     {
@@ -457,12 +526,18 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Called from JavaScript when dragging ends.
+    /// </summary>
     [JSInvokable]
     public void OnDragEnd()
     {
         _isDragging = false;
     }
 
+    /// <summary>
+    /// Called from JavaScript when the track is clicked to move the nearest handle.
+    /// </summary>
     [JSInvokable]
     public async Task OnTrackClick(double clientX, double clientY)
     {
@@ -484,6 +559,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Calculates the slider value from a mouse/touch position.
+    /// </summary>
     private async Task<double> CalculateValueFromPosition(double clientX, double clientY)
     {
         if (_jsModule == null) return MinValue;
@@ -500,6 +578,7 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <inheritdoc/>
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -530,6 +609,7 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -549,11 +629,17 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Handles validation state changes from the EditContext.
+    /// </summary>
     private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
     {
         InvokeAsync(StateHasChanged);
     }
 
+    /// <summary>
+    /// Detaches the validation state change listener from the EditContext.
+    /// </summary>
     private void DetachValidationStateChangedListener()
     {
         if (_previousEditContext != null)
@@ -562,6 +648,7 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <inheritdoc/>
     public async ValueTask DisposeAsync()
     {
         DetachValidationStateChangedListener();

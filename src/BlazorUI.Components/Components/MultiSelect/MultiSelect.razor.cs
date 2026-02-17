@@ -13,6 +13,9 @@ namespace BlazorUI.Components.MultiSelect;
 /// <typeparam name="TItem">The type of items in the multiselect list.</typeparam>
 public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
 {
+    /// <summary>
+    /// Gets or sets the JavaScript runtime for interop operations.
+    /// </summary>
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
@@ -271,6 +274,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         // Setup JS when popover opens
@@ -304,6 +308,9 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Cleans up JavaScript resources when the popover closes.
+    /// </summary>
     private async Task CleanupJsAsync()
     {
         if (_multiSelectModule != null)
@@ -557,6 +564,10 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     }
 
     // JSInvokable callbacks for keyboard navigation
+    
+    /// <summary>
+    /// Called from JavaScript when Space key is pressed on an item.
+    /// </summary>
     [JSInvokable]
     public void HandleSpace()
     {
@@ -564,6 +575,9 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         // No additional action needed, dropdown stays open
     }
 
+    /// <summary>
+    /// Called from JavaScript when Enter key is pressed to close the dropdown.
+    /// </summary>
     [JSInvokable]
     public void HandleEnter()
     {
@@ -572,6 +586,9 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Called from JavaScript when Escape key is pressed to close the dropdown.
+    /// </summary>
     [JSInvokable]
     public void HandleEscape()
     {
@@ -580,6 +597,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         StateHasChanged();
     }
 
+    /// <inheritdoc/>
     public async ValueTask DisposeAsync()
     {
         await CleanupJsAsync();

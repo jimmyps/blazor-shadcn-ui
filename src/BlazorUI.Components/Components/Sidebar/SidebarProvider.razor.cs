@@ -5,6 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BlazorUI.Components.Sidebar;
 
+/// <summary>
+/// Provides context and state management for sidebar components with responsive behavior and persistence.
+/// </summary>
 public partial class SidebarProvider : ComponentBase
 {
     private SidebarContext Context { get; set; } = new();
@@ -13,15 +16,25 @@ public partial class SidebarProvider : ComponentBase
     private PersistingComponentStateSubscription _persistingSubscription;
     private IHttpContextAccessor? _httpContextAccessor;
 
+    /// <summary>
+    /// Gets or sets the JavaScript runtime for interop operations.
+    /// </summary>
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the service provider for dependency resolution.
+    /// </summary>
     [Inject]
     private IServiceProvider ServiceProvider { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the persistent component state for preserving sidebar state across prerendering.
+    /// </summary>
     [Inject]
     private PersistentComponentState PersistentState { get; set; } = default!;
 
+    /// <inheritdoc/>
     protected override void OnInitialized()
     {
         // Try to get IHttpContextAccessor - it's only available in Server/SSR, not in WebAssembly
@@ -66,6 +79,9 @@ public partial class SidebarProvider : ComponentBase
         _persistingSubscription = PersistentState.RegisterOnPersisting(PersistState);
     }
 
+    /// <summary>
+    /// Persists the current sidebar state for restoration after prerendering.
+    /// </summary>
     private Task PersistState()
     {
         // Persist the current sidebar open state for client-side restoration
@@ -73,6 +89,7 @@ public partial class SidebarProvider : ComponentBase
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc/>
     protected override void OnParametersSet()
     {
         // Update context when parameters change
@@ -80,6 +97,7 @@ public partial class SidebarProvider : ComponentBase
         Context.SetSide(Side);
     }
 
+    /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -106,6 +124,9 @@ public partial class SidebarProvider : ComponentBase
         }
     }
 
+    /// <summary>
+    /// Handles sidebar state changes and persists them to cookies.
+    /// </summary>
     private async void OnStateChanged(object? sender, EventArgs e)
     {
         // Persist sidebar state to cookie when it changes
@@ -154,11 +175,13 @@ public partial class SidebarProvider : ComponentBase
         StateHasChanged();
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         _persistingSubscription.Dispose();
     }
 
+    /// <inheritdoc/>
     public async ValueTask DisposeAsync()
     {
         if (Context != null)

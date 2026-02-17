@@ -190,6 +190,7 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
 
     // === Lifecycle Methods ===
 
+    /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -198,6 +199,7 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <inheritdoc/>
     protected override async Task OnParametersSetAsync()
     {
         // If Value changed externally, update the editor
@@ -216,6 +218,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Initializes the JavaScript interop and Quill editor instance.
+    /// </summary>
     private async Task InitializeJsAsync()
     {
         if (_jsInitialized) return;
@@ -253,6 +258,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
 
     // === JSInvokable Callbacks ===
 
+    /// <summary>
+    /// Called from JavaScript when the editor content changes.
+    /// </summary>
     [JSInvokable]
     public async Task OnTextChangeCallback(TextChangeEventArgs args)
     {
@@ -266,6 +274,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         await OnTextChange.InvokeAsync(args);
     }
 
+    /// <summary>
+    /// Called from JavaScript when the editor selection changes.
+    /// </summary>
     [JSInvokable]
     public async Task OnSelectionChangeCallback(SelectionChangeEventArgs args)
     {
@@ -288,6 +299,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         await OnSelectionChange.InvokeAsync(args);
     }
 
+    /// <summary>
+    /// Extracts a boolean value from format dictionary.
+    /// </summary>
     private static bool GetFormatBool(Dictionary<string, object?> format, string key)
     {
         if (!format.TryGetValue(key, out var value) || value == null)
@@ -302,6 +316,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         return false;
     }
 
+    /// <summary>
+    /// Extracts a string value from format dictionary.
+    /// </summary>
     private static string GetFormatString(Dictionary<string, object?> format, string key)
     {
         if (!format.TryGetValue(key, out var value) || value == null)
@@ -323,6 +340,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
 
     // === Toolbar Actions ===
 
+    /// <summary>
+    /// Toggles a text format on or off for the current selection.
+    /// </summary>
     private async Task ToggleFormatAsync(string format, object? value = null)
     {
         if (_jsModule == null || !_jsInitialized || Disabled) return;
@@ -352,6 +372,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         await _jsModule.InvokeVoidAsync("focus", _editorId);
     }
 
+    /// <summary>
+    /// Updates the internal format state from the editor's current format.
+    /// </summary>
     private void UpdateFormatState(Dictionary<string, object?> format)
     {
         if (format == null) return;
@@ -398,6 +421,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         return false;
     }
 
+    /// <summary>
+    /// Handles changes to the header level dropdown.
+    /// </summary>
     private async Task HandleHeaderChangeAsync(string? value)
     {
         if (_jsModule == null || !_jsInitialized || Disabled) return;
@@ -417,6 +443,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         await _jsModule.InvokeVoidAsync("focus", _editorId);
     }
 
+    /// <summary>
+    /// Opens the link dialog to insert or edit a hyperlink.
+    /// </summary>
     private async Task InsertLinkAsync()
     {
         if (_jsModule == null || !_jsInitialized || Disabled) return;
@@ -453,6 +482,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         _linkDialogOpen = true;
     }
 
+    /// <summary>
+    /// Closes the link dialog without applying changes.
+    /// </summary>
     private void CloseLinkDialog()
     {
         _linkDialogOpen = false;
@@ -461,6 +493,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         _savedSelection = null;
     }
 
+    /// <summary>
+    /// Validates the link URL format.
+    /// </summary>
     private void ValidateLinkUrl()
     {
         if (string.IsNullOrWhiteSpace(_linkUrl) || _linkUrl == "https://")
@@ -477,6 +512,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Checks if a URL is valid (HTTP or HTTPS).
+    /// </summary>
     private static bool IsValidUrl(string? url)
     {
         if (string.IsNullOrWhiteSpace(url) || url == "https://")
@@ -486,6 +524,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
                && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
     }
 
+    /// <summary>
+    /// Applies the link URL to the current selection.
+    /// </summary>
     private async Task ApplyLinkAsync()
     {
         if (_jsModule == null || !_jsInitialized || !IsValidUrl(_linkUrl)) return;
@@ -502,6 +543,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         await _jsModule.InvokeVoidAsync("focus", _editorId);
     }
 
+    /// <summary>
+    /// Removes the link from the current selection.
+    /// </summary>
     private async Task RemoveLinkAsync()
     {
         if (_jsModule == null || !_jsInitialized) return;
@@ -659,6 +703,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
 
     // === Private Helper Methods ===
 
+    /// <summary>
+    /// Builds the editor configuration options object for JavaScript initialization.
+    /// </summary>
     private object BuildEditorOptions() => new
     {
         placeholder = Placeholder ?? "",
@@ -667,6 +714,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
 
     // === CSS Classes ===
 
+    /// <summary>
+    /// Gets the CSS class for the editor container.
+    /// </summary>
     private string ContainerCssClass => ClassNames.cn(
         "flex flex-col rounded-md border border-input bg-background",
         "focus-within:border-ring focus-within:ring-[2px] focus-within:ring-ring/50",
@@ -676,15 +726,24 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         Class
     );
 
+    /// <summary>
+    /// Gets the CSS class for the toolbar.
+    /// </summary>
     private string ToolbarCssClass => ClassNames.cn(
         "flex flex-wrap items-center gap-1 px-3 py-2 border-b border-input bg-muted/40"
     );
 
+    /// <summary>
+    /// Gets the CSS class for the Quill editor container.
+    /// </summary>
     private string EditorCssClass => ClassNames.cn(
         "text-base md:text-sm",
         ClassNames.when(Disabled, "cursor-not-allowed")
     );
 
+    /// <summary>
+    /// Gets the inline style for the editor with height constraints.
+    /// </summary>
     private string EditorStyle
     {
         get
@@ -712,6 +771,7 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
 
     // === Dispose ===
 
+    /// <inheritdoc/>
     public async ValueTask DisposeAsync()
     {
         if (_jsModule != null && _jsInitialized)
