@@ -370,9 +370,33 @@ Fine-tune the theme with custom parameters:
 </Grid>
 ```
 
-## Loading State
+## Loading and Initialization States
 
-Show a loading indicator while data is being fetched:
+The Grid component provides two separate state management concepts:
+
+### Initialization State
+
+Shown automatically during first-time setup (downloading scripts, building grid options):
+
+```razor
+<Grid Items="@orders">
+    <InitializingTemplate>
+        <div class="flex items-center justify-center h-64">
+            <Spinner Size="SpinnerSize.Large" />
+            <span class="ml-2">Setting up grid...</span>
+        </div>
+    </InitializingTemplate>
+    <Columns>
+        <!-- columns -->
+    </Columns>
+</Grid>
+```
+
+The initialization template is shown only once when the grid is first being set up. Once initialized, it never shows again.
+
+### Loading State (Data Operations)
+
+Show a loading indicator while data is being fetched or refreshed:
 
 ```razor
 <Grid Items="@orders" IsLoading="@isLoading">
@@ -386,7 +410,29 @@ Show a loading indicator while data is being fetched:
         <!-- columns -->
     </Columns>
 </Grid>
+
+@code {
+    private bool isLoading = true;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+    
+    private async Task LoadData()
+    {
+        isLoading = true;
+        orders = await OrderService.GetOrdersAsync();
+        isLoading = false;
+    }
+}
 ```
+
+Use `IsLoading` to control the loading state when fetching or refreshing data. This is independent of the initialization state.
+
+**Key Differences:**
+- **InitializingTemplate**: Shown during first-time grid setup (internal, automatic)
+- **LoadingTemplate**: Shown when `IsLoading=true` (external, controlled by you)
 
 ## Empty State
 
@@ -587,10 +633,11 @@ Apply custom CSS classes to cells and headers:
 | `Density` | `GridDensity` | `Comfortable` | Spacing density (Compact, Comfortable, Spacious) |
 | `Height` | `string?` | `"300px"` | Grid height (e.g., "500px", "100%") |
 | `Width` | `string?` | `"100%"` | Grid width (e.g., "800px", "100%") |
-| `IsLoading` | `bool` | `false` | Show loading state |
+| `IsLoading` | `bool` | `false` | Show loading state for data operations |
 | `Class` | `string?` | `null` | Additional CSS classes |
 | `Columns` | `RenderFragment` | Required | Column definitions |
-| `LoadingTemplate` | `RenderFragment?` | `null` | Custom loading template |
+| `LoadingTemplate` | `RenderFragment?` | `null` | Custom template for data loading state |
+| `InitializingTemplate` | `RenderFragment?` | `null` | Custom template for first-time grid initialization |
 
 ### GridColumn Component
 
