@@ -1,0 +1,86 @@
+@namespace BlazorUI.Components.Filter
+
+@* This component doesn't render - it only provides metadata *@
+
+@code {
+    [CascadingParameter] private IFilterBuilderContext? Parent { get; set; }
+    
+    [Parameter, EditorRequired] public string Field { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
+    [Parameter] public FilterFieldType Type { get; set; } = FilterFieldType.Text;
+    [Parameter] public List<FilterOperator>? Operators { get; set; }
+    [Parameter] public FilterOperator? DefaultOperator { get; set; }
+    [Parameter] public List<SelectOption>? Options { get; set; }
+    [Parameter] public RenderFragment<FilterCondition>? CustomControl { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public object? Min { get; set; }
+    [Parameter] public object? Max { get; set; }
+    [Parameter] public object? Step { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        if (Parent == null)
+        {
+            throw new InvalidOperationException(
+                $"{nameof(FilterField)} must be used inside a {nameof(FilterBuilder<object>)} component.");
+        }
+        
+        var definition = new FilterFieldDefinition
+        {
+            Field = Field,
+            Label = Label,
+            Type = Type,
+            Operators = Operators ?? GetDefaultOperators(),
+            DefaultOperator = DefaultOperator,
+            Options = Options,
+            CustomControl = CustomControl,
+            Placeholder = Placeholder,
+            Min = Min,
+            Max = Max,
+            Step = Step
+        };
+        
+        Parent.RegisterField(definition);
+    }
+    
+    private List<FilterOperator> GetDefaultOperators()
+    {
+        return Type switch
+        {
+            FilterFieldType.Text => new List<FilterOperator> 
+            { 
+                FilterOperator.Contains, 
+                FilterOperator.Equals,
+                FilterOperator.StartsWith,
+                FilterOperator.EndsWith,
+                FilterOperator.IsEmpty,
+                FilterOperator.IsNotEmpty
+            },
+            FilterFieldType.Number => new List<FilterOperator>
+            {
+                FilterOperator.Equals,
+                FilterOperator.GreaterThan,
+                FilterOperator.LessThan,
+                FilterOperator.Between
+            },
+            FilterFieldType.Date or FilterFieldType.DateRange => new List<FilterOperator>
+            {
+                FilterOperator.Equals,
+                FilterOperator.Between,
+                FilterOperator.GreaterThan,
+                FilterOperator.LessThan
+            },
+            FilterFieldType.Select or FilterFieldType.MultiSelect => new List<FilterOperator>
+            {
+                FilterOperator.IsAnyOf,
+                FilterOperator.IsNoneOf
+            },
+            FilterFieldType.Boolean => new List<FilterOperator>
+            {
+                FilterOperator.IsTrue,
+                FilterOperator.IsFalse
+            },
+            _ => new List<FilterOperator> { FilterOperator.Equals }
+        };
+    }
+}

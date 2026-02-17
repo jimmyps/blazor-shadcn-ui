@@ -1,0 +1,91 @@
+@namespace BlazorUI.Components.Filter
+@using BlazorUI.Components.Button
+@using BlazorUI.Icons.Lucide
+
+<div class="@CssClass">
+    <span class="text-xs font-medium">@GetFilterText()</span>
+    @if (OnRemove != null)
+    {
+        <button type="button"
+                class="ml-1 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                @onclick="OnRemove"
+                aria-label="Remove filter">
+            <XIcon class="h-3 w-3" />
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter] public FilterCondition Condition { get; set; } = new();
+    [Parameter] public FilterFieldDefinition? FieldDefinition { get; set; }
+    [Parameter] public EventCallback OnRemove { get; set; }
+    [Parameter] public string? Class { get; set; }
+    
+    private string CssClass => ClassNames.cn(
+        "inline-flex items-center gap-1 rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors",
+        "bg-secondary text-secondary-foreground",
+        Class
+    );
+    
+    private string GetFilterText()
+    {
+        var fieldLabel = FieldDefinition?.Label ?? Condition.Field;
+        var operatorText = GetOperatorText(Condition.Operator);
+        var valueText = GetValueText();
+        
+        if (Condition.Operator == FilterOperator.IsEmpty || 
+            Condition.Operator == FilterOperator.IsNotEmpty ||
+            Condition.Operator == FilterOperator.IsTrue ||
+            Condition.Operator == FilterOperator.IsFalse)
+        {
+            return $"{fieldLabel} {operatorText}";
+        }
+        
+        return $"{fieldLabel} {operatorText} {valueText}";
+    }
+    
+    private string GetOperatorText(FilterOperator op)
+    {
+        return op switch
+        {
+            FilterOperator.Equals => "equals",
+            FilterOperator.NotEquals => "not equals",
+            FilterOperator.Contains => "contains",
+            FilterOperator.NotContains => "not contains",
+            FilterOperator.StartsWith => "starts with",
+            FilterOperator.EndsWith => "ends with",
+            FilterOperator.IsEmpty => "is empty",
+            FilterOperator.IsNotEmpty => "is not empty",
+            FilterOperator.GreaterThan => ">",
+            FilterOperator.LessThan => "<",
+            FilterOperator.GreaterThanOrEqual => ">=",
+            FilterOperator.LessThanOrEqual => "<=",
+            FilterOperator.Between => "between",
+            FilterOperator.NotBetween => "not between",
+            FilterOperator.IsAnyOf => "is any of",
+            FilterOperator.IsNoneOf => "is none of",
+            FilterOperator.IsAllOf => "is all of",
+            FilterOperator.IsTrue => "is true",
+            FilterOperator.IsFalse => "is false",
+            _ => op.ToString()
+        };
+    }
+    
+    private string GetValueText()
+    {
+        if (Condition.Value == null)
+            return "";
+        
+        if (Condition.Operator == FilterOperator.Between && Condition.SecondaryValue != null)
+        {
+            return $"{Condition.Value} and {Condition.SecondaryValue}";
+        }
+        
+        if (Condition.Value is List<string> list)
+        {
+            return string.Join(", ", list);
+        }
+        
+        return Condition.Value.ToString() ?? "";
+    }
+}

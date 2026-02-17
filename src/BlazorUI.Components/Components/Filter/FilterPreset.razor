@@ -1,0 +1,31 @@
+@namespace BlazorUI.Components.Filter
+
+@* This component doesn't render - it only provides metadata *@
+
+@code {
+    [CascadingParameter] private IFilterBuilderContext? Parent { get; set; }
+    
+    [Parameter, EditorRequired] public string Name { get; set; } = string.Empty;
+    [Parameter] public string? Icon { get; set; }
+    [Parameter, EditorRequired] public FilterGroup Filters { get; set; } = new();
+    [Parameter] public string? Description { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        if (Parent == null)
+        {
+            throw new InvalidOperationException(
+                $"{nameof(FilterPreset)} must be used inside a {nameof(FilterBuilder<object>)} component.");
+        }
+        
+        var definition = new FilterPresetDefinition
+        {
+            Name = Name,
+            Icon = Icon,
+            Filters = Filters,
+            Description = Description
+        };
+        
+        Parent.RegisterPreset(definition);
+    }
+}
