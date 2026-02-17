@@ -1,7 +1,7 @@
 @namespace BlazorUI.Components.Filter
 @using BlazorUI.Components.Select
 @using BlazorUI.Components.Button
-@using BlazorUI.Icons.Lucide
+@using BlazorUI.Icons.Lucide.Components
 
 <div class="@CssClass">
     @* Field Selector *@
@@ -42,14 +42,14 @@
     </div>
     
     @* Remove Button *@
-    @if (OnRemove != null)
+    @if (OnRemove.HasDelegate)
     {
         <Button Variant="ButtonVariant.Ghost" 
                 Size="ButtonSize.Icon" 
                 OnClick="@OnRemove"
                 Class="h-9 w-9"
                 AriaLabel="Remove filter">
-            <XIcon class="h-4 w-4" />
+            <LucideIcon Name="x" Class="h-4 w-4" />
         </Button>
     }
 </div>

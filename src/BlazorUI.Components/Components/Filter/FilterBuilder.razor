@@ -4,7 +4,8 @@
 @using BlazorUI.Components.Button
 @using BlazorUI.Components.Separator
 @using BlazorUI.Components.Badge
-@using BlazorUI.Icons.Lucide
+@using BlazorUI.Icons.Lucide.Components
+@using BlazorUI.Primitives.Services
 
 <div class="@WrapperCssClass">
     @* Active Filter Chips *@
@@ -26,7 +27,7 @@
             <Button Variant="@ButtonVariant" 
                     Size="@ButtonSize" 
                     Class="@ButtonCssClass">
-                <FilterIcon class="h-4 w-4" />
+                <LucideIcon Name="filter" Class="h-4 w-4" />
                 <span>@ButtonText</span>
                 @if (GetActiveConditions().Any())
                 {
@@ -94,7 +95,7 @@
                             Size="ButtonSize.Small" 
                             OnClick="@AddCondition"
                             Class="w-full">
-                        <PlusIcon class="h-4 w-4" />
+                        <LucideIcon Name="plus" Class="h-4 w-4" />
                         <span>Add Filter</span>
                     </Button>
                 }

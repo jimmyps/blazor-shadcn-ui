@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Components;
+using BlazorUI.Components.Utilities;
+
 namespace BlazorUI.Components.Filter;
 
 public partial class FilterValue : ComponentBase
