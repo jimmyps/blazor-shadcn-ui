@@ -34,13 +34,13 @@ public class InputValidationBehavior : IAsyncDisposable
             : null;
 
     /// <summary>
-    /// Creates a new InputValidationBehavior instance.
+    /// Initializes a new instance of the <see cref="InputValidationBehavior"/> class.
     /// </summary>
-    /// <param name="owner">The component that owns this behavior (for InvokeAsync and StateHasChanged)</param>
-    /// <param name="getEffectiveId">Function to get the component's effective ID</param>
-    /// <param name="getEditContext">Function to get the current EditContext</param>
-    /// <param name="shouldShowValidation">Function to check if validation should be shown</param>
-    /// <param name="getJsModule">Function to get the JS module reference</param>
+    /// <param name="owner">The component that owns this behavior (for InvokeAsync and StateHasChanged).</param>
+    /// <param name="getEffectiveId">Function to get the component's effective ID.</param>
+    /// <param name="getEditContext">Function to get the current EditContext.</param>
+    /// <param name="shouldShowValidation">Function to check if validation should be shown.</param>
+    /// <param name="getJsModule">Function to get the JS module reference.</param>
     public InputValidationBehavior(
         ComponentBase owner,
         Func<string> getEffectiveId,
@@ -59,6 +59,8 @@ public class InputValidationBehavior : IAsyncDisposable
     /// Sets up field identifier. Call this from OnParametersSet.
     /// The component should subscribe to EditContext.OnValidationStateChanged and call HandleValidationStateChangedAsync.
     /// </summary>
+    /// <typeparam name="TValue">The type of the value being validated.</typeparam>
+    /// <param name="valueExpression">Expression for the value being validated.</param>
     public void OnParametersSet<TValue>(Expression<Func<TValue>>? valueExpression)
     {
         if (!_shouldShowValidation() || valueExpression == null)
@@ -196,6 +198,7 @@ public class InputValidationBehavior : IAsyncDisposable
     /// Notifies EditContext that the field value changed and updates validation state.
     /// Call this when the input value changes.
     /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task NotifyFieldChangedAsync()
     {
         var editContext = _getEditContext();
@@ -210,6 +213,10 @@ public class InputValidationBehavior : IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Disposes the validation behavior and releases resources.
+    /// </summary>
+    /// <returns>A task representing the asynchronous dispose operation.</returns>
     public async ValueTask DisposeAsync()
     {
         await ValueTask.CompletedTask;

@@ -223,6 +223,9 @@ public sealed class EChartsAxis
     [JsonPropertyName("splitNumber")]
     public int? SplitNumber { get; set; }
 
+    /// <summary>
+    /// Axis line configuration.
+    /// </summary>
     [JsonPropertyName("axisLine")]
     public EChartsAxisLine? AxisLine { get; set; }
 
@@ -452,6 +455,9 @@ public sealed class EChartsSeries
     [JsonPropertyName("type")]
     public string? Type { get; set; }
 
+    /// <summary>
+    /// Series name displayed in legend.
+    /// </summary>
     [JsonPropertyName("name")]
     public string? Name { get; set; }
 
@@ -960,6 +966,9 @@ public sealed class EChartsAxisPointer
 /// </summary>
 public sealed class EChartsLegend
 {
+    /// <summary>
+    /// Whether to show the legend.
+    /// </summary>
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
 

@@ -131,6 +131,11 @@ public partial class MarkdownEditor : ComponentBase, IAsyncDisposable
         "[&_li]:mb-1 [&_strong]:font-bold [&_em]:italic [&_u]:underline"
     );
 
+    /// <summary>
+    /// Initializes the markdown editor after rendering.
+    /// </summary>
+    /// <param name="firstRender">Whether this is the first render.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -154,6 +159,8 @@ public partial class MarkdownEditor : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Called from JavaScript when content changes via undo/redo.
     /// </summary>
+    /// <param name="value">The new markdown content value.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     [JSInvokable]
     public async Task OnContentChanged(string value)
     {
@@ -370,6 +377,8 @@ public partial class MarkdownEditor : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Gets the CSS classes for a tab based on its active state (GitHub style).
     /// </summary>
+    /// <param name="tabValue">The tab value to get classes for.</param>
+    /// <returns>The CSS classes for the tab.</returns>
     private string GetTabClass(string tabValue)
     {
         var isActive = _activeTab == tabValue;
@@ -385,6 +394,10 @@ public partial class MarkdownEditor : ComponentBase, IAsyncDisposable
         );
     }
 
+    /// <summary>
+    /// Disposes the markdown editor and releases resources.
+    /// </summary>
+    /// <returns>A task representing the asynchronous dispose operation.</returns>
     public async ValueTask DisposeAsync()
     {
         if (_module != null)

@@ -144,6 +144,9 @@ public partial class GridColumn<TItem> : ComponentBase
     [CascadingParameter]
     internal Grid<TItem>? ParentGrid { get; set; }
 
+    /// <summary>
+    /// Initializes the grid column and registers it with the parent grid.
+    /// </summary>
     protected override void OnInitialized()
     {
         if (ParentGrid == null)

@@ -6,6 +6,9 @@ namespace BlazorUI.Components.Utilities;
 /// </summary>
 public static class ClassNamesTests
 {
+    /// <summary>
+    /// Runs all ClassNames utility tests.
+    /// </summary>
     public static void RunTests()
     {
         Console.WriteLine("=== ClassNames (cn) Utility Tests ===\n");

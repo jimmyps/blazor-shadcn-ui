@@ -3,6 +3,9 @@ using Microsoft.JSInterop;
 
 namespace BlazorUI.Components.ResponsiveNav;
 
+/// <summary>
+/// Provider component for responsive navigation functionality.
+/// </summary>
 public partial class ResponsiveNavProvider : ComponentBase
 {
     private ResponsiveNavContext Context { get; set; } = new();
@@ -11,6 +14,12 @@ public partial class ResponsiveNavProvider : ComponentBase
 
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
+
+    /// <summary>
+    /// Initializes the responsive navigation provider after rendering.
+    /// </summary>
+    /// <param name="firstRender">Whether this is the first render.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -41,6 +50,11 @@ public partial class ResponsiveNavProvider : ComponentBase
         }
     }
 
+    /// <summary>
+    /// Handles state changes from the responsive navigation context.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The event arguments.</param>
     private async void OnStateChanged(object? sender, EventArgs e)
     {
         // Notify UI of state change
@@ -50,12 +64,17 @@ public partial class ResponsiveNavProvider : ComponentBase
     /// <summary>
     /// Called from JavaScript when mobile state changes.
     /// </summary>
+    /// <param name="isMobile">Whether the viewport is in mobile mode.</param>
     [JSInvokable]
     public void OnMobileChange(bool isMobile)
     {
         Context.SetIsMobile(isMobile);
     }
 
+    /// <summary>
+    /// Disposes the responsive navigation provider and releases resources.
+    /// </summary>
+    /// <returns>A task representing the asynchronous dispose operation.</returns>
     public async ValueTask DisposeAsync()
     {
         if (Context != null)

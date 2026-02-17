@@ -55,6 +55,13 @@ public enum ChartType
 /// </summary>
 public class ChartTypeJsonConverter : JsonConverter<ChartType>
 {
+    /// <summary>
+    /// Reads and converts JSON to a ChartType value.
+    /// </summary>
+    /// <param name="reader">The JSON reader.</param>
+    /// <param name="typeToConvert">The type to convert.</param>
+    /// <param name="options">Serialization options.</param>
+    /// <returns>The converted ChartType value.</returns>
     public override ChartType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var value = reader.GetString();
@@ -79,6 +86,12 @@ public class ChartTypeJsonConverter : JsonConverter<ChartType>
         };
     }
 
+    /// <summary>
+    /// Writes a ChartType value as JSON.
+    /// </summary>
+    /// <param name="writer">The JSON writer.</param>
+    /// <param name="value">The ChartType value to write.</param>
+    /// <param name="options">Serialization options.</param>
     public override void Write(Utf8JsonWriter writer, ChartType value, JsonSerializerOptions options)
     {
         // Write as lowercase for Chart.js compatibility
