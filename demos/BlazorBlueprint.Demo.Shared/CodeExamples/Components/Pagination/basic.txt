@@ -1,0 +1,16 @@
+<BbPagination>
+    <BbPaginationContent>
+        <BbPaginationItem>
+            <BbPaginationPrevious OnClick="GoToPreviousPage" Disabled="currentPage <= 1" />
+        </BbPaginationItem>
+        <BbPaginationItem>
+            <BbPaginationLink IsActive="true" OnClick="GoToPage">1</BbPaginationLink>
+        </BbPaginationItem>
+        <BbPaginationItem>
+            <BbPaginationLink OnClick="GoToPage">2</BbPaginationLink>
+        </BbPaginationItem>
+        <BbPaginationItem>
+            <BbPaginationNext OnClick="GoToNextPage" Disabled="currentPage >= 5" />
+        </BbPaginationItem>
+    </BbPaginationContent>
+</BbPagination>

@@ -1,0 +1,19 @@
+<BbButtonGroup>
+    <BbButton Variant="ButtonVariant.Outline">
+        <LucideIcon Name="copy" Size="16" />
+        Copy
+    </BbButton>
+    <BbButton Variant="ButtonVariant.Outline">
+        <LucideIcon Name="clipboard-paste" Size="16" />
+        Paste
+    </BbButton>
+    <BbButtonGroupSeparator />
+    <BbButton Variant="ButtonVariant.Outline">
+        <LucideIcon Name="undo" Size="16" />
+        Undo
+    </BbButton>
+    <BbButton Variant="ButtonVariant.Outline">
+        <LucideIcon Name="redo" Size="16" />
+        Redo
+    </BbButton>
+</BbButtonGroup>

@@ -1,7 +1,4 @@
 @page "/components/scroll-area"
-@using BlazorBlueprint.Components.ScrollArea
-@using BlazorBlueprint.Components.Separator
-
 <PageTitle>Scroll Area Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -22,16 +19,17 @@
                 A scrollable area with vertical scrolling.
             </p>
         </div>
-        <ScrollArea Height="200px" Class="w-[350px] rounded-md border p-4">
+        <BbScrollArea Height="200px" Class="w-[350px] rounded-md border p-4">
             <div class="space-y-4">
                 <h4 class="text-sm font-medium leading-none">Tags</h4>
                 @foreach (var tag in _tags)
                 {
                     <div class="text-sm">@tag</div>
-                    <Separator />
+                    <BbSeparator />
                 }
             </div>
-        </ScrollArea>
+        </BbScrollArea>
+        <CodeBlock Source="Components/ScrollArea/basic.txt" />
     </div>
 
     <!-- Horizontal Scrolling -->
@@ -42,7 +40,7 @@
                 A scrollable area with horizontal scrolling.
             </p>
         </div>
-        <ScrollArea Orientation="ScrollAreaOrientation.Horizontal" Class="w-full whitespace-nowrap rounded-md border">
+        <BbScrollArea Orientation="ScrollAreaOrientation.Horizontal" Class="w-full whitespace-nowrap rounded-md border">
             <div class="flex w-max space-x-4 p-4">
                 @for (int i = 1; i <= 10; i++)
                 {
@@ -55,7 +53,8 @@
                     </div>
                 }
             </div>
-        </ScrollArea>
+        </BbScrollArea>
+        <CodeBlock Source="Components/ScrollArea/horizontal.txt" />
     </div>
 
     <!-- Long Content -->
@@ -66,7 +65,7 @@
                 Scroll area with extensive content.
             </p>
         </div>
-        <ScrollArea MaxHeight="300px" Class="w-[350px] rounded-md border p-4">
+        <BbScrollArea MaxHeight="300px" Class="w-[350px] rounded-md border p-4">
             <div class="space-y-4">
                 <h4 class="text-sm font-medium leading-none mb-4">Lorem Ipsum</h4>
                 @for (int i = 0; i < 5; i++)
@@ -76,26 +75,68 @@
                     </p>
                 }
             </div>
-        </ScrollArea>
+        </BbScrollArea>
+        <CodeBlock Source="Components/ScrollArea/long-content.txt" />
+    </div>
+
+    <!-- Fill Container -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Fill Container</h2>
+            <p class="text-sm text-muted-foreground">
+                Automatically fills remaining vertical space in a flex column parent.
+                The scroll area excludes sibling elements like headers and footers.
+            </p>
+        </div>
+        <div class="h-[400px] border rounded-md flex flex-col">
+            <div class="flex h-12 items-center border-b px-4 shrink-0">
+                <h4 class="text-sm font-medium">Header (excluded from scroll)</h4>
+            </div>
+            <BbScrollArea FillContainer="true" Class="px-4">
+                <div class="space-y-4 py-4">
+                    <h4 class="text-sm font-medium leading-none">Scrollable Content</h4>
+                    @for (int i = 1; i <= 30; i++)
+                    {
+                        <div class="text-sm">Item @i</div>
+                        <BbSeparator />
+                    }
+                </div>
+            </BbScrollArea>
+            <div class="flex h-12 items-center border-t px-4 shrink-0">
+                <span class="text-sm text-muted-foreground">Footer (excluded from scroll)</span>
+            </div>
+        </div>
+        <CodeBlock Source="Components/ScrollArea/fill-container.txt" />
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">ScrollArea Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Orientation:</strong> <code class="bg-muted px-1 py-0.5 rounded">ScrollAreaOrientation</code> - Vertical (default), Horizontal, or Both</p>
-                    <p><strong>Type:</strong> <code class="bg-muted px-1 py-0.5 rounded">ScrollAreaType</code> - Auto, Always, Hover, or Hidden</p>
-                    <p><strong>Height:</strong> <code class="bg-muted px-1 py-0.5 rounded">string</code> - Fixed height (e.g., "200px")</p>
-                    <p><strong>MaxHeight:</strong> <code class="bg-muted px-1 py-0.5 rounded">string</code> - Maximum height (e.g., "300px")</p>
-                </div>
-            </div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="ScrollArea">
+                <ApiParameter Name="Orientation" Type="ScrollAreaOrientation" Default="Vertical">
+                    The orientation of the scroll area. Options: Vertical (default), Horizontal, or Both.
+                </ApiParameter>
+                <ApiParameter Name="Type" Type="ScrollAreaType" Default="Auto">
+                    Controls scrollbar visibility behavior. Options: Auto, Always, Hover, or Hidden.
+                </ApiParameter>
+                <ApiParameter Name="Height" Type="string?">
+                    Fixed height applied as an inline style (e.g., "200px").
+                </ApiParameter>
+                <ApiParameter Name="MaxHeight" Type="string?">
+                    Maximum height applied as an inline style (e.g., "300px").
+                </ApiParameter>
+                <ApiParameter Name="FillContainer" Type="bool" Default="false">
+                    When true, automatically fills remaining vertical space in a flex column parent container,
+                    excluding sibling elements. Takes precedence over Height and MaxHeight.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {

@@ -1,8 +1,4 @@
 @page "/components/progress"
-@using BlazorBlueprint.Components.Progress
-@using BlazorBlueprint.Components.Button
-@using BlazorBlueprint.Components.Separator
-
 <PageTitle>Progress Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -23,7 +19,8 @@
                 A simple progress bar showing a static value.
             </p>
         </div>
-        <Progress Value="33" />
+        <BbProgress Value="33" />
+        <CodeBlock Source="Components/Progress/basic.txt" />
     </div>
 
     <!-- Different Values -->
@@ -40,37 +37,38 @@
                     <span>Empty</span>
                     <span>0%</span>
                 </div>
-                <Progress Value="0" />
+                <BbProgress Value="0" />
             </div>
             <div class="space-y-2">
                 <div class="flex justify-between text-sm">
                     <span>Quarter</span>
                     <span>25%</span>
                 </div>
-                <Progress Value="25" />
+                <BbProgress Value="25" />
             </div>
             <div class="space-y-2">
                 <div class="flex justify-between text-sm">
                     <span>Half</span>
                     <span>50%</span>
                 </div>
-                <Progress Value="50" />
+                <BbProgress Value="50" />
             </div>
             <div class="space-y-2">
                 <div class="flex justify-between text-sm">
                     <span>Three Quarters</span>
                     <span>75%</span>
                 </div>
-                <Progress Value="75" />
+                <BbProgress Value="75" />
             </div>
             <div class="space-y-2">
                 <div class="flex justify-between text-sm">
                     <span>Complete</span>
                     <span>100%</span>
                 </div>
-                <Progress Value="100" />
+                <BbProgress Value="100" />
             </div>
         </div>
+        <CodeBlock Source="Components/Progress/states.txt" />
     </div>
 
     <!-- Interactive Example -->
@@ -82,20 +80,21 @@
             </p>
         </div>
         <div class="space-y-4">
-            <Progress Value="@_progressValue" />
+            <BbProgress Value="@_progressValue" />
             <div class="flex items-center gap-4">
-                <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="@(() => _progressValue = Math.Max(0, _progressValue - 10))">
+                <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="@(() => _progressValue = Math.Max(0, _progressValue - 10))">
                     -10
-                </Button>
+                </BbButton>
                 <span class="text-sm font-medium w-12 text-center">@_progressValue%</span>
-                <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="@(() => _progressValue = Math.Min(100, _progressValue + 10))">
+                <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="@(() => _progressValue = Math.Min(100, _progressValue + 10))">
                     +10
-                </Button>
-                <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small" OnClick="@(() => _progressValue = 0)">
+                </BbButton>
+                <BbButton Variant="ButtonVariant.Secondary" Size="ButtonSize.Small" OnClick="@(() => _progressValue = 0)">
                     Reset
-                </Button>
+                </BbButton>
             </div>
         </div>
+        <CodeBlock Source="Components/Progress/interactive.txt" />
     </div>
 
     <!-- Custom Max Value -->
@@ -112,16 +111,36 @@
                     <span>Downloaded 3 of 10 files</span>
                     <span>30%</span>
                 </div>
-                <Progress Value="3" Max="10" />
+                <BbProgress Value="3" Max="10" />
             </div>
             <div class="space-y-2">
                 <div class="flex justify-between text-sm">
                     <span>Uploaded 750MB of 1000MB</span>
                     <span>75%</span>
                 </div>
-                <Progress Value="750" Max="1000" />
+                <BbProgress Value="750" Max="1000" />
             </div>
         </div>
+        <CodeBlock Source="Components/Progress/custom-max.txt" />
+    </div>
+
+    <!-- With Label -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <div class="flex items-center gap-2">
+                <h2 class="text-2xl font-semibold">With Label</h2>
+                <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">v3</span>
+            </div>
+            <p class="text-sm text-muted-foreground">
+                Use <code class="text-xs bg-muted px-1 py-0.5 rounded">ShowLabel="true"</code> to display a percentage label alongside the progress bar. Customize the format with <code class="text-xs bg-muted px-1 py-0.5 rounded">LabelFormat</code>.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <BbProgress Value="60" ShowLabel="true" />
+            <BbProgress Value="3" Max="5" ShowLabel="true" LabelFormat="{0}% done" />
+            <BbProgress Value="@_progressValue" ShowLabel="true" />
+        </div>
+        <CodeBlock Source="Components/Progress/label.txt" />
     </div>
 
     <!-- Custom Styling -->
@@ -135,66 +154,67 @@
         <div class="space-y-4">
             <div class="space-y-2">
                 <span class="text-sm">Taller progress bar</span>
-                <Progress Value="60" Class="h-6" />
+                <BbProgress Value="60" Class="h-6" />
             </div>
             <div class="space-y-2">
                 <span class="text-sm">Custom colors</span>
-                <Progress Value="80" Class="bg-blue-100 dark:bg-blue-900" IndicatorClass="bg-blue-500" />
+                <BbProgress Value="80" Class="bg-blue-100 dark:bg-blue-900" IndicatorClass="bg-blue-500" />
             </div>
             <div class="space-y-2">
                 <span class="text-sm">Rounded full</span>
-                <Progress Value="45" Class="h-3 rounded-full" />
+                <BbProgress Value="45" Class="h-3 rounded-full" />
             </div>
         </div>
+        <CodeBlock Source="Components/Progress/custom-styling.txt" />
     </div>
 
+    <!-- Accessibility -->
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>
+                Uses <code>role="progressbar"</code> to identify the element as a progress indicator to assistive technologies.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Sets <code>aria-valuenow</code> to the current progress value, <code>aria-valuemin="0"</code>, and <code>aria-valuemax</code> to the configured maximum.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Progress percentage is visually conveyed via a CSS transform on the indicator, ensuring consistent rendering across browsers.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                When <code>ShowLabel</code> is enabled, a visible text percentage is displayed alongside the bar for additional clarity.
+            </AccessibilityItem>
+        </AriaAttributes>
+    </AccessibilityList>
+
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Value</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">double</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    The current progress value. Default: 0.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Max</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">double</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    The maximum value. Default: 100.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Class</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Additional CSS classes for the progress container.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">IndicatorClass</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Additional CSS classes for the progress indicator.
-                </p>
-            </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="Progress">
+                <ApiParameter Name="Value" Type="double" Default="0">
+                    The current progress value.
+                </ApiParameter>
+                <ApiParameter Name="Max" Type="double" Default="100">
+                    The maximum value for the progress bar.
+                </ApiParameter>
+                <ApiParameter Name="ShowLabel" Type="bool" Default="false">
+                    When true, displays a percentage label next to the progress bar.
+                </ApiParameter>
+                <ApiParameter Name="LabelFormat" Type="string" Default="&quot;{0}%&quot;">
+                    Custom format string for the label. <code>{0}</code> is replaced with the integer percentage value.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the progress container.
+                </ApiParameter>
+                <ApiParameter Name="IndicatorClass" Type="string?">
+                    Additional CSS classes to apply to the progress indicator.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {

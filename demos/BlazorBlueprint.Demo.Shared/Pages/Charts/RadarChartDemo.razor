@@ -1,10 +1,8 @@
 @page "/charts/radar"
-@using ApexCharts
-@using BlazorBlueprint.Components.Chart
-
+@using BlazorBlueprint.Icons.Lucide.Components
 <PageTitle>Radar Chart - Blazor Blueprint</PageTitle>
 
-<div class="space-y-8 max-w-4xl">
+<div class="space-y-8 max-w-6xl">
     <div>
         <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">Radar Chart</h1>
@@ -14,156 +12,409 @@
         </div>
     </div>
 
-    <!-- Default Radar -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Default</h2>
-            <p class="text-sm text-muted-foreground">
-                Standard radar chart with lines connecting points.
-            </p>
-        </div>
-        <div class="max-w-lg mx-auto">
-            <ChartContainer>
-                <RadarChart TItem="SkillScore"
-                            Items="@_skillData"
-                            Variant="RadarChartVariant.Default"
-                            Height="350px">
-                    <ApexPointSeries TItem="SkillScore"
-                                     Items="@_skillData"
-                                     Name="Score"
-                                     SeriesType="SeriesType.Radar"
-                                     XValue="@(item => item.Skill)"
-                                     YValue="@(item => (decimal)item.Score)" />
-                </RadarChart>
-            </ChartContainer>
-        </div>
-    </div>
+    <!-- Grid of chart variants -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-    <!-- Polygon Fill -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Polygon Fill</h2>
-            <p class="text-sm text-muted-foreground">
-                Radar chart with filled polygon area.
-            </p>
+        <!-- Radar Chart -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radar Chart</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadarChart Data="@_monthlyData" IndicatorKey="month" Height="250px">
+                        <BbChartTooltip />
+                        <BbRadar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" FillOpacity="0.6" ShowDots="false" />
+                    </BbRadarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/RadarChart/default.txt" />
         </div>
-        <div class="max-w-lg mx-auto">
-            <ChartContainer>
-                <RadarChart TItem="SkillScore"
-                            Items="@_skillData"
-                            Variant="RadarChartVariant.PolygonFill"
-                            Height="350px">
-                    <ApexPointSeries TItem="SkillScore"
-                                     Items="@_skillData"
-                                     Name="Score"
-                                     SeriesType="SeriesType.Radar"
-                                     XValue="@(item => item.Skill)"
-                                     YValue="@(item => (decimal)item.Score)" />
-                </RadarChart>
-            </ChartContainer>
-        </div>
-    </div>
 
-    <!-- Multi Series -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Multi Series</h2>
-            <p class="text-sm text-muted-foreground">
-                Compare multiple entities across the same dimensions.
-            </p>
+        <!-- Radar Chart - Dots -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radar Chart - Dots</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadarChart Data="@_monthlyData" IndicatorKey="month" Height="250px">
+                        <BbChartTooltip />
+                        <BbRadar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" FillOpacity="0.6" ShowDots="true" />
+                    </BbRadarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/RadarChart/dots.txt" />
         </div>
-        <div class="max-w-lg mx-auto">
-            <ChartContainer>
-                <RadarChart TItem="SkillScore"
-                            Items="@_skillData"
-                            Variant="RadarChartVariant.MultiSeries"
-                            Height="350px">
-                    <ApexPointSeries TItem="SkillScore"
-                                     Items="@_skillData"
-                                     Name="Developer A"
-                                     SeriesType="SeriesType.Radar"
-                                     XValue="@(item => item.Skill)"
-                                     YValue="@(item => (decimal)item.Score)" />
-                    <ApexPointSeries TItem="SkillScore"
-                                     Items="@_skillDataB"
-                                     Name="Developer B"
-                                     SeriesType="SeriesType.Radar"
-                                     XValue="@(item => item.Skill)"
-                                     YValue="@(item => (decimal)item.Score)" />
-                </RadarChart>
-            </ChartContainer>
-        </div>
-    </div>
 
-    <!-- Without Markers -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Without Markers</h2>
-            <p class="text-sm text-muted-foreground">
-                Clean radar without vertex markers.
-            </p>
+        <!-- Radar Chart - Lines Only -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radar Chart - Lines Only</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadarChart Data="@_monthlyData" IndicatorKey="month" Height="250px">
+                        <BbChartTooltip />
+                        <BbRadar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" FillOpacity="0" ShowDots="false" />
+                    </BbRadarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/RadarChart/lines-only.txt" />
         </div>
-        <div class="max-w-lg mx-auto">
-            <ChartContainer>
-                <RadarChart TItem="SkillScore"
-                            Items="@_skillData"
-                            Variant="RadarChartVariant.PolygonFill"
-                            ShowMarkers="false"
-                            Height="350px">
-                    <ApexPointSeries TItem="SkillScore"
-                                     Items="@_skillData"
-                                     Name="Score"
-                                     SeriesType="SeriesType.Radar"
-                                     XValue="@(item => item.Skill)"
-                                     YValue="@(item => (decimal)item.Score)" />
-                </RadarChart>
-            </ChartContainer>
+
+        <!-- Radar Chart - Custom Label -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radar Chart - Custom Label</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadarChart Data="@_monthlyData" Indicators="@_customLabelIndicators" Height="250px">
+                        <BbChartTooltip />
+                        <BbRadar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" FillOpacity="0.6" ShowDots="true" DotSize="6" />
+                    </BbRadarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/RadarChart/custom-label.txt" />
         </div>
+
+        <!-- Radar Chart - Grid Custom -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radar Chart - Grid Custom</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadarChart Data="@_monthlyData" IndicatorKey="month" Height="250px" GridFill="true">
+                        <BbChartTooltip />
+                        <BbRadar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" FillOpacity="0.6" ShowDots="false" />
+                    </BbRadarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/RadarChart/grid-custom.txt" />
+        </div>
+
+        <!-- Radar Chart - Grid None -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radar Chart - Grid None</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadarChart Data="@_monthlyData" IndicatorKey="month" Height="250px"
+                                ShowAxisLines="false" ShowGridLines="false">
+                        <BbChartTooltip />
+                        <BbRadar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" FillOpacity="0.6" ShowDots="false" />
+                    </BbRadarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/RadarChart/grid-none.txt" />
+        </div>
+
+        <!-- Radar Chart - Grid Circle -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radar Chart - Grid Circle</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadarChart Data="@_monthlyData" IndicatorKey="month" Height="250px" Shape="RadarShape.Circle">
+                        <BbChartTooltip />
+                        <BbRadar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" FillOpacity="0.6" ShowDots="false" />
+                    </BbRadarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/RadarChart/grid-circle.txt" />
+        </div>
+
+        <!-- Radar Chart - Grid Circle - No Lines -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radar Chart - Grid Circle - No Lines</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadarChart Data="@_monthlyData" IndicatorKey="month" Height="250px"
+                                Shape="RadarShape.Circle" ShowAxisLines="false">
+                        <BbChartTooltip />
+                        <BbRadar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" FillOpacity="0.6" ShowDots="false" />
+                    </BbRadarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/RadarChart/grid-circle-no-lines.txt" />
+        </div>
+
+        <!-- Radar Chart - Grid Circle Filled -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radar Chart - Grid Circle Filled</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadarChart Data="@_monthlyData" IndicatorKey="month" Height="250px"
+                                Shape="RadarShape.Circle" GridFill="true">
+                        <BbChartTooltip />
+                        <BbRadar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" FillOpacity="0.6" ShowDots="false" />
+                    </BbRadarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/RadarChart/grid-circle-filled.txt" />
+        </div>
+
+        <!-- Radar Chart - Grid Filled -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radar Chart - Grid Filled</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadarChart Data="@_monthlyData" IndicatorKey="month" Height="250px"
+                                GridFill="true" ShowAxisLines="false">
+                        <BbChartTooltip />
+                        <BbRadar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" FillOpacity="0.6" ShowDots="false" />
+                    </BbRadarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/RadarChart/grid-filled.txt" />
+        </div>
+
+        <!-- Radar Chart - Multiple -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radar Chart - Multiple</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadarChart Data="@_monthlyData" IndicatorKey="month" Height="250px">
+                        <BbChartTooltip />
+                        <BbRadar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" FillOpacity="0.5" ShowDots="false" />
+                        <BbRadar DataKey="mobile" Name="Mobile" Color="var(--chart-2)" FillOpacity="0.5" ShowDots="false" />
+                    </BbRadarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/RadarChart/multiple.txt" />
+        </div>
+
+        <!-- Radar Chart - Legend -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radar Chart - Legend</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadarChart Data="@_monthlyData" IndicatorKey="month" Height="250px">
+                        <BbChartTooltip />
+                        <BbChartLegend />
+                        <BbRadar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" FillOpacity="0.5" ShowDots="false" />
+                        <BbRadar DataKey="mobile" Name="Mobile" Color="var(--chart-2)" FillOpacity="0.5" ShowDots="false" />
+                    </BbRadarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/RadarChart/legend.txt" />
+        </div>
+
     </div>
 
     <!-- API Reference -->
     <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">API Reference</h2>
-        </div>
+        <h2 class="text-2xl font-semibold">API Reference</h2>
         <div class="border rounded-lg p-6 space-y-4">
             <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Variant</h3>
+                <h3 class="font-mono text-sm font-semibold mb-2">RadarChart.IndicatorKey</h3>
                 <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">RadarChartVariant</code>
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string</code>
                 </p>
                 <p class="text-sm text-muted-foreground">
-                    Options: Default, PolygonFill, MultiSeries
+                    The property name for category labels on the radar axes.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">ShowMarkers</h3>
+                <h3 class="font-mono text-sm font-semibold mb-2">RadarChart.Shape</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string</code> (default: "polygon")
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    The radar grid shape. Use "polygon" for angular or "circle" for circular.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">RadarChart.ShowAxisLines</h3>
                 <p class="text-sm text-muted-foreground mb-2">
                     Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code> (default: true)
                 </p>
                 <p class="text-sm text-muted-foreground">
-                    Whether to show markers at polygon vertices.
+                    Whether to show the lines from center to each vertex.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">MarkerSize</h3>
+                <h3 class="font-mono text-sm font-semibold mb-2">RadarChart.ShowGridLines</h3>
                 <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">int</code> (default: 4)
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code> (default: true)
                 </p>
                 <p class="text-sm text-muted-foreground">
-                    Size of markers in pixels.
+                    Whether to show the polygon/circle grid lines.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">FillOpacity</h3>
+                <h3 class="font-mono text-sm font-semibold mb-2">RadarChart.GridFill</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code> (default: false)
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    Whether to fill the split areas between grid lines with alternating colors.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">RadarChart.MaxValue</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">double?</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    Maximum value for all radar axes. Applied to auto-generated indicators.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Radar.DataKey</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    The property name for the values to plot on the radar polygon.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Radar.ShowDots</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code> (default: true)
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    Whether to show dot markers at polygon vertices.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Radar.FillOpacity</h3>
                 <p class="text-sm text-muted-foreground mb-2">
                     Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">double</code> (default: 0.25)
                 </p>
                 <p class="text-sm text-muted-foreground">
-                    Opacity of the fill area for filled variants.
+                    Opacity of the filled area (0.0 to 1.0). Set to 0 for lines only.
                 </p>
             </div>
         </div>
@@ -171,29 +422,30 @@
 </div>
 
 @code {
-    public class SkillScore
+    public class MonthlyData
     {
-        public string Skill { get; set; } = "";
-        public int Score { get; set; }
+        public string Month { get; set; } = "";
+        public int Desktop { get; set; }
+        public int Mobile { get; set; }
     }
 
-    private List<SkillScore> _skillData =
+    private readonly List<MonthlyData> _monthlyData =
     [
-        new() { Skill = "HTML", Score = 90 },
-        new() { Skill = "CSS", Score = 85 },
-        new() { Skill = "JavaScript", Score = 80 },
-        new() { Skill = "TypeScript", Score = 75 },
-        new() { Skill = "React", Score = 70 },
-        new() { Skill = "Node.js", Score = 65 }
+        new() { Month = "January", Desktop = 186, Mobile = 80 },
+        new() { Month = "February", Desktop = 305, Mobile = 200 },
+        new() { Month = "March", Desktop = 237, Mobile = 120 },
+        new() { Month = "April", Desktop = 73, Mobile = 190 },
+        new() { Month = "May", Desktop = 209, Mobile = 130 },
+        new() { Month = "June", Desktop = 214, Mobile = 140 }
     ];
 
-    private List<SkillScore> _skillDataB =
+    private readonly EChartsRadarIndicator[] _customLabelIndicators =
     [
-        new() { Skill = "HTML", Score = 75 },
-        new() { Skill = "CSS", Score = 90 },
-        new() { Skill = "JavaScript", Score = 70 },
-        new() { Skill = "TypeScript", Score = 85 },
-        new() { Skill = "React", Score = 80 },
-        new() { Skill = "Node.js", Score = 75 }
+        new() { Name = "{a|186/80}\n{b|January}", Max = 350 },
+        new() { Name = "{a|305/200}\n{b|February}", Max = 350 },
+        new() { Name = "{a|237/120}\n{b|March}", Max = 350 },
+        new() { Name = "{a|73/190}\n{b|April}", Max = 350 },
+        new() { Name = "{a|209/130}\n{b|May}", Max = 350 },
+        new() { Name = "{a|214/140}\n{b|June}", Max = 350 }
     ];
 }

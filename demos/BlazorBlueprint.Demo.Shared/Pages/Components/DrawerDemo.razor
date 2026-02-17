@@ -1,8 +1,4 @@
 @page "/components/drawer"
-@using BlazorBlueprint.Components.Drawer
-@using BlazorBlueprint.Components.Button
-@using BlazorBlueprint.Components.Separator
-
 <PageTitle>Drawer Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -23,28 +19,30 @@
                 A simple drawer that slides up from the bottom.
             </p>
         </div>
-        <Drawer>
-            <DrawerTrigger>
-                <Button Variant="ButtonVariant.Outline">Open Drawer</Button>
-            </DrawerTrigger>
-            <DrawerContent>
-                <DrawerHeader>
-                    <DrawerTitle>Edit Profile</DrawerTitle>
-                    <DrawerDescription>
+        <BbDrawer>
+            <BbDrawerTrigger>
+                <BbButton Variant="ButtonVariant.Outline">Open Drawer</BbButton>
+            </BbDrawerTrigger>
+            <BbDrawerContent>
+                <BbDrawerHeader>
+                    <BbDrawerTitle>Edit Profile</BbDrawerTitle>
+                    <BbDrawerDescription>
                         Make changes to your profile here. Click save when you're done.
-                    </DrawerDescription>
-                </DrawerHeader>
+                    </BbDrawerDescription>
+                </BbDrawerHeader>
                 <div class="p-4">
                     <p class="text-sm text-muted-foreground">Drawer content goes here...</p>
                 </div>
-                <DrawerFooter>
-                    <Button>Save changes</Button>
-                    <DrawerClose>
-                        <Button Variant="ButtonVariant.Outline">Cancel</Button>
-                    </DrawerClose>
-                </DrawerFooter>
-            </DrawerContent>
-        </Drawer>
+                <BbDrawerFooter>
+                    <BbButton>Save changes</BbButton>
+                    <BbDrawerClose>
+                        <BbButton Variant="ButtonVariant.Outline">Cancel</BbButton>
+                    </BbDrawerClose>
+                </BbDrawerFooter>
+            </BbDrawerContent>
+        </BbDrawer>
+
+        <CodeBlock Source="Components/Drawer/basic.txt" />
     </div>
 
     <!-- Different Directions -->
@@ -56,97 +54,167 @@
             </p>
         </div>
         <div class="flex flex-wrap gap-4">
-            <Drawer Direction="DrawerDirection.Top">
-                <DrawerTrigger>
-                    <Button Variant="ButtonVariant.Outline">Top</Button>
-                </DrawerTrigger>
-                <DrawerContent ShowHandle="false">
-                    <DrawerHeader>
-                        <DrawerTitle>Top Drawer</DrawerTitle>
-                        <DrawerDescription>This slides from the top.</DrawerDescription>
-                    </DrawerHeader>
-                    <DrawerFooter>
-                        <DrawerClose>
-                            <Button Variant="ButtonVariant.Outline">Close</Button>
-                        </DrawerClose>
-                    </DrawerFooter>
-                </DrawerContent>
-            </Drawer>
+            <BbDrawer Direction="DrawerDirection.Top">
+                <BbDrawerTrigger>
+                    <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Icon">
+                        <LucideIcon Name="arrow-up" Size="16" />
+                    </BbButton>
+                </BbDrawerTrigger>
+                <BbDrawerContent ShowHandle="false">
+                    <BbDrawerHeader>
+                        <BbDrawerTitle>Top Drawer</BbDrawerTitle>
+                        <BbDrawerDescription>This slides from the top.</BbDrawerDescription>
+                    </BbDrawerHeader>
+                    <BbDrawerFooter>
+                        <BbDrawerClose>
+                            <BbButton Variant="ButtonVariant.Outline">Close</BbButton>
+                        </BbDrawerClose>
+                    </BbDrawerFooter>
+                </BbDrawerContent>
+            </BbDrawer>
 
-            <Drawer Direction="DrawerDirection.Right">
-                <DrawerTrigger>
-                    <Button Variant="ButtonVariant.Outline">Right</Button>
-                </DrawerTrigger>
-                <DrawerContent ShowHandle="false">
-                    <DrawerHeader>
-                        <DrawerTitle>Right Drawer</DrawerTitle>
-                        <DrawerDescription>This slides from the right.</DrawerDescription>
-                    </DrawerHeader>
-                    <DrawerFooter>
-                        <DrawerClose>
-                            <Button Variant="ButtonVariant.Outline">Close</Button>
-                        </DrawerClose>
-                    </DrawerFooter>
-                </DrawerContent>
-            </Drawer>
+            <BbDrawer Direction="DrawerDirection.Right">
+                <BbDrawerTrigger>
+                    <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Icon">
+                        <LucideIcon Name="arrow-right" Size="16" />
+                    </BbButton>
+                </BbDrawerTrigger>
+                <BbDrawerContent ShowHandle="false">
+                    <BbDrawerHeader>
+                        <BbDrawerTitle>Right Drawer</BbDrawerTitle>
+                        <BbDrawerDescription>This slides from the right.</BbDrawerDescription>
+                    </BbDrawerHeader>
+                    <BbDrawerFooter>
+                        <BbDrawerClose>
+                            <BbButton Variant="ButtonVariant.Outline">Close</BbButton>
+                        </BbDrawerClose>
+                    </BbDrawerFooter>
+                </BbDrawerContent>
+            </BbDrawer>
 
-            <Drawer Direction="DrawerDirection.Bottom">
-                <DrawerTrigger>
-                    <Button Variant="ButtonVariant.Outline">Bottom</Button>
-                </DrawerTrigger>
-                <DrawerContent>
-                    <DrawerHeader>
-                        <DrawerTitle>Bottom Drawer</DrawerTitle>
-                        <DrawerDescription>This slides from the bottom (default).</DrawerDescription>
-                    </DrawerHeader>
-                    <DrawerFooter>
-                        <DrawerClose>
-                            <Button Variant="ButtonVariant.Outline">Close</Button>
-                        </DrawerClose>
-                    </DrawerFooter>
-                </DrawerContent>
-            </Drawer>
+            <BbDrawer Direction="DrawerDirection.Bottom">
+                <BbDrawerTrigger>
+                    <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Icon">
+                        <LucideIcon Name="arrow-down" Size="16" />
+                    </BbButton>
+                </BbDrawerTrigger>
+                <BbDrawerContent>
+                    <BbDrawerHeader>
+                        <BbDrawerTitle>Bottom Drawer</BbDrawerTitle>
+                        <BbDrawerDescription>This slides from the bottom (default).</BbDrawerDescription>
+                    </BbDrawerHeader>
+                    <BbDrawerFooter>
+                        <BbDrawerClose>
+                            <BbButton Variant="ButtonVariant.Outline">Close</BbButton>
+                        </BbDrawerClose>
+                    </BbDrawerFooter>
+                </BbDrawerContent>
+            </BbDrawer>
 
-            <Drawer Direction="DrawerDirection.Left">
-                <DrawerTrigger>
-                    <Button Variant="ButtonVariant.Outline">Left</Button>
-                </DrawerTrigger>
-                <DrawerContent ShowHandle="false">
-                    <DrawerHeader>
-                        <DrawerTitle>Left Drawer</DrawerTitle>
-                        <DrawerDescription>This slides from the left.</DrawerDescription>
-                    </DrawerHeader>
-                    <DrawerFooter>
-                        <DrawerClose>
-                            <Button Variant="ButtonVariant.Outline">Close</Button>
-                        </DrawerClose>
-                    </DrawerFooter>
-                </DrawerContent>
-            </Drawer>
+            <BbDrawer Direction="DrawerDirection.Left">
+                <BbDrawerTrigger>
+                    <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Icon">
+                        <LucideIcon Name="arrow-left" Size="16" />
+                    </BbButton>
+                </BbDrawerTrigger>
+                <BbDrawerContent ShowHandle="false">
+                    <BbDrawerHeader>
+                        <BbDrawerTitle>Left Drawer</BbDrawerTitle>
+                        <BbDrawerDescription>This slides from the left.</BbDrawerDescription>
+                    </BbDrawerHeader>
+                    <BbDrawerFooter>
+                        <BbDrawerClose>
+                            <BbButton Variant="ButtonVariant.Outline">Close</BbButton>
+                        </BbDrawerClose>
+                    </BbDrawerFooter>
+                </BbDrawerContent>
+            </BbDrawer>
         </div>
+
+        <CodeBlock Source="Components/Drawer/directions.txt" />
+    </div>
+
+    <!-- Action Sheet -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Action Sheet</h2>
+            <p class="text-sm text-muted-foreground">
+                Use <code class="text-xs bg-muted px-1 py-0.5 rounded">DrawerItem</code> to create mobile-friendly action sheets with styled action buttons.
+            </p>
+        </div>
+        <BbDrawer>
+            <BbDrawerTrigger>
+                <BbButton Variant="ButtonVariant.Outline">Open Action Sheet</BbButton>
+            </BbDrawerTrigger>
+            <BbDrawerContent>
+                <BbDrawerHeader>
+                    <BbDrawerTitle>Actions</BbDrawerTitle>
+                    <BbDrawerDescription>Choose an action to perform.</BbDrawerDescription>
+                </BbDrawerHeader>
+                <div class="px-2 pb-4 space-y-1">
+                    <BbDrawerItem OnClick="@HandleShare">
+                        <Icon>
+                            <LucideIcon Name="share" Size="20" />
+                        </Icon>
+                        <ChildContent>Share</ChildContent>
+                    </BbDrawerItem>
+                    <BbDrawerItem OnClick="@HandleEdit">
+                        <Icon>
+                            <LucideIcon Name="pencil" Size="20" />
+                        </Icon>
+                        <ChildContent>Edit</ChildContent>
+                    </BbDrawerItem>
+                    <BbDrawerItem OnClick="@HandleDuplicate">
+                        <Icon>
+                            <LucideIcon Name="copy" Size="20" />
+                        </Icon>
+                        <ChildContent>Duplicate</ChildContent>
+                    </BbDrawerItem>
+                    <BbDrawerItem Class="text-destructive" OnClick="@HandleDelete">
+                        <Icon>
+                            <LucideIcon Name="trash-2" Size="20" />
+                        </Icon>
+                        <ChildContent>Delete</ChildContent>
+                    </BbDrawerItem>
+                </div>
+            </BbDrawerContent>
+        </BbDrawer>
+
+        <CodeBlock Source="Components/Drawer/action-sheet.txt" />
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Drawer Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Direction:</strong> <code class="bg-muted px-1 py-0.5 rounded">DrawerDirection</code> - Top, Right, Bottom (default), Left</p>
-                    <p><strong>Open:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool?</code> - Controlled open state</p>
-                    <p><strong>DefaultOpen:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Initial open state</p>
-                </div>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">DrawerContent Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>ShowHandle:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Show drag handle. Default: true</p>
-                </div>
-            </div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="Drawer">
+                <ApiParameter Name="Direction" Type="DrawerDirection" Default="Bottom">
+                    Direction the drawer slides from (Top, Right, Bottom, Left).
+                </ApiParameter>
+                <ApiParameter Name="Open" Type="bool?">
+                    Controlled open state.
+                </ApiParameter>
+                <ApiParameter Name="DefaultOpen" Type="bool" Default="false">
+                    Initial open state.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="DrawerContent">
+                <ApiParameter Name="ShowHandle" Type="bool" Default="true">
+                    Show drag handle.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
+
+@code {
+    private void HandleShare() { }
+    private void HandleEdit() { }
+    private void HandleDuplicate() { }
+    private void HandleDelete() { }
+}

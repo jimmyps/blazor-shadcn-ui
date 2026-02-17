@@ -1,0 +1,8 @@
+<BbTooltip>
+    <BbTooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+        Hover me
+    </BbTooltipTrigger>
+    <BbTooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
+        This is a tooltip
+    </BbTooltipContent>
+</BbTooltip>

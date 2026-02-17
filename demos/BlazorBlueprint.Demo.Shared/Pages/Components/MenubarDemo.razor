@@ -1,9 +1,4 @@
 @page "/components/menubar"
-@using BlazorBlueprint.Components.Menubar
-@using BlazorBlueprint.Components.Separator
-@using BlazorBlueprint.Components.Kbd
-@using BlazorBlueprint.Primitives.Services
-@inject IKeyboardShortcutService KeyboardShortcuts
 @implements IAsyncDisposable
 
 <PageTitle>Menubar Component - Blazor Blueprint</PageTitle>
@@ -28,82 +23,82 @@
         </div>
 
         <div class="flex items-start gap-4">
-            <Menubar>
-                <MenubarMenu>
-                    <MenubarTrigger>File</MenubarTrigger>
-                    <MenubarContent>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("New Tab"))">
+            <BbMenubar>
+                <BbMenubarMenu>
+                    <BbMenubarTrigger>File</BbMenubarTrigger>
+                    <BbMenubarContent>
+                        <BbMenubarItem Shortcut="Ctrl+Shift+T" OnClick="@(() => HandleShortcutAction("New Tab"))">
                             New Tab
-                            <MenubarShortcut>Ctrl+Shift+T</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("New Window"))">
+                            <BbMenubarShortcut>Ctrl+Shift+T</BbMenubarShortcut>
+                        </BbMenubarItem>
+                        <BbMenubarItem Shortcut="Ctrl+Shift+N" OnClick="@(() => HandleShortcutAction("New Window"))">
                             New Window
-                            <MenubarShortcut>Ctrl+Shift+N</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Share"))">Share</MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Print"))">
+                            <BbMenubarShortcut>Ctrl+Shift+N</BbMenubarShortcut>
+                        </BbMenubarItem>
+                        <BbMenubarSeparator />
+                        <BbMenubarItem OnClick="@(() => HandleShortcutAction("Share"))">Share</BbMenubarItem>
+                        <BbMenubarSeparator />
+                        <BbMenubarItem Shortcut="Ctrl+Shift+P" OnClick="@(() => HandleShortcutAction("Print"))">
                             Print...
-                            <MenubarShortcut>Ctrl+Shift+P</MenubarShortcut>
-                        </MenubarItem>
-                    </MenubarContent>
-                </MenubarMenu>
-                <MenubarMenu>
-                    <MenubarTrigger>Edit</MenubarTrigger>
-                    <MenubarContent>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Undo"))">
+                            <BbMenubarShortcut>Ctrl+Shift+P</BbMenubarShortcut>
+                        </BbMenubarItem>
+                    </BbMenubarContent>
+                </BbMenubarMenu>
+                <BbMenubarMenu>
+                    <BbMenubarTrigger>Edit</BbMenubarTrigger>
+                    <BbMenubarContent>
+                        <BbMenubarItem Shortcut="Ctrl+Z" OnClick="@(() => HandleShortcutAction("Undo"))">
                             Undo
-                            <MenubarShortcut>Ctrl+Z</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Redo"))">
+                            <BbMenubarShortcut>Ctrl+Z</BbMenubarShortcut>
+                        </BbMenubarItem>
+                        <BbMenubarItem Shortcut="Ctrl+Y" OnClick="@(() => HandleShortcutAction("Redo"))">
                             Redo
-                            <MenubarShortcut>Ctrl+Y</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Find"))">
+                            <BbMenubarShortcut>Ctrl+Y</BbMenubarShortcut>
+                        </BbMenubarItem>
+                        <BbMenubarSeparator />
+                        <BbMenubarItem Shortcut="Ctrl+F" OnClick="@(() => HandleShortcutAction("Find"))">
                             Find
-                            <MenubarShortcut>Ctrl+F</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Replace"))">
+                            <BbMenubarShortcut>Ctrl+F</BbMenubarShortcut>
+                        </BbMenubarItem>
+                        <BbMenubarItem Shortcut="Ctrl+H" OnClick="@(() => HandleShortcutAction("Replace"))">
                             Replace
-                            <MenubarShortcut>Ctrl+H</MenubarShortcut>
-                        </MenubarItem>
-                    </MenubarContent>
-                </MenubarMenu>
-                <MenubarMenu>
-                    <MenubarTrigger>View</MenubarTrigger>
-                    <MenubarContent>
-                        <MenubarLabel>Appearance</MenubarLabel>
-                        <MenubarCheckboxItem @bind-Checked="_showStatusBar">Status Bar</MenubarCheckboxItem>
-                        <MenubarCheckboxItem @bind-Checked="_showActivityBar">Activity Bar</MenubarCheckboxItem>
-                        <MenubarCheckboxItem @bind-Checked="_showSidebar">Sidebar</MenubarCheckboxItem>
-                        <MenubarSeparator />
-                        <MenubarLabel>Zoom</MenubarLabel>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Zoom In"))">
+                            <BbMenubarShortcut>Ctrl+H</BbMenubarShortcut>
+                        </BbMenubarItem>
+                    </BbMenubarContent>
+                </BbMenubarMenu>
+                <BbMenubarMenu>
+                    <BbMenubarTrigger>View</BbMenubarTrigger>
+                    <BbMenubarContent>
+                        <BbMenubarLabel>Appearance</BbMenubarLabel>
+                        <BbMenubarCheckboxItem @bind-Checked="_showStatusBar">Status Bar</BbMenubarCheckboxItem>
+                        <BbMenubarCheckboxItem @bind-Checked="_showActivityBar">Activity Bar</BbMenubarCheckboxItem>
+                        <BbMenubarCheckboxItem @bind-Checked="_showSidebar">Sidebar</BbMenubarCheckboxItem>
+                        <BbMenubarSeparator />
+                        <BbMenubarLabel>Zoom</BbMenubarLabel>
+                        <BbMenubarItem OnClick="@(() => HandleShortcutAction("Zoom In"))">
                             Zoom In
-                            <MenubarShortcut>Ctrl+=</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Zoom Out"))">
+                            <BbMenubarShortcut>Ctrl+=</BbMenubarShortcut>
+                        </BbMenubarItem>
+                        <BbMenubarItem OnClick="@(() => HandleShortcutAction("Zoom Out"))">
                             Zoom Out
-                            <MenubarShortcut>Ctrl+-</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarCheckboxItem @bind-Checked="_fullScreen">Full Screen</MenubarCheckboxItem>
-                    </MenubarContent>
-                </MenubarMenu>
-                <MenubarMenu>
-                    <MenubarTrigger>Help</MenubarTrigger>
-                    <MenubarContent>
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("Documentation"))">
+                            <BbMenubarShortcut>Ctrl+-</BbMenubarShortcut>
+                        </BbMenubarItem>
+                        <BbMenubarSeparator />
+                        <BbMenubarCheckboxItem @bind-Checked="_fullScreen">Full Screen</BbMenubarCheckboxItem>
+                    </BbMenubarContent>
+                </BbMenubarMenu>
+                <BbMenubarMenu>
+                    <BbMenubarTrigger>Help</BbMenubarTrigger>
+                    <BbMenubarContent>
+                        <BbMenubarItem Shortcut="F1" OnClick="@(() => HandleShortcutAction("Documentation"))">
                             Documentation
-                            <MenubarShortcut>F1</MenubarShortcut>
-                        </MenubarItem>
-                        <MenubarSeparator />
-                        <MenubarItem OnClick="@(() => HandleShortcutAction("About"))">About</MenubarItem>
-                    </MenubarContent>
-                </MenubarMenu>
-            </Menubar>
+                            <BbMenubarShortcut>F1</BbMenubarShortcut>
+                        </BbMenubarItem>
+                        <BbMenubarSeparator />
+                        <BbMenubarItem OnClick="@(() => HandleShortcutAction("About"))">About</BbMenubarItem>
+                    </BbMenubarContent>
+                </BbMenubarMenu>
+            </BbMenubar>
 
             @if (!string.IsNullOrEmpty(_shortcutAction))
             {
@@ -118,70 +113,111 @@
             <p class="font-medium mb-3">Available shortcuts:</p>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                 <div class="flex items-center gap-2">
-                    <Kbd Keys="Ctrl+Shift+T" Size="KbdSize.Small" /> <span class="text-muted-foreground">New Tab</span>
+                    <BbKbd Keys="Ctrl+Shift+T" Size="KbdSize.Small" /> <span class="text-muted-foreground">New Tab</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <Kbd Keys="Ctrl+Shift+N" Size="KbdSize.Small" /> <span class="text-muted-foreground">New Window</span>
+                    <BbKbd Keys="Ctrl+Shift+N" Size="KbdSize.Small" /> <span class="text-muted-foreground">New Window</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <Kbd Keys="Ctrl+Z" Size="KbdSize.Small" /> <span class="text-muted-foreground">Undo</span>
+                    <BbKbd Keys="Ctrl+Z" Size="KbdSize.Small" /> <span class="text-muted-foreground">Undo</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <Kbd Keys="Ctrl+Y" Size="KbdSize.Small" /> <span class="text-muted-foreground">Redo</span>
+                    <BbKbd Keys="Ctrl+Y" Size="KbdSize.Small" /> <span class="text-muted-foreground">Redo</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <Kbd Keys="Ctrl+F" Size="KbdSize.Small" /> <span class="text-muted-foreground">Find</span>
+                    <BbKbd Keys="Ctrl+F" Size="KbdSize.Small" /> <span class="text-muted-foreground">Find</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <Kbd Keys="Ctrl+H" Size="KbdSize.Small" /> <span class="text-muted-foreground">Replace</span>
+                    <BbKbd Keys="Ctrl+H" Size="KbdSize.Small" /> <span class="text-muted-foreground">Replace</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <Kbd Keys="F1" Size="KbdSize.Small" /> <span class="text-muted-foreground">Documentation</span>
+                    <BbKbd Keys="F1" Size="KbdSize.Small" /> <span class="text-muted-foreground">Documentation</span>
                 </div>
             </div>
         </div>
+
+        <CodeBlock Source="Components/Menubar/example.txt" />
+    </div>
+
+    <!-- Custom Trigger Styling -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Custom Trigger Styling</h2>
+            <p class="text-sm text-muted-foreground">
+                Use <code class="bg-muted px-1 py-0.5 rounded">TriggerClass</code> on the <code class="bg-muted px-1 py-0.5 rounded">Menubar</code> to style all triggers at once instead of adding <code class="bg-muted px-1 py-0.5 rounded">Class</code> to each <code class="bg-muted px-1 py-0.5 rounded">MenubarTrigger</code>.
+            </p>
+        </div>
+        <div class="space-y-3">
+            <BbMenubar TriggerClass="font-bold text-primary">
+                <BbMenubarMenu>
+                    <BbMenubarTrigger>File</BbMenubarTrigger>
+                    <BbMenubarContent>
+                        <BbMenubarItem>New</BbMenubarItem>
+                        <BbMenubarItem>Open</BbMenubarItem>
+                        <BbMenubarItem>Save</BbMenubarItem>
+                    </BbMenubarContent>
+                </BbMenubarMenu>
+                <BbMenubarMenu>
+                    <BbMenubarTrigger>Edit</BbMenubarTrigger>
+                    <BbMenubarContent>
+                        <BbMenubarItem>Undo</BbMenubarItem>
+                        <BbMenubarItem>Redo</BbMenubarItem>
+                    </BbMenubarContent>
+                </BbMenubarMenu>
+                <BbMenubarMenu>
+                    <BbMenubarTrigger>View</BbMenubarTrigger>
+                    <BbMenubarContent>
+                        <BbMenubarItem>Zoom In</BbMenubarItem>
+                        <BbMenubarItem>Zoom Out</BbMenubarItem>
+                    </BbMenubarContent>
+                </BbMenubarMenu>
+            </BbMenubar>
+        </div>
+
+        <CodeBlock Source="Components/Menubar/custom-trigger-styling.txt" />
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-semibold mb-2">Components</h3>
-                <div class="space-y-2 text-sm">
-                    <p><code class="bg-muted px-1 py-0.5 rounded">Menubar</code> - Root container</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarMenu</code> - Individual menu</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarTrigger</code> - Menu button</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarContent</code> - Dropdown content</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarItem</code> - Menu item</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarCheckboxItem</code> - Toggleable menu item</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarLabel</code> - Section label</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarSeparator</code> - Visual divider</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">MenubarShortcut</code> - Keyboard shortcut hint</p>
-                </div>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">MenubarItem Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>OnClick:</strong> <code class="bg-muted px-1 py-0.5 rounded">EventCallback</code> - Click handler</p>
-                    <p><strong>Disabled:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disables the item</p>
-                    <p><strong>Inset:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Adds left padding</p>
-                </div>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">MenubarCheckboxItem Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Checked:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Whether the item is checked</p>
-                    <p><strong>CheckedChanged:</strong> <code class="bg-muted px-1 py-0.5 rounded">EventCallback&lt;bool&gt;</code> - Callback when checked state changes</p>
-                    <p><strong>Disabled:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disables the item</p>
-                </div>
-            </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="Menubar">
+                <ApiParameter Name="TriggerClass" Type="string?" Default="null">
+                    CSS classes to apply to all MenubarTrigger components.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="MenubarItem">
+                <ApiParameter Name="OnClick" Type="EventCallback" Default="default">
+                    Click handler for the menu item.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the menu item is disabled.
+                </ApiParameter>
+                <ApiParameter Name="Inset" Type="bool" Default="false">
+                    Adds left padding to align with items that have icons.
+                </ApiParameter>
+                <ApiParameter Name="Shortcut" Type="string?" Default="null">
+                    Keyboard shortcut to auto-register globally (e.g., "Ctrl+N", "F1").
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="MenubarCheckboxItem">
+                <ApiParameter Name="Checked" Type="bool" Default="false">
+                    Whether the checkbox item is checked.
+                </ApiParameter>
+                <ApiParameter Name="CheckedChanged" Type="EventCallback<bool>" Default="default">
+                    Callback invoked when the checked state changes.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the checkbox item is disabled.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {
@@ -193,32 +229,7 @@
     private bool _showSidebar = false;
     private bool _fullScreen = false;
 
-    // Keyboard shortcut registrations
-    private IDisposable? _shortcutNewTab;
-    private IDisposable? _shortcutNewWindow;
-    private IDisposable? _shortcutPrint;
-    private IDisposable? _shortcutUndo;
-    private IDisposable? _shortcutRedo;
-    private IDisposable? _shortcutFind;
-    private IDisposable? _shortcutReplace;
-    private IDisposable? _shortcutDocs;
     private CancellationTokenSource? _clearCts;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            // Register keyboard shortcuts
-            _shortcutNewTab = await KeyboardShortcuts.RegisterAsync("Ctrl+Shift+T", () => HandleShortcutAsync("New Tab"));
-            _shortcutNewWindow = await KeyboardShortcuts.RegisterAsync("Ctrl+Shift+N", () => HandleShortcutAsync("New Window"));
-            _shortcutPrint = await KeyboardShortcuts.RegisterAsync("Ctrl+Shift+P", () => HandleShortcutAsync("Print"));
-            _shortcutUndo = await KeyboardShortcuts.RegisterAsync("Ctrl+Z", () => HandleShortcutAsync("Undo"));
-            _shortcutRedo = await KeyboardShortcuts.RegisterAsync("Ctrl+Y", () => HandleShortcutAsync("Redo"));
-            _shortcutFind = await KeyboardShortcuts.RegisterAsync("Ctrl+F", () => HandleShortcutAsync("Find"));
-            _shortcutReplace = await KeyboardShortcuts.RegisterAsync("Ctrl+H", () => HandleShortcutAsync("Replace"));
-            _shortcutDocs = await KeyboardShortcuts.RegisterAsync("F1", () => HandleShortcutAsync("Documentation"));
-        }
-    }
 
     private async Task HandleShortcutAsync(string action)
     {
@@ -251,14 +262,6 @@
     {
         _clearCts?.Cancel();
         _clearCts?.Dispose();
-        _shortcutNewTab?.Dispose();
-        _shortcutNewWindow?.Dispose();
-        _shortcutPrint?.Dispose();
-        _shortcutUndo?.Dispose();
-        _shortcutRedo?.Dispose();
-        _shortcutFind?.Dispose();
-        _shortcutReplace?.Dispose();
-        _shortcutDocs?.Dispose();
         return ValueTask.CompletedTask;
     }
 }

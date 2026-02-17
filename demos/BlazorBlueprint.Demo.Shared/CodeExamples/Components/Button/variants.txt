@@ -1,0 +1,6 @@
+<BbButton Variant="ButtonVariant.Default">Default</BbButton>
+<BbButton Variant="ButtonVariant.Destructive">Destructive</BbButton>
+<BbButton Variant="ButtonVariant.Outline">Outline</BbButton>
+<BbButton Variant="ButtonVariant.Secondary">Secondary</BbButton>
+<BbButton Variant="ButtonVariant.Ghost">Ghost</BbButton>
+<BbButton Variant="ButtonVariant.Link">Link</BbButton>

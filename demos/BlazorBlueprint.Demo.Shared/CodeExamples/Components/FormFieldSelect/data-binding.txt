@@ -1,0 +1,11 @@
+// Value = Label: use SelectOption.FromValue
+private static readonly string[] Fruits = ["Apple", "Banana", "Cherry", "Grape"];
+private readonly SelectOption<string>[] _fruitOptions =
+    Fruits.Select(SelectOption.FromValue).ToArray();
+
+<BbFormFieldSelect TValue="string"
+                 @bind-Value="_fruitDataBound"
+                 Label="Favorite fruit"
+                 Placeholder="Select a fruit..."
+                 HelperText="Pick one from the list."
+                 Options="@_fruitOptions" />

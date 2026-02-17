@@ -1,0 +1,203 @@
+@namespace BlazorBlueprint.Components
+@implements IDisposable
+
+<div class="@CssClass">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         width="24"
+         height="24"
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         class="mr-2 h-4 w-4 shrink-0 opacity-50">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+    </svg>
+    <input @ref="_inputRef"
+           type="text"
+           placeholder="@Placeholder"
+           disabled="@Disabled"
+           value="@_displayValue"
+           @oninput="HandleInput"
+           @onkeydown="HandleKeyDown"
+           class="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 ml-2"
+           role="combobox"
+           aria-autocomplete="list"
+           aria-expanded="true"
+           aria-controls="@Context?.ListId" />
+</div>
+
+@code {
+    private CancellationTokenSource? _debounceCts;
+    private string _displayValue = string.Empty;
+    private bool _isDebouncing;
+
+    [CascadingParameter]
+    public CommandContext? Context { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional CSS classes to apply to the input container.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Gets or sets the placeholder text for the input.
+    /// </summary>
+    [Parameter]
+    public string Placeholder { get; set; } = "Type a command or search...";
+
+    /// <summary>
+    /// Gets or sets whether the input is disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the input should auto-focus when rendered.
+    /// </summary>
+    [Parameter]
+    public bool AutoFocus { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether debounce is disabled. When false (default), input is debounced.
+    /// </summary>
+    [Parameter]
+    public bool DisableDebounce { get; set; }
+
+    /// <summary>
+    /// Gets or sets the debounce delay in milliseconds. Default is 500 ms.
+    /// </summary>
+    [Parameter]
+    public int DebounceInterval { get; set; } = 500;
+
+    private ElementReference _inputRef;
+    private bool _previousAutoFocus;
+    private bool _shouldFocus;
+
+    /// <summary>
+    /// Focuses the input element.
+    /// </summary>
+    public async Task FocusAsync()
+    {
+        try
+        {
+            await _inputRef.FocusAsync();
+        }
+        catch
+        {
+            // Ignore focus errors (element may not be ready)
+        }
+    }
+
+    /// <summary>
+    /// Gets the computed CSS classes for the input container.
+    /// </summary>
+    private string CssClass => ClassNames.cn(
+        "flex items-center border-b border-border px-3",
+        Class
+    );
+
+    protected override void OnParametersSet()
+    {
+        // Check if AutoFocus changed from false to true
+        if (AutoFocus && !_previousAutoFocus)
+        {
+            _shouldFocus = true;
+        }
+        _previousAutoFocus = AutoFocus;
+
+        // Sync display value from context when not actively debouncing
+        if (!_isDebouncing)
+        {
+            _displayValue = Context?.SearchQuery ?? string.Empty;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Focus when AutoFocus becomes true (either on first render or when popover opens)
+        if (_shouldFocus)
+        {
+            _shouldFocus = false;
+            try
+            {
+                // Small delay to ensure the element is ready in the DOM (especially after portal rendering)
+                await Task.Delay(50);
+                await _inputRef.FocusAsync();
+            }
+            catch
+            {
+                // Ignore focus errors
+            }
+        }
+    }
+
+    private void HandleInput(ChangeEventArgs args)
+    {
+        var value = args.Value?.ToString() ?? string.Empty;
+        _displayValue = value;
+
+        if (DisableDebounce)
+        {
+            Context?.SetSearchQuery(value);
+        }
+        else
+        {
+            _isDebouncing = true;
+            DebounceSetSearchQuery(value);
+        }
+    }
+
+    private async void DebounceSetSearchQuery(string value)
+    {
+        _debounceCts?.Cancel();
+        _debounceCts?.Dispose();
+        _debounceCts = new CancellationTokenSource();
+
+        try
+        {
+            await Task.Delay(DebounceInterval, _debounceCts.Token);
+
+            _isDebouncing = false;
+            Context?.SetSearchQuery(value);
+        }
+        catch (TaskCanceledException)
+        {
+            // Timer was cancelled — either by a new keystroke or disposal.
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs args)
+    {
+        if (Context == null) return;
+
+        switch (args.Key)
+        {
+            case "ArrowDown":
+                await Context.MoveFocusAsync(1);
+                break;
+            case "ArrowUp":
+                await Context.MoveFocusAsync(-1);
+                break;
+            case "Home":
+                await Context.FocusFirstAsync();
+                break;
+            case "End":
+                await Context.FocusLastAsync();
+                break;
+            case "Enter":
+                await Context.SelectFocusedItemAsync();
+                break;
+        }
+    }
+
+    public void Dispose()
+    {
+        _debounceCts?.Cancel();
+        _debounceCts?.Dispose();
+        GC.SuppressFinalize(this);
+    }
+}

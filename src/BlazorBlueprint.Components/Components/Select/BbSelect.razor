@@ -1,0 +1,163 @@
+@typeparam TValue
+@namespace BlazorBlueprint.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Linq.Expressions
+@attribute [CascadingTypeParameter(nameof(TValue))]
+
+@* Styled Select wrapper around Select *@
+<BlazorBlueprint.Primitives.Select.BbSelect TValue="TValue"
+                 Value="@Value"
+                 ValueChanged="@HandleValueChanged"
+                 @bind-Open="IsOpen"
+                 Disabled="Disabled"
+                 DisplayTextSelector="@GetDisplayTextSelector()"
+                 class="@CssClass">
+    @if (Options is not null)
+    {
+        <BbSelectTrigger TValue="TValue">
+            <BbSelectValue Placeholder="@Placeholder" />
+        </BbSelectTrigger>
+        <BbSelectContent TValue="TValue">
+            @foreach (var option in Options)
+            {
+                <BbSelectItem TValue="TValue" Value="@option.Value" Text="@option.Text" />
+            }
+        </BbSelectContent>
+    }
+    else
+    {
+        @ChildContent
+    }
+</BlazorBlueprint.Primitives.Select.BbSelect>
+
+@code {
+    private FieldIdentifier _fieldIdentifier;
+    private EditContext? _editContext;
+
+    /// <summary>
+    /// Gets or sets the cascaded EditContext from a parent EditForm.
+    /// </summary>
+    [CascadingParameter]
+    private EditContext? CascadedEditContext { get; set; }
+    /// <summary>
+    /// Gets or sets the currently selected value.
+    /// </summary>
+    [Parameter]
+    public TValue? Value { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the selected value changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<TValue?> ValueChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    [Parameter]
+    public Expression<Func<TValue?>>? ValueExpression { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the select is disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the dropdown is open (controlled mode).
+    /// </summary>
+    [Parameter]
+    public bool? Open { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the open state changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<bool> OpenChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional CSS classes to apply to the select container.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Optional function to derive display text from a value.
+    /// In compositional mode, controls the trigger display for pre-selected values.
+    /// Ignored when <see cref="Options"/> is provided (text is looked up from the collection).
+    /// Falls back to <c>ToString()</c> when null.
+    /// </summary>
+    [Parameter]
+    public Func<TValue, string>? DisplayTextSelector { get; set; }
+
+    /// <summary>
+    /// Gets or sets the collection of value/label pairs to display.
+    /// Each option contains a value (bound on selection) and display text (shown in the dropdown and trigger).
+    /// When provided, the component auto-generates the trigger, value display, and dropdown content.
+    /// Takes priority over <see cref="ChildContent"/>.
+    /// </summary>
+    [Parameter]
+    public IEnumerable<SelectOption<TValue>>? Options { get; set; }
+
+    /// <summary>
+    /// Gets or sets the placeholder text displayed when no value is selected.
+    /// Used in data-binding mode (Options). In compositional mode, set the placeholder
+    /// on the SelectValue component directly.
+    /// </summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// Gets or sets the content to be rendered inside the select component.
+    /// Should contain SelectTrigger and SelectContent components.
+    /// Ignored when Options is provided.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private bool IsOpen { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (CascadedEditContext != null && ValueExpression != null)
+        {
+            _editContext = CascadedEditContext;
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+        }
+    }
+
+    private async Task HandleValueChanged(TValue? value)
+    {
+        Value = value;
+        await ValueChanged.InvokeAsync(value);
+
+        if (_editContext != null && ValueExpression != null && _fieldIdentifier.FieldName != null)
+        {
+            _editContext.NotifyFieldChanged(_fieldIdentifier);
+        }
+    }
+
+    /// <summary>
+    /// Returns a display text selector for the primitives layer.
+    /// Options mode: looks up text from the Options collection.
+    /// Compositional mode: passes through DisplayTextSelector as-is.
+    /// </summary>
+    private Func<TValue, string>? GetDisplayTextSelector()
+    {
+        if (Options is not null)
+        {
+            return v => Options
+                .FirstOrDefault(o => EqualityComparer<TValue>.Default.Equals(o.Value, v))
+                ?.Text ?? v?.ToString() ?? "";
+        }
+
+        return DisplayTextSelector;
+    }
+
+    /// <summary>
+    /// Gets the computed CSS classes for the select container.
+    /// </summary>
+    private string CssClass => ClassNames.cn("relative", Class);
+}

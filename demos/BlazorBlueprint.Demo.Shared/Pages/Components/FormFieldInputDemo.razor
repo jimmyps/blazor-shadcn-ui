@@ -1,9 +1,4 @@
 @page "/components/form-field-input"
-@using BlazorBlueprint.Components.FormFieldInput
-@using BlazorBlueprint.Components.InputField
-@using BlazorBlueprint.Components.Input
-@using BlazorBlueprint.Components.Button
-@using BlazorBlueprint.Components.Converters
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>FormFieldInput Component - Blazor Blueprint</PageTitle>
@@ -15,32 +10,6 @@
             <p class="text-xl text-muted-foreground">
                 An opinionated form field with built-in label, helper text, and automatic error messages.
             </p>
-        </div>
-    </div>
-
-    <!-- When to use -->
-    <div class="rounded-lg border bg-card p-6 space-y-4">
-        <h2 class="text-lg font-semibold">When to use FormFieldInput</h2>
-        <p class="text-sm text-muted-foreground">
-            Use <code class="text-xs bg-muted px-1 py-0.5 rounded">FormFieldInput&lt;TValue&gt;</code> when you want a complete,
-            ready-to-use form field with label, helper text, and automatic error display. It composes
-            <a href="/components/input-field" class="text-primary underline underline-offset-4 hover:text-primary/80">InputField&lt;TValue&gt;</a>
-            with the <a href="/components/field" class="text-primary underline underline-offset-4 hover:text-primary/80">Field</a> component system
-            so you don't have to wire them up manually.
-        </p>
-        <div class="rounded-md border border-dashed p-4 space-y-1.5">
-            <p class="text-sm font-medium">Example scenario</p>
-            <p class="text-sm text-muted-foreground">
-                You're building a user registration form with Name, Age, and Email fields.
-                Each field needs a label, helper text, and user-friendly error messages when
-                validation fails. Instead of wiring up Field + FieldLabel + InputField + FieldDescription +
-                FieldError for each one, you drop in a single
-                <code class="text-xs bg-muted px-1 py-0.5 rounded">FormFieldInput</code> tag per field and
-                get all of that automatically.
-            </p>
-        </div>
-        <div class="bg-muted rounded-md p-4 space-y-2">
-            <pre class="text-sm font-mono whitespace-pre-wrap">&lt;FormFieldInput TValue="int" @("@")bind-Value="age" Label="Age" HelperText="Must be 18 or older" /&gt;</pre>
         </div>
     </div>
 
@@ -68,7 +37,7 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldInput TValue="string"
+            <BbFormFieldInput TValue="string"
                        @bind-Value="_name"
                        Label="Full Name"
                        HelperText="Enter your first and last name."
@@ -78,6 +47,7 @@
             <p class="text-sm font-medium mb-1">Current value:</p>
             <p class="text-sm font-mono">@(string.IsNullOrEmpty(_name) ? "(empty)" : _name)</p>
         </div>
+        <CodeBlock Source="Components/FormFieldInput/basic.txt" />
     </div>
 
     <!-- Auto Error Messages -->
@@ -91,7 +61,7 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldInput TValue="int"
+            <BbFormFieldInput TValue="int"
                        @bind-Value="_age"
                        Label="Age"
                        HelperText="Must be between 1 and 100."
@@ -102,6 +72,7 @@
             <p class="text-sm font-medium mb-1">Current value:</p>
             <p class="text-sm font-mono">@_age</p>
         </div>
+        <CodeBlock Source="Components/FormFieldInput/auto-errors.txt" />
     </div>
 
     <!-- Custom Error Text -->
@@ -114,7 +85,7 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldInput TValue="decimal"
+            <BbFormFieldInput TValue="decimal"
                        @bind-Value="_price"
                        Label="Price"
                        HelperText="Enter the product price in USD."
@@ -126,6 +97,7 @@
             <p class="text-sm font-medium mb-1">Current value:</p>
             <p class="text-sm font-mono">@_price</p>
         </div>
+        <CodeBlock Source="Components/FormFieldInput/custom-error.txt" />
     </div>
 
     <!-- Email with Pattern Validation -->
@@ -138,7 +110,7 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldInput TValue="string"
+            <BbFormFieldInput TValue="string"
                        @bind-Value="_email"
                        Label="Email Address"
                        HelperText="We'll never share your email with anyone else."
@@ -150,6 +122,7 @@
             <p class="text-sm font-medium mb-1">Current value:</p>
             <p class="text-sm font-mono">@(string.IsNullOrEmpty(_email) ? "(empty)" : _email)</p>
         </div>
+        <CodeBlock Source="Components/FormFieldInput/pattern.txt" />
     </div>
 
     <!-- Nullable DateTime -->
@@ -161,7 +134,7 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldInput TValue="DateTime?"
+            <BbFormFieldInput TValue="DateTime?"
                        @bind-Value="_birthDate"
                        Label="Date of Birth"
                        HelperText="Optional. Used for age verification."
@@ -172,6 +145,7 @@
             <p class="text-sm font-medium mb-1">Current value:</p>
             <p class="text-sm font-mono">@(_birthDate?.ToString("yyyy-MM-dd") ?? "(null)")</p>
         </div>
+        <CodeBlock Source="Components/FormFieldInput/nullable-datetime.txt" />
     </div>
 
     <!-- Required Field -->
@@ -184,7 +158,7 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldInput TValue="string"
+            <BbFormFieldInput TValue="string"
                        @bind-Value="_username"
                        Label="Username"
                        HelperText="Required. Choose a unique username."
@@ -195,6 +169,7 @@
             <p class="text-sm font-medium mb-1">Current value:</p>
             <p class="text-sm font-mono">@(string.IsNullOrEmpty(_username) ? "(empty)" : _username)</p>
         </div>
+        <CodeBlock Source="Components/FormFieldInput/required.txt" />
     </div>
 
     <!-- Disabled Field -->
@@ -206,12 +181,13 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldInput TValue="string"
+            <BbFormFieldInput TValue="string"
                        Value="@("readonly@example.com")"
                        Label="Email (locked)"
                        HelperText="Contact support to change your email."
                        Disabled="true" />
         </div>
+        <CodeBlock Source="Components/FormFieldInput/disabled.txt" />
     </div>
 
     <!-- Multiple Fields (Form Example) -->
@@ -223,18 +199,18 @@
             </p>
         </div>
         <div class="max-w-md space-y-4">
-            <FormFieldInput TValue="string"
+            <BbFormFieldInput TValue="string"
                        @bind-Value="_formName"
                        Label="Name"
                        Required="true"
                        Placeholder="Jane Smith" />
-            <FormFieldInput TValue="string"
+            <BbFormFieldInput TValue="string"
                        @bind-Value="_formEmail"
                        Label="Email"
                        Type="InputType.Email"
                        Required="true"
                        Placeholder="jane@example.com" />
-            <FormFieldInput TValue="int"
+            <BbFormFieldInput TValue="int"
                        @bind-Value="_formAge"
                        Label="Age"
                        HelperText="Must be 18 or older."
@@ -249,6 +225,7 @@
                 <p>Age: @_formAge</p>
             </div>
         </div>
+        <CodeBlock Source="Components/FormFieldInput/form.txt" />
     </div>
 
     <!-- EditForm Integration -->
@@ -266,25 +243,25 @@
         <div class="max-w-md">
             <EditForm Model="_editFormModel" OnValidSubmit="HandleEditFormSubmit" class="space-y-4">
                 <DataAnnotationsValidator />
-                <FormFieldInput TValue="string"
+                <BbFormFieldInput TValue="string"
                            @bind-Value="_editFormModel.FullName"
                            Label="Full Name"
                            HelperText="Required. Enter your first and last name."
                            Placeholder="Jane Smith" />
-                <FormFieldInput TValue="int"
+                <BbFormFieldInput TValue="int"
                            @bind-Value="_editFormModel.Age"
                            Label="Age"
                            HelperText="Must be between 1 and 120."
                            Placeholder="25" />
-                <FormFieldInput TValue="string"
+                <BbFormFieldInput TValue="string"
                            @bind-Value="_editFormModel.Email"
                            Label="Email"
                            HelperText="We'll use this to contact you."
                            Type="InputType.Email"
                            Placeholder="jane@example.com" />
                 <div class="flex gap-2">
-                    <Button Type="ButtonType.Submit">Submit</Button>
-                    <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetEditForm">Reset</Button>
+                    <BbButton Type="ButtonType.Submit">Submit</BbButton>
+                    <BbButton Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetEditForm">Reset</BbButton>
                 </div>
             </EditForm>
         </div>
@@ -299,45 +276,88 @@
                 </div>
             </div>
         }
+        <CodeBlock Source="Components/FormFieldInput/edit-form.txt" />
     </div>
 
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Automatically associates label with input via generated ID</AccessibilityItem>
+            <AccessibilityItem>Description linked via aria-describedby</AccessibilityItem>
+            <AccessibilityItem>Validation errors displayed with aria-invalid</AccessibilityItem>
+        </AriaAttributes>
+    </AccessibilityList>
+
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">FormFieldInput&lt;TValue&gt; Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Label:</strong> <code class="bg-muted px-1 py-0.5 rounded">string?</code> - Label text displayed above the input.</p>
-                    <p><strong>HelperText:</strong> <code class="bg-muted px-1 py-0.5 rounded">string?</code> - Helper text below the input. Hidden during error state.</p>
-                    <p><strong>ErrorText:</strong> <code class="bg-muted px-1 py-0.5 rounded">string?</code> - Manual error text override. When set, replaces auto-generated messages.</p>
-                    <p><strong>Orientation:</strong> <code class="bg-muted px-1 py-0.5 rounded">FieldOrientation</code> - Layout direction. Default: Vertical.</p>
-                    <p><strong>Class:</strong> <code class="bg-muted px-1 py-0.5 rounded">string?</code> - CSS classes for the outer Field container.</p>
-                    <p><strong>InputClass:</strong> <code class="bg-muted px-1 py-0.5 rounded">string?</code> - CSS classes for the inner InputField element.</p>
-                </div>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Pass-Through Parameters</h3>
-                <div class="space-y-2 text-sm text-muted-foreground">
-                    <p>All <code class="bg-muted px-1 py-0.5 rounded">InputField&lt;TValue&gt;</code> parameters are available: Value, Converter, Format, Type, Placeholder, Disabled, Required, Validation, ValidationPattern, UpdateTiming, DebounceInterval, AriaLabel, OnParseError, OnErrorCleared, ValueExpression, Name.</p>
-                    <p>Inside an <code class="bg-muted px-1 py-0.5 rounded">EditForm</code>, DataAnnotations validation messages are displayed automatically. Parse errors take priority over DataAnnotations errors.</p>
-                </div>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Auto Error Messages</h3>
-                <div class="space-y-2 text-sm text-muted-foreground">
-                    <p><strong>Parse error:</strong> "'abc' is not a valid whole number."</p>
-                    <p><strong>Pattern validation:</strong> "'invalid' does not match the required format."</p>
-                    <p><strong>Value validation:</strong> "The entered value is not valid."</p>
-                    <p>Override with <code class="bg-muted px-1 py-0.5 rounded">ErrorText</code> for domain-specific messages.</p>
-                </div>
-            </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="FormFieldInput&lt;TValue&gt;">
+                <ApiParameter Name="Label" Type="string?" Default="null">
+                    The label text displayed above the input.
+                </ApiParameter>
+                <ApiParameter Name="HelperText" Type="string?" Default="null">
+                    Helper text displayed below the input. Hidden during error state.
+                </ApiParameter>
+                <ApiParameter Name="ErrorText" Type="string?" Default="null">
+                    Manual error text override. When the field is invalid and this is set, replaces auto-generated messages.
+                </ApiParameter>
+                <ApiParameter Name="Orientation" Type="FieldOrientation" Default="Vertical">
+                    Layout orientation of the field.
+                </ApiParameter>
+                <ApiParameter Name="Value" Type="TValue?" Default="null">
+                    The current typed value. Use @@bind-Value for two-way binding.
+                </ApiParameter>
+                <ApiParameter Name="ValueChanged" Type="EventCallback&lt;TValue?&gt;">
+                    Callback invoked when the typed value changes.
+                </ApiParameter>
+                <ApiParameter Name="Type" Type="InputType" Default="Text">
+                    The type of input (Text, Email, Password, Date, etc.).
+                </ApiParameter>
+                <ApiParameter Name="Placeholder" Type="string?" Default="null">
+                    Placeholder text displayed when the input is empty.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the input is disabled.
+                </ApiParameter>
+                <ApiParameter Name="Required" Type="bool" Default="false">
+                    Whether the input is required (sets the HTML required attribute).
+                </ApiParameter>
+                <ApiParameter Name="Validation" Type="Func&lt;TValue, bool&gt;?" Default="null">
+                    Post-parse validation function. Returns true if the value is valid.
+                </ApiParameter>
+                <ApiParameter Name="ValidationPattern" Type="string?" Default="null">
+                    Regex pattern for pre-parse validation.
+                </ApiParameter>
+                <ApiParameter Name="Format" Type="string?" Default="null">
+                    Display format string (e.g., "N2", "yyyy-MM-dd").
+                </ApiParameter>
+                <ApiParameter Name="Converter" Type="InputConverter&lt;TValue&gt;?" Default="null">
+                    Optional custom converter for value parsing and formatting.
+                </ApiParameter>
+                <ApiParameter Name="UpdateTiming" Type="UpdateTiming" Default="Immediate">
+                    When ValueChanged fires (Immediate or Debounced).
+                </ApiParameter>
+                <ApiParameter Name="DebounceInterval" Type="int" Default="500">
+                    Debounce delay in milliseconds when using Debounced update timing.
+                </ApiParameter>
+                <ApiParameter Name="InputClass" Type="string?" Default="null">
+                    Additional CSS classes applied to the inner InputField element.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes applied to the outer Field container.
+                </ApiParameter>
+                <ApiParameter Name="AriaLabel" Type="string?" Default="null">
+                    ARIA label for the control.
+                </ApiParameter>
+                <ApiParameter Name="Name" Type="string?" Default="null">
+                    HTML name attribute passed through to the inner InputField.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {

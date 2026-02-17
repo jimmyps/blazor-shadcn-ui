@@ -1,0 +1,19 @@
+<BbDialog>
+    <BbDialogTrigger class="px-3 py-2 border rounded text-sm">
+        Open Dialog
+    </BbDialogTrigger>
+    <BbDialogPortal>
+        <BbDialogOverlay class="fixed inset-0 bg-black/50 z-50" />
+        <BbDialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
+            <BbDialogTitle class="text-lg font-semibold mb-2">
+                Dialog Title
+            </BbDialogTitle>
+            <BbDialogDescription class="text-sm text-muted-foreground mb-4">
+                This is a basic dialog using the unstyled primitive components.
+            </BbDialogDescription>
+            <BbDialogClose class="px-3 py-2 border rounded text-sm">
+                Close
+            </BbDialogClose>
+        </BbDialogContent>
+    </BbDialogPortal>
+</BbDialog>

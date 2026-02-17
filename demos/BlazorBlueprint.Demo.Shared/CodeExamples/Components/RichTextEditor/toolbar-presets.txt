@@ -1,0 +1,15 @@
+<BbRichTextEditor @bind-Value="simpleValue"
+                Toolbar="ToolbarPreset.Simple"
+                Placeholder="Basic formatting only..." />
+
+<BbRichTextEditor @bind-Value="standardValue"
+                Toolbar="ToolbarPreset.Standard"
+                Placeholder="Common formatting options..." />
+
+<BbRichTextEditor @bind-Value="fullValue"
+                Toolbar="ToolbarPreset.Full"
+                Placeholder="All formatting options..." />
+
+<BbRichTextEditor @bind-Value="noToolbarValue"
+                Toolbar="ToolbarPreset.None"
+                Placeholder="Plain editor without toolbar..." />

@@ -1,0 +1,20 @@
+<div class="flex items-center space-x-2">
+    <BbCheckbox Checked="@_selectAllChecked"
+              CheckedChanged="HandleSelectAllChanged"
+              Indeterminate="@_selectAllIndeterminate"
+              Id="select-all" />
+    <label for="select-all" class="text-sm font-semibold leading-none">
+        Select all
+    </label>
+</div>
+<div class="ml-6 space-y-3">
+    <div class="flex items-center space-x-2">
+        <BbCheckbox Checked="@_itemRead"
+                  CheckedChanged="@(v => { _itemRead = v; UpdateSelectAll(); })"
+                  Id="item-read" />
+        <label for="item-read" class="text-sm font-medium leading-none">
+            Read
+        </label>
+    </div>
+    @* ... more items *@
+</div>

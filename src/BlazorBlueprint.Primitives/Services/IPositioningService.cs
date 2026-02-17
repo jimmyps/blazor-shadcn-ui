@@ -73,10 +73,11 @@ public class PositioningOptions
     public int Padding { get; set; } = 8;
 
     /// <summary>
-    /// Positioning strategy: "absolute" or "fixed".
-    /// Absolute positions relative to offset parent, fixed relative to viewport.
+    /// Positioning strategy for the floating element.
+    /// <see cref="PositioningStrategy.Absolute"/> positions relative to offset parent,
+    /// <see cref="PositioningStrategy.Fixed"/> positions relative to viewport.
     /// </summary>
-    public string Strategy { get; set; } = "absolute";
+    public PositioningStrategy Strategy { get; set; } = PositioningStrategy.Absolute;
 
     /// <summary>
     /// Whether to match the floating element width to the reference element width.

@@ -1,0 +1,41 @@
+<BbSidebarMenuItem>
+    <BbCollapsible>
+        <BbSidebarMenuButton Tooltip="Projects">
+            <span>Projects</span>
+            <BbSidebarMenuChevron>
+                <LucideIcon Name="chevron-right" Size="16" />
+            </BbSidebarMenuChevron>
+        </BbSidebarMenuButton>
+
+        <BbCollapsibleContent>
+            <BbSidebarMenuSub>
+                <BbSidebarMenuSubItem>
+                    <BbSidebarMenuSubButton>
+                        <span>Active Projects</span>
+                    </BbSidebarMenuSubButton>
+                </BbSidebarMenuSubItem>
+
+                <BbSidebarMenuSubItem>
+                    <BbCollapsible>
+                        <BbSidebarMenuSubButton>
+                            <span>Project Settings</span>
+                            <BbSidebarMenuChevron>
+                                <LucideIcon Name="chevron-right" Size="16" />
+                            </BbSidebarMenuChevron>
+                        </BbSidebarMenuSubButton>
+
+                        <BbCollapsibleContent>
+                            <BbSidebarMenuSub>
+                                <BbSidebarMenuSubItem>
+                                    <BbSidebarMenuSubButton>
+                                        <span>General Settings</span>
+                                    </BbSidebarMenuSubButton>
+                                </BbSidebarMenuSubItem>
+                            </BbSidebarMenuSub>
+                        </BbCollapsibleContent>
+                    </BbCollapsible>
+                </BbSidebarMenuSubItem>
+            </BbSidebarMenuSub>
+        </BbCollapsibleContent>
+    </BbCollapsible>
+</BbSidebarMenuItem>

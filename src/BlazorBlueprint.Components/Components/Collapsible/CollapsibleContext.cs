@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Collapsible;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Provides context state for a Collapsible component and its sub-components.
@@ -21,8 +21,8 @@ namespace BlazorBlueprint.Components.Collapsible;
 /// <para>
 /// Components consuming this context:
 /// <list type="bullet">
-/// <item><see cref="CollapsibleTrigger"/> - Reads state and calls toggle</item>
-/// <item><see cref="CollapsibleContent"/> - Reads state to show/hide content</item>
+/// <item><see cref="BbCollapsibleTrigger"/> - Reads state and calls toggle</item>
+/// <item><see cref="BbCollapsibleContent"/> - Reads state to show/hide content</item>
 /// </list>
 /// </para>
 /// </remarks>
@@ -44,11 +44,11 @@ public class CollapsibleContext
     /// </value>
     /// <remarks>
     /// This property reflects the current state of the collapsible component.
-    /// When <c>true</c>, the <see cref="CollapsibleContent"/> will be visible and
+    /// When <c>true</c>, the <see cref="BbCollapsibleContent"/> will be visible and
     /// accessible. When <c>false</c>, the content will be hidden (typically via
     /// CSS display: none or height: 0).
     /// <para>
-    /// This state is controlled by the parent <see cref="Collapsible"/> component
+    /// This state is controlled by the parent <see cref="BbCollapsible"/> component
     /// and can be toggled via the <see cref="Toggle"/> method or by setting the
     /// Open parameter on the Collapsible component.
     /// </para>
@@ -64,7 +64,7 @@ public class CollapsibleContext
     /// </value>
     /// <remarks>
     /// When <c>true</c>, the collapsible cannot be toggled by user interaction.
-    /// The <see cref="CollapsibleTrigger"/> will be marked as disabled and will not
+    /// The <see cref="BbCollapsibleTrigger"/> will be marked as disabled and will not
     /// respond to clicks. The <see cref="Toggle"/> method will not perform any action
     /// when the collapsible is disabled.
     /// <para>
@@ -86,8 +86,8 @@ public class CollapsibleContext
     /// or <c>null</c> if no toggle handler is set.
     /// </value>
     /// <remarks>
-    /// This method is provided by the parent <see cref="Collapsible"/> component
-    /// and should be invoked by the <see cref="CollapsibleTrigger"/> when clicked.
+    /// This method is provided by the parent <see cref="BbCollapsible"/> component
+    /// and should be invoked by the <see cref="BbCollapsibleTrigger"/> when clicked.
     /// The method will only execute if <see cref="Disabled"/> is <c>false</c>.
     /// <para>
     /// The toggle operation typically:
@@ -95,7 +95,7 @@ public class CollapsibleContext
     /// <item>Flips the <see cref="Open"/> state (true ↔ false)</item>
     /// <item>Triggers a re-render of the Collapsible component tree</item>
     /// <item>Updates ARIA attributes (aria-expanded) on the trigger</item>
-    /// <item>Shows/hides the <see cref="CollapsibleContent"/> with animation</item>
+    /// <item>Shows/hides the <see cref="BbCollapsibleContent"/> with animation</item>
     /// </list>
     /// </para>
     /// </remarks>

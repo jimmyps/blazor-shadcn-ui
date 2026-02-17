@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.TimePicker;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the time format for the TimePicker component.

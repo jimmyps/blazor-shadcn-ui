@@ -1,0 +1,2 @@
+<BbSwitch Disabled="true" Checked="false" />
+<BbSwitch Disabled="true" Checked="true" />

@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace BlazorBlueprint.Components.Toggle;
+namespace BlazorBlueprint.Components;
 
 public enum ToggleVariant
 {

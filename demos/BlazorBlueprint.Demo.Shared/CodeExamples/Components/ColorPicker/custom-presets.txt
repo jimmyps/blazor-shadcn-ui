@@ -1,0 +1,5 @@
+<BbColorPicker @bind-Value="_color" PresetColors="@_brandColors" />
+
+@code {
+    private string[] _brandColors = { "#6366F1", "#8B5CF6", "#EC4899" };
+}

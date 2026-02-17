@@ -1,0 +1,8 @@
+<BbTypographyH1>Getting Started</BbTypographyH1>
+<BbTypographyLead>
+    Learn how to install and use BlazorBlueprint components.
+</BbTypographyLead>
+<BbTypographyH2>Installation</BbTypographyH2>
+<BbTypographyP>
+    First, install the BlazorBlueprint package...
+</BbTypographyP>

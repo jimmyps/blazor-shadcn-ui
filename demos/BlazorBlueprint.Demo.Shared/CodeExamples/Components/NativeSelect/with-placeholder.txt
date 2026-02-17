@@ -1,0 +1,4 @@
+<BbNativeSelect TValue="string" @bind-Value="_selectedCountry" Placeholder="Choose your country">
+    <option value="us">United States</option>
+    <option value="uk">United Kingdom</option>
+</BbNativeSelect>

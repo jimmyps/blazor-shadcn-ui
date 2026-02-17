@@ -1,0 +1,10 @@
+<BbLabel For="form-name">
+    Full Name <span class="text-destructive">*</span>
+</BbLabel>
+<BbInput Id="form-name" Required />
+
+<BbLabel>Preferences</BbLabel>
+<BbCheckbox Id="form-newsletter" />
+<BbLabel For="form-newsletter" Class="cursor-pointer font-normal">
+    Subscribe to newsletter
+</BbLabel>

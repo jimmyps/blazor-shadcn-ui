@@ -1,0 +1,9 @@
+<EditForm Model="editFormModel" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <BbFormFieldInput TValue="string"
+                   @bind-Value="editFormModel.FullName"
+                   Label="Full Name"
+                   HelperText="Required. Enter your first and last name."
+                   Placeholder="Jane Smith" />
+    <BbButton Type="ButtonType.Submit">Submit</BbButton>
+</EditForm>

@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Timeline;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines how the connector line fits between timeline icons.

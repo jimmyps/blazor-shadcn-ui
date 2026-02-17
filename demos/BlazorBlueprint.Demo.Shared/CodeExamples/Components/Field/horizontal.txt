@@ -1,0 +1,7 @@
+<BbField Orientation="FieldOrientation.Horizontal">
+    <BbFieldLabel For="name" Class="w-32 pt-2">Full Name</BbFieldLabel>
+    <BbFieldContent>
+        <BbInput Id="name" Placeholder="John Doe" />
+        <BbFieldDescription>Enter your first and last name.</BbFieldDescription>
+    </BbFieldContent>
+</BbField>

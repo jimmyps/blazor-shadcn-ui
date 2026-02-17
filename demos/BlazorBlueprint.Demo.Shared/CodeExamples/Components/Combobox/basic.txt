@@ -1,0 +1,21 @@
+<BbCombobox TValue="string"
+         Options="frameworks"
+         @bind-Value="selectedFramework"
+         Placeholder="Select framework..."
+         SearchPlaceholder="Search framework..."
+         EmptyMessage="No framework found."
+         PopoverWidth="w-[200px]" />
+
+@code {
+    private string? selectedFramework;
+
+    private readonly SelectOption<string>[] frameworks =
+    [
+        new("next.js", "Next.js"),
+        new("sveltekit", "SvelteKit"),
+        new("blazor", "Blazor")
+    ];
+
+    // Look up display text using the GetText extension
+    string label = frameworks.GetText(selectedFramework);
+}

@@ -1,0 +1,12 @@
+<BbSidebarMenuItem>
+    <BbSidebarMenuButton Href="/" Match="NavLinkMatch.All" Tooltip="Home">
+        <LucideIcon Name="house" Size="16" />
+        <span>Home</span>
+    </BbSidebarMenuButton>
+</BbSidebarMenuItem>
+<BbSidebarMenuItem>
+    <BbSidebarMenuButton Href="/components" Match="NavLinkMatch.Prefix" Tooltip="Components">
+        <LucideIcon Name="layers" Size="16" />
+        <span>Components</span>
+    </BbSidebarMenuButton>
+</BbSidebarMenuItem>

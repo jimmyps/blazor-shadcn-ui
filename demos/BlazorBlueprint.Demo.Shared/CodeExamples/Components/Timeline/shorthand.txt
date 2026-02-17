@@ -1,0 +1,5 @@
+<BbTimeline>
+    <BbTimelineItem Title="Project Kickoff" Time="Jan 2024" Description="Initial planning and team formation." />
+    <BbTimelineItem Title="Design Phase" Time="Mar 2024" Description="Completed wireframes and design system." />
+    <BbTimelineItem Title="Beta Release" Time="Jun 2024" Description="Launched beta version." ShowConnector="false" />
+</BbTimeline>

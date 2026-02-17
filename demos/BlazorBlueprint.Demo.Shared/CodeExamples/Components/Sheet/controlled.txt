@@ -1,0 +1,10 @@
+<BbSheet @bind-Open="isSheetOpen">
+    <BbSheetContent>
+        <BbSheetHeader>
+            <BbSheetTitle>Controlled Sheet</BbSheetTitle>
+            <BbSheetDescription>
+                This sheet's open state is controlled from the parent component.
+            </BbSheetDescription>
+        </BbSheetHeader>
+    </BbSheetContent>
+</BbSheet>

@@ -1,0 +1,6 @@
+<BbLineChart Data="@data" Height="200px">
+    <BbXAxis DataKey="month" />
+    <BbYAxis Show="false" />
+    <BbChartTooltip />
+    <BbLine DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Curve="CurveType.Step" ShowDots="false" />
+</BbLineChart>

@@ -1,0 +1,8 @@
+<BbTooltip>
+    <BbTooltipTrigger AsChild="false">
+        <LucideIcon Name="info" Size="16" Class="cursor-help text-muted-foreground" />
+    </BbTooltipTrigger>
+    <BbTooltipContent>
+        Choose a unique username for your account
+    </BbTooltipContent>
+</BbTooltip>

@@ -1,0 +1,46 @@
+@namespace BlazorBlueprint.Components
+@typeparam TValue
+@inherits FormFieldBase
+
+<BbField Orientation="@Orientation" IsInvalid="@IsInvalid" Class="@Class">
+    @if (Label is not null)
+    {
+        <BbFieldLabel For="@ControlId">@Label</BbFieldLabel>
+    }
+    <BbFieldContent>
+        <BbInputField @ref="_inputRef"
+                    TValue="TValue"
+                    Value="@Value"
+                    ValueChanged="HandleValueChanged"
+                    ValueExpression="@ValueExpression"
+                    Name="@Name"
+                    Converter="@Converter"
+                    Format="@Format"
+                    Type="@Type"
+                    Placeholder="@Placeholder"
+                    Disabled="@Disabled"
+                    Required="@Required"
+                    Validation="@Validation"
+                    ValidationPattern="@ValidationPattern"
+                    UpdateTiming="@UpdateTiming"
+                    DebounceInterval="@DebounceInterval"
+                    Id="@ControlId"
+                    AriaLabel="@AriaLabel"
+                    AriaDescribedBy="@DescribedById"
+                    OnParseError="HandleParseError"
+                    OnErrorCleared="HandleErrorCleared"
+                    Class="@InputClass" />
+        @if (!string.IsNullOrEmpty(HelperText) && !IsInvalid)
+        {
+            <BbFieldDescription Id="@DescriptionId">@HelperText</BbFieldDescription>
+        }
+        @if (_hasError)
+        {
+            <BbFieldError Id="@ErrorId">@_errorMessage</BbFieldError>
+        }
+        else if (HasEditContextErrors)
+        {
+            <BbFieldError Id="@ErrorId" Errors="@EditContextErrors" />
+        }
+    </BbFieldContent>
+</BbField>

@@ -1,0 +1,28 @@
+<BbTimeline>
+    <BbTimelineItem Status="TimelineStatus.Completed">
+        <TimeContent>
+            <BbTimelineTime Class="text-right pr-4">Step 1</BbTimelineTime>
+        </TimeContent>
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineHeader>
+                    <BbTimelineTitle>Order Placed</BbTimelineTitle>
+                </BbTimelineHeader>
+                <BbTimelineDescription>Your order has been confirmed.</BbTimelineDescription>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+    <BbTimelineItem Status="TimelineStatus.InProgress">
+        <TimeContent>
+            <BbTimelineTime Class="text-right pr-4">Step 3</BbTimelineTime>
+        </TimeContent>
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineHeader>
+                    <BbTimelineTitle>Shipping</BbTimelineTitle>
+                </BbTimelineHeader>
+                <BbTimelineDescription>Your package is on its way.</BbTimelineDescription>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>

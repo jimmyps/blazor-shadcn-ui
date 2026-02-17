@@ -1,0 +1,22 @@
+<BbCombobox TValue="int?"
+         Options="priorities"
+         @bind-Value="selectedPriority"
+         Placeholder="Select priority..."
+         SearchPlaceholder="Search priority..."
+         EmptyMessage="No priority found."
+         PopoverWidth="w-[200px]" />
+
+@code {
+    private int? selectedPriority;
+
+    private readonly SelectOption<int?>[] priorities =
+    [
+        new(1, "Low"),
+        new(2, "Medium"),
+        new(3, "High"),
+        new(4, "Critical")
+    ];
+
+    // GetText works with any value type (int?, Guid?, enums, etc.)
+    string label = priorities.GetText(selectedPriority);
+}

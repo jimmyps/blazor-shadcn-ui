@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.FileUpload;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Represents a file validation error.

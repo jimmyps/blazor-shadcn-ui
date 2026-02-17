@@ -1,0 +1,20 @@
+<BbHoverCard>
+    <BbHoverCardTrigger class="text-primary underline cursor-pointer">
+        @username
+    </BbHoverCardTrigger>
+    <BbHoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[300px]">
+        <div class="flex gap-3">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-700"></div>
+            <div class="flex-1">
+                <div class="font-semibold mb-1">Username</div>
+                <p class="text-xs text-muted-foreground mb-2">
+                    Software developer interested in UI/UX design and web technologies.
+                </p>
+                <div class="flex gap-4 text-xs text-muted-foreground">
+                    <span><strong>1.2k</strong> followers</span>
+                    <span><strong>340</strong> following</span>
+                </div>
+            </div>
+        </div>
+    </BbHoverCardContent>
+</BbHoverCard>

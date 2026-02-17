@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace BlazorBlueprint.Components.MaskedInput;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Processes mask patterns and applies them to input values.

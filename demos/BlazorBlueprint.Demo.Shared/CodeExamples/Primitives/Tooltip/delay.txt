@@ -1,0 +1,9 @@
+<BbTooltip DelayDuration="0">
+    <BbTooltipTrigger>Instant (0ms)</BbTooltipTrigger>
+    <BbTooltipContent>Shows immediately</BbTooltipContent>
+</BbTooltip>
+
+<BbTooltip DelayDuration="1500">
+    <BbTooltipTrigger>Slow (1500ms)</BbTooltipTrigger>
+    <BbTooltipContent>Shows after 1.5 seconds</BbTooltipContent>
+</BbTooltip>

@@ -1,6 +1,4 @@
 @page "/components/input-otp"
-@using BlazorBlueprint.Components.InputOTP
-@using BlazorBlueprint.Components.Button
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>Input OTP Component - Blazor Blueprint</PageTitle>
@@ -23,12 +21,13 @@
                 A 6-digit OTP input with separators.
             </p>
         </div>
-        <InputOTP @bind-Value="_otpValue" OnComplete="HandleComplete" />
+        <BbInputOTP @bind-Value="_otpValue" OnComplete="HandleComplete" />
         <p class="text-sm text-muted-foreground">Value: @(_otpValue ?? "empty")</p>
         @if (_isComplete)
         {
             <p class="text-sm text-green-600">OTP Complete!</p>
         }
+        <CodeBlock Source="Components/InputOTP/basic.txt" />
     </div>
 
     <!-- Without Separator -->
@@ -39,7 +38,8 @@
                 OTP input without separators.
             </p>
         </div>
-        <InputOTP Length="4" ShowSeparator="false" />
+        <BbInputOTP Length="4" ShowSeparator="false" />
+        <CodeBlock Source="Components/InputOTP/without-separator.txt" />
     </div>
 
     <!-- Custom Separator -->
@@ -50,11 +50,12 @@
                 OTP input with a custom separator.
             </p>
         </div>
-        <InputOTP Length="6" GroupSize="2">
-            <Separator>
+        <BbInputOTP Length="6" GroupSize="2">
+            <BbSeparator>
                 <span class="text-muted-foreground">:</span>
-            </Separator>
-        </InputOTP>
+            </BbSeparator>
+        </BbInputOTP>
+        <CodeBlock Source="Components/InputOTP/custom-separator.txt" />
     </div>
 
     <!-- Different Lengths -->
@@ -68,17 +69,18 @@
         <div class="space-y-4">
             <div>
                 <p class="text-sm text-muted-foreground mb-2">4 digits:</p>
-                <InputOTP Length="4" ShowSeparator="false" />
+                <BbInputOTP Length="4" ShowSeparator="false" />
             </div>
             <div>
                 <p class="text-sm text-muted-foreground mb-2">6 digits:</p>
-                <InputOTP Length="6" />
+                <BbInputOTP Length="6" />
             </div>
             <div>
                 <p class="text-sm text-muted-foreground mb-2">8 digits:</p>
-                <InputOTP Length="8" GroupSize="4" />
+                <BbInputOTP Length="8" GroupSize="4" />
             </div>
         </div>
+        <CodeBlock Source="Components/InputOTP/lengths.txt" />
     </div>
 
     <!-- Sizes -->
@@ -92,17 +94,18 @@
         <div class="space-y-4">
             <div>
                 <p class="text-sm text-muted-foreground mb-2">Small:</p>
-                <InputOTP Length="4" ShowSeparator="false" Size="InputOTPSize.Small" />
+                <BbInputOTP Length="4" ShowSeparator="false" Size="InputOTPSize.Small" />
             </div>
             <div>
                 <p class="text-sm text-muted-foreground mb-2">Default:</p>
-                <InputOTP Length="4" ShowSeparator="false" Size="InputOTPSize.Default" />
+                <BbInputOTP Length="4" ShowSeparator="false" Size="InputOTPSize.Default" />
             </div>
             <div>
                 <p class="text-sm text-muted-foreground mb-2">Large:</p>
-                <InputOTP Length="4" ShowSeparator="false" Size="InputOTPSize.Large" />
+                <BbInputOTP Length="4" ShowSeparator="false" Size="InputOTPSize.Large" />
             </div>
         </div>
+        <CodeBlock Source="Components/InputOTP/sizes.txt" />
     </div>
 
     <!-- Disabled -->
@@ -113,7 +116,32 @@
                 A disabled OTP input.
             </p>
         </div>
-        <InputOTP Length="6" Disabled="true" Value="123456" />
+        <BbInputOTP Length="6" Disabled="true" Value="123456" />
+        <CodeBlock Source="Components/InputOTP/disabled.txt" />
+    </div>
+
+    <!-- Custom Input Styling -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <div class="flex items-center gap-2">
+                <h2 class="text-2xl font-semibold">Custom Input Styling</h2>
+                <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">v3</span>
+            </div>
+            <p class="text-sm text-muted-foreground">
+                Use <code class="text-xs bg-muted px-1 py-0.5 rounded">InputClass</code> to style individual OTP input boxes without CSS hacks.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <p class="text-sm text-muted-foreground mb-2">Custom border color:</p>
+                <BbInputOTP Length="4" ShowSeparator="false" InputClass="border-blue-500 focus:ring-blue-500" />
+            </div>
+            <div>
+                <p class="text-sm text-muted-foreground mb-2">Rounded full inputs:</p>
+                <BbInputOTP Length="4" ShowSeparator="false" InputClass="rounded-full" />
+            </div>
+        </div>
+        <CodeBlock Source="Components/InputOTP/custom-styling.txt" />
     </div>
 
     <!-- Verification Flow -->
@@ -132,15 +160,16 @@
                 </p>
             </div>
             <div class="flex justify-center">
-                <InputOTP @bind-Value="_verifyOtp" Length="6" />
+                <BbInputOTP @bind-Value="_verifyOtp" Length="6" />
             </div>
-            <Button Class="w-full" Disabled="@(_verifyOtp?.Length != 6)">
+            <BbButton Class="w-full" Disabled="@(_verifyOtp?.Length != 6)">
                 Verify
-            </Button>
+            </BbButton>
             <p class="text-center text-sm text-muted-foreground">
                 Didn't receive a code? <a href="#" class="text-primary underline">Resend</a>
             </p>
         </div>
+        <CodeBlock Source="Components/InputOTP/verification-flow.txt" />
     </div>
 
     <!-- Form Validation with EditForm -->
@@ -158,13 +187,13 @@
 
             <div class="space-y-2">
                 <label class="text-sm font-medium">Verification Code</label>
-                <InputOTP @bind-Value="otpFormModel.VerificationCode" Length="6" />
+                <BbInputOTP @bind-Value="otpFormModel.VerificationCode" Length="6" />
                 <ValidationMessage For="@(() => otpFormModel.VerificationCode)" class="text-sm text-destructive" />
             </div>
 
             <div class="flex gap-4">
-                <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Verify</Button>
-                <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetOTPForm">Reset</Button>
+                <BbButton Type="ButtonType.Submit" Variant="ButtonVariant.Default">Verify</BbButton>
+                <BbButton Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetOTPForm">Reset</BbButton>
             </div>
 
             @if (!string.IsNullOrEmpty(otpFormMessage))
@@ -174,7 +203,83 @@
                 </div>
             }
         </EditForm>
+        <CodeBlock Source="Components/InputOTP/form-validation.txt" />
     </div>
+
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Each digit input uses <code class="text-xs bg-muted px-1 py-0.5 rounded">inputmode="numeric"</code> for mobile numeric keyboards</AccessibilityItem>
+            <AccessibilityItem>Individual inputs are constrained with <code class="text-xs bg-muted px-1 py-0.5 rounded">maxlength="1"</code></AccessibilityItem>
+            <AccessibilityItem>Disabled state applies the <code class="text-xs bg-muted px-1 py-0.5 rounded">disabled</code> attribute to all digit inputs</AccessibilityItem>
+            <AccessibilityItem>Integrates with EditForm validation, applying <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-invalid</code> styling on error</AccessibilityItem>
+            <AccessibilityItem>Hidden input with <code class="text-xs bg-muted px-1 py-0.5 rounded">name</code> attribute supports SSR form postback</AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Move focus to the previous digit">
+                <BbKbd>ArrowLeft</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Move focus to the next digit">
+                <BbKbd>ArrowRight</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Clear current digit and move to previous">
+                <BbKbd>Backspace</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Auto-advance to next digit after entry">
+                <BbKbd>0-9</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="InputOTP">
+                <ApiParameter Name="Length" Type="int" Default="6">
+                    The number of OTP digit inputs to render.
+                </ApiParameter>
+                <ApiParameter Name="Value" Type="string?" Default="null">
+                    The current OTP value. Use @@bind-Value for two-way binding.
+                </ApiParameter>
+                <ApiParameter Name="ValueChanged" Type="EventCallback&lt;string&gt;">
+                    Callback invoked when the OTP value changes.
+                </ApiParameter>
+                <ApiParameter Name="ValueExpression" Type="Expression&lt;Func&lt;string?&gt;&gt;?" Default="null">
+                    Expression that identifies the bound value. Used for EditForm integration.
+                </ApiParameter>
+                <ApiParameter Name="OnComplete" Type="EventCallback&lt;string&gt;">
+                    Callback invoked when all digits have been filled in.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the OTP input is disabled.
+                </ApiParameter>
+                <ApiParameter Name="ShowSeparator" Type="bool" Default="true">
+                    Whether to show separators between digit groups.
+                </ApiParameter>
+                <ApiParameter Name="GroupSize" Type="int" Default="3">
+                    Number of digits per group for separator placement.
+                </ApiParameter>
+                <ApiParameter Name="Separator" Type="RenderFragment?" Default="null">
+                    Custom separator content. Defaults to a dash character when not provided.
+                </ApiParameter>
+                <ApiParameter Name="Size" Type="InputOTPSize" Default="Default">
+                    Size variant for the input boxes. Options: Small, Default, Large.
+                </ApiParameter>
+                <ApiParameter Name="InputClass" Type="string?" Default="null">
+                    Additional CSS classes applied to each individual OTP input box.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the outer container.
+                </ApiParameter>
+                <ApiParameter Name="Name" Type="string?" Default="null">
+                    HTML name attribute for the hidden input. Auto-derived from ValueExpression inside an EditForm.
+                </ApiParameter>
+            </ApiReference>
+        </div>
+    </section>
 </div>
 
 @code {

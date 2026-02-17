@@ -1,0 +1,18 @@
+<BbButtonGroup>
+    <BbButtonGroupText>
+        <LucideIcon Name="file-text" Size="16" />
+        Document Actions:
+    </BbButtonGroupText>
+    <BbButton Variant="ButtonVariant.Outline">
+        <LucideIcon Name="eye" Size="16" />
+        View
+    </BbButton>
+    <BbButton Variant="ButtonVariant.Outline">
+        <LucideIcon Name="pencil" Size="16" />
+        Edit
+    </BbButton>
+    <BbButton Variant="ButtonVariant.Outline">
+        <LucideIcon Name="trash-2" Size="16" />
+        Delete
+    </BbButton>
+</BbButtonGroup>

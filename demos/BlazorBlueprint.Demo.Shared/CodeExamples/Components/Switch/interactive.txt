@@ -1,0 +1,1 @@
+<BbSwitch @bind-Checked="interactiveChecked" Id="interactive" />

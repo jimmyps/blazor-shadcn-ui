@@ -1,0 +1,7 @@
+<!-- With MaxLength: shows current/max format -->
+<BbTextarea ShowCharacterCount="true" MaxLength="280"
+          Placeholder="What's happening?" />
+
+<!-- Without MaxLength: shows character count only -->
+<BbTextarea ShowCharacterCount="true"
+          Placeholder="Free-form text..." />

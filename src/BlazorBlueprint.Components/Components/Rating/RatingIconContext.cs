@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Rating;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Context provided to custom icon templates.

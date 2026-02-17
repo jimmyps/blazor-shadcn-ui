@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Chart;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Provides utilities for working with chart colors and CSS variables.

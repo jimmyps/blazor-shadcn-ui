@@ -1,0 +1,8 @@
+<BbPopover @bind-Open="isOpen">
+    <BbPopoverTrigger>
+        <BbButton>@(isOpen ? "Close" : "Open") Controlled</BbButton>
+    </BbPopoverTrigger>
+    <BbPopoverContent>
+        <p class="text-sm">This popover is controlled externally.</p>
+    </BbPopoverContent>
+</BbPopover>

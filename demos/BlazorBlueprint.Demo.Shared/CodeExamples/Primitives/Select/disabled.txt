@@ -1,0 +1,6 @@
+<BbSelect TValue="string" Disabled="true" DefaultValue="@("disabled")">
+    <BbSelectTrigger class="... opacity-50 cursor-not-allowed">
+        <span>Disabled Select</span>
+    </BbSelectTrigger>
+    ...
+</BbSelect>

@@ -1,0 +1,12 @@
+<div class="flex items-center space-x-2">
+    <BbCheckbox @bind-Checked="styled1" Class="border-2" Id="styled1" />
+    <label for="styled1" class="text-sm font-medium leading-none">
+        Thicker border
+    </label>
+</div>
+<div class="flex items-center space-x-2">
+    <BbCheckbox @bind-Checked="styled2" Class="shadow-md" Id="styled2" />
+    <label for="styled2" class="text-sm font-medium leading-none">
+        With shadow
+    </label>
+</div>

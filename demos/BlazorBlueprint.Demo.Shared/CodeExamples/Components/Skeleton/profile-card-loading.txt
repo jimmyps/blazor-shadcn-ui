@@ -1,0 +1,13 @@
+<div class="border rounded-lg p-6 space-y-6">
+    <div class="flex items-center space-x-4">
+        <BbSkeleton Shape="SkeletonShape.Circular" Class="h-16 w-16" />
+        <div class="space-y-2">
+            <BbSkeleton Class="h-5 w-[120px]" />
+            <BbSkeleton Class="h-4 w-[100px]" />
+        </div>
+    </div>
+    <div class="space-y-2">
+        <BbSkeleton Class="h-4 w-full" />
+        <BbSkeleton Class="h-4 w-2/3" />
+    </div>
+</div>

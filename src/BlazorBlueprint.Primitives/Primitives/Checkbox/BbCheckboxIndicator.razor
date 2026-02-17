@@ -1,0 +1,71 @@
+@namespace BlazorBlueprint.Primitives.Checkbox
+
+@* CheckboxIndicator - auto-renders check/indeterminate icon based on parent state *@
+@if (ParentCheckbox != null && (ParentCheckbox.Checked || ParentCheckbox.Indeterminate))
+{
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
+    else if (ParentCheckbox.Indeterminate)
+    {
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="@Size"
+             height="@Size"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="@StrokeWidth"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             @attributes="AdditionalAttributes">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+    }
+    else
+    {
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="@Size"
+             height="@Size"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="@StrokeWidth"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             @attributes="AdditionalAttributes">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+    }
+}
+
+@code {
+    [CascadingParameter]
+    private BbCheckbox? ParentCheckbox { get; set; }
+
+    /// <summary>
+    /// Optional custom content to render instead of the default check/indeterminate icons.
+    /// When provided, this content is rendered whenever the checkbox is checked or indeterminate.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Size of the default SVG icons in pixels. Default: 14.
+    /// </summary>
+    [Parameter]
+    public int Size { get; set; } = 14;
+
+    /// <summary>
+    /// Stroke width of the default SVG icons. Default: 3.
+    /// </summary>
+    [Parameter]
+    public int StrokeWidth { get; set; } = 3;
+
+    /// <summary>
+    /// Additional attributes to apply to the SVG icon elements.
+    /// Only applied when using the default icons (not custom ChildContent).
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

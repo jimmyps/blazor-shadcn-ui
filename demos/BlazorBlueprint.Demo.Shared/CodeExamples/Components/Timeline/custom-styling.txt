@@ -1,0 +1,16 @@
+<BbTimeline Align="TimelineAlign.Left">
+    <BbTimelineItem Status="TimelineStatus.Completed">
+        <IconContent>
+            <BbTimelineIcon Color="TimelineColor.Primary">
+                <LucideIcon Name="package" Size="16" />
+            </BbTimelineIcon>
+        </IconContent>
+        <ChildContent>
+            <BbTimelineContent Class="border rounded-lg p-3 shadow-sm">
+                <BbTimelineTitle>Order Shipped</BbTimelineTitle>
+                <BbTimelineDescription>Your package is on its way.</BbTimelineDescription>
+                <BbTimelineTime Class="text-xs mt-1">2 hours ago</BbTimelineTime>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>

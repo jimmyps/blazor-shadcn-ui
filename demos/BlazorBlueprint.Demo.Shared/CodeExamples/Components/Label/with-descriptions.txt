@@ -1,0 +1,5 @@
+<BbLabel For="display-name">Display Name</BbLabel>
+<BbInput Id="display-name" Placeholder="John Doe" />
+<p class="text-xs text-muted-foreground">
+    This is your public display name.
+</p>

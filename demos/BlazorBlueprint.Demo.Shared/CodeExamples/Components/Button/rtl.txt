@@ -1,0 +1,8 @@
+<div dir="rtl">
+    <BbButton IconPosition="IconPosition.Start">
+        <Icon>
+            <LucideIcon Name="arrow-left" Size="16" />
+        </Icon>
+        <ChildContent>Back (Start)</ChildContent>
+    </BbButton>
+</div>

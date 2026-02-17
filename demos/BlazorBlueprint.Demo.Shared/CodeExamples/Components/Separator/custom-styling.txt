@@ -1,0 +1,4 @@
+<BbSeparator Class="my-4" />
+<BbSeparator Class="my-4 h-[2px]" />
+<BbSeparator Class="my-4 bg-primary" />
+<BbSeparator Class="my-4 border-t border-dashed border-border h-0" />

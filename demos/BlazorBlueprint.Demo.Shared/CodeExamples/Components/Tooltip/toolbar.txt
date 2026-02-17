@@ -1,0 +1,8 @@
+<BbTooltip>
+    <BbTooltipTrigger AsChild="false" Class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent">
+        <LucideIcon Name="bold" Size="16" />
+    </BbTooltipTrigger>
+    <BbTooltipContent>
+        Bold (Ctrl+B)
+    </BbTooltipContent>
+</BbTooltip>

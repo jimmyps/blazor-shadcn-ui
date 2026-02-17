@@ -1,6 +1,4 @@
 @page "/components/command"
-@using BlazorBlueprint.Components.Command
-@using BlazorBlueprint.Components.Kbd
 @using BlazorBlueprint.Icons.Lucide.Data
 @using BlazorBlueprint.Icons.Feather.Data
 @using BlazorBlueprint.Icons.Heroicons.Data
@@ -29,15 +27,15 @@
     <section class="space-y-4">
         <h2 class="text-2xl font-semibold">Command Palette (Overlay)</h2>
         <p class="text-sm text-muted-foreground">
-            A proper command palette that appears as an overlay on the screen. Click the button or press <Kbd>Ctrl+I</Kbd> to open.
+            A proper command palette that appears as an overlay on the screen. Click the button or press <BbKbd>Ctrl+I</BbKbd> to open.
         </p>
 
         <div class="flex flex-col gap-2">
-            <Button Variant="ButtonVariant.Outline" OnClick="@(() => isCommandPaletteOpen = true)">
+            <BbButton Variant="ButtonVariant.Outline" OnClick="@(() => isCommandPaletteOpen = true)">
                 <LucideIcon Name="command" Size="16" Class="mr-2" />
                 Open Command Palette
                 <span class="ml-auto text-xs text-muted-foreground">Ctrl+I</span>
-            </Button>
+            </BbButton>
             @if (!string.IsNullOrEmpty(paletteSelected))
             {
                 <p class="text-sm">Last selected: <strong>@paletteSelected</strong></p>
@@ -54,48 +52,104 @@
                 <!-- Command Palette -->
                 <div class="relative w-full max-w-lg mx-4" @onclick:stopPropagation="true">
                     <div class="border rounded-lg shadow-2xl bg-background animate-in fade-in-0 zoom-in-95">
-                        <BlazorBlueprint.Components.Command.Command OnValueChange="@HandlePaletteSelect">
-                            <CommandInput Placeholder="Type a command or search..." AutoFocus="true" />
-                            <CommandList>
-                                <CommandEmpty>No results found.</CommandEmpty>
-                                <CommandGroup Heading="Suggestions">
-                                    <CommandItem Value="calendar">
+                        <BlazorBlueprint.Components.BbCommand OnValueChange="@HandlePaletteSelect">
+                            <BbCommandInput Placeholder="Type a command or search..." AutoFocus="true" />
+                            <BbCommandList>
+                                <BbCommandEmpty>No results found.</BbCommandEmpty>
+                                <BbCommandGroup Heading="Suggestions">
+                                    <BbCommandItem Value="calendar">
                                         <LucideIcon Name="calendar" Size="16" Class="mr-2" />
                                         Calendar
-                                    </CommandItem>
-                                    <CommandItem Value="search-emoji">
+                                    </BbCommandItem>
+                                    <BbCommandItem Value="search-emoji">
                                         <LucideIcon Name="smile" Size="16" Class="mr-2" />
                                         Search Emoji
-                                    </CommandItem>
-                                    <CommandItem Value="calculator">
+                                    </BbCommandItem>
+                                    <BbCommandItem Value="calculator">
                                         <LucideIcon Name="calculator" Size="16" Class="mr-2" />
                                         Calculator
-                                    </CommandItem>
-                                </CommandGroup>
-                                <CommandSeparator />
-                                <CommandGroup Heading="Settings">
-                                    <CommandItem Value="profile">
+                                    </BbCommandItem>
+                                </BbCommandGroup>
+                                <BbCommandSeparator />
+                                <BbCommandGroup Heading="Settings">
+                                    <BbCommandItem Value="profile">
                                         <LucideIcon Name="user" Size="16" Class="mr-2" />
                                         Profile
-                                        <CommandShortcut>⌘P</CommandShortcut>
-                                    </CommandItem>
-                                    <CommandItem Value="billing">
+                                        <BbCommandShortcut>⌘P</BbCommandShortcut>
+                                    </BbCommandItem>
+                                    <BbCommandItem Value="billing">
                                         <LucideIcon Name="credit-card" Size="16" Class="mr-2" />
                                         Billing
-                                        <CommandShortcut>⌘B</CommandShortcut>
-                                    </CommandItem>
-                                    <CommandItem Value="settings">
+                                        <BbCommandShortcut>⌘B</BbCommandShortcut>
+                                    </BbCommandItem>
+                                    <BbCommandItem Value="settings">
                                         <LucideIcon Name="settings" Size="16" Class="mr-2" />
                                         Settings
-                                        <CommandShortcut>⌘S</CommandShortcut>
-                                    </CommandItem>
-                                </CommandGroup>
-                            </CommandList>
-                        </BlazorBlueprint.Components.Command.Command>
+                                        <BbCommandShortcut>⌘S</BbCommandShortcut>
+                                    </BbCommandItem>
+                                </BbCommandGroup>
+                            </BbCommandList>
+                        </BlazorBlueprint.Components.BbCommand>
                     </div>
                 </div>
             </div>
         }
+
+        <CodeBlock Source="Components/Command/palette.txt" />
+    </section>
+
+    <!-- CommandDialog with Shortcut -->
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">CommandDialog with Shortcut</h2>
+        <p class="text-sm text-muted-foreground">
+            Use <code class="bg-muted px-1 py-0.5 rounded">CommandDialog</code> to get a command palette with a built-in keyboard shortcut. Press <BbKbd>Ctrl+J</BbKbd> to open.
+        </p>
+
+        <div class="flex flex-col gap-2">
+            <BbButton Variant="ButtonVariant.Outline" OnClick="@(() => isCommandDialogOpen = true)">
+                <LucideIcon Name="command" Size="16" Class="mr-2" />
+                Open Command Dialog
+                <span class="ml-auto text-xs text-muted-foreground">Ctrl+J</span>
+            </BbButton>
+            @if (!string.IsNullOrEmpty(dialogSelected))
+            {
+                <p class="text-sm">Last selected: <strong>@dialogSelected</strong></p>
+            }
+        </div>
+
+        <BbCommandDialog @bind-Open="isCommandDialogOpen" Shortcut="Ctrl+J" OnValueChange="HandleDialogSelect">
+            <BbCommandInput Placeholder="Type a command or search..." AutoFocus="true" />
+            <BbCommandList>
+                <BbCommandEmpty>No results found.</BbCommandEmpty>
+                <BbCommandGroup Heading="Suggestions">
+                    <BbCommandItem Value="calendar">
+                        <Icon><LucideIcon Name="calendar" Size="16" /></Icon>
+                        <ChildContent>Calendar</ChildContent>
+                    </BbCommandItem>
+                    <BbCommandItem Value="search-emoji">
+                        <Icon><LucideIcon Name="smile" Size="16" /></Icon>
+                        <ChildContent>Search Emoji</ChildContent>
+                    </BbCommandItem>
+                    <BbCommandItem Value="calculator">
+                        <Icon><LucideIcon Name="calculator" Size="16" /></Icon>
+                        <ChildContent>Calculator</ChildContent>
+                    </BbCommandItem>
+                </BbCommandGroup>
+                <BbCommandSeparator />
+                <BbCommandGroup Heading="Settings">
+                    <BbCommandItem Value="profile">
+                        <Icon><LucideIcon Name="user" Size="16" /></Icon>
+                        <ChildContent>Profile</ChildContent>
+                    </BbCommandItem>
+                    <BbCommandItem Value="settings">
+                        <Icon><LucideIcon Name="settings" Size="16" /></Icon>
+                        <ChildContent>Settings</ChildContent>
+                    </BbCommandItem>
+                </BbCommandGroup>
+            </BbCommandList>
+        </BbCommandDialog>
+
+        <CodeBlock Source="Components/Command/command-dialog.txt" />
     </section>
 
     <!-- Basic Command -->
@@ -107,24 +161,26 @@
 
         <div class="flex flex-col gap-2">
             <div class="border rounded-lg shadow-sm max-w-md">
-                <BlazorBlueprint.Components.Command.Command OnValueChange="@HandleBasicSelect">
-                    <CommandInput Placeholder="Type a command or search..." />
-                    <CommandList>
-                        <CommandEmpty>No results found.</CommandEmpty>
-                        <CommandGroup>
-                            <CommandItem Value="calendar">Calendar</CommandItem>
-                            <CommandItem Value="search-emoji">Search Emoji</CommandItem>
-                            <CommandItem Value="calculator">Calculator</CommandItem>
-                            <CommandItem Value="settings">Settings</CommandItem>
-                        </CommandGroup>
-                    </CommandList>
-                </BlazorBlueprint.Components.Command.Command>
+                <BlazorBlueprint.Components.BbCommand OnValueChange="@HandleBasicSelect">
+                    <BbCommandInput Placeholder="Type a command or search..." />
+                    <BbCommandList>
+                        <BbCommandEmpty>No results found.</BbCommandEmpty>
+                        <BbCommandGroup>
+                            <BbCommandItem Value="calendar">Calendar</BbCommandItem>
+                            <BbCommandItem Value="search-emoji">Search Emoji</BbCommandItem>
+                            <BbCommandItem Value="calculator">Calculator</BbCommandItem>
+                            <BbCommandItem Value="settings">Settings</BbCommandItem>
+                        </BbCommandGroup>
+                    </BbCommandList>
+                </BlazorBlueprint.Components.BbCommand>
             </div>
             @if (!string.IsNullOrEmpty(basicSelected))
             {
                 <p class="text-sm">Selected: <strong>@basicSelected</strong></p>
             }
         </div>
+
+        <CodeBlock Source="Components/Command/basic.txt" />
     </section>
 
     <!-- With Groups -->
@@ -136,47 +192,49 @@
 
         <div class="flex flex-col gap-2">
             <div class="border rounded-lg shadow-sm max-w-md">
-                <BlazorBlueprint.Components.Command.Command OnValueChange="@HandleGroupSelect">
-                    <CommandInput Placeholder="Search commands..." />
-                    <CommandList>
-                        <CommandEmpty>No results found.</CommandEmpty>
-                        <CommandGroup Heading="Suggestions">
-                            <CommandItem Value="calendar">
+                <BlazorBlueprint.Components.BbCommand OnValueChange="@HandleGroupSelect">
+                    <BbCommandInput Placeholder="Search commands..." />
+                    <BbCommandList>
+                        <BbCommandEmpty>No results found.</BbCommandEmpty>
+                        <BbCommandGroup Heading="Suggestions">
+                            <BbCommandItem Value="calendar">
                                 <LucideIcon Name="calendar" Size="16" Class="mr-2" />
                                 Calendar
-                            </CommandItem>
-                            <CommandItem Value="search-emoji">
+                            </BbCommandItem>
+                            <BbCommandItem Value="search-emoji">
                                 <LucideIcon Name="smile" Size="16" Class="mr-2" />
                                 Search Emoji
-                            </CommandItem>
-                            <CommandItem Value="calculator">
+                            </BbCommandItem>
+                            <BbCommandItem Value="calculator">
                                 <LucideIcon Name="calculator" Size="16" Class="mr-2" />
                                 Calculator
-                            </CommandItem>
-                        </CommandGroup>
-                        <CommandSeparator />
-                        <CommandGroup Heading="Settings">
-                            <CommandItem Value="profile">
+                            </BbCommandItem>
+                        </BbCommandGroup>
+                        <BbCommandSeparator />
+                        <BbCommandGroup Heading="Settings">
+                            <BbCommandItem Value="profile">
                                 <LucideIcon Name="user" Size="16" Class="mr-2" />
                                 Profile
-                            </CommandItem>
-                            <CommandItem Value="billing">
+                            </BbCommandItem>
+                            <BbCommandItem Value="billing">
                                 <LucideIcon Name="credit-card" Size="16" Class="mr-2" />
                                 Billing
-                            </CommandItem>
-                            <CommandItem Value="settings">
+                            </BbCommandItem>
+                            <BbCommandItem Value="settings">
                                 <LucideIcon Name="settings" Size="16" Class="mr-2" />
                                 Settings
-                            </CommandItem>
-                        </CommandGroup>
-                    </CommandList>
-                </BlazorBlueprint.Components.Command.Command>
+                            </BbCommandItem>
+                        </BbCommandGroup>
+                    </BbCommandList>
+                </BlazorBlueprint.Components.BbCommand>
             </div>
             @if (!string.IsNullOrEmpty(groupSelected))
             {
                 <p class="text-sm">Selected: <strong>@groupSelected</strong></p>
             }
         </div>
+
+        <CodeBlock Source="Components/Command/grouped.txt" />
     </section>
 
     <!-- With Keyboard Shortcuts -->
@@ -188,47 +246,49 @@
 
         <div class="flex flex-col gap-2">
             <div class="border rounded-lg shadow-sm max-w-md">
-                <BlazorBlueprint.Components.Command.Command OnValueChange="@HandleShortcutSelect">
-                    <CommandInput Placeholder="Search commands..." />
-                    <CommandList>
-                        <CommandEmpty>No results found.</CommandEmpty>
-                        <CommandGroup Heading="File">
-                            <CommandItem Value="new">
+                <BlazorBlueprint.Components.BbCommand OnValueChange="@HandleShortcutSelect">
+                    <BbCommandInput Placeholder="Search commands..." />
+                    <BbCommandList>
+                        <BbCommandEmpty>No results found.</BbCommandEmpty>
+                        <BbCommandGroup Heading="File">
+                            <BbCommandItem Value="new">
                                 New File
-                                <CommandShortcut>⌘N</CommandShortcut>
-                            </CommandItem>
-                            <CommandItem Value="open">
+                                <BbCommandShortcut>⌘N</BbCommandShortcut>
+                            </BbCommandItem>
+                            <BbCommandItem Value="open">
                                 Open File
-                                <CommandShortcut>⌘O</CommandShortcut>
-                            </CommandItem>
-                            <CommandItem Value="save">
+                                <BbCommandShortcut>⌘O</BbCommandShortcut>
+                            </BbCommandItem>
+                            <BbCommandItem Value="save">
                                 Save File
-                                <CommandShortcut>⌘S</CommandShortcut>
-                            </CommandItem>
-                        </CommandGroup>
-                        <CommandSeparator />
-                        <CommandGroup Heading="Edit">
-                            <CommandItem Value="copy">
+                                <BbCommandShortcut>⌘S</BbCommandShortcut>
+                            </BbCommandItem>
+                        </BbCommandGroup>
+                        <BbCommandSeparator />
+                        <BbCommandGroup Heading="Edit">
+                            <BbCommandItem Value="copy">
                                 Copy
-                                <CommandShortcut>⌘C</CommandShortcut>
-                            </CommandItem>
-                            <CommandItem Value="paste">
+                                <BbCommandShortcut>⌘C</BbCommandShortcut>
+                            </BbCommandItem>
+                            <BbCommandItem Value="paste">
                                 Paste
-                                <CommandShortcut>⌘V</CommandShortcut>
-                            </CommandItem>
-                            <CommandItem Value="cut">
+                                <BbCommandShortcut>⌘V</BbCommandShortcut>
+                            </BbCommandItem>
+                            <BbCommandItem Value="cut">
                                 Cut
-                                <CommandShortcut>⌘X</CommandShortcut>
-                            </CommandItem>
-                        </CommandGroup>
-                    </CommandList>
-                </BlazorBlueprint.Components.Command.Command>
+                                <BbCommandShortcut>⌘X</BbCommandShortcut>
+                            </BbCommandItem>
+                        </BbCommandGroup>
+                    </BbCommandList>
+                </BlazorBlueprint.Components.BbCommand>
             </div>
             @if (!string.IsNullOrEmpty(shortcutSelected))
             {
                 <p class="text-sm">Selected: <strong>@shortcutSelected</strong></p>
             }
         </div>
+
+        <CodeBlock Source="Components/Command/keyboard-shortcuts.txt" />
     </section>
 
     <!-- With Disabled Items -->
@@ -240,25 +300,27 @@
 
         <div class="flex flex-col gap-2">
             <div class="border rounded-lg shadow-sm max-w-md">
-                <BlazorBlueprint.Components.Command.Command OnValueChange="@HandleDisabledSelect">
-                    <CommandInput Placeholder="Search commands..." />
-                    <CommandList>
-                        <CommandEmpty>No results found.</CommandEmpty>
-                        <CommandGroup>
-                            <CommandItem Value="cut">Cut</CommandItem>
-                            <CommandItem Value="copy">Copy</CommandItem>
-                            <CommandItem Value="paste" Disabled="true">Paste (Disabled)</CommandItem>
-                            <CommandItem Value="select-all">Select All</CommandItem>
-                            <CommandItem Value="delete" Disabled="true">Delete (Disabled)</CommandItem>
-                        </CommandGroup>
-                    </CommandList>
-                </BlazorBlueprint.Components.Command.Command>
+                <BlazorBlueprint.Components.BbCommand OnValueChange="@HandleDisabledSelect">
+                    <BbCommandInput Placeholder="Search commands..." />
+                    <BbCommandList>
+                        <BbCommandEmpty>No results found.</BbCommandEmpty>
+                        <BbCommandGroup>
+                            <BbCommandItem Value="cut">Cut</BbCommandItem>
+                            <BbCommandItem Value="copy">Copy</BbCommandItem>
+                            <BbCommandItem Value="paste" Disabled="true">Paste (Disabled)</BbCommandItem>
+                            <BbCommandItem Value="select-all">Select All</BbCommandItem>
+                            <BbCommandItem Value="delete" Disabled="true">Delete (Disabled)</BbCommandItem>
+                        </BbCommandGroup>
+                    </BbCommandList>
+                </BlazorBlueprint.Components.BbCommand>
             </div>
             @if (!string.IsNullOrEmpty(disabledSelected))
             {
                 <p class="text-sm">Selected: <strong>@disabledSelected</strong></p>
             }
         </div>
+
+        <CodeBlock Source="Components/Command/disabled.txt" />
     </section>
 
     <!-- Empty State -->
@@ -270,24 +332,26 @@
 
         <div class="flex flex-col gap-2">
             <div class="border rounded-lg shadow-sm max-w-md">
-                <BlazorBlueprint.Components.Command.Command>
-                    <CommandInput Placeholder="Try searching for xyz..." />
-                    <CommandList>
-                        <CommandEmpty>
+                <BlazorBlueprint.Components.BbCommand>
+                    <BbCommandInput Placeholder="Try searching for xyz..." />
+                    <BbCommandList>
+                        <BbCommandEmpty>
                             <div class="flex flex-col items-center gap-2">
                                 <LucideIcon Name="search-x" Size="32" Class="text-muted-foreground" />
                                 <p class="text-sm">No results found for your query.</p>
                             </div>
-                        </CommandEmpty>
-                        <CommandGroup>
-                            <CommandItem Value="apple">Apple</CommandItem>
-                            <CommandItem Value="banana">Banana</CommandItem>
-                            <CommandItem Value="cherry">Cherry</CommandItem>
-                        </CommandGroup>
-                    </CommandList>
-                </BlazorBlueprint.Components.Command.Command>
+                        </BbCommandEmpty>
+                        <BbCommandGroup>
+                            <BbCommandItem Value="apple">Apple</BbCommandItem>
+                            <BbCommandItem Value="banana">Banana</BbCommandItem>
+                            <BbCommandItem Value="cherry">Cherry</BbCommandItem>
+                        </BbCommandGroup>
+                    </BbCommandList>
+                </BlazorBlueprint.Components.BbCommand>
             </div>
         </div>
+
+        <CodeBlock Source="Components/Command/empty.txt" />
     </section>
 
     <!-- Complex Example -->
@@ -299,73 +363,75 @@
 
         <div class="flex flex-col gap-2">
             <div class="border rounded-lg shadow-sm max-w-lg">
-                <BlazorBlueprint.Components.Command.Command OnValueChange="@HandleComplexSelect">
-                    <CommandInput Placeholder="Type a command or search..." />
-                    <CommandList>
-                        <CommandEmpty>No results found.</CommandEmpty>
-                        <CommandGroup Heading="Suggestions">
-                            <CommandItem Value="calendar">
+                <BlazorBlueprint.Components.BbCommand OnValueChange="@HandleComplexSelect">
+                    <BbCommandInput Placeholder="Type a command or search..." />
+                    <BbCommandList>
+                        <BbCommandEmpty>No results found.</BbCommandEmpty>
+                        <BbCommandGroup Heading="Suggestions">
+                            <BbCommandItem Value="calendar">
                                 <LucideIcon Name="calendar" Size="16" Class="mr-2" />
                                 Calendar
-                            </CommandItem>
-                            <CommandItem Value="search-emoji">
+                            </BbCommandItem>
+                            <BbCommandItem Value="search-emoji">
                                 <LucideIcon Name="smile" Size="16" Class="mr-2" />
                                 Search Emoji
-                            </CommandItem>
-                            <CommandItem Value="calculator">
+                            </BbCommandItem>
+                            <BbCommandItem Value="calculator">
                                 <LucideIcon Name="calculator" Size="16" Class="mr-2" />
                                 Calculator
-                            </CommandItem>
-                        </CommandGroup>
-                        <CommandSeparator />
-                        <CommandGroup Heading="File">
-                            <CommandItem Value="new-file">
+                            </BbCommandItem>
+                        </BbCommandGroup>
+                        <BbCommandSeparator />
+                        <BbCommandGroup Heading="File">
+                            <BbCommandItem Value="new-file">
                                 <LucideIcon Name="file-plus" Size="16" Class="mr-2" />
                                 New File
-                                <CommandShortcut>⌘N</CommandShortcut>
-                            </CommandItem>
-                            <CommandItem Value="open-file">
+                                <BbCommandShortcut>⌘N</BbCommandShortcut>
+                            </BbCommandItem>
+                            <BbCommandItem Value="open-file">
                                 <LucideIcon Name="folder-open" Size="16" Class="mr-2" />
                                 Open File
-                                <CommandShortcut>⌘O</CommandShortcut>
-                            </CommandItem>
-                            <CommandItem Value="save-file">
+                                <BbCommandShortcut>⌘O</BbCommandShortcut>
+                            </BbCommandItem>
+                            <BbCommandItem Value="save-file">
                                 <LucideIcon Name="save" Size="16" Class="mr-2" />
                                 Save File
-                                <CommandShortcut>⌘S</CommandShortcut>
-                            </CommandItem>
-                            <CommandItem Value="save-as" Disabled="true">
+                                <BbCommandShortcut>⌘S</BbCommandShortcut>
+                            </BbCommandItem>
+                            <BbCommandItem Value="save-as" Disabled="true">
                                 <LucideIcon Name="save" Size="16" Class="mr-2" />
                                 Save As... (Disabled)
-                                <CommandShortcut>⇧⌘S</CommandShortcut>
-                            </CommandItem>
-                        </CommandGroup>
-                        <CommandSeparator />
-                        <CommandGroup Heading="Settings">
-                            <CommandItem Value="profile">
+                                <BbCommandShortcut>⇧⌘S</BbCommandShortcut>
+                            </BbCommandItem>
+                        </BbCommandGroup>
+                        <BbCommandSeparator />
+                        <BbCommandGroup Heading="Settings">
+                            <BbCommandItem Value="profile">
                                 <LucideIcon Name="user" Size="16" Class="mr-2" />
                                 Profile
-                                <CommandShortcut>⌘P</CommandShortcut>
-                            </CommandItem>
-                            <CommandItem Value="billing">
+                                <BbCommandShortcut>⌘P</BbCommandShortcut>
+                            </BbCommandItem>
+                            <BbCommandItem Value="billing">
                                 <LucideIcon Name="credit-card" Size="16" Class="mr-2" />
                                 Billing
-                                <CommandShortcut>⌘B</CommandShortcut>
-                            </CommandItem>
-                            <CommandItem Value="settings">
+                                <BbCommandShortcut>⌘B</BbCommandShortcut>
+                            </BbCommandItem>
+                            <BbCommandItem Value="settings">
                                 <LucideIcon Name="settings" Size="16" Class="mr-2" />
                                 Settings
-                                <CommandShortcut>⌘,</CommandShortcut>
-                            </CommandItem>
-                        </CommandGroup>
-                    </CommandList>
-                </BlazorBlueprint.Components.Command.Command>
+                                <BbCommandShortcut>⌘,</BbCommandShortcut>
+                            </BbCommandItem>
+                        </BbCommandGroup>
+                    </BbCommandList>
+                </BlazorBlueprint.Components.BbCommand>
             </div>
             @if (!string.IsNullOrEmpty(complexSelected))
             {
                 <p class="text-sm">Selected: <strong>@complexSelected</strong></p>
             }
         </div>
+
+        <CodeBlock Source="Components/Command/complex.txt" />
     </section>
 
     <!-- Lazy Loading (Large Lists) -->
@@ -378,11 +444,11 @@
 
         <div class="flex flex-col gap-2">
             <div class="border rounded-lg shadow-sm max-w-md">
-                <BlazorBlueprint.Components.Command.Command OnValueChange="@HandleLazySelect">
-                    <CommandInput Placeholder="@($"Search {TotalIconCount} icons...")" />
-                    <CommandList Class="max-h-[300px]">
-                        <CommandEmpty>No icons found.</CommandEmpty>
-                        <CommandVirtualizedGroup TItem="(string Name, int Index)"
+                <BlazorBlueprint.Components.BbCommand OnValueChange="@HandleLazySelect">
+                    <BbCommandInput Placeholder="@($"Search {TotalIconCount} icons...")" />
+                    <BbCommandList Class="max-h-[300px]">
+                        <BbCommandEmpty>No icons found.</BbCommandEmpty>
+                        <BbCommandVirtualizedGroup TItem="(string Name, int Index)"
                             Heading="Lucide"
                             Items="_lucideIcons"
                             ItemValue="@(icon => icon.Name)"
@@ -393,9 +459,9 @@
                                 <span class="flex-1">@icon.Name</span>
                                 <span class="text-xs text-muted-foreground ml-2">#@icon.Index</span>
                             </ItemTemplate>
-                        </CommandVirtualizedGroup>
-                        <CommandSeparator />
-                        <CommandVirtualizedGroup TItem="(string Name, int Index)"
+                        </BbCommandVirtualizedGroup>
+                        <BbCommandSeparator />
+                        <BbCommandVirtualizedGroup TItem="(string Name, int Index)"
                             Heading="Feather"
                             Items="_featherIcons"
                             ItemValue="@(icon => icon.Name)"
@@ -406,9 +472,9 @@
                                 <span class="flex-1">@icon.Name</span>
                                 <span class="text-xs text-muted-foreground ml-2">#@icon.Index</span>
                             </ItemTemplate>
-                        </CommandVirtualizedGroup>
-                        <CommandSeparator />
-                        <CommandVirtualizedGroup TItem="(string Name, int Index)"
+                        </BbCommandVirtualizedGroup>
+                        <BbCommandSeparator />
+                        <BbCommandVirtualizedGroup TItem="(string Name, int Index)"
                             Heading="Heroicons"
                             Items="_heroIcons"
                             ItemValue="@(icon => icon.Name)"
@@ -419,15 +485,17 @@
                                 <span class="flex-1">@icon.Name</span>
                                 <span class="text-xs text-muted-foreground ml-2">#@icon.Index</span>
                             </ItemTemplate>
-                        </CommandVirtualizedGroup>
-                    </CommandList>
-                </BlazorBlueprint.Components.Command.Command>
+                        </BbCommandVirtualizedGroup>
+                    </BbCommandList>
+                </BlazorBlueprint.Components.BbCommand>
             </div>
             @if (!string.IsNullOrEmpty(lazySelected))
             {
                 <p class="text-sm">Selected: <strong>@lazySelected</strong></p>
             }
         </div>
+
+        <CodeBlock Source="Components/Command/lazy-loading.txt" />
     </section>
 
     <!-- Debounce -->
@@ -442,53 +510,183 @@
             <div class="space-y-2">
                 <p class="text-sm font-medium">Debounced (default, 500ms)</p>
                 <div class="border rounded-lg shadow-sm">
-                    <BlazorBlueprint.Components.Command.Command>
-                        <CommandInput Placeholder="Search (debounced)..." />
-                        <CommandList>
-                            <CommandEmpty>No results found.</CommandEmpty>
-                            <CommandGroup>
-                                <CommandItem Value="apple">Apple</CommandItem>
-                                <CommandItem Value="banana">Banana</CommandItem>
-                                <CommandItem Value="cherry">Cherry</CommandItem>
-                                <CommandItem Value="date">Date</CommandItem>
-                            </CommandGroup>
-                        </CommandList>
-                    </BlazorBlueprint.Components.Command.Command>
+                    <BlazorBlueprint.Components.BbCommand>
+                        <BbCommandInput Placeholder="Search (debounced)..." />
+                        <BbCommandList>
+                            <BbCommandEmpty>No results found.</BbCommandEmpty>
+                            <BbCommandGroup>
+                                <BbCommandItem Value="apple">Apple</BbCommandItem>
+                                <BbCommandItem Value="banana">Banana</BbCommandItem>
+                                <BbCommandItem Value="cherry">Cherry</BbCommandItem>
+                                <BbCommandItem Value="date">Date</BbCommandItem>
+                            </BbCommandGroup>
+                        </BbCommandList>
+                    </BlazorBlueprint.Components.BbCommand>
                 </div>
                 <p class="text-xs text-muted-foreground">Filtering happens after you stop typing for 500ms.</p>
             </div>
             <div class="space-y-2">
                 <p class="text-sm font-medium">Immediate (DisableDebounce)</p>
                 <div class="border rounded-lg shadow-sm">
-                    <BlazorBlueprint.Components.Command.Command>
-                        <CommandInput Placeholder="Search (immediate)..." DisableDebounce="true" />
-                        <CommandList>
-                            <CommandEmpty>No results found.</CommandEmpty>
-                            <CommandGroup>
-                                <CommandItem Value="apple">Apple</CommandItem>
-                                <CommandItem Value="banana">Banana</CommandItem>
-                                <CommandItem Value="cherry">Cherry</CommandItem>
-                                <CommandItem Value="date">Date</CommandItem>
-                            </CommandGroup>
-                        </CommandList>
-                    </BlazorBlueprint.Components.Command.Command>
+                    <BlazorBlueprint.Components.BbCommand>
+                        <BbCommandInput Placeholder="Search (immediate)..." DisableDebounce="true" />
+                        <BbCommandList>
+                            <BbCommandEmpty>No results found.</BbCommandEmpty>
+                            <BbCommandGroup>
+                                <BbCommandItem Value="apple">Apple</BbCommandItem>
+                                <BbCommandItem Value="banana">Banana</BbCommandItem>
+                                <BbCommandItem Value="cherry">Cherry</BbCommandItem>
+                                <BbCommandItem Value="date">Date</BbCommandItem>
+                            </BbCommandGroup>
+                        </BbCommandList>
+                    </BlazorBlueprint.Components.BbCommand>
                 </div>
                 <p class="text-xs text-muted-foreground">Filtering happens on every keystroke.</p>
             </div>
         </div>
+
+        <CodeBlock Source="Components/Command/debounce.txt" />
     </section>
 
-    <!-- Keyboard Navigation Info -->
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Command container uses <code>role="listbox"</code> for item selection semantics</AccessibilityItem>
+            <AccessibilityItem>Items use <code>role="option"</code> with <code>aria-selected</code> for the highlighted item</AccessibilityItem>
+            <AccessibilityItem>Groups use <code>role="group"</code> with <code>aria-labelledby</code> for heading association</AccessibilityItem>
+            <AccessibilityItem>Search input is linked to the listbox via <code>aria-controls</code></AccessibilityItem>
+            <AccessibilityItem>Disabled items use <code>aria-disabled</code> and are skipped during keyboard navigation</AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Move through items">
+                <BbKbd>Arrow Up</BbKbd> / <BbKbd>Arrow Down</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Select highlighted item">
+                <BbKbd>Enter</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Close dialog (when in CommandDialog)">
+                <BbKbd>Escape</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Type to filter items">
+                <BbKbd>Any Key</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
+
+    <!-- API Reference -->
     <section class="space-y-4">
-        <h2 class="text-2xl font-semibold">Keyboard Navigation</h2>
-        <div class="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
-            <h3 class="font-medium mb-2">Available Keyboard Shortcuts:</h3>
-            <ul class="space-y-2 text-sm text-muted-foreground">
-                <li><Kbd>↑</Kbd> <Kbd>↓</Kbd> Navigate through items</li>
-                <li><Kbd>Enter</Kbd> Select the highlighted item</li>
-                <li><Kbd>Esc</Kbd> Clear search query</li>
-                <li><Kbd>Type</Kbd> Filter items in real-time</li>
-            </ul>
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="Command">
+                <ApiParameter Name="SearchQuery" Type="string" Default="&quot;&quot;">
+                    The current search/filter text. Supports two-way binding with <code>@@bind-SearchQuery</code>.
+                </ApiParameter>
+                <ApiParameter Name="OnValueChange" Type="EventCallback&lt;string&gt;">
+                    Callback when an item is selected, receiving the item's Value.
+                </ApiParameter>
+                <ApiParameter Name="FilterFunction" Type="Func&lt;CommandItemMetadata, string, bool&gt;?" Default="null">
+                    Custom filter function. When null, uses built-in case-insensitive text matching.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Disables the entire command menu.
+                </ApiParameter>
+                <ApiParameter Name="CloseOnSelect" Type="bool" Default="true">
+                    Whether to close the parent dialog when an item is selected.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the command container.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="CommandDialog">
+                <ApiParameter Name="Open" Type="bool" Default="false">
+                    Whether the dialog is open. Supports two-way binding with <code>@@bind-Open</code>.
+                </ApiParameter>
+                <ApiParameter Name="Shortcut" Type="string?" Default="null">
+                    Keyboard shortcut to toggle the dialog (e.g., "Ctrl+J", "Ctrl+K").
+                </ApiParameter>
+                <ApiParameter Name="OnValueChange" Type="EventCallback&lt;string&gt;">
+                    Callback when an item is selected.
+                </ApiParameter>
+                <ApiParameter Name="CloseOnSelect" Type="bool" Default="true">
+                    Whether to close the dialog when an item is selected.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the dialog.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="CommandInput">
+                <ApiParameter Name="Placeholder" Type="string" Default="&quot;Type a command or search...&quot;">
+                    Placeholder text for the search input.
+                </ApiParameter>
+                <ApiParameter Name="AutoFocus" Type="bool" Default="false">
+                    Automatically focus the input when rendered.
+                </ApiParameter>
+                <ApiParameter Name="DisableDebounce" Type="bool" Default="false">
+                    When true, filters immediately on every keystroke instead of debouncing.
+                </ApiParameter>
+                <ApiParameter Name="DebounceInterval" Type="int" Default="500">
+                    Debounce delay in milliseconds before filtering is applied.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Disables the search input.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the input.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="CommandList">
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the list container. Use to control max height (e.g., <code>max-h-[300px]</code>).
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="CommandGroup">
+                <ApiParameter Name="Heading" Type="string?" Default="null">
+                    Optional heading text displayed above the group.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the group.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="CommandItem">
+                <ApiParameter Name="Value" Type="string?" Default="null">
+                    The value passed to OnValueChange when this item is selected.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Disables the item, preventing selection and keyboard navigation.
+                </ApiParameter>
+                <ApiParameter Name="SearchText" Type="string?" Default="null">
+                    Custom text for filtering. When null, the rendered text content is used.
+                </ApiParameter>
+                <ApiParameter Name="OnSelect" Type="EventCallback">
+                    Callback invoked when this specific item is selected.
+                </ApiParameter>
+                <ApiParameter Name="Icon" Type="RenderFragment?" Default="null">
+                    Icon content rendered before the item text.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the item.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="CommandSeparator">
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the separator.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="CommandShortcut">
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the shortcut text.
+                </ApiParameter>
+            </ApiReference>
         </div>
     </section>
 </div>
@@ -510,7 +708,9 @@
 
     // Independent state for each section
     private bool isCommandPaletteOpen;
+    private bool isCommandDialogOpen;
     private string? paletteSelected;
+    private string? dialogSelected;
     private string? basicSelected;
     private string? groupSelected;
     private string? shortcutSelected;
@@ -525,6 +725,7 @@
         isCommandPaletteOpen = false; // Close the palette after selection
     }
 
+    private void HandleDialogSelect(string value) => dialogSelected = value;
     private void HandleBasicSelect(string value) => basicSelected = value;
     private void HandleGroupSelect(string value) => groupSelected = value;
     private void HandleShortcutSelect(string value) => shortcutSelected = value;

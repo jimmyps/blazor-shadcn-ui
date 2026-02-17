@@ -1,8 +1,4 @@
 @page "/components/spinner"
-@using BlazorBlueprint.Components.Spinner
-@using BlazorBlueprint.Components.Button
-@using BlazorBlueprint.Components.Separator
-
 <PageTitle>Spinner Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -23,7 +19,8 @@
                 A simple spinning loading indicator.
             </p>
         </div>
-        <Spinner />
+        <BbSpinner />
+        <CodeBlock Source="Components/Spinner/basic.txt" />
     </div>
 
     <!-- Sizes -->
@@ -36,18 +33,19 @@
         </div>
         <div class="flex items-center gap-8">
             <div class="flex flex-col items-center gap-2">
-                <Spinner Size="SpinnerSize.Small" />
+                <BbSpinner Size="SpinnerSize.Small" />
                 <span class="text-sm text-muted-foreground">Small</span>
             </div>
             <div class="flex flex-col items-center gap-2">
-                <Spinner Size="SpinnerSize.Default" />
+                <BbSpinner Size="SpinnerSize.Default" />
                 <span class="text-sm text-muted-foreground">Default</span>
             </div>
             <div class="flex flex-col items-center gap-2">
-                <Spinner Size="SpinnerSize.Large" />
+                <BbSpinner Size="SpinnerSize.Large" />
                 <span class="text-sm text-muted-foreground">Large</span>
             </div>
         </div>
+        <CodeBlock Source="Components/Spinner/sizes.txt" />
     </div>
 
     <!-- In Buttons -->
@@ -59,19 +57,20 @@
             </p>
         </div>
         <div class="flex flex-wrap gap-4">
-            <Button Disabled="true">
-                <Spinner Size="SpinnerSize.Small" Class="mr-2" />
+            <BbButton Disabled="true">
+                <BbSpinner Size="SpinnerSize.Small" Class="mr-2" />
                 Please wait
-            </Button>
-            <Button Variant="ButtonVariant.Outline" Disabled="true">
-                <Spinner Size="SpinnerSize.Small" Class="mr-2" />
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Outline" Disabled="true">
+                <BbSpinner Size="SpinnerSize.Small" Class="mr-2" />
                 Loading...
-            </Button>
-            <Button Variant="ButtonVariant.Secondary" Disabled="true">
-                <Spinner Size="SpinnerSize.Small" Class="mr-2" />
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Secondary" Disabled="true">
+                <BbSpinner Size="SpinnerSize.Small" Class="mr-2" />
                 Saving
-            </Button>
+            </BbButton>
         </div>
+        <CodeBlock Source="Components/Spinner/loading-buttons.txt" />
     </div>
 
     <!-- Interactive Button -->
@@ -82,17 +81,18 @@
                 Click the button to simulate a loading operation.
             </p>
         </div>
-        <Button Disabled="@_isLoading" OnClick="@SimulateLoading">
+        <BbButton Disabled="@_isLoading" OnClick="@SimulateLoading">
             @if (_isLoading)
             {
-                <Spinner Size="SpinnerSize.Small" Class="mr-2" />
+                <BbSpinner Size="SpinnerSize.Small" Class="mr-2" />
                 <span>Processing...</span>
             }
             else
             {
                 <span>Submit</span>
             }
-        </Button>
+        </BbButton>
+        <CodeBlock Source="Components/Spinner/interactive.txt" />
     </div>
 
     <!-- Custom Colors -->
@@ -105,22 +105,23 @@
         </div>
         <div class="flex items-center gap-8">
             <div class="flex flex-col items-center gap-2">
-                <Spinner Class="text-blue-500" />
+                <BbSpinner Class="text-blue-500" />
                 <span class="text-sm text-muted-foreground">Blue</span>
             </div>
             <div class="flex flex-col items-center gap-2">
-                <Spinner Class="text-green-500" />
+                <BbSpinner Class="text-green-500" />
                 <span class="text-sm text-muted-foreground">Green</span>
             </div>
             <div class="flex flex-col items-center gap-2">
-                <Spinner Class="text-red-500" />
+                <BbSpinner Class="text-red-500" />
                 <span class="text-sm text-muted-foreground">Red</span>
             </div>
             <div class="flex flex-col items-center gap-2">
-                <Spinner Class="text-purple-500" />
+                <BbSpinner Class="text-purple-500" />
                 <span class="text-sm text-muted-foreground">Purple</span>
             </div>
         </div>
+        <CodeBlock Source="Components/Spinner/custom-colors.txt" />
     </div>
 
     <!-- Loading States -->
@@ -135,56 +136,41 @@
             <!-- Centered Loading -->
             <div class="border rounded-lg p-8 flex items-center justify-center">
                 <div class="flex flex-col items-center gap-2">
-                    <Spinner Size="SpinnerSize.Large" />
+                    <BbSpinner Size="SpinnerSize.Large" />
                     <span class="text-sm text-muted-foreground">Loading content...</span>
                 </div>
             </div>
 
             <!-- Inline Loading -->
             <div class="border rounded-lg p-4 flex items-center gap-3">
-                <Spinner Size="SpinnerSize.Small" />
+                <BbSpinner Size="SpinnerSize.Small" />
                 <span class="text-sm">Fetching data from server...</span>
             </div>
         </div>
+        <CodeBlock Source="Components/Spinner/loading-states.txt" />
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Size</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">SpinnerSize</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="Spinner">
+                <ApiParameter Name="Size" Type="SpinnerSize" Default="Default">
                     The size of the spinner. Options: Small (16px), Default (24px), Large (40px).
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Class</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
                     Additional CSS classes to apply. Use text-* classes to change color.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">AriaLabel</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Accessible label for screen readers. Default: "Loading".
-                </p>
-            </div>
+                </ApiParameter>
+                <ApiParameter Name="AriaLabel" Type="string?" Default="Loading">
+                    Accessible label for screen readers.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {

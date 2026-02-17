@@ -1,9 +1,5 @@
 @page "/components/input-group"
 @using BlazorBlueprint.Primitives.Services
-@using BlazorBlueprint.Components.InputGroup
-@using BlazorBlueprint.Components.Input
-@using BlazorBlueprint.Components.Label
-@using BlazorBlueprint.Components.DropdownMenu
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>Input Group - Blazor Blueprint</PageTitle>
@@ -28,55 +24,56 @@
         <div class="space-y-6">
             <!-- Icon Start -->
             <div class="space-y-2">
-                <Label>Search</Label>
-                <InputGroup>
-                    <InputGroupAddon Align="InputGroupAlign.InlineStart">
+                <BbLabel>Search</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
                         <LucideIcon Name="search" Size="16" />
-                    </InputGroupAddon>
-                    <InputGroupInput Placeholder="Search..." />
-                </InputGroup>
+                    </BbInputGroupAddon>
+                    <BbInputGroupInput Placeholder="Search..." />
+                </BbInputGroup>
             </div>
 
             <!-- Icon End -->
             <div class="space-y-2">
-                <Label>Username</Label>
-                <InputGroup>
-                    <InputGroupInput Value="johndoe123" Placeholder="Enter username" />
-                    <InputGroupAddon Align="InputGroupAlign.InlineEnd" Class="text-sm text-muted-foreground">
+                <BbLabel>Username</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupInput Value="johndoe123" Placeholder="Enter username" />
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd" Class="text-sm text-muted-foreground">
                         @@company.com
-                    </InputGroupAddon>
-                </InputGroup>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
             </div>
 
             <!-- Icons on Both Sides -->
             <div class="space-y-2">
-                <Label>Email</Label>
-                <InputGroup>
-                    <InputGroupAddon Align="InputGroupAlign.InlineStart">
+                <BbLabel>Email</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
                         <LucideIcon Name="at-sign" Size="16" />
-                    </InputGroupAddon>
-                    <InputGroupInput Type="InputType.Email" Placeholder="name@example.com" />
-                    <InputGroupAddon Align="InputGroupAlign.InlineEnd">
+                    </BbInputGroupAddon>
+                    <BbInputGroupInput Type="InputType.Email" Placeholder="name@example.com" />
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
                         <LucideIcon Name="circle-check" Size="16" />
-                    </InputGroupAddon>
-                </InputGroup>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
             </div>
 
             <!-- Icons on Both Sides and Rounded -->
             <div class="space-y-2">
-                <Label>Website</Label>
-                <InputGroup Class="rounded-full">
-                    <InputGroupAddon Align="InputGroupAlign.InlineStart">
+                <BbLabel>Website</BbLabel>
+                <BbInputGroup Class="rounded-full">
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
                         <LucideIcon Name="circle-alert" Size="16" />
                         <span class="font-semibold text-sm">https://</span>
-                    </InputGroupAddon>
-                    <InputGroupInput Type="InputType.Text" Placeholder="www.example.com" />
-                    <InputGroupAddon Align="InputGroupAlign.InlineEnd">
+                    </BbInputGroupAddon>
+                    <BbInputGroupInput Type="InputType.Text" Placeholder="www.example.com" />
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
                         <LucideIcon Name="star" Size="16" />
-                    </InputGroupAddon>
-                </InputGroup>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
             </div>
         </div>
+        <CodeBlock Source="Components/InputGroup/basic.txt" />
     </section>
 
     <!-- Text Addons -->
@@ -91,40 +88,41 @@
         <div class="space-y-6">
             <!-- Currency -->
             <div class="space-y-2">
-                <Label>Price</Label>
-                <InputGroup>
-                    <InputGroupAddon Align="InputGroupAlign.InlineStart">
-                        <InputGroupText>$</InputGroupText>
-                    </InputGroupAddon>
-                    <InputGroupInput Type="InputType.Number" Placeholder="0.00" />
-                    <InputGroupAddon Align="InputGroupAlign.InlineEnd">
-                        <InputGroupText>USD</InputGroupText>
-                    </InputGroupAddon>
-                </InputGroup>
+                <BbLabel>Price</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
+                        <BbInputGroupText>$</BbInputGroupText>
+                    </BbInputGroupAddon>
+                    <BbInputGroupInput Type="InputType.Number" Placeholder="0.00" />
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+                        <BbInputGroupText>USD</BbInputGroupText>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
             </div>
 
             <!-- URL -->
             <div class="space-y-2">
-                <Label>Website</Label>
-                <InputGroup>
-                    <InputGroupAddon Align="InputGroupAlign.InlineStart">
-                        <InputGroupText>https://</InputGroupText>
-                    </InputGroupAddon>
-                    <InputGroupInput Placeholder="example.com" />
-                </InputGroup>
+                <BbLabel>Website</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
+                        <BbInputGroupText>https://</BbInputGroupText>
+                    </BbInputGroupAddon>
+                    <BbInputGroupInput Placeholder="example.com" />
+                </BbInputGroup>
             </div>
 
             <!-- Weight -->
             <div class="space-y-2">
-                <Label>Weight</Label>
-                <InputGroup>
-                    <InputGroupInput Type="InputType.Number" Placeholder="0" />
-                    <InputGroupAddon Align="InputGroupAlign.InlineEnd">
-                        <InputGroupText>kg</InputGroupText>
-                    </InputGroupAddon>
-                </InputGroup>
+                <BbLabel>Weight</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupInput Type="InputType.Number" Placeholder="0" />
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+                        <BbInputGroupText>kg</BbInputGroupText>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
             </div>
         </div>
+        <CodeBlock Source="Components/InputGroup/text-addons.txt" />
     </section>
 
     <!-- Action Buttons -->
@@ -139,46 +137,47 @@
         <div class="space-y-6">
             <!-- Search with Button -->
             <div class="space-y-2">
-                <Label>Search</Label>
-                <InputGroup>
-                    <InputGroupInput Placeholder="Search products..." />
-                    <InputGroupAddon Align="InputGroupAlign.InlineEnd">
-                        <InputGroupButton Class="!px-2.5 !py-0.5 !rounded-sm">
+                <BbLabel>Search</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupInput Placeholder="Search products..." />
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+                        <BbInputGroupButton Class="!px-2.5 !py-0.5 !rounded-sm">
                             Search
-                        </InputGroupButton>
-                    </InputGroupAddon>
-                </InputGroup>
+                        </BbInputGroupButton>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
             </div>
 
             <!-- Icon Button -->
             <div class="space-y-2">
-                <Label>API Key</Label>
-                <InputGroup>
-                    <InputGroupInput Value="sk-1234567890abcdef" />
-                    <InputGroupAddon Align="InputGroupAlign.InlineEnd">
-                        <InputGroupButton Variant="ButtonVariant.Ghost" Class="!px-1.5 !py-1.5 !rounded-md">
+                <BbLabel>API Key</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupInput Value="sk-1234567890abcdef" />
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+                        <BbInputGroupButton Variant="ButtonVariant.Ghost" Class="!px-1.5 !py-1.5 !rounded-md">
                             <LucideIcon Name="copy" Size="16" />
-                        </InputGroupButton>
-                    </InputGroupAddon>
-                </InputGroup>
+                        </BbInputGroupButton>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
             </div>
 
             <!-- Icon + Button -->
             <div class="space-y-2">
-                <Label>Newsletter</Label>
-                <InputGroup>
-                    <InputGroupAddon Align="InputGroupAlign.InlineStart">
+                <BbLabel>Newsletter</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
                         <LucideIcon Name="mail" Size="16" />
-                    </InputGroupAddon>
-                    <InputGroupInput Type="InputType.Email" Placeholder="Enter your email" />
-                    <InputGroupAddon Align="InputGroupAlign.InlineEnd">
-                        <InputGroupButton Class="!px-2.5 !py-0.5 !rounded-sm">
+                    </BbInputGroupAddon>
+                    <BbInputGroupInput Type="InputType.Email" Placeholder="Enter your email" />
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+                        <BbInputGroupButton Class="!px-2.5 !py-0.5 !rounded-sm">
                             Subscribe
-                        </InputGroupButton>
-                    </InputGroupAddon>
-                </InputGroup>
+                        </BbInputGroupButton>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
             </div>
         </div>
+        <CodeBlock Source="Components/InputGroup/action-buttons.txt" />
     </section>
 
     <!-- Form Validation -->
@@ -193,43 +192,44 @@
         <div class="space-y-6">
             <!-- Success State -->
             <div class="space-y-2">
-                <Label>Username</Label>
-                <InputGroup>
-                    <InputGroupInput Value="johndoe" />
-                    <InputGroupAddon Align="InputGroupAlign.InlineEnd">
+                <BbLabel>Username</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupInput Value="johndoe" />
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
                         <LucideIcon Name="circle-check" Size="16" Color="Green" />
-                    </InputGroupAddon>
-                </InputGroup>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
                 <p class="text-sm text-green-600">Username is available</p>
             </div>
 
             <!-- Error State -->
             <div class="space-y-2">
-                <Label>Email</Label>
-                <InputGroup>
-                    <InputGroupInput
+                <BbLabel>Email</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupInput
                         Type="InputType.Email"
                         Value="invalid-email"
                         AriaInvalid="true" />
-                    <InputGroupAddon Align="InputGroupAlign.InlineEnd">
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
                         <LucideIcon Name="triangle-alert" Size="16" Class="text-destructive" />
-                    </InputGroupAddon>
-                </InputGroup>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
                 <p class="text-sm text-destructive">Please enter a valid email address</p>
             </div>
 
             <!-- Loading State -->
             <div class="space-y-2">
-                <Label>Verification Code</Label>
-                <InputGroup>
-                    <InputGroupInput Placeholder="Enter code..." />
-                    <InputGroupAddon Align="InputGroupAlign.InlineEnd">
+                <BbLabel>Verification Code</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupInput Placeholder="Enter code..." />
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
                         <LucideIcon Name="loader-circle" Size="16" Class="animate-spin" />
-                    </InputGroupAddon>
-                </InputGroup>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
                 <p class="text-sm text-muted-foreground">Verifying...</p>
             </div>
         </div>
+        <CodeBlock Source="Components/InputGroup/form-validation.txt" />
     </section>
 
     <!-- Advanced Examples -->
@@ -244,62 +244,63 @@
         <div class="space-y-6">
             <!-- Search with Clear and Search Button -->
             <div class="space-y-2">
-                <Label>Advanced Search</Label>
-                <InputGroup>
-                    <InputGroupAddon Align="InputGroupAlign.InlineStart">
+                <BbLabel>Advanced Search</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
                         <LucideIcon Name="search" Size="16" />
-                    </InputGroupAddon>
-                    <InputGroupInput Placeholder="Search files and folders..." />
-                    <InputGroupAddon Align="InputGroupAlign.InlineEnd">
-                        <InputGroupButton Variant="ButtonVariant.Ghost" Class="!px-1.5 !py-1.5 !rounded-md">
+                    </BbInputGroupAddon>
+                    <BbInputGroupInput Placeholder="Search files and folders..." />
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+                        <BbInputGroupButton Variant="ButtonVariant.Ghost" Class="!px-1.5 !py-1.5 !rounded-md">
                             <LucideIcon Name="x" Size="16" />
-                        </InputGroupButton>
-                    </InputGroupAddon>
-                    <InputGroupAddon Align="InputGroupAlign.InlineEnd">
-                        <InputGroupButton Class="!px-2.5 !py-0.5 !rounded-sm">
+                        </BbInputGroupButton>
+                    </BbInputGroupAddon>
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+                        <BbInputGroupButton Class="!px-2.5 !py-0.5 !rounded-sm">
                             Search
-                        </InputGroupButton>
-                    </InputGroupAddon>
-                </InputGroup>
+                        </BbInputGroupButton>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
             </div>
 
             <!-- Amount with Currency Button -->
             <div class="space-y-2">
-                <Label>Transfer Amount</Label>
-                <InputGroup>
-                    <InputGroupAddon Align="InputGroupAlign.InlineStart">
+                <BbLabel>Transfer Amount</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
                         <LucideIcon Name="circle-dollar-sign" Size="16" />
-                    </InputGroupAddon>
-                    <InputGroupInput Type="InputType.Number" Placeholder="0.00" />
-                    <InputGroupAddon Align="InputGroupAlign.InlineEnd">
-                        <InputGroupButton Variant="ButtonVariant.Outline" Class="!px-2.5 !py-0.5 !rounded-sm">
+                    </BbInputGroupAddon>
+                    <BbInputGroupInput Type="InputType.Number" Placeholder="0.00" />
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+                        <BbInputGroupButton Variant="ButtonVariant.Outline" Class="!px-2.5 !py-0.5 !rounded-sm">
                             USD <LucideIcon Name="chevron-down" Size="14" />
-                        </InputGroupButton>
-                    </InputGroupAddon>
-                </InputGroup>
+                        </BbInputGroupButton>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
             </div>
 
             <!-- Textarea with Action Buttons -->
             <div class="space-y-2">
-                <Label>Comment</Label>
-                <InputGroup>
-                    <InputGroupTextarea Rows="4" Placeholder="Write your comment..." />
-                    <InputGroupAddon Align="InputGroupAlign.BlockEnd">
+                <BbLabel>Comment</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupTextarea Rows="4" Placeholder="Write your comment..." />
+                    <BbInputGroupAddon Align="InputGroupAlign.BlockEnd">
                         <div class="flex items-center justify-between w-full">
                             <p class="text-sm text-muted-foreground">Max 500 characters</p>
                             <div class="flex gap-2">
-                                <InputGroupButton Variant="ButtonVariant.Ghost" Class="!px-2.5 !py-0.5 !rounded-sm">
+                                <BbInputGroupButton Variant="ButtonVariant.Ghost" Class="!px-2.5 !py-0.5 !rounded-sm">
                                     Cancel
-                                </InputGroupButton>
-                                <InputGroupButton Class="!px-2.5 !py-0.5 !rounded-sm">
+                                </BbInputGroupButton>
+                                <BbInputGroupButton Class="!px-2.5 !py-0.5 !rounded-sm">
                                     Post
-                                </InputGroupButton>
+                                </BbInputGroupButton>
                             </div>
                         </div>
-                    </InputGroupAddon>
-                </InputGroup>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
             </div>
         </div>
+        <CodeBlock Source="Components/InputGroup/advanced.txt" />
     </section>
 
     <!-- Dropdown Menu Example -->
@@ -314,49 +315,50 @@
         <div class="space-y-6">
             <!-- Input with Dropdown Menu -->
             <div class="space-y-2">
-                <Label>File Name</Label>
-                <DropdownMenu>
-                    <InputGroup>
-                        <InputGroupInput Placeholder="Enter file name" />
-                        <InputGroupAddon Align="InputGroupAlign.InlineEnd">
-                            <DropdownMenuTrigger AsChild="true">
-                                <InputGroupButton Variant="ButtonVariant.Ghost" Class="!px-1.5 !py-1.5 !rounded-md">
+                <BbLabel>File Name</BbLabel>
+                <BbDropdownMenu>
+                    <BbInputGroup>
+                        <BbInputGroupInput Placeholder="Enter file name" />
+                        <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+                            <BbDropdownMenuTrigger>
+                                <BbInputGroupButton Variant="ButtonVariant.Ghost" Class="!px-1.5 !py-1.5 !rounded-md">
                                     <LucideIcon Name="chevron-down" Size="16" />
-                                </InputGroupButton>
-                            </DropdownMenuTrigger>
-                        </InputGroupAddon>
-                    </InputGroup>
-                    <DropdownMenuContent Align="@PopoverAlign.End">
-                        <DropdownMenuItem OnClick="@(() => HandleMenuAction("Settings"))">Settings</DropdownMenuItem>
-                        <DropdownMenuItem OnClick="@(() => HandleMenuAction("Copy path"))">Copy path</DropdownMenuItem>
-                        <DropdownMenuItem OnClick="@(() => HandleMenuAction("Open location"))">Open location</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                                </BbInputGroupButton>
+                            </BbDropdownMenuTrigger>
+                        </BbInputGroupAddon>
+                    </BbInputGroup>
+                    <BbDropdownMenuContent Align="@PopoverAlign.End">
+                        <BbDropdownMenuItem OnClick="@(() => HandleMenuAction("Settings"))">Settings</BbDropdownMenuItem>
+                        <BbDropdownMenuItem OnClick="@(() => HandleMenuAction("Copy path"))">Copy path</BbDropdownMenuItem>
+                        <BbDropdownMenuItem OnClick="@(() => HandleMenuAction("Open location"))">Open location</BbDropdownMenuItem>
+                    </BbDropdownMenuContent>
+                </BbDropdownMenu>
             </div>
 
             <!-- Input with Search Scope Dropdown -->
             <div class="space-y-2">
-                <Label>Search</Label>
-                <DropdownMenu>
-                    <InputGroup Class="rounded-lg">
-                        <InputGroupInput Placeholder="Enter search query" />
-                        <InputGroupAddon Align="InputGroupAlign.InlineEnd">
-                            <DropdownMenuTrigger AsChild="true">
-                                <InputGroupButton Variant="ButtonVariant.Ghost" Class="!px-1 !py-1 !rounded-md">
+                <BbLabel>Search</BbLabel>
+                <BbDropdownMenu>
+                    <BbInputGroup Class="rounded-lg">
+                        <BbInputGroupInput Placeholder="Enter search query" />
+                        <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+                            <BbDropdownMenuTrigger>
+                                <BbInputGroupButton Variant="ButtonVariant.Ghost" Class="!px-1 !py-1 !rounded-md">
                                     Search In...
                                     <LucideIcon Name="chevron-down" Size="16" />
-                                </InputGroupButton>
-                            </DropdownMenuTrigger>
-                        </InputGroupAddon>
-                    </InputGroup>
-                    <DropdownMenuContent Align="@PopoverAlign.End">
-                        <DropdownMenuItem OnClick="@(() => HandleSearchScope("Documentation"))">Documentation</DropdownMenuItem>
-                        <DropdownMenuItem OnClick="@(() => HandleSearchScope("Blog Posts"))">Blog Posts</DropdownMenuItem>
-                        <DropdownMenuItem OnClick="@(() => HandleSearchScope("Changelog"))">Changelog</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                                </BbInputGroupButton>
+                            </BbDropdownMenuTrigger>
+                        </BbInputGroupAddon>
+                    </BbInputGroup>
+                    <BbDropdownMenuContent Align="@PopoverAlign.End">
+                        <BbDropdownMenuItem OnClick="@(() => HandleSearchScope("Documentation"))">Documentation</BbDropdownMenuItem>
+                        <BbDropdownMenuItem OnClick="@(() => HandleSearchScope("Blog Posts"))">Blog Posts</BbDropdownMenuItem>
+                        <BbDropdownMenuItem OnClick="@(() => HandleSearchScope("Changelog"))">Changelog</BbDropdownMenuItem>
+                    </BbDropdownMenuContent>
+                </BbDropdownMenu>
             </div>
         </div>
+        <CodeBlock Source="Components/InputGroup/dropdown-menu.txt" />
     </section>
 
     <!-- Code Editor Example -->
@@ -371,32 +373,33 @@
         <div class="space-y-6">
             <!-- Code Editor with Toolbar -->
             <div class="space-y-2">
-                <InputGroup>
-                    <InputGroupAddon Align="InputGroupAlign.BlockStart" Class="order-1 border-b !py-3">
-                        <InputGroupText Class="font-mono font-medium gap-1.5">
+                <BbInputGroup>
+                    <BbInputGroupAddon Align="InputGroupAlign.BlockStart" Class="order-1 border-b !py-3">
+                        <BbInputGroupText Class="font-mono font-medium gap-1.5">
                             <LucideIcon Name="file-code" Size="16" />
                             script.js
-                        </InputGroupText>
-                        <InputGroupButton Variant="ButtonVariant.Ghost" Class="ml-auto !px-2 !py-2 !rounded-md">
+                        </BbInputGroupText>
+                        <BbInputGroupButton Variant="ButtonVariant.Ghost" Class="ml-auto !px-2 !py-2 !rounded-md">
                             <LucideIcon Name="refresh-cw" Size="16" />
-                        </InputGroupButton>
-                        <InputGroupButton Variant="ButtonVariant.Ghost" Class="!px-2 !py-2 !rounded-md">
+                        </BbInputGroupButton>
+                        <BbInputGroupButton Variant="ButtonVariant.Ghost" Class="!px-2 !py-2 !rounded-md">
                             <LucideIcon Name="copy" Size="16" />
-                        </InputGroupButton>
-                    </InputGroupAddon>
-                    <InputGroupTextarea
+                        </BbInputGroupButton>
+                    </BbInputGroupAddon>
+                    <BbInputGroupTextarea
                         Placeholder="console.log('Hello, world!');"
                         Rows="8"
                         Class="min-h-[200px] font-mono text-sm order-2 !border-0" />
-                    <InputGroupAddon Align="InputGroupAlign.BlockEnd" Class="order-3 border-t !py-3">
-                        <InputGroupText>Line 1, Column 1</InputGroupText>
-                        <InputGroupButton Class="ml-auto !px-3 !py-1.5 !rounded-md">
+                    <BbInputGroupAddon Align="InputGroupAlign.BlockEnd" Class="order-3 border-t !py-3">
+                        <BbInputGroupText>Line 1, Column 1</BbInputGroupText>
+                        <BbInputGroupButton Class="ml-auto !px-3 !py-1.5 !rounded-md">
                             Run <LucideIcon Name="corner-down-left" Size="16" />
-                        </InputGroupButton>
-                    </InputGroupAddon>
-                </InputGroup>
+                        </BbInputGroupButton>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
             </div>
         </div>
+        <CodeBlock Source="Components/InputGroup/code-editor.txt" />
     </section>
 
     <!-- Update Timing -->
@@ -412,16 +415,16 @@
         <div class="space-y-6">
             <!-- Immediate -->
             <div class="space-y-2">
-                <Label>Immediate (default)</Label>
-                <InputGroup>
-                    <InputGroupAddon Align="InputGroupAlign.InlineStart">
+                <BbLabel>Immediate (default)</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
                         <LucideIcon Name="search" Size="16" />
-                    </InputGroupAddon>
-                    <InputGroupInput UpdateTiming="UpdateTiming.Immediate"
+                    </BbInputGroupAddon>
+                    <BbInputGroupInput UpdateTiming="UpdateTiming.Immediate"
                                      Value="@_igImmediateValue"
                                      ValueChanged="@((v) => _igImmediateValue = v)"
                                      Placeholder="Fires on every keystroke" />
-                </InputGroup>
+                </BbInputGroup>
                 <div class="rounded-lg border p-3 bg-muted/50">
                     <p class="text-xs text-muted-foreground mb-1">Value:</p>
                     <p class="text-sm font-mono">@(string.IsNullOrEmpty(_igImmediateValue) ? "(empty)" : _igImmediateValue)</p>
@@ -430,16 +433,16 @@
 
             <!-- OnChange -->
             <div class="space-y-2">
-                <Label>OnChange (blur / Enter)</Label>
-                <InputGroup>
-                    <InputGroupAddon Align="InputGroupAlign.InlineStart">
+                <BbLabel>OnChange (blur / Enter)</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
                         <LucideIcon Name="search" Size="16" />
-                    </InputGroupAddon>
-                    <InputGroupInput UpdateTiming="UpdateTiming.OnChange"
+                    </BbInputGroupAddon>
+                    <BbInputGroupInput UpdateTiming="UpdateTiming.OnChange"
                                      Value="@_igOnChangeValue"
                                      ValueChanged="@((v) => _igOnChangeValue = v)"
                                      Placeholder="Fires on blur or Enter" />
-                </InputGroup>
+                </BbInputGroup>
                 <div class="rounded-lg border p-3 bg-muted/50">
                     <p class="text-xs text-muted-foreground mb-1">Value:</p>
                     <p class="text-sm font-mono">@(string.IsNullOrEmpty(_igOnChangeValue) ? "(empty)" : _igOnChangeValue)</p>
@@ -448,17 +451,17 @@
 
             <!-- Debounced -->
             <div class="space-y-2">
-                <Label>Debounced (500ms)</Label>
-                <InputGroup>
-                    <InputGroupAddon Align="InputGroupAlign.InlineStart">
+                <BbLabel>Debounced (500ms)</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
                         <LucideIcon Name="search" Size="16" />
-                    </InputGroupAddon>
-                    <InputGroupInput UpdateTiming="UpdateTiming.Debounced"
+                    </BbInputGroupAddon>
+                    <BbInputGroupInput UpdateTiming="UpdateTiming.Debounced"
                                      DebounceInterval="500"
                                      Value="@_igDebouncedValue"
                                      ValueChanged="@((v) => _igDebouncedValue = v)"
                                      Placeholder="Fires after typing pauses" />
-                </InputGroup>
+                </BbInputGroup>
                 <div class="rounded-lg border p-3 bg-muted/50">
                     <p class="text-xs text-muted-foreground mb-1">Value:</p>
                     <p class="text-sm font-mono">@(string.IsNullOrEmpty(_igDebouncedValue) ? "(empty)" : _igDebouncedValue)</p>
@@ -467,24 +470,25 @@
 
             <!-- Textarea Debounced -->
             <div class="space-y-2">
-                <Label>Textarea Debounced (300ms)</Label>
-                <InputGroup>
-                    <InputGroupTextarea UpdateTiming="UpdateTiming.Debounced"
+                <BbLabel>Textarea Debounced (300ms)</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupTextarea UpdateTiming="UpdateTiming.Debounced"
                                         DebounceInterval="300"
                                         Rows="3"
                                         Value="@_igTextareaDebouncedValue"
                                         ValueChanged="@((v) => _igTextareaDebouncedValue = v)"
                                         Placeholder="Type to see debounced updates..." />
-                    <InputGroupAddon Align="InputGroupAlign.BlockEnd">
-                        <InputGroupText>Debounced at 300ms</InputGroupText>
-                    </InputGroupAddon>
-                </InputGroup>
+                    <BbInputGroupAddon Align="InputGroupAlign.BlockEnd">
+                        <BbInputGroupText>Debounced at 300ms</BbInputGroupText>
+                    </BbInputGroupAddon>
+                </BbInputGroup>
                 <div class="rounded-lg border p-3 bg-muted/50">
                     <p class="text-xs text-muted-foreground mb-1">Value:</p>
                     <p class="text-sm font-mono">@(string.IsNullOrEmpty(_igTextareaDebouncedValue) ? "(empty)" : _igTextareaDebouncedValue)</p>
                 </div>
             </div>
         </div>
+        <CodeBlock Source="Components/InputGroup/update-timing.txt" />
     </section>
 
     <!-- Form Validation with EditForm -->
@@ -501,27 +505,27 @@
             <DataAnnotationsValidator />
 
             <div class="space-y-2">
-                <Label>Email</Label>
-                <InputGroup>
-                    <InputGroupAddon Align="InputGroupAlign.InlineStart">
+                <BbLabel>Email</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
                         <LucideIcon Name="at-sign" Size="16" />
-                    </InputGroupAddon>
-                    <InputGroupInput Type="InputType.Email" @bind-Value="formModel.Email" Placeholder="name@example.com" />
-                </InputGroup>
+                    </BbInputGroupAddon>
+                    <BbInputGroupInput Type="InputType.Email" @bind-Value="formModel.Email" Placeholder="name@example.com" />
+                </BbInputGroup>
                 <ValidationMessage For="@(() => formModel.Email)" class="text-sm text-destructive" />
             </div>
 
             <div class="space-y-2">
-                <Label>Comment</Label>
-                <InputGroup>
-                    <InputGroupTextarea @bind-Value="formModel.Comment" Rows="3" Placeholder="Write your comment..." />
-                </InputGroup>
+                <BbLabel>Comment</BbLabel>
+                <BbInputGroup>
+                    <BbInputGroupTextarea @bind-Value="formModel.Comment" Rows="3" Placeholder="Write your comment..." />
+                </BbInputGroup>
                 <ValidationMessage For="@(() => formModel.Comment)" class="text-sm text-destructive" />
             </div>
 
             <div class="flex gap-4">
-                <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</Button>
-                <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</Button>
+                <BbButton Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</BbButton>
+                <BbButton Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</BbButton>
             </div>
 
             @if (!string.IsNullOrEmpty(formMessage))
@@ -531,44 +535,191 @@
                 </div>
             }
         </EditForm>
+        <CodeBlock Source="Components/InputGroup/editform-validation.txt" />
+    </section>
+
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>InputGroupInput and InputGroupTextarea support aria-label for accessible labeling when no visible label is present</AccessibilityItem>
+            <AccessibilityItem>aria-describedby links inputs to supplementary descriptions or instructions</AccessibilityItem>
+            <AccessibilityItem>aria-invalid is set automatically when validation fails inside an EditForm, or manually via AriaInvalid parameter</AccessibilityItem>
+            <AccessibilityItem>InputGroup applies destructive border styling when any child control has aria-invalid="true"</AccessibilityItem>
+            <AccessibilityItem>InputGroupButton supports aria-label for icon-only buttons without visible text</AccessibilityItem>
+            <AccessibilityItem>Clicking an InputGroupAddon delegates focus to the associated input control</AccessibilityItem>
+        </AriaAttributes>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="InputGroup">
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes applied to the input group container.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The child content containing InputGroupInput/InputGroupTextarea and InputGroupAddon components.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="InputGroupAddon">
+                <ApiParameter Name="Align" Type="InputGroupAlign" Default="InlineStart">
+                    The alignment position of the addon: InlineStart, InlineEnd, BlockStart, or BlockEnd.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes applied to the addon container.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The addon content (icons, buttons, text, or other elements).
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="InputGroupInput">
+                <ApiParameter Name="Type" Type="InputType" Default="Text">
+                    The type of input (Text, Email, Password, Number, Tel, Url, Search, Date, Time, File).
+                </ApiParameter>
+                <ApiParameter Name="Value" Type="string?" Default="null">
+                    The current value of the input. Use @@bind-Value for two-way binding.
+                </ApiParameter>
+                <ApiParameter Name="ValueChanged" Type="EventCallback&lt;string?&gt;">
+                    Callback invoked when the input value changes.
+                </ApiParameter>
+                <ApiParameter Name="ValueExpression" Type="Expression&lt;Func&lt;string?&gt;&gt;?" Default="null">
+                    Expression that identifies the bound value for EditForm integration.
+                </ApiParameter>
+                <ApiParameter Name="Placeholder" Type="string?" Default="null">
+                    Placeholder text displayed when the input is empty.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the input is disabled.
+                </ApiParameter>
+                <ApiParameter Name="Required" Type="bool" Default="false">
+                    Whether the input is required (sets the HTML required attribute).
+                </ApiParameter>
+                <ApiParameter Name="UpdateTiming" Type="UpdateTiming" Default="Immediate">
+                    When ValueChanged fires: Immediate, OnChange, or Debounced.
+                </ApiParameter>
+                <ApiParameter Name="DebounceInterval" Type="int" Default="500">
+                    Debounce delay in milliseconds when UpdateTiming is Debounced.
+                </ApiParameter>
+                <ApiParameter Name="Id" Type="string?" Default="null">
+                    The HTML id attribute.
+                </ApiParameter>
+                <ApiParameter Name="Name" Type="string?" Default="null">
+                    The HTML name attribute. Auto-derived from ValueExpression inside EditForm if not set.
+                </ApiParameter>
+                <ApiParameter Name="AriaLabel" Type="string?" Default="null">
+                    ARIA label for accessibility.
+                </ApiParameter>
+                <ApiParameter Name="AriaDescribedBy" Type="string?" Default="null">
+                    ARIA described-by attribute linking to a description element.
+                </ApiParameter>
+                <ApiParameter Name="AriaInvalid" Type="bool?" Default="null">
+                    Whether the input value is invalid. Auto-detected inside EditForm.
+                </ApiParameter>
+                <ApiParameter Name="OnInputRef" Type="Action&lt;ElementReference&gt;?" Default="null">
+                    Callback invoked after first render with the input's ElementReference for JS interop.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes applied to the input element.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="InputGroupTextarea">
+                <ApiParameter Name="Value" Type="string?" Default="null">
+                    The current value of the textarea. Use @@bind-Value for two-way binding.
+                </ApiParameter>
+                <ApiParameter Name="ValueChanged" Type="EventCallback&lt;string?&gt;">
+                    Callback invoked when the textarea value changes.
+                </ApiParameter>
+                <ApiParameter Name="ValueExpression" Type="Expression&lt;Func&lt;string?&gt;&gt;?" Default="null">
+                    Expression that identifies the bound value for EditForm integration.
+                </ApiParameter>
+                <ApiParameter Name="Rows" Type="int" Default="3">
+                    The number of visible text rows.
+                </ApiParameter>
+                <ApiParameter Name="Placeholder" Type="string?" Default="null">
+                    Placeholder text displayed when the textarea is empty.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the textarea is disabled.
+                </ApiParameter>
+                <ApiParameter Name="Required" Type="bool" Default="false">
+                    Whether the textarea is required (sets the HTML required attribute).
+                </ApiParameter>
+                <ApiParameter Name="UpdateTiming" Type="UpdateTiming" Default="Immediate">
+                    When ValueChanged fires: Immediate, OnChange, or Debounced.
+                </ApiParameter>
+                <ApiParameter Name="DebounceInterval" Type="int" Default="500">
+                    Debounce delay in milliseconds when UpdateTiming is Debounced.
+                </ApiParameter>
+                <ApiParameter Name="Id" Type="string?" Default="null">
+                    The HTML id attribute.
+                </ApiParameter>
+                <ApiParameter Name="Name" Type="string?" Default="null">
+                    The HTML name attribute. Auto-derived from ValueExpression inside EditForm if not set.
+                </ApiParameter>
+                <ApiParameter Name="AriaLabel" Type="string?" Default="null">
+                    ARIA label for accessibility.
+                </ApiParameter>
+                <ApiParameter Name="AriaDescribedBy" Type="string?" Default="null">
+                    ARIA described-by attribute linking to a description element.
+                </ApiParameter>
+                <ApiParameter Name="AriaInvalid" Type="bool?" Default="null">
+                    Whether the textarea value is invalid. Auto-detected inside EditForm.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes applied to the textarea element.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="InputGroupButton">
+                <ApiParameter Name="Type" Type="ButtonType" Default="Button">
+                    The button type (Button, Submit, Reset).
+                </ApiParameter>
+                <ApiParameter Name="Variant" Type="ButtonVariant" Default="Default">
+                    The button visual variant.
+                </ApiParameter>
+                <ApiParameter Name="Size" Type="ButtonSize" Default="Small">
+                    The button size. Defaults to Small for better proportions within input groups.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the button is disabled.
+                </ApiParameter>
+                <ApiParameter Name="OnClick" Type="EventCallback">
+                    Click event handler.
+                </ApiParameter>
+                <ApiParameter Name="Icon" Type="RenderFragment?">
+                    Icon to display in the button.
+                </ApiParameter>
+                <ApiParameter Name="IconPosition" Type="IconPosition" Default="Start">
+                    Position of the icon relative to button text.
+                </ApiParameter>
+                <ApiParameter Name="AriaLabel" Type="string?" Default="null">
+                    ARIA label for accessibility, especially for icon-only buttons.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes applied to the button.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The button text content.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="InputGroupText">
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes applied to the text container.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The text content (currency symbols, URL prefixes, units, etc.).
+                </ApiParameter>
+            </ApiReference>
+        </div>
     </section>
 </div>
-
-<!-- Code Example -->
-<section class="space-y-4 mt-10">
-    <h2 class="text-2xl font-semibold">Usage</h2>
-    <div class="rounded-lg border bg-muted/30 p-6">
-        <pre class="text-sm overflow-x-auto"><code>@@using BlazorBlueprint.Components.InputGroup
-@@using BlazorBlueprint.Components.Input
-
-&lt;!-- Icon at start --&gt;
-&lt;InputGroup&gt;
-    &lt;InputGroupAddon Align="InputGroupAlign.InlineStart"&gt;
-        &lt;SearchIcon Size="16" /&gt;
-    &lt;/InputGroupAddon&gt;
-    &lt;InputGroupInput Placeholder="Search..." /&gt;
-&lt;/InputGroup&gt;
-
-&lt;!-- Button at end --&gt;
-&lt;InputGroup&gt;
-    &lt;InputGroupInput Placeholder="Enter email" /&gt;
-    &lt;InputGroupAddon Align="InputGroupAlign.InlineEnd"&gt;
-        &lt;InputGroupButton&gt;Subscribe&lt;/InputGroupButton&gt;
-    &lt;/InputGroupAddon&gt;
-&lt;/InputGroup&gt;
-
-&lt;!-- Icons on both sides --&gt;
-&lt;InputGroup&gt;
-    &lt;InputGroupAddon Align="InputGroupAlign.InlineStart"&gt;
-        &lt;MailIcon Size="16" /&gt;
-    &lt;/InputGroupAddon&gt;
-    &lt;InputGroupInput Type="InputType.Email" Placeholder="name@example.com" /&gt;
-    &lt;InputGroupAddon Align="InputGroupAlign.InlineEnd"&gt;
-        &lt;CheckCircle2Icon Size="16" /&gt;
-    &lt;/InputGroupAddon&gt;
-&lt;/InputGroup&gt;</code></pre>
-    </div>
-</section>
 
 @code {
     private string? _igImmediateValue;

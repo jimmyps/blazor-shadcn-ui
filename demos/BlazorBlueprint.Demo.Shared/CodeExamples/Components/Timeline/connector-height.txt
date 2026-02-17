@@ -1,0 +1,9 @@
+<BbTimeline Align="TimelineAlign.Left">
+    <BbTimelineItem ConnectorClass="min-h-12">
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Event A</BbTimelineTitle>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>

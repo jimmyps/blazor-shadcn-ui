@@ -1,0 +1,13 @@
+<BbAccordion Type="AccordionType.Single" Collapsible="true">
+    <BbAccordionItem Value="rich-1">
+        <BbAccordionTrigger>Step 1: Installation</BbAccordionTrigger>
+        <BbAccordionContent>
+            <div class="space-y-2">
+                <p>Install the package:</p>
+                <div class="rounded-md bg-muted p-4">
+                    <code>dotnet add package BlazorBlueprint</code>
+                </div>
+            </div>
+        </BbAccordionContent>
+    </BbAccordionItem>
+</BbAccordion>

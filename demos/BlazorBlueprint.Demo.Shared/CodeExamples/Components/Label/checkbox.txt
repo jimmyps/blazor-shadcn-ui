@@ -1,0 +1,4 @@
+<BbCheckbox Id="terms-checkbox" />
+<BbLabel For="terms-checkbox" Class="cursor-pointer">
+    Accept terms and conditions
+</BbLabel>

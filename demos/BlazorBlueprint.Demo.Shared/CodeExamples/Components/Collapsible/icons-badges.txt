@@ -1,0 +1,10 @@
+<BbCollapsible>
+    <BbCollapsibleTrigger AsChild="false">
+        <LucideIcon Name="star" />
+        Premium Features
+        <BbBadge>New</BbBadge>
+    </BbCollapsibleTrigger>
+    <BbCollapsibleContent>
+        <!-- Feature list... -->
+    </BbCollapsibleContent>
+</BbCollapsible>

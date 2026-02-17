@@ -1,0 +1,7 @@
+<BbRichTextEditor @bind-Value="maxHeightValue"
+                MaxHeight="200px"
+                Placeholder="Type a lot of content..." />
+
+<BbRichTextEditor @bind-Value="fixedHeightValue"
+                Height="150px"
+                Placeholder="Fixed height editor..." />

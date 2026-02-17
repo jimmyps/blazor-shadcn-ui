@@ -1,0 +1,13 @@
+<BbCollapsible>
+    <BbCollapsibleTrigger AsChild="false">Parent Section</BbCollapsibleTrigger>
+    <BbCollapsibleContent>
+        <BbCollapsible>
+            <BbCollapsibleTrigger AsChild="false">Child Section 1</BbCollapsibleTrigger>
+            <BbCollapsibleContent>...</BbCollapsibleContent>
+        </BbCollapsible>
+        <BbCollapsible>
+            <BbCollapsibleTrigger AsChild="false">Child Section 2</BbCollapsibleTrigger>
+            <BbCollapsibleContent>...</BbCollapsibleContent>
+        </BbCollapsible>
+    </BbCollapsibleContent>
+</BbCollapsible>

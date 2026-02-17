@@ -1,0 +1,5 @@
+<BbDataTable TData="Person" Data="@people" ShowToolbar="false">
+    <Columns>
+        <BbDataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+    </Columns>
+</BbDataTable>

@@ -1,6 +1,4 @@
 @page "/components/hovercard"
-@using BlazorBlueprint.Components.HoverCard
-
 <PageTitle>Hover Card Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -30,14 +28,14 @@
                 <p class="text-sm text-muted-foreground">
                     HoverCardTrigger renders its own div element.
                 </p>
-                <HoverCard>
-                    <HoverCardTrigger Class="underline cursor-pointer">
+                <BbHoverCard>
+                    <BbHoverCardTrigger AsChild="false" Class="underline cursor-pointer">
                         @@username
-                    </HoverCardTrigger>
-                    <HoverCardContent>
+                    </BbHoverCardTrigger>
+                    <BbHoverCardContent>
                         <p class="text-sm">User profile info</p>
-                    </HoverCardContent>
-                </HoverCard>
+                    </BbHoverCardContent>
+                </BbHoverCard>
             </div>
 
             <!-- With AsChild -->
@@ -46,11 +44,11 @@
                 <p class="text-sm text-muted-foreground">
                     Button receives hover/focus behavior via TriggerContext.
                 </p>
-                <HoverCard>
-                    <HoverCardTrigger AsChild>
-                        <Button Variant="ButtonVariant.Link">@@johndoe</Button>
-                    </HoverCardTrigger>
-                    <HoverCardContent>
+                <BbHoverCard>
+                    <BbHoverCardTrigger>
+                        <BbButton Variant="ButtonVariant.Link">@@johndoe</BbButton>
+                    </BbHoverCardTrigger>
+                    <BbHoverCardContent>
                         <div class="flex gap-3">
                             <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white font-bold">
                                 JD
@@ -60,10 +58,12 @@
                                 <p class="text-xs text-muted-foreground">Software Developer</p>
                             </div>
                         </div>
-                    </HoverCardContent>
-                </HoverCard>
+                    </BbHoverCardContent>
+                </BbHoverCard>
             </div>
         </div>
+
+        <CodeBlock Source="Components/HoverCard/as-child.txt" />
     </div>
 
     <div class="space-y-4">
@@ -74,9 +74,9 @@
 
         <div class="flex items-center gap-2">
             <p class="text-sm">Hover over</p>
-            <HoverCard>
-                <HoverCardTrigger Class="underline">@@nextjs</HoverCardTrigger>
-                <HoverCardContent>
+            <BbHoverCard>
+                <BbHoverCardTrigger AsChild="false" Class="underline">@@nextjs</BbHoverCardTrigger>
+                <BbHoverCardContent>
                     <div class="flex justify-between space-x-4">
                         <div class="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-lg">
                             N
@@ -94,10 +94,12 @@
                             </div>
                         </div>
                     </div>
-                </HoverCardContent>
-            </HoverCard>
+                </BbHoverCardContent>
+            </BbHoverCard>
             <p class="text-sm">for more information.</p>
         </div>
+
+        <CodeBlock Source="Components/HoverCard/default.txt" />
     </div>
 
     <div class="space-y-4">
@@ -108,11 +110,11 @@
 
         <div class="text-sm">
             Article written by
-            <HoverCard>
-                <HoverCardTrigger Class="font-semibold text-primary hover:underline cursor-pointer">
+            <BbHoverCard>
+                <BbHoverCardTrigger AsChild="false" Class="font-semibold text-primary hover:underline cursor-pointer">
                     @@johndoe
-                </HoverCardTrigger>
-                <HoverCardContent>
+                </BbHoverCardTrigger>
+                <BbHoverCardContent>
                     <div class="flex gap-4">
                         <div class="h-16 w-16 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white font-bold text-2xl">
                             JD
@@ -135,10 +137,12 @@
                             </div>
                         </div>
                     </div>
-                </HoverCardContent>
-            </HoverCard>
+                </BbHoverCardContent>
+            </BbHoverCard>
             on January 15, 2024.
         </div>
+
+        <CodeBlock Source="Components/HoverCard/user-profile.txt" />
     </div>
 
     <div class="space-y-4">
@@ -148,11 +152,11 @@
         </p>
 
         <div class="flex flex-wrap gap-4">
-            <HoverCard OpenDelay="300">
-                <HoverCardTrigger Class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+            <BbHoverCard OpenDelay="300">
+                <BbHoverCardTrigger AsChild="false" Class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                     View Product
-                </HoverCardTrigger>
-                <HoverCardContent>
+                </BbHoverCardTrigger>
+                <BbHoverCardContent>
                     <div class="space-y-3">
                         <div class="h-32 w-full rounded-md bg-gradient-to-br from-orange-400 to-rose-400"></div>
                         <div class="space-y-1">
@@ -166,14 +170,14 @@
                             </div>
                         </div>
                     </div>
-                </HoverCardContent>
-            </HoverCard>
+                </BbHoverCardContent>
+            </BbHoverCard>
 
-            <HoverCard OpenDelay="300">
-                <HoverCardTrigger Class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+            <BbHoverCard OpenDelay="300">
+                <BbHoverCardTrigger AsChild="false" Class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                     Another Product
-                </HoverCardTrigger>
-                <HoverCardContent>
+                </BbHoverCardTrigger>
+                <BbHoverCardContent>
                     <div class="space-y-3">
                         <div class="h-32 w-full rounded-md bg-gradient-to-br from-blue-400 to-purple-400"></div>
                         <div class="space-y-1">
@@ -187,9 +191,11 @@
                             </div>
                         </div>
                     </div>
-                </HoverCardContent>
-            </HoverCard>
+                </BbHoverCardContent>
+            </BbHoverCard>
         </div>
+
+        <CodeBlock Source="Components/HoverCard/product-preview.txt" />
     </div>
 
     <div class="space-y-4">
@@ -201,11 +207,11 @@
         <div class="text-sm max-w-2xl">
             <p>
                 The component uses
-                <HoverCard OpenDelay="200">
-                    <HoverCardTrigger Class="border-b border-dashed border-primary cursor-help">
+                <BbHoverCard OpenDelay="200">
+                    <BbHoverCardTrigger AsChild="false" Class="border-b border-dashed border-primary cursor-help">
                         Floating UI
-                    </HoverCardTrigger>
-                    <HoverCardContent>
+                    </BbHoverCardTrigger>
+                    <BbHoverCardContent>
                         <div class="space-y-2">
                             <h4 class="text-sm font-semibold">Floating UI</h4>
                             <p class="text-sm text-muted-foreground">
@@ -215,26 +221,102 @@
                                 Learn more →
                             </a>
                         </div>
-                    </HoverCardContent>
-                </HoverCard>
+                    </BbHoverCardContent>
+                </BbHoverCard>
                 for intelligent positioning with automatic collision detection and
-                <HoverCard OpenDelay="200">
-                    <HoverCardTrigger Class="border-b border-dashed border-primary cursor-help">
+                <BbHoverCard OpenDelay="200">
+                    <BbHoverCardTrigger AsChild="false" Class="border-b border-dashed border-primary cursor-help">
                         ARIA attributes
-                    </HoverCardTrigger>
-                    <HoverCardContent>
+                    </BbHoverCardTrigger>
+                    <BbHoverCardContent>
                         <div class="space-y-2">
                             <h4 class="text-sm font-semibold">ARIA Attributes</h4>
                             <p class="text-sm text-muted-foreground">
                                 Accessible Rich Internet Applications (ARIA) attributes help make web content more accessible to people using assistive technologies like screen readers.
                             </p>
                         </div>
-                    </HoverCardContent>
-                </HoverCard>
+                    </BbHoverCardContent>
+                </BbHoverCard>
                 for screen reader compatibility.
             </p>
         </div>
+
+        <CodeBlock Source="Components/HoverCard/definition-tooltip.txt" />
     </div>
+
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Trigger element receives focus and hover events</AccessibilityItem>
+            <AccessibilityItem>Content is announced to screen readers when displayed</AccessibilityItem>
+            <AccessibilityItem>Proper role and aria attributes for tooltip-like behavior</AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Show hover card on focus">
+                <BbKbd>Tab</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="HoverCard">
+                <ApiParameter Name="Open" Type="bool?" Default="null">
+                    Controls whether the hover card is open (controlled mode). When null, the hover card manages its own state.
+                </ApiParameter>
+                <ApiParameter Name="OpenChanged" Type="EventCallback&lt;bool&gt;">
+                    Event callback invoked when the open state changes. Use with @@bind-Open for two-way binding.
+                </ApiParameter>
+                <ApiParameter Name="DefaultOpen" Type="bool" Default="false">
+                    Default open state when in uncontrolled mode.
+                </ApiParameter>
+                <ApiParameter Name="OnOpenChange" Type="EventCallback&lt;bool&gt;">
+                    Event callback invoked when the hover card open state changes.
+                </ApiParameter>
+                <ApiParameter Name="OpenDelay" Type="int" Default="700">
+                    Delay in milliseconds before opening the hover card.
+                </ApiParameter>
+                <ApiParameter Name="CloseDelay" Type="int" Default="300">
+                    Delay in milliseconds before closing the hover card.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The child content. Should include HoverCardTrigger and HoverCardContent components.
+                </ApiParameter>
+            </ApiReference>
+            <ApiReference ComponentName="HoverCardTrigger">
+                <ApiParameter Name="AsChild" Type="bool" Default="true">
+                    When true, the trigger does not render its own element. Instead, it passes trigger behavior via TriggerContext to child components.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes to apply to the trigger.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The child content to render within the trigger.
+                </ApiParameter>
+            </ApiReference>
+            <ApiReference ComponentName="HoverCardContent">
+                <ApiParameter Name="Side" Type="PopoverSide" Default="Bottom">
+                    Preferred side for positioning the content relative to the trigger.
+                </ApiParameter>
+                <ApiParameter Name="Align" Type="PopoverAlign" Default="Center">
+                    Alignment of the content relative to the trigger.
+                </ApiParameter>
+                <ApiParameter Name="Offset" Type="int" Default="4">
+                    Offset distance from the trigger element in pixels.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes to apply to the content container.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content to render inside the hover card.
+                </ApiParameter>
+            </ApiReference>
+        </div>
+    </section>
 </div>
 
 @code {

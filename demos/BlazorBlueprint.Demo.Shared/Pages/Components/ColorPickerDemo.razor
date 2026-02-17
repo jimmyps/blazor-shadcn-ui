@@ -1,5 +1,4 @@
 @page "/components/color-picker"
-@using BlazorBlueprint.Components.ColorPicker
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>ColorPicker Component - Blazor Blueprint</PageTitle>
@@ -22,11 +21,12 @@
                 Select a color using the visual picker or enter a hex value.
             </p>
         </div>
-        <ColorPicker @bind-Value="_basicColor" />
+        <BbColorPicker @bind-Value="_basicColor" />
         <p class="text-sm text-muted-foreground">Selected: @_basicColor</p>
         <div class="h-16 w-32 rounded-md border border-input"
              style="background-color: @_basicColor;">
         </div>
+        <CodeBlock Source="Components/ColorPicker/basic.txt" />
     </div>
 
     <!-- With Alpha Channel -->
@@ -37,11 +37,12 @@
                 Enable transparency selection with the alpha slider.
             </p>
         </div>
-        <ColorPicker @bind-Value="_alphaColor" ShowAlpha="true" />
+        <BbColorPicker @bind-Value="_alphaColor" ShowAlpha="true" />
         <p class="text-sm text-muted-foreground">Selected: @_alphaColor</p>
         <div class="h-16 w-32 rounded-md border border-input"
              style="background: linear-gradient(@_alphaColor, @_alphaColor), url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 fill-opacity=%22.1%22><rect x=%220%22 y=%220%22 width=%228%22 height=%228%22 fill=%22%23000%22/><rect x=%228%22 y=%228%22 width=%228%22 height=%228%22 fill=%22%23000%22/></svg>');">
         </div>
+        <CodeBlock Source="Components/ColorPicker/alpha.txt" />
     </div>
 
     <!-- Without Presets -->
@@ -52,8 +53,9 @@
                 Preset color swatches are hidden.
             </p>
         </div>
-        <ColorPicker @bind-Value="_noPresetsColor" ShowPresets="false" />
+        <BbColorPicker @bind-Value="_noPresetsColor" ShowPresets="false" />
         <p class="text-sm text-muted-foreground">Selected: @_noPresetsColor</p>
+        <CodeBlock Source="Components/ColorPicker/no-presets.txt" />
     </div>
 
     <!-- Custom Presets -->
@@ -64,9 +66,10 @@
                 Brand colors as presets.
             </p>
         </div>
-        <ColorPicker @bind-Value="_customPresetsColor"
+        <BbColorPicker @bind-Value="_customPresetsColor"
                      PresetColors="@_brandColors" />
         <p class="text-sm text-muted-foreground">Selected: @_customPresetsColor</p>
+        <CodeBlock Source="Components/ColorPicker/custom-presets.txt" />
     </div>
 
     <!-- Without Inputs -->
@@ -77,8 +80,9 @@
                 Visual picker only, no hex/RGB inputs.
             </p>
         </div>
-        <ColorPicker @bind-Value="_noInputsColor" ShowInputs="false" />
+        <BbColorPicker @bind-Value="_noInputsColor" ShowInputs="false" />
         <p class="text-sm text-muted-foreground">Selected: @_noInputsColor</p>
+        <CodeBlock Source="Components/ColorPicker/no-inputs.txt" />
     </div>
 
     <!-- Pre-selected Color -->
@@ -89,8 +93,24 @@
                 Initialized with a specific color.
             </p>
         </div>
-        <ColorPicker @bind-Value="_preselectedColor" />
+        <BbColorPicker @bind-Value="_preselectedColor" />
         <p class="text-sm text-muted-foreground">Selected: @_preselectedColor</p>
+        <CodeBlock Source="Components/ColorPicker/preselected.txt" />
+    </div>
+
+    <!-- Default Value (Uncontrolled) -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <div class="flex items-center gap-2">
+                <h2 class="text-2xl font-semibold">Default Value</h2>
+                <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">v3</span>
+            </div>
+            <p class="text-sm text-muted-foreground">
+                Use <code class="text-xs bg-muted px-1 py-0.5 rounded">DefaultValue</code> to set an initial color without external binding. The picker starts at the specified color.
+            </p>
+        </div>
+        <BbColorPicker DefaultValue="#8B5CF6" />
+        <CodeBlock Source="Components/ColorPicker/default-value.txt" />
     </div>
 
     <!-- Multiple Pickers -->
@@ -104,11 +124,11 @@
         <div class="flex items-center gap-4">
             <div>
                 <label class="text-sm font-medium mb-1 block">Foreground</label>
-                <ColorPicker @bind-Value="_fgColor" />
+                <BbColorPicker @bind-Value="_fgColor" />
             </div>
             <div>
                 <label class="text-sm font-medium mb-1 block">Background</label>
-                <ColorPicker @bind-Value="_bgColor" />
+                <BbColorPicker @bind-Value="_bgColor" />
             </div>
         </div>
         <div class="p-4 rounded-md border border-input"
@@ -116,6 +136,7 @@
             <p class="text-lg font-medium">Sample Text</p>
             <p class="text-sm">This text uses the selected colors.</p>
         </div>
+        <CodeBlock Source="Components/ColorPicker/foreground-background.txt" />
     </div>
 
     <!-- Disabled -->
@@ -123,7 +144,8 @@
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Disabled</h2>
         </div>
-        <ColorPicker Value="#3B82F6" Disabled="true" />
+        <BbColorPicker Value="#3B82F6" Disabled="true" />
+        <CodeBlock Source="Components/ColorPicker/disabled.txt" />
     </div>
 
     <!-- Form Validation with EditForm -->
@@ -141,13 +163,13 @@
 
             <div class="space-y-2">
                 <label class="text-sm font-medium">Brand Color</label>
-                <ColorPicker @bind-Value="colorFormModel.BrandColor" />
+                <BbColorPicker @bind-Value="colorFormModel.BrandColor" />
                 <ValidationMessage For="@(() => colorFormModel.BrandColor)" class="text-sm text-destructive" />
             </div>
 
             <div class="flex gap-4">
-                <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</Button>
-                <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetColorForm">Reset</Button>
+                <BbButton Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</BbButton>
+                <BbButton Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetColorForm">Reset</BbButton>
             </div>
 
             @if (!string.IsNullOrEmpty(colorFormMessage))
@@ -157,40 +179,45 @@
                 </div>
             }
         </EditForm>
+        <CodeBlock Source="Components/ColorPicker/form-validation.txt" />
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">ColorPicker Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Value:</strong> <code class="bg-muted px-1 py-0.5 rounded">string</code> - Color value in hex format (#RRGGBB)</p>
-                    <p><strong>Format:</strong> <code class="bg-muted px-1 py-0.5 rounded">ColorFormat</code> - Output format (Hex, RGB, HSL). Default: Hex</p>
-                    <p><strong>ShowAlpha:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Show alpha slider. Default: false</p>
-                    <p><strong>ShowPresets:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Show preset colors. Default: true</p>
-                    <p><strong>PresetColors:</strong> <code class="bg-muted px-1 py-0.5 rounded">string[]?</code> - Custom preset colors</p>
-                    <p><strong>ShowInputs:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Show hex/RGB inputs. Default: true</p>
-                    <p><strong>Disabled:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disables the picker</p>
-                </div>
-            </div>
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">ColorUtils Static Methods</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>RgbToHsl(r, g, b):</strong> Convert RGB to HSL</p>
-                    <p><strong>HslToRgb(h, s, l):</strong> Convert HSL to RGB</p>
-                    <p><strong>RgbToHsv(r, g, b):</strong> Convert RGB to HSV</p>
-                    <p><strong>HsvToRgb(h, s, v):</strong> Convert HSV to RGB</p>
-                    <p><strong>ToHex(r, g, b, a?):</strong> Format as hex string</p>
-                    <p><strong>ParseHex(hex):</strong> Parse hex to RGBA values</p>
-                    <p><strong>IsValidHex(hex):</strong> Validate hex string</p>
-                </div>
-            </div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="ColorPicker">
+                <ApiParameter Name="Value" Type="string">
+                    Color value in hex format (#RRGGBB).
+                </ApiParameter>
+                <ApiParameter Name="Format" Type="ColorFormat" Default="Hex">
+                    Output format (Hex, RGB, HSL).
+                </ApiParameter>
+                <ApiParameter Name="ShowAlpha" Type="bool" Default="false">
+                    Show alpha slider.
+                </ApiParameter>
+                <ApiParameter Name="ShowPresets" Type="bool" Default="true">
+                    Show preset colors.
+                </ApiParameter>
+                <ApiParameter Name="PresetColors" Type="string[]?">
+                    Custom preset colors.
+                </ApiParameter>
+                <ApiParameter Name="ShowInputs" Type="bool" Default="true">
+                    Show hex/RGB inputs.
+                </ApiParameter>
+                <ApiParameter Name="DefaultValue" Type="string?">
+                    Initial color when not externally bound.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool">
+                    Disables the picker.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {

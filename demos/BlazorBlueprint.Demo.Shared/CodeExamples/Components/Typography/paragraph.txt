@@ -1,0 +1,3 @@
+<BbTypographyP>
+    The king, seeing how much happier his subjects were...
+</BbTypographyP>

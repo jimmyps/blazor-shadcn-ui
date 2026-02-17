@@ -1,6 +1,5 @@
 @page "/components/select"
 @using System.ComponentModel.DataAnnotations
-
 <PageTitle>Select Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -16,32 +15,131 @@
     <div class="space-y-6">
     </div>
 
-    <!-- Basic Select -->
+    <!-- Data-Binding Mode -->
     <section class="space-y-4">
-        <h2 class="text-2xl font-semibold">Basic Select</h2>
+        <div class="flex items-center gap-2">
+            <h2 class="text-2xl font-semibold">Data-Binding Mode</h2>
+            <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">v3</span>
+        </div>
         <p class="text-sm text-muted-foreground">
-            A simple select with a list of options.
+            Pass an <code class="text-xs bg-muted px-1 py-0.5 rounded">Options</code> collection of
+            <code class="text-xs bg-muted px-1 py-0.5 rounded">SelectOption&lt;TValue&gt;</code> pairs and
+            the component auto-generates the trigger, value display, and dropdown content.
+            Use <code class="text-xs bg-muted px-1 py-0.5 rounded">SelectOption.FromValue</code> when value and label are the same.
         </p>
 
         <div class="flex items-center gap-4">
-            <Select @bind-Value="selectedFruit" TValue="string" Class="w-[280px]">
-                <SelectTrigger>
-                    <SelectValue Placeholder="Select a fruit" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem Value="@("apple")" Text="Apple" TValue="string">Apple</SelectItem>
-                    <SelectItem Value="@("banana")" Text="Banana" TValue="string">Banana</SelectItem>
-                    <SelectItem Value="@("blueberry")" Text="Blueberry" TValue="string">Blueberry</SelectItem>
-                    <SelectItem Value="@("grapes")" Text="Grapes" TValue="string">Grapes</SelectItem>
-                    <SelectItem Value="@("pineapple")" Text="Pineapple" TValue="string">Pineapple</SelectItem>
-                </SelectContent>
-            </Select>
+            <BbSelect TValue="string"
+                    @bind-Value="selectedFruit"
+                    Options="@fruitOptions"
+                    Placeholder="Select a fruit"
+                    Class="w-[280px]" />
 
             @if (!string.IsNullOrEmpty(selectedFruit))
             {
                 <p class="text-sm">Selected: <strong>@selectedFruit</strong></p>
             }
         </div>
+
+        <div class="flex items-center gap-4">
+            <BbSelect TValue="int?"
+                    @bind-Value="selectedNumber"
+                    Options="@numberOptions"
+                    Placeholder="Select a number"
+                    Class="w-[280px]" />
+
+            @if (selectedNumber is not null)
+            {
+                <p class="text-sm">Selected: <strong>@selectedNumber</strong></p>
+            }
+        </div>
+
+        <CodeBlock Source="Components/Select/data-binding.txt" />
+    </section>
+
+    <!-- Value/Label Pairs -->
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">Value/Label Pairs</h2>
+        <p class="text-sm text-muted-foreground">
+            When the bound value differs from the display text (e.g. binding to an ID while showing a name),
+            each <code class="text-xs bg-muted px-1 py-0.5 rounded">SelectOption</code> maps a value to its label.
+            The trigger automatically shows the label for the selected value.
+        </p>
+
+        <div class="flex items-center gap-4">
+            <BbSelect TValue="string"
+                    @bind-Value="selectedUserId"
+                    Options="@userOptions"
+                    Placeholder="Select a team member"
+                    Class="w-[280px]" />
+
+            @if (!string.IsNullOrEmpty(selectedUserId))
+            {
+                <p class="text-sm">Bound value: <strong>@selectedUserId</strong></p>
+            }
+        </div>
+
+        <div class="flex items-center gap-4">
+            <BbSelect TValue="Guid?"
+                    @bind-Value="selectedProjectId"
+                    Options="@projectOptions"
+                    Placeholder="Select a project"
+                    Class="w-[280px]" />
+
+            @if (selectedProjectId is not null)
+            {
+                <p class="text-sm">Bound value: <strong>@selectedProjectId</strong></p>
+            }
+        </div>
+
+        <div class="flex items-center gap-4">
+            <BbSelect TValue="string"
+                    @bind-Value="selectedPreselectedUserId"
+                    Options="@userOptions"
+                    Placeholder="Select a team member"
+                    Class="w-[280px]" />
+
+            @if (!string.IsNullOrEmpty(selectedPreselectedUserId))
+            {
+                <p class="text-sm">Bound value: <strong>@selectedPreselectedUserId</strong></p>
+            }
+        </div>
+        <p class="text-xs text-muted-foreground italic">
+            The third select above is pre-selected to "Bob Chen" via <code class="text-xs bg-muted px-1 py-0.5 rounded">selectedUserId = "u002"</code>.
+        </p>
+
+        <CodeBlock Source="Components/Select/value-label-pairs.txt" />
+    </section>
+
+    <!-- Compositional Mode (Basic) -->
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">Compositional Mode</h2>
+        <p class="text-sm text-muted-foreground">
+            For full control over the trigger, content, and item rendering, use SelectTrigger, SelectContent,
+            and SelectItem child components directly.
+        </p>
+
+        <div class="flex items-center gap-4">
+            <BbSelect @bind-Value="selectedFruitComposed" TValue="string" Class="w-[280px]">
+                <BbSelectTrigger>
+                    <BbSelectValue Placeholder="Select a fruit" />
+                </BbSelectTrigger>
+                <BbSelectContent>
+                    <BbSelectItem Value="@("apple")" Text="🍎 Apple" />
+                    <BbSelectItem Value="@("banana")" Text="🍌 Banana" />
+                    <BbSelectItem Value="@("blueberry")" Text="🫐 Blueberry" />
+                    <BbSelectItem Value="@("grapes")" Text="🍇 Grapes" />
+                    <BbSelectItem Value="@("pineapple")" Text="🍍 Pineapple" />
+                </BbSelectContent>
+            </BbSelect>
+
+            @if (!string.IsNullOrEmpty(selectedFruitComposed))
+            {
+                <p class="text-sm">Selected: <strong>@selectedFruitComposed</strong></p>
+            }
+        </div>
+
+        <CodeBlock Source="Components/Select/compositional.txt" />
     </section>
 
     <!-- Grouped Select -->
@@ -52,37 +150,39 @@
         </p>
 
         <div class="flex items-center gap-4">
-            <Select @bind-Value="selectedAnimal" TValue="string" Class="w-[280px]">
-                <SelectTrigger>
-                    <SelectValue Placeholder="Select an animal" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectGroup>
-                        <SelectLabel>Mammals</SelectLabel>
-                        <SelectItem Value="@("cat")" Text="Cat" TValue="string">Cat</SelectItem>
-                        <SelectItem Value="@("dog")" Text="Dog" TValue="string">Dog</SelectItem>
-                        <SelectItem Value="@("elephant")" Text="Elephant" TValue="string">Elephant</SelectItem>
-                    </SelectGroup>
-                    <SelectGroup>
-                        <SelectLabel>Birds</SelectLabel>
-                        <SelectItem Value="@("eagle")" Text="Eagle" TValue="string">Eagle</SelectItem>
-                        <SelectItem Value="@("parrot")" Text="Parrot" TValue="string">Parrot</SelectItem>
-                        <SelectItem Value="@("penguin")" Text="Penguin" TValue="string">Penguin</SelectItem>
-                    </SelectGroup>
-                    <SelectGroup>
-                        <SelectLabel>Reptiles</SelectLabel>
-                        <SelectItem Value="@("crocodile")" Text="Crocodile" TValue="string">Crocodile</SelectItem>
-                        <SelectItem Value="@("snake")" Text="Snake" TValue="string">Snake</SelectItem>
-                        <SelectItem Value="@("turtle")" Text="Turtle" TValue="string">Turtle</SelectItem>
-                    </SelectGroup>
-                </SelectContent>
-            </Select>
+            <BbSelect @bind-Value="selectedAnimal" TValue="string" Class="w-[280px]">
+                <BbSelectTrigger>
+                    <BbSelectValue Placeholder="Select an animal" />
+                </BbSelectTrigger>
+                <BbSelectContent>
+                    <BbSelectGroup>
+                        <BbSelectLabel>Mammals</BbSelectLabel>
+                        <BbSelectItem Value="@("cat")" Text="Cat" />
+                        <BbSelectItem Value="@("dog")" Text="Dog" />
+                        <BbSelectItem Value="@("elephant")" Text="Elephant" />
+                    </BbSelectGroup>
+                    <BbSelectGroup>
+                        <BbSelectLabel>Birds</BbSelectLabel>
+                        <BbSelectItem Value="@("eagle")" Text="Eagle" />
+                        <BbSelectItem Value="@("parrot")" Text="Parrot" />
+                        <BbSelectItem Value="@("penguin")" Text="Penguin" />
+                    </BbSelectGroup>
+                    <BbSelectGroup>
+                        <BbSelectLabel>Reptiles</BbSelectLabel>
+                        <BbSelectItem Value="@("crocodile")" Text="Crocodile" />
+                        <BbSelectItem Value="@("snake")" Text="Snake" />
+                        <BbSelectItem Value="@("turtle")" Text="Turtle" />
+                    </BbSelectGroup>
+                </BbSelectContent>
+            </BbSelect>
 
             @if (!string.IsNullOrEmpty(selectedAnimal))
             {
                 <p class="text-sm">Selected: <strong>@selectedAnimal</strong></p>
             }
         </div>
+
+        <CodeBlock Source="Components/Select/grouped.txt" />
     </section>
 
     <!-- Scrollable Long List -->
@@ -93,51 +193,48 @@
         </p>
 
         <div class="flex items-center gap-4">
-            <Select @bind-Value="selectedCountry" TValue="string" Class="w-[280px]">
-                <SelectTrigger>
-                    <SelectValue Placeholder="Select a country" />
-                </SelectTrigger>
-                <SelectContent>
-                    @foreach (var country in countries)
+            <BbSelect @bind-Value="selectedCountry" TValue="string" Class="w-[280px]">
+                <BbSelectTrigger>
+                    <BbSelectValue Placeholder="Select a country" />
+                </BbSelectTrigger>
+                <BbSelectContent>
+                    @foreach (var country in Countries)
                     {
-                        <SelectItem Value="@country" TValue="string">@country</SelectItem>
+                        <BbSelectItem Value="@country" Text="@country" />
                     }
-                </SelectContent>
-            </Select>
+                </BbSelectContent>
+            </BbSelect>
 
             @if (!string.IsNullOrEmpty(selectedCountry))
             {
                 <p class="text-sm">Selected: <strong>@selectedCountry</strong></p>
             }
         </div>
+
+        <CodeBlock Source="Components/Select/scrollable.txt" />
     </section>
 
-    <!-- Generic Type Example -->
+    <!-- Scrollable Data-Binding -->
     <section class="space-y-4">
-        <h2 class="text-2xl font-semibold">Generic Type Support</h2>
+        <h2 class="text-2xl font-semibold">Scrollable Data-Binding</h2>
         <p class="text-sm text-muted-foreground">
-            Select component supports generic types (int, enum, custom types).
+            Data-binding mode handles large collections with automatic scrolling, just like the compositional mode.
         </p>
 
         <div class="flex items-center gap-4">
-            <Select @bind-Value="selectedNumber" TValue="int" Class="w-[280px]">
-                <SelectTrigger>
-                    <SelectValue Placeholder="Select a number" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem Value="1" Text="One" TValue="int">One</SelectItem>
-                    <SelectItem Value="2" Text="Two" TValue="int">Two</SelectItem>
-                    <SelectItem Value="3" Text="Three" TValue="int">Three</SelectItem>
-                    <SelectItem Value="4" Text="Four" TValue="int">Four</SelectItem>
-                    <SelectItem Value="5" Text="Five" TValue="int">Five</SelectItem>
-                </SelectContent>
-            </Select>
+            <BbSelect TValue="string"
+                    @bind-Value="selectedCountryDataBound"
+                    Options="@countryOptions"
+                    Placeholder="Select a country"
+                    Class="w-[280px]" />
 
-            @if (selectedNumber > 0)
+            @if (!string.IsNullOrEmpty(selectedCountryDataBound))
             {
-                <p class="text-sm">Selected: <strong>@selectedNumber</strong></p>
+                <p class="text-sm">Selected: <strong>@selectedCountryDataBound</strong></p>
             }
         </div>
+
+        <CodeBlock Source="Components/Select/scrollable-data-binding.txt" />
     </section>
 
     <!-- Form Validation with EditForm -->
@@ -154,24 +251,17 @@
 
             <div class="space-y-2">
                 <label class="text-sm font-medium">Favorite Fruit</label>
-                <Select @bind-Value="selectFormModel.Fruit" TValue="string" Class="w-[280px]">
-                    <SelectTrigger>
-                        <SelectValue Placeholder="Select a fruit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem Value="@("apple")" Text="Apple" TValue="string">Apple</SelectItem>
-                        <SelectItem Value="@("banana")" Text="Banana" TValue="string">Banana</SelectItem>
-                        <SelectItem Value="@("blueberry")" Text="Blueberry" TValue="string">Blueberry</SelectItem>
-                        <SelectItem Value="@("grapes")" Text="Grapes" TValue="string">Grapes</SelectItem>
-                        <SelectItem Value="@("pineapple")" Text="Pineapple" TValue="string">Pineapple</SelectItem>
-                    </SelectContent>
-                </Select>
+                <BbSelect @bind-Value="selectFormModel.Fruit"
+                        TValue="string"
+                        Options="fruitOptions"
+                        Placeholder="Select a fruit"
+                        Class="w-[280px]" />
                 <ValidationMessage For="@(() => selectFormModel.Fruit)" class="text-sm text-destructive" />
             </div>
 
             <div class="flex gap-4">
-                <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</Button>
-                <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetSelectForm">Reset</Button>
+                <BbButton Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</BbButton>
+                <BbButton Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetSelectForm">Reset</BbButton>
             </div>
 
             @if (!string.IsNullOrEmpty(selectFormMessage))
@@ -181,17 +271,153 @@
                 </div>
             }
         </EditForm>
+
+        <CodeBlock Source="Components/Select/form-validation.txt" />
+    </section>
+
+    <AccessibilityList>
+            <AriaAttributes>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">role="listbox"</code> on the dropdown content
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-expanded</code> indicates dropdown state
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-selected</code> on selected item
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Focus management with keyboard navigation support
+                </AccessibilityItem>
+            </AriaAttributes>
+            <KeyboardNavigation>
+                <KeyboardShortcutItem Description="Open dropdown">
+                    <BbKbd>Enter</BbKbd> / <BbKbd>Space</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Navigate options">
+                    <BbKbd>Arrow Keys</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Select option">
+                    <BbKbd>Enter</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Close dropdown">
+                    <BbKbd>Escape</BbKbd>
+                </KeyboardShortcutItem>
+            </KeyboardNavigation>
+        </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="Select&lt;TValue&gt;">
+                <ApiParameter Name="Options" Type="IEnumerable&lt;SelectOption&lt;TValue&gt;&gt;?">
+                    Collection of options for data-driven mode. When provided, auto-generates trigger, value display, and dropdown content.
+                </ApiParameter>
+                <ApiParameter Name="Value" Type="TValue?">
+                    Currently selected value. Supports two-way binding with <code>@@bind-Value</code>.
+                </ApiParameter>
+                <ApiParameter Name="ValueChanged" Type="EventCallback&lt;TValue?&gt;">
+                    Callback invoked when the selected value changes.
+                </ApiParameter>
+                <ApiParameter Name="Placeholder" Type="string?">
+                    Placeholder text when no value is selected (data-driven mode).
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the select is disabled.
+                </ApiParameter>
+                <ApiParameter Name="Open" Type="bool?">
+                    Whether the dropdown is open. Supports two-way binding with <code>@@bind-Open</code>.
+                </ApiParameter>
+                <ApiParameter Name="DisplayTextSelector" Type="Func&lt;TValue, string&gt;?">
+                    Function to derive display text from a value in compositional mode. Falls back to ToString().
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    Content for compositional mode. Should contain SelectTrigger and SelectContent.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="SelectTrigger&lt;TValue&gt;">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the trigger button.
+                </ApiParameter>
+                <ApiParameter Name="ActiveClass" Type="string?" Default="&quot;bg-accent text-accent-foreground&quot;">
+                    CSS classes applied when the dropdown is open. Set to <code>null</code> or empty to disable.
+                    Use to match the context (e.g., <code>"bg-sidebar-accent text-sidebar-accent-foreground"</code> in sidebars).
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="SelectItem&lt;TValue&gt;">
+                <ApiParameter Name="Value" Type="TValue">
+                    The value of this item. Required.
+                </ApiParameter>
+                <ApiParameter Name="Text" Type="string?">
+                    Display text. If not provided, uses ChildContent text or Value.ToString().
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether this item is disabled.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    Custom content rendered as the item's display.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="SelectValue">
+                <ApiParameter Name="Placeholder" Type="string?">
+                    Placeholder text when no value is selected.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment&lt;string&gt;?">
+                    Custom template for selected value display. Receives display text as context.
+                </ApiParameter>
+            </ApiReference>
+        </div>
     </section>
 </div>
 
 @code {
     private string? selectedFruit;
+    private string? selectedFruitComposed;
     private string? selectedAnimal;
     private string? selectedCountry;
-    private int selectedNumber;
+    private string? selectedCountryDataBound;
+    private int? selectedNumber;
+    private string? selectedUserId;
+    private Guid? selectedProjectId;
+    private string? selectedPreselectedUserId = "u002";
 
-    private readonly string[] countries = new[]
-    {
+    private static readonly string[] Fruits = ["Apple", "Banana", "Blueberry", "Grapes", "Pineapple"];
+    private readonly SelectOption<string>[] fruitOptions = Fruits.Select(SelectOption.FromValue).ToArray();
+
+    private readonly SelectOption<int?>[] numberOptions =
+    [
+        new(1, "One"), new(2, "Two"), new(3, "Three"), new(4, "Four"), new(5, "Five")
+    ];
+
+    private static readonly Guid Project1Id = Guid.Parse("6163de1b-65e2-4c98-b8a8-403efa27a7c2");
+    private static readonly Guid Project2Id = Guid.Parse("a4b8c3d1-2e5f-4a6b-9c8d-7e1f2a3b4c5d");
+    private static readonly Guid Project3Id = Guid.Parse("d9e8f7a6-5b4c-3d2e-1f0a-9b8c7d6e5f4a");
+
+    private readonly SelectOption<string>[] userOptions =
+    [
+        new("u001", "Alice Martin"),
+        new("u002", "Bob Chen"),
+        new("u003", "Carol Davis"),
+        new("u004", "Dan Wilson")
+    ];
+
+    private readonly SelectOption<Guid?>[] projectOptions =
+    [
+        new(Project1Id, "Website Redesign"),
+        new(Project2Id, "Mobile App"),
+        new(Project3Id, "API Migration")
+    ];
+
+    private static readonly string[] Countries =
+    [
         "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
         "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
         "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus",
@@ -202,7 +428,8 @@
         "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia",
         "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti",
         "Dominica", "Dominican Republic", "East Timor", "Ecuador", "Egypt"
-    };
+    ];
+    private readonly SelectOption<string>[] countryOptions = Countries.Select(SelectOption.FromValue).ToArray();
 
     private SelectFormModel selectFormModel = new();
     private string? selectFormMessage;

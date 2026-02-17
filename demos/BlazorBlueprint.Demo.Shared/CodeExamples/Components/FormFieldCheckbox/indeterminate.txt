@@ -1,0 +1,8 @@
+<BbFormFieldCheckbox Checked="@selectAllChecked"
+                       CheckedChanged="HandleSelectAllChanged"
+                       Indeterminate="@selectAllIndeterminate"
+                       Label="Select all permissions" />
+
+<BbFormFieldCheckbox Checked="@permRead"
+                   CheckedChanged="@(v => { permRead = v; UpdateSelectAll(); })"
+                   Label="Read" />

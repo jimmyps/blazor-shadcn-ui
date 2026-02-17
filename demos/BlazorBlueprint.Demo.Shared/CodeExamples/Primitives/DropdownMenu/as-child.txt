@@ -1,0 +1,17 @@
+@using BlazorBlueprint.Primitives.DropdownMenu
+
+@* Without AsChild — trigger renders its own button *@
+<BbDropdownMenu ItemClass="block px-2 py-1.5 cursor-pointer rounded hover:bg-accent focus:bg-accent focus:outline-none">
+    <BbDropdownMenuTrigger class="...">Open Menu</BbDropdownMenuTrigger>
+    <BbDropdownMenuContent class="...">
+        <BbDropdownMenuItem>Item 1</BbDropdownMenuItem>
+    </BbDropdownMenuContent>
+</BbDropdownMenu>
+
+@* With AsChild — your element becomes the trigger *@
+<BbDropdownMenu ItemClass="...">
+    <BbDropdownMenuTrigger AsChild>
+        <BbButton Variant="ButtonVariant.Outline">Open Menu</BbButton>
+    </BbDropdownMenuTrigger>
+    ...
+</BbDropdownMenu>

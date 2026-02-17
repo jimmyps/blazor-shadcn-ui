@@ -1,0 +1,4 @@
+<BbFormFieldSwitch Checked="true"
+                     Label="Airplane mode"
+                     HelperText="Managed by your administrator."
+                     Disabled="true" />

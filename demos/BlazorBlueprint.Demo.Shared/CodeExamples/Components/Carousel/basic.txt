@@ -1,0 +1,16 @@
+<BbCarousel Class="w-full">
+    <BbCarouselContent>
+        @for (int i = 1; i <= 5; i++)
+        {
+            <BbCarouselItem>
+                <BbCard>
+                    <BbCardContent>
+                        @i
+                    </BbCardContent>
+                </BbCard>
+            </BbCarouselItem>
+        }
+    </BbCarouselContent>
+    <BbCarouselPrevious />
+    <BbCarouselNext />
+</BbCarousel>

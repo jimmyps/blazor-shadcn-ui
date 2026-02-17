@@ -1,0 +1,4 @@
+<BbCollapsible @bind-Open="isOpen">
+    <BbCollapsibleTrigger>...</BbCollapsibleTrigger>
+    <BbCollapsibleContent>...</BbCollapsibleContent>
+</BbCollapsible>

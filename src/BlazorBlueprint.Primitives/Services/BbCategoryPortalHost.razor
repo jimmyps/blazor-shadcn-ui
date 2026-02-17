@@ -1,0 +1,145 @@
+@namespace BlazorBlueprint.Primitives.Services
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IPortalService PortalService
+@inject IJSRuntime JSRuntime
+
+@* Renders portals for a specific category at the document body level.
+   Only re-renders when its own category's portals change. *@
+@{
+    // Guard: ignore RefreshPortal calls from nested FloatingPortals during our render.
+    // Without this, a FloatingPortal inside another portal (e.g., Combobox in Dialog)
+    // would trigger OnPortalsCategoryChanged during our render, scheduling another render,
+    // creating an infinite async loop.
+    _isRendering = true;
+    // Track which portals are being rendered in this cycle
+    _renderedThisCycle.Clear();
+}
+@foreach (var portal in PortalService.GetPortals(Category))
+{
+    _renderedThisCycle.Add(portal.Key);
+    <div @key="portal.Key" data-portal-id="@portal.Key" data-portal-category="@Category" class="blazorblueprint-portal" style="display: contents;">
+        @portal.Value
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// The portal category this host renders.
+    /// </summary>
+    [Parameter]
+    public PortalCategory Category { get; set; }
+
+    private HashSet<string> _renderedThisCycle = new();
+    private IJSObjectReference? _portalModule;
+    private bool _isRendering;
+    private bool _isFirstCategoryHost;
+
+    protected override void OnInitialized()
+    {
+        // Only register as host if no other host exists yet.
+        // This handles the case where both BbContainerPortalHost and BbOverlayPortalHost
+        // are used together — only the first one registers as host.
+        if (!PortalService.HasHost)
+        {
+            PortalService.RegisterHost();
+            _isFirstCategoryHost = true;
+        }
+
+        PortalService.OnPortalsCategoryChanged += HandleCategoryChanged;
+    }
+
+    /// <summary>
+    /// Handles portal changes scoped to a specific category.
+    /// Ignores notifications for other categories and during own render cycle.
+    /// </summary>
+    private void HandleCategoryChanged(PortalCategory category)
+    {
+        if (category != Category)
+        {
+            return;
+        }
+
+        if (_isRendering)
+        {
+            // During rendering, a nested FloatingPortal's OnParametersSet calls
+            // RefreshPortal, which fires this callback. Scheduling a re-render here
+            // would create an infinite loop. RefreshPortal is always redundant during
+            // rendering because the host is already rendering all portal content.
+            // Structural changes (register/unregister from OnAfterRenderAsync of nested
+            // components) are detected after the render cycle completes.
+            return;
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Clear the rendering guard now that the render cycle is complete.
+        _isRendering = false;
+
+        if (firstRender)
+        {
+            // Load portal.js to initialize the auto-focus observer.
+            // This ensures elements with data-autofocus are automatically focused when rendered.
+            try
+            {
+                _portalModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorBlueprint.Primitives/js/primitives/portal.js");
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnect in Blazor Server
+            }
+            catch (InvalidOperationException)
+            {
+                // JS interop not available during prerendering — safe to ignore
+            }
+        }
+
+        // Notify all portals that were rendered this cycle BEFORE checking for structural changes.
+        // This signals to content components that their ElementRef is now valid.
+        // Must happen first because nested FloatingPortal components wait for this notification
+        // (with a 500ms timeout) before setting up positioning.
+        foreach (var portalId in _renderedThisCycle)
+        {
+            PortalService.NotifyPortalRendered(portalId);
+        }
+
+        // Detect structural changes (register/unregister) that occurred during the render
+        // cycle. Nested FloatingPortal components call RegisterPortal in their
+        // OnAfterRenderAsync (which runs before ours, depth-first), so the portal set
+        // reflects any additions/removals by this point.
+        var currentPortalKeys = PortalService.GetPortals(Category)
+            .Select(kvp => kvp.Key)
+            .ToHashSet();
+
+        if (!_renderedThisCycle.SetEquals(currentPortalKeys))
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_isFirstCategoryHost)
+        {
+            PortalService.UnregisterHost();
+        }
+
+        PortalService.OnPortalsCategoryChanged -= HandleCategoryChanged;
+
+        if (_portalModule != null)
+        {
+            try
+            {
+                await _portalModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnect
+            }
+        }
+    }
+}

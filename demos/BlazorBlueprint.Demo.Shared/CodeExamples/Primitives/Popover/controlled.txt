@@ -1,0 +1,16 @@
+<button @onclick="() => isOpen = !isOpen">Toggle Popover</button>
+<span>State: @(isOpen ? "Open" : "Closed")</span>
+
+<BbPopover @bind-Open="isOpen">
+    <BbPopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+        @(isOpen ? "Close" : "Open") Controlled
+    </BbPopoverTrigger>
+    <BbPopoverContent class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+        <p class="text-sm">Controlled by parent state: @isOpen</p>
+        <button @onclick="() => isOpen = false">Close from content</button>
+    </BbPopoverContent>
+</BbPopover>
+
+@code {
+    private bool isOpen = false;
+}

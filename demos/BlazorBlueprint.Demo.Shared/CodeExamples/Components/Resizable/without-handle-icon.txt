@@ -1,0 +1,5 @@
+<BbResizablePanelGroup Direction="ResizableDirection.Horizontal">
+    <BbResizablePanel DefaultSize="50">Left</BbResizablePanel>
+    <BbResizableHandle WithHandle="false" />
+    <BbResizablePanel DefaultSize="50">Right</BbResizablePanel>
+</BbResizablePanelGroup>

@@ -1,0 +1,9 @@
+<BbSplitButton OnClick="HandleSave">
+    <ChildContent>Save</ChildContent>
+    <DropdownContent>
+        <BbSplitButtonItem OnClick="HandleSaveAs">Save As...</BbSplitButtonItem>
+        <BbSplitButtonItem OnClick="HandleSaveDraft">Save Draft</BbSplitButtonItem>
+        <BbSplitButtonSeparator />
+        <BbSplitButtonItem OnClick="HandleExport">Export</BbSplitButtonItem>
+    </DropdownContent>
+</BbSplitButton>

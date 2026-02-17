@@ -1,0 +1,28 @@
+@namespace BlazorBlueprint.Components
+
+@*
+    DialogFooter helper component for organizing dialog action buttons.
+*@
+
+<div class="@CssClass">
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>
+    /// The content to display in the dialog footer (typically action buttons).
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes to apply to the footer container.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    private string CssClass => ClassNames.cn(
+        "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+        Class
+    );
+}

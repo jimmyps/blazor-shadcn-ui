@@ -2,12 +2,12 @@ using System.Linq.Expressions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace BlazorBlueprint.Components.Field;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Abstract base class for form field wrappers that compose a control with
-/// <see cref="Field.Field"/>, <see cref="FieldLabel"/>, <see cref="FieldDescription"/>,
-/// and <see cref="FieldError"/> for a complete, accessible form field experience.
+/// <see cref="BbField.BbField"/>, <see cref="BbFieldLabel"/>, <see cref="BbFieldDescription"/>,
+/// and <see cref="BbFieldError"/> for a complete, accessible form field experience.
 /// </summary>
 /// <remarks>
 /// Provides shared logic for ID generation, EditContext lifecycle management,
@@ -17,6 +17,7 @@ namespace BlazorBlueprint.Components.Field;
 public abstract class FormFieldBase : ComponentBase, IDisposable
 {
     private FieldIdentifier? _fieldIdentifier;
+    private LambdaExpression? _cachedExpression;
     private EditContext? _subscribedEditContext;
 
     private readonly string _controlId = $"formfield-{Guid.NewGuid():N}";
@@ -54,11 +55,12 @@ public abstract class FormFieldBase : ComponentBase, IDisposable
     public string? HelperText { get; set; }
 
     /// <summary>
-    /// Gets or sets a manual error text override.
+    /// Gets or sets a manual error text override displayed when the field has validation errors.
     /// </summary>
     /// <remarks>
-    /// When set and the field is in an error state, this text is displayed
-    /// instead of auto-generated or EditContext validation messages.
+    /// This is a display-only override: it does <b>not</b> trigger an error state by itself.
+    /// When the field is invalid (e.g., has EditContext validation errors) and this property is set,
+    /// the provided text is shown instead of the auto-generated validation messages.
     /// </remarks>
     [Parameter]
     public string? ErrorText { get; set; }
@@ -111,7 +113,7 @@ public abstract class FormFieldBase : ComponentBase, IDisposable
     /// Gets whether the field is in an invalid state. Subclasses may override
     /// to add additional error sources (e.g., parse errors).
     /// </summary>
-    protected virtual bool IsInvalid => HasEditContextErrors || !string.IsNullOrEmpty(ErrorText);
+    protected virtual bool IsInvalid => HasEditContextErrors;
 
     /// <summary>
     /// Gets the value for the <c>aria-describedby</c> attribute. Points to
@@ -129,6 +131,18 @@ public abstract class FormFieldBase : ComponentBase, IDisposable
     /// a <see cref="FieldIdentifier"/> for EditContext integration.
     /// </summary>
     protected abstract LambdaExpression? GetFieldExpression();
+
+    /// <summary>
+    /// Notifies the cascaded <see cref="EditContext"/> that the field value has changed,
+    /// triggering validation. Call this after updating the bound value.
+    /// </summary>
+    protected void NotifyFieldChanged()
+    {
+        if (CascadedEditContext is not null && _fieldIdentifier.HasValue)
+        {
+            CascadedEditContext.NotifyFieldChanged(_fieldIdentifier.Value);
+        }
+    }
 
     // --- Lifecycle ---
 
@@ -155,10 +169,17 @@ public abstract class FormFieldBase : ComponentBase, IDisposable
         var expression = GetFieldExpression();
         if (CascadedEditContext is not null && expression is not null)
         {
-            _fieldIdentifier = CreateFieldIdentifier(expression);
+            // Only recompute when the expression reference changes to avoid
+            // Expression.Compile() on every render cycle.
+            if (!ReferenceEquals(expression, _cachedExpression))
+            {
+                _cachedExpression = expression;
+                _fieldIdentifier = CreateFieldIdentifier(expression);
+            }
         }
         else
         {
+            _cachedExpression = null;
             _fieldIdentifier = null;
         }
     }

@@ -1,0 +1,10 @@
+<!-- Centered Loading -->
+<div class="flex items-center justify-center">
+    <BbSpinner Size="SpinnerSize.Large" />
+</div>
+
+<!-- Inline Loading -->
+<div class="flex items-center gap-3">
+    <BbSpinner Size="SpinnerSize.Small" />
+    <span>Fetching data...</span>
+</div>

@@ -1,0 +1,9 @@
+<BbMenubar TriggerClass="font-bold text-primary">
+    <BbMenubarMenu>
+        <BbMenubarTrigger>File</BbMenubarTrigger>
+        <BbMenubarContent>
+            <BbMenubarItem>New</BbMenubarItem>
+            <BbMenubarItem>Open</BbMenubarItem>
+        </BbMenubarContent>
+    </BbMenubarMenu>
+</BbMenubar>

@@ -1,0 +1,4 @@
+<BbCheckboxGroup TValue="string" @bind-Values="values" ShowSelectAll SelectAllLabel="Select all permissions">
+    <BbCheckboxGroupItem Value="@("read")" Label="Read" />
+    <BbCheckboxGroupItem Value="@("write")" Label="Write" />
+</BbCheckboxGroup>

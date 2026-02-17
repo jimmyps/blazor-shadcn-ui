@@ -1,0 +1,9 @@
+<BbInputGroup>
+    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
+        <BbInputGroupText>$</BbInputGroupText>
+    </BbInputGroupAddon>
+    <BbInputGroupInput Type="InputType.Number" Placeholder="0.00" />
+    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+        <BbInputGroupText>USD</BbInputGroupText>
+    </BbInputGroupAddon>
+</BbInputGroup>

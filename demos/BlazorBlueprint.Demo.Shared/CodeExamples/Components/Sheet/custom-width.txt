@@ -1,0 +1,13 @@
+<BbSheet>
+    <BbSheetTrigger>
+        <BbButton Variant="ButtonVariant.Outline">Open Wide Sheet</BbButton>
+    </BbSheetTrigger>
+    <BbSheetContent Class="w-[400px] sm:w-[540px]">
+        <BbSheetHeader>
+            <BbSheetTitle>Wide Sheet</BbSheetTitle>
+            <BbSheetDescription>
+                This sheet uses a custom width class.
+            </BbSheetDescription>
+        </BbSheetHeader>
+    </BbSheetContent>
+</BbSheet>

@@ -1,0 +1,1 @@
+<BbDateRangePicker @bind-Value="_minMaxDays" MinDays="3" MaxDays="14" />

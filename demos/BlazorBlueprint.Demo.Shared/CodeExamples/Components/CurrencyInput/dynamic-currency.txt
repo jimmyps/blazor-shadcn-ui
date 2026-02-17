@@ -1,0 +1,1 @@
+<BbCurrencyInput @bind-Value="_value" CurrencyCode="@_selectedCurrency" />

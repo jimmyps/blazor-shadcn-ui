@@ -1,0 +1,33 @@
+@using BlazorBlueprint.Primitives.Dialog
+
+<!-- Without AsChild -->
+<BbDialog>
+    <BbDialogTrigger class="px-3 py-2 border rounded text-sm">
+        Open Dialog
+    </BbDialogTrigger>
+    <BbDialogPortal>
+        <BbDialogOverlay class="fixed inset-0 bg-black/50 z-50" />
+        <BbDialogContent class="...">
+            <BbDialogTitle>Without AsChild</BbDialogTitle>
+            <BbDialogDescription>...</BbDialogDescription>
+            <BbDialogClose class="...">Close</BbDialogClose>
+        </BbDialogContent>
+    </BbDialogPortal>
+</BbDialog>
+
+<!-- With AsChild -->
+<BbDialog>
+    <BbDialogTrigger AsChild>
+        <BbButton Variant="ButtonVariant.Outline">Open Dialog</BbButton>
+    </BbDialogTrigger>
+    <BbDialogPortal>
+        <BbDialogOverlay class="fixed inset-0 bg-black/50 z-50" />
+        <BbDialogContent class="...">
+            <BbDialogTitle>With AsChild</BbDialogTitle>
+            <BbDialogDescription>...</BbDialogDescription>
+            <BbDialogClose AsChild>
+                <BbButton Variant="ButtonVariant.Secondary">Close</BbButton>
+            </BbDialogClose>
+        </BbDialogContent>
+    </BbDialogPortal>
+</BbDialog>

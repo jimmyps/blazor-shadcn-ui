@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Kbd;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Size variants for the Kbd component.

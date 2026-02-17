@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Toast;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the position where toasts are displayed on the screen.

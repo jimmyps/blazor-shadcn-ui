@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Slider;
+namespace BlazorBlueprint.Components;
 
 public enum SliderOrientation
 {

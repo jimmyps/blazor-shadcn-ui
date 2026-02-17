@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Toast;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Service for managing toast notifications.
@@ -6,7 +6,7 @@ namespace BlazorBlueprint.Components.Toast;
 /// </summary>
 public class ToastService
 {
-    private readonly List<ToastData> _toasts = new();
+    private readonly List<ToastData> toasts = new();
 
     /// <summary>
     /// Event fired when the toast collection changes.
@@ -16,7 +16,7 @@ public class ToastService
     /// <summary>
     /// Gets the current list of toasts.
     /// </summary>
-    public IReadOnlyList<ToastData> Toasts => _toasts.AsReadOnly();
+    public IReadOnlyList<ToastData> Toasts => toasts.AsReadOnly();
 
     /// <summary>
     /// Gets or sets the runtime toast position override.
@@ -50,7 +50,7 @@ public class ToastService
     /// <param name="toast">The toast data to display.</param>
     public void Show(ToastData toast)
     {
-        _toasts.Add(toast);
+        toasts.Add(toast);
         OnChange?.Invoke();
     }
 
@@ -73,12 +73,28 @@ public class ToastService
     }
 
     /// <summary>
-    /// Shows a success toast (default variant).
+    /// Shows a success toast with green accent and circle-check icon.
     /// </summary>
     /// <param name="description">The message to display.</param>
     /// <param name="title">Optional title.</param>
     public void Success(string description, string? title = null) =>
-        Show(description, title, ToastVariant.Default);
+        Show(description, title, ToastVariant.Success);
+
+    /// <summary>
+    /// Shows an info toast with blue accent and info icon.
+    /// </summary>
+    /// <param name="description">The message to display.</param>
+    /// <param name="title">Optional title.</param>
+    public void Info(string description, string? title = null) =>
+        Show(description, title, ToastVariant.Info);
+
+    /// <summary>
+    /// Shows a warning toast with amber accent and triangle-alert icon.
+    /// </summary>
+    /// <param name="description">The message to display.</param>
+    /// <param name="title">Optional title.</param>
+    public void Warning(string description, string? title = null) =>
+        Show(description, title, ToastVariant.Warning);
 
     /// <summary>
     /// Shows an error toast (destructive variant).
@@ -94,10 +110,10 @@ public class ToastService
     /// <param name="id">The toast ID to dismiss.</param>
     public void Dismiss(string id)
     {
-        var toast = _toasts.FirstOrDefault(t => t.Id == id);
+        var toast = toasts.FirstOrDefault(t => t.Id == id);
         if (toast != null)
         {
-            _toasts.Remove(toast);
+            toasts.Remove(toast);
             OnChange?.Invoke();
         }
     }
@@ -107,7 +123,7 @@ public class ToastService
     /// </summary>
     public void DismissAll()
     {
-        _toasts.Clear();
+        toasts.Clear();
         OnChange?.Invoke();
     }
 }

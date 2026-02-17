@@ -1,0 +1,9 @@
+<!-- Without AsChild: renders its own button -->
+<BbCollapsibleTrigger AsChild="false" Class="...">
+    Show more
+</BbCollapsibleTrigger>
+
+<!-- With AsChild: Button receives trigger behavior -->
+<BbCollapsibleTrigger>
+    <BbButton>Toggle Section</BbButton>
+</BbCollapsibleTrigger>

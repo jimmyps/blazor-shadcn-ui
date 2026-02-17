@@ -1,0 +1,27 @@
+<div class="space-y-4 max-w-md border rounded-lg p-6">
+    <div class="space-y-2">
+        <label class="text-sm font-medium">Framework</label>
+        <BbCombobox TValue="string"
+                 Options="frameworks"
+                 @bind-Value="formFramework"
+                 Placeholder="Select framework..."
+                 SearchPlaceholder="Search framework..."
+                 Class="w-full"
+                 MatchTriggerWidth="true" />
+    </div>
+
+    <div class="space-y-2">
+        <label class="text-sm font-medium">Language</label>
+        <BbCombobox TValue="string"
+                 Options="languages"
+                 @bind-Value="formLanguage"
+                 Placeholder="Select language..."
+                 SearchPlaceholder="Search language..."
+                 Class="w-full"
+                 MatchTriggerWidth="true" />
+    </div>
+
+    <BbButton Variant="ButtonVariant.Default" OnClick="HandleFormSubmit">
+        Submit
+    </BbButton>
+</div>

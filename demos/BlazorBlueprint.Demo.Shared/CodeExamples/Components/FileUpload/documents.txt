@@ -1,0 +1,4 @@
+<BbFileUpload @bind-Files="files"
+    Multiple="true"
+    Accept=".pdf,.doc,.docx,.xls,.xlsx"
+    MaxFileSize="@(20 * 1024 * 1024)" />

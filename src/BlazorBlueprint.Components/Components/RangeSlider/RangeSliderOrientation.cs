@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.RangeSlider;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the orientation of a RangeSlider.

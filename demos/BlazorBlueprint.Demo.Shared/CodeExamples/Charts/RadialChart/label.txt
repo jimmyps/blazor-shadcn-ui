@@ -1,0 +1,4 @@
+<BbRadialBarChart Data="@data" Height="250px">
+    <BbChartTooltip />
+    <BbRadialBar DataKey="visitors" NameKey="browser" ShowLabels="true" />
+</BbRadialBarChart>

@@ -1,0 +1,16 @@
+<BbFormFieldSelect TValue="int?"
+                 @bind-Value="_priorityLevel"
+                 Label="Priority"
+                 Placeholder="Select priority..."
+                 Options="@_priorityOptions" />
+
+@code {
+    private int? _priorityLevel;
+
+    private readonly SelectOption<int?>[] _priorityOptions =
+    [
+        new(1, "Low"),
+        new(2, "Medium"),
+        new(3, "High")
+    ];
+}

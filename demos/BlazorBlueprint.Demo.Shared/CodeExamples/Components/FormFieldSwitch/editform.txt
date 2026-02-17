@@ -1,0 +1,8 @@
+<EditForm Model="formModel" OnValidSubmit="HandleFormSubmit">
+    <DataAnnotationsValidator />
+    <BbFormFieldSwitch @bind-Checked="formModel.AcceptMarketing"
+                     Label="Accept marketing emails" />
+    <BbFormFieldSwitch @bind-Checked="formModel.AcceptPrivacy"
+                     Label="Accept privacy policy" />
+    <BbButton Type="ButtonType.Submit">Submit</BbButton>
+</EditForm>

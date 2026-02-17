@@ -1,0 +1,12 @@
+<BbCard>
+    <BbCardHeader>
+        <BbCardTitle>Card Title</BbCardTitle>
+        <BbCardDescription>Card description goes here.</BbCardDescription>
+    </BbCardHeader>
+    <BbCardContent>
+        <p>This is the main content area of the card.</p>
+    </BbCardContent>
+    <BbCardFooter>
+        <BbButton Size="ButtonSize.Small">Action</BbButton>
+    </BbCardFooter>
+</BbCard>

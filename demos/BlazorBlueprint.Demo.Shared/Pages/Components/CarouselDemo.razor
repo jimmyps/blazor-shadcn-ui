@@ -1,9 +1,4 @@
 @page "/components/carousel"
-@using BlazorBlueprint.Components.Carousel
-@using BlazorBlueprint.Components.Card
-@using BlazorBlueprint.Components.Separator
-@using BlazorBlueprint.Components.AspectRatio
-
 <PageTitle>Carousel Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -25,25 +20,26 @@
             </p>
         </div>
         <div class="w-full max-w-xs mx-auto">
-            <Carousel Class="w-full">
-                <CarouselContent>
+            <BbCarousel Class="w-full">
+                <BbCarouselContent>
                     @for (int i = 1; i <= 5; i++)
                     {
-                        <CarouselItem>
+                        <BbCarouselItem>
                             <div class="p-1">
-                                <Card>
-                                    <CardContent Class="flex aspect-square items-center justify-center p-6">
+                                <BbCard>
+                                    <BbCardContent Class="flex aspect-square items-center justify-center p-6">
                                         <span class="text-4xl font-semibold">@i</span>
-                                    </CardContent>
-                                </Card>
+                                    </BbCardContent>
+                                </BbCard>
                             </div>
-                        </CarouselItem>
+                        </BbCarouselItem>
                     }
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-            </Carousel>
+                </BbCarouselContent>
+                <BbCarouselPrevious />
+                <BbCarouselNext />
+            </BbCarousel>
         </div>
+        <CodeBlock Source="Components/Carousel/basic.txt" />
     </div>
 
     <!-- With Loop -->
@@ -55,25 +51,26 @@
             </p>
         </div>
         <div class="w-full max-w-xs mx-auto">
-            <Carousel Class="w-full" Loop="true">
-                <CarouselContent>
+            <BbCarousel Class="w-full" Loop="true">
+                <BbCarouselContent>
                     @for (int i = 1; i <= 3; i++)
                     {
-                        <CarouselItem>
+                        <BbCarouselItem>
                             <div class="p-1">
-                                <Card>
-                                    <CardContent Class="flex aspect-square items-center justify-center p-6 bg-primary/10">
+                                <BbCard>
+                                    <BbCardContent Class="flex aspect-square items-center justify-center p-6 bg-primary/10">
                                         <span class="text-4xl font-semibold">@i</span>
-                                    </CardContent>
-                                </Card>
+                                    </BbCardContent>
+                                </BbCard>
                             </div>
-                        </CarouselItem>
+                        </BbCarouselItem>
                     }
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-            </Carousel>
+                </BbCarouselContent>
+                <BbCarouselPrevious />
+                <BbCarouselNext />
+            </BbCarousel>
         </div>
+        <CodeBlock Source="Components/Carousel/loop.txt" />
     </div>
 
     <!-- Image Gallery -->
@@ -85,83 +82,77 @@
             </p>
         </div>
         <div class="w-full max-w-lg mx-auto">
-            <Carousel Class="w-full" Loop="true">
-                <CarouselContent>
-                    <CarouselItem>
+            <BbCarousel Class="w-full" Loop="true">
+                <BbCarouselContent>
+                    <BbCarouselItem>
                         <div class="p-1">
-                            <AspectRatio Ratio="16 / 9">
+                            <BbAspectRatio Ratio="16 / 9">
                                 <img src="https://images.unsplash.com/photo-1767536472182-6e7142d5fb7a?w=800&auto=format&fit=crop"
                                      alt=""
                                      class="rounded-lg object-cover w-full h-full" />
-                            </AspectRatio>
+                            </BbAspectRatio>
                         </div>
-                    </CarouselItem>
-                    <CarouselItem>
+                    </BbCarouselItem>
+                    <BbCarouselItem>
                         <div class="p-1">
-                            <AspectRatio Ratio="16 / 9">
+                            <BbAspectRatio Ratio="16 / 9">
                                 <img src="https://images.unsplash.com/photo-1766488735864-44c313801587?w=800&auto=format&fit=crop"
                                      alt=""
                                      class="rounded-lg object-cover w-full h-full" />
-                            </AspectRatio>
+                            </BbAspectRatio>
                         </div>
-                    </CarouselItem>
-                    <CarouselItem>
+                    </BbCarouselItem>
+                    <BbCarouselItem>
                         <div class="p-1">
-                            <AspectRatio Ratio="16 / 9">
+                            <BbAspectRatio Ratio="16 / 9">
                                 <img src="https://images.unsplash.com/photo-1766596534244-104ac1d954f1?w=800&auto=format&fit=crop"
                                      alt=""
                                      class="rounded-lg object-cover w-full h-full" />
-                            </AspectRatio>
+                            </BbAspectRatio>
                         </div>
-                    </CarouselItem>
-                    <CarouselItem>
+                    </BbCarouselItem>
+                    <BbCarouselItem>
                         <div class="p-1">
-                            <AspectRatio Ratio="16 / 9">
+                            <BbAspectRatio Ratio="16 / 9">
                                 <img src="https://images.unsplash.com/photo-1766512433912-ba04869c2fbc?w=800&auto=format&fit=crop"
                                      alt=""
                                      class="rounded-lg object-cover w-full h-full" />
-                            </AspectRatio>
+                            </BbAspectRatio>
                         </div>
-                    </CarouselItem>
-                    <CarouselItem>
+                    </BbCarouselItem>
+                    <BbCarouselItem>
                         <div class="p-1">
-                            <AspectRatio Ratio="16 / 9">
+                            <BbAspectRatio Ratio="16 / 9">
                                 <img src="https://images.unsplash.com/photo-1767305680237-daa42b9e9a98?w=800&auto=format&fit=crop"
                                      alt=""
                                      class="rounded-lg object-cover w-full h-full" />
-                            </AspectRatio>
+                            </BbAspectRatio>
                         </div>
-                    </CarouselItem>
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-            </Carousel>
+                    </BbCarouselItem>
+                </BbCarouselContent>
+                <BbCarouselPrevious />
+                <BbCarouselNext />
+            </BbCarousel>
         </div>
+        <CodeBlock Source="Components/Carousel/image-gallery.txt" />
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Carousel Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Orientation:</strong> <code class="bg-muted px-1 py-0.5 rounded">CarouselOrientation</code> - Horizontal (default) or Vertical</p>
-                    <p><strong>Loop:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Enable infinite loop. Default: false</p>
-                </div>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-semibold mb-2">Components</h3>
-                <div class="space-y-2 text-sm">
-                    <p><code class="bg-muted px-1 py-0.5 rounded">CarouselContent</code> - Container for carousel items</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">CarouselItem</code> - Individual slide</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">CarouselPrevious</code> - Previous button</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">CarouselNext</code> - Next button</p>
-                </div>
-            </div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="Carousel">
+                <ApiParameter Name="Orientation" Type="CarouselOrientation">
+                    Horizontal (default) or Vertical.
+                </ApiParameter>
+                <ApiParameter Name="Loop" Type="bool" Default="false">
+                    Enable infinite loop.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>

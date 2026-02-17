@@ -1,0 +1,11 @@
+public static class MyButtonVariants
+{
+    public const string Success = "bg-green-600 text-white hover:bg-green-700";
+    public const string Warning = "bg-amber-500 text-white hover:bg-amber-600";
+    public const string Brand = "bg-gradient-to-r from-purple-500 to-pink-500 ...";
+}
+
+// Usage:
+<BbButton Class="@MyButtonVariants.Success">Confirm</BbButton>
+<BbButton Class="@MyButtonVariants.Warning">Warning</BbButton>
+<BbButton Class="@MyButtonVariants.Brand">Brand</BbButton>

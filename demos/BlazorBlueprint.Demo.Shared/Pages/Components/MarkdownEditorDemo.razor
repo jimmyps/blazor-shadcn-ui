@@ -1,10 +1,4 @@
 @page "/components/markdown-editor"
-@using BlazorBlueprint.Components.MarkdownEditor
-@using BlazorBlueprint.Components.Card
-@using BlazorBlueprint.Components.Button
-@using BlazorBlueprint.Components.Label
-@using BlazorBlueprint.Components.Kbd
-
 <PageTitle>Markdown Editor - Blazor Blueprint</PageTitle>
 
 <div class="space-y-10 max-w-4xl">
@@ -25,20 +19,22 @@
         </div>
 
         <div class="space-y-4">
-            <MarkdownEditor @bind-Value="basicValue" Placeholder="Write something amazing..." />
+            <BbMarkdownEditor @bind-Value="basicValue" Placeholder="Write something amazing..." />
 
             @if (!string.IsNullOrEmpty(basicValue))
             {
-                <Card>
-                    <CardHeader>
-                        <CardTitle Class="text-sm">Raw Markdown</CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                <BbCard>
+                    <BbCardHeader>
+                        <BbCardTitle Class="text-sm">Raw Markdown</BbCardTitle>
+                    </BbCardHeader>
+                    <BbCardContent>
                         <pre class="text-xs bg-muted p-3 rounded-md overflow-auto">@basicValue</pre>
-                    </CardContent>
-                </Card>
+                    </BbCardContent>
+                </BbCard>
             }
         </div>
+
+        <CodeBlock Source="Components/MarkdownEditor/basic.txt" />
     </section>
 
     @* With Label *@
@@ -51,11 +47,13 @@
         </div>
 
         <div class="space-y-2">
-            <Label For="description-editor">Description</Label>
-            <MarkdownEditor @bind-Value="labeledValue"
+            <BbLabel For="description-editor">Description</BbLabel>
+            <BbMarkdownEditor @bind-Value="labeledValue"
                             Id="description-editor"
                             Placeholder="Enter a description..." />
         </div>
+
+        <CodeBlock Source="Components/MarkdownEditor/with-label.txt" />
     </section>
 
     @* Toolbar Features Demo *@
@@ -71,9 +69,9 @@
             <div class="space-y-3">
                 <h3 class="font-semibold">Available Formatting</h3>
                 <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                    <li><strong>Bold</strong> - Select text and click B or press <Kbd>Ctrl+B</Kbd></li>
-                    <li><em>Italic</em> - Select text and click I or press <Kbd>Ctrl+I</Kbd></li>
-                    <li><u>Underline</u> - Select text and click U or press <Kbd>Ctrl+U</Kbd></li>
+                    <li><strong>Bold</strong> - Select text and click B or press <BbKbd>Ctrl+B</BbKbd></li>
+                    <li><em>Italic</em> - Select text and click I or press <BbKbd>Ctrl+I</BbKbd></li>
+                    <li><u>Underline</u> - Select text and click U or press <BbKbd>Ctrl+U</BbKbd></li>
                     <li>Headings - Use the heading dropdown to set H1, H2, H3, or normal text</li>
                     <li>Bullet List - Click the bullet list icon to add list items</li>
                     <li>Numbered List - Click the numbered list icon for ordered lists</li>
@@ -81,8 +79,10 @@
             </div>
         </div>
 
-        <MarkdownEditor @bind-Value="toolbarDemoValue"
+        <BbMarkdownEditor @bind-Value="toolbarDemoValue"
                         Placeholder="Try out the toolbar features..." />
+
+        <CodeBlock Source="Components/MarkdownEditor/toolbar.txt" />
     </section>
 
     @* Pre-populated Content *@
@@ -94,7 +94,34 @@
             </p>
         </div>
 
-        <MarkdownEditor @bind-Value="prePopulatedValue" />
+        <BbMarkdownEditor @bind-Value="prePopulatedValue" />
+
+        <CodeBlock Source="Components/MarkdownEditor/pre-populated.txt" />
+    </section>
+
+    @* Custom Min Height *@
+    <section class="space-y-6">
+        <div class="space-y-2">
+            <div class="flex items-center gap-2">
+                <h2 class="text-2xl font-semibold">Custom Min Height</h2>
+                <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">v3</span>
+            </div>
+            <p class="text-muted-foreground">
+                Use the <code class="text-xs bg-muted px-1 py-0.5 rounded">MinHeight</code> parameter to set the minimum height of the textarea and preview areas instead of using CSS class hacks.
+            </p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <BbLabel>Compact (100px)</BbLabel>
+                <BbMarkdownEditor @bind-Value="_compactValue" MinHeight="100px" Placeholder="A compact editor..." />
+            </div>
+            <div class="space-y-2">
+                <BbLabel>Tall (300px)</BbLabel>
+                <BbMarkdownEditor @bind-Value="_tallValue" MinHeight="300px" Placeholder="A taller editor..." />
+            </div>
+        </div>
+        <CodeBlock Source="Components/MarkdownEditor/min-height.txt" />
     </section>
 
     @* Disabled State *@
@@ -106,8 +133,10 @@
             </p>
         </div>
 
-        <MarkdownEditor Value="This editor is disabled and cannot be edited."
+        <BbMarkdownEditor Value="This editor is disabled and cannot be edited."
                         Disabled="true" />
+
+        <CodeBlock Source="Components/MarkdownEditor/disabled.txt" />
     </section>
 
     @* Form Integration *@
@@ -119,25 +148,25 @@
             </p>
         </div>
 
-        <Card>
-            <CardHeader>
-                <CardTitle>Submit Feedback</CardTitle>
-                <CardDescription>Share your thoughts with us using markdown formatting.</CardDescription>
-            </CardHeader>
-            <CardContent Class="space-y-4">
+        <BbCard>
+            <BbCardHeader>
+                <BbCardTitle>Submit Feedback</BbCardTitle>
+                <BbCardDescription>Share your thoughts with us using markdown formatting.</BbCardDescription>
+            </BbCardHeader>
+            <BbCardContent Class="space-y-4">
                 <div class="space-y-2">
-                    <Label For="feedback-editor">Your Feedback</Label>
-                    <MarkdownEditor @bind-Value="feedbackValue"
+                    <BbLabel For="feedback-editor">Your Feedback</BbLabel>
+                    <BbMarkdownEditor @bind-Value="feedbackValue"
                                     Id="feedback-editor"
                                     Placeholder="What's on your mind?" />
                 </div>
-            </CardContent>
-            <CardFooter>
-                <Button OnClick="HandleSubmit" Disabled="@string.IsNullOrWhiteSpace(feedbackValue)">
+            </BbCardContent>
+            <BbCardFooter>
+                <BbButton OnClick="HandleSubmit" Disabled="@string.IsNullOrWhiteSpace(feedbackValue)">
                     Submit Feedback
-                </Button>
-            </CardFooter>
-        </Card>
+                </BbButton>
+            </BbCardFooter>
+        </BbCard>
 
         @if (submitted)
         {
@@ -145,51 +174,64 @@
                 Feedback submitted successfully!
             </div>
         }
+
+        <CodeBlock Source="Components/MarkdownEditor/form-integration.txt" />
     </section>
 
-    @* Usage Notes *@
-    <section class="space-y-6">
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Supports AriaLabel for labeling the textarea</AccessibilityItem>
+            <AccessibilityItem>Supports AriaDescribedBy to link description text</AccessibilityItem>
+            <AccessibilityItem>Supports AriaInvalid for error state styling</AccessibilityItem>
+            <AccessibilityItem>Associate with Label component using the Id parameter</AccessibilityItem>
+            <AccessibilityItem>Disabled state prevents interaction and applies visual cues</AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <AccessibilityItem><BbKbd>Ctrl+B</BbKbd> applies bold formatting to selected text</AccessibilityItem>
+            <AccessibilityItem><BbKbd>Ctrl+I</BbKbd> applies italic formatting to selected text</AccessibilityItem>
+            <AccessibilityItem><BbKbd>Ctrl+U</BbKbd> applies underline formatting to selected text</AccessibilityItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Usage Notes</h2>
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-
-        <div class="rounded-lg border p-6 space-y-4">
-            <div class="space-y-3">
-                <h3 class="font-semibold">Key Features</h3>
-                <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                    <li>Write/Preview tabs for editing and viewing rendered output</li>
-                    <li>Toolbar with formatting buttons for common markdown syntax</li>
-                    <li>Keyboard shortcuts for bold, italic, and underline</li>
-                    <li>Heading dropdown for H1, H2, H3, and normal paragraph</li>
-                    <li>Bullet and numbered list support</li>
-                    <li>Two-way data binding with @("@bind-Value")</li>
-                    <li>Markdown rendering powered by Markdig</li>
-                </ul>
-            </div>
-
-            <div class="space-y-3">
-                <h3 class="font-semibold">Markdown Syntax</h3>
-                <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                    <li><code class="bg-muted px-1 rounded">**bold**</code> - Bold text</li>
-                    <li><code class="bg-muted px-1 rounded">*italic*</code> - Italic text</li>
-                    <li><code class="bg-muted px-1 rounded">&lt;u&gt;underline&lt;/u&gt;</code> - Underlined text</li>
-                    <li><code class="bg-muted px-1 rounded"># Heading 1</code> - Large heading</li>
-                    <li><code class="bg-muted px-1 rounded">## Heading 2</code> - Medium heading</li>
-                    <li><code class="bg-muted px-1 rounded">### Heading 3</code> - Small heading</li>
-                    <li><code class="bg-muted px-1 rounded">- item</code> - Bullet list item</li>
-                    <li><code class="bg-muted px-1 rounded">1. item</code> - Numbered list item</li>
-                </ul>
-            </div>
-
-            <div class="space-y-3">
-                <h3 class="font-semibold">Accessibility</h3>
-                <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                    <li>Supports ARIA labels and descriptions</li>
-                    <li>Keyboard navigation for toolbar</li>
-                    <li>Associate with Label component using Id parameter</li>
-                    <li>Supports disabled state</li>
-                </ul>
-            </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="MarkdownEditor">
+                <ApiParameter Name="Value" Type="string?" Default="null">
+                    The markdown content value. Supports two-way binding with @@bind-Value.
+                </ApiParameter>
+                <ApiParameter Name="ValueChanged" Type="EventCallback&lt;string?&gt;" Default="default">
+                    Callback invoked when the value changes.
+                </ApiParameter>
+                <ApiParameter Name="Placeholder" Type="string?" Default="null">
+                    Placeholder text displayed when the editor is empty.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the editor is disabled, preventing user input.
+                </ApiParameter>
+                <ApiParameter Name="MinHeight" Type="string?" Default="null">
+                    Minimum height for the textarea and preview areas (e.g., "200px", "10rem"). Defaults to 150px via CSS when not set.
+                </ApiParameter>
+                <ApiParameter Name="Id" Type="string?" Default="null">
+                    HTML id attribute for the textarea element. Use to associate with a Label component.
+                </ApiParameter>
+                <ApiParameter Name="AriaLabel" Type="string?" Default="null">
+                    ARIA label for the textarea element.
+                </ApiParameter>
+                <ApiParameter Name="AriaDescribedBy" Type="string?" Default="null">
+                    ID of the element that describes the textarea.
+                </ApiParameter>
+                <ApiParameter Name="AriaInvalid" Type="bool?" Default="null">
+                    Whether the textarea value is invalid. Applies destructive border styling when true.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes to apply to the editor container.
+                </ApiParameter>
+            </ApiReference>
         </div>
     </section>
 </div>
@@ -199,6 +241,8 @@
     private string? labeledValue;
     private string? toolbarDemoValue;
     private string? feedbackValue;
+    private string? _compactValue;
+    private string? _tallValue;
     private bool submitted;
 
     private string prePopulatedValue = @"# Welcome to the Markdown Editor

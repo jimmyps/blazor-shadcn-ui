@@ -1,0 +1,1 @@
+<BbFileUpload @bind-Files="files" Multiple="true" ShowPreview="false" />

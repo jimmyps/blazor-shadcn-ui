@@ -1,0 +1,81 @@
+@namespace BlazorBlueprint.Components
+@implements IDisposable
+
+<div @ref="_itemRef"
+     role="menuitem"
+     class="@CssClass"
+     tabindex="-1"
+     @onclick="HandleClick"
+     @onclick:stopPropagation="true">
+    @if (Icon != null)
+    {
+        <span class="mr-2 h-4 w-4 shrink-0 [&>svg]:h-4 [&>svg]:w-4">@Icon</span>
+    }
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter]
+    public BbContextMenu? Context { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Optional icon to display before the menu item content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? Icon { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public bool Inset { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    private ElementReference _itemRef;
+
+    public bool IsDisabled => Disabled;
+
+    public async Task FocusAsync()
+    {
+        try
+        {
+            await _itemRef.FocusAsync();
+        }
+        catch
+        {
+            // Ignore focus errors (element might not be mounted yet)
+        }
+    }
+
+    private async Task HandleClick()
+    {
+        if (!Disabled)
+        {
+            await OnClick.InvokeAsync();
+            if (Context != null)
+            {
+                await Context.Close();
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+    }
+
+    private string CssClass => ClassNames.cn(
+        "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none",
+        "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+        Disabled ? "pointer-events-none opacity-50" : null,
+        Inset ? "pl-8" : null,
+        Class
+    );
+}

@@ -1,0 +1,14 @@
+private readonly SelectOption<string>[] _userOptions =
+[
+    new("u001", "Alice Martin"),
+    new("u002", "Bob Chen"),
+    new("u003", "Carol Davis"),
+    new("u004", "Dan Wilson")
+];
+
+<BbFormFieldSelect TValue="string"
+                 @bind-Value="_selectedUserId"
+                 Label="Team member"
+                 Placeholder="Select a member..."
+                 HelperText="Value binds to the user ID, not the name."
+                 Options="@_userOptions" />

@@ -1,0 +1,13 @@
+<BbSheet Side="SheetSide.Top">
+    <BbSheetTrigger>
+        <BbButton Variant="ButtonVariant.Outline">Open from Top</BbButton>
+    </BbSheetTrigger>
+    <BbSheetContent>
+        <BbSheetHeader>
+            <BbSheetTitle>Notifications</BbSheetTitle>
+            <BbSheetDescription>
+                View your recent notifications and updates.
+            </BbSheetDescription>
+        </BbSheetHeader>
+    </BbSheetContent>
+</BbSheet>

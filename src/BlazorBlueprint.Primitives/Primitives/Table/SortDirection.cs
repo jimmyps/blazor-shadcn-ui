@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Primitives.Table;
+namespace BlazorBlueprint.Primitives;
 
 /// <summary>
 /// Defines the direction for sorting table columns.

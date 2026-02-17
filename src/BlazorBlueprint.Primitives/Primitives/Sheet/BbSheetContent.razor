@@ -1,0 +1,271 @@
+@namespace BlazorBlueprint.Primitives.Sheet
+@inject IFocusManager FocusManager
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+@*
+    SheetContent is the main content container for the sheet.
+    Handles focus trap, escape key, scroll lock, side-specific positioning, and ARIA attributes.
+*@
+
+@if (Context.IsOpen)
+{
+    <div @ref="_contentRef"
+         id="@Context.ContentId"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="@Context.TitleId"
+         aria-describedby="@Context.DescriptionId"
+         tabindex="-1"
+         @attributes="AdditionalAttributes"
+         data-state="open"
+         data-side="@Context.Side.ToString().ToLower()">
+        @ChildContent
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    private SheetContext Context { get; set; } = null!;
+
+    /// <summary>
+    /// The content to render inside the sheet.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional attributes to apply to the content container.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Whether pressing Escape should close the sheet.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool CloseOnEscape { get; set; } = true;
+
+    /// <summary>
+    /// Whether to trap focus within the sheet.
+    /// Default is true for modal sheets.
+    /// </summary>
+    [Parameter]
+    public bool TrapFocus { get; set; } = true;
+
+    /// <summary>
+    /// Whether to lock body scroll when sheet is open.
+    /// Default is true for modal sheets.
+    /// </summary>
+    [Parameter]
+    public bool LockScroll { get; set; } = true;
+
+    /// <summary>
+    /// Event callback invoked when Escape key is pressed.
+    /// </summary>
+    [Parameter]
+    public EventCallback<KeyboardEventArgs> OnEscapeKeyDown { get; set; }
+
+    private ElementReference _contentRef;
+    private IAsyncDisposable? _focusTrap;
+    private IJSObjectReference? _portalModule;
+    private IJSObjectReference? _scrollLockCleanup;
+    private IJSObjectReference? _escapeModule;
+    private DotNetObjectReference<BbSheetContent>? _dotNetRef;
+    private string _instanceId = Guid.NewGuid().ToString("N");
+    private bool _isInitialized = false;
+    private bool _disposed;
+
+    protected override void OnInitialized()
+    {
+        if (Context == null)
+        {
+            throw new InvalidOperationException(
+                "SheetContent must be used within a Sheet component. " +
+                "Ensure SheetContent is a child of a Sheet component.");
+        }
+
+        // Subscribe to context changes
+        Context.OnStateChanged += HandleContextStateChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Context.IsOpen && !_isInitialized)
+        {
+            _isInitialized = true;
+
+            // Set up focus trap
+            if (TrapFocus)
+            {
+                try
+                {
+                    _focusTrap = await FocusManager.TrapFocus(_contentRef);
+                }
+                catch (JSDisconnectedException)
+                {
+                    // Expected during circuit disconnect in Blazor Server
+                }
+                catch (InvalidOperationException)
+                {
+                    // JS interop not available during prerendering
+                }
+            }
+
+            // Lock body scroll
+            if (LockScroll)
+            {
+                try
+                {
+                    _portalModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                        "import", "./_content/BlazorBlueprint.Primitives/js/primitives/portal.js");
+                    _scrollLockCleanup = await _portalModule.InvokeAsync<IJSObjectReference>("lockBodyScroll");
+                }
+                catch (JSDisconnectedException)
+                {
+                    // Expected during circuit disconnect in Blazor Server
+                }
+                catch (InvalidOperationException)
+                {
+                    // JS interop not available during prerendering
+                }
+            }
+
+            // Set up escape key detection in JS (avoids C# round-trip on every keystroke)
+            try
+            {
+                _escapeModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorBlueprint.Primitives/js/primitives/escape-keydown.js");
+                _dotNetRef = DotNetObjectReference.Create(this);
+                await _escapeModule.InvokeVoidAsync("initialize", _dotNetRef, _instanceId);
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnect in Blazor Server
+            }
+            catch (InvalidOperationException)
+            {
+                // JS interop not available during prerendering
+            }
+        }
+        else if (!Context.IsOpen && _isInitialized)
+        {
+            await CleanupAsync();
+        }
+    }
+
+    private void HandleContextStateChanged()
+    {
+        if (!Context.IsOpen && _isInitialized)
+        {
+            // Sheet closed, clean up on the Blazor sync context
+            _ = InvokeAsync(async () =>
+            {
+                await CleanupAsync();
+                StateHasChanged();
+            });
+            return;
+        }
+
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task JsOnEscapeKey()
+    {
+        if (_disposed) { return; }
+
+        // Invoke custom handler if provided
+        if (OnEscapeKeyDown.HasDelegate)
+        {
+            await OnEscapeKeyDown.InvokeAsync(new KeyboardEventArgs { Key = "Escape" });
+        }
+
+        // Close sheet if configured
+        if (CloseOnEscape)
+        {
+            Context.Close();
+        }
+    }
+
+    private async Task CleanupAsync()
+    {
+        // Dispose focus trap
+        if (_focusTrap != null)
+        {
+            await _focusTrap.DisposeAsync();
+            _focusTrap = null;
+        }
+
+        // Unlock body scroll
+        if (_scrollLockCleanup != null)
+        {
+            try
+            {
+                await _scrollLockCleanup.InvokeVoidAsync("apply");
+            }
+            catch
+            {
+                // Cleanup may already be disposed
+            }
+            _scrollLockCleanup = null;
+        }
+
+        // Remove escape key listener
+        if (_escapeModule != null)
+        {
+            try
+            {
+                await _escapeModule.InvokeVoidAsync("dispose", _instanceId);
+            }
+            catch
+            {
+                // Cleanup may already be disposed
+            }
+        }
+
+        _dotNetRef?.Dispose();
+        _dotNetRef = null;
+
+        _isInitialized = false;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _disposed = true;
+
+        await CleanupAsync();
+
+        if (_portalModule != null)
+        {
+            try
+            {
+                await _portalModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnect
+            }
+        }
+
+        if (_escapeModule != null)
+        {
+            try
+            {
+                await _escapeModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnect
+            }
+        }
+
+        _dotNetRef?.Dispose();
+
+        if (Context != null)
+        {
+            Context.OnStateChanged -= HandleContextStateChanged;
+        }
+    }
+}

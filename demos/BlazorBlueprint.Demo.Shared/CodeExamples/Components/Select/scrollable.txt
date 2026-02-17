@@ -1,0 +1,11 @@
+<BbSelect @bind-Value="selectedCountry" TValue="string" Class="w-[280px]">
+    <BbSelectTrigger>
+        <BbSelectValue Placeholder="Select a country" />
+    </BbSelectTrigger>
+    <BbSelectContent>
+        @foreach (var country in Countries)
+        {
+            <BbSelectItem Value="@country" Text="@country" />
+        }
+    </BbSelectContent>
+</BbSelect>

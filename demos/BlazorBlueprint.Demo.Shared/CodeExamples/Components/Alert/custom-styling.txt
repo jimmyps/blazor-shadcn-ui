@@ -1,0 +1,9 @@
+<BbAlert Class="border-purple-500/30 bg-purple-500/10 [&>svg]:text-purple-500">
+    <Icon>
+        <LucideIcon Name="sparkles" Class="h-4 w-4" />
+    </Icon>
+    <ChildContent>
+        <BbAlertTitle>Custom</BbAlertTitle>
+        <BbAlertDescription>A custom-styled alert.</BbAlertDescription>
+    </ChildContent>
+</BbAlert>

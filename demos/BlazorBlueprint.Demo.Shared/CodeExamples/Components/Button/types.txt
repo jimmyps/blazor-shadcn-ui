@@ -1,0 +1,3 @@
+<BbButton Type="ButtonType.Button">Type: Button</BbButton>
+<BbButton Type="ButtonType.Submit" Variant="ButtonVariant.Default">Type: Submit</BbButton>
+<BbButton Type="ButtonType.Reset" Variant="ButtonVariant.Secondary">Type: Reset</BbButton>

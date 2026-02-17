@@ -1,0 +1,5 @@
+<EditForm Model="formModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <BbInput @bind-Value="formModel.Name" />
+    <ValidationMessage For="@(() => formModel.Name)" />
+</EditForm>

@@ -1,7 +1,4 @@
 @page "/components/breadcrumb"
-@using BlazorBlueprint.Components.Breadcrumb
-@using BlazorBlueprint.Components.Separator
-
 <PageTitle>Breadcrumb Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -22,19 +19,21 @@
                 A simple breadcrumb navigation showing the current page path.
             </p>
         </div>
-        <Breadcrumb>
-            <BreadcrumbItem>
-                <BreadcrumbLink Href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-                <BreadcrumbLink Href="/components">Components</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-                <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-            </BreadcrumbItem>
-        </Breadcrumb>
+        <BbBreadcrumb>
+            <BbBreadcrumbItem>
+                <BbBreadcrumbLink Href="/">Home</BbBreadcrumbLink>
+            </BbBreadcrumbItem>
+            <BbBreadcrumbSeparator />
+            <BbBreadcrumbItem>
+                <BbBreadcrumbLink Href="/components">Components</BbBreadcrumbLink>
+            </BbBreadcrumbItem>
+            <BbBreadcrumbSeparator />
+            <BbBreadcrumbItem>
+                <BbBreadcrumbPage>Breadcrumb</BbBreadcrumbPage>
+            </BbBreadcrumbItem>
+        </BbBreadcrumb>
+
+        <CodeBlock Source="Components/Breadcrumb/basic.txt" />
     </div>
 
     <!-- With Ellipsis -->
@@ -45,23 +44,25 @@
                 Use ellipsis to indicate collapsed breadcrumb items.
             </p>
         </div>
-        <Breadcrumb>
-            <BreadcrumbItem>
-                <BreadcrumbLink Href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-                <BreadcrumbEllipsis />
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-                <BreadcrumbLink Href="/components">Components</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-                <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-            </BreadcrumbItem>
-        </Breadcrumb>
+        <BbBreadcrumb>
+            <BbBreadcrumbItem>
+                <BbBreadcrumbLink Href="/">Home</BbBreadcrumbLink>
+            </BbBreadcrumbItem>
+            <BbBreadcrumbSeparator />
+            <BbBreadcrumbItem>
+                <BbBreadcrumbEllipsis />
+            </BbBreadcrumbItem>
+            <BbBreadcrumbSeparator />
+            <BbBreadcrumbItem>
+                <BbBreadcrumbLink Href="/components">Components</BbBreadcrumbLink>
+            </BbBreadcrumbItem>
+            <BbBreadcrumbSeparator />
+            <BbBreadcrumbItem>
+                <BbBreadcrumbPage>Breadcrumb</BbBreadcrumbPage>
+            </BbBreadcrumbItem>
+        </BbBreadcrumb>
+
+        <CodeBlock Source="Components/Breadcrumb/ellipsis.txt" />
     </div>
 
     <!-- Custom Separator -->
@@ -72,38 +73,84 @@
                 Customize the separator between breadcrumb items.
             </p>
         </div>
-        <Breadcrumb>
-            <BreadcrumbItem>
-                <BreadcrumbLink Href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator>/</BreadcrumbSeparator>
-            <BreadcrumbItem>
-                <BreadcrumbLink Href="/components">Components</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator>/</BreadcrumbSeparator>
-            <BreadcrumbItem>
-                <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-            </BreadcrumbItem>
-        </Breadcrumb>
+        <BbBreadcrumb>
+            <BbBreadcrumbItem>
+                <BbBreadcrumbLink Href="/">Home</BbBreadcrumbLink>
+            </BbBreadcrumbItem>
+            <BbBreadcrumbSeparator>/</BbBreadcrumbSeparator>
+            <BbBreadcrumbItem>
+                <BbBreadcrumbLink Href="/components">Components</BbBreadcrumbLink>
+            </BbBreadcrumbItem>
+            <BbBreadcrumbSeparator>/</BbBreadcrumbSeparator>
+            <BbBreadcrumbItem>
+                <BbBreadcrumbPage>Breadcrumb</BbBreadcrumbPage>
+            </BbBreadcrumbItem>
+        </BbBreadcrumb>
+
+        <CodeBlock Source="Components/Breadcrumb/custom-separator.txt" />
+    </div>
+
+    <!-- Auto Separators -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Auto Separators</h2>
+            <p class="text-sm text-muted-foreground">
+                Use <code class="bg-muted px-1 py-0.5 rounded">AutoSeparator</code> on <code class="bg-muted px-1 py-0.5 rounded">BreadcrumbList</code> to automatically insert separators between items — no manual <code class="bg-muted px-1 py-0.5 rounded">BreadcrumbSeparator</code> needed.
+            </p>
+        </div>
+        <BbBreadcrumb>
+            <BbBreadcrumbList AutoSeparator="true">
+                <BbBreadcrumbItem>
+                    <BbBreadcrumbLink Href="/">Home</BbBreadcrumbLink>
+                </BbBreadcrumbItem>
+                <BbBreadcrumbItem>
+                    <BbBreadcrumbLink Href="/components">Components</BbBreadcrumbLink>
+                </BbBreadcrumbItem>
+                <BbBreadcrumbItem>
+                    <BbBreadcrumbPage>Breadcrumb</BbBreadcrumbPage>
+                </BbBreadcrumbItem>
+            </BbBreadcrumbList>
+        </BbBreadcrumb>
+
+        <p class="text-sm text-muted-foreground mt-4">
+            With a custom separator:
+        </p>
+        <BbBreadcrumb>
+            <BbBreadcrumbList AutoSeparator="true">
+                <SeparatorContent>/</SeparatorContent>
+                <ChildContent>
+                    <BbBreadcrumbItem>
+                        <BbBreadcrumbLink Href="/">Home</BbBreadcrumbLink>
+                    </BbBreadcrumbItem>
+                    <BbBreadcrumbItem>
+                        <BbBreadcrumbLink Href="/components">Components</BbBreadcrumbLink>
+                    </BbBreadcrumbItem>
+                    <BbBreadcrumbItem>
+                        <BbBreadcrumbPage>Breadcrumb</BbBreadcrumbPage>
+                    </BbBreadcrumbItem>
+                </ChildContent>
+            </BbBreadcrumbList>
+        </BbBreadcrumb>
+
+        <CodeBlock Source="Components/Breadcrumb/auto-separators.txt" />
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-semibold mb-2">Components</h3>
-                <div class="space-y-2 text-sm">
-                    <p><code class="bg-muted px-1 py-0.5 rounded">Breadcrumb</code> - Container with nav element</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbItem</code> - Individual breadcrumb item</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbLink</code> - Clickable link</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbPage</code> - Current page (non-clickable)</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbSeparator</code> - Separator between items</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbEllipsis</code> - Collapsed items indicator</p>
-                </div>
+
+        <div class="space-y-4">
+            <div class="space-y-2 text-sm">
+                <p><code class="bg-muted px-1 py-0.5 rounded">Breadcrumb</code> - Container with nav element</p>
+                <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbItem</code> - Individual breadcrumb item</p>
+                <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbLink</code> - Clickable link</p>
+                <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbPage</code> - Current page (non-clickable)</p>
+                <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbSeparator</code> - Separator between items</p>
+                <p><code class="bg-muted px-1 py-0.5 rounded">BreadcrumbEllipsis</code> - Collapsed items indicator</p>
             </div>
         </div>
-    </div>
+    </section>
 </div>

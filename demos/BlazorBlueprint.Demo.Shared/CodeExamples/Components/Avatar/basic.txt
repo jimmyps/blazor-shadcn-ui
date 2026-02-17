@@ -1,0 +1,4 @@
+<BbAvatar>
+    <BbAvatarImage Source="image.jpg" Alt="User" />
+    <BbAvatarFallback>JD</BbAvatarFallback>
+</BbAvatar>

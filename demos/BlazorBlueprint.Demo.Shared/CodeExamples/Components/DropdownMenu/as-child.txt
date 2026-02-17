@@ -1,0 +1,12 @@
+<BbDropdownMenu>
+    <BbDropdownMenuTrigger AsChild>
+        <BbButton Variant="ButtonVariant.Outline">
+            Actions
+            <LucideIcon Name="chevron-down" Size="16" />
+        </BbButton>
+    </BbDropdownMenuTrigger>
+    <BbDropdownMenuContent>
+        <BbDropdownMenuItem>Edit</BbDropdownMenuItem>
+        <BbDropdownMenuItem>Delete</BbDropdownMenuItem>
+    </BbDropdownMenuContent>
+</BbDropdownMenu>

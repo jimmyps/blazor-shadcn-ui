@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using BlazorBlueprint.Primitives.Contexts;
 
 namespace BlazorBlueprint.Primitives.Accordion;
@@ -22,23 +21,6 @@ public class AccordionState
     /// Gets or sets whether items can be collapsed in single mode.
     /// </summary>
     public bool Collapsible { get; set; }
-}
-
-/// <summary>
-/// Type of accordion behavior.
-/// </summary>
-public enum AccordionType
-{
-    /// <summary>
-    /// Only one item can be open at a time.
-    /// </summary>
-    [SuppressMessage("Naming", "CA1720:Identifier contains type name", Justification = "Single is a domain term for selection mode")]
-    Single,
-
-    /// <summary>
-    /// Multiple items can be open simultaneously.
-    /// </summary>
-    Multiple
 }
 
 /// <summary>

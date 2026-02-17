@@ -1,0 +1,12 @@
+<BbFormFieldInput TValue="string"
+                   @bind-Value="formName"
+                   Label="Name"
+                   Required="true"
+                   Placeholder="Jane Smith" />
+
+<BbFormFieldInput TValue="string"
+                   @bind-Value="formEmail"
+                   Label="Email"
+                   Type="InputType.Email"
+                   Required="true"
+                   Placeholder="jane@example.com" />

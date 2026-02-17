@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Primitives.Services;
+namespace BlazorBlueprint.Primitives;
 
 /// <summary>
 /// Combined placement values for simplified positioning configuration.

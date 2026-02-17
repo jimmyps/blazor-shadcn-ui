@@ -1,0 +1,11 @@
+<BbDialog>
+    <BbDialogTrigger>Open Wide Dialog</BbDialogTrigger>
+    <BbDialogContent Class="max-w-3xl">
+        <BbDialogHeader>
+            <BbDialogTitle>Wide Dialog</BbDialogTitle>
+            <BbDialogDescription>
+                This dialog uses a custom max-width class.
+            </BbDialogDescription>
+        </BbDialogHeader>
+    </BbDialogContent>
+</BbDialog>

@@ -1,0 +1,29 @@
+<BbHoverCard>
+    <BbHoverCardTrigger AsChild="false" Class="font-semibold text-primary hover:underline cursor-pointer">
+        @johndoe
+    </BbHoverCardTrigger>
+    <BbHoverCardContent>
+        <div class="flex gap-4">
+            <div class="h-16 w-16 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white font-bold text-2xl">
+                JD
+            </div>
+            <div class="space-y-2 flex-1">
+                <div>
+                    <h4 class="text-sm font-semibold leading-none">John Doe</h4>
+                    <p class="text-sm text-muted-foreground">@johndoe</p>
+                </div>
+                <p class="text-sm">
+                    Full-stack developer passionate about creating beautiful user experiences and scalable systems.
+                </p>
+                <div class="flex gap-4 text-xs text-muted-foreground">
+                    <div>
+                        <span class="font-semibold text-foreground">2.5k</span> followers
+                    </div>
+                    <div>
+                        <span class="font-semibold text-foreground">890</span> following
+                    </div>
+                </div>
+            </div>
+        </div>
+    </BbHoverCardContent>
+</BbHoverCard>

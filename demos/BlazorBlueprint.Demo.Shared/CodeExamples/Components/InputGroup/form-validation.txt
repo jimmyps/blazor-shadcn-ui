@@ -1,0 +1,9 @@
+<BbInputGroup>
+    <BbInputGroupInput
+        Type="InputType.Email"
+        Value="invalid-email"
+        AriaInvalid="true" />
+    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+        <LucideIcon Name="triangle-alert" Size="16" Class="text-destructive" />
+    </BbInputGroupAddon>
+</BbInputGroup>

@@ -1,0 +1,2 @@
+<!-- Uncontrolled with initial color -->
+<BbColorPicker DefaultValue="#8B5CF6" />

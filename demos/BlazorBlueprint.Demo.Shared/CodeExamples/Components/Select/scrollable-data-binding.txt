@@ -1,0 +1,8 @@
+private readonly SelectOption<string>[] countryOptions =
+    Countries.Select(SelectOption.FromValue).ToArray();
+
+<BbSelect TValue="string"
+        @bind-Value="selectedCountryDataBound"
+        Options="@countryOptions"
+        Placeholder="Select a country"
+        Class="w-[280px]" />

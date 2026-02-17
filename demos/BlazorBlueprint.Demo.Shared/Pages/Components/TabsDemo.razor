@@ -1,6 +1,4 @@
 @page "/components/tabs"
-@using BlazorBlueprint.Components.Tabs
-
 <PageTitle>Tabs Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -23,13 +21,13 @@
         </p>
 
         <div class="w-[400px]">
-            <Tabs DefaultValue="account">
-                <TabsList Class="grid w-full grid-cols-2">
-                    <TabsTrigger Value="account">Account</TabsTrigger>
-                    <TabsTrigger Value="password">Password</TabsTrigger>
-                </TabsList>
+            <BbTabs DefaultValue="account">
+                <BbTabsList Class="grid w-full grid-cols-2">
+                    <BbTabsTrigger Value="account">Account</BbTabsTrigger>
+                    <BbTabsTrigger Value="password">Password</BbTabsTrigger>
+                </BbTabsList>
 
-            <TabsContent Value="account">
+            <BbTabsContent Value="account">
                 <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
                     <div class="space-y-2">
                         <h3 class="text-2xl font-semibold leading-none tracking-tight">Account</h3>
@@ -57,9 +55,9 @@
                         </button>
                     </div>
                 </div>
-            </TabsContent>
+            </BbTabsContent>
 
-            <TabsContent Value="password">
+            <BbTabsContent Value="password">
                 <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
                     <div class="space-y-2">
                         <h3 class="text-2xl font-semibold leading-none tracking-tight">Password</h3>
@@ -87,9 +85,11 @@
                         </button>
                     </div>
                 </div>
-            </TabsContent>
-            </Tabs>
+            </BbTabsContent>
+            </BbTabs>
         </div>
+
+        <CodeBlock Source="Components/Tabs/default.txt" />
     </div>
 
     <div class="space-y-4">
@@ -98,50 +98,52 @@
             Tabs can have more than two options.
         </p>
 
-        <Tabs DefaultValue="overview">
-            <TabsList>
-                <TabsTrigger Value="overview">Overview</TabsTrigger>
-                <TabsTrigger Value="analytics">Analytics</TabsTrigger>
-                <TabsTrigger Value="reports">Reports</TabsTrigger>
-                <TabsTrigger Value="notifications">Notifications</TabsTrigger>
-            </TabsList>
+        <BbTabs DefaultValue="overview">
+            <BbTabsList>
+                <BbTabsTrigger Value="overview">Overview</BbTabsTrigger>
+                <BbTabsTrigger Value="analytics">Analytics</BbTabsTrigger>
+                <BbTabsTrigger Value="reports">Reports</BbTabsTrigger>
+                <BbTabsTrigger Value="notifications">Notifications</BbTabsTrigger>
+            </BbTabsList>
 
-            <TabsContent Value="overview">
+            <BbTabsContent Value="overview">
                 <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
                     <h3 class="text-lg font-semibold mb-2">Overview</h3>
                     <p class="text-sm text-muted-foreground">
                         View a summary of your account activity and statistics.
                     </p>
                 </div>
-            </TabsContent>
+            </BbTabsContent>
 
-            <TabsContent Value="analytics">
+            <BbTabsContent Value="analytics">
                 <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
                     <h3 class="text-lg font-semibold mb-2">Analytics</h3>
                     <p class="text-sm text-muted-foreground">
                         Detailed analytics and metrics about your usage.
                     </p>
                 </div>
-            </TabsContent>
+            </BbTabsContent>
 
-            <TabsContent Value="reports">
+            <BbTabsContent Value="reports">
                 <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
                     <h3 class="text-lg font-semibold mb-2">Reports</h3>
                     <p class="text-sm text-muted-foreground">
                         Generate and download detailed reports.
                     </p>
                 </div>
-            </TabsContent>
+            </BbTabsContent>
 
-            <TabsContent Value="notifications">
+            <BbTabsContent Value="notifications">
                 <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
                     <h3 class="text-lg font-semibold mb-2">Notifications</h3>
                     <p class="text-sm text-muted-foreground">
                         Manage your notification preferences.
                     </p>
                 </div>
-            </TabsContent>
-        </Tabs>
+            </BbTabsContent>
+        </BbTabs>
+
+        <CodeBlock Source="Components/Tabs/multiple.txt" />
     </div>
 
     <div class="space-y-4">
@@ -168,42 +170,126 @@
         <p class="text-xs text-muted-foreground mb-2">Current: <strong>@activeTab</strong></p>
 
         <div class="w-[400px]">
-            <Tabs @bind-Value="activeTab">
-                <TabsList Class="grid w-full grid-cols-3">
-                    <TabsTrigger Value="morning">Morning</TabsTrigger>
-                    <TabsTrigger Value="afternoon">Afternoon</TabsTrigger>
-                    <TabsTrigger Value="evening">Evening</TabsTrigger>
-                </TabsList>
+            <BbTabs @bind-Value="activeTab">
+                <BbTabsList Class="grid w-full grid-cols-3">
+                    <BbTabsTrigger Value="morning">Morning</BbTabsTrigger>
+                    <BbTabsTrigger Value="afternoon">Afternoon</BbTabsTrigger>
+                    <BbTabsTrigger Value="evening">Evening</BbTabsTrigger>
+                </BbTabsList>
 
-            <TabsContent Value="morning">
+            <BbTabsContent Value="morning">
                 <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
                     <h3 class="text-lg font-semibold mb-2">🌅 Morning</h3>
                     <p class="text-sm text-muted-foreground">
                         Good morning! Start your day with a fresh perspective.
                     </p>
                 </div>
-            </TabsContent>
+            </BbTabsContent>
 
-            <TabsContent Value="afternoon">
+            <BbTabsContent Value="afternoon">
                 <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
                     <h3 class="text-lg font-semibold mb-2">☀️ Afternoon</h3>
                     <p class="text-sm text-muted-foreground">
                         Afternoon productivity at its peak!
                     </p>
                 </div>
-            </TabsContent>
+            </BbTabsContent>
 
-            <TabsContent Value="evening">
+            <BbTabsContent Value="evening">
                 <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
                     <h3 class="text-lg font-semibold mb-2">🌙 Evening</h3>
                     <p class="text-sm text-muted-foreground">
                         Wind down and reflect on your day.
                     </p>
                 </div>
-            </TabsContent>
-            </Tabs>
+            </BbTabsContent>
+            </BbTabs>
         </div>
+
+        <CodeBlock Source="Components/Tabs/controlled.txt" />
     </div>
+
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Uses <code>role="tablist"</code>, <code>role="tab"</code>, and <code>role="tabpanel"</code> for proper semantics</AccessibilityItem>
+            <AccessibilityItem><code>aria-selected</code> indicates the active tab</AccessibilityItem>
+            <AccessibilityItem><code>aria-controls</code> links each tab trigger to its content panel</AccessibilityItem>
+            <AccessibilityItem><code>aria-orientation</code> reflects horizontal or vertical layout</AccessibilityItem>
+            <AccessibilityItem>Disabled tabs are excluded from the tab sequence</AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Move focus between tabs">
+                <BbKbd>Arrow Keys</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Activate focused tab (manual mode)">
+                <BbKbd>Enter</BbKbd> / <BbKbd>Space</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Move focus to first tab">
+                <BbKbd>Home</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Move focus to last tab">
+                <BbKbd>End</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="Tabs">
+                <ApiParameter Name="Value" Type="string?" Default="null">
+                    Controls which tab is active (controlled mode). Supports two-way binding with <code>@@bind-Value</code>.
+                </ApiParameter>
+                <ApiParameter Name="DefaultValue" Type="string?" Default="null">
+                    Default active tab value when in uncontrolled mode.
+                </ApiParameter>
+                <ApiParameter Name="Orientation" Type="TabsOrientation" Default="Horizontal">
+                    Orientation of the tabs. Options: Horizontal, Vertical.
+                </ApiParameter>
+                <ApiParameter Name="ActivationMode" Type="TabsActivationMode" Default="Automatic">
+                    Activation mode. Automatic activates on focus, Manual requires Enter/Space.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the tabs container.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="TabsList">
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the tabs list container.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="TabsTrigger">
+                <ApiParameter Name="Value" Type="string">
+                    The value that identifies this tab. Must match a TabsContent Value.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether this tab trigger is disabled.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the tab trigger.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="TabsContent">
+                <ApiParameter Name="Value" Type="string">
+                    The value that identifies this content panel. Must match a TabsTrigger Value.
+                </ApiParameter>
+                <ApiParameter Name="ForceMount" Type="bool" Default="false">
+                    When true, content remains mounted but hidden when inactive instead of being unmounted.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the tab content panel.
+                </ApiParameter>
+            </ApiReference>
+        </div>
+    </section>
 </div>
 
 @code {

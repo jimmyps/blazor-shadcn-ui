@@ -1,0 +1,11 @@
+// Icons are shown automatically for semantic variants
+ToastService.Success("With auto icon.", "Success");
+
+// Disable auto icon with ShowIcon = false
+ToastService.Show(new ToastData
+{
+    Title = "Success",
+    Description = "Saved without the icon.",
+    Variant = ToastVariant.Success,
+    ShowIcon = false
+});

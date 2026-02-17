@@ -1,0 +1,1 @@
+<BbInput Type="InputType.Text" Placeholder="Disabled input" Disabled="true" Value="Cannot edit this" />

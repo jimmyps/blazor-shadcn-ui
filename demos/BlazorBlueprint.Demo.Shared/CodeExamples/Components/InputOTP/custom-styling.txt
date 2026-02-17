@@ -1,0 +1,5 @@
+<BbInputOTP Length="4" ShowSeparator="false"
+          InputClass="border-blue-500 focus:ring-blue-500" />
+
+<BbInputOTP Length="4" ShowSeparator="false"
+          InputClass="rounded-full" />

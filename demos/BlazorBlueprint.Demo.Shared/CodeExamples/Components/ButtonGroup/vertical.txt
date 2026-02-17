@@ -1,0 +1,18 @@
+<BbButtonGroup Orientation="ButtonGroupOrientation.Vertical">
+    <BbButton Variant="ButtonVariant.Outline" Class="justify-start">
+        <LucideIcon Name="house" Size="16" />
+        Home
+    </BbButton>
+    <BbButton Variant="ButtonVariant.Outline" Class="justify-start">
+        <LucideIcon Name="user" Size="16" />
+        Profile
+    </BbButton>
+    <BbButton Variant="ButtonVariant.Outline" Class="justify-start">
+        <LucideIcon Name="settings" Size="16" />
+        Settings
+    </BbButton>
+    <BbButton Variant="ButtonVariant.Outline" Class="justify-start">
+        <LucideIcon Name="log-out" Size="16" />
+        Logout
+    </BbButton>
+</BbButtonGroup>

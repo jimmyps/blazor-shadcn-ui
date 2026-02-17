@@ -1,0 +1,19 @@
+<BbHoverCard>
+    <BbHoverCardTrigger>Bottom (default)</BbHoverCardTrigger>
+    <BbHoverCardContent Side="@PopoverSide.Bottom">Positioned at bottom</BbHoverCardContent>
+</BbHoverCard>
+
+<BbHoverCard>
+    <BbHoverCardTrigger>Top</BbHoverCardTrigger>
+    <BbHoverCardContent Side="@PopoverSide.Top">Positioned at top</BbHoverCardContent>
+</BbHoverCard>
+
+<BbHoverCard>
+    <BbHoverCardTrigger>Right</BbHoverCardTrigger>
+    <BbHoverCardContent Side="@PopoverSide.Right">Positioned at right</BbHoverCardContent>
+</BbHoverCard>
+
+<BbHoverCard>
+    <BbHoverCardTrigger>Left</BbHoverCardTrigger>
+    <BbHoverCardContent Side="@PopoverSide.Left">Positioned at left</BbHoverCardContent>
+</BbHoverCard>

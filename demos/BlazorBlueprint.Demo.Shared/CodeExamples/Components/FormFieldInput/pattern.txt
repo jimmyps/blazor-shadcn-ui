@@ -1,0 +1,7 @@
+<BbFormFieldInput TValue="string"
+                   @bind-Value="email"
+                   Label="Email Address"
+                   HelperText="We'll never share your email with anyone else."
+                   Type="InputType.Email"
+                   ValidationPattern="@("^[^@\s]+@[^@\s]+\.[^@\s]+$")"
+                   Placeholder="you@example.com" />

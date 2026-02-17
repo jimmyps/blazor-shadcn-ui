@@ -1,0 +1,4 @@
+<BbAvatar Size="AvatarSize.Large">
+    <BbAvatarImage Source="https://github.com/vercel.png" Alt="Vercel" />
+    <BbAvatarFallback>VC</BbAvatarFallback>
+</BbAvatar>

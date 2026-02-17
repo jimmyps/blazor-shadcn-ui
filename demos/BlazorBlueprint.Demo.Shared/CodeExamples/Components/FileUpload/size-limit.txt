@@ -1,0 +1,4 @@
+<BbFileUpload @bind-Files="files"
+    Multiple="true"
+    MaxFileSize="@(1 * 1024 * 1024)"
+    OnValidationError="HandleValidationError" />

@@ -1,0 +1,16 @@
+<BbNavigationMenu>
+    <BbNavigationMenuList>
+        <BbNavigationMenuItem Value="getting-started">
+            <BbNavigationMenuTrigger>Getting started</BbNavigationMenuTrigger>
+            <BbNavigationMenuContent>
+                <div class="grid gap-3 p-4 w-[400px]">
+                    <a href="#">Introduction</a>
+                    <a href="#">Installation</a>
+                </div>
+            </BbNavigationMenuContent>
+        </BbNavigationMenuItem>
+        <BbNavigationMenuItem>
+            <BbNavigationMenuLink Href="/components">Documentation</BbNavigationMenuLink>
+        </BbNavigationMenuItem>
+    </BbNavigationMenuList>
+</BbNavigationMenu>

@@ -1,6 +1,4 @@
 @page "/components/sheet"
-@using BlazorBlueprint.Components.Sheet
-
 <PageTitle>Sheet Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -30,17 +28,17 @@
                 <p class="text-sm text-muted-foreground">
                     SheetTrigger renders its own button with inline classes.
                 </p>
-                <Sheet>
-                    <SheetTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                <BbSheet>
+                    <BbSheetTrigger AsChild="false" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                         Open Sheet
-                    </SheetTrigger>
-                    <SheetContent>
-                        <SheetHeader>
-                            <SheetTitle>Without AsChild</SheetTitle>
-                            <SheetDescription>Uses inline CSS classes on trigger.</SheetDescription>
-                        </SheetHeader>
-                    </SheetContent>
-                </Sheet>
+                    </BbSheetTrigger>
+                    <BbSheetContent>
+                        <BbSheetHeader>
+                            <BbSheetTitle>Without AsChild</BbSheetTitle>
+                            <BbSheetDescription>Uses inline CSS classes on trigger.</BbSheetDescription>
+                        </BbSheetHeader>
+                    </BbSheetContent>
+                </BbSheet>
             </div>
 
             <!-- With AsChild -->
@@ -49,27 +47,29 @@
                 <p class="text-sm text-muted-foreground">
                     Button receives trigger behavior via TriggerContext.
                 </p>
-                <Sheet>
-                    <SheetTrigger AsChild>
-                        <Button Variant="ButtonVariant.Outline">
+                <BbSheet>
+                    <BbSheetTrigger>
+                        <BbButton Variant="ButtonVariant.Outline">
                             <LucideIcon Name="menu" Size="16" />
                             Open Menu
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent Side="BlazorBlueprint.Primitives.Sheet.SheetSide.Left">
-                        <SheetHeader>
-                            <SheetTitle>With AsChild</SheetTitle>
-                            <SheetDescription>Button component styled trigger.</SheetDescription>
-                        </SheetHeader>
-                        <SheetFooter>
-                            <SheetClose AsChild>
-                                <Button Variant="ButtonVariant.Outline">Close</Button>
-                            </SheetClose>
-                        </SheetFooter>
-                    </SheetContent>
-                </Sheet>
+                        </BbButton>
+                    </BbSheetTrigger>
+                    <BbSheetContent Side="SheetSide.Left">
+                        <BbSheetHeader>
+                            <BbSheetTitle>With AsChild</BbSheetTitle>
+                            <BbSheetDescription>Button component styled trigger.</BbSheetDescription>
+                        </BbSheetHeader>
+                        <BbSheetFooter>
+                            <BbSheetClose>
+                                <BbButton Variant="ButtonVariant.Outline">Close</BbButton>
+                            </BbSheetClose>
+                        </BbSheetFooter>
+                    </BbSheetContent>
+                </BbSheet>
             </div>
         </div>
+
+        <CodeBlock Source="Components/Sheet/as-child.txt" />
     </div>
 
     <div class="space-y-4">
@@ -78,18 +78,18 @@
             A sheet that slides in from the right side of the screen.
         </p>
 
-        <Sheet>
-            <SheetTrigger AsChild>
-                <Button Variant="ButtonVariant.Outline">Open Sheet</Button>
-            </SheetTrigger>
+        <BbSheet>
+            <BbSheetTrigger>
+                <BbButton Variant="ButtonVariant.Outline">Open Sheet</BbButton>
+            </BbSheetTrigger>
 
-            <SheetContent>
-                <SheetHeader>
-                    <SheetTitle>Edit profile</SheetTitle>
-                    <SheetDescription>
+            <BbSheetContent>
+                <BbSheetHeader>
+                    <BbSheetTitle>Edit profile</BbSheetTitle>
+                    <BbSheetDescription>
                         Make changes to your profile here. Click save when you're done.
-                    </SheetDescription>
-                </SheetHeader>
+                    </BbSheetDescription>
+                </BbSheetHeader>
 
                 <div class="grid gap-4 py-4">
                     <div class="grid grid-cols-4 items-center gap-4">
@@ -110,11 +110,13 @@
                     </div>
                 </div>
 
-                <SheetFooter>
-                    <Button>Save changes</Button>
-                </SheetFooter>
-            </SheetContent>
-        </Sheet>
+                <BbSheetFooter>
+                    <BbButton>Save changes</BbButton>
+                </BbSheetFooter>
+            </BbSheetContent>
+        </BbSheet>
+
+        <CodeBlock Source="Components/Sheet/side-right.txt" />
     </div>
 
     <div class="space-y-4">
@@ -123,18 +125,18 @@
             A sheet that slides in from the top of the screen.
         </p>
 
-        <Sheet Side="BlazorBlueprint.Primitives.Sheet.SheetSide.Top">
-            <SheetTrigger AsChild>
-                <Button Variant="ButtonVariant.Outline">Open from Top</Button>
-            </SheetTrigger>
+        <BbSheet Side="SheetSide.Top">
+            <BbSheetTrigger>
+                <BbButton Variant="ButtonVariant.Outline">Open from Top</BbButton>
+            </BbSheetTrigger>
 
-            <SheetContent>
-                <SheetHeader>
-                    <SheetTitle>Notifications</SheetTitle>
-                    <SheetDescription>
+            <BbSheetContent>
+                <BbSheetHeader>
+                    <BbSheetTitle>Notifications</BbSheetTitle>
+                    <BbSheetDescription>
                         View your recent notifications and updates.
-                    </SheetDescription>
-                </SheetHeader>
+                    </BbSheetDescription>
+                </BbSheetHeader>
 
                 <div class="py-4 space-y-4">
                     <div class="flex items-start gap-4 pb-4 border-b">
@@ -159,8 +161,10 @@
                         </div>
                     </div>
                 </div>
-            </SheetContent>
-        </Sheet>
+            </BbSheetContent>
+        </BbSheet>
+
+        <CodeBlock Source="Components/Sheet/side-top.txt" />
     </div>
 
     <div class="space-y-4">
@@ -169,18 +173,18 @@
             A sheet that slides in from the bottom of the screen.
         </p>
 
-        <Sheet Side="BlazorBlueprint.Primitives.Sheet.SheetSide.Bottom">
-            <SheetTrigger AsChild>
-                <Button Variant="ButtonVariant.Outline">Open from Bottom</Button>
-            </SheetTrigger>
+        <BbSheet Side="SheetSide.Bottom">
+            <BbSheetTrigger>
+                <BbButton Variant="ButtonVariant.Outline">Open from Bottom</BbButton>
+            </BbSheetTrigger>
 
-            <SheetContent>
-                <SheetHeader>
-                    <SheetTitle>Cookie Settings</SheetTitle>
-                    <SheetDescription>
+            <BbSheetContent>
+                <BbSheetHeader>
+                    <BbSheetTitle>Cookie Settings</BbSheetTitle>
+                    <BbSheetDescription>
                         Manage your cookie preferences.
-                    </SheetDescription>
-                </SheetHeader>
+                    </BbSheetDescription>
+                </BbSheetHeader>
 
                 <div class="py-4 space-y-4">
                     <div class="flex items-center justify-between">
@@ -212,11 +216,13 @@
                     </div>
                 </div>
 
-                <SheetFooter>
-                    <Button>Save Preferences</Button>
-                </SheetFooter>
-            </SheetContent>
-        </Sheet>
+                <BbSheetFooter>
+                    <BbButton>Save Preferences</BbButton>
+                </BbSheetFooter>
+            </BbSheetContent>
+        </BbSheet>
+
+        <CodeBlock Source="Components/Sheet/side-bottom.txt" />
     </div>
 
     <div class="space-y-4">
@@ -225,18 +231,18 @@
             A sheet that slides in from the left side of the screen.
         </p>
 
-        <Sheet Side="BlazorBlueprint.Primitives.Sheet.SheetSide.Left">
-            <SheetTrigger AsChild>
-                <Button Variant="ButtonVariant.Outline">Open from Left</Button>
-            </SheetTrigger>
+        <BbSheet Side="SheetSide.Left">
+            <BbSheetTrigger>
+                <BbButton Variant="ButtonVariant.Outline">Open from Left</BbButton>
+            </BbSheetTrigger>
 
-            <SheetContent>
-                <SheetHeader>
-                    <SheetTitle>Navigation Menu</SheetTitle>
-                    <SheetDescription>
+            <BbSheetContent>
+                <BbSheetHeader>
+                    <BbSheetTitle>Navigation Menu</BbSheetTitle>
+                    <BbSheetDescription>
                         Browse through the application sections.
-                    </SheetDescription>
-                </SheetHeader>
+                    </BbSheetDescription>
+                </BbSheetHeader>
 
                 <div class="py-4 space-y-2">
                     <a href="#" class="block px-3 py-2 rounded-md hover:bg-accent text-sm font-medium">
@@ -257,8 +263,10 @@
                         </a>
                     </div>
                 </div>
-            </SheetContent>
-        </Sheet>
+            </BbSheetContent>
+        </BbSheet>
+
+        <CodeBlock Source="Components/Sheet/side-left.txt" />
     </div>
 
     <div class="space-y-4">
@@ -274,14 +282,14 @@
             </button>
         </div>
 
-        <Sheet @bind-Open="isSheetOpen">
-            <SheetContent>
-                <SheetHeader>
-                    <SheetTitle>Controlled Sheet</SheetTitle>
-                    <SheetDescription>
+        <BbSheet @bind-Open="isSheetOpen">
+            <BbSheetContent>
+                <BbSheetHeader>
+                    <BbSheetTitle>Controlled Sheet</BbSheetTitle>
+                    <BbSheetDescription>
                         This sheet's open state is controlled from the parent component.
-                    </SheetDescription>
-                </SheetHeader>
+                    </BbSheetDescription>
+                </BbSheetHeader>
 
                 <div class="py-4">
                     <p class="text-sm mb-4">
@@ -292,14 +300,16 @@
                     </p>
                 </div>
 
-                <SheetFooter>
+                <BbSheetFooter>
                     <button @onclick="() => isSheetOpen = false"
                             class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                         Close
                     </button>
-                </SheetFooter>
-            </SheetContent>
-        </Sheet>
+                </BbSheetFooter>
+            </BbSheetContent>
+        </BbSheet>
+
+        <CodeBlock Source="Components/Sheet/controlled.txt" />
     </div>
 
     <div class="space-y-4">
@@ -308,18 +318,18 @@
             Hide the default close button using ShowClose="false".
         </p>
 
-        <Sheet>
-            <SheetTrigger AsChild>
-                <Button Variant="ButtonVariant.Outline">Open Sheet</Button>
-            </SheetTrigger>
+        <BbSheet>
+            <BbSheetTrigger>
+                <BbButton Variant="ButtonVariant.Outline">Open Sheet</BbButton>
+            </BbSheetTrigger>
 
-            <SheetContent ShowClose="false">
-                <SheetHeader>
-                    <SheetTitle>Confirm Action</SheetTitle>
-                    <SheetDescription>
+            <BbSheetContent ShowClose="false">
+                <BbSheetHeader>
+                    <BbSheetTitle>Confirm Action</BbSheetTitle>
+                    <BbSheetDescription>
                         This sheet doesn't have a close button in the top-right corner.
-                    </SheetDescription>
-                </SheetHeader>
+                    </BbSheetDescription>
+                </BbSheetHeader>
 
                 <div class="py-4">
                     <p class="text-sm text-muted-foreground">
@@ -327,16 +337,18 @@
                     </p>
                 </div>
 
-                <SheetFooter>
-                    <SheetClose AsChild>
-                        <Button Variant="ButtonVariant.Outline">Cancel</Button>
-                    </SheetClose>
-                    <SheetClose AsChild>
-                        <Button>Confirm</Button>
-                    </SheetClose>
-                </SheetFooter>
-            </SheetContent>
-        </Sheet>
+                <BbSheetFooter>
+                    <BbSheetClose>
+                        <BbButton Variant="ButtonVariant.Outline">Cancel</BbButton>
+                    </BbSheetClose>
+                    <BbSheetClose>
+                        <BbButton>Confirm</BbButton>
+                    </BbSheetClose>
+                </BbSheetFooter>
+            </BbSheetContent>
+        </BbSheet>
+
+        <CodeBlock Source="Components/Sheet/without-close.txt" />
     </div>
 
     <div class="space-y-4">
@@ -345,18 +357,18 @@
             Customize the sheet width using the Class parameter.
         </p>
 
-        <Sheet>
-            <SheetTrigger AsChild>
-                <Button Variant="ButtonVariant.Outline">Open Wide Sheet</Button>
-            </SheetTrigger>
+        <BbSheet>
+            <BbSheetTrigger>
+                <BbButton Variant="ButtonVariant.Outline">Open Wide Sheet</BbButton>
+            </BbSheetTrigger>
 
-            <SheetContent Class="w-[400px] sm:w-[540px]">
-                <SheetHeader>
-                    <SheetTitle>Wide Sheet</SheetTitle>
-                    <SheetDescription>
+            <BbSheetContent Class="w-[400px] sm:w-[540px]">
+                <BbSheetHeader>
+                    <BbSheetTitle>Wide Sheet</BbSheetTitle>
+                    <BbSheetDescription>
                         This sheet uses a custom width class.
-                    </SheetDescription>
-                </SheetHeader>
+                    </BbSheetDescription>
+                </BbSheetHeader>
 
                 <div class="py-4">
                     <p class="text-sm">
@@ -365,80 +377,94 @@
                         instead of the default <code class="bg-muted px-1 py-0.5 rounded text-xs">w-3/4 sm:max-w-sm</code>.
                     </p>
                 </div>
-            </SheetContent>
-        </Sheet>
+            </BbSheetContent>
+        </BbSheet>
+
+        <CodeBlock Source="Components/Sheet/custom-width.txt" />
     </div>
 
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold">Features</h2>
-        <ul class="list-disc list-inside space-y-2 text-sm">
-            <li>Slides in from any side (top, right, bottom, left)</li>
-            <li>Full keyboard navigation support</li>
-            <li>Focus is automatically trapped within the sheet</li>
-            <li>Can be controlled or uncontrolled</li>
-            <li>Manages screen reader announcements with ARIA</li>
-            <li>Scroll lock on body when sheet is open</li>
-            <li>Smooth slide animations with fade overlay</li>
-            <li>Respects prefers-reduced-motion</li>
-        </ul>
-    </div>
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Renders with <code>role="dialog"</code> and <code>aria-modal="true"</code> for screen readers</AccessibilityItem>
+            <AccessibilityItem><code>aria-labelledby</code> automatically linked to SheetTitle</AccessibilityItem>
+            <AccessibilityItem><code>aria-describedby</code> automatically linked to SheetDescription</AccessibilityItem>
+            <AccessibilityItem>Focus is trapped within the sheet when open</AccessibilityItem>
+            <AccessibilityItem>Body scroll is locked when sheet is open</AccessibilityItem>
+            <AccessibilityItem>Respects <code>prefers-reduced-motion</code> for animations</AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Close the sheet">
+                <BbKbd>Escape</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Move focus between elements">
+                <BbKbd>Tab</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
 
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold">Installation</h2>
-
+    <!-- API Reference -->
+    <section class="space-y-4">
         <div class="space-y-2">
-            <p class="text-sm text-muted-foreground">Add the following using statement to your _Imports.razor:</p>
-            <div class="bg-muted p-4 rounded-md">
-                <code class="text-sm">@@using BlazorBlueprint.Components.Sheet</code>
-            </div>
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-    </div>
 
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold">Usage</h2>
+        <div class="space-y-4">
+            <ApiReference ComponentName="Sheet">
+                <ApiParameter Name="Open" Type="bool?" Default="null">
+                    Controls whether the sheet is open (controlled mode). When null, the sheet manages its own state.
+                </ApiParameter>
+                <ApiParameter Name="OpenChanged" Type="EventCallback&lt;bool&gt;">
+                    Event callback invoked when the open state changes. Use with <code>@@bind-Open</code> for two-way binding.
+                </ApiParameter>
+                <ApiParameter Name="DefaultOpen" Type="bool" Default="false">
+                    Default open state when in uncontrolled mode.
+                </ApiParameter>
+                <ApiParameter Name="Side" Type="SheetSide" Default="Right">
+                    The side from which the sheet slides in. Options: Top, Right, Bottom, Left.
+                </ApiParameter>
+                <ApiParameter Name="Modal" Type="bool" Default="true">
+                    Whether the sheet can be dismissed by clicking the overlay or pressing Escape.
+                </ApiParameter>
+            </ApiReference>
 
-        <div class="bg-muted p-4 rounded-md">
-            <pre class="text-sm overflow-x-auto"><code>&lt;Sheet&gt;
-    &lt;SheetTrigger&gt;
-        &lt;Button&gt;Open&lt;/Button&gt;
-    &lt;/SheetTrigger&gt;
-    &lt;SheetContent&gt;
-        &lt;SheetHeader&gt;
-            &lt;SheetTitle&gt;Edit profile&lt;/SheetTitle&gt;
-            &lt;SheetDescription&gt;
-                Make changes to your profile here.
-            &lt;/SheetDescription&gt;
-        &lt;/SheetHeader&gt;
-        @* Your content here *@
-        &lt;SheetFooter&gt;
-            &lt;Button&gt;Save&lt;/Button&gt;
-        &lt;/SheetFooter&gt;
-    &lt;/SheetContent&gt;
-&lt;/Sheet&gt;</code></pre>
+            <ApiReference ComponentName="SheetTrigger">
+                <ApiParameter Name="AsChild" Type="bool" Default="true">
+                    When true, passes trigger behavior to child components instead of rendering its own button.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="SheetContent">
+                <ApiParameter Name="Side" Type="SheetSide?" Default="null">
+                    Override the side from the parent Sheet component.
+                </ApiParameter>
+                <ApiParameter Name="ShowClose" Type="bool" Default="true">
+                    Whether to show the close button (X icon).
+                </ApiParameter>
+                <ApiParameter Name="CloseOnEscape" Type="bool" Default="true">
+                    Whether pressing Escape should close the sheet.
+                </ApiParameter>
+                <ApiParameter Name="TrapFocus" Type="bool" Default="true">
+                    Whether to trap focus within the sheet.
+                </ApiParameter>
+                <ApiParameter Name="LockScroll" Type="bool" Default="true">
+                    Whether to lock body scroll when sheet is open.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for custom width or styling.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="SheetClose">
+                <ApiParameter Name="AsChild" Type="bool" Default="true">
+                    When true, passes close behavior to child components instead of rendering its own button.
+                </ApiParameter>
+                <ApiParameter Name="PreventClose" Type="bool" Default="false">
+                    When true, prevents the default close behavior. Only the OnClick handler is invoked.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
-
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold">Different Sides</h2>
-
-        <div class="bg-muted p-4 rounded-md">
-            <pre class="text-sm overflow-x-auto"><code>&lt;Sheet Side="SheetSide.Left"&gt;
-    &lt;!-- Content slides in from left --&gt;
-&lt;/Sheet&gt;
-
-&lt;Sheet Side="SheetSide.Right"&gt;
-    &lt;!-- Content slides in from right (default) --&gt;
-&lt;/Sheet&gt;
-
-&lt;Sheet Side="SheetSide.Top"&gt;
-    &lt;!-- Content slides in from top --&gt;
-&lt;/Sheet&gt;
-
-&lt;Sheet Side="SheetSide.Bottom"&gt;
-    &lt;!-- Content slides in from bottom --&gt;
-&lt;/Sheet&gt;</code></pre>
-        </div>
-    </div>
+    </section>
 </div>
 
 @code {

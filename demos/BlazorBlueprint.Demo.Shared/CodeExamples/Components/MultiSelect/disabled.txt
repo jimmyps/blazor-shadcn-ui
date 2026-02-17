@@ -1,0 +1,6 @@
+<BbMultiSelect TValue="string"
+             Options="languages"
+             Values="@disabledValues"
+             Placeholder="Disabled multiselect"
+             Disabled="true"
+             PopoverWidth="w-[300px]" />

@@ -1,0 +1,15 @@
+<BbTooltip>
+    <BbTooltipTrigger AsChild="false" Class="inline-flex items-center justify-center rounded-md border px-4 py-2">
+        Premium Plan
+    </BbTooltipTrigger>
+    <BbTooltipContent Class="max-w-xs">
+        <div class="space-y-1">
+            <p class="font-semibold">Premium Features</p>
+            <ul class="text-xs space-y-0.5 text-muted-foreground">
+                <li>• Unlimited projects</li>
+                <li>• Priority support</li>
+                <li>• Advanced analytics</li>
+            </ul>
+        </div>
+    </BbTooltipContent>
+</BbTooltip>

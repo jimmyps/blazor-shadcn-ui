@@ -1,0 +1,1 @@
+<BbDateRangePicker @bind-Value="_noWeekends" DisabledDates="@(date => date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)" />

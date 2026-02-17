@@ -1,0 +1,25 @@
+<BbPagination>
+    <BbPaginationContent>
+        <BbPaginationItem>
+            <BbPaginationPrevious />
+        </BbPaginationItem>
+        <BbPaginationItem>
+            <BbPaginationLink IsActive="true">1</BbPaginationLink>
+        </BbPaginationItem>
+        <BbPaginationItem>
+            <BbPaginationLink>2</BbPaginationLink>
+        </BbPaginationItem>
+        <BbPaginationItem>
+            <BbPaginationEllipsis />
+        </BbPaginationItem>
+        <BbPaginationItem>
+            <BbPaginationLink>9</BbPaginationLink>
+        </BbPaginationItem>
+        <BbPaginationItem>
+            <BbPaginationLink>10</BbPaginationLink>
+        </BbPaginationItem>
+        <BbPaginationItem>
+            <BbPaginationNext />
+        </BbPaginationItem>
+    </BbPaginationContent>
+</BbPagination>

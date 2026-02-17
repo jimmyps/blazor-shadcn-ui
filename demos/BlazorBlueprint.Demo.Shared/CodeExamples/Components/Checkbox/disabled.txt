@@ -1,0 +1,14 @@
+<div class="flex items-center space-x-2">
+    <BbCheckbox Disabled="true" Checked="false" Id="disabled-unchecked" />
+    <label for="disabled-unchecked"
+           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+        Disabled (unchecked)
+    </label>
+</div>
+<div class="flex items-center space-x-2">
+    <BbCheckbox Disabled="true" Checked="true" Id="disabled-checked" />
+    <label for="disabled-checked"
+           class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+        Disabled (checked)
+    </label>
+</div>

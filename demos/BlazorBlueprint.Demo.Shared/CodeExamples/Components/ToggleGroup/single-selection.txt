@@ -1,0 +1,8 @@
+<BbToggleGroup TValue="string" @bind-Value="_alignment" Variant="ToggleVariant.Outline">
+    <BbToggleGroupItem TValue="string" Value="@("left")">
+        <LucideIcon Name="align-left" Class="h-4 w-4" />
+    </BbToggleGroupItem>
+    <BbToggleGroupItem TValue="string" Value="@("center")">
+        <LucideIcon Name="align-center" Class="h-4 w-4" />
+    </BbToggleGroupItem>
+</BbToggleGroup>

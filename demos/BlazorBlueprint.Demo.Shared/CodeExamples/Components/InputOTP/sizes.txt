@@ -1,0 +1,3 @@
+<BbInputOTP Length="4" ShowSeparator="false" Size="InputOTPSize.Small" />
+<BbInputOTP Length="4" ShowSeparator="false" Size="InputOTPSize.Default" />
+<BbInputOTP Length="4" ShowSeparator="false" Size="InputOTPSize.Large" />

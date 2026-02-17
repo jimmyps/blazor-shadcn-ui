@@ -1,0 +1,10 @@
+<BbSidebarProvider Variant="SidebarVariant.Inset">
+    <div class="flex h-full w-full">
+        <BbSidebar>
+            <!-- Sidebar content -->
+        </BbSidebar>
+        <BbSidebarInset>
+            <!-- Main content -->
+        </BbSidebarInset>
+    </div>
+</BbSidebarProvider>

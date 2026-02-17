@@ -24,11 +24,13 @@
             </p>
         </div>
         <div class="flex flex-wrap gap-4">
-            <Badge Variant="BadgeVariant.Default">Default</Badge>
-            <Badge Variant="BadgeVariant.Secondary">Secondary</Badge>
-            <Badge Variant="BadgeVariant.Destructive">Destructive</Badge>
-            <Badge Variant="BadgeVariant.Outline">Outline</Badge>
+            <BbBadge Variant="BadgeVariant.Default">Default</BbBadge>
+            <BbBadge Variant="BadgeVariant.Secondary">Secondary</BbBadge>
+            <BbBadge Variant="BadgeVariant.Destructive">Destructive</BbBadge>
+            <BbBadge Variant="BadgeVariant.Outline">Outline</BbBadge>
         </div>
+
+        <CodeBlock Source="Components/Badge/variants.txt" />
     </div>
 
     <!-- Usage Examples -->
@@ -46,19 +48,19 @@
                 <div class="flex flex-wrap gap-3">
                     <div class="flex items-center gap-2">
                         <span class="text-sm">Active:</span>
-                        <Badge Variant="BadgeVariant.Default">Active</Badge>
+                        <BbBadge Variant="BadgeVariant.Default">Active</BbBadge>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-sm">Pending:</span>
-                        <Badge Variant="BadgeVariant.Secondary">Pending</Badge>
+                        <BbBadge Variant="BadgeVariant.Secondary">Pending</BbBadge>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-sm">Error:</span>
-                        <Badge Variant="BadgeVariant.Destructive">Error</Badge>
+                        <BbBadge Variant="BadgeVariant.Destructive">Error</BbBadge>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-sm">Draft:</span>
-                        <Badge Variant="BadgeVariant.Outline">Draft</Badge>
+                        <BbBadge Variant="BadgeVariant.Outline">Draft</BbBadge>
                     </div>
                 </div>
             </div>
@@ -69,15 +71,15 @@
                 <div class="flex flex-wrap gap-4 items-center">
                     <div class="flex items-center gap-2">
                         <span class="text-sm">Messages</span>
-                        <Badge Variant="BadgeVariant.Default">3</Badge>
+                        <BbBadge Variant="BadgeVariant.Default">3</BbBadge>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-sm">Unread</span>
-                        <Badge Variant="BadgeVariant.Destructive">12</Badge>
+                        <BbBadge Variant="BadgeVariant.Destructive">12</BbBadge>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-sm">Completed</span>
-                        <Badge Variant="BadgeVariant.Secondary">24</Badge>
+                        <BbBadge Variant="BadgeVariant.Secondary">24</BbBadge>
                     </div>
                 </div>
             </div>
@@ -86,11 +88,11 @@
             <div class="space-y-3">
                 <h3 class="text-lg font-medium">Tags/Labels</h3>
                 <div class="flex flex-wrap gap-2">
-                    <Badge Variant="BadgeVariant.Outline">React</Badge>
-                    <Badge Variant="BadgeVariant.Outline">TypeScript</Badge>
-                    <Badge Variant="BadgeVariant.Outline">Tailwind CSS</Badge>
-                    <Badge Variant="BadgeVariant.Outline">Blazor</Badge>
-                    <Badge Variant="BadgeVariant.Outline">C#</Badge>
+                    <BbBadge Variant="BadgeVariant.Outline">React</BbBadge>
+                    <BbBadge Variant="BadgeVariant.Outline">TypeScript</BbBadge>
+                    <BbBadge Variant="BadgeVariant.Outline">Tailwind CSS</BbBadge>
+                    <BbBadge Variant="BadgeVariant.Outline">Blazor</BbBadge>
+                    <BbBadge Variant="BadgeVariant.Outline">C#</BbBadge>
                 </div>
             </div>
 
@@ -100,19 +102,21 @@
                 <div class="flex flex-wrap gap-4 items-center">
                     <div class="flex items-center gap-2">
                         <span class="text-sm">New Feature</span>
-                        <Badge Variant="BadgeVariant.Default">NEW</Badge>
+                        <BbBadge Variant="BadgeVariant.Default">NEW</BbBadge>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-sm">Beta</span>
-                        <Badge Variant="BadgeVariant.Secondary">BETA</Badge>
+                        <BbBadge Variant="BadgeVariant.Secondary">BETA</BbBadge>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-sm">Deprecated</span>
-                        <Badge Variant="BadgeVariant.Destructive">DEPRECATED</Badge>
+                        <BbBadge Variant="BadgeVariant.Destructive">DEPRECATED</BbBadge>
                     </div>
                 </div>
             </div>
         </div>
+
+        <CodeBlock Source="Components/Badge/usage.txt" />
     </div>
 
     <!-- In Lists/Cards -->
@@ -129,30 +133,32 @@
                     <h4 class="text-sm font-medium">Project Alpha</h4>
                     <p class="text-sm text-muted-foreground">Active development</p>
                 </div>
-                <Badge Variant="BadgeVariant.Default">In Progress</Badge>
+                <BbBadge Variant="BadgeVariant.Default">In Progress</BbBadge>
             </div>
             <div class="p-4 flex items-center justify-between">
                 <div class="space-y-1">
                     <h4 class="text-sm font-medium">Project Beta</h4>
                     <p class="text-sm text-muted-foreground">Under review</p>
                 </div>
-                <Badge Variant="BadgeVariant.Secondary">Review</Badge>
+                <BbBadge Variant="BadgeVariant.Secondary">Review</BbBadge>
             </div>
             <div class="p-4 flex items-center justify-between">
                 <div class="space-y-1">
                     <h4 class="text-sm font-medium">Project Gamma</h4>
                     <p class="text-sm text-muted-foreground">Deployment failed</p>
                 </div>
-                <Badge Variant="BadgeVariant.Destructive">Failed</Badge>
+                <BbBadge Variant="BadgeVariant.Destructive">Failed</BbBadge>
             </div>
             <div class="p-4 flex items-center justify-between">
                 <div class="space-y-1">
                     <h4 class="text-sm font-medium">Project Delta</h4>
                     <p class="text-sm text-muted-foreground">Planning phase</p>
                 </div>
-                <Badge Variant="BadgeVariant.Outline">Draft</Badge>
+                <BbBadge Variant="BadgeVariant.Outline">Draft</BbBadge>
             </div>
         </div>
+
+        <CodeBlock Source="Components/Badge/in-lists.txt" />
     </div>
 
     <!-- Custom Styling -->
@@ -164,11 +170,13 @@
             </p>
         </div>
         <div class="flex flex-wrap gap-4">
-            <Badge Variant="BadgeVariant.Default" Class="text-lg px-4 py-1">Large Badge</Badge>
-            <Badge Variant="BadgeVariant.Secondary" Class="rounded-sm">Square Corners</Badge>
-            <Badge Variant="BadgeVariant.Outline" Class="border-2 border-blue-500 text-blue-500">Custom Color</Badge>
-            <Badge Variant="BadgeVariant.Default" Class="bg-gradient-to-r from-purple-500 to-pink-500 border-0">Gradient</Badge>
+            <BbBadge Variant="BadgeVariant.Default" Class="text-lg px-4 py-1">Large Badge</BbBadge>
+            <BbBadge Variant="BadgeVariant.Secondary" Class="rounded-sm">Square Corners</BbBadge>
+            <BbBadge Variant="BadgeVariant.Outline" Class="border-2 border-blue-500 text-blue-500">Custom Color</BbBadge>
+            <BbBadge Variant="BadgeVariant.Default" Class="bg-gradient-to-r from-purple-500 to-pink-500 border-0">Gradient</BbBadge>
         </div>
+
+        <CodeBlock Source="Components/Badge/custom-styling.txt" />
     </div>
 
     <!-- Custom Variants -->
@@ -180,11 +188,13 @@
             </p>
         </div>
         <div class="flex flex-wrap gap-4">
-            <Badge Class="border-transparent bg-green-600 text-white hover:bg-green-700">Success</Badge>
-            <Badge Class="border-transparent bg-blue-600 text-white hover:bg-blue-700">Info</Badge>
-            <Badge Class="border-transparent bg-amber-500 text-white hover:bg-amber-600">Warning</Badge>
-            <Badge Class="border-transparent bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600">Brand</Badge>
+            <BbBadge Class="border-transparent bg-green-600 text-white hover:bg-green-700">Success</BbBadge>
+            <BbBadge Class="border-transparent bg-blue-600 text-white hover:bg-blue-700">Info</BbBadge>
+            <BbBadge Class="border-transparent bg-amber-500 text-white hover:bg-amber-600">Warning</BbBadge>
+            <BbBadge Class="border-transparent bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600">Brand</BbBadge>
         </div>
+
+        <CodeBlock Source="Components/Badge/custom-variants.txt" />
     </div>
 
     <!-- With Icons -->
@@ -196,85 +206,97 @@
             </p>
         </div>
         <div class="flex flex-wrap gap-4">
-            <Badge Variant="BadgeVariant.Default">
+            <BbBadge Variant="BadgeVariant.Default">
                 <LucideIcon Name="check" Size="12" Class="mr-1" />
                 Verified
-            </Badge>
-            <Badge Variant="BadgeVariant.Destructive">
+            </BbBadge>
+            <BbBadge Variant="BadgeVariant.Destructive">
                 <LucideIcon Name="x" Size="12" Class="mr-1" />
                 Closed
-            </Badge>
-            <Badge Variant="BadgeVariant.Secondary">
+            </BbBadge>
+            <BbBadge Variant="BadgeVariant.Secondary">
                 <LucideIcon Name="star" Size="12" Class="mr-1" />
                 Featured
-            </Badge>
-            <Badge Variant="BadgeVariant.Outline">
+            </BbBadge>
+            <BbBadge Variant="BadgeVariant.Outline">
                 <LucideIcon Name="heart" Size="12" Class="mr-1" />
                 Favorite
-            </Badge>
+            </BbBadge>
         </div>
+
+        <CodeBlock Source="Components/Badge/with-icons.txt" />
+    </div>
+
+    <!-- Notification Dot -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Notification Dot</h2>
+            <p class="text-sm text-muted-foreground">
+                Add a small dot indicator to badges using <code class="text-xs bg-muted px-1 py-0.5 rounded">ShowDot</code>.
+                Control the position with <code class="text-xs bg-muted px-1 py-0.5 rounded">DotPosition</code> and the color with <code class="text-xs bg-muted px-1 py-0.5 rounded">DotClass</code>.
+            </p>
+        </div>
+        <div class="space-y-4">
+            <div class="flex flex-wrap gap-6">
+                <BbBadge Variant="BadgeVariant.Default" ShowDot>Default</BbBadge>
+                <BbBadge Variant="BadgeVariant.Secondary" ShowDot>Secondary</BbBadge>
+                <BbBadge Variant="BadgeVariant.Destructive" ShowDot DotClass="bg-destructive">Destructive</BbBadge>
+                <BbBadge Variant="BadgeVariant.Outline" ShowDot>Outline</BbBadge>
+            </div>
+            <div class="flex flex-wrap gap-6">
+                <BbBadge ShowDot DotPosition="BadgeDotPosition.TopRight">Top Right</BbBadge>
+                <BbBadge ShowDot DotPosition="BadgeDotPosition.TopLeft">Top Left</BbBadge>
+                <BbBadge ShowDot DotPosition="BadgeDotPosition.BottomRight">Bottom Right</BbBadge>
+                <BbBadge ShowDot DotPosition="BadgeDotPosition.BottomLeft">Bottom Left</BbBadge>
+            </div>
+            <div class="flex flex-wrap gap-6">
+                <BbBadge Variant="BadgeVariant.Outline" ShowDot DotClass="bg-green-500">Online</BbBadge>
+                <BbBadge Variant="BadgeVariant.Outline" ShowDot DotClass="bg-yellow-500">Away</BbBadge>
+                <BbBadge Variant="BadgeVariant.Outline" ShowDot DotClass="bg-red-500">Busy</BbBadge>
+                <BbBadge Variant="BadgeVariant.Outline" ShowDot DotClass="bg-gray-400">Offline</BbBadge>
+            </div>
+        </div>
+
+        <CodeBlock Source="Components/Badge/notification-dot.txt" />
     </div>
 
     <!-- Accessibility -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Accessibility Notes</h2>
-            <p class="text-sm text-muted-foreground">
-                Best practices for using badges accessibly.
-            </p>
-        </div>
-        <div class="border rounded-lg p-6 space-y-3 bg-muted/50">
-            <p class="text-sm">
-                ✓ <strong>Keep text concise:</strong> Badges work best with 1-2 words or small numbers.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Meaningful content:</strong> Badge text should be self-explanatory.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Color alone:</strong> Don't rely solely on color to convey meaning. Include text.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Context:</strong> Ensure the badge's meaning is clear from surrounding content.
-            </p>
-        </div>
-    </div>
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>
+                Keep text concise: Badges work best with 1-2 words or small numbers.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Badge text should be self-explanatory and meaningful.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Don't rely solely on color to convey meaning. Include text.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Ensure the badge's meaning is clear from surrounding content.
+            </AccessibilityItem>
+        </AriaAttributes>
+    </AccessibilityList>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Variant</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">BadgeVariant</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="Badge">
+                <ApiParameter Name="Variant" Type="BadgeVariant" Default="Default">
                     The visual style variant. Options: Default, Secondary, Destructive, Outline.
-                    Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">Default</code>
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Class</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
                     Additional CSS classes to apply to the badge element.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">ChildContent</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">RenderFragment?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
                     The content to display inside the badge (text, icons, numbers, etc.).
-                </p>
-            </div>
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>

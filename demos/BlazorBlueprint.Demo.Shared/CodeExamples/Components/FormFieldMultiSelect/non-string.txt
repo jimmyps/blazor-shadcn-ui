@@ -1,0 +1,23 @@
+<BbFormFieldMultiSelect TValue="int"
+                      Options="_permissions"
+                      @bind-Values="_selectedPermissions"
+                      Label="Permissions"
+                      Placeholder="Select permissions..."
+                      SearchPlaceholder="Search permissions..."
+                      HelperText="Assign permissions to this role."
+                      MatchTriggerWidth="true"
+                      InputClass="w-full" />
+
+@code {
+    private IEnumerable<int>? _selectedPermissions;
+
+    private readonly SelectOption<int>[] _permissions =
+    [
+        new(1, "Read"),
+        new(2, "Write"),
+        new(3, "Delete"),
+        new(4, "Admin")
+    ];
+
+    // _permissions.GetTexts(_selectedPermissions)
+}

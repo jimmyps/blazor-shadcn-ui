@@ -1,0 +1,36 @@
+<BbMultiSelect TValue="string"
+             @bind-Values="compositionalValues"
+             Placeholder="Select permissions..."
+             SearchPlaceholder="Search..."
+             ShowSelectAll="true"
+             SelectAllLabel="Select All"
+             PopoverWidth="w-[300px]">
+    <BbMultiSelectItem Value="@("read")" Text="Read">
+        <div class="flex items-center gap-2">
+            <span class="inline-block h-2 w-2 rounded-full bg-green-500"></span>
+            Read
+        </div>
+    </BbMultiSelectItem>
+    <BbMultiSelectItem Value="@("write")" Text="Write">
+        <div class="flex items-center gap-2">
+            <span class="inline-block h-2 w-2 rounded-full bg-yellow-500"></span>
+            Write
+        </div>
+    </BbMultiSelectItem>
+    <BbMultiSelectItem Value="@("delete")" Text="Delete">
+        <div class="flex items-center gap-2">
+            <span class="inline-block h-2 w-2 rounded-full bg-red-500"></span>
+            Delete
+        </div>
+    </BbMultiSelectItem>
+    <BbMultiSelectItem Value="@("admin")" Text="Admin">
+        <div class="flex items-center gap-2">
+            <span class="inline-block h-2 w-2 rounded-full bg-purple-500"></span>
+            Admin
+        </div>
+    </BbMultiSelectItem>
+</BbMultiSelect>
+
+@code {
+    private IEnumerable<string>? compositionalValues;
+}

@@ -1,0 +1,6 @@
+<BbAvatar Size="AvatarSize.Large" ShowDot DotClass="bg-green-500">
+    <BbAvatarFallback>JD</BbAvatarFallback>
+</BbAvatar>
+<BbAvatar Size="AvatarSize.Large" ShowDot DotClass="bg-yellow-500">
+    <BbAvatarFallback>AS</BbAvatarFallback>
+</BbAvatar>

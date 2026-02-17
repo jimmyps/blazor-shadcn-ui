@@ -1,0 +1,4 @@
+<BbBadge Variant="BadgeVariant.Default" Class="text-lg px-4 py-1">Large Badge</BbBadge>
+<BbBadge Variant="BadgeVariant.Secondary" Class="rounded-sm">Square Corners</BbBadge>
+<BbBadge Variant="BadgeVariant.Outline" Class="border-2 border-blue-500 text-blue-500">Custom Color</BbBadge>
+<BbBadge Variant="BadgeVariant.Default" Class="bg-gradient-to-r from-purple-500 to-pink-500 border-0">Gradient</BbBadge>

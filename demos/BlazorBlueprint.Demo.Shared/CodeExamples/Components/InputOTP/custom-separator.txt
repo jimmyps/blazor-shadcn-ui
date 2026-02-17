@@ -1,0 +1,5 @@
+<BbInputOTP Length="6" GroupSize="2">
+    <BbSeparator>
+        <span class="text-muted-foreground">:</span>
+    </BbSeparator>
+</BbInputOTP>

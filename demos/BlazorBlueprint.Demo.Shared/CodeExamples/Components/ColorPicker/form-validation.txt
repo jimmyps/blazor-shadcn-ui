@@ -1,0 +1,6 @@
+<EditForm Model="model" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <BbColorPicker @bind-Value="model.BrandColor" />
+    <ValidationMessage For="@(() => model.BrandColor)" />
+    <BbButton Type="ButtonType.Submit">Submit</BbButton>
+</EditForm>

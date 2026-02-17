@@ -1,0 +1,25 @@
+<BbFormFieldCombobox TValue="int?"
+                   Options="_priorities"
+                   @bind-Value="_selectedPriority"
+                   Label="Priority"
+                   Placeholder="Select priority..."
+                   SearchPlaceholder="Search priorities..."
+                   EmptyMessage="No priority found."
+                   HelperText="Choose the task priority level."
+                   MatchTriggerWidth="true"
+                   InputClass="w-full" />
+
+@code {
+    private int? _selectedPriority;
+
+    private readonly SelectOption<int?>[] _priorities =
+    [
+        new(1, "Critical"),
+        new(2, "High"),
+        new(3, "Medium"),
+        new(4, "Low")
+    ];
+
+    // GetText works with any TValue — no manual helper needed
+    // _priorities.GetText(_selectedPriority)
+}

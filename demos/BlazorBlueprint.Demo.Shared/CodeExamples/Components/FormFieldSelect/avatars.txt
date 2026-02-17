@@ -1,0 +1,17 @@
+<BbFormFieldSelect TValue="string"
+                 @bind-Value="_assignee"
+                 Label="Assign to"
+                 Placeholder="Select a team member...">
+    <BbSelectItem Value="@("alice")" Text="Alice Martin">
+        <div class="flex items-center gap-2">
+            <BbAvatar Size="AvatarSize.Small" Class="h-6 w-6 text-[10px]">
+                <BbAvatarFallback>AM</BbAvatarFallback>
+            </BbAvatar>
+            <div class="flex flex-col">
+                <span class="text-sm">Alice Martin</span>
+                <span class="text-xs text-muted-foreground">Engineering</span>
+            </div>
+        </div>
+    </BbSelectItem>
+    ...
+</BbFormFieldSelect>

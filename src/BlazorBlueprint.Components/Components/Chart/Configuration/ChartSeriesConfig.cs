@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Chart;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Configuration for a single chart series including its label and color.

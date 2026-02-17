@@ -1,0 +1,21 @@
+<BbSheet>
+    <BbSheetTrigger>
+        <BbButton Variant="ButtonVariant.Outline">Open Sheet</BbButton>
+    </BbSheetTrigger>
+    <BbSheetContent ShowClose="false">
+        <BbSheetHeader>
+            <BbSheetTitle>Confirm Action</BbSheetTitle>
+            <BbSheetDescription>
+                This sheet doesn't have a close button.
+            </BbSheetDescription>
+        </BbSheetHeader>
+        <BbSheetFooter>
+            <BbSheetClose>
+                <BbButton Variant="ButtonVariant.Outline">Cancel</BbButton>
+            </BbSheetClose>
+            <BbSheetClose>
+                <BbButton>Confirm</BbButton>
+            </BbSheetClose>
+        </BbSheetFooter>
+    </BbSheetContent>
+</BbSheet>

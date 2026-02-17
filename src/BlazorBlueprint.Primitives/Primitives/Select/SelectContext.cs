@@ -4,6 +4,23 @@ using BlazorBlueprint.Primitives.Contexts;
 namespace BlazorBlueprint.Primitives.Select;
 
 /// <summary>
+/// Non-generic interface exposing the display-only contract of a select context.
+/// Used by components that need the selected display text without knowing TValue.
+/// </summary>
+public interface ISelectDisplayContext
+{
+    /// <summary>
+    /// Gets the display text for the currently selected value.
+    /// </summary>
+    public string? DisplayText { get; }
+
+    /// <summary>
+    /// Event that is raised when the state changes.
+    /// </summary>
+    public event Action? OnStateChanged;
+}
+
+/// <summary>
 /// State for the Select primitive context.
 /// </summary>
 /// <typeparam name="TValue">The type of the selected value.</typeparam>
@@ -47,8 +64,14 @@ public class SelectState<TValue>
 /// Manages select state, provides IDs for ARIA attributes, and handles keyboard navigation.
 /// </summary>
 /// <typeparam name="TValue">The type of the selected value.</typeparam>
-public class SelectContext<TValue> : PrimitiveContextWithEvents<SelectState<TValue>>
+public class SelectContext<TValue> : PrimitiveContextWithEvents<SelectState<TValue>>, ISelectDisplayContext
 {
+    /// <summary>
+    /// Gets or sets default CSS classes to apply to all items in the select.
+    /// Cascaded from the parent Select's ItemClass parameter.
+    /// </summary>
+    public string? ItemClass { get; set; }
+
     /// <summary>
     /// Callback invoked when the selected value changes.
     /// </summary>
@@ -111,9 +134,6 @@ public class SelectContext<TValue> : PrimitiveContextWithEvents<SelectState<TVal
         {
             return;
         }
-
-        // Clear items so they can re-register when the dropdown opens
-        ClearItems();
 
         UpdateState(state =>
         {
@@ -255,11 +275,6 @@ public class SelectContext<TValue> : PrimitiveContextWithEvents<SelectState<TVal
     }
 
     /// <summary>
-    /// Clears all registered items.
-    /// </summary>
-    public void ClearItems() => Items.Clear();
-
-    /// <summary>
     /// Moves focus to the next item that is not disabled.
     /// </summary>
     /// <param name="direction">1 for next, -1 for previous.</param>
@@ -384,6 +399,7 @@ public class SelectContext<TValue> : PrimitiveContextWithEvents<SelectState<TVal
         var item = Items.FirstOrDefault(i => EqualityComparer<TValue>.Default.Equals(i.Value, value));
         return item?.DisplayText;
     }
+
 }
 
 /// <summary>

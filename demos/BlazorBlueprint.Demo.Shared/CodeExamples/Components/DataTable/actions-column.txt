@@ -1,0 +1,12 @@
+<BbDataTableColumn TData="Person" TValue="object" Header="Actions">
+    <CellTemplate Context="person">
+        <div class="flex items-center gap-2">
+            <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="@(() => ShowDetails(person))">
+                View
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" OnClick="@(() => EditPerson(person))">
+                Edit
+            </BbButton>
+        </div>
+    </CellTemplate>
+</BbDataTableColumn>

@@ -1,0 +1,10 @@
+<BbAccordion Type="AccordionType.Single" Collapsible="true">
+    <BbAccordionItem Value="item-1">
+        <BbAccordionTrigger>Item 1</BbAccordionTrigger>
+        <BbAccordionContent>Content 1 - Click again to collapse.</BbAccordionContent>
+    </BbAccordionItem>
+    <BbAccordionItem Value="item-2">
+        <BbAccordionTrigger>Item 2</BbAccordionTrigger>
+        <BbAccordionContent>Content 2 - Click again to collapse.</BbAccordionContent>
+    </BbAccordionItem>
+</BbAccordion>

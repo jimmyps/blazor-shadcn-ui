@@ -1,0 +1,11 @@
+<BbTabs DefaultValue="enabled1">
+    <BbTabsList class="...">
+        <BbTabsTrigger Value="enabled1" class="...">Enabled 1</BbTabsTrigger>
+        <BbTabsTrigger Value="disabled" Disabled="true" class="...">Disabled</BbTabsTrigger>
+        <BbTabsTrigger Value="enabled2" class="...">Enabled 2</BbTabsTrigger>
+    </BbTabsList>
+
+    <BbTabsContent Value="enabled1" class="...">First enabled tab</BbTabsContent>
+    <BbTabsContent Value="disabled" class="...">Won't be shown</BbTabsContent>
+    <BbTabsContent Value="enabled2" class="...">Second enabled tab</BbTabsContent>
+</BbTabs>

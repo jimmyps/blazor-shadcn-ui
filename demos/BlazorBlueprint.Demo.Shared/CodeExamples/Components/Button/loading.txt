@@ -1,0 +1,21 @@
+<BbButton Loading="true">Save Changes</BbButton>
+
+<BbButton Loading="true" LoadingText="Saving..." Variant="ButtonVariant.Outline">
+    Save Changes
+</BbButton>
+
+<BbButton Loading="@_isLoading" OnClick="SimulateLoading">
+    @(_isLoading ? "Submitting..." : "Submit")
+</BbButton>
+
+@code {
+    private bool _isLoading;
+
+    private async Task SimulateLoading(MouseEventArgs e)
+    {
+        _isLoading = true;
+        StateHasChanged();
+        await Task.Delay(2000);
+        _isLoading = false;
+    }
+}

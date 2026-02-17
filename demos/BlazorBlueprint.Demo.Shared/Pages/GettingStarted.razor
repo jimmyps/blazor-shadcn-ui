@@ -77,7 +77,7 @@
                         Import and use styled components directly with beautiful defaults:
                     </p>
                     <div class="rounded-lg border bg-muted/50 p-4">
-                        <pre class="text-sm overflow-x-auto"><code>@@using BlazorBlueprint.Components.Dialog
+                        <pre class="text-sm overflow-x-auto"><code>@@using BlazorBlueprint.Components.BbDialog
 
 &lt;Dialog&gt;
     &lt;DialogTrigger&gt;Open Dialog&lt;/DialogTrigger&gt;
@@ -98,9 +98,7 @@
                         Use primitives when you want full control over styling:
                     </p>
                     <div class="rounded-lg border bg-muted/50 p-4">
-                        <pre class="text-sm overflow-x-auto"><code>@@using BlazorBlueprint.Primitives.Dialog
-
-&lt;DialogPrimitive&gt;
+                        <pre class="text-sm overflow-x-auto"><code>&lt;BlazorBlueprint.Primitives.Dialog.BbDialog&gt;
     &lt;DialogTrigger class="my-custom-button-class"&gt;
         Open Dialog
     &lt;/DialogTrigger&gt;
@@ -113,7 +111,7 @@
             &lt;p class="my-content-styles"&gt;Fully custom!&lt;/p&gt;
         &lt;/DialogContent&gt;
     &lt;/DialogPortal&gt;
-&lt;/DialogPrimitive&gt;</code></pre>
+&lt;/BlazorBlueprint.Primitives.Dialog.BbDialog&gt;</code></pre>
                     </div>
                 </div>
             </div>

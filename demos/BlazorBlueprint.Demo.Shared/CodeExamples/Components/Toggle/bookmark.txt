@@ -1,0 +1,5 @@
+<BbToggle @bind-Pressed="_isBookmarked" Variant="ToggleVariant.Outline">
+    <LucideIcon Name="bookmark"
+                Fill="@(_isBookmarked ? "#3b82f6" : "none")" />
+    Bookmark
+</BbToggle>

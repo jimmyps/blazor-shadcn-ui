@@ -1,0 +1,8 @@
+<BbToggleGroup TValue="string" @bind-Values="_formatting" Type="ToggleGroupType.Multiple" Variant="ToggleVariant.Outline">
+    <BbToggleGroupItem TValue="string" Value="@("bold")">
+        <LucideIcon Name="bold" Class="h-4 w-4" />
+    </BbToggleGroupItem>
+    <BbToggleGroupItem TValue="string" Value="@("italic")">
+        <LucideIcon Name="italic" Class="h-4 w-4" />
+    </BbToggleGroupItem>
+</BbToggleGroup>

@@ -1,0 +1,12 @@
+<div class="border rounded-lg divide-y">
+    @for (int i = 0; i < 4; i++)
+    {
+        <div class="p-4 flex items-center space-x-4">
+            <BbSkeleton Shape="SkeletonShape.Circular" Class="h-10 w-10" />
+            <div class="space-y-2 flex-1">
+                <BbSkeleton Class="h-4 w-[200px]" />
+                <BbSkeleton Class="h-3 w-[150px]" />
+            </div>
+        </div>
+    }
+</div>

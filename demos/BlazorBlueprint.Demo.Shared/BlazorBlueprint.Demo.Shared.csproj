@@ -25,6 +25,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.14" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="CodeExamples\**\*.txt" />
+  </ItemGroup>
+
   <!-- Build Tailwind CSS -->
   <Target Name="BuildTailwindCSS" BeforeTargets="BeforeBuild" Condition="'$(OS)' == 'Windows_NT' AND '$(CI)' != 'true'">
     <Message Text="Building Tailwind CSS..." Importance="high" />

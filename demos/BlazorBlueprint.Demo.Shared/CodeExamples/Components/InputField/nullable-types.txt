@@ -1,0 +1,2 @@
+<BbInputField TValue="int?" @bind-Value="_nullableIntValue" />
+<BbInputField TValue="int" @bind-Value="_nonNullableIntValue" />

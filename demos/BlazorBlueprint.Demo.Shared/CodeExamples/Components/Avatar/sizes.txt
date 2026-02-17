@@ -1,0 +1,12 @@
+<BbAvatar Size="AvatarSize.Small">
+    <BbAvatarFallback>XS</BbAvatarFallback>
+</BbAvatar>
+<BbAvatar Size="AvatarSize.Default">
+    <BbAvatarFallback>MD</BbAvatarFallback>
+</BbAvatar>
+<BbAvatar Size="AvatarSize.Large">
+    <BbAvatarFallback>LG</BbAvatarFallback>
+</BbAvatar>
+<BbAvatar Size="AvatarSize.ExtraLarge">
+    <BbAvatarFallback>XL</BbAvatarFallback>
+</BbAvatar>

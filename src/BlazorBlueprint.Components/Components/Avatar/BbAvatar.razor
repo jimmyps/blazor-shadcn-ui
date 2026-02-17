@@ -1,0 +1,17 @@
+@namespace BlazorBlueprint.Components
+
+@if (ShowDot)
+{
+    <span class="relative inline-flex">
+        <span class="@CssClass">
+            @ChildContent
+        </span>
+        <span class="@DotCssClass"></span>
+    </span>
+}
+else
+{
+    <span class="@CssClass">
+        @ChildContent
+    </span>
+}

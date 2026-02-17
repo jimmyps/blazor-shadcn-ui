@@ -1,0 +1,10 @@
+<BbFieldGroup Orientation="FieldGroupOrientation.Horizontal">
+    <BbField Class="flex-1">
+        <BbFieldLabel For="city">City</BbFieldLabel>
+        <BbFieldContent><BbInput Id="city" /></BbFieldContent>
+    </BbField>
+    <BbField Class="w-32">
+        <BbFieldLabel For="zip">ZIP</BbFieldLabel>
+        <BbFieldContent><BbInput Id="zip" /></BbFieldContent>
+    </BbField>
+</BbFieldGroup>

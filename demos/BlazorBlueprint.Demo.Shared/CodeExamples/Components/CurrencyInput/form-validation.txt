@@ -1,0 +1,6 @@
+<EditForm Model="formModel" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <BbCurrencyInput @bind-Value="formModel.Amount" CurrencyCode="USD" />
+    <ValidationMessage For="@(() => formModel.Amount)" />
+    <BbButton Type="ButtonType.Submit">Submit</BbButton>
+</EditForm>

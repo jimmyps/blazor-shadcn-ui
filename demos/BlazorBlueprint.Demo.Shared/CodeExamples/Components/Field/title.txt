@@ -1,0 +1,20 @@
+<BbField>
+    <BbFieldContent>
+        <BbFieldTitle>Email Notifications</BbFieldTitle>
+        <div class="space-y-2">
+            <div class="flex items-center gap-2">
+                <BbCheckbox Id="notify-updates" />
+                <BbFieldLabel For="notify-updates" Class="font-normal">Product updates</BbFieldLabel>
+            </div>
+            <div class="flex items-center gap-2">
+                <BbCheckbox Id="notify-security" />
+                <BbFieldLabel For="notify-security" Class="font-normal">Security alerts</BbFieldLabel>
+            </div>
+            <div class="flex items-center gap-2">
+                <BbCheckbox Id="notify-marketing" />
+                <BbFieldLabel For="notify-marketing" Class="font-normal">Marketing emails</BbFieldLabel>
+            </div>
+        </div>
+        <BbFieldDescription>Choose which emails you want to receive.</BbFieldDescription>
+    </BbFieldContent>
+</BbField>

@@ -1,0 +1,20 @@
+<button @onclick="() => isControlledOpen = true">Open Sheet</button>
+<button @onclick="() => isControlledOpen = false">Close from Outside</button>
+
+<BbSheet @bind-Open="isControlledOpen">
+    <BbSheetPortal>
+        <BbSheetOverlay class="fixed inset-0 bg-black/50 z-50" />
+        <BbSheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
+            <BbSheetTitle>Controlled Sheet</BbSheetTitle>
+            <BbSheetDescription>
+                This sheet's state is controlled by the parent component.
+            </BbSheetDescription>
+            <p>Open state: <strong>@isControlledOpen</strong></p>
+            <BbSheetClose class="px-3 py-2 border rounded text-sm">Close</BbSheetClose>
+        </BbSheetContent>
+    </BbSheetPortal>
+</BbSheet>
+
+@code {
+    private bool isControlledOpen = false;
+}

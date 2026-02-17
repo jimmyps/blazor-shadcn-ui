@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Item;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the size options for the Item component.

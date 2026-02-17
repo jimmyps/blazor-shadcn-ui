@@ -1,10 +1,8 @@
-@using BlazorBlueprint.Components.Sidebar
-@using BlazorBlueprint.Components.DropdownMenu
 @using BlazorBlueprint.Icons
 @using BlazorBlueprint.Primitives.Services
 
-<DropdownMenu>
-    <DropdownMenuTrigger Class="flex w-full items-center gap-2 px-2 py-2 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-0 group-data-[collapsible=icon]:justify-center cursor-pointer hover:bg-sidebar-accent data-[state=open]:bg-sidebar-accent rounded-md transition-colors">
+<BbDropdownMenu>
+    <BbDropdownMenuTrigger AsChild="false" ActiveClass="bg-sidebar-accent" Class="flex w-full items-center gap-2 px-2 py-2 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-0 group-data-[collapsible=icon]:justify-center cursor-pointer hover:bg-sidebar-accent rounded-md transition-colors">
         <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <LucideIcon Name="book-open" Size="16" />
         </div>
@@ -17,11 +15,11 @@
                 <LucideIcon Name="chevrons-up-down" Size="12" />
             </div>
         </div>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent Align="@GetAlign()" Side="@GetSide()" ZIndex="9999" MatchTriggerWidth="@(!IsIconMode)" Strategy="@GetStrategy()" style="@GetWidthStyle()">
-        <DropdownMenuLabel>Select Version</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem OnClick="@(() => SelectedVersion = "v1.0.1")">
+    </BbDropdownMenuTrigger>
+    <BbDropdownMenuContent Align="@GetAlign()" Side="@GetSide()" ZIndex="9999" MatchTriggerWidth="@(!IsIconMode)" Strategy="@GetStrategy()" style="@GetWidthStyle()">
+        <BbDropdownMenuLabel>Select Version</BbDropdownMenuLabel>
+        <BbDropdownMenuSeparator />
+        <BbDropdownMenuItem OnClick="@(() => SelectedVersion = "v1.0.1")">
             <div class="flex items-center justify-between w-full">
                 <span>v1.0.1</span>
                 @if (SelectedVersion == "v1.0.1")
@@ -29,8 +27,8 @@
                     <LucideIcon Name="check" Size="16" />
                 }
             </div>
-        </DropdownMenuItem>
-        <DropdownMenuItem OnClick="@(() => SelectedVersion = "v1.1.0-alpha")">
+        </BbDropdownMenuItem>
+        <BbDropdownMenuItem OnClick="@(() => SelectedVersion = "v1.1.0-alpha")">
             <div class="flex items-center justify-between w-full">
                 <span>v1.1.0-alpha</span>
                 @if (SelectedVersion == "v1.1.0-alpha")
@@ -38,8 +36,8 @@
                     <LucideIcon Name="check" Size="16" />
                 }
             </div>
-        </DropdownMenuItem>
-        <DropdownMenuItem OnClick="@(() => SelectedVersion = "v2.0.0-beta1")">
+        </BbDropdownMenuItem>
+        <BbDropdownMenuItem OnClick="@(() => SelectedVersion = "v2.0.0-beta1")">
             <div class="flex items-center justify-between w-full">
                 <span>v2.0.0-beta1</span>
                 @if (SelectedVersion == "v2.0.0-beta1")
@@ -47,9 +45,9 @@
                     <LucideIcon Name="check" Size="16" />
                 }
             </div>
-        </DropdownMenuItem>
-    </DropdownMenuContent>
-</DropdownMenu>
+        </BbDropdownMenuItem>
+    </BbDropdownMenuContent>
+</BbDropdownMenu>
 
 @code {
     [CascadingParameter]

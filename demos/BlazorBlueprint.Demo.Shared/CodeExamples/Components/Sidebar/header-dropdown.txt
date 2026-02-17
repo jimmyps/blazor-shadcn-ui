@@ -1,0 +1,20 @@
+<BbSidebar>
+    <BbSidebarHeader>
+        <ResponsiveHeaderDropdown @bind-SelectedVersion="selectedVersion" />
+    </BbSidebarHeader>
+
+    <BbSidebarContent>
+        <BbSidebarGroup>
+            <BbSidebarGroupLabel>Getting Started</BbSidebarGroupLabel>
+            <BbSidebarGroupContent>
+                <BbSidebarMenu>
+                    <BbSidebarMenuItem>
+                        <BbSidebarMenuButton Tooltip="Installation">
+                            <span>Installation</span>
+                        </BbSidebarMenuButton>
+                    </BbSidebarMenuItem>
+                </BbSidebarMenu>
+            </BbSidebarGroupContent>
+        </BbSidebarGroup>
+    </BbSidebarContent>
+</BbSidebar>

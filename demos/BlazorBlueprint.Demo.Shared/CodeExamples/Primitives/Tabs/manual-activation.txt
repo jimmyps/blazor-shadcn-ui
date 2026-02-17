@@ -1,0 +1,11 @@
+<BbTabs DefaultValue="overview" ActivationMode="TabsActivationMode.Manual">
+    <BbTabsList class="...">
+        <BbTabsTrigger Value="overview" class="...">Overview</BbTabsTrigger>
+        <BbTabsTrigger Value="analytics" class="...">Analytics</BbTabsTrigger>
+        <BbTabsTrigger Value="reports" class="...">Reports</BbTabsTrigger>
+    </BbTabsList>
+
+    <BbTabsContent Value="overview" class="...">Overview content</BbTabsContent>
+    <BbTabsContent Value="analytics" class="...">Analytics content</BbTabsContent>
+    <BbTabsContent Value="reports" class="...">Reports content</BbTabsContent>
+</BbTabs>

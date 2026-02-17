@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Tooltip;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Provides shared configuration context for all tooltips within a TooltipProvider.
@@ -6,8 +6,8 @@ namespace BlazorBlueprint.Components.Tooltip;
 /// <remarks>
 /// <para>
 /// TooltipProviderContext is used to configure tooltip behavior globally within a section
-/// of the application. It is provided by the <see cref="TooltipProvider"/> component and
-/// cascaded to all child <see cref="Tooltip"/> components.
+/// of the application. It is provided by the <see cref="BbTooltipProvider"/> component and
+/// cascaded to all child <see cref="BbTooltip"/> components.
 /// </para>
 /// <para>
 /// This context enables:

@@ -1,0 +1,4 @@
+<BbCheckboxGroup TValue="string" @bind-Values="values">
+    <BbCheckboxGroupItem Value="@("email")" Label="Email notifications" />
+    <BbCheckboxGroupItem Value="@("sms")" Label="SMS notifications" />
+</BbCheckboxGroup>

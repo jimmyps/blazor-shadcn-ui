@@ -1,0 +1,9 @@
+<div class="flex items-center gap-4 p-4">
+    <BbAvatar>
+        <BbAvatarFallback>JD</BbAvatarFallback>
+    </BbAvatar>
+    <div class="flex-1">
+        <p class="font-medium">John Doe</p>
+        <p class="text-sm text-muted-foreground">john.doe@example.com</p>
+    </div>
+</div>

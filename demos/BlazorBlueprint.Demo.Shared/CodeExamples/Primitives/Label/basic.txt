@@ -1,0 +1,6 @@
+@using BlazorBlueprint.Primitives.Label
+
+<BbLabel For="basic-input" class="text-sm font-medium">
+    Basic label
+</BbLabel>
+<input type="text" id="basic-input" placeholder="Click the label to focus" />

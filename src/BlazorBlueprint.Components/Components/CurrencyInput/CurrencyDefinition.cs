@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.CurrencyInput;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the properties of a currency.

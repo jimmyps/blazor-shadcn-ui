@@ -1,0 +1,19 @@
+@using BlazorBlueprint.Primitives.Tabs
+
+<BbTabs DefaultValue="tab1">
+    <BbTabsList class="flex gap-1 p-1 bg-muted rounded-md w-fit">
+        <BbTabsTrigger Value="tab1" class="...">Tab 1</BbTabsTrigger>
+        <BbTabsTrigger Value="tab2" class="...">Tab 2</BbTabsTrigger>
+        <BbTabsTrigger Value="tab3" class="...">Tab 3</BbTabsTrigger>
+    </BbTabsList>
+
+    <BbTabsContent Value="tab1" class="...">
+        Tab 1 Content
+    </BbTabsContent>
+    <BbTabsContent Value="tab2" class="...">
+        Tab 2 Content
+    </BbTabsContent>
+    <BbTabsContent Value="tab3" class="...">
+        Tab 3 Content
+    </BbTabsContent>
+</BbTabs>

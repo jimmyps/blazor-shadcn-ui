@@ -1,0 +1,16 @@
+<BbSheet Side="SheetSide.Bottom">
+    <BbSheetTrigger>
+        <BbButton Variant="ButtonVariant.Outline">Open from Bottom</BbButton>
+    </BbSheetTrigger>
+    <BbSheetContent>
+        <BbSheetHeader>
+            <BbSheetTitle>Cookie Settings</BbSheetTitle>
+            <BbSheetDescription>
+                Manage your cookie preferences.
+            </BbSheetDescription>
+        </BbSheetHeader>
+        <BbSheetFooter>
+            <BbButton>Save Preferences</BbButton>
+        </BbSheetFooter>
+    </BbSheetContent>
+</BbSheet>

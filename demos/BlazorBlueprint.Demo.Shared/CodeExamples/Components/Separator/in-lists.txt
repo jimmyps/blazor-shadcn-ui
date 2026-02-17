@@ -1,0 +1,9 @@
+<div class="border rounded-lg">
+    <div class="p-4">
+        <h3>Profile Settings</h3>
+    </div>
+    <BbSeparator />
+    <div class="p-4">
+        <h3>Preferences</h3>
+    </div>
+</div>

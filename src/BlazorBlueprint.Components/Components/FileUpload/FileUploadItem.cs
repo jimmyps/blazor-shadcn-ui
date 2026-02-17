@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace BlazorBlueprint.Components.FileUpload;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Represents a file in the upload queue.

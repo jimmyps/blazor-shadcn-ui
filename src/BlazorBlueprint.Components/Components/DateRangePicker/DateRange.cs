@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.DateRangePicker;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Represents a date range with start and end dates.

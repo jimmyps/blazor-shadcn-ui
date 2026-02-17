@@ -1,0 +1,1 @@
+<BbTimePicker @bind-Value="_timeStep15" MinuteStep="15" />

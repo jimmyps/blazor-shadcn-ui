@@ -1,0 +1,2 @@
+<BbMarkdownEditor Value="This editor is disabled and cannot be edited."
+                Disabled="true" />

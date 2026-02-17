@@ -1,0 +1,4 @@
+<BbLabel For="description-editor">Description</BbLabel>
+<BbMarkdownEditor @bind-Value="labeledValue"
+                Id="description-editor"
+                Placeholder="Enter a description..." />

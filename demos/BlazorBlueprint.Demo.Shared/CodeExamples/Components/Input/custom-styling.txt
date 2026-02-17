@@ -1,0 +1,2 @@
+<BbInput Class="border-blue-500 focus-visible:ring-blue-500" />
+<BbInput Class="rounded-full" />

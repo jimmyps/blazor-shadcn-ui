@@ -1,6 +1,4 @@
 @page "/components/avatar"
-@using BlazorBlueprint.Components.Avatar
-
 <PageTitle>Avatar Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -25,16 +23,18 @@
             </p>
         </div>
         <div class="flex gap-4">
-            <Avatar>
-                <AvatarImage Source="_content/BlazorBlueprint.Demo.Shared/images/mathew-icon.png" Alt="Mathew" />
-                <AvatarFallback>SH</AvatarFallback>
-            </Avatar>
+            <BbAvatar>
+                <BbAvatarImage Source="Components/_content/BlazorBlueprint.Demo.Shared/images/mathew-icon.png" Alt="Mathew" />
+                <BbAvatarFallback>SH</BbAvatarFallback>
+            </BbAvatar>
 
-            <Avatar>
-                <AvatarImage Source="https://unavailable-image.jpg" Alt="User" />
-                <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
+            <BbAvatar>
+                <BbAvatarImage Source="Components/https://unavailable-image.jpg" Alt="User" />
+                <BbAvatarFallback>JD</BbAvatarFallback>
+            </BbAvatar>
         </div>
+
+        <CodeBlock Source="Components/Avatar/basic.txt" />
     </div>
 
     <!-- Size Variants -->
@@ -47,33 +47,35 @@
         </div>
         <div class="flex items-center gap-6">
             <div class="flex flex-col items-center gap-2">
-                <Avatar Size="AvatarSize.Small">
-                    <AvatarFallback>XS</AvatarFallback>
-                </Avatar>
+                <BbAvatar Size="AvatarSize.Small">
+                    <BbAvatarFallback>XS</BbAvatarFallback>
+                </BbAvatar>
                 <span class="text-xs text-muted-foreground">Small</span>
             </div>
 
             <div class="flex flex-col items-center gap-2">
-                <Avatar Size="AvatarSize.Default">
-                    <AvatarFallback>MD</AvatarFallback>
-                </Avatar>
+                <BbAvatar Size="AvatarSize.Default">
+                    <BbAvatarFallback>MD</BbAvatarFallback>
+                </BbAvatar>
                 <span class="text-xs text-muted-foreground">Default</span>
             </div>
 
             <div class="flex flex-col items-center gap-2">
-                <Avatar Size="AvatarSize.Large">
-                    <AvatarFallback>LG</AvatarFallback>
-                </Avatar>
+                <BbAvatar Size="AvatarSize.Large">
+                    <BbAvatarFallback>LG</BbAvatarFallback>
+                </BbAvatar>
                 <span class="text-xs text-muted-foreground">Large</span>
             </div>
 
             <div class="flex flex-col items-center gap-2">
-                <Avatar Size="AvatarSize.ExtraLarge">
-                    <AvatarFallback>XL</AvatarFallback>
-                </Avatar>
+                <BbAvatar Size="AvatarSize.ExtraLarge">
+                    <BbAvatarFallback>XL</BbAvatarFallback>
+                </BbAvatar>
                 <span class="text-xs text-muted-foreground">Extra Large</span>
             </div>
         </div>
+
+        <CodeBlock Source="Components/Avatar/sizes.txt" />
     </div>
 
     <!-- With Images -->
@@ -85,21 +87,23 @@
             </p>
         </div>
         <div class="flex gap-4">
-            <Avatar Size="AvatarSize.Large">
-                <AvatarImage Source="https://github.com/vercel.png" Alt="Vercel" />
-                <AvatarFallback>VC</AvatarFallback>
-            </Avatar>
+            <BbAvatar Size="AvatarSize.Large">
+                <BbAvatarImage Source="Components/https://github.com/vercel.png" Alt="Vercel" />
+                <BbAvatarFallback>VC</BbAvatarFallback>
+            </BbAvatar>
 
-            <Avatar Size="AvatarSize.Large">
-                <AvatarImage Source="https://github.com/microsoft.png" Alt="Microsoft" />
-                <AvatarFallback>MS</AvatarFallback>
-            </Avatar>
+            <BbAvatar Size="AvatarSize.Large">
+                <BbAvatarImage Source="Components/https://github.com/microsoft.png" Alt="Microsoft" />
+                <BbAvatarFallback>MS</BbAvatarFallback>
+            </BbAvatar>
 
-            <Avatar Size="AvatarSize.Large">
-                <AvatarImage Source="https://github.com/google.png" Alt="Google" />
-                <AvatarFallback>GG</AvatarFallback>
-            </Avatar>
+            <BbAvatar Size="AvatarSize.Large">
+                <BbAvatarImage Source="Components/https://github.com/google.png" Alt="Google" />
+                <BbAvatarFallback>GG</BbAvatarFallback>
+            </BbAvatar>
         </div>
+
+        <CodeBlock Source="Components/Avatar/with-images.txt" />
     </div>
 
     <!-- With Icons -->
@@ -111,24 +115,26 @@
             </p>
         </div>
         <div class="flex gap-4">
-            <Avatar>
-                <AvatarFallback>
+            <BbAvatar>
+                <BbAvatarFallback>
                     <LucideIcon Name="user" Size="20" />
-                </AvatarFallback>
-            </Avatar>
+                </BbAvatarFallback>
+            </BbAvatar>
 
-            <Avatar Size="AvatarSize.Large">
-                <AvatarFallback>
+            <BbAvatar Size="AvatarSize.Large">
+                <BbAvatarFallback>
                     <LucideIcon Name="circle-user" Size="24" />
-                </AvatarFallback>
-            </Avatar>
+                </BbAvatarFallback>
+            </BbAvatar>
 
-            <Avatar Size="AvatarSize.ExtraLarge">
-                <AvatarFallback>
+            <BbAvatar Size="AvatarSize.ExtraLarge">
+                <BbAvatarFallback>
                     <LucideIcon Name="users" Size="32" />
-                </AvatarFallback>
-            </Avatar>
+                </BbAvatarFallback>
+            </BbAvatar>
         </div>
+
+        <CodeBlock Source="Components/Avatar/with-icons.txt" />
     </div>
 
     <!-- User List Example -->
@@ -141,9 +147,9 @@
         </div>
         <div class="border rounded-lg divide-y">
             <div class="flex items-center gap-4 p-4 hover:bg-accent transition-colors">
-                <Avatar>
-                    <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
+                <BbAvatar>
+                    <BbAvatarFallback>JD</BbAvatarFallback>
+                </BbAvatar>
                 <div class="flex-1">
                     <p class="font-medium">John Doe</p>
                     <p class="text-sm text-muted-foreground">john.doe@example.com</p>
@@ -151,9 +157,9 @@
             </div>
 
             <div class="flex items-center gap-4 p-4 hover:bg-accent transition-colors">
-                <Avatar>
-                    <AvatarFallback>AS</AvatarFallback>
-                </Avatar>
+                <BbAvatar>
+                    <BbAvatarFallback>AS</BbAvatarFallback>
+                </BbAvatar>
                 <div class="flex-1">
                     <p class="font-medium">Alice Smith</p>
                     <p class="text-sm text-muted-foreground">alice.smith@example.com</p>
@@ -161,15 +167,17 @@
             </div>
 
             <div class="flex items-center gap-4 p-4 hover:bg-accent transition-colors">
-                <Avatar>
-                    <AvatarFallback>BJ</AvatarFallback>
-                </Avatar>
+                <BbAvatar>
+                    <BbAvatarFallback>BJ</BbAvatarFallback>
+                </BbAvatar>
                 <div class="flex-1">
                     <p class="font-medium">Bob Johnson</p>
                     <p class="text-sm text-muted-foreground">bob.johnson@example.com</p>
                 </div>
             </div>
         </div>
+
+        <CodeBlock Source="Components/Avatar/user-list.txt" />
     </div>
 
     <!-- Avatar Group -->
@@ -177,26 +185,42 @@
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Avatar Group</h2>
             <p class="text-sm text-muted-foreground">
-                Stack avatars to show multiple users or team members compactly.
+                Use <code class="text-xs bg-muted px-1 py-0.5 rounded">AvatarGroup</code> to stack avatars with overlapping layout and automatic ring styling.
             </p>
         </div>
-        <div class="flex -space-x-4">
-            <Avatar Class="border-2 border-background">
-                <AvatarFallback>AB</AvatarFallback>
-            </Avatar>
-            <Avatar Class="border-2 border-background">
-                <AvatarFallback>CD</AvatarFallback>
-            </Avatar>
-            <Avatar Class="border-2 border-background">
-                <AvatarFallback>EF</AvatarFallback>
-            </Avatar>
-            <Avatar Class="border-2 border-background">
-                <AvatarFallback>GH</AvatarFallback>
-            </Avatar>
-            <Avatar Class="border-2 border-background">
-                <AvatarFallback Class="bg-primary text-primary-foreground">+5</AvatarFallback>
-            </Avatar>
-        </div>
+        <BbAvatarGroup>
+            <BbAvatar>
+                <BbAvatarFallback>AB</BbAvatarFallback>
+            </BbAvatar>
+            <BbAvatar>
+                <BbAvatarFallback>CD</BbAvatarFallback>
+            </BbAvatar>
+            <BbAvatar>
+                <BbAvatarFallback>EF</BbAvatarFallback>
+            </BbAvatar>
+            <BbAvatar>
+                <BbAvatarFallback>GH</BbAvatarFallback>
+            </BbAvatar>
+            <BbAvatar>
+                <BbAvatarFallback Class="bg-primary text-primary-foreground">+5</BbAvatarFallback>
+            </BbAvatar>
+        </BbAvatarGroup>
+        <BbAvatarGroup>
+            <BbAvatar Size="AvatarSize.Large">
+                <BbAvatarImage Source="Components/https://github.com/vercel.png" Alt="Vercel" />
+                <BbAvatarFallback>VC</BbAvatarFallback>
+            </BbAvatar>
+            <BbAvatar Size="AvatarSize.Large">
+                <BbAvatarImage Source="Components/https://github.com/microsoft.png" Alt="Microsoft" />
+                <BbAvatarFallback>MS</BbAvatarFallback>
+            </BbAvatar>
+            <BbAvatar Size="AvatarSize.Large">
+                <BbAvatarImage Source="Components/https://github.com/google.png" Alt="Google" />
+                <BbAvatarFallback>GG</BbAvatarFallback>
+            </BbAvatar>
+        </BbAvatarGroup>
+
+        <CodeBlock Source="Components/Avatar/group.txt" />
     </div>
 
     <!-- Custom Styles -->
@@ -208,181 +232,129 @@
             </p>
         </div>
         <div class="flex gap-4">
-            <Avatar Size="AvatarSize.Large">
-                <AvatarFallback Class="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+            <BbAvatar Size="AvatarSize.Large">
+                <BbAvatarFallback Class="bg-gradient-to-br from-purple-500 to-pink-500 text-white">
                     AB
-                </AvatarFallback>
-            </Avatar>
+                </BbAvatarFallback>
+            </BbAvatar>
 
-            <Avatar Size="AvatarSize.Large">
-                <AvatarFallback Class="bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
+            <BbAvatar Size="AvatarSize.Large">
+                <BbAvatarFallback Class="bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
                     CD
-                </AvatarFallback>
-            </Avatar>
+                </BbAvatarFallback>
+            </BbAvatar>
 
-            <Avatar Size="AvatarSize.Large">
-                <AvatarFallback Class="bg-gradient-to-br from-green-500 to-emerald-500 text-white">
+            <BbAvatar Size="AvatarSize.Large">
+                <BbAvatarFallback Class="bg-gradient-to-br from-green-500 to-emerald-500 text-white">
                     EF
-                </AvatarFallback>
-            </Avatar>
+                </BbAvatarFallback>
+            </BbAvatar>
 
-            <Avatar Size="AvatarSize.Large">
-                <AvatarFallback Class="bg-gradient-to-br from-orange-500 to-red-500 text-white">
+            <BbAvatar Size="AvatarSize.Large">
+                <BbAvatarFallback Class="bg-gradient-to-br from-orange-500 to-red-500 text-white">
                     GH
-                </AvatarFallback>
-            </Avatar>
+                </BbAvatarFallback>
+            </BbAvatar>
         </div>
+
+        <CodeBlock Source="Components/Avatar/custom-styles.txt" />
     </div>
 
-    <!-- With Status Indicator -->
+    <!-- Dot Indicator -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">With Status Indicator</h2>
+            <h2 class="text-2xl font-semibold">Dot Indicator</h2>
             <p class="text-sm text-muted-foreground">
-                Add status indicators to show online/offline/busy states.
+                Use <code class="text-xs bg-muted px-1 py-0.5 rounded">ShowDot</code> and <code class="text-xs bg-muted px-1 py-0.5 rounded">DotClass</code> to add a colored dot indicator.
             </p>
         </div>
         <div class="flex gap-6">
-            <div class="relative inline-block">
-                <Avatar Size="AvatarSize.Large">
-                    <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-                <span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 ring-2 ring-background"></span>
-            </div>
+            <BbAvatar Size="AvatarSize.Large" ShowDot DotClass="bg-green-500">
+                <BbAvatarFallback>JD</BbAvatarFallback>
+            </BbAvatar>
 
-            <div class="relative inline-block">
-                <Avatar Size="AvatarSize.Large">
-                    <AvatarFallback>AS</AvatarFallback>
-                </Avatar>
-                <span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-yellow-500 ring-2 ring-background"></span>
-            </div>
+            <BbAvatar Size="AvatarSize.Large" ShowDot DotClass="bg-yellow-500">
+                <BbAvatarFallback>AS</BbAvatarFallback>
+            </BbAvatar>
 
-            <div class="relative inline-block">
-                <Avatar Size="AvatarSize.Large">
-                    <AvatarFallback>BJ</AvatarFallback>
-                </Avatar>
-                <span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-red-500 ring-2 ring-background"></span>
-            </div>
+            <BbAvatar Size="AvatarSize.Large" ShowDot DotClass="bg-red-500">
+                <BbAvatarFallback>BJ</BbAvatarFallback>
+            </BbAvatar>
 
-            <div class="relative inline-block">
-                <Avatar Size="AvatarSize.Large">
-                    <AvatarFallback>MK</AvatarFallback>
-                </Avatar>
-                <span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-gray-400 ring-2 ring-background"></span>
-            </div>
+            <BbAvatar Size="AvatarSize.Large" ShowDot DotClass="bg-gray-400">
+                <BbAvatarFallback>MK</BbAvatarFallback>
+            </BbAvatar>
         </div>
+        <div class="flex items-center gap-6">
+            <BbAvatar Size="AvatarSize.Small" ShowDot DotClass="bg-green-500">
+                <BbAvatarFallback>SM</BbAvatarFallback>
+            </BbAvatar>
+            <BbAvatar ShowDot DotClass="bg-green-500">
+                <BbAvatarFallback>MD</BbAvatarFallback>
+            </BbAvatar>
+            <BbAvatar Size="AvatarSize.Large" ShowDot DotClass="bg-green-500">
+                <BbAvatarFallback>LG</BbAvatarFallback>
+            </BbAvatar>
+            <BbAvatar Size="AvatarSize.ExtraLarge" ShowDot DotClass="bg-green-500">
+                <BbAvatarFallback>XL</BbAvatarFallback>
+            </BbAvatar>
+        </div>
+
+        <CodeBlock Source="Components/Avatar/dot-indicator.txt" />
     </div>
 
-    <!-- Accessibility Notes -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Accessibility Notes</h2>
-            <p class="text-sm text-muted-foreground">
-                Best practices for accessible avatars.
-            </p>
-        </div>
-        <div class="border rounded-lg p-6 space-y-3 bg-muted/50">
-            <p class="text-sm">
-                ✓ <strong>Alt text:</strong> Always provide descriptive alt text for AvatarImage that identifies the person or entity.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Fallback content:</strong> Use meaningful initials or icons that help identify the user when images fail.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Non-interactive:</strong> Avatars are purely presentational. If clickable, wrap in a button with proper ARIA label.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Status indicators:</strong> If using status dots, consider adding aria-label to convey state to screen readers.
-            </p>
-        </div>
-    </div>
+    <!-- Accessibility -->
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>
+                Always provide descriptive alt text for AvatarImage that identifies the person or entity.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Use meaningful initials or icons that help identify the user when images fail.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Avatars are purely presentational. If clickable, wrap in a button with proper ARIA label.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                If using status dots, consider adding aria-label to convey state to screen readers.
+            </AccessibilityItem>
+        </AriaAttributes>
+    </AccessibilityList>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-6">
-            <!-- Avatar -->
-            <div>
-                <h3 class="text-lg font-semibold mb-3">Avatar</h3>
-                <div class="space-y-3">
-                    <div>
-                        <p class="font-mono text-sm font-medium mb-1">Size</p>
-                        <p class="text-sm text-muted-foreground">
-                            Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">AvatarSize</code> |
-                            Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">AvatarSize.Default</code>
-                        </p>
-                        <p class="text-sm text-muted-foreground mt-1">
-                            Controls the dimensions of the avatar. Options: Small (32px), Default (40px), Large (48px), ExtraLarge (64px).
-                        </p>
-                    </div>
-                    <Separator />
-                    <div>
-                        <p class="font-mono text-sm font-medium mb-1">Class</p>
-                        <p class="text-sm text-muted-foreground">
-                            Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                        </p>
-                        <p class="text-sm text-muted-foreground mt-1">
-                            Additional CSS classes for the avatar container.
-                        </p>
-                    </div>
-                </div>
-            </div>
 
-            <Separator />
+        <div class="space-y-4">
+            <ApiReference ComponentName="Avatar">
+                <ApiParameter Name="Size" Type="AvatarSize" Default="AvatarSize.Default">
+                    Controls the dimensions of the avatar. Options: Small (32px), Default (40px), Large (48px), ExtraLarge (64px).
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes for the avatar container.
+                </ApiParameter>
+            </ApiReference>
 
-            <!-- AvatarImage -->
-            <div>
-                <h3 class="text-lg font-semibold mb-3">AvatarImage</h3>
-                <div class="space-y-3">
-                    <div>
-                        <p class="font-mono text-sm font-medium mb-1">Source</p>
-                        <p class="text-sm text-muted-foreground">
-                            Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                        </p>
-                        <p class="text-sm text-muted-foreground mt-1">
-                            URL of the image to display. If loading fails, AvatarFallback will be shown.
-                        </p>
-                    </div>
-                    <Separator />
-                    <div>
-                        <p class="font-mono text-sm font-medium mb-1">Alt</p>
-                        <p class="text-sm text-muted-foreground">
-                            Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                        </p>
-                        <p class="text-sm text-muted-foreground mt-1">
-                            Alternative text for the image (required for accessibility).
-                        </p>
-                    </div>
-                    <Separator />
-                    <div>
-                        <p class="font-mono text-sm font-medium mb-1">Class</p>
-                        <p class="text-sm text-muted-foreground">
-                            Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                        </p>
-                        <p class="text-sm text-muted-foreground mt-1">
-                            Additional CSS classes for the image element.
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <ApiReference ComponentName="AvatarImage">
+                <ApiParameter Name="Source" Type="string?">
+                    URL of the image to display. If loading fails, AvatarFallback will be shown.
+                </ApiParameter>
+                <ApiParameter Name="Alt" Type="string?">
+                    Alternative text for the image (required for accessibility).
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes for the image element.
+                </ApiParameter>
+            </ApiReference>
 
-            <Separator />
-
-            <!-- AvatarFallback -->
-            <div>
-                <h3 class="text-lg font-semibold mb-3">AvatarFallback</h3>
-                <div>
-                    <p class="font-mono text-sm font-medium mb-1">Class</p>
-                    <p class="text-sm text-muted-foreground">
-                        Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                    </p>
-                    <p class="text-sm text-muted-foreground mt-1">
-                        Additional CSS classes for the fallback container. Useful for custom background colors.
-                    </p>
-                </div>
-            </div>
+            <ApiReference ComponentName="AvatarFallback">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes for the fallback container. Useful for custom background colors.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>

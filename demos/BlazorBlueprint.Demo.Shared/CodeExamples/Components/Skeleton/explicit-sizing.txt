@@ -1,0 +1,9 @@
+<!-- Fixed pixel sizes -->
+<BbSkeleton Width="250px" Height="20px" />
+
+<!-- Percentage width -->
+<BbSkeleton Width="50%" Height="100px" />
+
+<!-- Circular with explicit size -->
+<BbSkeleton Shape="SkeletonShape.Circular"
+          Width="64px" Height="64px" />

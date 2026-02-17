@@ -1,0 +1,3 @@
+<BbButton Disabled="true">Default Disabled</BbButton>
+<BbButton Variant="ButtonVariant.Destructive" Disabled="true">Destructive Disabled</BbButton>
+<BbButton Variant="ButtonVariant.Outline" Disabled="true">Outline Disabled</BbButton>

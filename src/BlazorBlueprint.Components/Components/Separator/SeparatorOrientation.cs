@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Separator;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the orientation of a Separator component.

@@ -1,0 +1,16 @@
+<BbDialog>
+    <BbDialogTrigger>
+        <BbButton Variant="ButtonVariant.Destructive">Delete Account</BbButton>
+    </BbDialogTrigger>
+    <BbDialogContent>
+        <BbDialogHeader>
+            <BbDialogTitle>Delete Account</BbDialogTitle>
+        </BbDialogHeader>
+        <BbDialogFooter>
+            <BbDialogClose>
+                <BbButton Variant="ButtonVariant.Outline">Cancel</BbButton>
+            </BbDialogClose>
+            <BbButton Variant="ButtonVariant.Destructive">Delete</BbButton>
+        </BbDialogFooter>
+    </BbDialogContent>
+</BbDialog>

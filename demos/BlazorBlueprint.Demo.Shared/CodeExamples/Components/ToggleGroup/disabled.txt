@@ -1,0 +1,5 @@
+<BbToggleGroup TValue="string" Disabled="true">...</BbToggleGroup>
+
+<BbToggleGroup TValue="string">
+    <BbToggleGroupItem TValue="string" Value="@("center")" Disabled="true">...</BbToggleGroupItem>
+</BbToggleGroup>

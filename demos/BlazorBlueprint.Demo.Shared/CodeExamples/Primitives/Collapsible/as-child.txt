@@ -1,0 +1,23 @@
+@using BlazorBlueprint.Primitives.Collapsible
+
+<!-- Without AsChild -->
+<BbCollapsible>
+    <BbCollapsibleTrigger class="h-9 px-3 py-2 border rounded text-sm cursor-pointer">
+        Click to toggle
+    </BbCollapsibleTrigger>
+    <BbCollapsibleContent class="mt-2">
+        Content controlled by the primitive.
+    </BbCollapsibleContent>
+</BbCollapsible>
+
+<!-- With AsChild -->
+<BbCollapsible>
+    <BbCollapsibleTrigger AsChild>
+        <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small">
+            Click to toggle
+        </BbButton>
+    </BbCollapsibleTrigger>
+    <BbCollapsibleContent class="mt-2">
+        Button handles the trigger behavior.
+    </BbCollapsibleContent>
+</BbCollapsible>

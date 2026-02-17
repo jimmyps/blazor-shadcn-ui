@@ -1,0 +1,8 @@
+<BbAccordion Type="AccordionType.Single" Collapsible="true">
+    <BbAccordionItem Value="faq-1">
+        <BbAccordionTrigger>What payment methods do you accept?</BbAccordionTrigger>
+        <BbAccordionContent>
+            We accept all major credit cards, PayPal, and bank transfers.
+        </BbAccordionContent>
+    </BbAccordionItem>
+</BbAccordion>

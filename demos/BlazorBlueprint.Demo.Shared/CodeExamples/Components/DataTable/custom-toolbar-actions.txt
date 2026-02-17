@@ -1,0 +1,10 @@
+<BbDataTable TData="Person" Data="@people">
+    <ToolbarActions>
+        <BbButton Variant="ButtonVariant.Default" Size="ButtonSize.Small" OnClick="@AddNewPerson">
+            Add Person
+        </BbButton>
+    </ToolbarActions>
+    <Columns>
+        <BbDataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+    </Columns>
+</BbDataTable>

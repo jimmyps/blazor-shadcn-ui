@@ -1,0 +1,21 @@
+<BbCombobox TValue="Status?"
+         Options="statusOptions"
+         @bind-Value="selectedStatus"
+         Placeholder="Select status..."
+         SearchPlaceholder="Search status..."
+         EmptyMessage="No status found."
+         PopoverWidth="w-[200px]" />
+
+@code {
+    private Status? selectedStatus;
+
+    public enum Status { Active, Inactive, Pending, Archived }
+
+    private readonly SelectOption<Status?>[] statusOptions =
+    [
+        new(Status.Active, "Active"),
+        new(Status.Inactive, "Inactive"),
+        new(Status.Pending, "Pending"),
+        new(Status.Archived, "Archived")
+    ];
+}

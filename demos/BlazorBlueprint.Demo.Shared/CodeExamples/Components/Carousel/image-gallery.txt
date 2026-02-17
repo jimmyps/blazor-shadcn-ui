@@ -1,0 +1,12 @@
+<BbCarousel Class="w-full" Loop="true">
+    <BbCarouselContent>
+        <BbCarouselItem>
+            <BbAspectRatio Ratio="16 / 9">
+                <img src="..." alt="" />
+            </BbAspectRatio>
+        </BbCarouselItem>
+        <!-- More slides... -->
+    </BbCarouselContent>
+    <BbCarouselPrevious />
+    <BbCarouselNext />
+</BbCarousel>

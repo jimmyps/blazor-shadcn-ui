@@ -1,0 +1,7 @@
+<div class="flex items-center justify-between">
+    <div>
+        <div>Email Notifications</div>
+        <div>Receive email about your account activity</div>
+    </div>
+    <BbSwitch @bind-Checked="cardNotifications" />
+</div>

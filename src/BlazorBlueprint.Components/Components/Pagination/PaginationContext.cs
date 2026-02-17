@@ -1,6 +1,7 @@
+using BlazorBlueprint.Primitives;
 using BlazorBlueprint.Primitives.Table;
 
-namespace BlazorBlueprint.Components.Pagination;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Provides context state for Pagination component and its sub-components.

@@ -1,0 +1,13 @@
+<BbSplitButton Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="HandleSave">
+    <ChildContent>Small</ChildContent>
+    <DropdownContent>
+        <BbSplitButtonItem>Option 1</BbSplitButtonItem>
+    </DropdownContent>
+</BbSplitButton>
+
+<BbSplitButton Size="ButtonSize.Large" Variant="ButtonVariant.Outline" OnClick="HandleSave">
+    <ChildContent>Large</ChildContent>
+    <DropdownContent>
+        <BbSplitButtonItem>Option 1</BbSplitButtonItem>
+    </DropdownContent>
+</BbSplitButton>

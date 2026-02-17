@@ -1,0 +1,1 @@
+<BbInputField TValue="int" @bind-Value="_intValue" Placeholder="Enter a number" />

@@ -1,0 +1,28 @@
+private string? selectedPreselectedUserId = "u002"; // Pre-selected
+
+private readonly SelectOption<string>[] userOptions =
+[
+    new("u001", "Alice Martin"),
+    new("u002", "Bob Chen"),
+    new("u003", "Carol Davis"),
+    new("u004", "Dan Wilson")
+];
+
+<BbSelect TValue="string"
+        @bind-Value="selectedUserId"
+        Options="@userOptions"
+        Placeholder="Select a team member"
+        Class="w-[280px]" />
+
+private readonly SelectOption<Guid?>[] projectOptions =
+[
+    new(Project1Id, "Website Redesign"),
+    new(Project2Id, "Mobile App"),
+    new(Project3Id, "API Migration")
+];
+
+<BbSelect TValue="Guid?"
+        @bind-Value="selectedProjectId"
+        Options="@projectOptions"
+        Placeholder="Select a project"
+        Class="w-[280px]" />

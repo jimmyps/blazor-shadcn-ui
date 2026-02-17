@@ -26,7 +26,7 @@
         </div>
         <div class="space-y-3">
             <div class="flex items-center space-x-2">
-                <Switch @bind-Checked="basicChecked" Id="basic-switch" />
+                <BbSwitch @bind-Checked="basicChecked" Id="basic-switch" />
                 <label for="basic-switch" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Airplane Mode
                 </label>
@@ -35,6 +35,7 @@
                 Current state: @(basicChecked ? "On ✓" : "Off")
             </p>
         </div>
+        <CodeBlock Source="Components/Switch/basic.txt" />
     </div>
 
     <!-- Size Variants -->
@@ -47,24 +48,25 @@
         </div>
         <div class="space-y-3">
             <div class="flex items-center space-x-2">
-                <Switch @bind-Checked="smallChecked" Size="SwitchSize.Small" Id="small-switch" />
+                <BbSwitch @bind-Checked="smallChecked" Size="SwitchSize.Small" Id="small-switch" />
                 <label for="small-switch" class="text-sm font-medium leading-none">
                     Small switch
                 </label>
             </div>
             <div class="flex items-center space-x-2">
-                <Switch @bind-Checked="mediumChecked" Size="SwitchSize.Medium" Id="medium-switch" />
+                <BbSwitch @bind-Checked="mediumChecked" Size="SwitchSize.Medium" Id="medium-switch" />
                 <label for="medium-switch" class="text-sm font-medium leading-none">
                     Medium switch (default)
                 </label>
             </div>
             <div class="flex items-center space-x-2">
-                <Switch @bind-Checked="largeChecked" Size="SwitchSize.Large" Id="large-switch" />
+                <BbSwitch @bind-Checked="largeChecked" Size="SwitchSize.Large" Id="large-switch" />
                 <label for="large-switch" class="text-sm font-medium leading-none">
                     Large switch
                 </label>
             </div>
         </div>
+        <CodeBlock Source="Components/Switch/sizes.txt" />
     </div>
 
     <!-- Settings Example -->
@@ -77,19 +79,19 @@
         </div>
         <div class="space-y-3">
             <div class="flex items-center space-x-2">
-                <Switch @bind-Checked="notifications" Id="notifications" />
+                <BbSwitch @bind-Checked="notifications" Id="notifications" />
                 <label for="notifications" class="text-sm font-medium leading-none">
                     Enable notifications
                 </label>
             </div>
             <div class="flex items-center space-x-2">
-                <Switch @bind-Checked="autoSave" Id="auto-save" />
+                <BbSwitch @bind-Checked="autoSave" Id="auto-save" />
                 <label for="auto-save" class="text-sm font-medium leading-none">
                     Auto-save changes
                 </label>
             </div>
             <div class="flex items-center space-x-2">
-                <Switch @bind-Checked="analytics" Id="analytics" />
+                <BbSwitch @bind-Checked="analytics" Id="analytics" />
                 <label for="analytics" class="text-sm font-medium leading-none">
                     Send usage analytics
                 </label>
@@ -98,6 +100,7 @@
                 Active settings: @string.Join(", ", GetActiveSettings())
             </p>
         </div>
+        <CodeBlock Source="Components/Switch/settings-panel.txt" />
     </div>
 
     <!-- Disabled State -->
@@ -110,18 +113,19 @@
         </div>
         <div class="space-y-3">
             <div class="flex items-center space-x-2">
-                <Switch Disabled="true" Checked="false" Id="disabled-off" />
+                <BbSwitch Disabled="true" Checked="false" Id="disabled-off" />
                 <label for="disabled-off" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Disabled (off)
                 </label>
             </div>
             <div class="flex items-center space-x-2">
-                <Switch Disabled="true" Checked="true" Id="disabled-on" />
+                <BbSwitch Disabled="true" Checked="true" Id="disabled-on" />
                 <label for="disabled-on" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Disabled (on)
                 </label>
             </div>
         </div>
+        <CodeBlock Source="Components/Switch/disabled.txt" />
     </div>
 
     <!-- Form Validation -->
@@ -137,7 +141,7 @@
 
             <div class="space-y-3">
                 <div class="flex items-center space-x-2">
-                    <Switch @bind-Checked="formModel.AcceptTerms" Id="terms" />
+                    <BbSwitch @bind-Checked="formModel.AcceptTerms" Id="terms" />
                     <label for="terms" class="text-sm font-medium leading-none">
                         I accept the terms and conditions
                     </label>
@@ -147,7 +151,7 @@
 
             <div class="space-y-3">
                 <div class="flex items-center space-x-2">
-                    <Switch @bind-Checked="formModel.EnableMarketing" Id="marketing" />
+                    <BbSwitch @bind-Checked="formModel.EnableMarketing" Id="marketing" />
                     <label for="marketing" class="text-sm font-medium leading-none">
                         Enable marketing emails (optional)
                     </label>
@@ -155,8 +159,8 @@
             </div>
 
             <div class="flex gap-4">
-                <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</Button>
-                <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</Button>
+                <BbButton Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</BbButton>
+                <BbButton Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</BbButton>
             </div>
 
             @if (!string.IsNullOrEmpty(formMessage))
@@ -166,6 +170,7 @@
                 </div>
             }
         </EditForm>
+        <CodeBlock Source="Components/Switch/form-validation.txt" />
     </div>
 
     <!-- Interactive Example -->
@@ -178,7 +183,7 @@
         </div>
         <div class="space-y-3">
             <div class="flex items-center space-x-2">
-                <Switch @bind-Checked="interactiveChecked" Id="interactive" />
+                <BbSwitch @bind-Checked="interactiveChecked" Id="interactive" />
                 <label for="interactive" class="text-sm font-medium leading-none">
                     Enable dark mode
                 </label>
@@ -196,6 +201,7 @@
                 </div>
             }
         </div>
+        <CodeBlock Source="Components/Switch/interactive.txt" />
     </div>
 
     <!-- Card Layout -->
@@ -216,7 +222,7 @@
                         Receive email about your account activity
                     </div>
                 </div>
-                <Switch @bind-Checked="cardNotifications" Id="card-notifications" />
+                <BbSwitch @bind-Checked="cardNotifications" Id="card-notifications" />
             </div>
             <div class="flex items-center justify-between rounded-lg border p-4">
                 <div class="space-y-0.5">
@@ -227,7 +233,7 @@
                         Receive emails about new products and features
                     </div>
                 </div>
-                <Switch @bind-Checked="cardMarketing" Id="card-marketing" />
+                <BbSwitch @bind-Checked="cardMarketing" Id="card-marketing" />
             </div>
             <div class="flex items-center justify-between rounded-lg border p-4">
                 <div class="space-y-0.5">
@@ -238,9 +244,62 @@
                         Receive notifications from social interactions
                     </div>
                 </div>
-                <Switch @bind-Checked="cardSocial" Id="card-social" />
+                <BbSwitch @bind-Checked="cardSocial" Id="card-social" />
             </div>
         </div>
+        <CodeBlock Source="Components/Switch/settings-cards.txt" />
+    </div>
+
+    <!-- Icon Thumb -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Icon Thumb</h2>
+            <p class="text-sm text-muted-foreground">
+                Render custom content inside the thumb using <code class="text-xs bg-muted px-1 py-0.5 rounded">ThumbContent</code>.
+                The context parameter provides the checked state for conditional rendering.
+            </p>
+        </div>
+        <div class="space-y-3">
+            <div class="flex items-center space-x-2">
+                <BbSwitch @bind-Checked="iconTheme" Size="SwitchSize.Large" Id="icon-theme"
+                        ThumbCheckedClass="bg-slate-800 text-white"
+                        ThumbUncheckedClass="bg-amber-400 text-amber-900">
+                    <ThumbContent>
+                        @if (context)
+                        {
+                            <LucideIcon Name="moon" Size="14" />
+                        }
+                        else
+                        {
+                            <LucideIcon Name="sun" Size="14" />
+                        }
+                    </ThumbContent>
+                </BbSwitch>
+                <label for="icon-theme" class="text-sm font-medium leading-none">
+                    @(iconTheme ? "Dark mode" : "Light mode")
+                </label>
+            </div>
+            <div class="flex items-center space-x-2">
+                <BbSwitch @bind-Checked="iconSound" Size="SwitchSize.Large" Id="icon-sound"
+                        ThumbCheckedClass="bg-primary text-primary-foreground"
+                        ThumbUncheckedClass="text-muted-foreground">
+                    <ThumbContent>
+                        @if (context)
+                        {
+                            <LucideIcon Name="volume-2" Size="14" />
+                        }
+                        else
+                        {
+                            <LucideIcon Name="volume-x" Size="14" />
+                        }
+                    </ThumbContent>
+                </BbSwitch>
+                <label for="icon-sound" class="text-sm font-medium leading-none">
+                    @(iconSound ? "Sound on" : "Sound off")
+                </label>
+            </div>
+        </div>
+        <CodeBlock Source="Components/Switch/icon-thumb.txt" />
     </div>
 
     <!-- Custom Styling -->
@@ -248,60 +307,113 @@
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Custom Styling</h2>
             <p class="text-sm text-muted-foreground">
-                Switches with additional CSS classes.
+                Customize the track and thumb independently. Use <code class="text-xs bg-muted px-1 py-0.5 rounded">ThumbCheckedClass</code>
+                and <code class="text-xs bg-muted px-1 py-0.5 rounded">ThumbUncheckedClass</code> for state-dependent thumb styles.
             </p>
         </div>
         <div class="space-y-3">
             <div class="flex items-center space-x-2">
-                <Switch @bind-Checked="styled1" Class="shadow-lg" Id="styled1" />
+                <BbSwitch @bind-Checked="styled1" Class="shadow-lg" Id="styled1" />
                 <label for="styled1" class="text-sm font-medium leading-none">
-                    With shadow
+                    Track with shadow
                 </label>
             </div>
             <div class="flex items-center space-x-2">
-                <Switch @bind-Checked="styled2" Class="ring-2 ring-offset-2" Id="styled2" />
+                <BbSwitch @bind-Checked="styled2" ThumbClass="bg-primary" Id="styled2" />
                 <label for="styled2" class="text-sm font-medium leading-none">
-                    With ring
+                    Colored thumb (always)
+                </label>
+            </div>
+            <div class="flex items-center space-x-2">
+                <BbSwitch @bind-Checked="styled3"
+                        ThumbCheckedClass="bg-green-500"
+                        ThumbUncheckedClass="bg-red-500"
+                        Id="styled3" />
+                <label for="styled3" class="text-sm font-medium leading-none">
+                    State-dependent thumb color
                 </label>
             </div>
         </div>
+        <CodeBlock Source="Components/Switch/custom-styling.txt" />
     </div>
 
     <!-- Accessibility Notes -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Accessibility</h2>
-            <p class="text-sm text-muted-foreground">
-                Keyboard navigation and screen reader support.
-            </p>
-        </div>
-        <div class="space-y-2 text-sm">
-            <p>✓ Tab key focuses switches in sequence</p>
-            <p>✓ Space or Enter key toggles focused switch</p>
-            <p>✓ Disabled switches are not focusable (tabindex="-1")</p>
-            <p>✓ ARIA attributes set correctly (role="switch", aria-checked, aria-disabled)</p>
-            <p>✓ Focus ring appears on keyboard focus (focus-visible:ring-2)</p>
-            <p>✓ Color contrast meets WCAG 2.1 AA standards</p>
-            <p>✓ Semantic label association using htmlFor attribute</p>
-            <p>✓ Screen readers announce switch state correctly</p>
-        </div>
-    </div>
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>
+                Disabled switches are not focusable (tabindex="-1")
+            </AccessibilityItem>
+            <AccessibilityItem>
+                ARIA attributes set correctly (<code class="text-xs bg-muted px-1 py-0.5 rounded">role="switch"</code>, <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-checked</code>, <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-disabled</code>)
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Focus ring appears on keyboard focus (focus-visible:ring-2)
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Color contrast meets WCAG 2.1 AA standards
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Semantic label association using htmlFor attribute
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Screen readers announce switch state correctly
+            </AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Focus switches in sequence">
+                <BbKbd>Tab</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Toggle focused switch">
+                <BbKbd>Space</BbKbd> or <BbKbd>Enter</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
 
-    <!-- Browser Compatibility -->
-    <div class="space-y-4">
+    <!-- API Reference -->
+    <section class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Browser Compatibility</h2>
-            <p class="text-sm text-muted-foreground">
-                Tested and verified across modern browsers.
-            </p>
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="space-y-2 text-sm">
-            <p>✓ Chrome 120+ (compatible)</p>
-            <p>✓ Firefox 120+ (compatible)</p>
-            <p>✓ Edge 120+ (compatible)</p>
-            <p>✓ Safari 17+ (compatible)</p>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="Switch">
+                <ApiParameter Name="Checked" Type="bool" Default="false">
+                    Whether the switch is checked (on). Supports two-way binding with <code>@@bind-Checked</code>.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the switch is disabled. Prevents interaction and reduces opacity.
+                </ApiParameter>
+                <ApiParameter Name="Size" Type="SwitchSize" Default="Medium">
+                    Size variant. Options: Small, Medium, Large.
+                </ApiParameter>
+                <ApiParameter Name="Id" Type="string?" Default="null">
+                    HTML id attribute. Used for associating with a label element.
+                </ApiParameter>
+                <ApiParameter Name="AriaLabel" Type="string?" Default="null">
+                    Accessible name for the switch when no visible label is present.
+                </ApiParameter>
+                <ApiParameter Name="AriaDescribedBy" Type="string?" Default="null">
+                    ID of the element containing help text for screen readers.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the switch track element.
+                </ApiParameter>
+                <ApiParameter Name="ThumbClass" Type="string?" Default="null">
+                    Additional CSS classes for the switch thumb element.
+                </ApiParameter>
+                <ApiParameter Name="ThumbCheckedClass" Type="string?" Default="null">
+                    Additional CSS classes applied to the thumb when checked.
+                </ApiParameter>
+                <ApiParameter Name="ThumbUncheckedClass" Type="string?" Default="null">
+                    Additional CSS classes applied to the thumb when unchecked.
+                </ApiParameter>
+                <ApiParameter Name="ThumbContent" Type="RenderFragment&lt;bool&gt;?" Default="null">
+                    Custom content to render inside the thumb. The context parameter is the checked state.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {
@@ -339,9 +451,14 @@
     private bool cardMarketing = false;
     private bool cardSocial = true;
 
+    // Icon thumb
+    private bool iconTheme = false;
+    private bool iconSound = true;
+
     // Custom styling
     private bool styled1 = false;
     private bool styled2 = false;
+    private bool styled3 = false;
 
     // Form validation
     private FormModel formModel = new();

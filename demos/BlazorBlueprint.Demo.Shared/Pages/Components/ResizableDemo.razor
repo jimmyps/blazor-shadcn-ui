@@ -1,6 +1,4 @@
 @page "/components/resizable"
-@using BlazorBlueprint.Components.Resizable
-
 <PageTitle>Resizable Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -22,20 +20,21 @@
             </p>
         </div>
         <div class="h-[200px] border rounded-lg overflow-hidden">
-            <ResizablePanelGroup Direction="ResizableDirection.Horizontal">
-                <ResizablePanel DefaultSize="50">
+            <BbResizablePanelGroup Direction="ResizableDirection.Horizontal">
+                <BbResizablePanel DefaultSize="50">
                     <div class="flex h-full items-center justify-center p-6">
                         <span class="font-semibold">Panel One</span>
                     </div>
-                </ResizablePanel>
-                <ResizableHandle />
-                <ResizablePanel DefaultSize="50">
+                </BbResizablePanel>
+                <BbResizableHandle />
+                <BbResizablePanel DefaultSize="50">
                     <div class="flex h-full items-center justify-center p-6">
                         <span class="font-semibold">Panel Two</span>
                     </div>
-                </ResizablePanel>
-            </ResizablePanelGroup>
+                </BbResizablePanel>
+            </BbResizablePanelGroup>
         </div>
+        <CodeBlock Source="Components/Resizable/horizontal.txt" />
     </div>
 
     <!-- Vertical Layout -->
@@ -47,20 +46,21 @@
             </p>
         </div>
         <div class="h-[300px] border rounded-lg overflow-hidden">
-            <ResizablePanelGroup Direction="ResizableDirection.Vertical">
-                <ResizablePanel DefaultSize="30">
+            <BbResizablePanelGroup Direction="ResizableDirection.Vertical">
+                <BbResizablePanel DefaultSize="30">
                     <div class="flex h-full items-center justify-center p-6">
                         <span class="font-semibold">Header</span>
                     </div>
-                </ResizablePanel>
-                <ResizableHandle />
-                <ResizablePanel DefaultSize="70">
+                </BbResizablePanel>
+                <BbResizableHandle />
+                <BbResizablePanel DefaultSize="70">
                     <div class="flex h-full items-center justify-center p-6">
                         <span class="font-semibold">Content</span>
                     </div>
-                </ResizablePanel>
-            </ResizablePanelGroup>
+                </BbResizablePanel>
+            </BbResizablePanelGroup>
         </div>
+        <CodeBlock Source="Components/Resizable/vertical.txt" />
     </div>
 
     <!-- Without Handle Icon -->
@@ -72,20 +72,21 @@
             </p>
         </div>
         <div class="h-[200px] border rounded-lg overflow-hidden">
-            <ResizablePanelGroup Direction="ResizableDirection.Horizontal">
-                <ResizablePanel DefaultSize="50">
+            <BbResizablePanelGroup Direction="ResizableDirection.Horizontal">
+                <BbResizablePanel DefaultSize="50">
                     <div class="flex h-full items-center justify-center p-6 bg-muted/50">
                         <span class="font-semibold">Left</span>
                     </div>
-                </ResizablePanel>
-                <ResizableHandle WithHandle="false" />
-                <ResizablePanel DefaultSize="50">
+                </BbResizablePanel>
+                <BbResizableHandle WithHandle="false" />
+                <BbResizablePanel DefaultSize="50">
                     <div class="flex h-full items-center justify-center p-6">
                         <span class="font-semibold">Right</span>
                     </div>
-                </ResizablePanel>
-            </ResizablePanelGroup>
+                </BbResizablePanel>
+            </BbResizablePanelGroup>
         </div>
+        <CodeBlock Source="Components/Resizable/without-handle-icon.txt" />
     </div>
 
     <!-- Three Panels -->
@@ -97,26 +98,27 @@
             </p>
         </div>
         <div class="h-[200px] border rounded-lg overflow-hidden">
-            <ResizablePanelGroup Direction="ResizableDirection.Horizontal">
-                <ResizablePanel DefaultSize="25">
+            <BbResizablePanelGroup Direction="ResizableDirection.Horizontal">
+                <BbResizablePanel DefaultSize="25">
                     <div class="flex h-full items-center justify-center p-6 bg-muted/30">
                         <span class="font-semibold">Sidebar</span>
                     </div>
-                </ResizablePanel>
-                <ResizableHandle />
-                <ResizablePanel DefaultSize="50">
+                </BbResizablePanel>
+                <BbResizableHandle />
+                <BbResizablePanel DefaultSize="50">
                     <div class="flex h-full items-center justify-center p-6">
                         <span class="font-semibold">Main Content</span>
                     </div>
-                </ResizablePanel>
-                <ResizableHandle />
-                <ResizablePanel DefaultSize="25">
+                </BbResizablePanel>
+                <BbResizableHandle />
+                <BbResizablePanel DefaultSize="25">
                     <div class="flex h-full items-center justify-center p-6 bg-muted/30">
                         <span class="font-semibold">Details</span>
                     </div>
-                </ResizablePanel>
-            </ResizablePanelGroup>
+                </BbResizablePanel>
+            </BbResizablePanelGroup>
         </div>
+        <CodeBlock Source="Components/Resizable/three-panels.txt" />
     </div>
 
     <!-- Nested Layout -->
@@ -128,29 +130,98 @@
             </p>
         </div>
         <div class="h-[400px] border rounded-lg overflow-hidden">
-            <ResizablePanelGroup Direction="ResizableDirection.Horizontal">
-                <ResizablePanel DefaultSize="30">
+            <BbResizablePanelGroup Direction="ResizableDirection.Horizontal">
+                <BbResizablePanel DefaultSize="30">
                     <div class="flex h-full items-center justify-center p-6 bg-muted/30">
                         <span class="font-semibold">Sidebar</span>
                     </div>
-                </ResizablePanel>
-                <ResizableHandle />
-                <ResizablePanel DefaultSize="70">
-                    <ResizablePanelGroup Direction="ResizableDirection.Vertical">
-                        <ResizablePanel DefaultSize="60">
+                </BbResizablePanel>
+                <BbResizableHandle />
+                <BbResizablePanel DefaultSize="70">
+                    <BbResizablePanelGroup Direction="ResizableDirection.Vertical">
+                        <BbResizablePanel DefaultSize="60">
                             <div class="flex h-full items-center justify-center p-6">
                                 <span class="font-semibold">Main Content</span>
                             </div>
-                        </ResizablePanel>
-                        <ResizableHandle />
-                        <ResizablePanel DefaultSize="40">
+                        </BbResizablePanel>
+                        <BbResizableHandle />
+                        <BbResizablePanel DefaultSize="40">
                             <div class="flex h-full items-center justify-center p-6 bg-muted/20">
                                 <span class="font-semibold">Terminal / Output</span>
                             </div>
-                        </ResizablePanel>
-                    </ResizablePanelGroup>
-                </ResizablePanel>
-            </ResizablePanelGroup>
+                        </BbResizablePanel>
+                    </BbResizablePanelGroup>
+                </BbResizablePanel>
+            </BbResizablePanelGroup>
         </div>
+        <CodeBlock Source="Components/Resizable/nested.txt" />
     </div>
+
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Resize handles use <code>role="separator"</code> with <code>aria-orientation</code></AccessibilityItem>
+            <AccessibilityItem><code>aria-valuenow</code>, <code>aria-valuemin</code>, and <code>aria-valuemax</code> reflect panel sizes</AccessibilityItem>
+            <AccessibilityItem>Panels are properly labeled for assistive technologies</AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Focus resize handles">
+                <BbKbd>Tab</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Resize panels">
+                <BbKbd>Arrow Keys</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Resize panels by larger increment">
+                <BbKbd>Page Up</BbKbd> / <BbKbd>Page Down</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Collapse / expand panel">
+                <BbKbd>Home</BbKbd> / <BbKbd>End</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="ResizablePanelGroup">
+                <ApiParameter Name="Direction" Type="ResizableDirection" Default="Horizontal">
+                    The direction of the panels. Options: Horizontal, Vertical.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the panel group container.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="ResizablePanel">
+                <ApiParameter Name="DefaultSize" Type="double" Default="50">
+                    The default size as a percentage (0-100).
+                </ApiParameter>
+                <ApiParameter Name="MinSize" Type="double" Default="10">
+                    The minimum size as a percentage (0-100).
+                </ApiParameter>
+                <ApiParameter Name="MaxSize" Type="double" Default="100">
+                    The maximum size as a percentage (0-100).
+                </ApiParameter>
+                <ApiParameter Name="Collapsible" Type="bool" Default="false">
+                    Whether the panel can be collapsed.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the panel.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="ResizableHandle">
+                <ApiParameter Name="WithHandle" Type="bool" Default="true">
+                    Whether to show the grip handle icon.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the handle.
+                </ApiParameter>
+            </ApiReference>
+        </div>
+    </section>
 </div>

@@ -1,0 +1,21 @@
+<BbMultiSelect TValue="string"
+             Options="languages"
+             @bind-Values="selectedLanguages"
+             Placeholder="Select languages..."
+             SearchPlaceholder="Search languages..."
+             EmptyMessage="No language found."
+             PopoverWidth="w-[300px]" />
+
+@code {
+    private IEnumerable<string>? selectedLanguages;
+
+    private readonly SelectOption<string>[] languages =
+    [
+        new("csharp", "C#"),
+        new("typescript", "TypeScript"),
+        new("python", "Python")
+    ];
+
+    // Look up display texts using the GetTexts extension
+    string[] labels = languages.GetTexts(selectedLanguages).ToArray();
+}

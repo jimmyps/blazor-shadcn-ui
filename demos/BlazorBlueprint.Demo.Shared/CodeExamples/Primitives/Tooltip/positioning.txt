@@ -1,0 +1,9 @@
+<BbTooltip>
+    <BbTooltipTrigger>Top</BbTooltipTrigger>
+    <BbTooltipContent Side="@PopoverSide.Top">Top positioned</BbTooltipContent>
+</BbTooltip>
+
+<BbTooltip>
+    <BbTooltipTrigger>Bottom</BbTooltipTrigger>
+    <BbTooltipContent Side="@PopoverSide.Bottom">Bottom positioned</BbTooltipContent>
+</BbTooltip>

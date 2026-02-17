@@ -1,0 +1,13 @@
+<BbCard>
+    <BbCardHeader>
+        <BbCardTitle>Create Project</BbCardTitle>
+        <BbCardDescription>Deploy your new project in one-click.</BbCardDescription>
+    </BbCardHeader>
+    <BbCardContent>
+        <p>Your project will be created with default settings.</p>
+    </BbCardContent>
+    <BbCardFooter Class="gap-2">
+        <BbButton Variant="ButtonVariant.Outline">Cancel</BbButton>
+        <BbButton>Deploy</BbButton>
+    </BbCardFooter>
+</BbCard>

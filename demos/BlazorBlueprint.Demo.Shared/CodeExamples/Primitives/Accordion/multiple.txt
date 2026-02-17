@@ -1,0 +1,10 @@
+<BbAccordion Type="AccordionType.Multiple" DefaultValue="@(new HashSet<string> { "multiple-1" })">
+    <BbAccordionItem Value="multiple-1">
+        <BbAccordionTrigger>First Section</BbAccordionTrigger>
+        <BbAccordionContent>This can be open alongside other sections.</BbAccordionContent>
+    </BbAccordionItem>
+    <BbAccordionItem Value="multiple-2">
+        <BbAccordionTrigger>Second Section</BbAccordionTrigger>
+        <BbAccordionContent>Open both sections at once.</BbAccordionContent>
+    </BbAccordionItem>
+</BbAccordion>

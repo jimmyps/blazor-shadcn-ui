@@ -1,0 +1,16 @@
+@using BlazorBlueprint.Primitives.Label
+
+<BbLabel For="text-input">Text Input</BbLabel>
+<input type="text" id="text-input" />
+
+<BbLabel For="select-input">Select Dropdown</BbLabel>
+<select id="select-input">...</select>
+
+<BbLabel For="textarea-input">Textarea</BbLabel>
+<textarea id="textarea-input"></textarea>
+
+<input type="checkbox" id="checkbox-input" />
+<BbLabel For="checkbox-input">Checkbox Label</BbLabel>
+
+<input type="radio" id="radio-input" />
+<BbLabel For="radio-input">Radio Label</BbLabel>

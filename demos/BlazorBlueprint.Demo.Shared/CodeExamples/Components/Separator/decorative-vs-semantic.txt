@@ -1,0 +1,2 @@
+<BbSeparator Decorative="true" />
+<BbSeparator Decorative="false" />

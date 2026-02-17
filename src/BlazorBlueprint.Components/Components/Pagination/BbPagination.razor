@@ -1,0 +1,192 @@
+@namespace BlazorBlueprint.Components
+
+<CascadingValue Value="@_context" IsFixed="false">
+    <nav role="navigation" aria-label="pagination" class="@CssClass">
+        @if (ChildContent != null)
+        {
+            @ChildContent
+        }
+        else if (TotalPages != null)
+        {
+            <BbPaginationContent>
+                <BbPaginationItem>
+                    <BbPaginationPrevious ShowText="false" />
+                </BbPaginationItem>
+                @foreach (var page in GetPageNumbers())
+                {
+                    if (page == -1)
+                    {
+                        <BbPaginationItem>
+                            <BbPaginationEllipsis />
+                        </BbPaginationItem>
+                    }
+                    else
+                    {
+                        var pageNum = page;
+                        <BbPaginationItem>
+                            <BbPaginationLink IsActive="@(pageNum == EffectiveCurrentPage)" OnClick="@(() => GoToPage(pageNum))">
+                                @pageNum
+                            </BbPaginationLink>
+                        </BbPaginationItem>
+                    }
+                }
+                <BbPaginationItem>
+                    <BbPaginationNext ShowText="false" />
+                </BbPaginationItem>
+            </BbPaginationContent>
+        }
+    </nav>
+</CascadingValue>
+
+@code {
+    private PaginationContext _context = new();
+    private PaginationState? _internalState;
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Optional pagination state for automatic state management.
+    /// When provided, child components will automatically wire up to this state.
+    /// </summary>
+    [Parameter]
+    public PaginationState? State { get; set; }
+
+    /// <summary>
+    /// Shorthand: total number of pages. When set and ChildContent is null,
+    /// auto-renders the standard prev/pages/next pagination layout.
+    /// </summary>
+    [Parameter]
+    public int? TotalPages { get; set; }
+
+    /// <summary>
+    /// Shorthand: current page number (1-based). Used with <see cref="TotalPages"/>.
+    /// </summary>
+    [Parameter]
+    public int CurrentPage { get; set; } = 1;
+
+    /// <summary>
+    /// Event callback for two-way binding of <see cref="CurrentPage"/>.
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> CurrentPageChanged { get; set; }
+
+    /// <summary>
+    /// Available page size options for the page size selector.
+    /// </summary>
+    [Parameter]
+    public int[] PageSizes { get; set; } = [10, 20, 50, 100];
+
+    /// <summary>
+    /// Callback invoked when the current page changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> OnPageChanged { get; set; }
+
+    /// <summary>
+    /// Callback invoked when the page size changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> OnPageSizeChanged { get; set; }
+
+    private int EffectiveCurrentPage => State?.CurrentPage ?? CurrentPage;
+
+    protected override void OnParametersSet()
+    {
+        if (TotalPages != null && State == null)
+        {
+            _internalState ??= new PaginationState();
+            _internalState.TotalItems = TotalPages.Value;
+            _internalState.PageSize = 1;
+            _internalState.CurrentPage = CurrentPage;
+            _context.State = _internalState;
+        }
+        else
+        {
+            _context.State = State;
+        }
+
+        _context.PageSizes = PageSizes;
+        _context.OnPageChanged = async (page) =>
+        {
+            if (CurrentPageChanged.HasDelegate)
+            {
+                await CurrentPageChanged.InvokeAsync(page);
+            }
+            if (OnPageChanged.HasDelegate)
+            {
+                await OnPageChanged.InvokeAsync(page);
+            }
+        };
+        _context.OnPageSizeChanged = async (size) =>
+        {
+            if (OnPageSizeChanged.HasDelegate)
+            {
+                await OnPageSizeChanged.InvokeAsync(size);
+            }
+        };
+    }
+
+    private async Task GoToPage(int page)
+    {
+        if (_context.State != null)
+        {
+            _context.State.GoToPage(page);
+            if (_context.OnPageChanged != null)
+            {
+                await _context.OnPageChanged(page);
+            }
+        }
+    }
+
+    private List<int> GetPageNumbers()
+    {
+        var total = TotalPages ?? _context.State?.TotalPages ?? 0;
+        var current = EffectiveCurrentPage;
+        var pages = new List<int>();
+
+        if (total <= 7)
+        {
+            for (var i = 1; i <= total; i++)
+            {
+                pages.Add(i);
+            }
+            return pages;
+        }
+
+        // Always show first page
+        pages.Add(1);
+
+        if (current > 3)
+        {
+            pages.Add(-1); // ellipsis
+        }
+
+        // Pages around current
+        var start = Math.Max(2, current - 1);
+        var end = Math.Min(total - 1, current + 1);
+
+        for (var i = start; i <= end; i++)
+        {
+            pages.Add(i);
+        }
+
+        if (current < total - 2)
+        {
+            pages.Add(-1); // ellipsis
+        }
+
+        // Always show last page
+        pages.Add(total);
+
+        return pages;
+    }
+
+    private string CssClass => ClassNames.cn(
+        "mx-auto flex w-full justify-center",
+        Class
+    );
+}

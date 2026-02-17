@@ -1,0 +1,45 @@
+<BbSelect TValue="string" Value="@selectedRange"
+        ValueChanged="OnRangeChanged"
+        Options="@rangeOptions" Class="w-[160px]" />
+
+<BbAreaChart Data="@filteredData" Height="300px">
+    <BbXAxis DataKey="date" />
+    <BbYAxis />
+    <BbChartTooltip />
+    <BbChartLegend />
+    <BbArea DataKey="desktop" Name="Desktop" Color="var(--chart-1)"
+          Curve="CurveType.Smooth" Stacked="true">
+        <BbFill>
+            <BbLinearGradient>
+                <BbGradientStop Offset="0" Color="var(--chart-1)" Opacity="0.6" />
+                <BbGradientStop Offset="1" Color="var(--chart-1)" Opacity="0.05" />
+            </BbLinearGradient>
+        </BbFill>
+    </BbArea>
+    <BbArea DataKey="mobile" Name="Mobile" Color="var(--chart-2)"
+          Curve="CurveType.Smooth" Stacked="true">
+        <BbFill>
+            <BbLinearGradient>
+                <BbGradientStop Offset="0" Color="var(--chart-2)" Opacity="0.6" />
+                <BbGradientStop Offset="1" Color="var(--chart-2)" Opacity="0.05" />
+            </BbLinearGradient>
+        </BbFill>
+    </BbArea>
+</BbAreaChart>
+
+@code {
+    string selectedRange = "90d";
+
+    SelectOption<string>[] rangeOptions =
+    [
+        new("90d", "Last 3 months"),
+        new("30d", "Last 30 days"),
+        new("7d", "Last 7 days")
+    ];
+
+    void OnRangeChanged(string? value)
+    {
+        selectedRange = value ?? "90d";
+        // Filter _chartData based on selectedRange
+    }
+}

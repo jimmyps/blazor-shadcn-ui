@@ -1,0 +1,13 @@
+<BbButton IconPosition="IconPosition.Start">
+    <Icon>
+        <LucideIcon Name="arrow-left" Size="16" />
+    </Icon>
+    <ChildContent>Back</ChildContent>
+</BbButton>
+
+<BbButton IconPosition="IconPosition.End" Variant="ButtonVariant.Secondary">
+    <Icon>
+        <LucideIcon Name="external-link" Size="16" />
+    </Icon>
+    <ChildContent>External Link</ChildContent>
+</BbButton>

@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Sidebar;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the element type for SidebarGroupLabel component.

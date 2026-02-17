@@ -1,0 +1,3 @@
+<BbTextarea UpdateTiming="UpdateTiming.Immediate" />
+<BbTextarea UpdateTiming="UpdateTiming.OnChange" />
+<BbTextarea UpdateTiming="UpdateTiming.Debounced" DebounceInterval="500" />

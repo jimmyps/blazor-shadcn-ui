@@ -1,10 +1,8 @@
 @page "/charts/pie"
-@using ApexCharts
-@using BlazorBlueprint.Components.Chart
-
+@using BlazorBlueprint.Icons.Lucide.Components
 <PageTitle>Pie Chart - Blazor Blueprint</PageTitle>
 
-<div class="space-y-8 max-w-4xl">
+<div class="space-y-8 max-w-6xl">
     <div>
         <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">Pie Chart</h1>
@@ -14,109 +12,304 @@
         </div>
     </div>
 
-    <!-- Pie -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Pie</h2>
-            <p class="text-sm text-muted-foreground">
-                Standard pie chart showing proportional slices.
-            </p>
-        </div>
-        <div class="max-w-md mx-auto">
-            <ChartContainer>
-                <PieChart TItem="BrowserShare"
-                          Items="@_browserData"
-                          Variant="PieChartVariant.Pie"
-                          Height="350px">
-                    <ApexPointSeries TItem="BrowserShare"
-                                     Items="@_browserData"
-                                     Name="Share"
-                                     SeriesType="SeriesType.Pie"
-                                     XValue="@(item => item.Browser)"
-                                     YValue="@(item => (decimal)item.Percentage)" />
-                </PieChart>
-            </ChartContainer>
-        </div>
-    </div>
+    <!-- Grid of chart variants -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-    <!-- Donut -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Donut</h2>
-            <p class="text-sm text-muted-foreground">
-                Donut chart with hollow center for summary content.
-            </p>
+        <!-- Pie Chart -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Pie Chart</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbPieChart Data="@_browserData" Height="250px">
+                        <BbChartTooltip />
+                        <BbPie DataKey="visitors" NameKey="browser" />
+                    </BbPieChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/PieChart/default.txt" />
         </div>
-        <div class="max-w-md mx-auto">
-            <ChartContainer>
-                <PieChart TItem="BrowserShare"
-                          Items="@_browserData"
-                          Variant="PieChartVariant.Donut"
-                          CenterLabel="Browsers"
-                          CenterValue="5"
-                          Height="350px">
-                    <ApexPointSeries TItem="BrowserShare"
-                                     Items="@_browserData"
-                                     Name="Share"
-                                     SeriesType="SeriesType.Donut"
-                                     XValue="@(item => item.Browser)"
-                                     YValue="@(item => (decimal)item.Percentage)" />
-                </PieChart>
-            </ChartContainer>
-        </div>
-    </div>
 
-    <!-- Gradient Donut -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Gradient Donut</h2>
-            <p class="text-sm text-muted-foreground">
-                Donut chart with gradient fills for visual depth.
-            </p>
+        <!-- Separator None -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Pie Chart - Separator None</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbPieChart Data="@_browserData" Height="250px">
+                        <BbChartTooltip />
+                        <BbPie DataKey="visitors" NameKey="browser" PaddingAngle="0" />
+                    </BbPieChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/PieChart/separator-none.txt" />
         </div>
-        <div class="max-w-md mx-auto">
-            <ChartContainer>
-                <PieChart TItem="BrowserShare"
-                          Items="@_browserData"
-                          Variant="PieChartVariant.GradientDonut"
-                          Height="350px">
-                    <ApexPointSeries TItem="BrowserShare"
-                                     Items="@_browserData"
-                                     Name="Share"
-                                     SeriesType="SeriesType.Donut"
-                                     XValue="@(item => item.Browser)"
-                                     YValue="@(item => (decimal)item.Percentage)" />
-                </PieChart>
-            </ChartContainer>
-        </div>
-    </div>
 
-    <!-- Custom Donut Size -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Custom Donut Size</h2>
-            <p class="text-sm text-muted-foreground">
-                Donut with larger center hole (75%).
-            </p>
+        <!-- Label -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Pie Chart - Label</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbPieChart Data="@_browserData" Height="250px">
+                        <BbChartTooltip />
+                        <BbPie DataKey="visitors" NameKey="browser"
+                             ShowLabels="true" LabelFormatter="{c}" />
+                    </BbPieChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/PieChart/label.txt" />
         </div>
-        <div class="max-w-md mx-auto">
-            <ChartContainer>
-                <PieChart TItem="BrowserShare"
-                          Items="@_browserData"
-                          Variant="PieChartVariant.Donut"
-                          DonutSize="75"
-                          CenterLabel="Total"
-                          CenterValue="100%"
-                          Height="350px">
-                    <ApexPointSeries TItem="BrowserShare"
-                                     Items="@_browserData"
-                                     Name="Share"
-                                     SeriesType="SeriesType.Donut"
-                                     XValue="@(item => item.Browser)"
-                                     YValue="@(item => (decimal)item.Percentage)" />
-                </PieChart>
-            </ChartContainer>
+
+        <!-- Custom Label -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Pie Chart - Custom Label</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbPieChart Data="@_browserData" Height="250px">
+                        <BbChartTooltip />
+                        <BbPie DataKey="visitors" NameKey="browser" OuterRadius="70"
+                             ShowLabels="true" LabelFormatter="{c}" />
+                    </BbPieChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/PieChart/custom-label.txt" />
         </div>
+
+        <!-- Label List -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Pie Chart - Label List</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbPieChart Data="@_browserData" Height="250px">
+                        <BbChartTooltip />
+                        <BbPie DataKey="visitors" NameKey="browser"
+                             ShowLabels="true" LabelPosition="LabelPosition.Inside" LabelFormatter="{b}"
+                             LabelColor="white" LabelFontSize="10" />
+                    </BbPieChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/PieChart/label-list.txt" />
+        </div>
+
+        <!-- Legend -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Pie Chart - Legend</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbPieChart Data="@_browserData" Height="250px">
+                        <BbChartTooltip />
+                        <BbChartLegend />
+                        <BbPie DataKey="visitors" NameKey="browser" />
+                    </BbPieChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/PieChart/legend.txt" />
+        </div>
+
+        <!-- Donut -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Pie Chart - Donut</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbPieChart Data="@_browserData" Height="250px">
+                        <BbChartTooltip />
+                        <BbPie DataKey="visitors" NameKey="browser" InnerRadius="60" />
+                    </BbPieChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/PieChart/donut.txt" />
+        </div>
+
+        <!-- Donut Active -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Pie Chart - Donut Active</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbPieChart Data="@_browserData" Height="250px">
+                        <BbChartTooltip />
+                        <BbPie DataKey="visitors" NameKey="browser" InnerRadius="60" ActiveIndex="0" />
+                    </BbPieChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/PieChart/donut-active.txt" />
+        </div>
+
+        <!-- Donut with Text -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Pie Chart - Donut with Text</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbPieChart Data="@_browserData" Height="250px">
+                        <BbChartTooltip />
+                        <BbPie DataKey="visitors" NameKey="browser" InnerRadius="60">
+                            <BbCenterLabel Value="@_browserData.Sum(d => d.Visitors).ToString("N0")" Title="Visitors" />
+                        </BbPie>
+                    </BbPieChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/PieChart/donut-text.txt" />
+        </div>
+
+        <!-- Stacked -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Pie Chart - Stacked</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbPieChart Data="@_stackedData" Height="250px">
+                        <BbChartTooltip />
+                        <BbPie DataKey="desktop" NameKey="month" InnerRadius="60" OuterRadius="80" />
+                        <BbPie DataKey="mobile" NameKey="month" InnerRadius="25" OuterRadius="50" />
+                    </BbPieChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/PieChart/stacked.txt" />
+        </div>
+
+        <!-- Interactive -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex items-start justify-between p-6">
+                    <div class="flex flex-col space-y-1.5">
+                        <h3 class="font-semibold leading-none tracking-tight">Pie Chart - Interactive</h3>
+                        <p class="text-sm text-muted-foreground">January - June 2024</p>
+                    </div>
+                    <select @bind="_selectedBrowser" @bind:event="onchange"
+                            class="text-sm border rounded-lg px-3 py-1.5 bg-card">
+                        @foreach (var item in _browserData)
+                        {
+                            <option value="@item.Browser">@item.Browser</option>
+                        }
+                    </select>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbPieChart Data="@_browserData" Height="250px">
+                        <BbChartTooltip />
+                        <BbPie DataKey="visitors" NameKey="browser" InnerRadius="60"
+                             ActiveIndex="@SelectedIndex">
+                            <BbCenterLabel Value="@SelectedVisitors.ToString("N0")" Title="Visitors" />
+                        </BbPie>
+                    </BbPieChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/PieChart/interactive.txt" />
+        </div>
+
     </div>
 
     <!-- API Reference -->
@@ -126,42 +319,95 @@
         </div>
         <div class="border rounded-lg p-6 space-y-4">
             <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Variant</h3>
+                <h3 class="font-mono text-sm font-semibold mb-2">Pie.DataKey</h3>
                 <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">PieChartVariant</code>
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string</code>
                 </p>
                 <p class="text-sm text-muted-foreground">
-                    Options: Pie, Donut, GradientDonut
+                    The property name for slice values.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">DonutSize</h3>
+                <h3 class="font-mono text-sm font-semibold mb-2">Pie.NameKey</h3>
                 <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">int</code> (default: 55)
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string</code>
                 </p>
                 <p class="text-sm text-muted-foreground">
-                    Size of the center hole as a percentage (0-100).
+                    The property name for slice labels.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Pie.InnerRadius</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">int</code> — Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">0</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    Inner radius as a percentage. Set greater than 0 for a donut chart.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Pie.OuterRadius</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">int</code> — Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">80</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    Outer radius as a percentage of the chart container.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Pie.PaddingAngle</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">int</code> — Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">2</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    Border width between slices in pixels. Set to 0 for no separator.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Pie.ShowLabels</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code> — Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">false</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    Whether to display labels on each slice.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Pie.LabelFormatter</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    ECharts formatter string. Use <code class="text-xs bg-muted px-1 py-0.5 rounded">{b}</code> for name,
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">{c}</code> for value,
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">{d}</code> for percentage.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Pie.ActiveIndex</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">int?</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    Index of the pre-selected (active) slice, offset from center.
+                </p>
+            </div>
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">CenterLabel</h3>
                 <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">component</code>
                 </p>
                 <p class="text-sm text-muted-foreground">
-                    Text label to display in the donut center.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">CenterValue</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Value to display in the donut center (larger than label).
+                    Child of Pie. Displays <code class="text-xs bg-muted px-1 py-0.5 rounded">Value</code> (large, bold) and
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">Title</code> (small, muted) in the donut center.
                 </p>
             </div>
         </div>
@@ -169,18 +415,42 @@
 </div>
 
 @code {
-    public class BrowserShare
+    public class BrowserData
     {
         public string Browser { get; set; } = "";
-        public double Percentage { get; set; }
+        public int Visitors { get; set; }
     }
 
-    private List<BrowserShare> _browserData =
+    private readonly List<BrowserData> _browserData =
     [
-        new() { Browser = "Chrome", Percentage = 63 },
-        new() { Browser = "Safari", Percentage = 19 },
-        new() { Browser = "Firefox", Percentage = 8 },
-        new() { Browser = "Edge", Percentage = 6 },
-        new() { Browser = "Other", Percentage = 4 }
+        new() { Browser = "Chrome", Visitors = 275 },
+        new() { Browser = "Safari", Visitors = 200 },
+        new() { Browser = "Firefox", Visitors = 187 },
+        new() { Browser = "Edge", Visitors = 173 },
+        new() { Browser = "Other", Visitors = 90 }
     ];
+
+    public class MonthlyDeviceData
+    {
+        public string Month { get; set; } = "";
+        public int Desktop { get; set; }
+        public int Mobile { get; set; }
+    }
+
+    private readonly List<MonthlyDeviceData> _stackedData =
+    [
+        new() { Month = "January", Desktop = 186, Mobile = 80 },
+        new() { Month = "February", Desktop = 305, Mobile = 200 },
+        new() { Month = "March", Desktop = 237, Mobile = 120 },
+        new() { Month = "April", Desktop = 173, Mobile = 190 },
+        new() { Month = "May", Desktop = 209, Mobile = 130 }
+    ];
+
+    private string _selectedBrowser = "Chrome";
+
+    private int SelectedVisitors =>
+        _browserData.FirstOrDefault(d => d.Browser == _selectedBrowser)?.Visitors ?? 0;
+
+    private int SelectedIndex =>
+        _browserData.FindIndex(d => d.Browser == _selectedBrowser);
 }

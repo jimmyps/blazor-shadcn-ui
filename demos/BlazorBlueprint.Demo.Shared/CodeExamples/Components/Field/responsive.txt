@@ -1,0 +1,6 @@
+<BbField Orientation="FieldOrientation.Responsive">
+    <BbFieldLabel For="company" Class="w-full md:w-32 md:pt-2">Company</BbFieldLabel>
+    <BbFieldContent>
+        <BbInput Id="company" Placeholder="Acme Inc." />
+    </BbFieldContent>
+</BbField>

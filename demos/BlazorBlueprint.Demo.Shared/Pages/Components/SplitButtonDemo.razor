@@ -1,6 +1,4 @@
 @page "/components/split-button"
-@using BlazorBlueprint.Components.SplitButton
-@using BlazorBlueprint.Components.Button
 @using BlazorBlueprint.Icons.Lucide.Components
 
 <PageTitle>Split Button - Blazor Blueprint</PageTitle>
@@ -23,21 +21,22 @@
         </div>
 
         <div class="flex flex-wrap gap-4">
-            <SplitButton OnClick="HandleSave">
+            <BbSplitButton OnClick="HandleSave">
                 <ChildContent>Save</ChildContent>
                 <DropdownContent>
-                    <SplitButtonItem OnClick="HandleSaveAs">Save As...</SplitButtonItem>
-                    <SplitButtonItem OnClick="HandleSaveDraft">Save Draft</SplitButtonItem>
-                    <SplitButtonSeparator />
-                    <SplitButtonItem OnClick="HandleExport">Export</SplitButtonItem>
+                    <BbSplitButtonItem OnClick="HandleSaveAs">Save As...</BbSplitButtonItem>
+                    <BbSplitButtonItem OnClick="HandleSaveDraft">Save Draft</BbSplitButtonItem>
+                    <BbSplitButtonSeparator />
+                    <BbSplitButtonItem OnClick="HandleExport">Export</BbSplitButtonItem>
                 </DropdownContent>
-            </SplitButton>
+            </BbSplitButton>
         </div>
 
         @if (!string.IsNullOrEmpty(_lastAction))
         {
             <p class="text-sm text-muted-foreground">Last action: @_lastAction</p>
         }
+        <CodeBlock Source="Components/SplitButton/default.txt" />
     </section>
 
     <!-- Variants -->
@@ -50,38 +49,39 @@
         </div>
 
         <div class="flex flex-wrap gap-4">
-            <SplitButton Variant="ButtonVariant.Default" OnClick="HandleSave">
+            <BbSplitButton Variant="ButtonVariant.Default" OnClick="HandleSave">
                 <ChildContent>Default</ChildContent>
                 <DropdownContent>
-                    <SplitButtonItem>Option 1</SplitButtonItem>
-                    <SplitButtonItem>Option 2</SplitButtonItem>
+                    <BbSplitButtonItem>Option 1</BbSplitButtonItem>
+                    <BbSplitButtonItem>Option 2</BbSplitButtonItem>
                 </DropdownContent>
-            </SplitButton>
+            </BbSplitButton>
 
-            <SplitButton Variant="ButtonVariant.Secondary" OnClick="HandleSave">
+            <BbSplitButton Variant="ButtonVariant.Secondary" OnClick="HandleSave">
                 <ChildContent>Secondary</ChildContent>
                 <DropdownContent>
-                    <SplitButtonItem>Option 1</SplitButtonItem>
-                    <SplitButtonItem>Option 2</SplitButtonItem>
+                    <BbSplitButtonItem>Option 1</BbSplitButtonItem>
+                    <BbSplitButtonItem>Option 2</BbSplitButtonItem>
                 </DropdownContent>
-            </SplitButton>
+            </BbSplitButton>
 
-            <SplitButton Variant="ButtonVariant.Outline" OnClick="HandleSave">
+            <BbSplitButton Variant="ButtonVariant.Outline" OnClick="HandleSave">
                 <ChildContent>Outline</ChildContent>
                 <DropdownContent>
-                    <SplitButtonItem>Option 1</SplitButtonItem>
-                    <SplitButtonItem>Option 2</SplitButtonItem>
+                    <BbSplitButtonItem>Option 1</BbSplitButtonItem>
+                    <BbSplitButtonItem>Option 2</BbSplitButtonItem>
                 </DropdownContent>
-            </SplitButton>
+            </BbSplitButton>
 
-            <SplitButton Variant="ButtonVariant.Destructive" OnClick="HandleSave">
+            <BbSplitButton Variant="ButtonVariant.Destructive" OnClick="HandleSave">
                 <ChildContent>Destructive</ChildContent>
                 <DropdownContent>
-                    <SplitButtonItem>Option 1</SplitButtonItem>
-                    <SplitButtonItem>Option 2</SplitButtonItem>
+                    <BbSplitButtonItem>Option 1</BbSplitButtonItem>
+                    <BbSplitButtonItem>Option 2</BbSplitButtonItem>
                 </DropdownContent>
-            </SplitButton>
+            </BbSplitButton>
         </div>
+        <CodeBlock Source="Components/SplitButton/variants.txt" />
     </section>
 
     <!-- Sizes -->
@@ -94,30 +94,31 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-4">
-            <SplitButton Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="HandleSave">
+            <BbSplitButton Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="HandleSave">
                 <ChildContent>Small</ChildContent>
                 <DropdownContent>
-                    <SplitButtonItem>Option 1</SplitButtonItem>
-                    <SplitButtonItem>Option 2</SplitButtonItem>
+                    <BbSplitButtonItem>Option 1</BbSplitButtonItem>
+                    <BbSplitButtonItem>Option 2</BbSplitButtonItem>
                 </DropdownContent>
-            </SplitButton>
+            </BbSplitButton>
 
-            <SplitButton Size="ButtonSize.Default" Variant="ButtonVariant.Outline" OnClick="HandleSave">
+            <BbSplitButton Size="ButtonSize.Default" Variant="ButtonVariant.Outline" OnClick="HandleSave">
                 <ChildContent>Default</ChildContent>
                 <DropdownContent>
-                    <SplitButtonItem>Option 1</SplitButtonItem>
-                    <SplitButtonItem>Option 2</SplitButtonItem>
+                    <BbSplitButtonItem>Option 1</BbSplitButtonItem>
+                    <BbSplitButtonItem>Option 2</BbSplitButtonItem>
                 </DropdownContent>
-            </SplitButton>
+            </BbSplitButton>
 
-            <SplitButton Size="ButtonSize.Large" Variant="ButtonVariant.Outline" OnClick="HandleSave">
+            <BbSplitButton Size="ButtonSize.Large" Variant="ButtonVariant.Outline" OnClick="HandleSave">
                 <ChildContent>Large</ChildContent>
                 <DropdownContent>
-                    <SplitButtonItem>Option 1</SplitButtonItem>
-                    <SplitButtonItem>Option 2</SplitButtonItem>
+                    <BbSplitButtonItem>Option 1</BbSplitButtonItem>
+                    <BbSplitButtonItem>Option 2</BbSplitButtonItem>
                 </DropdownContent>
-            </SplitButton>
+            </BbSplitButton>
         </div>
+        <CodeBlock Source="Components/SplitButton/sizes.txt" />
     </section>
 
     <!-- With Icon -->
@@ -130,45 +131,46 @@
         </div>
 
         <div class="flex flex-wrap gap-4">
-            <SplitButton OnClick="HandleSave">
+            <BbSplitButton OnClick="HandleSave">
                 <ChildContent>
                     <LucideIcon Name="save" Size="16" Class="mr-2" />
                     Save
                 </ChildContent>
                 <DropdownContent>
-                    <SplitButtonItem OnClick="HandleSaveAs">
+                    <BbSplitButtonItem OnClick="HandleSaveAs">
                         <LucideIcon Name="file-plus" Size="16" Class="mr-2" />
                         Save As...
-                    </SplitButtonItem>
-                    <SplitButtonItem OnClick="HandleSaveDraft">
+                    </BbSplitButtonItem>
+                    <BbSplitButtonItem OnClick="HandleSaveDraft">
                         <LucideIcon Name="file-edit" Size="16" Class="mr-2" />
                         Save Draft
-                    </SplitButtonItem>
-                    <SplitButtonSeparator />
-                    <SplitButtonItem OnClick="HandleExport">
+                    </BbSplitButtonItem>
+                    <BbSplitButtonSeparator />
+                    <BbSplitButtonItem OnClick="HandleExport">
                         <LucideIcon Name="download" Size="16" Class="mr-2" />
                         Export
-                    </SplitButtonItem>
+                    </BbSplitButtonItem>
                 </DropdownContent>
-            </SplitButton>
+            </BbSplitButton>
 
-            <SplitButton Variant="ButtonVariant.Outline" OnClick="HandlePublish">
+            <BbSplitButton Variant="ButtonVariant.Outline" OnClick="HandlePublish">
                 <ChildContent>
                     <LucideIcon Name="send" Size="16" Class="mr-2" />
                     Publish
                 </ChildContent>
                 <DropdownContent>
-                    <SplitButtonItem>
+                    <BbSplitButtonItem>
                         <LucideIcon Name="eye" Size="16" Class="mr-2" />
                         Preview
-                    </SplitButtonItem>
-                    <SplitButtonItem>
+                    </BbSplitButtonItem>
+                    <BbSplitButtonItem>
                         <LucideIcon Name="clock" Size="16" Class="mr-2" />
                         Schedule
-                    </SplitButtonItem>
+                    </BbSplitButtonItem>
                 </DropdownContent>
-            </SplitButton>
+            </BbSplitButton>
         </div>
+        <CodeBlock Source="Components/SplitButton/with-icon.txt" />
     </section>
 
     <!-- Disabled -->
@@ -181,21 +183,22 @@
         </div>
 
         <div class="flex flex-wrap gap-4">
-            <SplitButton Disabled="true" OnClick="HandleSave">
+            <BbSplitButton Disabled="true" OnClick="HandleSave">
                 <ChildContent>Save</ChildContent>
                 <DropdownContent>
-                    <SplitButtonItem>Save As...</SplitButtonItem>
-                    <SplitButtonItem>Save Draft</SplitButtonItem>
+                    <BbSplitButtonItem>Save As...</BbSplitButtonItem>
+                    <BbSplitButtonItem>Save Draft</BbSplitButtonItem>
                 </DropdownContent>
-            </SplitButton>
+            </BbSplitButton>
 
-            <SplitButton Disabled="true" Variant="ButtonVariant.Outline" OnClick="HandleSave">
+            <BbSplitButton Disabled="true" Variant="ButtonVariant.Outline" OnClick="HandleSave">
                 <ChildContent>Outline Disabled</ChildContent>
                 <DropdownContent>
-                    <SplitButtonItem>Option 1</SplitButtonItem>
+                    <BbSplitButtonItem>Option 1</BbSplitButtonItem>
                 </DropdownContent>
-            </SplitButton>
+            </BbSplitButton>
         </div>
+        <CodeBlock Source="Components/SplitButton/disabled.txt" />
     </section>
 
     <!-- Practical Example -->
@@ -208,33 +211,34 @@
         </div>
 
         <div class="flex flex-wrap gap-4">
-            <SplitButton OnClick="HandleMerge">
+            <BbSplitButton OnClick="HandleMerge">
                 <ChildContent>
                     <LucideIcon Name="git-merge" Size="16" Class="mr-2" />
                     Merge pull request
                 </ChildContent>
                 <DropdownContent>
-                    <SplitButtonItem>
+                    <BbSplitButtonItem>
                         <div class="flex flex-col">
                             <span class="font-medium">Create a merge commit</span>
                             <span class="text-xs text-muted-foreground">All commits will be added to the base branch.</span>
                         </div>
-                    </SplitButtonItem>
-                    <SplitButtonItem>
+                    </BbSplitButtonItem>
+                    <BbSplitButtonItem>
                         <div class="flex flex-col">
                             <span class="font-medium">Squash and merge</span>
                             <span class="text-xs text-muted-foreground">Commits will be combined into one commit.</span>
                         </div>
-                    </SplitButtonItem>
-                    <SplitButtonItem>
+                    </BbSplitButtonItem>
+                    <BbSplitButtonItem>
                         <div class="flex flex-col">
                             <span class="font-medium">Rebase and merge</span>
                             <span class="text-xs text-muted-foreground">Commits will be rebased onto the base branch.</span>
                         </div>
-                    </SplitButtonItem>
+                    </BbSplitButtonItem>
                 </DropdownContent>
-            </SplitButton>
+            </BbSplitButton>
         </div>
+        <CodeBlock Source="Components/SplitButton/practical.txt" />
     </section>
 
     <!-- Usage Notes -->
@@ -258,8 +262,8 @@
             <div class="space-y-3">
                 <h3 class="font-semibold">Accessibility</h3>
                 <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                    <li>Uses role="group" on the container</li>
-                    <li>Dropdown trigger has aria-label for screen readers</li>
+                    <li>Uses <code class="text-xs bg-muted px-1 py-0.5 rounded">role="group"</code> on the container</li>
+                    <li>Dropdown trigger has <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-label</code> for screen readers</li>
                     <li>Keyboard navigation supported via DropdownMenu primitive</li>
                 </ul>
             </div>

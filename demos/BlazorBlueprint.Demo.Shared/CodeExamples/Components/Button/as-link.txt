@@ -1,0 +1,11 @@
+<BbButton Href="/components/badge">Go to Badge</BbButton>
+
+<BbButton Href="https://github.com" Target="_blank" Variant="ButtonVariant.Outline" IconPosition="IconPosition.End">
+    <Icon>
+        <LucideIcon Name="external-link" Size="16" />
+    </Icon>
+    <ChildContent>GitHub</ChildContent>
+</BbButton>
+
+<!-- Disabled link -->
+<BbButton Href="/components/badge" Disabled="true">Disabled Link</BbButton>

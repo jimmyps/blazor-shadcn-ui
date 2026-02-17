@@ -1,6 +1,4 @@
 @page "/components/date-picker"
-@using BlazorBlueprint.Components.DatePicker
-@using BlazorBlueprint.Components.Separator
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>Date Picker Component - Blazor Blueprint</PageTitle>
@@ -23,10 +21,11 @@
                 Click the button to open the calendar popover and select a date.
             </p>
         </div>
-        <DatePicker @bind-Value="_basicDate" />
+        <BbDatePicker @bind-Value="_basicDate" />
         <p class="text-sm text-muted-foreground">
             Selected: @(_basicDate?.ToString("MMMM d, yyyy") ?? "None")
         </p>
+        <CodeBlock Source="Components/DatePicker/basic.txt" />
     </div>
 
     <!-- With Preselected Date -->
@@ -37,7 +36,8 @@
                 Date picker with an initial value.
             </p>
         </div>
-        <DatePicker @bind-Value="_preselectedDate" />
+        <BbDatePicker @bind-Value="_preselectedDate" />
+        <CodeBlock Source="Components/DatePicker/preselected.txt" />
     </div>
 
     <!-- Custom Placeholder -->
@@ -48,7 +48,8 @@
                 Customize the placeholder text when no date is selected.
             </p>
         </div>
-        <DatePicker @bind-Value="_customPlaceholder" Placeholder="Select birth date" />
+        <BbDatePicker @bind-Value="_customPlaceholder" Placeholder="Select birth date" />
+        <CodeBlock Source="Components/DatePicker/custom-placeholder.txt" />
     </div>
 
     <!-- Custom Date Format -->
@@ -62,17 +63,18 @@
         <div class="space-y-4">
             <div>
                 <p class="text-sm mb-2">Long format (default):</p>
-                <DatePicker @bind-Value="_formatDate1" DateFormat="MMMM d, yyyy" />
+                <BbDatePicker @bind-Value="_formatDate1" DateFormat="MMMM d, yyyy" />
             </div>
             <div>
                 <p class="text-sm mb-2">Short format:</p>
-                <DatePicker @bind-Value="_formatDate2" DateFormat="MM/dd/yyyy" />
+                <BbDatePicker @bind-Value="_formatDate2" DateFormat="MM/dd/yyyy" />
             </div>
             <div>
                 <p class="text-sm mb-2">ISO format:</p>
-                <DatePicker @bind-Value="_formatDate3" DateFormat="yyyy-MM-dd" />
+                <BbDatePicker @bind-Value="_formatDate3" DateFormat="yyyy-MM-dd" />
             </div>
         </div>
+        <CodeBlock Source="Components/DatePicker/custom-format.txt" />
     </div>
 
     <!-- Date Constraints -->
@@ -86,17 +88,18 @@
         <div class="space-y-4">
             <div>
                 <p class="text-sm mb-2">Future dates only (from today):</p>
-                <DatePicker @bind-Value="_futureDate" MinDate="@DateTime.Today" />
+                <BbDatePicker @bind-Value="_futureDate" MinDate="@DateTime.Today" />
             </div>
             <div>
                 <p class="text-sm mb-2">Past dates only (until today):</p>
-                <DatePicker @bind-Value="_pastDate" MaxDate="@DateTime.Today" />
+                <BbDatePicker @bind-Value="_pastDate" MaxDate="@DateTime.Today" />
             </div>
             <div>
                 <p class="text-sm mb-2">Next 30 days only:</p>
-                <DatePicker @bind-Value="_rangeDate" MinDate="@DateTime.Today" MaxDate="@DateTime.Today.AddDays(30)" />
+                <BbDatePicker @bind-Value="_rangeDate" MinDate="@DateTime.Today" MaxDate="@DateTime.Today.AddDays(30)" />
             </div>
         </div>
+        <CodeBlock Source="Components/DatePicker/constraints.txt" />
     </div>
 
     <!-- Disabled Weekends -->
@@ -109,8 +112,9 @@
         </div>
         <div>
             <p class="text-sm mb-2">No weekends:</p>
-            <DatePicker @bind-Value="_noWeekendsDate" DisabledDates="@IsWeekend" />
+            <BbDatePicker @bind-Value="_noWeekendsDate" DisabledDates="@IsWeekend" />
         </div>
+        <CodeBlock Source="Components/DatePicker/disabled-dates.txt" />
     </div>
 
     <!-- Week Start Day -->
@@ -124,13 +128,14 @@
         <div class="flex gap-8">
             <div>
                 <p class="text-sm mb-2">Sunday (default):</p>
-                <DatePicker @bind-Value="_sundayStart" FirstDayOfWeek="DayOfWeek.Sunday" />
+                <BbDatePicker @bind-Value="_sundayStart" FirstDayOfWeek="DayOfWeek.Sunday" />
             </div>
             <div>
                 <p class="text-sm mb-2">Monday:</p>
-                <DatePicker @bind-Value="_mondayStart" FirstDayOfWeek="DayOfWeek.Monday" />
+                <BbDatePicker @bind-Value="_mondayStart" FirstDayOfWeek="DayOfWeek.Monday" />
             </div>
         </div>
+        <CodeBlock Source="Components/DatePicker/week-start-day.txt" />
     </div>
 
     <!-- Form Validation with EditForm -->
@@ -148,13 +153,13 @@
 
             <div class="space-y-2">
                 <label class="text-sm font-medium">Event Date</label>
-                <DatePicker @bind-Value="dateFormModel.EventDate" Placeholder="Select event date" />
+                <BbDatePicker @bind-Value="dateFormModel.EventDate" Placeholder="Select event date" />
                 <ValidationMessage For="@(() => dateFormModel.EventDate)" class="text-sm text-destructive" />
             </div>
 
             <div class="flex gap-4">
-                <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</Button>
-                <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetDateForm">Reset</Button>
+                <BbButton Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</BbButton>
+                <BbButton Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetDateForm">Reset</BbButton>
             </div>
 
             @if (!string.IsNullOrEmpty(dateFormMessage))
@@ -167,72 +172,38 @@
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Value</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">DateTime?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="DatePicker">
+                <ApiParameter Name="Value" Type="DateTime?">
                     The selected date. Use @@bind-Value for two-way binding.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">DateFormat</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Format string for displaying the date. Default: "MMMM d, yyyy".
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Placeholder</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Placeholder text when no date is selected. Default: "Pick a date".
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">MinDate / MaxDate</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">DateTime?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Minimum and maximum selectable dates.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">DisabledDates</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">Func&lt;DateTime, bool&gt;?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="DateFormat" Type="string" Default="&quot;MMMM d, yyyy&quot;">
+                    Format string for displaying the date.
+                </ApiParameter>
+                <ApiParameter Name="Placeholder" Type="string" Default="&quot;Pick a date&quot;">
+                    Placeholder text when no date is selected.
+                </ApiParameter>
+                <ApiParameter Name="MinDate" Type="DateTime?">
+                    Minimum selectable date.
+                </ApiParameter>
+                <ApiParameter Name="MaxDate" Type="DateTime?">
+                    Maximum selectable date.
+                </ApiParameter>
+                <ApiParameter Name="DisabledDates" Type="Func&lt;DateTime, bool&gt;?">
                     Function to determine if a date should be disabled.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Disabled</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
                     Whether the date picker is disabled.
-                </p>
-            </div>
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {

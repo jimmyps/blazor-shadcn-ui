@@ -1,7 +1,4 @@
 @page "/components/pagination"
-@using BlazorBlueprint.Components.Pagination
-@using BlazorBlueprint.Components.Separator
-@using BlazorBlueprint.Primitives.Table
 
 <PageTitle>Pagination Component - Blazor Blueprint</PageTitle>
 
@@ -23,24 +20,26 @@
                 A simple pagination component with page numbers using manual state management.
             </p>
         </div>
-        <Pagination>
-            <PaginationContent>
-                <PaginationItem>
-                    <PaginationPrevious OnClick="@(() => GoToPage(_currentPage - 1))" Disabled="@(_currentPage <= 1)" />
-                </PaginationItem>
+        <BbPagination>
+            <BbPaginationContent>
+                <BbPaginationItem>
+                    <BbPaginationPrevious OnClick="@(() => GoToPage(_currentPage - 1))" Disabled="@(_currentPage <= 1)" />
+                </BbPaginationItem>
                 @for (int i = 1; i <= 5; i++)
                 {
                     var page = i;
-                    <PaginationItem>
-                        <PaginationLink IsActive="@(_currentPage == page)" OnClick="@(() => GoToPage(page))">@(page)</PaginationLink>
-                    </PaginationItem>
+                    <BbPaginationItem>
+                        <BbPaginationLink IsActive="@(_currentPage == page)" OnClick="@(() => GoToPage(page))">@(page)</BbPaginationLink>
+                    </BbPaginationItem>
                 }
-                <PaginationItem>
-                    <PaginationNext OnClick="@(() => GoToPage(_currentPage + 1))" Disabled="@(_currentPage >= 5)" />
-                </PaginationItem>
-            </PaginationContent>
-        </Pagination>
+                <BbPaginationItem>
+                    <BbPaginationNext OnClick="@(() => GoToPage(_currentPage + 1))" Disabled="@(_currentPage >= 5)" />
+                </BbPaginationItem>
+            </BbPaginationContent>
+        </BbPagination>
         <p class="text-sm text-muted-foreground text-center">Current page: @_currentPage</p>
+
+        <CodeBlock Source="Components/Pagination/basic.txt" />
     </div>
 
     <!-- With Ellipsis -->
@@ -51,31 +50,33 @@
                 Show ellipsis for large page ranges.
             </p>
         </div>
-        <Pagination>
-            <PaginationContent>
-                <PaginationItem>
-                    <PaginationPrevious />
-                </PaginationItem>
-                <PaginationItem>
-                    <PaginationLink IsActive="true">1</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                    <PaginationLink>2</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                    <PaginationEllipsis />
-                </PaginationItem>
-                <PaginationItem>
-                    <PaginationLink>9</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                    <PaginationLink>10</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                    <PaginationNext />
-                </PaginationItem>
-            </PaginationContent>
-        </Pagination>
+        <BbPagination>
+            <BbPaginationContent>
+                <BbPaginationItem>
+                    <BbPaginationPrevious />
+                </BbPaginationItem>
+                <BbPaginationItem>
+                    <BbPaginationLink IsActive="true">1</BbPaginationLink>
+                </BbPaginationItem>
+                <BbPaginationItem>
+                    <BbPaginationLink>2</BbPaginationLink>
+                </BbPaginationItem>
+                <BbPaginationItem>
+                    <BbPaginationEllipsis />
+                </BbPaginationItem>
+                <BbPaginationItem>
+                    <BbPaginationLink>9</BbPaginationLink>
+                </BbPaginationItem>
+                <BbPaginationItem>
+                    <BbPaginationLink>10</BbPaginationLink>
+                </BbPaginationItem>
+                <BbPaginationItem>
+                    <BbPaginationNext />
+                </BbPaginationItem>
+            </BbPaginationContent>
+        </BbPagination>
+
+        <CodeBlock Source="Components/Pagination/ellipsis.txt" />
     </div>
 
     <!-- State-Managed Pagination -->
@@ -87,28 +88,30 @@
                 Navigation buttons automatically enable/disable and update state.
             </p>
         </div>
-        <Pagination State="@_paginationState"
+        <BbPagination State="@_paginationState"
                     OnPageChanged="HandlePageChanged"
                     Class="flex items-center justify-between">
-            <PaginationInfo />
-            <PaginationContent>
-                <PaginationItem>
-                    <PaginationFirst />
-                </PaginationItem>
-                <PaginationItem>
-                    <PaginationPrevious ShowText="false" />
-                </PaginationItem>
-                <PaginationItem>
-                    <PaginationPageDisplay />
-                </PaginationItem>
-                <PaginationItem>
-                    <PaginationNext ShowText="false" />
-                </PaginationItem>
-                <PaginationItem>
-                    <PaginationLast />
-                </PaginationItem>
-            </PaginationContent>
-        </Pagination>
+            <BbPaginationInfo />
+            <BbPaginationContent>
+                <BbPaginationItem>
+                    <BbPaginationFirst />
+                </BbPaginationItem>
+                <BbPaginationItem>
+                    <BbPaginationPrevious ShowText="false" />
+                </BbPaginationItem>
+                <BbPaginationItem>
+                    <BbPaginationPageDisplay />
+                </BbPaginationItem>
+                <BbPaginationItem>
+                    <BbPaginationNext ShowText="false" />
+                </BbPaginationItem>
+                <BbPaginationItem>
+                    <BbPaginationLast />
+                </BbPaginationItem>
+            </BbPaginationContent>
+        </BbPagination>
+
+        <CodeBlock Source="Components/Pagination/state-managed.txt" />
     </div>
 
     <!-- Full Table Pagination Style -->
@@ -119,25 +122,27 @@
                 Full-featured pagination with page size selector, ideal for data tables.
             </p>
         </div>
-        <Pagination State="@_tablePaginationState"
+        <BbPagination State="@_tablePaginationState"
                     PageSizes="@(new[] { 5, 10, 20, 50 })"
                     OnPageChanged="HandleTablePageChanged"
                     OnPageSizeChanged="HandleTablePageSizeChanged"
                     Class="flex items-center justify-between px-2 py-4 border rounded-lg">
-            <PaginationInfo />
-            <PaginationContent Class="flex items-center gap-6 lg:gap-8">
-                <PaginationPageSizeSelector />
+            <BbPaginationInfo />
+            <BbPaginationContent Class="flex items-center gap-6 lg:gap-8">
+                <BbPaginationPageSizeSelector />
                 <div class="flex items-center gap-2">
-                    <PaginationPageDisplay />
+                    <BbPaginationPageDisplay />
                     <div class="flex items-center gap-1">
-                        <PaginationItem><PaginationFirst /></PaginationItem>
-                        <PaginationItem><PaginationPrevious ShowText="false" /></PaginationItem>
-                        <PaginationItem><PaginationNext ShowText="false" /></PaginationItem>
-                        <PaginationItem><PaginationLast /></PaginationItem>
+                        <BbPaginationItem><BbPaginationFirst /></BbPaginationItem>
+                        <BbPaginationItem><BbPaginationPrevious ShowText="false" /></BbPaginationItem>
+                        <BbPaginationItem><BbPaginationNext ShowText="false" /></BbPaginationItem>
+                        <BbPaginationItem><BbPaginationLast /></BbPaginationItem>
                     </div>
                 </div>
-            </PaginationContent>
-        </Pagination>
+            </BbPaginationContent>
+        </BbPagination>
+
+        <CodeBlock Source="Components/Pagination/table-style.txt" />
     </div>
 
     <!-- Customized Labels -->
@@ -148,73 +153,271 @@
                 Customize labels and formats for internationalization or different use cases.
             </p>
         </div>
-        <Pagination State="@_customPaginationState"
+        <BbPagination State="@_customPaginationState"
                     Class="flex items-center justify-between px-2 py-4 border rounded-lg">
-            <PaginationInfo Format="Items {0} to {1} (Total: {2})" EmptyText="No data available" />
-            <PaginationContent Class="flex items-center gap-4">
-                <PaginationPageSizeSelector Label="Items per page" ShowLabel="true" />
-                <PaginationPageDisplay Format="{0} / {1}" />
+            <BbPaginationInfo Format="Items {0} to {1} (Total: {2})" EmptyText="No data available" />
+            <BbPaginationContent Class="flex items-center gap-4">
+                <BbPaginationPageSizeSelector Label="Items per page" ShowLabel="true" />
+                <BbPaginationPageDisplay Format="{0} / {1}" />
                 <div class="flex items-center gap-1">
-                    <PaginationItem><PaginationFirst /></PaginationItem>
-                    <PaginationItem><PaginationPrevious ShowText="false" /></PaginationItem>
-                    <PaginationItem><PaginationNext ShowText="false" /></PaginationItem>
-                    <PaginationItem><PaginationLast /></PaginationItem>
+                    <BbPaginationItem><BbPaginationFirst /></BbPaginationItem>
+                    <BbPaginationItem><BbPaginationPrevious ShowText="false" /></BbPaginationItem>
+                    <BbPaginationItem><BbPaginationNext ShowText="false" /></BbPaginationItem>
+                    <BbPaginationItem><BbPaginationLast /></BbPaginationItem>
                 </div>
-            </PaginationContent>
-        </Pagination>
+            </BbPaginationContent>
+        </BbPagination>
+
+        <CodeBlock Source="Components/Pagination/custom-labels.txt" />
     </div>
 
-    <!-- API Reference -->
+    <!-- Simple Mode -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <h2 class="text-2xl font-semibold">Simple Mode</h2>
+            <p class="text-sm text-muted-foreground">
+                Use <code class="bg-muted px-1 py-0.5 rounded">TotalPages</code> and <code class="bg-muted px-1 py-0.5 rounded">CurrentPage</code> for a one-liner pagination
+                that auto-renders the standard layout — no child components needed.
+            </p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-semibold mb-2">Core Components</h3>
-                <div class="space-y-2 text-sm">
-                    <p><code class="bg-muted px-1 py-0.5 rounded">Pagination</code> - Container with optional State for automatic management</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">PaginationContent</code> - List container</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">PaginationItem</code> - Individual item wrapper</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">PaginationLink</code> - Page number link</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">PaginationEllipsis</code> - Ellipsis indicator</p>
-                </div>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-semibold mb-2">Navigation Components</h3>
-                <div class="space-y-2 text-sm">
-                    <p><code class="bg-muted px-1 py-0.5 rounded">PaginationFirst</code> - First page button (auto-disables at start)</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">PaginationPrevious</code> - Previous page button (ShowText, Text parameters)</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">PaginationNext</code> - Next page button (ShowText, Text parameters)</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">PaginationLast</code> - Last page button (auto-disables at end)</p>
-                </div>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-semibold mb-2">Info Components</h3>
-                <div class="space-y-2 text-sm">
-                    <p><code class="bg-muted px-1 py-0.5 rounded">PaginationInfo</code> - Shows "Showing X-Y of Z" (Format, EmptyText parameters)</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">PaginationPageDisplay</code> - Shows "Page X of Y" (Format parameter)</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">PaginationPageSizeSelector</code> - Page size dropdown (Label, ShowLabel, PageSizes parameters)</p>
-                </div>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-semibold mb-2">Pagination Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>State:</strong> <code class="bg-muted px-1 py-0.5 rounded">PaginationState?</code> - Optional state for automatic management</p>
-                    <p><strong>PageSizes:</strong> <code class="bg-muted px-1 py-0.5 rounded">int[]</code> - Available page size options (default: 10, 20, 50, 100)</p>
-                    <p><strong>OnPageChanged:</strong> <code class="bg-muted px-1 py-0.5 rounded">EventCallback&lt;int&gt;</code> - Callback when page changes</p>
-                    <p><strong>OnPageSizeChanged:</strong> <code class="bg-muted px-1 py-0.5 rounded">EventCallback&lt;int&gt;</code> - Callback when page size changes</p>
-                </div>
-            </div>
-        </div>
+        <BbPagination TotalPages="10" @bind-CurrentPage="_simplePage" OnPageChanged="HandleSimplePageChanged" />
+        <p class="text-sm text-muted-foreground">Current page: @_simplePage</p>
+
+        <CodeBlock Source="Components/Pagination/simple-mode.txt" />
     </div>
+
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>The root <code class="text-xs bg-muted px-1 py-0.5 rounded">Pagination</code> renders a <code class="text-xs bg-muted px-1 py-0.5 rounded">&lt;nav&gt;</code> element with <code class="text-xs bg-muted px-1 py-0.5 rounded">role="navigation"</code> and <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-label="pagination"</code></AccessibilityItem>
+            <AccessibilityItem>Active page links use <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-current="page"</code> to indicate the current page</AccessibilityItem>
+            <AccessibilityItem>Disabled navigation buttons use the native <code class="text-xs bg-muted px-1 py-0.5 rounded">disabled</code> attribute</AccessibilityItem>
+            <AccessibilityItem>Ellipsis elements use <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-hidden="true"</code> with a <code class="text-xs bg-muted px-1 py-0.5 rounded">sr-only</code> "More pages" label for screen readers</AccessibilityItem>
+            <AccessibilityItem>Icon-only navigation buttons include <code class="text-xs bg-muted px-1 py-0.5 rounded">sr-only</code> text labels for screen reader accessibility</AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Activate the focused pagination button">
+                <BbKbd>Enter</BbKbd> / <BbKbd>Space</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Move focus between pagination controls">
+                <BbKbd>Tab</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="Pagination">
+                <ApiParameter Name="State" Type="PaginationState?" Default="null">
+                    Optional pagination state for automatic state management. When provided, child components automatically wire up to this state.
+                </ApiParameter>
+                <ApiParameter Name="TotalPages" Type="int?" Default="null">
+                    Shorthand total number of pages. When set and ChildContent is null, auto-renders the standard prev/pages/next layout.
+                </ApiParameter>
+                <ApiParameter Name="CurrentPage" Type="int" Default="1">
+                    Current page number (1-based). Used with TotalPages for simple mode. Supports two-way binding.
+                </ApiParameter>
+                <ApiParameter Name="PageSizes" Type="int[]" Default="10, 20, 50, 100">
+                    Available page size options for the page size selector.
+                </ApiParameter>
+                <ApiParameter Name="OnPageChanged" Type="EventCallback<int>">
+                    Callback invoked when the current page changes.
+                </ApiParameter>
+                <ApiParameter Name="OnPageSizeChanged" Type="EventCallback<int>">
+                    Callback invoked when the page size changes.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the root nav element.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?" Default="null">
+                    Custom child content. When null and TotalPages is set, renders the default layout automatically.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="PaginationContent">
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the list container.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?" Default="null">
+                    The pagination items to render inside the list.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="PaginationItem">
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the list item wrapper.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?" Default="null">
+                    The pagination control to render inside the item.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="PaginationLink">
+                <ApiParameter Name="IsActive" Type="bool" Default="false">
+                    Whether this link represents the current active page. Sets aria-current="page" when true.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the link is disabled.
+                </ApiParameter>
+                <ApiParameter Name="Href" Type="string?" Default="null">
+                    Optional URL. When set, renders as an anchor element instead of a button.
+                </ApiParameter>
+                <ApiParameter Name="Size" Type="PaginationLinkSize" Default="Icon">
+                    Size variant. Options: Default, Icon.
+                </ApiParameter>
+                <ApiParameter Name="OnClick" Type="EventCallback">
+                    Click handler for the link.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?" Default="null">
+                    Content to render inside the link (typically a page number).
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="PaginationEllipsis">
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes for the ellipsis indicator.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="PaginationFirst">
+                <ApiParameter Name="Disabled" Type="bool?" Default="null">
+                    Explicitly disable the button. When null, automatically determined from pagination state.
+                </ApiParameter>
+                <ApiParameter Name="OnClick" Type="EventCallback">
+                    Custom click handler. When using pagination state, navigation is automatic.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="PaginationPrevious">
+                <ApiParameter Name="ShowText" Type="bool" Default="true">
+                    Whether to show the text label alongside the icon.
+                </ApiParameter>
+                <ApiParameter Name="Text" Type="string" Default="Previous">
+                    Custom text for the button label.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool?" Default="null">
+                    Explicitly disable the button. When null, automatically determined from pagination state.
+                </ApiParameter>
+                <ApiParameter Name="Size" Type="PaginationLinkSize" Default="Default">
+                    Size of the pagination link.
+                </ApiParameter>
+                <ApiParameter Name="Href" Type="string?" Default="null">
+                    Optional URL. When set, renders as an anchor element.
+                </ApiParameter>
+                <ApiParameter Name="OnClick" Type="EventCallback">
+                    Custom click handler. When using pagination state, navigation is automatic.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="PaginationNext">
+                <ApiParameter Name="ShowText" Type="bool" Default="true">
+                    Whether to show the text label alongside the icon.
+                </ApiParameter>
+                <ApiParameter Name="Text" Type="string" Default="Next">
+                    Custom text for the button label.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool?" Default="null">
+                    Explicitly disable the button. When null, automatically determined from pagination state.
+                </ApiParameter>
+                <ApiParameter Name="Size" Type="PaginationLinkSize" Default="Default">
+                    Size of the pagination link.
+                </ApiParameter>
+                <ApiParameter Name="Href" Type="string?" Default="null">
+                    Optional URL. When set, renders as an anchor element.
+                </ApiParameter>
+                <ApiParameter Name="OnClick" Type="EventCallback">
+                    Custom click handler. When using pagination state, navigation is automatic.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="PaginationLast">
+                <ApiParameter Name="Disabled" Type="bool?" Default="null">
+                    Explicitly disable the button. When null, automatically determined from pagination state.
+                </ApiParameter>
+                <ApiParameter Name="OnClick" Type="EventCallback">
+                    Custom click handler. When using pagination state, navigation is automatic.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="PaginationInfo">
+                <ApiParameter Name="Format" Type="string" Default="Showing {0}-{1} of {2}">
+                    Format string for displaying item range. Use {0} for start, {1} for end, {2} for total.
+                </ApiParameter>
+                <ApiParameter Name="EmptyText" Type="string" Default="No items">
+                    Text to display when there are no items.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?" Default="null">
+                    Custom content to display when not using pagination state.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="PaginationPageDisplay">
+                <ApiParameter Name="Format" Type="string" Default="Page {0} of {1}">
+                    Format string for displaying page info. Use {0} for current page, {1} for total pages.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?" Default="null">
+                    Custom content to display when not using pagination state.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="PaginationPageSizeSelector">
+                <ApiParameter Name="ShowLabel" Type="bool" Default="true">
+                    Whether to show the label text.
+                </ApiParameter>
+                <ApiParameter Name="Label" Type="string" Default="Rows per page">
+                    Label text for the page size selector.
+                </ApiParameter>
+                <ApiParameter Name="PageSizes" Type="int[]?" Default="null">
+                    Override page sizes from context. When null, uses the parent Pagination's PageSizes.
+                </ApiParameter>
+                <ApiParameter Name="TriggerClass" Type="string?" Default="null">
+                    CSS class for the Select trigger element.
+                </ApiParameter>
+                <ApiParameter Name="OnPageSizeChanged" Type="EventCallback<int>">
+                    Custom callback when page size changes.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes.
+                </ApiParameter>
+            </ApiReference>
+        </div>
+    </section>
 </div>
 
 @code {
     private int _currentPage = 1;
+    private int _simplePage = 1;
+
+    private void HandleSimplePageChanged(int page)
+    {
+        _simplePage = page;
+        StateHasChanged();
+    }
 
     // State-managed pagination
     private PaginationState _paginationState = new()

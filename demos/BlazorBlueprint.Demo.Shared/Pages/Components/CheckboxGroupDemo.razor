@@ -1,0 +1,126 @@
+@page "/components/checkbox-group"
+<PageTitle>CheckboxGroup Component - Blazor Blueprint</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">CheckboxGroup Component</h1>
+            <p class="text-xl text-muted-foreground">
+                A group of checkboxes with shared state management and optional select-all support.
+            </p>
+        </div>
+    </div>
+
+    <!-- Basic Usage -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic Usage</h2>
+            <p class="text-sm text-muted-foreground">
+                Use <code class="text-xs bg-muted px-1 py-0.5 rounded">CheckboxGroup</code> and <code class="text-xs bg-muted px-1 py-0.5 rounded">CheckboxGroupItem</code> to manage multiple checkboxes with shared state.
+            </p>
+        </div>
+        <div class="max-w-sm">
+            <BbCheckboxGroup TValue="string" @bind-Values="basicValues">
+                <BbCheckboxGroupItem TValue="string" Value="@("email")" Label="Email notifications" />
+                <BbCheckboxGroupItem TValue="string" Value="@("sms")" Label="SMS notifications" />
+                <BbCheckboxGroupItem TValue="string" Value="@("push")" Label="Push notifications" />
+            </BbCheckboxGroup>
+        </div>
+        <p class="text-sm text-muted-foreground">
+            Selected: @(basicValues.Count > 0 ? string.Join(", ", basicValues) : "None")
+        </p>
+        <CodeBlock Source="Components/CheckboxGroup/basic.txt" />
+    </div>
+
+    <!-- Select All -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Select All with Indeterminate</h2>
+            <p class="text-sm text-muted-foreground">
+                Enable <code class="text-xs bg-muted px-1 py-0.5 rounded">ShowSelectAll</code> to add a master checkbox that automatically handles checked and indeterminate states.
+            </p>
+        </div>
+        <div class="max-w-sm border rounded-lg p-4">
+            <BbCheckboxGroup TValue="string" @bind-Values="selectAllValues" ShowSelectAll SelectAllLabel="Select all permissions">
+                <BbCheckboxGroupItem TValue="string" Value="@("read")" Label="Read" />
+                <BbCheckboxGroupItem TValue="string" Value="@("write")" Label="Write" />
+                <BbCheckboxGroupItem TValue="string" Value="@("delete")" Label="Delete" />
+                <BbCheckboxGroupItem TValue="string" Value="@("admin")" Label="Admin" />
+            </BbCheckboxGroup>
+        </div>
+        <p class="text-sm text-muted-foreground">
+            Selected: @(selectAllValues.Count > 0 ? string.Join(", ", selectAllValues) : "None")
+        </p>
+        <CodeBlock Source="Components/CheckboxGroup/select-all.txt" />
+    </div>
+
+    <!-- Disabled Items -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Disabled Items</h2>
+            <p class="text-sm text-muted-foreground">
+                Disable individual items or the entire group.
+            </p>
+        </div>
+        <div class="flex gap-8">
+            <div class="max-w-sm space-y-2">
+                <h3 class="text-sm font-medium">Individual items disabled</h3>
+                <BbCheckboxGroup TValue="string" @bind-Values="disabledValues">
+                    <BbCheckboxGroupItem TValue="string" Value="@("free")" Label="Free tier" />
+                    <BbCheckboxGroupItem TValue="string" Value="@("pro")" Label="Pro tier" Disabled />
+                    <BbCheckboxGroupItem TValue="string" Value="@("enterprise")" Label="Enterprise tier" Disabled />
+                </BbCheckboxGroup>
+            </div>
+            <div class="max-w-sm space-y-2">
+                <h3 class="text-sm font-medium">Entire group disabled</h3>
+                <BbCheckboxGroup TValue="string" @bind-Values="groupDisabledValues" Disabled>
+                    <BbCheckboxGroupItem TValue="string" Value="@("a")" Label="Option A" />
+                    <BbCheckboxGroupItem TValue="string" Value="@("b")" Label="Option B" />
+                    <BbCheckboxGroupItem TValue="string" Value="@("c")" Label="Option C" />
+                </BbCheckboxGroup>
+            </div>
+        </div>
+        <CodeBlock Source="Components/CheckboxGroup/disabled.txt" />
+    </div>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="CheckboxGroup">
+                <ApiParameter Name="Values" Type="IReadOnlyCollection&lt;TValue&gt;">
+                    The currently selected values. Supports two-way binding with <code class="text-xs bg-muted px-1 py-0.5 rounded">@@bind-Values</code>.
+                </ApiParameter>
+                <ApiParameter Name="ShowSelectAll" Type="bool" Default="false">
+                    When true, shows a "Select all" checkbox with automatic indeterminate state.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Disables all items in the group.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="CheckboxGroupItem">
+                <ApiParameter Name="Value" Type="TValue">
+                    The value this item represents in the group.
+                </ApiParameter>
+                <ApiParameter Name="Label" Type="string?">
+                    Text label displayed next to the checkbox.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Disables this individual item.
+                </ApiParameter>
+            </ApiReference>
+        </div>
+    </section>
+</div>
+
+@code {
+    private IReadOnlyCollection<string> basicValues = Array.Empty<string>();
+    private IReadOnlyCollection<string> selectAllValues = new[] { "read" };
+    private IReadOnlyCollection<string> disabledValues = new[] { "free" };
+    private IReadOnlyCollection<string> groupDisabledValues = new[] { "a", "b" };
+}

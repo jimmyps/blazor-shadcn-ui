@@ -1,0 +1,9 @@
+<EditForm Model="formModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <BbRadioGroup @bind-Value="formModel.NotificationPreference" AriaLabel="Choose notification preference">
+        <BbRadioGroupItem Value="@("email")" Label="Email" />
+        <BbRadioGroupItem Value="@("sms")" Label="SMS" />
+        <BbRadioGroupItem Value="@("push")" Label="Push Notifications" />
+    </BbRadioGroup>
+    <ValidationMessage For="@(() => formModel.NotificationPreference)" />
+</EditForm>

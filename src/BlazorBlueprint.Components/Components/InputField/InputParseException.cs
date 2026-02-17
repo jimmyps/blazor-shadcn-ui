@@ -1,11 +1,11 @@
-namespace BlazorBlueprint.Components.InputField;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Represents an error that occurred while parsing or validating user input
-/// in an <see cref="InputField{TValue}"/> component.
+/// in an <see cref="BbInputField{TValue}"/> component.
 /// </summary>
 /// <remarks>
-/// Raised via the <see cref="InputField{TValue}.OnParseError"/> callback when the user
+/// Raised via the <see cref="BbInputField{TValue}.OnParseError"/> callback when the user
 /// blurs the input with a value that cannot be converted or validated.
 /// Contains the raw input string, target type, and error kind for contextual error reporting.
 /// </remarks>

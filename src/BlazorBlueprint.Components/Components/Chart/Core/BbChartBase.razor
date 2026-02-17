@@ -1,0 +1,14 @@
+@namespace BlazorBlueprint.Components
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<CascadingValue Value="(BbChartBase)this" IsFixed="true">
+    <div id="@chartId"
+         class="@ContainerCssClass"
+         style="@ContainerStyle"
+         data-slot="@DataSlot"
+         @attributes="AdditionalAttributes">
+        <div style="display:none">@ChildContent</div>
+    </div>
+</CascadingValue>

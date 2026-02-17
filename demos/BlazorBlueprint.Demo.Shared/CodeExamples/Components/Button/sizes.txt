@@ -1,0 +1,12 @@
+<BbButton Size="ButtonSize.Small">Small</BbButton>
+<BbButton Size="ButtonSize.Default">Default</BbButton>
+<BbButton Size="ButtonSize.Large">Large</BbButton>
+<BbButton Size="ButtonSize.Icon" AriaLabel="Icon button">
+    <LucideIcon Name="arrow-right" Size="16" />
+</BbButton>
+<BbButton Size="ButtonSize.IconSmall" AriaLabel="Small icon button">
+    <LucideIcon Name="minus" Size="14" />
+</BbButton>
+<BbButton Size="ButtonSize.IconLarge" AriaLabel="Large icon button">
+    <LucideIcon Name="arrow-right" Size="18" />
+</BbButton>

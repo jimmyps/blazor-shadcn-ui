@@ -1,0 +1,5 @@
+<BbPieChart Data="@data" Height="250px">
+    <BbChartTooltip />
+    <BbPie DataKey="desktop" NameKey="month" InnerRadius="60" OuterRadius="80" />
+    <BbPie DataKey="mobile" NameKey="month" InnerRadius="25" OuterRadius="50" />
+</BbPieChart>

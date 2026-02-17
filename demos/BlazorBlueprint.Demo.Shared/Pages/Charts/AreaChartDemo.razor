@@ -1,10 +1,8 @@
 @page "/charts/area"
-@using ApexCharts
-@using BlazorBlueprint.Components.Chart
-
+@using BlazorBlueprint.Icons.Lucide.Components
 <PageTitle>Area Chart - Blazor Blueprint</PageTitle>
 
-<div class="space-y-8 max-w-4xl">
+<div class="space-y-8 max-w-6xl">
     <div>
         <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">Area Chart</h1>
@@ -14,108 +12,316 @@
         </div>
     </div>
 
-    <!-- Default Area -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Default</h2>
-            <p class="text-sm text-muted-foreground">
-                Standard area chart with gradient fill.
-            </p>
+    <!-- Interactive Area Chart (full width hero) -->
+    <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+        <div class="flex items-center justify-between p-6">
+            <div class="flex flex-col space-y-1.5">
+                <h3 class="font-semibold leading-none tracking-tight">Area Chart - Interactive</h3>
+                <p class="text-sm text-muted-foreground">Showing total visitors for the @_subtitleText</p>
+            </div>
+            <BbSelect TValue="string" Value="@_selectedRange" ValueChanged="OnRangeChanged"
+                    Options="@_rangeOptions" Class="w-[160px]" />
         </div>
-        <ChartContainer>
-            <AreaChart TItem="TrendData"
-                       Items="@_trendData"
-                       Variant="AreaChartVariant.Default"
-                       Height="300px">
-                <ApexPointSeries TItem="TrendData"
-                                 Items="@_trendData"
-                                 Name="Desktop"
-                                 SeriesType="SeriesType.Area"
-                                 XValue="@(item => item.Month)"
-                                 YValue="@(item => (decimal)item.Desktop)" />
-            </AreaChart>
-        </ChartContainer>
+        <div class="p-6 pt-0">
+            <BbAreaChart Data="@_filteredChartData" Height="300px">
+                <BbXAxis DataKey="date" />
+                <BbYAxis />
+                <BbChartTooltip />
+                <BbChartLegend />
+                <BbArea DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Curve="CurveType.Smooth" Stacked="true">
+                    <BbFill>
+                        <BbLinearGradient>
+                            <BbGradientStop Offset="0" Color="var(--chart-1)" Opacity="0.6" />
+                            <BbGradientStop Offset="1" Color="var(--chart-1)" Opacity="0.05" />
+                        </BbLinearGradient>
+                    </BbFill>
+                </BbArea>
+                <BbArea DataKey="mobile" Name="Mobile" Color="var(--chart-2)" Curve="CurveType.Smooth" Stacked="true">
+                    <BbFill>
+                        <BbLinearGradient>
+                            <BbGradientStop Offset="0" Color="var(--chart-2)" Opacity="0.6" />
+                            <BbGradientStop Offset="1" Color="var(--chart-2)" Opacity="0.05" />
+                        </BbLinearGradient>
+                    </BbFill>
+                </BbArea>
+            </BbAreaChart>
+        </div>
+        <div class="flex flex-col gap-2 p-6 pt-0">
+            <div class="flex gap-2 items-center font-medium leading-none">
+                Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+            </div>
+            <div class="text-sm text-muted-foreground leading-none">
+                @_dateRangeText
+            </div>
+        </div>
     </div>
+    <CodeBlock Source="Charts/AreaChart/interactive.txt" />
 
-    <!-- Spline Area -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Spline</h2>
-            <p class="text-sm text-muted-foreground">
-                Smooth curved area using spline interpolation.
-            </p>
-        </div>
-        <ChartContainer>
-            <AreaChart TItem="TrendData"
-                       Items="@_trendData"
-                       Variant="AreaChartVariant.Spline"
-                       Height="300px">
-                <ApexPointSeries TItem="TrendData"
-                                 Items="@_trendData"
-                                 Name="Desktop"
-                                 SeriesType="SeriesType.Area"
-                                 XValue="@(item => item.Month)"
-                                 YValue="@(item => (decimal)item.Desktop)" />
-                <ApexPointSeries TItem="TrendData"
-                                 Items="@_trendData"
-                                 Name="Mobile"
-                                 SeriesType="SeriesType.Area"
-                                 XValue="@(item => item.Month)"
-                                 YValue="@(item => (decimal)item.Mobile)" />
-            </AreaChart>
-        </ChartContainer>
-    </div>
+    <!-- Grid of chart variants -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-    <!-- Stacked Area -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Stacked</h2>
-            <p class="text-sm text-muted-foreground">
-                Multiple series stacked showing part-to-whole relationships.
-            </p>
+        <!-- Default (Smooth) -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Area Chart</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbAreaChart Data="@_monthlyData" Height="200px">
+                        <BbXAxis DataKey="month" />
+                        <BbYAxis Show="false" />
+                        <BbChartTooltip />
+                        <BbArea DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Curve="CurveType.Smooth">
+                            <BbFill>
+                                <BbLinearGradient>
+                                    <BbGradientStop Offset="0" Color="var(--chart-1)" Opacity="0.4" />
+                                    <BbGradientStop Offset="1" Color="var(--chart-1)" Opacity="0.05" />
+                                </BbLinearGradient>
+                            </BbFill>
+                        </BbArea>
+                    </BbAreaChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/AreaChart/default.txt" />
         </div>
-        <ChartContainer>
-            <AreaChart TItem="TrendData"
-                       Items="@_trendData"
-                       Variant="AreaChartVariant.Stacked"
-                       Height="300px">
-                <ApexPointSeries TItem="TrendData"
-                                 Items="@_trendData"
-                                 Name="Desktop"
-                                 SeriesType="SeriesType.Area"
-                                 XValue="@(item => item.Month)"
-                                 YValue="@(item => (decimal)item.Desktop)" />
-                <ApexPointSeries TItem="TrendData"
-                                 Items="@_trendData"
-                                 Name="Mobile"
-                                 SeriesType="SeriesType.Area"
-                                 XValue="@(item => item.Month)"
-                                 YValue="@(item => (decimal)item.Mobile)" />
-            </AreaChart>
-        </ChartContainer>
-    </div>
 
-    <!-- Step Area -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Stepline</h2>
-            <p class="text-sm text-muted-foreground">
-                Step area chart showing discrete value changes.
-            </p>
+        <!-- Linear -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Area Chart - Linear</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbAreaChart Data="@_monthlyData" Height="200px">
+                        <BbXAxis DataKey="month" />
+                        <BbYAxis Show="false" />
+                        <BbChartTooltip />
+                        <BbArea DataKey="desktop" Name="Desktop" Color="var(--chart-1)">
+                            <BbFill>
+                                <BbLinearGradient>
+                                    <BbGradientStop Offset="0" Color="var(--chart-1)" Opacity="0.4" />
+                                    <BbGradientStop Offset="1" Color="var(--chart-1)" Opacity="0.05" />
+                                </BbLinearGradient>
+                            </BbFill>
+                        </BbArea>
+                    </BbAreaChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/AreaChart/linear.txt" />
         </div>
-        <ChartContainer>
-            <AreaChart TItem="TrendData"
-                       Items="@_trendData"
-                       Variant="AreaChartVariant.Stepline"
-                       Height="300px">
-                <ApexPointSeries TItem="TrendData"
-                                 Items="@_trendData"
-                                 Name="Desktop"
-                                 SeriesType="SeriesType.Area"
-                                 XValue="@(item => item.Month)"
-                                 YValue="@(item => (decimal)item.Desktop)" />
-            </AreaChart>
-        </ChartContainer>
+
+        <!-- Step -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Area Chart - Step</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbAreaChart Data="@_monthlyData" Height="200px">
+                        <BbXAxis DataKey="month" />
+                        <BbYAxis Show="false" />
+                        <BbChartTooltip />
+                        <BbArea DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Curve="CurveType.Step">
+                            <BbFill>
+                                <BbLinearGradient>
+                                    <BbGradientStop Offset="0" Color="var(--chart-1)" Opacity="0.4" />
+                                    <BbGradientStop Offset="1" Color="var(--chart-1)" Opacity="0.05" />
+                                </BbLinearGradient>
+                            </BbFill>
+                        </BbArea>
+                    </BbAreaChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/AreaChart/step.txt" />
+        </div>
+
+        <!-- Legend -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Area Chart - Legend</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbAreaChart Data="@_monthlyData" Height="200px">
+                        <BbXAxis DataKey="month" />
+                        <BbYAxis Show="false" />
+                        <BbChartTooltip />
+                        <BbChartLegend />
+                        <BbArea DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Curve="CurveType.Smooth">
+                            <BbFill>
+                                <BbLinearGradient>
+                                    <BbGradientStop Offset="0" Color="var(--chart-1)" Opacity="0.4" />
+                                    <BbGradientStop Offset="1" Color="var(--chart-1)" Opacity="0.05" />
+                                </BbLinearGradient>
+                            </BbFill>
+                        </BbArea>
+                        <BbArea DataKey="mobile" Name="Mobile" Color="var(--chart-2)" Curve="CurveType.Smooth">
+                            <BbFill>
+                                <BbLinearGradient>
+                                    <BbGradientStop Offset="0" Color="var(--chart-2)" Opacity="0.4" />
+                                    <BbGradientStop Offset="1" Color="var(--chart-2)" Opacity="0.05" />
+                                </BbLinearGradient>
+                            </BbFill>
+                        </BbArea>
+                    </BbAreaChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/AreaChart/legend.txt" />
+        </div>
+
+        <!-- Stacked -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Area Chart - Stacked</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbAreaChart Data="@_monthlyData" Height="200px">
+                        <BbXAxis DataKey="month" />
+                        <BbYAxis Show="false" />
+                        <BbChartTooltip />
+                        <BbArea DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Curve="CurveType.Smooth" Stacked="true">
+                            <BbFill>
+                                <BbLinearGradient>
+                                    <BbGradientStop Offset="0" Color="var(--chart-1)" Opacity="0.4" />
+                                    <BbGradientStop Offset="1" Color="var(--chart-1)" Opacity="0.05" />
+                                </BbLinearGradient>
+                            </BbFill>
+                        </BbArea>
+                        <BbArea DataKey="mobile" Name="Mobile" Color="var(--chart-2)" Curve="CurveType.Smooth" Stacked="true">
+                            <BbFill>
+                                <BbLinearGradient>
+                                    <BbGradientStop Offset="0" Color="var(--chart-2)" Opacity="0.4" />
+                                    <BbGradientStop Offset="1" Color="var(--chart-2)" Opacity="0.05" />
+                                </BbLinearGradient>
+                            </BbFill>
+                        </BbArea>
+                    </BbAreaChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/AreaChart/stacked.txt" />
+        </div>
+
+        <!-- Gradient -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Area Chart - Gradient</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbAreaChart Data="@_monthlyData" Height="200px">
+                        <BbXAxis DataKey="month" />
+                        <BbYAxis Show="false" />
+                        <BbChartTooltip />
+                        <BbArea DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Curve="CurveType.Smooth" StrokeWidth="0">
+                            <BbFill>
+                                <BbLinearGradient>
+                                    <BbGradientStop Offset="0" Color="var(--chart-1)" Opacity="0.8" />
+                                    <BbGradientStop Offset="1" Color="var(--chart-1)" Opacity="0.1" />
+                                </BbLinearGradient>
+                            </BbFill>
+                        </BbArea>
+                    </BbAreaChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/AreaChart/gradient.txt" />
+        </div>
+
+        <!-- Axes -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Area Chart - Axes</h3>
+                    <p class="text-sm text-muted-foreground">Showing total visitors for the last 6 months</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbAreaChart Data="@_monthlyData" Height="200px">
+                        <BbXAxis DataKey="month" ShowAxisLine="true" ShowTicks="true" />
+                        <BbYAxis ShowGrid="true" />
+                        <BbChartTooltip />
+                        <BbArea DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Curve="CurveType.Smooth">
+                            <BbFill>
+                                <BbLinearGradient>
+                                    <BbGradientStop Offset="0" Color="var(--chart-1)" Opacity="0.4" />
+                                    <BbGradientStop Offset="1" Color="var(--chart-1)" Opacity="0.05" />
+                                </BbLinearGradient>
+                            </BbFill>
+                        </BbArea>
+                        <BbArea DataKey="mobile" Name="Mobile" Color="var(--chart-2)" Curve="CurveType.Smooth">
+                            <BbFill>
+                                <BbLinearGradient>
+                                    <BbGradientStop Offset="0" Color="var(--chart-2)" Opacity="0.4" />
+                                    <BbGradientStop Offset="1" Color="var(--chart-2)" Opacity="0.05" />
+                                </BbLinearGradient>
+                            </BbFill>
+                        </BbArea>
+                    </BbAreaChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        January - June 2024
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/AreaChart/axes.txt" />
+        </div>
     </div>
 
     <!-- API Reference -->
@@ -125,32 +331,52 @@
         </div>
         <div class="border rounded-lg p-6 space-y-4">
             <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Variant</h3>
+                <h3 class="font-mono text-sm font-semibold mb-2">Area.Curve</h3>
                 <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">AreaChartVariant</code>
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">CurveType</code>
                 </p>
                 <p class="text-sm text-muted-foreground">
-                    Options: Default, Spline, Stacked, Stepline
+                    Options: Linear (default), Smooth, Step, StepBefore, StepAfter
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">StrokeWidth</h3>
+                <h3 class="font-mono text-sm font-semibold mb-2">Area.Stacked</h3>
                 <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">int</code> (default: 2)
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code> (default: false)
                 </p>
                 <p class="text-sm text-muted-foreground">
-                    Width of the area border line in pixels.
+                    Whether this area series should be stacked.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">FillOpacity</h3>
+                <h3 class="font-mono text-sm font-semibold mb-2">Area.FillOpacity</h3>
                 <p class="text-sm text-muted-foreground mb-2">
                     Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">double</code> (default: 0.4)
                 </p>
                 <p class="text-sm text-muted-foreground">
-                    Opacity of the area fill (0.0 to 1.0).
+                    Opacity of the area fill (0.0 to 1.0). Overridden when using gradient Fill.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Area.Color</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    CSS color for the area stroke. Use var(--chart-N) tokens.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Fill / LinearGradient / GradientStop</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Compose gradient fills using child components inside any series.
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    GradientStop accepts Offset (0-1), Color, and Opacity parameters.
                 </p>
             </div>
         </div>
@@ -158,14 +384,72 @@
 </div>
 
 @code {
-    public class TrendData
+    public class ChartData
+    {
+        public string Date { get; set; } = "";
+        public int Desktop { get; set; }
+        public int Mobile { get; set; }
+    }
+
+    public class MonthlyData
     {
         public string Month { get; set; } = "";
         public int Desktop { get; set; }
         public int Mobile { get; set; }
     }
 
-    private List<TrendData> _trendData =
+    private string _selectedRange = "90d";
+
+    private readonly SelectOption<string>[] _rangeOptions =
+    [
+        new("90d", "Last 3 months"),
+        new("30d", "Last 30 days"),
+        new("7d", "Last 7 days")
+    ];
+
+    private List<ChartData> _filteredChartData = [];
+
+    private string _subtitleText => _selectedRange switch
+    {
+        "7d" => "last 7 days",
+        "30d" => "last 30 days",
+        _ => "last 3 months"
+    };
+
+    private string _dateRangeText => _selectedRange switch
+    {
+        "7d" => "June 24 - June 30, 2024",
+        "30d" => "June 1 - June 30, 2024",
+        _ => "April 1 - June 30, 2024"
+    };
+
+    protected override void OnInitialized()
+    {
+        ApplyFilter();
+    }
+
+    private void OnRangeChanged(string? value)
+    {
+        _selectedRange = value ?? "90d";
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        var endDate = DateOnly.Parse("2024-06-30");
+        var startDate = _selectedRange switch
+        {
+            "7d" => endDate.AddDays(-6),
+            "30d" => endDate.AddDays(-29),
+            _ => DateOnly.Parse("2024-04-01")
+        };
+
+        _filteredChartData = _chartData
+            .Where(d => DateOnly.Parse(d.Date) >= startDate && DateOnly.Parse(d.Date) <= endDate)
+            .ToList();
+    }
+
+    private List<MonthlyData> _monthlyData =
     [
         new() { Month = "Jan", Desktop = 186, Mobile = 80 },
         new() { Month = "Feb", Desktop = 305, Mobile = 200 },
@@ -173,5 +457,100 @@
         new() { Month = "Apr", Desktop = 73, Mobile = 190 },
         new() { Month = "May", Desktop = 209, Mobile = 130 },
         new() { Month = "Jun", Desktop = 214, Mobile = 140 }
+    ];
+
+    private List<ChartData> _chartData =
+    [
+        new() { Date = "2024-04-01", Desktop = 222, Mobile = 150 },
+        new() { Date = "2024-04-02", Desktop = 97, Mobile = 180 },
+        new() { Date = "2024-04-03", Desktop = 167, Mobile = 120 },
+        new() { Date = "2024-04-04", Desktop = 242, Mobile = 260 },
+        new() { Date = "2024-04-05", Desktop = 373, Mobile = 290 },
+        new() { Date = "2024-04-06", Desktop = 301, Mobile = 340 },
+        new() { Date = "2024-04-07", Desktop = 245, Mobile = 180 },
+        new() { Date = "2024-04-08", Desktop = 409, Mobile = 320 },
+        new() { Date = "2024-04-09", Desktop = 59, Mobile = 110 },
+        new() { Date = "2024-04-10", Desktop = 261, Mobile = 190 },
+        new() { Date = "2024-04-11", Desktop = 327, Mobile = 350 },
+        new() { Date = "2024-04-12", Desktop = 292, Mobile = 210 },
+        new() { Date = "2024-04-13", Desktop = 342, Mobile = 380 },
+        new() { Date = "2024-04-14", Desktop = 137, Mobile = 220 },
+        new() { Date = "2024-04-15", Desktop = 120, Mobile = 170 },
+        new() { Date = "2024-04-16", Desktop = 138, Mobile = 190 },
+        new() { Date = "2024-04-17", Desktop = 446, Mobile = 360 },
+        new() { Date = "2024-04-18", Desktop = 364, Mobile = 410 },
+        new() { Date = "2024-04-19", Desktop = 243, Mobile = 180 },
+        new() { Date = "2024-04-20", Desktop = 89, Mobile = 150 },
+        new() { Date = "2024-04-21", Desktop = 137, Mobile = 200 },
+        new() { Date = "2024-04-22", Desktop = 224, Mobile = 170 },
+        new() { Date = "2024-04-23", Desktop = 138, Mobile = 230 },
+        new() { Date = "2024-04-24", Desktop = 387, Mobile = 290 },
+        new() { Date = "2024-04-25", Desktop = 215, Mobile = 250 },
+        new() { Date = "2024-04-26", Desktop = 75, Mobile = 130 },
+        new() { Date = "2024-04-27", Desktop = 383, Mobile = 420 },
+        new() { Date = "2024-04-28", Desktop = 122, Mobile = 180 },
+        new() { Date = "2024-04-29", Desktop = 315, Mobile = 240 },
+        new() { Date = "2024-04-30", Desktop = 454, Mobile = 380 },
+        new() { Date = "2024-05-01", Desktop = 165, Mobile = 220 },
+        new() { Date = "2024-05-02", Desktop = 293, Mobile = 310 },
+        new() { Date = "2024-05-03", Desktop = 247, Mobile = 190 },
+        new() { Date = "2024-05-04", Desktop = 385, Mobile = 420 },
+        new() { Date = "2024-05-05", Desktop = 481, Mobile = 390 },
+        new() { Date = "2024-05-06", Desktop = 498, Mobile = 520 },
+        new() { Date = "2024-05-07", Desktop = 388, Mobile = 300 },
+        new() { Date = "2024-05-08", Desktop = 149, Mobile = 210 },
+        new() { Date = "2024-05-09", Desktop = 227, Mobile = 180 },
+        new() { Date = "2024-05-10", Desktop = 293, Mobile = 330 },
+        new() { Date = "2024-05-11", Desktop = 335, Mobile = 270 },
+        new() { Date = "2024-05-12", Desktop = 197, Mobile = 240 },
+        new() { Date = "2024-05-13", Desktop = 197, Mobile = 160 },
+        new() { Date = "2024-05-14", Desktop = 448, Mobile = 490 },
+        new() { Date = "2024-05-15", Desktop = 473, Mobile = 380 },
+        new() { Date = "2024-05-16", Desktop = 338, Mobile = 400 },
+        new() { Date = "2024-05-17", Desktop = 499, Mobile = 420 },
+        new() { Date = "2024-05-18", Desktop = 315, Mobile = 350 },
+        new() { Date = "2024-05-19", Desktop = 235, Mobile = 180 },
+        new() { Date = "2024-05-20", Desktop = 177, Mobile = 230 },
+        new() { Date = "2024-05-21", Desktop = 82, Mobile = 140 },
+        new() { Date = "2024-05-22", Desktop = 81, Mobile = 120 },
+        new() { Date = "2024-05-23", Desktop = 252, Mobile = 290 },
+        new() { Date = "2024-05-24", Desktop = 294, Mobile = 220 },
+        new() { Date = "2024-05-25", Desktop = 201, Mobile = 250 },
+        new() { Date = "2024-05-26", Desktop = 213, Mobile = 170 },
+        new() { Date = "2024-05-27", Desktop = 420, Mobile = 460 },
+        new() { Date = "2024-05-28", Desktop = 233, Mobile = 190 },
+        new() { Date = "2024-05-29", Desktop = 78, Mobile = 130 },
+        new() { Date = "2024-05-30", Desktop = 340, Mobile = 280 },
+        new() { Date = "2024-05-31", Desktop = 178, Mobile = 230 },
+        new() { Date = "2024-06-01", Desktop = 178, Mobile = 200 },
+        new() { Date = "2024-06-02", Desktop = 470, Mobile = 410 },
+        new() { Date = "2024-06-03", Desktop = 103, Mobile = 160 },
+        new() { Date = "2024-06-04", Desktop = 439, Mobile = 380 },
+        new() { Date = "2024-06-05", Desktop = 88, Mobile = 140 },
+        new() { Date = "2024-06-06", Desktop = 294, Mobile = 250 },
+        new() { Date = "2024-06-07", Desktop = 323, Mobile = 370 },
+        new() { Date = "2024-06-08", Desktop = 385, Mobile = 320 },
+        new() { Date = "2024-06-09", Desktop = 438, Mobile = 480 },
+        new() { Date = "2024-06-10", Desktop = 155, Mobile = 200 },
+        new() { Date = "2024-06-11", Desktop = 92, Mobile = 150 },
+        new() { Date = "2024-06-12", Desktop = 492, Mobile = 420 },
+        new() { Date = "2024-06-13", Desktop = 81, Mobile = 130 },
+        new() { Date = "2024-06-14", Desktop = 426, Mobile = 380 },
+        new() { Date = "2024-06-15", Desktop = 307, Mobile = 350 },
+        new() { Date = "2024-06-16", Desktop = 371, Mobile = 310 },
+        new() { Date = "2024-06-17", Desktop = 475, Mobile = 520 },
+        new() { Date = "2024-06-18", Desktop = 107, Mobile = 170 },
+        new() { Date = "2024-06-19", Desktop = 341, Mobile = 290 },
+        new() { Date = "2024-06-20", Desktop = 408, Mobile = 450 },
+        new() { Date = "2024-06-21", Desktop = 169, Mobile = 210 },
+        new() { Date = "2024-06-22", Desktop = 317, Mobile = 270 },
+        new() { Date = "2024-06-23", Desktop = 480, Mobile = 530 },
+        new() { Date = "2024-06-24", Desktop = 132, Mobile = 180 },
+        new() { Date = "2024-06-25", Desktop = 141, Mobile = 190 },
+        new() { Date = "2024-06-26", Desktop = 434, Mobile = 380 },
+        new() { Date = "2024-06-27", Desktop = 448, Mobile = 490 },
+        new() { Date = "2024-06-28", Desktop = 149, Mobile = 200 },
+        new() { Date = "2024-06-29", Desktop = 103, Mobile = 160 },
+        new() { Date = "2024-06-30", Desktop = 446, Mobile = 400 }
     ];
 }

@@ -64,10 +64,32 @@ public static class ApiSurfaceGenerator
                 foreach (var prop in parameters)
                 {
                     var paramAttr = prop.GetCustomAttribute<ParameterAttribute>()!;
-                    var suffix = paramAttr.CaptureUnmatchedValues
-                        ? " [CaptureUnmatchedValues]"
-                        : "";
+                    var suffixes = new List<string>();
+                    if (paramAttr.CaptureUnmatchedValues)
+                    {
+                        suffixes.Add("[CaptureUnmatchedValues]");
+                    }
+
+                    if (prop.GetCustomAttribute<EditorRequiredAttribute>() != null)
+                    {
+                        suffixes.Add("[EditorRequired]");
+                    }
+
+                    var suffix = suffixes.Count > 0 ? " " + string.Join(" ", suffixes) : "";
                     sb.AppendLine(CultureInfo.InvariantCulture, $"  - {prop.Name} : {FormatTypeName(prop.PropertyType)}{suffix}");
+                }
+            }
+
+            var cascadingParams = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where(p => p.GetCustomAttribute<CascadingParameterAttribute>() != null && p.DeclaringType == type)
+                .OrderBy(p => p.Name, StringComparer.Ordinal)
+                .ToList();
+
+            if (cascadingParams.Count > 0)
+            {
+                foreach (var prop in cascadingParams)
+                {
+                    sb.AppendLine(CultureInfo.InvariantCulture, $"  - {prop.Name} : {FormatTypeName(prop.PropertyType)} [CascadingParameter]");
                 }
             }
 

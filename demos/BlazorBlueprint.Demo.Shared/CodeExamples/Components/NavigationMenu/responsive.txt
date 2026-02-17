@@ -1,0 +1,24 @@
+<BbResponsiveNavProvider>
+    <header>
+        <!-- Logo -->
+        <a href="/">BlazorBlueprint</a>
+
+        <!-- Desktop navigation -->
+        <BbNavigationMenu Class="hidden md:flex">
+            <BbNavigationMenuList>
+                <BbNavigationMenuItem>
+                    <BbNavigationMenuLink Href="/components">Components</BbNavigationMenuLink>
+                </BbNavigationMenuItem>
+            </BbNavigationMenuList>
+        </BbNavigationMenu>
+
+        <!-- Mobile hamburger -->
+        <BbResponsiveNavTrigger />
+    </header>
+
+    <BbResponsiveNavContent>
+        <nav>
+            <a href="/components">Components</a>
+        </nav>
+    </BbResponsiveNavContent>
+</BbResponsiveNavProvider>

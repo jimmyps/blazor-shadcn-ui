@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Drawer;
+namespace BlazorBlueprint.Components;
 
 public enum DrawerDirection
 {

@@ -1,0 +1,16 @@
+@namespace BlazorBlueprint.Components
+
+<BlazorBlueprint.Primitives.Checkbox.BbCheckbox
+    Id="@EffectiveId"
+    Checked="@Checked"
+    CheckedChanged="@HandleCheckedChanged"
+    Indeterminate="@Indeterminate"
+    IndeterminateChanged="@IndeterminateChanged"
+    Disabled="@Disabled"
+    AriaLabel="@AriaLabel"
+    class="@CssClass"
+    aria-required="@(CheckedExpression != null ? "true" : null)"
+    aria-invalid="@(IsInvalid ? "true" : null)"
+    aria-describedby="@AriaDescribedBy">
+    <BlazorBlueprint.Primitives.Checkbox.BbCheckboxIndicator />
+</BlazorBlueprint.Primitives.Checkbox.BbCheckbox>

@@ -1,0 +1,24 @@
+<BbCommand OnValueChange="HandlePaletteSelect">
+    <BbCommandInput Placeholder="Type a command or search..." />
+    <BbCommandList>
+        <BbCommandEmpty>No results found.</BbCommandEmpty>
+        <BbCommandGroup Heading="Suggestions">
+            <BbCommandItem Value="calendar">
+                <LucideIcon Name="calendar" Size="16" Class="mr-2" />
+                Calendar
+            </BbCommandItem>
+            <BbCommandItem Value="search-emoji">Search Emoji</BbCommandItem>
+            <BbCommandItem Value="calculator">Calculator</BbCommandItem>
+        </BbCommandGroup>
+        <BbCommandSeparator />
+        <BbCommandGroup Heading="Settings">
+            <BbCommandItem Value="profile">
+                <LucideIcon Name="user" Size="16" Class="mr-2" />
+                Profile
+                <BbCommandShortcut>⌘P</BbCommandShortcut>
+            </BbCommandItem>
+            <BbCommandItem Value="billing">Billing</BbCommandItem>
+            <BbCommandItem Value="settings">Settings</BbCommandItem>
+        </BbCommandGroup>
+    </BbCommandList>
+</BbCommand>

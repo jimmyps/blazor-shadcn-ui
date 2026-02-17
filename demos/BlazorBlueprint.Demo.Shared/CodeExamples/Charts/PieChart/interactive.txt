@@ -1,0 +1,7 @@
+<BbPieChart Data="@data" Height="250px">
+    <BbChartTooltip />
+    <BbPie DataKey="visitors" NameKey="browser" InnerRadius="60"
+         ActiveIndex="@selectedIndex">
+        <BbCenterLabel Value="@selectedValue" Title="Visitors" />
+    </BbPie>
+</BbPieChart>

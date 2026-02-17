@@ -1,0 +1,23 @@
+<BbEmpty Size="EmptySize.Small"
+       Title="Small"
+       Description="Compact empty state for tight spaces.">
+    <Icon>
+        <LucideIcon Name="file-x" />
+    </Icon>
+</BbEmpty>
+
+<BbEmpty Size="EmptySize.Default"
+       Title="Default"
+       Description="Standard empty state for most use cases.">
+    <Icon>
+        <LucideIcon Name="file-x" />
+    </Icon>
+</BbEmpty>
+
+<BbEmpty Size="EmptySize.Large"
+       Title="Large"
+       Description="Prominent empty state for primary content areas.">
+    <Icon>
+        <LucideIcon Name="file-x" />
+    </Icon>
+</BbEmpty>

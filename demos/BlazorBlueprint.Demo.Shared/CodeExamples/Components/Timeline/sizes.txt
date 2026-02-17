@@ -1,0 +1,9 @@
+<BbTimeline Size="TimelineSize.Small">
+    <BbTimelineItem IconSize="TimelineSize.Small">
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Event A</BbTimelineTitle>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>

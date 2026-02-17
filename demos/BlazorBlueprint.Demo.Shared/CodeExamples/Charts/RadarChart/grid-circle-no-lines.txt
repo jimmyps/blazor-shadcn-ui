@@ -1,0 +1,6 @@
+<BbRadarChart Data="@data" IndicatorKey="month" Height="250px"
+            Shape="RadarShape.Circle" ShowAxisLines="false">
+    <BbChartTooltip />
+    <BbRadar DataKey="desktop" Name="Desktop" Color="var(--chart-1)"
+           FillOpacity="0.6" ShowDots="false" />
+</BbRadarChart>

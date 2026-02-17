@@ -28,5 +28,11 @@ public class RadioGroupContext<TValue>
     /// <summary>
     /// Gets or sets the list of registered radio group items.
     /// </summary>
-    public List<RadioGroupItem<TValue>> Items { get; set; } = new();
+    public List<BbRadioGroupItem<TValue>> Items { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets default CSS classes to apply to all items in the group.
+    /// Cascaded from the parent RadioGroup's ItemClass parameter.
+    /// </summary>
+    public string? ItemClass { get; set; }
 }

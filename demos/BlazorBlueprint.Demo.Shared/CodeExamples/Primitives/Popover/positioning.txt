@@ -1,0 +1,14 @@
+<BbPopover>
+    <BbPopoverTrigger>Top</BbPopoverTrigger>
+    <BbPopoverContent Side="@PopoverSide.Top">Positioned on top</BbPopoverContent>
+</BbPopover>
+
+<BbPopover>
+    <BbPopoverTrigger>Right</BbPopoverTrigger>
+    <BbPopoverContent Side="@PopoverSide.Right">Positioned on right</BbPopoverContent>
+</BbPopover>
+
+<BbPopover>
+    <BbPopoverTrigger>Left</BbPopoverTrigger>
+    <BbPopoverContent Side="@PopoverSide.Left">Positioned on left</BbPopoverContent>
+</BbPopover>

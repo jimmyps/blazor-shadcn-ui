@@ -1,0 +1,23 @@
+// Value = Label: use SelectOption.FromValue
+private static readonly string[] Fruits = ["Apple", "Banana", "Blueberry", "Grapes", "Pineapple"];
+private readonly SelectOption<string>[] fruitOptions =
+    Fruits.Select(SelectOption.FromValue).ToArray();
+
+<BbSelect TValue="string"
+        @bind-Value="selectedFruit"
+        Options="@fruitOptions"
+        Placeholder="Select a fruit"
+        Class="w-[280px]" />
+
+// Value ≠ Label: provide explicit text
+private readonly SelectOption<int?>[] numberOptions =
+[
+    new(1, "One"), new(2, "Two"), new(3, "Three"),
+    new(4, "Four"), new(5, "Five")
+];
+
+<BbSelect TValue="int?"
+        @bind-Value="selectedNumber"
+        Options="@numberOptions"
+        Placeholder="Select a number"
+        Class="w-[280px]" />

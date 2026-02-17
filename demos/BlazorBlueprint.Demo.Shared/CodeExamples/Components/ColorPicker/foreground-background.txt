@@ -1,0 +1,2 @@
+<BbColorPicker @bind-Value="_fgColor" />
+<BbColorPicker @bind-Value="_bgColor" />

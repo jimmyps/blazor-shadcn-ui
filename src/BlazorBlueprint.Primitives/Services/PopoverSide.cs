@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Primitives.Services;
+namespace BlazorBlueprint.Primitives;
 
 /// <summary>
 /// Defines the side where a positioned element appears relative to its trigger.

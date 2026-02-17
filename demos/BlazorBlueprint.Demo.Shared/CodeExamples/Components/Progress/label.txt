@@ -1,0 +1,6 @@
+<!-- Basic label (shows "60%") -->
+<BbProgress Value="60" ShowLabel="true" />
+
+<!-- Custom format -->
+<BbProgress Value="3" Max="5" ShowLabel="true"
+          LabelFormat="{0}% done" />

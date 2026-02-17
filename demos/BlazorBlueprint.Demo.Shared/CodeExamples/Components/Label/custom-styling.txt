@@ -1,0 +1,5 @@
+<BbLabel For="large-label-input" Class="text-lg font-bold">Large Bold Label</BbLabel>
+<BbInput Id="large-label-input" />
+
+<BbLabel For="colored-label-input" Class="text-blue-600">Colored Label</BbLabel>
+<BbInput Id="colored-label-input" />

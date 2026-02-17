@@ -1,0 +1,18 @@
+<BbTimeline Align="TimelineAlign.Left">
+    <BbTimelineItem Status="TimelineStatus.Completed">
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Data Fetched</BbTimelineTitle>
+                <BbTimelineDescription>Successfully retrieved records.</BbTimelineDescription>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+    <BbTimelineItem Loading="true" Status="TimelineStatus.InProgress">
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Processing</BbTimelineTitle>
+                <BbTimelineDescription>Running data transformation pipeline...</BbTimelineDescription>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>

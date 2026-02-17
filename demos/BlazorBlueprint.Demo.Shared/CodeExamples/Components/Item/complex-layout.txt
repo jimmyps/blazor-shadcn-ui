@@ -1,0 +1,21 @@
+<BbItem Variant="ItemVariant.Outline" Class="flex-wrap">
+    <BbItemMedia Variant="ItemMediaVariant.Image">
+        <BbAvatar>
+            <BbAvatarFallback>TR</BbAvatarFallback>
+        </BbAvatar>
+    </BbItemMedia>
+    <BbItemContent>
+        <BbItemTitle>Task Report</BbItemTitle>
+        <BbItemDescription>Monthly summary of completed tasks.</BbItemDescription>
+    </BbItemContent>
+    <BbItemActions>
+        <BbBadge Variant="BadgeVariant.Default">New</BbBadge>
+    </BbItemActions>
+    <BbItemFooter Class="mt-3">
+        <div class="flex gap-2">
+            <BbButton Variant="ButtonVariant.Default" Size="ButtonSize.Small">Download PDF</BbButton>
+            <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small">Share</BbButton>
+        </div>
+        <span class="text-xs text-muted-foreground">Generated today</span>
+    </BbItemFooter>
+</BbItem>

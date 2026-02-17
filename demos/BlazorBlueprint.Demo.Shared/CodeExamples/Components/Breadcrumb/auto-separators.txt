@@ -1,0 +1,31 @@
+<BbBreadcrumb>
+    <BbBreadcrumbList AutoSeparator="true">
+        <BbBreadcrumbItem>
+            <BbBreadcrumbLink Href="/">Home</BbBreadcrumbLink>
+        </BbBreadcrumbItem>
+        <BbBreadcrumbItem>
+            <BbBreadcrumbLink Href="/components">Components</BbBreadcrumbLink>
+        </BbBreadcrumbItem>
+        <BbBreadcrumbItem>
+            <BbBreadcrumbPage>Breadcrumb</BbBreadcrumbPage>
+        </BbBreadcrumbItem>
+    </BbBreadcrumbList>
+</BbBreadcrumb>
+
+<!-- With a custom separator -->
+<BbBreadcrumb>
+    <BbBreadcrumbList AutoSeparator="true">
+        <SeparatorContent>/</SeparatorContent>
+        <ChildContent>
+            <BbBreadcrumbItem>
+                <BbBreadcrumbLink Href="/">Home</BbBreadcrumbLink>
+            </BbBreadcrumbItem>
+            <BbBreadcrumbItem>
+                <BbBreadcrumbLink Href="/components">Components</BbBreadcrumbLink>
+            </BbBreadcrumbItem>
+            <BbBreadcrumbItem>
+                <BbBreadcrumbPage>Breadcrumb</BbBreadcrumbPage>
+            </BbBreadcrumbItem>
+        </ChildContent>
+    </BbBreadcrumbList>
+</BbBreadcrumb>

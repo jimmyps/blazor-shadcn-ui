@@ -1,7 +1,4 @@
 @page "/components/form-field-multi-select"
-@using BlazorBlueprint.Components.FormFieldMultiSelect
-@using BlazorBlueprint.Components.Button
-@using BlazorBlueprint.Components.Field
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>FormFieldMultiSelect Component - Blazor Blueprint</PageTitle>
@@ -9,37 +6,13 @@
 <div class="space-y-8 max-w-4xl">
     <div>
         <div class="space-y-3">
-            <h1 class="text-4xl font-bold tracking-tight">FormFieldMultiSelect</h1>
+            <div class="flex items-center gap-3">
+                <h1 class="text-4xl font-bold tracking-tight">FormFieldMultiSelect</h1>
+                <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">v3</span>
+            </div>
             <p class="text-xl text-muted-foreground">
                 A form field wrapper for MultiSelect with built-in label, helper text, and error messages.
             </p>
-        </div>
-    </div>
-
-    <!-- When to use -->
-    <div class="rounded-lg border bg-card p-6 space-y-4">
-        <h2 class="text-lg font-semibold">When to use FormFieldMultiSelect</h2>
-        <p class="text-sm text-muted-foreground">
-            Use <code class="text-xs bg-muted px-1 py-0.5 rounded">FormFieldMultiSelect&lt;TItem&gt;</code> when you want a complete,
-            ready-to-use multi-select with label, helper text, and automatic error display. It composes
-            <a href="/components/multiselect" class="text-primary underline underline-offset-4 hover:text-primary/80">MultiSelect</a>
-            with the <a href="/components/field" class="text-primary underline underline-offset-4 hover:text-primary/80">Field</a> component system
-            so you don't have to wire them up manually.
-        </p>
-        <div class="rounded-md border border-dashed p-4 space-y-1.5">
-            <p class="text-sm font-medium">Example scenario</p>
-            <p class="text-sm text-muted-foreground">
-                You're building a job application form where users select their skills from a list.
-                The field needs a label, search, tag display, and validation that at least one skill is selected.
-                Instead of composing MultiSelect + Field + FieldLabel + FieldDescription + FieldError,
-                you drop in a single <code class="text-xs bg-muted px-1 py-0.5 rounded">FormFieldMultiSelect</code> tag
-                and get all of that automatically.
-            </p>
-        </div>
-        <div class="bg-muted rounded-md p-4 space-y-2">
-            <pre class="text-sm font-mono whitespace-pre-wrap">&lt;FormFieldMultiSelect TItem="Skill" Items="skills" @("@")bind-Values="selectedSkills"
-    ValueSelector="@("@")(s =&gt; s.Value)" DisplaySelector="@("@")(s =&gt; s.Label)"
-    Label="Skills" Placeholder="Select your skills..." /&gt;</pre>
         </div>
     </div>
 
@@ -66,11 +39,9 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldMultiSelect TItem="Language"
-                                  Items="_languages"
+            <BbFormFieldMultiSelect TValue="string"
+                                  Options="_languages"
                                   @bind-Values="_selectedLanguages"
-                                  ValueSelector="@(l => l.Value)"
-                                  DisplaySelector="@(l => l.Label)"
                                   Label="Programming languages"
                                   Placeholder="Select languages..."
                                   SearchPlaceholder="Search languages..."
@@ -78,10 +49,121 @@
                                   MatchTriggerWidth="true"
                                   InputClass="w-full" />
         </div>
-        <div class="rounded-lg border p-4 bg-muted/50">
-            <p class="text-sm font-medium mb-1">Selected:</p>
-            <p class="text-sm font-mono">@(_selectedLanguages?.Any() == true ? string.Join(", ", _selectedLanguages) : "(none)")</p>
+        <div class="rounded-lg border p-4 bg-muted/50 space-y-1">
+            <p class="text-sm"><span class="font-medium">Selected values:</span> <span class="font-mono">@(_selectedLanguages?.Any() == true ? string.Join(", ", _selectedLanguages) : "(none)")</span></p>
+            <p class="text-sm"><span class="font-medium">Selected text:</span> @(_selectedLanguages?.Any() == true ? string.Join(", ", _languages.GetTexts(_selectedLanguages)) : "(none)")</p>
         </div>
+        <CodeBlock Source="Components/FormFieldMultiSelect/basic.txt" />
+    </div>
+
+    <!-- Compositional Mode -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Compositional Mode</h2>
+            <p class="text-sm text-muted-foreground">
+                For full control over item rendering, omit <code class="text-xs bg-muted px-1 py-0.5 rounded">Options</code>
+                and use <code class="text-xs bg-muted px-1 py-0.5 rounded">MultiSelectItem</code> children instead.
+                Search, Select All, keyboard navigation, and checkbox indicators work identically.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <BbFormFieldMultiSelect TValue="string"
+                                  @bind-Values="_compositionalValues"
+                                  Label="Permissions"
+                                  Placeholder="Select permissions..."
+                                  SearchPlaceholder="Search..."
+                                  ShowSelectAll="true"
+                                  SelectAllLabel="Select All"
+                                  HelperText="Assign access permissions."
+                                  MatchTriggerWidth="true"
+                                  InputClass="w-full">
+                <BbMultiSelectItem Value="@("read")" Text="Read">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block h-2 w-2 rounded-full bg-green-500"></span>
+                        Read
+                    </div>
+                </BbMultiSelectItem>
+                <BbMultiSelectItem Value="@("write")" Text="Write">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block h-2 w-2 rounded-full bg-yellow-500"></span>
+                        Write
+                    </div>
+                </BbMultiSelectItem>
+                <BbMultiSelectItem Value="@("delete")" Text="Delete">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block h-2 w-2 rounded-full bg-red-500"></span>
+                        Delete
+                    </div>
+                </BbMultiSelectItem>
+                <BbMultiSelectItem Value="@("admin")" Text="Admin">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block h-2 w-2 rounded-full bg-purple-500"></span>
+                        Admin
+                    </div>
+                </BbMultiSelectItem>
+            </BbFormFieldMultiSelect>
+        </div>
+        <div class="rounded-lg border p-4 bg-muted/50 space-y-1">
+            <p class="text-sm"><span class="font-medium">Selected values:</span> <span class="font-mono">@(_compositionalValues?.Any() == true ? string.Join(", ", _compositionalValues) : "(none)")</span></p>
+            <p class="text-sm"><span class="font-medium">Selected text:</span> @(_compositionalValues?.Any() == true ? string.Join(", ", _compositionalValues.Select(GetCompositionalLabel)) : "(none)")</p>
+        </div>
+        <CodeBlock Source="Components/FormFieldMultiSelect/compositional.txt" />
+    </div>
+
+    <!-- Non-String Value Types -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Non-String Value Types</h2>
+            <p class="text-sm text-muted-foreground">
+                Use <code class="text-xs bg-muted px-1 py-0.5 rounded">TValue</code> to bind to non-string types such as
+                <code class="text-xs bg-muted px-1 py-0.5 rounded">IEnumerable&lt;int&gt;?</code>. The component handles
+                conversion automatically.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <BbFormFieldMultiSelect TValue="int"
+                                  Options="_permissions"
+                                  @bind-Values="_selectedPermissions"
+                                  Label="Permissions"
+                                  Placeholder="Select permissions..."
+                                  SearchPlaceholder="Search permissions..."
+                                  HelperText="Assign permissions to this role."
+                                  MatchTriggerWidth="true"
+                                  InputClass="w-full" />
+        </div>
+        <div class="rounded-lg border p-4 bg-muted/50 space-y-1">
+            <p class="text-sm"><span class="font-medium">Selected values:</span> <span class="font-mono">@(_selectedPermissions?.Any() == true ? string.Join(", ", _selectedPermissions) : "(none)")</span></p>
+            <p class="text-sm"><span class="font-medium">Selected text:</span> @(_selectedPermissions?.Any() == true ? string.Join(", ", _permissions.GetTexts(_selectedPermissions)) : "(none)")</p>
+        </div>
+        <CodeBlock Source="Components/FormFieldMultiSelect/non-string.txt" />
+    </div>
+
+    <!-- Guid Values -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Guid Values</h2>
+            <p class="text-sm text-muted-foreground">
+                Bind to <code class="text-xs bg-muted px-1 py-0.5 rounded">IEnumerable&lt;Guid&gt;?</code> values when your items use
+                unique identifiers. Set <code class="text-xs bg-muted px-1 py-0.5 rounded">TValue="Guid"</code> and
+                the component handles serialization and comparison.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <BbFormFieldMultiSelect TValue="Guid"
+                                  Options="_projects"
+                                  @bind-Values="_selectedProjects"
+                                  Label="Projects"
+                                  Placeholder="Select projects..."
+                                  SearchPlaceholder="Search projects..."
+                                  HelperText="Choose projects to include."
+                                  MatchTriggerWidth="true"
+                                  InputClass="w-full" />
+        </div>
+        <div class="rounded-lg border p-4 bg-muted/50 space-y-1">
+            <p class="text-sm"><span class="font-medium">Selected values:</span> <span class="font-mono">@(_selectedProjects?.Any() == true ? string.Join(", ", _selectedProjects) : "(none)")</span></p>
+            <p class="text-sm"><span class="font-medium">Selected text:</span> @(_selectedProjects?.Any() == true ? string.Join(", ", _projects.GetTexts(_selectedProjects)) : "(none)")</p>
+        </div>
+        <CodeBlock Source="Components/FormFieldMultiSelect/guid.txt" />
     </div>
 
     <!-- Without Select All -->
@@ -94,11 +176,9 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldMultiSelect TItem="Technology"
-                                  Items="_technologies"
+            <BbFormFieldMultiSelect TValue="string"
+                                  Options="_technologies"
                                   @bind-Values="_selectedTechnologies"
-                                  ValueSelector="@(t => t.Value)"
-                                  DisplaySelector="@(t => t.Label)"
                                   Label="Tech stack"
                                   Placeholder="Select technologies..."
                                   SearchPlaceholder="Search..."
@@ -107,10 +187,11 @@
                                   MatchTriggerWidth="true"
                                   InputClass="w-full" />
         </div>
-        <div class="rounded-lg border p-4 bg-muted/50">
-            <p class="text-sm font-medium mb-1">Selected:</p>
-            <p class="text-sm font-mono">@(_selectedTechnologies?.Any() == true ? string.Join(", ", _selectedTechnologies) : "(none)")</p>
+        <div class="rounded-lg border p-4 bg-muted/50 space-y-1">
+            <p class="text-sm"><span class="font-medium">Selected values:</span> <span class="font-mono">@(_selectedTechnologies?.Any() == true ? string.Join(", ", _selectedTechnologies) : "(none)")</span></p>
+            <p class="text-sm"><span class="font-medium">Selected text:</span> @(_selectedTechnologies?.Any() == true ? string.Join(", ", _technologies.GetTexts(_selectedTechnologies)) : "(none)")</p>
         </div>
+        <CodeBlock Source="Components/FormFieldMultiSelect/without-select-all.txt" />
     </div>
 
     <!-- Disabled -->
@@ -122,17 +203,16 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldMultiSelect TItem="Language"
-                                  Items="_languages"
+            <BbFormFieldMultiSelect TValue="string"
+                                  Options="_languages"
                                   Values="@(new[] { "csharp", "typescript" })"
-                                  ValueSelector="@(l => l.Value)"
-                                  DisplaySelector="@(l => l.Label)"
                                   Label="Required skills"
                                   HelperText="These skills are required for this role."
                                   MatchTriggerWidth="true"
                                   InputClass="w-full"
                                   Disabled="true" />
         </div>
+        <CodeBlock Source="Components/FormFieldMultiSelect/disabled.txt" />
     </div>
 
     <!-- EditForm Integration -->
@@ -148,75 +228,185 @@
             <EditForm Model="_formModel" OnValidSubmit="HandleFormSubmit">
                 <DataAnnotationsValidator />
                 <div class="space-y-4">
-                    <FormFieldMultiSelect TItem="Language"
-                                          Items="_languages"
+                    <BbFormFieldMultiSelect TValue="string"
+                                          Options="_languages"
                                           @bind-Values="_formModel.Skills"
-                                          ValueSelector="@(l => l.Value)"
-                                          DisplaySelector="@(l => l.Label)"
                                           Label="Skills"
                                           Placeholder="Select your skills..."
                                           SearchPlaceholder="Search skills..."
                                           MatchTriggerWidth="true"
                                           InputClass="w-full" />
-                    <Button Type="ButtonType.Submit">Submit</Button>
+                    <BbButton Type="ButtonType.Submit">Submit</BbButton>
                 </div>
             </EditForm>
             @if (_formSubmitted)
             {
-                <div class="mt-4 rounded-lg border border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800 p-4">
+                <div class="mt-4 rounded-lg border border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800 p-4 space-y-1">
                     <p class="text-sm font-medium text-green-800 dark:text-green-200">
-                        Submitted: @(_formModel.Skills != null ? string.Join(", ", _formModel.Skills) : "(none)")
+                        Submitted values: <span class="font-mono">@(_formModel.Skills != null ? string.Join(", ", _formModel.Skills) : "(none)")</span>
+                    </p>
+                    <p class="text-sm font-medium text-green-800 dark:text-green-200">
+                        Submitted text: @(_formModel.Skills != null ? string.Join(", ", _languages.GetTexts(_formModel.Skills)) : "(none)")
                     </p>
                 </div>
             }
         </div>
+        <CodeBlock Source="Components/FormFieldMultiSelect/edit-form.txt" />
     </div>
+
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Automatically associates label with input via generated ID</AccessibilityItem>
+            <AccessibilityItem>Description linked via aria-describedby</AccessibilityItem>
+            <AccessibilityItem>Validation errors displayed with aria-invalid</AccessibilityItem>
+        </AriaAttributes>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="FormFieldMultiSelect&lt;TValue&gt;">
+                <ApiParameter Name="Label" Type="string?" Default="null">
+                    The label text displayed above the multi-select.
+                </ApiParameter>
+                <ApiParameter Name="HelperText" Type="string?" Default="null">
+                    Helper text displayed below the multi-select. Hidden during error state.
+                </ApiParameter>
+                <ApiParameter Name="ErrorText" Type="string?" Default="null">
+                    Manual error text override. When the field is invalid and this is set, replaces auto-generated messages.
+                </ApiParameter>
+                <ApiParameter Name="Orientation" Type="FieldOrientation" Default="Vertical">
+                    Layout orientation of the field.
+                </ApiParameter>
+                <ApiParameter Name="Options" Type="IEnumerable&lt;SelectOption&lt;TValue&gt;&gt;?" Default="null">
+                    Collection of options to display. When provided, uses Options mode. When null, uses Compositional mode with ChildContent.
+                </ApiParameter>
+                <ApiParameter Name="Values" Type="IEnumerable&lt;TValue&gt;?" Default="null">
+                    The currently selected values. Use @@bind-Values for two-way binding.
+                </ApiParameter>
+                <ApiParameter Name="ValuesChanged" Type="EventCallback&lt;IEnumerable&lt;TValue&gt;?&gt;">
+                    Callback invoked when the selected values change.
+                </ApiParameter>
+                <ApiParameter Name="Placeholder" Type="string" Default="&quot;Select items...&quot;">
+                    Placeholder text shown when no items are selected.
+                </ApiParameter>
+                <ApiParameter Name="SearchPlaceholder" Type="string" Default="&quot;Search...&quot;">
+                    Placeholder text shown in the search input.
+                </ApiParameter>
+                <ApiParameter Name="EmptyMessage" Type="string" Default="&quot;No results found.&quot;">
+                    Message displayed when no items match the search.
+                </ApiParameter>
+                <ApiParameter Name="ShowSelectAll" Type="bool" Default="true">
+                    Whether to show the Select All option.
+                </ApiParameter>
+                <ApiParameter Name="SelectAllLabel" Type="string" Default="&quot;Select All&quot;">
+                    Label for the Select All option.
+                </ApiParameter>
+                <ApiParameter Name="ClearLabel" Type="string" Default="&quot;Clear&quot;">
+                    Label for the Clear button.
+                </ApiParameter>
+                <ApiParameter Name="CloseLabel" Type="string" Default="&quot;Close&quot;">
+                    Label for the Close button.
+                </ApiParameter>
+                <ApiParameter Name="MaxDisplayTags" Type="int" Default="3">
+                    Maximum number of tags to display before showing "+N more".
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the multi-select is disabled.
+                </ApiParameter>
+                <ApiParameter Name="MatchTriggerWidth" Type="bool" Default="false">
+                    Whether to match the dropdown width to the trigger element width.
+                </ApiParameter>
+                <ApiParameter Name="PopoverWidth" Type="string" Default="&quot;w-[300px]&quot;">
+                    CSS class for the width of the popover content.
+                </ApiParameter>
+                <ApiParameter Name="AutoClose" Type="bool" Default="true">
+                    Whether clicking outside the dropdown should close it.
+                </ApiParameter>
+                <ApiParameter Name="InputClass" Type="string?" Default="null">
+                    Additional CSS classes applied to the inner MultiSelect element.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes applied to the outer Field container.
+                </ApiParameter>
+                <ApiParameter Name="AriaLabel" Type="string?" Default="null">
+                    ARIA label for the control.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?" Default="null">
+                    Content for compositional mode. Use MultiSelectItem components as children.
+                </ApiParameter>
+            </ApiReference>
+        </div>
+    </section>
 </div>
 
 @code {
     private IEnumerable<string>? _selectedLanguages;
+    private IEnumerable<string>? _compositionalValues;
     private IEnumerable<string>? _selectedTechnologies;
+    private IEnumerable<int>? _selectedPermissions;
+    private IEnumerable<Guid>? _selectedProjects;
     private bool _formSubmitted;
     private MultiSelectFormModel _formModel = new();
 
-    private readonly List<Language> _languages = new()
+    private readonly SelectOption<string>[] _languages =
+    [
+        new("csharp", "C#"),
+        new("typescript", "TypeScript"),
+        new("javascript", "JavaScript"),
+        new("python", "Python"),
+        new("java", "Java"),
+        new("go", "Go"),
+        new("rust", "Rust"),
+        new("php", "PHP")
+    ];
+
+    private readonly SelectOption<string>[] _technologies =
+    [
+        new("react", "React"),
+        new("vue", "Vue.js"),
+        new("angular", "Angular"),
+        new("blazor", "Blazor"),
+        new("nextjs", "Next.js"),
+        new("dotnet", ".NET"),
+        new("docker", "Docker")
+    ];
+
+    private readonly SelectOption<int>[] _permissions =
+    [
+        new(1, "Read"),
+        new(2, "Write"),
+        new(3, "Delete"),
+        new(4, "Admin"),
+        new(5, "Export")
+    ];
+
+    private readonly SelectOption<Guid>[] _projects =
+    [
+        new(Guid.Parse("a1b2c3d4-0001-0000-0000-000000000001"), "Alpha"),
+        new(Guid.Parse("a1b2c3d4-0002-0000-0000-000000000002"), "Beta"),
+        new(Guid.Parse("a1b2c3d4-0003-0000-0000-000000000003"), "Gamma"),
+        new(Guid.Parse("a1b2c3d4-0004-0000-0000-000000000004"), "Delta")
+    ];
+
+    private readonly Dictionary<string, string> _compositionalLabels = new()
     {
-        new Language { Value = "csharp", Label = "C#" },
-        new Language { Value = "typescript", Label = "TypeScript" },
-        new Language { Value = "javascript", Label = "JavaScript" },
-        new Language { Value = "python", Label = "Python" },
-        new Language { Value = "java", Label = "Java" },
-        new Language { Value = "go", Label = "Go" },
-        new Language { Value = "rust", Label = "Rust" },
-        new Language { Value = "php", Label = "PHP" }
+        ["read"] = "Read",
+        ["write"] = "Write",
+        ["delete"] = "Delete",
+        ["admin"] = "Admin"
     };
 
-    private readonly List<Technology> _technologies = new()
-    {
-        new Technology { Value = "react", Label = "React" },
-        new Technology { Value = "vue", Label = "Vue.js" },
-        new Technology { Value = "angular", Label = "Angular" },
-        new Technology { Value = "blazor", Label = "Blazor" },
-        new Technology { Value = "nextjs", Label = "Next.js" },
-        new Technology { Value = "dotnet", Label = ".NET" },
-        new Technology { Value = "docker", Label = "Docker" }
-    };
+    private string GetCompositionalLabel(string value) =>
+        _compositionalLabels.GetValueOrDefault(value) ?? value;
 
     private void HandleFormSubmit()
     {
         _formSubmitted = true;
-    }
-
-    private class Language
-    {
-        public required string Value { get; set; }
-        public required string Label { get; set; }
-    }
-
-    private class Technology
-    {
-        public required string Value { get; set; }
-        public required string Label { get; set; }
     }
 
     private class MultiSelectFormModel

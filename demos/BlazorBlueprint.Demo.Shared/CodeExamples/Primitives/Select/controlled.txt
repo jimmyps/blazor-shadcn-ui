@@ -1,0 +1,10 @@
+<BbSelect TValue="string" @bind-Value="value">
+    <BbSelectTrigger class="...">
+        <BbSelectValue Placeholder="Select..." />
+    </BbSelectTrigger>
+    <BbSelectContent class="...">
+        <BbSelectItem Value="@("mango")" Text="Mango" />
+    </BbSelectContent>
+</BbSelect>
+
+<button @onclick="@(() => value = "mango")">Set to Mango</button>

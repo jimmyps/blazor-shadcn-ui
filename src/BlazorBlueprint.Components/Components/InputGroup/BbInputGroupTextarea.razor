@@ -1,0 +1,19 @@
+@namespace BlazorBlueprint.Components
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+<textarea
+    @ref="inputRef"
+    id="@EffectiveId"
+    name="@EffectiveName"
+    data-slot="input-group-control"
+    class="@CssClass"
+    rows="@Rows"
+    placeholder="@Placeholder"
+    disabled="@Disabled"
+    required="@Required"
+    aria-label="@AriaLabel"
+    aria-describedby="@AriaDescribedBy"
+    aria-invalid="@EffectiveAriaInvalid"
+    @attributes="AdditionalAttributes">@Value</textarea>

@@ -28,7 +28,7 @@
                 <h3 class="text-sm font-medium">BlazorBlueprint</h3>
                 <p class="text-sm text-muted-foreground">A BlazorBlueprint component library</p>
             </div>
-            <Separator Orientation="SeparatorOrientation.Horizontal" />
+            <BbSeparator Orientation="SeparatorOrientation.Horizontal" />
             <div class="space-y-1">
                 <h4 class="text-sm font-medium leading-none">Components</h4>
                 <p class="text-sm text-muted-foreground">
@@ -36,6 +36,7 @@
                 </p>
             </div>
         </div>
+        <CodeBlock Source="Components/Separator/horizontal.txt" />
     </div>
 
     <!-- Vertical Separator -->
@@ -48,13 +49,14 @@
         </div>
         <div class="flex h-20 items-center space-x-4 text-sm">
             <div>Button</div>
-            <Separator Orientation="SeparatorOrientation.Vertical" />
+            <BbSeparator Orientation="SeparatorOrientation.Vertical" />
             <div>Input</div>
-            <Separator Orientation="SeparatorOrientation.Vertical" />
+            <BbSeparator Orientation="SeparatorOrientation.Vertical" />
             <div>Badge</div>
-            <Separator Orientation="SeparatorOrientation.Vertical" />
+            <BbSeparator Orientation="SeparatorOrientation.Vertical" />
             <div>Separator</div>
         </div>
+        <CodeBlock Source="Components/Separator/vertical.txt" />
     </div>
 
     <!-- Decorative vs Semantic -->
@@ -74,7 +76,7 @@
                 <div class="space-y-1">
                     <p class="text-sm">Section 1</p>
                 </div>
-                <Separator Decorative="true" Class="my-4" />
+                <BbSeparator Decorative="true" Class="my-4" />
                 <div class="space-y-1">
                     <p class="text-sm">Section 2</p>
                 </div>
@@ -89,13 +91,14 @@
                     <h4 class="text-sm font-medium">Settings</h4>
                     <p class="text-xs text-muted-foreground">Configure your account</p>
                 </div>
-                <Separator Decorative="false" Class="my-4" />
+                <BbSeparator Decorative="false" Class="my-4" />
                 <div class="space-y-1">
                     <h4 class="text-sm font-medium">Privacy</h4>
                     <p class="text-xs text-muted-foreground">Manage privacy settings</p>
                 </div>
             </div>
         </div>
+        <CodeBlock Source="Components/Separator/decorative-vs-semantic.txt" />
     </div>
 
     <!-- Custom Styling -->
@@ -109,21 +112,22 @@
         <div class="space-y-4 max-w-md">
             <div>
                 <p class="text-sm">Default separator</p>
-                <Separator Class="my-4" />
+                <BbSeparator Class="my-4" />
             </div>
             <div>
                 <p class="text-sm">Thicker separator</p>
-                <Separator Class="my-4 h-[2px]" />
+                <BbSeparator Class="my-4 h-[2px]" />
             </div>
             <div>
                 <p class="text-sm">Colored separator</p>
-                <Separator Class="my-4 bg-primary" />
+                <BbSeparator Class="my-4 bg-primary" />
             </div>
             <div>
                 <p class="text-sm">Dashed separator</p>
-                <Separator Class="my-4 border-t border-dashed border-border h-0" />
+                <BbSeparator Class="my-4 border-t border-dashed border-border h-0" />
             </div>
         </div>
+        <CodeBlock Source="Components/Separator/custom-styling.txt" />
     </div>
 
     <!-- Usage in Lists -->
@@ -139,60 +143,45 @@
                 <h3 class="font-medium">Profile Settings</h3>
                 <p class="text-sm text-muted-foreground">Manage your account</p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div class="p-4">
                 <h3 class="font-medium">Preferences</h3>
                 <p class="text-sm text-muted-foreground">Customize your experience</p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div class="p-4">
                 <h3 class="font-medium">Notifications</h3>
                 <p class="text-sm text-muted-foreground">Configure alerts</p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div class="p-4">
                 <h3 class="font-medium">Security</h3>
                 <p class="text-sm text-muted-foreground">Password and authentication</p>
             </div>
         </div>
+        <CodeBlock Source="Components/Separator/in-lists.txt" />
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Orientation</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">SeparatorOrientation</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    The orientation of the separator. Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">Horizontal</code>
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Decorative</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="Separator">
+                <ApiParameter Name="Orientation" Type="SeparatorOrientation" Default="Horizontal">
+                    The orientation of the separator. Options: Horizontal or Vertical.
+                </ApiParameter>
+                <ApiParameter Name="Decorative" Type="bool" Default="true">
                     When true (default), the separator is purely decorative and hidden from screen readers.
                     Set to false for semantic separators that convey content structure.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Class</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
                     Additional CSS classes to apply to the separator element.
-                </p>
-            </div>
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>

@@ -1,0 +1,5 @@
+<BbRadioGroup @bind-Value="selectedOption" AriaLabel="Choose an option">
+    <BbRadioGroupItem Value="@("default")" Label="Default" />
+    <BbRadioGroupItem Value="@("comfortable")" Label="Comfortable" />
+    <BbRadioGroupItem Value="@("compact")" Label="Compact" />
+</BbRadioGroup>

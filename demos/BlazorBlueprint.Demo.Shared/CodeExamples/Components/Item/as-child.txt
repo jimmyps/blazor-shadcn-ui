@@ -1,0 +1,22 @@
+<BbItem Variant="ItemVariant.Outline" AsChild="a" Href="https://github.com" target="_blank">
+    <BbItemMedia>
+        <LucideIcon Name="github" Size="18" />
+    </BbItemMedia>
+    <BbItemContent>
+        <BbItemTitle>View on GitHub</BbItemTitle>
+        <BbItemDescription>Opens in a new tab</BbItemDescription>
+    </BbItemContent>
+    <BbItemActions>
+        <LucideIcon Name="external-link" Size="16" />
+    </BbItemActions>
+</BbItem>
+
+<BbItem Variant="ItemVariant.Outline" AsChild="button" @onclick="@(() => {})">
+    <BbItemMedia>
+        <LucideIcon Name="star" Size="18" />
+    </BbItemMedia>
+    <BbItemContent>
+        <BbItemTitle>Mark as Favorite</BbItemTitle>
+        <BbItemDescription>Click to toggle favorite status</BbItemDescription>
+    </BbItemContent>
+</BbItem>

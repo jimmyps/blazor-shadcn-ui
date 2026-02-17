@@ -1,0 +1,2 @@
+<BbRichTextEditor Value="<p>This editor is <strong>disabled</strong>.</p>"
+                Disabled="true" />

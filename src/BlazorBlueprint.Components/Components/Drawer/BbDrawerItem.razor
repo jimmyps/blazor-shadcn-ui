@@ -1,0 +1,53 @@
+@namespace BlazorBlueprint.Components
+
+<button type="button"
+        class="@CssClass"
+        disabled="@Disabled"
+        @onclick="HandleClick">
+    @if (Icon != null)
+    {
+        <span class="mr-3 h-5 w-5 shrink-0">
+            @Icon
+        </span>
+    }
+    @ChildContent
+</button>
+
+@code {
+    [CascadingParameter]
+    public BbDrawer? DrawerContext { get; set; }
+
+    [Parameter]
+    public RenderFragment? Icon { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public bool CloseOnClick { get; set; } = true;
+
+    private string CssClass => ClassNames.cn(
+        "flex w-full items-center rounded-md px-4 py-3 text-sm font-medium transition-colors",
+        "hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "disabled:pointer-events-none disabled:opacity-50",
+        Class
+    );
+
+    private async Task HandleClick()
+    {
+        await OnClick.InvokeAsync();
+        if (CloseOnClick && DrawerContext != null)
+        {
+            await DrawerContext.SetOpen(false);
+        }
+    }
+}

@@ -1,0 +1,12 @@
+<BbSplitButton OnClick="HandleSave">
+    <ChildContent>
+        <LucideIcon Name="save" Size="16" Class="mr-2" />
+        Save
+    </ChildContent>
+    <DropdownContent>
+        <BbSplitButtonItem OnClick="HandleSaveAs">
+            <LucideIcon Name="file-plus" Size="16" Class="mr-2" />
+            Save As...
+        </BbSplitButtonItem>
+    </DropdownContent>
+</BbSplitButton>

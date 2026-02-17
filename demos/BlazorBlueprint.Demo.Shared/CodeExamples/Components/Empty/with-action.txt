@@ -1,0 +1,12 @@
+<BbEmpty Title="No projects"
+       Description="Get started by creating your first project.">
+    <Icon>
+        <LucideIcon Name="folder-open" />
+    </Icon>
+    <ChildContent>
+        <BbButton>
+            <LucideIcon Name="plus" Class="h-4 w-4 mr-2" />
+            Create Project
+        </BbButton>
+    </ChildContent>
+</BbEmpty>

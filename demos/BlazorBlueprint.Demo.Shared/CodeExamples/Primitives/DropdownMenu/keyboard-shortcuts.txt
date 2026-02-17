@@ -1,0 +1,27 @@
+@inject IKeyboardShortcutService KeyboardShortcuts
+@implements IAsyncDisposable
+
+@code {
+    private IDisposable? _shortcutNew;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _shortcutNew = await KeyboardShortcuts.RegisterAsync(
+                "Ctrl+Shift+N", HandleNewFile);
+        }
+    }
+
+    private Task HandleNewFile()
+    {
+        // Handle the shortcut action
+        return Task.CompletedTask;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        _shortcutNew?.Dispose();
+        return ValueTask.CompletedTask;
+    }
+}

@@ -1,0 +1,22 @@
+<BbFormFieldCombobox TValue="Guid?"
+                   Options="_projects"
+                   @bind-Value="_selectedProject"
+                   Label="Project"
+                   Placeholder="Select project..."
+                   SearchPlaceholder="Search projects..."
+                   EmptyMessage="No project found."
+                   HelperText="Choose the target project."
+                   MatchTriggerWidth="true"
+                   InputClass="w-full" />
+
+@code {
+    private Guid? _selectedProject;
+
+    private readonly SelectOption<Guid?>[] _projects =
+    [
+        new(Guid.Parse("..."), "Alpha"),
+        new(Guid.Parse("..."), "Beta")
+    ];
+
+    // _projects.GetText(_selectedProject)
+}

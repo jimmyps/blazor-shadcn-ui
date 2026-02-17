@@ -1,0 +1,5 @@
+<div class="flex h-20 items-center space-x-4">
+    <div>Button</div>
+    <BbSeparator Orientation="SeparatorOrientation.Vertical" />
+    <div>Input</div>
+</div>

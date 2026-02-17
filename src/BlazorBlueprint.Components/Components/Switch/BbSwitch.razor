@@ -1,0 +1,18 @@
+@namespace BlazorBlueprint.Components
+
+<BlazorBlueprint.Primitives.Switch.BbSwitch Checked="@Checked"
+                 CheckedChanged="@HandleCheckedChanged"
+                 Disabled="@Disabled"
+                 Id="@Id"
+                 aria-label="@AriaLabel"
+                 aria-required="@(CheckedExpression != null ? "true" : null)"
+                 aria-invalid="@(IsInvalid ? "true" : null)"
+                 aria-describedby="@AriaDescribedBy"
+                 class="@CssClass">
+    <BlazorBlueprint.Primitives.Switch.BbSwitchThumb class="@ThumbCssClass">
+        @if (ThumbContent is not null)
+        {
+            @ThumbContent(Checked)
+        }
+    </BlazorBlueprint.Primitives.Switch.BbSwitchThumb>
+</BlazorBlueprint.Primitives.Switch.BbSwitch>

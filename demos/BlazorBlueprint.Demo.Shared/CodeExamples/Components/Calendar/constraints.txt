@@ -1,0 +1,1 @@
+<BbCalendar @bind-Selected="_constrainedDate" MinDate="@_minDate" MaxDate="@_maxDate" />

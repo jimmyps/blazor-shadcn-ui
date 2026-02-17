@@ -1,0 +1,6 @@
+<BbFormFieldInput TValue="int"
+                   @bind-Value="age"
+                   Label="Age"
+                   HelperText="Must be between 1 and 100."
+                   Validation="v => v >= 1 && v <= 100"
+                   Placeholder="Enter your age" />

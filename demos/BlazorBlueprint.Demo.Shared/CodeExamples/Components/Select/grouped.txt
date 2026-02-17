@@ -1,0 +1,18 @@
+<BbSelect @bind-Value="selectedAnimal" TValue="string" Class="w-[280px]">
+    <BbSelectTrigger>
+        <BbSelectValue Placeholder="Select an animal" />
+    </BbSelectTrigger>
+    <BbSelectContent>
+        <BbSelectGroup>
+            <BbSelectLabel>Mammals</BbSelectLabel>
+            <BbSelectItem Value="@("cat")" Text="Cat" />
+            <BbSelectItem Value="@("dog")" Text="Dog" />
+            <BbSelectItem Value="@("elephant")" Text="Elephant" />
+        </BbSelectGroup>
+        <BbSelectGroup>
+            <BbSelectLabel>Birds</BbSelectLabel>
+            <BbSelectItem Value="@("eagle")" Text="Eagle" />
+            ...
+        </BbSelectGroup>
+    </BbSelectContent>
+</BbSelect>

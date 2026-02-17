@@ -1,0 +1,1 @@
+<BbInput Type="InputType.Text" Value="@boundValue" ValueChanged="@((value) => boundValue = value)" Placeholder="Start typing..." />

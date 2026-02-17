@@ -21,50 +21,69 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <Timeline>
-                <TimelineItem>
+            <BbTimeline>
+                <BbTimelineItem>
                     <TimeContent>
-                        <TimelineTime Class="text-right pr-4">Jan 2024</TimelineTime>
+                        <BbTimelineTime Class="text-right pr-4">Jan 2024</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Project Kickoff</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Initial planning and team formation for the new product launch.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Project Kickoff</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Initial planning and team formation for the new product launch.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem>
+                <BbTimelineItem>
                     <TimeContent>
-                        <TimelineTime Class="text-right pr-4">Mar 2024</TimelineTime>
+                        <BbTimelineTime Class="text-right pr-4">Mar 2024</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Design Phase</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Completed wireframes and design system for all core features.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Design Phase</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Completed wireframes and design system for all core features.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem ShowConnector="false">
+                <BbTimelineItem ShowConnector="false">
                     <TimeContent>
-                        <TimelineTime Class="text-right pr-4">Jun 2024</TimelineTime>
+                        <BbTimelineTime Class="text-right pr-4">Jun 2024</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Beta Release</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Launched beta version to early adopters for feedback.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Beta Release</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Launched beta version to early adopters for feedback.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-            </Timeline>
+                </BbTimelineItem>
+            </BbTimeline>
         </div>
+        <CodeBlock Source="Components/Timeline/default.txt" />
+    </div>
+
+    <!-- Shorthand -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Shorthand</h2>
+            <p class="text-sm text-muted-foreground">
+                Use <code class="bg-muted px-1 py-0.5 rounded">Title</code>, <code class="bg-muted px-1 py-0.5 rounded">Time</code>, and <code class="bg-muted px-1 py-0.5 rounded">Description</code> parameters for simple entries without composing sub-components.
+            </p>
+        </div>
+        <div class="border rounded-lg p-6">
+            <BbTimeline>
+                <BbTimelineItem Title="Project Kickoff" Time="Jan 2024" Description="Initial planning and team formation for the new product launch." />
+                <BbTimelineItem Title="Design Phase" Time="Mar 2024" Description="Completed wireframes and design system for all core features." />
+                <BbTimelineItem Title="Beta Release" Time="Jun 2024" Description="Launched beta version to early adopters for feedback." ShowConnector="false" />
+            </BbTimeline>
+        </div>
+        <CodeBlock Source="Components/Timeline/shorthand.txt" />
     </div>
 
     <!-- Rich Content -->
@@ -76,12 +95,12 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <Timeline Align="TimelineAlign.Left">
-                <TimelineItem Status="TimelineStatus.Completed">
+            <BbTimeline Align="TimelineAlign.Left">
+                <BbTimelineItem Status="TimelineStatus.Completed">
                     <IconContent>
-                        <TimelineIcon Color="TimelineColor.Primary">
+                        <BbTimelineIcon Color="TimelineColor.Primary">
                             <LucideIcon Name="check" Size="16" />
-                        </TimelineIcon>
+                        </BbTimelineIcon>
                     </IconContent>
                     <ChildContent>
                         <div class="border rounded-lg shadow-sm overflow-hidden">
@@ -96,36 +115,36 @@
                                     monitor trends over time, and export reports in multiple formats.
                                 </p>
                                 <div class="flex gap-2">
-                                    <Button Size="ButtonSize.Small">View Details</Button>
-                                    <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline">Dismiss</Button>
+                                    <BbButton Size="ButtonSize.Small">View Details</BbButton>
+                                    <BbButton Size="ButtonSize.Small" Variant="ButtonVariant.Outline">Dismiss</BbButton>
                                 </div>
                             </div>
                         </div>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem Status="TimelineStatus.Completed" ConnectorStyle="TimelineConnectorStyle.Dashed">
+                <BbTimelineItem Status="TimelineStatus.Completed" ConnectorStyle="TimelineConnectorStyle.Dashed">
                     <IconContent>
-                        <TimelineIcon Color="TimelineColor.Primary">
+                        <BbTimelineIcon Color="TimelineColor.Primary">
                             <LucideIcon Name="check" Size="16" />
-                        </TimelineIcon>
+                        </BbTimelineIcon>
                     </IconContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Initial commit</TimelineTitle>
-                                <TimelineTime Class="text-xs">2 hours ago</TimelineTime>
-                            </TimelineHeader>
-                            <TimelineDescription>Set up project structure.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Initial commit</BbTimelineTitle>
+                                <BbTimelineTime Class="text-xs">2 hours ago</BbTimelineTime>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Set up project structure.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem Status="TimelineStatus.Completed">
+                <BbTimelineItem Status="TimelineStatus.Completed">
                     <IconContent>
-                        <TimelineIcon Color="TimelineColor.Accent">
+                        <BbTimelineIcon Color="TimelineColor.Accent">
                             <LucideIcon Name="image" Size="16" />
-                        </TimelineIcon>
+                        </BbTimelineIcon>
                     </IconContent>
                     <ChildContent>
                         <div class="border rounded-lg shadow-sm overflow-hidden">
@@ -141,25 +160,26 @@
                             </div>
                         </div>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
+                <BbTimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
                     <IconContent>
-                        <TimelineIcon Color="TimelineColor.Muted" Status="TimelineStatus.Pending">
+                        <BbTimelineIcon Color="TimelineColor.Muted" Status="TimelineStatus.Pending">
                             <LucideIcon Name="circle-dashed" Size="16" />
-                        </TimelineIcon>
+                        </BbTimelineIcon>
                     </IconContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Code Review</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Awaiting review from the team lead.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Code Review</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Awaiting review from the team lead.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-            </Timeline>
+                </BbTimelineItem>
+            </BbTimeline>
         </div>
+        <CodeBlock Source="Components/Timeline/rich-content.txt" />
     </div>
 
     <!-- Status Variants -->
@@ -171,64 +191,65 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <Timeline>
-                <TimelineItem Status="TimelineStatus.Completed">
+            <BbTimeline>
+                <BbTimelineItem Status="TimelineStatus.Completed">
                     <TimeContent>
-                        <TimelineTime Class="text-right pr-4">Step 1</TimelineTime>
+                        <BbTimelineTime Class="text-right pr-4">Step 1</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Order Placed</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Your order has been confirmed and is being processed.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Order Placed</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Your order has been confirmed and is being processed.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem Status="TimelineStatus.Completed">
+                <BbTimelineItem Status="TimelineStatus.Completed">
                     <TimeContent>
-                        <TimelineTime Class="text-right pr-4">Step 2</TimelineTime>
+                        <BbTimelineTime Class="text-right pr-4">Step 2</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Payment Confirmed</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Payment has been successfully processed.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Payment Confirmed</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Payment has been successfully processed.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem Status="TimelineStatus.InProgress">
+                <BbTimelineItem Status="TimelineStatus.InProgress">
                     <TimeContent>
-                        <TimelineTime Class="text-right pr-4">Step 3</TimelineTime>
+                        <BbTimelineTime Class="text-right pr-4">Step 3</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Shipping</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Your package is on its way to the delivery address.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Shipping</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Your package is on its way to the delivery address.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
+                <BbTimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
                     <TimeContent>
-                        <TimelineTime Class="text-right pr-4">Step 4</TimelineTime>
+                        <BbTimelineTime Class="text-right pr-4">Step 4</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Delivered</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Package will be delivered to your doorstep.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Delivered</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Package will be delivered to your doorstep.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-            </Timeline>
+                </BbTimelineItem>
+            </BbTimeline>
         </div>
+        <CodeBlock Source="Components/Timeline/status-variants.txt" />
     </div>
 
     <!-- Color Variants -->
@@ -240,52 +261,53 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <Timeline>
-                <TimelineItem IconColor="TimelineColor.Primary">
+            <BbTimeline>
+                <BbTimelineItem IconColor="TimelineColor.Primary">
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Primary</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Default primary color theme.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Primary</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Default primary color theme.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem IconColor="TimelineColor.Secondary">
+                <BbTimelineItem IconColor="TimelineColor.Secondary">
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Secondary</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Secondary color for alternative styling.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Secondary</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Secondary color for alternative styling.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem IconColor="TimelineColor.Accent">
+                <BbTimelineItem IconColor="TimelineColor.Accent">
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Accent</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Accent color for highlighted items.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Accent</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Accent color for highlighted items.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem IconColor="TimelineColor.Destructive" ShowConnector="false">
+                <BbTimelineItem IconColor="TimelineColor.Destructive" ShowConnector="false">
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Destructive</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Destructive color for warnings or errors.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Destructive</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Destructive color for warnings or errors.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-            </Timeline>
+                </BbTimelineItem>
+            </BbTimeline>
         </div>
+        <CodeBlock Source="Components/Timeline/color-variants.txt" />
     </div>
 
     <!-- Size Variants -->
@@ -300,87 +322,88 @@
             <!-- Small -->
             <div class="border rounded-lg p-4">
                 <p class="text-sm font-medium mb-4">Small</p>
-                <Timeline Size="TimelineSize.Small">
-                    <TimelineItem IconSize="TimelineSize.Small">
+                <BbTimeline Size="TimelineSize.Small">
+                    <BbTimelineItem IconSize="TimelineSize.Small">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event A</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event A</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem IconSize="TimelineSize.Small">
+                    </BbTimelineItem>
+                    <BbTimelineItem IconSize="TimelineSize.Small">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event B</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event B</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem IconSize="TimelineSize.Small" ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem IconSize="TimelineSize.Small" ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event C</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event C</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
 
             <!-- Medium -->
             <div class="border rounded-lg p-4">
                 <p class="text-sm font-medium mb-4">Medium (Default)</p>
-                <Timeline Size="TimelineSize.Medium">
-                    <TimelineItem IconSize="TimelineSize.Medium">
+                <BbTimeline Size="TimelineSize.Medium">
+                    <BbTimelineItem IconSize="TimelineSize.Medium">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event A</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event A</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem IconSize="TimelineSize.Medium">
+                    </BbTimelineItem>
+                    <BbTimelineItem IconSize="TimelineSize.Medium">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event B</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event B</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem IconSize="TimelineSize.Medium" ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem IconSize="TimelineSize.Medium" ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event C</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event C</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
 
             <!-- Large -->
             <div class="border rounded-lg p-4">
                 <p class="text-sm font-medium mb-4">Large</p>
-                <Timeline Size="TimelineSize.Large">
-                    <TimelineItem IconSize="TimelineSize.Large">
+                <BbTimeline Size="TimelineSize.Large">
+                    <BbTimelineItem IconSize="TimelineSize.Large">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event A</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event A</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem IconSize="TimelineSize.Large">
+                    </BbTimelineItem>
+                    <BbTimelineItem IconSize="TimelineSize.Large">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event B</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event B</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem IconSize="TimelineSize.Large" ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem IconSize="TimelineSize.Large" ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event C</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event C</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
         </div>
+        <CodeBlock Source="Components/Timeline/sizes.txt" />
     </div>
 
     <!-- With Custom Icons -->
@@ -392,84 +415,85 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <Timeline>
-                <TimelineItem Status="TimelineStatus.Completed">
+            <BbTimeline>
+                <BbTimelineItem Status="TimelineStatus.Completed">
                     <IconContent>
-                        <TimelineIcon Color="TimelineColor.Primary">
+                        <BbTimelineIcon Color="TimelineColor.Primary">
                             <LucideIcon Name="check" Size="16" />
-                        </TimelineIcon>
+                        </BbTimelineIcon>
                     </IconContent>
                     <TimeContent>
-                        <TimelineTime Class="text-right pr-4">9:00 AM</TimelineTime>
+                        <BbTimelineTime Class="text-right pr-4">9:00 AM</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Code Review Approved</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>All review comments have been addressed and approved.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Code Review Approved</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>All review comments have been addressed and approved.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem Status="TimelineStatus.Completed">
+                <BbTimelineItem Status="TimelineStatus.Completed">
                     <IconContent>
-                        <TimelineIcon Color="TimelineColor.Primary">
+                        <BbTimelineIcon Color="TimelineColor.Primary">
                             <LucideIcon Name="git-merge" Size="16" />
-                        </TimelineIcon>
+                        </BbTimelineIcon>
                     </IconContent>
                     <TimeContent>
-                        <TimelineTime Class="text-right pr-4">10:30 AM</TimelineTime>
+                        <BbTimelineTime Class="text-right pr-4">10:30 AM</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Branch Merged</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Feature branch merged into main.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Branch Merged</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Feature branch merged into main.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem Status="TimelineStatus.InProgress">
+                <BbTimelineItem Status="TimelineStatus.InProgress">
                     <IconContent>
-                        <TimelineIcon Color="TimelineColor.Accent">
+                        <BbTimelineIcon Color="TimelineColor.Accent">
                             <LucideIcon Name="rocket" Size="16" />
-                        </TimelineIcon>
+                        </BbTimelineIcon>
                     </IconContent>
                     <TimeContent>
-                        <TimelineTime Class="text-right pr-4">11:00 AM</TimelineTime>
+                        <BbTimelineTime Class="text-right pr-4">11:00 AM</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Deploying to Production</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Deployment pipeline is running.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Deploying to Production</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Deployment pipeline is running.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
+                <BbTimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
                     <IconContent>
-                        <TimelineIcon Color="TimelineColor.Muted" Status="TimelineStatus.Pending">
+                        <BbTimelineIcon Color="TimelineColor.Muted" Status="TimelineStatus.Pending">
                             <LucideIcon Name="circle-check" Size="16" />
-                        </TimelineIcon>
+                        </BbTimelineIcon>
                     </IconContent>
                     <TimeContent>
-                        <TimelineTime Class="text-right pr-4">Pending</TimelineTime>
+                        <BbTimelineTime Class="text-right pr-4">Pending</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Health Check</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Verify all services are running correctly.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Health Check</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Verify all services are running correctly.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-            </Timeline>
+                </BbTimelineItem>
+            </BbTimeline>
         </div>
+        <CodeBlock Source="Components/Timeline/custom-icons.txt" />
     </div>
 
     <!-- Custom Connector Colors -->
@@ -481,41 +505,42 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <Timeline>
-                <TimelineItem IconColor="TimelineColor.Primary" ConnectorColor="TimelineColor.Accent">
+            <BbTimeline>
+                <BbTimelineItem IconColor="TimelineColor.Primary" ConnectorColor="TimelineColor.Accent">
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Accent Connector</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>This item uses an accent-colored connector line.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Accent Connector</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>This item uses an accent-colored connector line.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem IconColor="TimelineColor.Destructive" ConnectorColor="TimelineColor.Destructive">
+                <BbTimelineItem IconColor="TimelineColor.Destructive" ConnectorColor="TimelineColor.Destructive">
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Destructive Connector</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Both icon and connector use the destructive color.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Destructive Connector</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Both icon and connector use the destructive color.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
+                </BbTimelineItem>
 
-                <TimelineItem IconColor="TimelineColor.Secondary" ShowConnector="false">
+                <BbTimelineItem IconColor="TimelineColor.Secondary" ShowConnector="false">
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>No Connector</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>The last item hides its connector line.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>No Connector</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>The last item hides its connector line.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-            </Timeline>
+                </BbTimelineItem>
+            </BbTimeline>
         </div>
+        <CodeBlock Source="Components/Timeline/connector-colors.txt" />
     </div>
 
     <!-- Layout Alignment -->
@@ -530,136 +555,137 @@
             <!-- Left -->
             <div class="border rounded-lg p-6">
                 <p class="text-sm font-medium mb-4">Left</p>
-                <Timeline Align="TimelineAlign.Left">
-                    <TimelineItem>
+                <BbTimeline Align="TimelineAlign.Left">
+                    <BbTimelineItem>
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Design</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Created wireframes and mockups.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Design</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Created wireframes and mockups.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem>
+                    </BbTimelineItem>
+                    <BbTimelineItem>
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Development</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Built the core features.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Development</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Built the core features.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Launch</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Released to production.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Launch</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Released to production.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
 
             <!-- Right -->
             <div class="border rounded-lg p-6">
                 <p class="text-sm font-medium mb-4">Right</p>
-                <Timeline Align="TimelineAlign.Right">
-                    <TimelineItem>
+                <BbTimeline Align="TimelineAlign.Right">
+                    <BbTimelineItem>
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Design</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Created wireframes and mockups.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Design</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Created wireframes and mockups.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem>
+                    </BbTimelineItem>
+                    <BbTimelineItem>
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Development</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Built the core features.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Development</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Built the core features.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Launch</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Released to production.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Launch</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Released to production.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
         </div>
 
         <!-- Alternate -->
         <div class="border rounded-lg p-6">
             <p class="text-sm font-medium mb-4">Alternate</p>
-            <Timeline Align="TimelineAlign.Alternate">
-                <TimelineItem>
+            <BbTimeline Align="TimelineAlign.Alternate">
+                <BbTimelineItem>
                     <TimeContent>
-                        <TimelineTime Class="text-right pr-4">Q1 2024</TimelineTime>
+                        <BbTimelineTime Class="text-right pr-4">Q1 2024</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Planning</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Defined the project scope and milestones.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Planning</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Defined the project scope and milestones.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-                <TimelineItem>
+                </BbTimelineItem>
+                <BbTimelineItem>
                     <TimeContent>
-                        <TimelineTime Class="text-left pl-4">Q2 2024</TimelineTime>
+                        <BbTimelineTime Class="text-left pl-4">Q2 2024</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Design</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Completed design system and prototypes.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Design</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Completed design system and prototypes.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-                <TimelineItem>
+                </BbTimelineItem>
+                <BbTimelineItem>
                     <TimeContent>
-                        <TimelineTime Class="text-right pr-4">Q3 2024</TimelineTime>
+                        <BbTimelineTime Class="text-right pr-4">Q3 2024</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Development</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Built and tested all core features.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Development</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Built and tested all core features.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-                <TimelineItem ShowConnector="false">
+                </BbTimelineItem>
+                <BbTimelineItem ShowConnector="false">
                     <TimeContent>
-                        <TimelineTime Class="text-left pl-4">Q4 2024</TimelineTime>
+                        <BbTimelineTime Class="text-left pl-4">Q4 2024</BbTimelineTime>
                     </TimeContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Launch</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Released the product to the public.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Launch</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Released the product to the public.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-            </Timeline>
+                </BbTimelineItem>
+            </BbTimeline>
         </div>
+        <CodeBlock Source="Components/Timeline/layout-alignment.txt" />
     </div>
 
     <!-- Icon Variants -->
@@ -674,57 +700,58 @@
             <!-- Solid -->
             <div class="border rounded-lg p-6">
                 <p class="text-sm font-medium mb-4">Solid (Default)</p>
-                <Timeline Align="TimelineAlign.Left">
-                    <TimelineItem IconVariant="TimelineIconVariant.Solid">
+                <BbTimeline Align="TimelineAlign.Left">
+                    <BbTimelineItem IconVariant="TimelineIconVariant.Solid">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Solid Primary</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Filled background with contrasting text.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Solid Primary</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Filled background with contrasting text.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem IconVariant="TimelineIconVariant.Solid" IconColor="TimelineColor.Destructive" ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem IconVariant="TimelineIconVariant.Solid" IconColor="TimelineColor.Destructive" ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Solid Destructive</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Works with all color variants.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Solid Destructive</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Works with all color variants.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
 
             <!-- Outline -->
             <div class="border rounded-lg p-6">
                 <p class="text-sm font-medium mb-4">Outline</p>
-                <Timeline Align="TimelineAlign.Left">
-                    <TimelineItem IconVariant="TimelineIconVariant.Outline">
+                <BbTimeline Align="TimelineAlign.Left">
+                    <BbTimelineItem IconVariant="TimelineIconVariant.Outline">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Outline Primary</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Bordered style with transparent background.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Outline Primary</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Bordered style with transparent background.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem IconVariant="TimelineIconVariant.Outline" IconColor="TimelineColor.Destructive" ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem IconVariant="TimelineIconVariant.Outline" IconColor="TimelineColor.Destructive" ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Outline Destructive</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Works with all color variants.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Outline Destructive</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Works with all color variants.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
         </div>
+        <CodeBlock Source="Components/Timeline/icon-variants.txt" />
     </div>
 
     <!-- Connector Styles -->
@@ -739,66 +766,67 @@
             <!-- Solid -->
             <div class="border rounded-lg p-6">
                 <p class="text-sm font-medium mb-4">Solid (Default)</p>
-                <Timeline Align="TimelineAlign.Left">
-                    <TimelineItem ConnectorStyle="TimelineConnectorStyle.Solid">
+                <BbTimeline Align="TimelineAlign.Left">
+                    <BbTimelineItem ConnectorStyle="TimelineConnectorStyle.Solid">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Step 1</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Step 1</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem ConnectorStyle="TimelineConnectorStyle.Solid" ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem ConnectorStyle="TimelineConnectorStyle.Solid" ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Step 2</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Step 2</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
 
             <!-- Dashed -->
             <div class="border rounded-lg p-6">
                 <p class="text-sm font-medium mb-4">Dashed</p>
-                <Timeline Align="TimelineAlign.Left">
-                    <TimelineItem ConnectorStyle="TimelineConnectorStyle.Dashed">
+                <BbTimeline Align="TimelineAlign.Left">
+                    <BbTimelineItem ConnectorStyle="TimelineConnectorStyle.Dashed">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Step 1</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Step 1</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem ConnectorStyle="TimelineConnectorStyle.Dashed" ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem ConnectorStyle="TimelineConnectorStyle.Dashed" ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Step 2</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Step 2</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
 
             <!-- Dotted -->
             <div class="border rounded-lg p-6">
                 <p class="text-sm font-medium mb-4">Dotted</p>
-                <Timeline Align="TimelineAlign.Left">
-                    <TimelineItem ConnectorStyle="TimelineConnectorStyle.Dotted">
+                <BbTimeline Align="TimelineAlign.Left">
+                    <BbTimelineItem ConnectorStyle="TimelineConnectorStyle.Dotted">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Step 1</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Step 1</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem ConnectorStyle="TimelineConnectorStyle.Dotted" ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem ConnectorStyle="TimelineConnectorStyle.Dotted" ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Step 2</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Step 2</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
         </div>
+        <CodeBlock Source="Components/Timeline/connector-styles.txt" />
     </div>
 
     <!-- Connector Fit -->
@@ -813,77 +841,78 @@
             <!-- Spaced -->
             <div class="border rounded-lg p-6">
                 <p class="text-sm font-medium mb-4">Spaced (Default)</p>
-                <Timeline Align="TimelineAlign.Left" ConnectorFit="TimelineConnectorFit.Spaced">
-                    <TimelineItem>
+                <BbTimeline Align="TimelineAlign.Left" ConnectorFit="TimelineConnectorFit.Spaced">
+                    <BbTimelineItem>
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Design</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Created wireframes and mockups.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Design</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Created wireframes and mockups.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem>
+                    </BbTimelineItem>
+                    <BbTimelineItem>
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Development</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Built the core features.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Development</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Built the core features.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Launch</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Released to production.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Launch</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Released to production.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
 
             <!-- Connected -->
             <div class="border rounded-lg p-6">
                 <p class="text-sm font-medium mb-4">Connected</p>
-                <Timeline Align="TimelineAlign.Left" ConnectorFit="TimelineConnectorFit.Connected">
-                    <TimelineItem>
+                <BbTimeline Align="TimelineAlign.Left" ConnectorFit="TimelineConnectorFit.Connected">
+                    <BbTimelineItem>
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Design</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Created wireframes and mockups.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Design</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Created wireframes and mockups.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem>
+                    </BbTimelineItem>
+                    <BbTimelineItem>
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Development</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Built the core features.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Development</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Built the core features.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineHeader>
-                                    <TimelineTitle>Launch</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Released to production.</TimelineDescription>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Launch</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Released to production.</BbTimelineDescription>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
         </div>
+        <CodeBlock Source="Components/Timeline/connector-fit.txt" />
     </div>
 
     <!-- Custom Connector Height -->
@@ -898,87 +927,88 @@
             <!-- Default -->
             <div class="border rounded-lg p-6">
                 <p class="text-sm font-medium mb-4">Default (min-h-8)</p>
-                <Timeline Align="TimelineAlign.Left">
-                    <TimelineItem>
+                <BbTimeline Align="TimelineAlign.Left">
+                    <BbTimelineItem>
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event A</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event A</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem>
+                    </BbTimelineItem>
+                    <BbTimelineItem>
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event B</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event B</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event C</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event C</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
 
             <!-- min-h-12 -->
             <div class="border rounded-lg p-6">
                 <p class="text-sm font-medium mb-4">ConnectorClass="min-h-12"</p>
-                <Timeline Align="TimelineAlign.Left">
-                    <TimelineItem ConnectorClass="min-h-12">
+                <BbTimeline Align="TimelineAlign.Left">
+                    <BbTimelineItem ConnectorClass="min-h-12">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event A</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event A</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem ConnectorClass="min-h-12">
+                    </BbTimelineItem>
+                    <BbTimelineItem ConnectorClass="min-h-12">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event B</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event B</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event C</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event C</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
 
             <!-- min-h-16 -->
             <div class="border rounded-lg p-6">
                 <p class="text-sm font-medium mb-4">ConnectorClass="min-h-16"</p>
-                <Timeline Align="TimelineAlign.Left">
-                    <TimelineItem ConnectorClass="min-h-16">
+                <BbTimeline Align="TimelineAlign.Left">
+                    <BbTimelineItem ConnectorClass="min-h-16">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event A</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event A</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem ConnectorClass="min-h-16">
+                    </BbTimelineItem>
+                    <BbTimelineItem ConnectorClass="min-h-16">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event B</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event B</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem ShowConnector="false">
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle>Event C</TimelineTitle>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle>Event C</BbTimelineTitle>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
         </div>
+        <CodeBlock Source="Components/Timeline/connector-height.txt" />
     </div>
 
     <!-- Loading State -->
@@ -990,39 +1020,40 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <Timeline Align="TimelineAlign.Left">
-                <TimelineItem Status="TimelineStatus.Completed">
+            <BbTimeline Align="TimelineAlign.Left">
+                <BbTimelineItem Status="TimelineStatus.Completed">
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Data Fetched</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Successfully retrieved records from the database.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Data Fetched</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Successfully retrieved records from the database.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-                <TimelineItem Loading="true" Status="TimelineStatus.InProgress">
+                </BbTimelineItem>
+                <BbTimelineItem Loading="true" Status="TimelineStatus.InProgress">
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Processing</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Running data transformation pipeline...</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Processing</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Running data transformation pipeline...</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-                <TimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
+                </BbTimelineItem>
+                <BbTimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Export</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Waiting to generate the final report.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Export</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Waiting to generate the final report.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-            </Timeline>
+                </BbTimelineItem>
+            </BbTimeline>
         </div>
+        <CodeBlock Source="Components/Timeline/loading.txt" />
     </div>
 
     <!-- Collapsible Items -->
@@ -1034,21 +1065,21 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <Timeline Align="TimelineAlign.Left">
-                <TimelineItem IsCollapsible="true" DefaultOpen="true">
+            <BbTimeline Align="TimelineAlign.Left">
+                <BbTimelineItem IsCollapsible="true" DefaultOpen="true">
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>v2.0 Release</TimelineTitle>
-                            </TimelineHeader>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>v2.0 Release</BbTimelineTitle>
+                            </BbTimelineHeader>
+                        </BbTimelineContent>
                     </ChildContent>
                     <DetailContent>
-                        <TimelineContent>
-                            <TimelineDescription>
+                        <BbTimelineContent>
+                            <BbTimelineDescription>
                                 Major release with breaking changes. Includes new component API, improved performance,
                                 and updated design tokens. Migration guide available in the docs.
-                            </TimelineDescription>
+                            </BbTimelineDescription>
                             <div class="mt-3 space-y-2 text-sm">
                                 <p><strong>Breaking Changes:</strong></p>
                                 <ul class="list-disc list-inside space-y-1 text-muted-foreground">
@@ -1064,23 +1095,23 @@
                                     <li>Dark mode auto-detection</li>
                                 </ul>
                             </div>
-                        </TimelineContent>
+                        </BbTimelineContent>
                     </DetailContent>
-                </TimelineItem>
-                <TimelineItem IsCollapsible="true" DefaultOpen="false">
+                </BbTimelineItem>
+                <BbTimelineItem IsCollapsible="true" DefaultOpen="false">
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>v1.5 Patch</TimelineTitle>
-                            </TimelineHeader>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>v1.5 Patch</BbTimelineTitle>
+                            </BbTimelineHeader>
+                        </BbTimelineContent>
                     </ChildContent>
                     <DetailContent>
-                        <TimelineContent>
-                            <TimelineDescription>
+                        <BbTimelineContent>
+                            <BbTimelineDescription>
                                 Bug fixes for slider component, improved accessibility on date picker,
                                 and performance optimizations for large data sets.
-                            </TimelineDescription>
+                            </BbTimelineDescription>
                             <div class="mt-3 space-y-2 text-sm">
                                 <p><strong>Bug Fixes:</strong></p>
                                 <ul class="list-disc list-inside space-y-1 text-muted-foreground">
@@ -1094,23 +1125,23 @@
                                     <li>Reduced bundle size by 15% with tree-shaking improvements</li>
                                 </ul>
                             </div>
-                        </TimelineContent>
+                        </BbTimelineContent>
                     </DetailContent>
-                </TimelineItem>
-                <TimelineItem IsCollapsible="true" DefaultOpen="false" ShowConnector="false">
+                </BbTimelineItem>
+                <BbTimelineItem IsCollapsible="true" DefaultOpen="false" ShowConnector="false">
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>v1.0 Initial Release</TimelineTitle>
-                            </TimelineHeader>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>v1.0 Initial Release</BbTimelineTitle>
+                            </BbTimelineHeader>
+                        </BbTimelineContent>
                     </ChildContent>
                     <DetailContent>
-                        <TimelineContent>
-                            <TimelineDescription>
+                        <BbTimelineContent>
+                            <BbTimelineDescription>
                                 First stable release with 20+ components, dark mode support,
                                 and comprehensive documentation.
-                            </TimelineDescription>
+                            </BbTimelineDescription>
                             <div class="mt-3 space-y-2 text-sm">
                                 <p><strong>Included Components:</strong></p>
                                 <ul class="list-disc list-inside space-y-1 text-muted-foreground">
@@ -1120,11 +1151,12 @@
                                     <li>Avatar, Badge, Card, Separator, Skeleton</li>
                                 </ul>
                             </div>
-                        </TimelineContent>
+                        </BbTimelineContent>
                     </DetailContent>
-                </TimelineItem>
-            </Timeline>
+                </BbTimelineItem>
+            </BbTimeline>
         </div>
+        <CodeBlock Source="Components/Timeline/collapsible.txt" />
     </div>
 
     <!-- Custom Styling -->
@@ -1139,184 +1171,185 @@
             <!-- Card Style -->
             <div class="border rounded-lg p-6">
                 <p class="text-sm font-medium mb-4">Card Style</p>
-                <Timeline Align="TimelineAlign.Left">
-                    <TimelineItem Status="TimelineStatus.Completed">
+                <BbTimeline Align="TimelineAlign.Left">
+                    <BbTimelineItem Status="TimelineStatus.Completed">
                         <IconContent>
-                            <TimelineIcon Color="TimelineColor.Primary">
+                            <BbTimelineIcon Color="TimelineColor.Primary">
                                 <LucideIcon Name="package" Size="16" />
-                            </TimelineIcon>
+                            </BbTimelineIcon>
                         </IconContent>
                         <ChildContent>
-                            <TimelineContent Class="border rounded-lg p-3 shadow-sm">
-                                <TimelineHeader>
-                                    <TimelineTitle>Order Shipped</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Your package is on its way via express delivery.</TimelineDescription>
-                                <TimelineTime Class="text-xs mt-1">2 hours ago</TimelineTime>
-                            </TimelineContent>
+                            <BbTimelineContent Class="border rounded-lg p-3 shadow-sm">
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Order Shipped</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Your package is on its way via express delivery.</BbTimelineDescription>
+                                <BbTimelineTime Class="text-xs mt-1">2 hours ago</BbTimelineTime>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem Status="TimelineStatus.Completed">
+                    </BbTimelineItem>
+                    <BbTimelineItem Status="TimelineStatus.Completed">
                         <IconContent>
-                            <TimelineIcon Color="TimelineColor.Primary">
+                            <BbTimelineIcon Color="TimelineColor.Primary">
                                 <LucideIcon Name="credit-card" Size="16" />
-                            </TimelineIcon>
+                            </BbTimelineIcon>
                         </IconContent>
                         <ChildContent>
-                            <TimelineContent Class="border rounded-lg p-3 shadow-sm">
-                                <TimelineHeader>
-                                    <TimelineTitle>Payment Processed</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>Successfully charged to card ending in 4242.</TimelineDescription>
-                                <TimelineTime Class="text-xs mt-1">5 hours ago</TimelineTime>
-                            </TimelineContent>
+                            <BbTimelineContent Class="border rounded-lg p-3 shadow-sm">
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Payment Processed</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>Successfully charged to card ending in 4242.</BbTimelineDescription>
+                                <BbTimelineTime Class="text-xs mt-1">5 hours ago</BbTimelineTime>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem Status="TimelineStatus.Completed" ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem Status="TimelineStatus.Completed" ShowConnector="false">
                         <IconContent>
-                            <TimelineIcon Color="TimelineColor.Primary">
+                            <BbTimelineIcon Color="TimelineColor.Primary">
                                 <LucideIcon Name="shopping-cart" Size="16" />
-                            </TimelineIcon>
+                            </BbTimelineIcon>
                         </IconContent>
                         <ChildContent>
-                            <TimelineContent Class="border rounded-lg p-3 shadow-sm">
-                                <TimelineHeader>
-                                    <TimelineTitle>Order Placed</TimelineTitle>
-                                </TimelineHeader>
-                                <TimelineDescription>3 items totalling $127.00.</TimelineDescription>
-                                <TimelineTime Class="text-xs mt-1">Yesterday</TimelineTime>
-                            </TimelineContent>
+                            <BbTimelineContent Class="border rounded-lg p-3 shadow-sm">
+                                <BbTimelineHeader>
+                                    <BbTimelineTitle>Order Placed</BbTimelineTitle>
+                                </BbTimelineHeader>
+                                <BbTimelineDescription>3 items totalling $127.00.</BbTimelineDescription>
+                                <BbTimelineTime Class="text-xs mt-1">Yesterday</BbTimelineTime>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
 
             <!-- Minimal Style -->
             <div class="border rounded-lg p-6">
                 <p class="text-sm font-medium mb-4">Minimal Style</p>
-                <Timeline Align="TimelineAlign.Left" Size="TimelineSize.Small">
-                    <TimelineItem IconSize="TimelineSize.Small" ConnectorStyle="TimelineConnectorStyle.Dashed">
+                <BbTimeline Align="TimelineAlign.Left" Size="TimelineSize.Small">
+                    <BbTimelineItem IconSize="TimelineSize.Small" ConnectorStyle="TimelineConnectorStyle.Dashed">
                         <IconContent>
-                            <TimelineIcon Size="TimelineSize.Small" Color="TimelineColor.Accent" Variant="TimelineIconVariant.Outline">
+                            <BbTimelineIcon Size="TimelineSize.Small" Color="TimelineColor.Accent" Variant="TimelineIconVariant.Outline">
                                 <LucideIcon Name="file-plus" Size="12" />
-                            </TimelineIcon>
+                            </BbTimelineIcon>
                         </IconContent>
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle Class="text-sm">Created pull request <span class="text-primary font-mono">#42</span></TimelineTitle>
-                                <TimelineTime Class="text-xs">10 min ago</TimelineTime>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle Class="text-sm">Created pull request <span class="text-primary font-mono">#42</span></BbTimelineTitle>
+                                <BbTimelineTime Class="text-xs">10 min ago</BbTimelineTime>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem IconSize="TimelineSize.Small" ConnectorStyle="TimelineConnectorStyle.Dashed">
+                    </BbTimelineItem>
+                    <BbTimelineItem IconSize="TimelineSize.Small" ConnectorStyle="TimelineConnectorStyle.Dashed">
                         <IconContent>
-                            <TimelineIcon Size="TimelineSize.Small" Color="TimelineColor.Primary" Variant="TimelineIconVariant.Outline">
+                            <BbTimelineIcon Size="TimelineSize.Small" Color="TimelineColor.Primary" Variant="TimelineIconVariant.Outline">
                                 <LucideIcon Name="message-square" Size="12" />
-                            </TimelineIcon>
+                            </BbTimelineIcon>
                         </IconContent>
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle Class="text-sm">Left a review comment</TimelineTitle>
-                                <TimelineTime Class="text-xs">25 min ago</TimelineTime>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle Class="text-sm">Left a review comment</BbTimelineTitle>
+                                <BbTimelineTime Class="text-xs">25 min ago</BbTimelineTime>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem IconSize="TimelineSize.Small" ConnectorStyle="TimelineConnectorStyle.Dashed">
+                    </BbTimelineItem>
+                    <BbTimelineItem IconSize="TimelineSize.Small" ConnectorStyle="TimelineConnectorStyle.Dashed">
                         <IconContent>
-                            <TimelineIcon Size="TimelineSize.Small" Color="TimelineColor.Primary" Variant="TimelineIconVariant.Outline">
+                            <BbTimelineIcon Size="TimelineSize.Small" Color="TimelineColor.Primary" Variant="TimelineIconVariant.Outline">
                                 <LucideIcon Name="git-commit-horizontal" Size="12" />
-                            </TimelineIcon>
+                            </BbTimelineIcon>
                         </IconContent>
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle Class="text-sm">Pushed 3 commits to <span class="font-mono text-primary">main</span></TimelineTitle>
-                                <TimelineTime Class="text-xs">1 hour ago</TimelineTime>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle Class="text-sm">Pushed 3 commits to <span class="font-mono text-primary">main</span></BbTimelineTitle>
+                                <BbTimelineTime Class="text-xs">1 hour ago</BbTimelineTime>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                    <TimelineItem IconSize="TimelineSize.Small" ShowConnector="false">
+                    </BbTimelineItem>
+                    <BbTimelineItem IconSize="TimelineSize.Small" ShowConnector="false">
                         <IconContent>
-                            <TimelineIcon Size="TimelineSize.Small" Color="TimelineColor.Muted" Variant="TimelineIconVariant.Outline">
+                            <BbTimelineIcon Size="TimelineSize.Small" Color="TimelineColor.Muted" Variant="TimelineIconVariant.Outline">
                                 <LucideIcon Name="git-branch" Size="12" />
-                            </TimelineIcon>
+                            </BbTimelineIcon>
                         </IconContent>
                         <ChildContent>
-                            <TimelineContent>
-                                <TimelineTitle Class="text-sm">Created branch <span class="font-mono text-primary">feat/timeline</span></TimelineTitle>
-                                <TimelineTime Class="text-xs">2 hours ago</TimelineTime>
-                            </TimelineContent>
+                            <BbTimelineContent>
+                                <BbTimelineTitle Class="text-sm">Created branch <span class="font-mono text-primary">feat/timeline</span></BbTimelineTitle>
+                                <BbTimelineTime Class="text-xs">2 hours ago</BbTimelineTime>
+                            </BbTimelineContent>
                         </ChildContent>
-                    </TimelineItem>
-                </Timeline>
+                    </BbTimelineItem>
+                </BbTimeline>
             </div>
         </div>
 
         <!-- Custom Colors -->
         <div class="border rounded-lg p-6">
             <p class="text-sm font-medium mb-4">Custom Colors</p>
-            <Timeline Align="TimelineAlign.Left">
-                <TimelineItem>
+            <BbTimeline Align="TimelineAlign.Left">
+                <BbTimelineItem>
                     <IconContent>
-                        <TimelineIcon Class="bg-blue-500 text-white">
+                        <BbTimelineIcon Class="bg-blue-500 text-white">
                             <LucideIcon Name="pencil" Size="16" />
-                        </TimelineIcon>
+                        </BbTimelineIcon>
                     </IconContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Draft Created</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>New blog post draft saved.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Draft Created</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>New blog post draft saved.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-                <TimelineItem>
+                </BbTimelineItem>
+                <BbTimelineItem>
                     <IconContent>
-                        <TimelineIcon Class="bg-amber-500 text-white">
+                        <BbTimelineIcon Class="bg-amber-500 text-white">
                             <LucideIcon Name="eye" Size="16" />
-                        </TimelineIcon>
+                        </BbTimelineIcon>
                     </IconContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Under Review</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Submitted for editorial review.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Under Review</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Submitted for editorial review.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-                <TimelineItem>
+                </BbTimelineItem>
+                <BbTimelineItem>
                     <IconContent>
-                        <TimelineIcon Class="bg-emerald-500 text-white">
+                        <BbTimelineIcon Class="bg-emerald-500 text-white">
                             <LucideIcon Name="check" Size="16" />
-                        </TimelineIcon>
+                        </BbTimelineIcon>
                     </IconContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Approved</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Content approved by the editor.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Approved</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Content approved by the editor.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-                <TimelineItem ShowConnector="false">
+                </BbTimelineItem>
+                <BbTimelineItem ShowConnector="false">
                     <IconContent>
-                        <TimelineIcon Class="bg-purple-500 text-white">
+                        <BbTimelineIcon Class="bg-purple-500 text-white">
                             <LucideIcon Name="globe" Size="16" />
-                        </TimelineIcon>
+                        </BbTimelineIcon>
                     </IconContent>
                     <ChildContent>
-                        <TimelineContent>
-                            <TimelineHeader>
-                                <TimelineTitle>Published</TimelineTitle>
-                            </TimelineHeader>
-                            <TimelineDescription>Post is now live on the website.</TimelineDescription>
-                        </TimelineContent>
+                        <BbTimelineContent>
+                            <BbTimelineHeader>
+                                <BbTimelineTitle>Published</BbTimelineTitle>
+                            </BbTimelineHeader>
+                            <BbTimelineDescription>Post is now live on the website.</BbTimelineDescription>
+                        </BbTimelineContent>
                     </ChildContent>
-                </TimelineItem>
-            </Timeline>
+                </BbTimelineItem>
+            </BbTimeline>
         </div>
+        <CodeBlock Source="Components/Timeline/custom-styling.txt" />
     </div>
 
     <!-- Empty State -->
@@ -1328,184 +1361,99 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <Timeline />
+            <BbTimeline />
         </div>
+        <CodeBlock Source="Components/Timeline/empty.txt" />
     </div>
 
     <!-- Accessibility -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Accessibility Notes</h2>
-            <p class="text-sm text-muted-foreground">
-                Best practices for using the Timeline component accessibly.
-            </p>
-        </div>
-        <div class="border rounded-lg p-6 space-y-3 bg-muted/50">
-            <p class="text-sm">
-                ✓ <strong>Semantic HTML:</strong> Uses ordered list (&lt;ol&gt;) and list items (&lt;li&gt;) for proper structure.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>ARIA label:</strong> The timeline container includes an aria-label for screen readers.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Heading hierarchy:</strong> Timeline titles use &lt;h3&gt; for proper document outline.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Time elements:</strong> Use the &lt;time&gt; element for machine-readable dates.
-            </p>
-        </div>
-    </div>
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>
+                Uses semantic HTML with ordered list (&lt;ol&gt;) and list items (&lt;li&gt;) for proper structure.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                The timeline container includes an <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-label</code> for screen readers.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Timeline titles use &lt;h3&gt; for proper document outline and heading hierarchy.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Use the &lt;time&gt; element for machine-readable dates.
+            </AccessibilityItem>
+        </AriaAttributes>
+    </AccessibilityList>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
 
-        <!-- Timeline -->
-        <div class="border rounded-lg p-6 space-y-4">
-            <h3 class="text-lg font-semibold">Timeline</h3>
-            <p class="text-sm text-muted-foreground">Root container component rendering an ordered list.</p>
-            <div class="space-y-3">
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">Size</h4>
-                    <p class="text-sm text-muted-foreground">
-                        Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">TimelineSize</code> |
-                        Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">Medium</code>
-                    </p>
-                    <p class="text-sm text-muted-foreground">Controls gap spacing between items (Small, Medium, Large).</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">Class</h4>
-                    <p class="text-sm text-muted-foreground">
-                        Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                    </p>
-                    <p class="text-sm text-muted-foreground">Additional CSS classes for the timeline container.</p>
-                </div>
-            </div>
-        </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="Timeline">
+                <ApiParameter Name="Size" Type="TimelineSize" Default="Medium">
+                    Controls gap spacing between items (Small, Medium, Large).
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes for the timeline container.
+                </ApiParameter>
+            </ApiReference>
 
-        <!-- TimelineItem -->
-        <div class="border rounded-lg p-6 space-y-4">
-            <h3 class="text-lg font-semibold">TimelineItem</h3>
-            <p class="text-sm text-muted-foreground">Individual entry in the timeline with icon, connector, and content.</p>
-            <div class="space-y-3">
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">Status</h4>
-                    <p class="text-sm text-muted-foreground">
-                        Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">TimelineStatus</code> |
-                        Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">Completed</code>
-                    </p>
-                    <p class="text-sm text-muted-foreground">Current status (Completed, InProgress, Pending).</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">IconColor</h4>
-                    <p class="text-sm text-muted-foreground">
-                        Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">TimelineColor</code> |
-                        Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">Primary</code>
-                    </p>
-                    <p class="text-sm text-muted-foreground">Color theme for the icon (Primary, Secondary, Muted, Accent, Destructive).</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">ConnectorColor</h4>
-                    <p class="text-sm text-muted-foreground">
-                        Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">TimelineColor?</code> |
-                        Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">null</code> (inherits from status)
-                    </p>
-                    <p class="text-sm text-muted-foreground">Explicit color for the connector line. When null, color is derived from Status.</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">ShowConnector</h4>
-                    <p class="text-sm text-muted-foreground">
-                        Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code> |
-                        Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">true</code>
-                    </p>
-                    <p class="text-sm text-muted-foreground">Whether to show the vertical connector line below this item.</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">ConnectorClass</h4>
-                    <p class="text-sm text-muted-foreground">
-                        Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                    </p>
-                    <p class="text-sm text-muted-foreground">Additional CSS classes for the connector line. Use to customize height (e.g., "min-h-16").</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">IconSize</h4>
-                    <p class="text-sm text-muted-foreground">
-                        Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">TimelineSize</code> |
-                        Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">Medium</code>
-                    </p>
-                    <p class="text-sm text-muted-foreground">Size of the icon indicator.</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">IconContent</h4>
-                    <p class="text-sm text-muted-foreground">
-                        Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">RenderFragment?</code>
-                    </p>
-                    <p class="text-sm text-muted-foreground">Custom icon content to replace the default icon.</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">TimeContent</h4>
-                    <p class="text-sm text-muted-foreground">
-                        Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">RenderFragment?</code>
-                    </p>
-                    <p class="text-sm text-muted-foreground">Time/date content displayed in the left column.</p>
-                </div>
-            </div>
-        </div>
+            <ApiReference ComponentName="TimelineItem">
+                <ApiParameter Name="Status" Type="TimelineStatus" Default="Completed">
+                    Current status (Completed, InProgress, Pending).
+                </ApiParameter>
+                <ApiParameter Name="IconColor" Type="TimelineColor" Default="Primary">
+                    Color theme for the icon (Primary, Secondary, Muted, Accent, Destructive).
+                </ApiParameter>
+                <ApiParameter Name="ConnectorColor" Type="TimelineColor?" Default="null">
+                    Explicit color for the connector line. When null, color is derived from Status.
+                </ApiParameter>
+                <ApiParameter Name="ShowConnector" Type="bool" Default="true">
+                    Whether to show the vertical connector line below this item.
+                </ApiParameter>
+                <ApiParameter Name="ConnectorClass" Type="string?">
+                    Additional CSS classes for the connector line. Use to customize height (e.g., "min-h-16").
+                </ApiParameter>
+                <ApiParameter Name="IconSize" Type="TimelineSize" Default="Medium">
+                    Size of the icon indicator.
+                </ApiParameter>
+                <ApiParameter Name="IconContent" Type="RenderFragment?">
+                    Custom icon content to replace the default icon.
+                </ApiParameter>
+                <ApiParameter Name="TimeContent" Type="RenderFragment?">
+                    Time/date content displayed in the left column.
+                </ApiParameter>
+            </ApiReference>
 
-        <!-- Sub-components -->
-        <div class="border rounded-lg p-6 space-y-4">
-            <h3 class="text-lg font-semibold">Sub-Components</h3>
-            <div class="space-y-3">
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">TimelineIcon</h4>
-                    <p class="text-sm text-muted-foreground">Circular icon indicator. Props: Color, Size, Status, ChildContent.</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">TimelineConnector</h4>
-                    <p class="text-sm text-muted-foreground">Vertical line between items. Props: Status, Color, Class.</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">TimelineContent</h4>
-                    <p class="text-sm text-muted-foreground">Flex container for the content area. Props: Class, ChildContent.</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">TimelineHeader</h4>
-                    <p class="text-sm text-muted-foreground">Header section containing title and time. Props: Class, ChildContent.</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">TimelineTitle</h4>
-                    <p class="text-sm text-muted-foreground">Semantic heading (&lt;h3&gt;) for the item title. Props: Class, ChildContent.</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">TimelineDescription</h4>
-                    <p class="text-sm text-muted-foreground">Paragraph for item description text. Props: Class, ChildContent.</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">TimelineTime</h4>
-                    <p class="text-sm text-muted-foreground">Semantic &lt;time&gt; element for dates. Props: Class, ChildContent.</p>
-                </div>
-                <Separator />
-                <div>
-                    <h4 class="font-mono text-sm font-semibold mb-1">TimelineEmpty</h4>
-                    <p class="text-sm text-muted-foreground">Fallback displayed when no items exist. Props: Class, ChildContent.</p>
-                </div>
-            </div>
+            <ApiReference ComponentName="Sub-Components">
+                <ApiParameter Name="TimelineIcon" Type="Component">
+                    Circular icon indicator. Props: Color, Size, Status, ChildContent.
+                </ApiParameter>
+                <ApiParameter Name="TimelineConnector" Type="Component">
+                    Vertical line between items. Props: Status, Color, Class.
+                </ApiParameter>
+                <ApiParameter Name="TimelineContent" Type="Component">
+                    Flex container for the content area. Props: Class, ChildContent.
+                </ApiParameter>
+                <ApiParameter Name="TimelineHeader" Type="Component">
+                    Header section containing title and time. Props: Class, ChildContent.
+                </ApiParameter>
+                <ApiParameter Name="TimelineTitle" Type="Component">
+                    Semantic heading (&lt;h3&gt;) for the item title. Props: Class, ChildContent.
+                </ApiParameter>
+                <ApiParameter Name="TimelineDescription" Type="Component">
+                    Paragraph for item description text. Props: Class, ChildContent.
+                </ApiParameter>
+                <ApiParameter Name="TimelineTime" Type="Component">
+                    Semantic &lt;time&gt; element for dates. Props: Class, ChildContent.
+                </ApiParameter>
+                <ApiParameter Name="TimelineEmpty" Type="Component">
+                    Fallback displayed when no items exist. Props: Class, ChildContent.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>

@@ -1,0 +1,18 @@
+<BbTimeline>
+    <BbTimelineItem IconColor="TimelineColor.Primary">
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Primary</BbTimelineTitle>
+                <BbTimelineDescription>Default primary color theme.</BbTimelineDescription>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+    <BbTimelineItem IconColor="TimelineColor.Accent">
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Accent</BbTimelineTitle>
+                <BbTimelineDescription>Accent color for highlighted items.</BbTimelineDescription>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>

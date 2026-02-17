@@ -1,8 +1,4 @@
 @page "/components/alert-dialog"
-@using BlazorBlueprint.Components.AlertDialog
-@using BlazorBlueprint.Components.Button
-@using BlazorBlueprint.Components.Separator
-
 <PageTitle>Alert Dialog Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -23,28 +19,30 @@
                 Alert dialogs are used for critical confirmations that require user acknowledgement.
             </p>
         </div>
-        <AlertDialog>
-            <AlertDialogTrigger>
-                <Button Variant="ButtonVariant.Outline">Show Dialog</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
+        <BbAlertDialog>
+            <BbAlertDialogTrigger>
+                <BbButton Variant="ButtonVariant.Outline">Show Dialog</BbButton>
+            </BbAlertDialogTrigger>
+            <BbAlertDialogContent>
+                <BbAlertDialogHeader>
+                    <BbAlertDialogTitle>Are you absolutely sure?</BbAlertDialogTitle>
+                    <BbAlertDialogDescription>
                         This action cannot be undone. This will permanently delete your
                         account and remove your data from our servers.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel>
-                        <Button Variant="ButtonVariant.Outline">Cancel</Button>
-                    </AlertDialogCancel>
-                    <AlertDialogAction>
-                        <Button>Continue</Button>
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+                    </BbAlertDialogDescription>
+                </BbAlertDialogHeader>
+                <BbAlertDialogFooter>
+                    <BbAlertDialogCancel>
+                        <BbButton Variant="ButtonVariant.Outline">Cancel</BbButton>
+                    </BbAlertDialogCancel>
+                    <BbAlertDialogAction>
+                        <BbButton>Continue</BbButton>
+                    </BbAlertDialogAction>
+                </BbAlertDialogFooter>
+            </BbAlertDialogContent>
+        </BbAlertDialog>
+
+        <CodeBlock Source="Components/AlertDialog/basic.txt" />
     </div>
 
     <!-- Destructive Action -->
@@ -55,28 +53,30 @@
                 Use destructive button variant for dangerous actions.
             </p>
         </div>
-        <AlertDialog>
-            <AlertDialogTrigger>
-                <Button Variant="ButtonVariant.Destructive">Delete Account</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Account</AlertDialogTitle>
-                    <AlertDialogDescription>
+        <BbAlertDialog>
+            <BbAlertDialogTrigger>
+                <BbButton Variant="ButtonVariant.Destructive">Delete Account</BbButton>
+            </BbAlertDialogTrigger>
+            <BbAlertDialogContent>
+                <BbAlertDialogHeader>
+                    <BbAlertDialogTitle>Delete Account</BbAlertDialogTitle>
+                    <BbAlertDialogDescription>
                         Are you sure you want to delete your account? All of your data will be
                         permanently removed. This action cannot be undone.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel>
-                        <Button Variant="ButtonVariant.Outline">Cancel</Button>
-                    </AlertDialogCancel>
-                    <AlertDialogAction>
-                        <Button Variant="ButtonVariant.Destructive">Yes, delete account</Button>
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+                    </BbAlertDialogDescription>
+                </BbAlertDialogHeader>
+                <BbAlertDialogFooter>
+                    <BbAlertDialogCancel>
+                        <BbButton Variant="ButtonVariant.Outline">Cancel</BbButton>
+                    </BbAlertDialogCancel>
+                    <BbAlertDialogAction>
+                        <BbButton Variant="ButtonVariant.Destructive">Yes, delete account</BbButton>
+                    </BbAlertDialogAction>
+                </BbAlertDialogFooter>
+            </BbAlertDialogContent>
+        </BbAlertDialog>
+
+        <CodeBlock Source="Components/AlertDialog/destructive.txt" />
     </div>
 
     <!-- Controlled State -->
@@ -88,26 +88,28 @@
             </p>
         </div>
         <div class="flex items-center gap-4">
-            <Button OnClick="@(() => _isControlledOpen = true)">Open Dialog</Button>
+            <BbButton OnClick="@(() => _isControlledOpen = true)">Open Dialog</BbButton>
             <span class="text-sm text-muted-foreground">
                 Dialog is: @(_isControlledOpen ? "Open" : "Closed")
             </span>
         </div>
-        <AlertDialog @bind-Open="_isControlledOpen">
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Controlled Dialog</AlertDialogTitle>
-                    <AlertDialogDescription>
+        <BbAlertDialog @bind-Open="_isControlledOpen">
+            <BbAlertDialogContent>
+                <BbAlertDialogHeader>
+                    <BbAlertDialogTitle>Controlled Dialog</BbAlertDialogTitle>
+                    <BbAlertDialogDescription>
                         This dialog's open state is controlled by a parent component.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel>
-                        <Button Variant="ButtonVariant.Outline">Close</Button>
-                    </AlertDialogCancel>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+                    </BbAlertDialogDescription>
+                </BbAlertDialogHeader>
+                <BbAlertDialogFooter>
+                    <BbAlertDialogCancel>
+                        <BbButton Variant="ButtonVariant.Outline">Close</BbButton>
+                    </BbAlertDialogCancel>
+                </BbAlertDialogFooter>
+            </BbAlertDialogContent>
+        </BbAlertDialog>
+
+        <CodeBlock Source="Components/AlertDialog/controlled.txt" />
     </div>
 
     <!-- Key Differences from Dialog -->
@@ -142,42 +144,26 @@
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Open</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="AlertDialog">
+                <ApiParameter Name="Open" Type="bool?">
                     Controls the open state in controlled mode.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">DefaultOpen</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Initial open state for uncontrolled mode. Default: false.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">OnOpenChange</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">EventCallback&lt;bool&gt;</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="DefaultOpen" Type="bool" Default="false">
+                    Initial open state for uncontrolled mode.
+                </ApiParameter>
+                <ApiParameter Name="OnOpenChange" Type="EventCallback&lt;bool&gt;">
                     Callback when the open state changes.
-                </p>
-            </div>
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {

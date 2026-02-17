@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace BlazorBlueprint.Components.DataTable;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Specifies the row selection behavior for a data table.

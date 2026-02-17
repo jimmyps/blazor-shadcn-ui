@@ -1,5 +1,4 @@
 @page "/components/currency-input"
-@using BlazorBlueprint.Components.CurrencyInput
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>CurrencyInput Component - Blazor Blueprint</PageTitle>
@@ -23,9 +22,10 @@
             </p>
         </div>
         <div class="w-64">
-            <CurrencyInput @bind-Value="_usdValue" CurrencyCode="USD" Placeholder="0.00" />
+            <BbCurrencyInput @bind-Value="_usdValue" CurrencyCode="USD" Placeholder="0.00" />
         </div>
         <p class="text-sm text-muted-foreground">Value: $@_usdValue.ToString("F2")</p>
+        <CodeBlock Source="Components/CurrencyInput/basic.txt" />
     </div>
 
     <!-- Euro -->
@@ -37,7 +37,7 @@
             </p>
         </div>
         <div class="w-64">
-            <CurrencyInput @bind-Value="_eurValue" CurrencyCode="EUR" Placeholder="0,00" />
+            <BbCurrencyInput @bind-Value="_eurValue" CurrencyCode="EUR" Placeholder="0,00" />
         </div>
         <p class="text-sm text-muted-foreground">Value: @_eurValue.ToString("F2")</p>
     </div>
@@ -48,7 +48,7 @@
             <h2 class="text-2xl font-semibold">British Pound (GBP)</h2>
         </div>
         <div class="w-64">
-            <CurrencyInput @bind-Value="_gbpValue" CurrencyCode="GBP" />
+            <BbCurrencyInput @bind-Value="_gbpValue" CurrencyCode="GBP" />
         </div>
         <p class="text-sm text-muted-foreground">Value: @_gbpValue.ToString("F2")</p>
     </div>
@@ -62,7 +62,7 @@
             </p>
         </div>
         <div class="w-64">
-            <CurrencyInput @bind-Value="_jpyValue" CurrencyCode="JPY" />
+            <BbCurrencyInput @bind-Value="_jpyValue" CurrencyCode="JPY" />
         </div>
         <p class="text-sm text-muted-foreground">Value: @_jpyValue.ToString("F0")</p>
     </div>
@@ -76,7 +76,7 @@
             </p>
         </div>
         <div class="w-64">
-            <CurrencyInput @bind-Value="_kwdValue" CurrencyCode="KWD" />
+            <BbCurrencyInput @bind-Value="_kwdValue" CurrencyCode="KWD" />
         </div>
         <p class="text-sm text-muted-foreground">Value: @_kwdValue.ToString("F3")</p>
     </div>
@@ -90,7 +90,7 @@
             </p>
         </div>
         <div class="w-64">
-            <CurrencyInput @bind-Value="_chfValue" CurrencyCode="CHF" />
+            <BbCurrencyInput @bind-Value="_chfValue" CurrencyCode="CHF" />
         </div>
         <p class="text-sm text-muted-foreground">Value: @_chfValue.ToString("F2")</p>
     </div>
@@ -101,7 +101,7 @@
             <h2 class="text-2xl font-semibold">Brazilian Real (BRL)</h2>
         </div>
         <div class="w-64">
-            <CurrencyInput @bind-Value="_brlValue" CurrencyCode="BRL" />
+            <BbCurrencyInput @bind-Value="_brlValue" CurrencyCode="BRL" />
         </div>
         <p class="text-sm text-muted-foreground">Value: @_brlValue.ToString("F2")</p>
     </div>
@@ -112,7 +112,7 @@
             <h2 class="text-2xl font-semibold">Indian Rupee (INR)</h2>
         </div>
         <div class="w-64">
-            <CurrencyInput @bind-Value="_inrValue" CurrencyCode="INR" />
+            <BbCurrencyInput @bind-Value="_inrValue" CurrencyCode="INR" />
         </div>
         <p class="text-sm text-muted-foreground">Value: @_inrValue.ToString("F2")</p>
     </div>
@@ -126,9 +126,10 @@
             </p>
         </div>
         <div class="w-64">
-            <CurrencyInput @bind-Value="_noSymbolValue" CurrencyCode="USD" ShowSymbol="false" />
+            <BbCurrencyInput @bind-Value="_noSymbolValue" CurrencyCode="USD" ShowSymbol="false" />
         </div>
         <p class="text-sm text-muted-foreground">Value: @_noSymbolValue.ToString("F2")</p>
+        <CodeBlock Source="Components/CurrencyInput/without-symbol.txt" />
     </div>
 
     <!-- With Min/Max -->
@@ -140,9 +141,10 @@
             </p>
         </div>
         <div class="w-64">
-            <CurrencyInput @bind-Value="_constrainedValue" CurrencyCode="USD" Min="0" Max="1000" />
+            <BbCurrencyInput @bind-Value="_constrainedValue" CurrencyCode="USD" Min="0" Max="1000" />
         </div>
         <p class="text-sm text-muted-foreground">Value: $@_constrainedValue.ToString("F2") (min: $0, max: $1,000)</p>
+        <CodeBlock Source="Components/CurrencyInput/min-max.txt" />
     </div>
 
     <!-- Positive Only -->
@@ -154,7 +156,7 @@
             </p>
         </div>
         <div class="w-64">
-            <CurrencyInput @bind-Value="_positiveValue" CurrencyCode="USD" AllowNegative="false" />
+            <BbCurrencyInput @bind-Value="_positiveValue" CurrencyCode="USD" AllowNegative="false" />
         </div>
         <p class="text-sm text-muted-foreground">Value: $@_positiveValue.ToString("F2")</p>
     </div>
@@ -165,7 +167,7 @@
             <h2 class="text-2xl font-semibold">Disabled</h2>
         </div>
         <div class="w-64">
-            <CurrencyInput Value="1234.56m" CurrencyCode="USD" Disabled="true" />
+            <BbCurrencyInput Value="1234.56m" CurrencyCode="USD" Disabled="true" />
         </div>
     </div>
 
@@ -179,7 +181,7 @@
         </div>
         <div class="flex gap-4 items-end">
             <div class="w-64">
-                <CurrencyInput @bind-Value="_dynamicValue" CurrencyCode="@_selectedCurrency" />
+                <BbCurrencyInput @bind-Value="_dynamicValue" CurrencyCode="@_selectedCurrency" />
             </div>
             <select class="h-10 px-3 rounded-md border border-input bg-background text-sm"
                     @onchange="HandleCurrencyChange">
@@ -195,6 +197,7 @@
             </select>
         </div>
         <p class="text-sm text-muted-foreground">Value: @_dynamicValue (@_selectedCurrency)</p>
+        <CodeBlock Source="Components/CurrencyInput/dynamic-currency.txt" />
     </div>
 
     <!-- Debounce -->
@@ -211,7 +214,7 @@
             <div class="space-y-2">
                 <label class="text-sm font-medium">Debounced (default)</label>
                 <div class="w-64">
-                    <CurrencyInput Value="@_debouncedCurrency"
+                    <BbCurrencyInput Value="@_debouncedCurrency"
                                    ValueChanged="@((v) => _debouncedCurrency = v)"
                                    CurrencyCode="USD"
                                    Placeholder="Type to see delay" />
@@ -224,7 +227,7 @@
             <div class="space-y-2">
                 <label class="text-sm font-medium">Immediate (DisableDebounce)</label>
                 <div class="w-64">
-                    <CurrencyInput DisableDebounce="true"
+                    <BbCurrencyInput DisableDebounce="true"
                                    Value="@_immediateCurrency"
                                    ValueChanged="@((v) => _immediateCurrency = v)"
                                    CurrencyCode="USD"
@@ -236,6 +239,7 @@
                 </div>
             </div>
         </div>
+        <CodeBlock Source="Components/CurrencyInput/debounce.txt" />
     </div>
 
     <!-- Form Validation with EditForm -->
@@ -253,13 +257,13 @@
 
             <div class="space-y-2">
                 <label class="text-sm font-medium">Amount</label>
-                <CurrencyInput @bind-Value="currencyFormModel.Amount" CurrencyCode="USD" Placeholder="0.00" />
+                <BbCurrencyInput @bind-Value="currencyFormModel.Amount" CurrencyCode="USD" Placeholder="0.00" />
                 <ValidationMessage For="@(() => currencyFormModel.Amount)" class="text-sm text-destructive" />
             </div>
 
             <div class="flex gap-4">
-                <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</Button>
-                <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetCurrencyForm">Reset</Button>
+                <BbButton Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</BbButton>
+                <BbButton Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetCurrencyForm">Reset</BbButton>
             </div>
 
             @if (!string.IsNullOrEmpty(currencyFormMessage))
@@ -269,37 +273,58 @@
                 </div>
             }
         </EditForm>
+        <CodeBlock Source="Components/CurrencyInput/form-validation.txt" />
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">CurrencyInput Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Value:</strong> <code class="bg-muted px-1 py-0.5 rounded">decimal</code> - Current value</p>
-                    <p><strong>CurrencyCode:</strong> <code class="bg-muted px-1 py-0.5 rounded">string</code> - ISO 4217 currency code. Default: "USD"</p>
-                    <p><strong>ShowSymbol:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Show currency symbol. Default: true</p>
-                    <p><strong>Min:</strong> <code class="bg-muted px-1 py-0.5 rounded">decimal?</code> - Minimum allowed value</p>
-                    <p><strong>Max:</strong> <code class="bg-muted px-1 py-0.5 rounded">decimal?</code> - Maximum allowed value</p>
-                    <p><strong>AllowNegative:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Allow negative values. Default: true</p>
-                    <p><strong>UseThousandSeparator:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Use thousand separators. Default: true</p>
-                    <p><strong>DisableDebounce:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disable debounce to fire ValueChanged on every keystroke. Default: false</p>
-                    <p><strong>DebounceInterval:</strong> <code class="bg-muted px-1 py-0.5 rounded">int</code> - Debounce delay in milliseconds. Default: 500</p>
-                    <p><strong>Disabled:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disables the input</p>
-                </div>
-            </div>
-            <div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="CurrencyInput">
+                <ApiParameter Name="Value" Type="decimal" Default="0">
+                    Current value.
+                </ApiParameter>
+                <ApiParameter Name="CurrencyCode" Type="string" Default="&quot;USD&quot;">
+                    ISO 4217 currency code.
+                </ApiParameter>
+                <ApiParameter Name="ShowSymbol" Type="bool" Default="true">
+                    Show currency symbol.
+                </ApiParameter>
+                <ApiParameter Name="Min" Type="decimal?">
+                    Minimum allowed value.
+                </ApiParameter>
+                <ApiParameter Name="Max" Type="decimal?">
+                    Maximum allowed value.
+                </ApiParameter>
+                <ApiParameter Name="AllowNegative" Type="bool" Default="true">
+                    Allow negative values.
+                </ApiParameter>
+                <ApiParameter Name="UseThousandSeparator" Type="bool" Default="true">
+                    Use thousand separators.
+                </ApiParameter>
+                <ApiParameter Name="DisableDebounce" Type="bool" Default="false">
+                    Disable debounce to fire ValueChanged on every keystroke.
+                </ApiParameter>
+                <ApiParameter Name="DebounceInterval" Type="int" Default="500">
+                    Debounce delay in milliseconds.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Disables the input.
+                </ApiParameter>
+            </ApiReference>
+
+            <div class="border rounded-lg p-6">
                 <h3 class="font-mono text-sm font-semibold mb-2">Supported Currencies (40+)</h3>
                 <div class="text-sm text-muted-foreground">
                     <p>USD, EUR, GBP, JPY, CNY, INR, CAD, AUD, CHF, HKD, SGD, SEK, NOK, DKK, NZD, MXN, BRL, KRW, TRY, RUB, ZAR, THB, MYR, IDR, PHP, VND, PLN, CZK, ILS, AED, SAR, KWD, BHD, OMR, NGN, EGP, ARS, CLP, COP, TWD</p>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {

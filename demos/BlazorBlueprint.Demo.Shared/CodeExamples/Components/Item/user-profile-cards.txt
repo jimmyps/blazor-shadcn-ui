@@ -1,0 +1,19 @@
+<BbItemGroup>
+    <BbItem Variant="ItemVariant.Outline">
+        <BbItemMedia Variant="ItemMediaVariant.Image">
+            <BbAvatar>
+                <BbAvatarFallback>JD</BbAvatarFallback>
+            </BbAvatar>
+        </BbItemMedia>
+        <BbItemContent>
+            <BbItemTitle>
+                John Doe
+                <BbBadge Variant="BadgeVariant.Default">Admin</BbBadge>
+            </BbItemTitle>
+            <BbItemDescription>john.doe@example.com</BbItemDescription>
+        </BbItemContent>
+        <BbItemActions>
+            <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small">View Profile</BbButton>
+        </BbItemActions>
+    </BbItem>
+</BbItemGroup>

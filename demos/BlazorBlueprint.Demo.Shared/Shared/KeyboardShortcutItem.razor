@@ -1,0 +1,9 @@
+<div class="flex items-center justify-between gap-4">
+    <span class="text-sm text-muted-foreground">@Description</span>
+    <span class="flex items-center gap-1 shrink-0">@ChildContent</span>
+</div>
+
+@code {
+    [Parameter] public string? Description { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

@@ -1,0 +1,14 @@
+<BbRadarChart Data="@data" Indicators="@indicators" Height="250px">
+    <BbChartTooltip />
+    <BbRadar DataKey="desktop" Name="Desktop" Color="var(--chart-1)"
+           FillOpacity="0.6" ShowDots="true" DotSize="6" />
+</BbRadarChart>
+
+@code {
+    EChartsRadarIndicator[] indicators =
+    [
+        new() { Name = "{a|186/80}\n{b|January}", Max = 350 },
+        new() { Name = "{a|305/200}\n{b|February}", Max = 350 },
+        // ...
+    ];
+}

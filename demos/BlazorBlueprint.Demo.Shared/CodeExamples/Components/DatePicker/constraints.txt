@@ -1,0 +1,3 @@
+<BbDatePicker @bind-Value="_futureDate" MinDate="@DateTime.Today" />
+<BbDatePicker @bind-Value="_pastDate" MaxDate="@DateTime.Today" />
+<BbDatePicker @bind-Value="_rangeDate" MinDate="@DateTime.Today" MaxDate="@DateTime.Today.AddDays(30)" />

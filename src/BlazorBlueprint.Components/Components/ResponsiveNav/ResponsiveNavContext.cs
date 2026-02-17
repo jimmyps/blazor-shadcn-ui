@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.ResponsiveNav;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// State container for the responsive navigation component.

@@ -1,0 +1,33 @@
+@using BlazorBlueprint.Primitives.Sheet
+
+<!-- Without AsChild -->
+<BbSheet>
+    <BbSheetTrigger class="px-3 py-2 border rounded text-sm">
+        Open Sheet
+    </BbSheetTrigger>
+    <BbSheetPortal>
+        <BbSheetOverlay class="fixed inset-0 bg-black/50 z-50" />
+        <BbSheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
+            <BbSheetTitle>Without AsChild</BbSheetTitle>
+            <BbSheetDescription>Trigger rendered its own button element.</BbSheetDescription>
+            <BbSheetClose class="px-3 py-2 border rounded text-sm">Close</BbSheetClose>
+        </BbSheetContent>
+    </BbSheetPortal>
+</BbSheet>
+
+<!-- With AsChild -->
+<BbSheet>
+    <BbSheetTrigger AsChild>
+        <BbButton Variant="ButtonVariant.Outline">Open Sheet</BbButton>
+    </BbSheetTrigger>
+    <BbSheetPortal>
+        <BbSheetOverlay class="fixed inset-0 bg-black/50 z-50" />
+        <BbSheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
+            <BbSheetTitle>With AsChild</BbSheetTitle>
+            <BbSheetDescription>Button component handles the trigger behavior.</BbSheetDescription>
+            <BbSheetClose AsChild>
+                <BbButton Variant="ButtonVariant.Secondary">Close</BbButton>
+            </BbSheetClose>
+        </BbSheetContent>
+    </BbSheetPortal>
+</BbSheet>

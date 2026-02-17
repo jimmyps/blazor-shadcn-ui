@@ -1,0 +1,12 @@
+<BbInputGroup>
+    <BbInputGroupTextarea Rows="4" Placeholder="Write your comment..." />
+    <BbInputGroupAddon Align="InputGroupAlign.BlockEnd">
+        <div class="flex items-center justify-between w-full">
+            <p class="text-sm text-muted-foreground">Max 500 characters</p>
+            <div class="flex gap-2">
+                <BbInputGroupButton Variant="ButtonVariant.Ghost" Class="!px-2.5 !py-0.5 !rounded-sm">Cancel</BbInputGroupButton>
+                <BbInputGroupButton Class="!px-2.5 !py-0.5 !rounded-sm">Post</BbInputGroupButton>
+            </div>
+        </div>
+    </BbInputGroupAddon>
+</BbInputGroup>

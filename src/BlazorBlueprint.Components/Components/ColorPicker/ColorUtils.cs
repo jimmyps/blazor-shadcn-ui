@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace BlazorBlueprint.Components.ColorPicker;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Utility methods for color conversions.

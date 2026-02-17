@@ -1,0 +1,65 @@
+@typeparam TValue
+@namespace BlazorBlueprint.Primitives.Select
+@implements IDisposable
+
+@* SelectValue - displays the selected value's display text or a placeholder *@
+@if (ChildContent != null)
+{
+    @ChildContent(DisplayText ?? "")
+}
+else if (!string.IsNullOrEmpty(DisplayText))
+{
+    <span @attributes="AdditionalAttributes">@DisplayText</span>
+}
+else
+{
+    <span @attributes="AdditionalAttributes" style="opacity: 0.5">@Placeholder</span>
+}
+
+@code {
+    [CascadingParameter]
+    private SelectContext<TValue>? Context { get; set; }
+
+    /// <summary>
+    /// Placeholder text displayed when no value is selected.
+    /// </summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// Optional template for custom display rendering.
+    /// Receives the display text as the context parameter.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<string>? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional attributes to apply to the default span element.
+    /// Only used when ChildContent is null.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string? DisplayText => Context?.DisplayText;
+
+    protected override void OnInitialized()
+    {
+        if (Context != null)
+        {
+            Context.OnStateChanged += HandleStateChanged;
+        }
+    }
+
+    private void HandleStateChanged()
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        if (Context != null)
+        {
+            Context.OnStateChanged -= HandleStateChanged;
+        }
+    }
+}

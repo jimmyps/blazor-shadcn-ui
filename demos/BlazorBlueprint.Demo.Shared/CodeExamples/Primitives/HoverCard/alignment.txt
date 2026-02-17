@@ -1,0 +1,20 @@
+<BbHoverCard>
+    <BbHoverCardTrigger>Start Aligned</BbHoverCardTrigger>
+    <BbHoverCardContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start">
+        Aligned to start
+    </BbHoverCardContent>
+</BbHoverCard>
+
+<BbHoverCard>
+    <BbHoverCardTrigger>Center Aligned</BbHoverCardTrigger>
+    <BbHoverCardContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Center">
+        Centered
+    </BbHoverCardContent>
+</BbHoverCard>
+
+<BbHoverCard>
+    <BbHoverCardTrigger>End Aligned</BbHoverCardTrigger>
+    <BbHoverCardContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.End">
+        Aligned to end
+    </BbHoverCardContent>
+</BbHoverCard>

@@ -1,0 +1,4 @@
+<BbToggle Variant="ToggleVariant.Outline">
+    <LucideIcon Name="italic" Class="h-4 w-4 mr-2" />
+    Italic
+</BbToggle>

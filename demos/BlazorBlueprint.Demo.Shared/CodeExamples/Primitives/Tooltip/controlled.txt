@@ -1,0 +1,10 @@
+<button @onclick="() => isOpen = !isOpen">External Toggle</button>
+
+<BbTooltip @bind-Open="isOpen">
+    <BbTooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+        Controlled Tooltip
+    </BbTooltipTrigger>
+    <BbTooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
+        This tooltip is controlled externally
+    </BbTooltipContent>
+</BbTooltip>

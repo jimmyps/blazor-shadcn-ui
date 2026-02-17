@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Pagination;
+namespace BlazorBlueprint.Components;
 
 public enum PaginationLinkSize
 {

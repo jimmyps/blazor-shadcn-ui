@@ -1,0 +1,29 @@
+@namespace BlazorBlueprint.Components
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+<div class="@ContainerClass">
+    @if (ShowSymbol && Currency.SymbolBefore)
+    {
+        <span class="@SymbolClass">@Currency.Symbol</span>
+    }
+    <input
+        @ref="inputRef"
+        id="@EffectiveId"
+        name="@EffectiveName"
+        type="text"
+        inputmode="decimal"
+        class="@CssClass"
+        value="@DisplayValue"
+        placeholder="@Placeholder"
+        disabled="@Disabled"
+        required="@Required"
+        aria-label="@(AriaLabel ?? $"Amount in {Currency.Name}")"
+        aria-describedby="@AriaDescribedBy"
+        aria-invalid="@EffectiveAriaInvalid" />
+    @if (ShowSymbol && !Currency.SymbolBefore)
+    {
+        <span class="@SymbolClass">@Currency.Symbol</span>
+    }
+</div>

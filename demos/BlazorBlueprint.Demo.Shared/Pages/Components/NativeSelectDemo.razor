@@ -1,5 +1,4 @@
 @page "/components/native-select"
-@using BlazorBlueprint.Components.NativeSelect
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>Native Select Component - Blazor Blueprint</PageTitle>
@@ -23,14 +22,15 @@
             </p>
         </div>
         <div class="w-[280px]">
-            <NativeSelect TValue="string" @bind-Value="_selectedFruit" Placeholder="Select a fruit">
+            <BbNativeSelect TValue="string" @bind-Value="_selectedFruit" Placeholder="Select a fruit">
                 <option value="apple">Apple</option>
                 <option value="banana">Banana</option>
                 <option value="orange">Orange</option>
                 <option value="grape">Grape</option>
-            </NativeSelect>
+            </BbNativeSelect>
         </div>
         <p class="text-sm text-muted-foreground">Selected: @(_selectedFruit ?? "none")</p>
+        <CodeBlock Source="Components/NativeSelect/basic.txt" />
     </div>
 
     <!-- With Placeholder -->
@@ -42,15 +42,16 @@
             </p>
         </div>
         <div class="w-[280px]">
-            <NativeSelect TValue="string" @bind-Value="_selectedCountry" Placeholder="Choose your country">
+            <BbNativeSelect TValue="string" @bind-Value="_selectedCountry" Placeholder="Choose your country">
                 <option value="us">United States</option>
                 <option value="uk">United Kingdom</option>
                 <option value="ca">Canada</option>
                 <option value="au">Australia</option>
                 <option value="de">Germany</option>
                 <option value="fr">France</option>
-            </NativeSelect>
+            </BbNativeSelect>
         </div>
+        <CodeBlock Source="Components/NativeSelect/with-placeholder.txt" />
     </div>
 
     <!-- Sizes -->
@@ -62,19 +63,20 @@
             </p>
         </div>
         <div class="flex flex-col gap-4 w-[280px]">
-            <NativeSelect TValue="string" Size="NativeSelectSize.Small" Placeholder="Small">
+            <BbNativeSelect TValue="string" Size="NativeSelectSize.Small" Placeholder="Small">
                 <option value="1">Option 1</option>
                 <option value="2">Option 2</option>
-            </NativeSelect>
-            <NativeSelect TValue="string" Size="NativeSelectSize.Default" Placeholder="Default">
+            </BbNativeSelect>
+            <BbNativeSelect TValue="string" Size="NativeSelectSize.Default" Placeholder="Default">
                 <option value="1">Option 1</option>
                 <option value="2">Option 2</option>
-            </NativeSelect>
-            <NativeSelect TValue="string" Size="NativeSelectSize.Large" Placeholder="Large">
+            </BbNativeSelect>
+            <BbNativeSelect TValue="string" Size="NativeSelectSize.Large" Placeholder="Large">
                 <option value="1">Option 1</option>
                 <option value="2">Option 2</option>
-            </NativeSelect>
+            </BbNativeSelect>
         </div>
+        <CodeBlock Source="Components/NativeSelect/sizes.txt" />
     </div>
 
     <!-- Disabled -->
@@ -86,11 +88,12 @@
             </p>
         </div>
         <div class="w-[280px]">
-            <NativeSelect TValue="string" Disabled="true" Placeholder="Disabled select">
+            <BbNativeSelect TValue="string" Disabled="true" Placeholder="Disabled select">
                 <option value="1">Option 1</option>
                 <option value="2">Option 2</option>
-            </NativeSelect>
+            </BbNativeSelect>
         </div>
+        <CodeBlock Source="Components/NativeSelect/disabled.txt" />
     </div>
 
     <!-- With Option Groups -->
@@ -102,7 +105,7 @@
             </p>
         </div>
         <div class="w-[280px]">
-            <NativeSelect TValue="string" @bind-Value="_selectedCar" Placeholder="Select a car">
+            <BbNativeSelect TValue="string" @bind-Value="_selectedCar" Placeholder="Select a car">
                 <optgroup label="Swedish Cars">
                     <option value="volvo">Volvo</option>
                     <option value="saab">Saab</option>
@@ -116,8 +119,9 @@
                     <option value="toyota">Toyota</option>
                     <option value="honda">Honda</option>
                 </optgroup>
-            </NativeSelect>
+            </BbNativeSelect>
         </div>
+        <CodeBlock Source="Components/NativeSelect/option-groups.txt" />
     </div>
 
     <!-- Numeric Values -->
@@ -129,15 +133,16 @@
             </p>
         </div>
         <div class="w-[280px]">
-            <NativeSelect TValue="int" @bind-Value="_selectedNumber" Placeholder="Select a number">
+            <BbNativeSelect TValue="int" @bind-Value="_selectedNumber" Placeholder="Select a number">
                 <option value="1">One</option>
                 <option value="2">Two</option>
                 <option value="3">Three</option>
                 <option value="4">Four</option>
                 <option value="5">Five</option>
-            </NativeSelect>
+            </BbNativeSelect>
         </div>
         <p class="text-sm text-muted-foreground">Selected number: @_selectedNumber</p>
+        <CodeBlock Source="Components/NativeSelect/numeric-values.txt" />
     </div>
 
     <!-- Form Validation with EditForm -->
@@ -155,20 +160,20 @@
 
             <div class="space-y-2">
                 <label class="text-sm font-medium">Country</label>
-                <NativeSelect TValue="string" @bind-Value="nativeSelectFormModel.Country" Placeholder="Select a country">
+                <BbNativeSelect TValue="string" @bind-Value="nativeSelectFormModel.Country" Placeholder="Select a country">
                     <option value="us">United States</option>
                     <option value="uk">United Kingdom</option>
                     <option value="ca">Canada</option>
                     <option value="au">Australia</option>
                     <option value="de">Germany</option>
                     <option value="fr">France</option>
-                </NativeSelect>
+                </BbNativeSelect>
                 <ValidationMessage For="@(() => nativeSelectFormModel.Country)" class="text-sm text-destructive" />
             </div>
 
             <div class="flex gap-4">
-                <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</Button>
-                <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetNativeSelectForm">Reset</Button>
+                <BbButton Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</BbButton>
+                <BbButton Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetNativeSelectForm">Reset</BbButton>
             </div>
 
             @if (!string.IsNullOrEmpty(nativeSelectFormMessage))
@@ -178,7 +183,82 @@
                 </div>
             }
         </EditForm>
+        <CodeBlock Source="Components/NativeSelect/form-validation.txt" />
     </div>
+
+    <!-- Accessibility -->
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>
+                Renders a native <code>&lt;select&gt;</code> element, inheriting built-in browser accessibility and screen reader support.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                The disabled attribute is applied directly to the native select, preventing interaction and signaling the disabled state to assistive technologies.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                When used inside an EditForm, validation errors automatically apply <code>aria-invalid</code> styling to indicate invalid state.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                The placeholder option uses <code>disabled</code> and <code>selected</code> attributes to display prompt text without allowing it as a valid selection.
+            </AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Open the select dropdown">
+                <BbKbd>Space</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Navigate between options">
+                <BbKbd>Arrow Keys</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Select an option and close">
+                <BbKbd>Enter</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Close without selecting">
+                <BbKbd>Escape</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="NativeSelect&lt;TValue&gt;">
+                <ApiParameter Name="TValue" Type="type parameter">
+                    The type of the selected value (e.g., string, int).
+                </ApiParameter>
+                <ApiParameter Name="Value" Type="TValue?">
+                    The currently selected value.
+                </ApiParameter>
+                <ApiParameter Name="ValueChanged" Type="EventCallback&lt;TValue?&gt;">
+                    Event callback invoked when the selected value changes.
+                </ApiParameter>
+                <ApiParameter Name="ValueExpression" Type="Expression&lt;Func&lt;TValue?&gt;&gt;?">
+                    An expression that identifies the bound value. Used for form validation integration with EditContext.
+                </ApiParameter>
+                <ApiParameter Name="Name" Type="string?">
+                    The HTML name attribute for the select element. When inside an EditForm and not explicitly set, derived automatically from the ValueExpression.
+                </ApiParameter>
+                <ApiParameter Name="Placeholder" Type="string?">
+                    Placeholder text shown as a disabled option when no value is selected.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the select is disabled.
+                </ApiParameter>
+                <ApiParameter Name="Size" Type="NativeSelectSize" Default="Default">
+                    Size variant for the select. Options: Small, Default, Large.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the select element.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The option and optgroup elements to display inside the select.
+                </ApiParameter>
+            </ApiReference>
+        </div>
+    </section>
 </div>
 
 @code {

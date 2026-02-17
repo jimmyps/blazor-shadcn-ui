@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace BlazorBlueprint.Components.Chart;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Maps series names to their configuration (labels and colors) for chart components.

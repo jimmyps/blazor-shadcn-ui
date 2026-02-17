@@ -1,0 +1,3 @@
+<BbButton Class="w-full">Full Width Button</BbButton>
+<BbButton Class="shadow-lg">With Shadow</BbButton>
+<BbButton Variant="ButtonVariant.Outline" Class="border-2 border-blue-500">Custom Border</BbButton>

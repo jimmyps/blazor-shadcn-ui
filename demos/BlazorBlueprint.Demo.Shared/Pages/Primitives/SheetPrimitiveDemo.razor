@@ -1,7 +1,4 @@
 @page "/primitives/sheet"
-@using BlazorBlueprint.Primitives.Sheet
-@using BlazorBlueprint.Components.Kbd
-
 <PageTitle>Sheet Primitive - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -29,21 +26,21 @@
                     <p class="text-sm text-muted-foreground">
                         SheetTrigger renders its own button element.
                     </p>
-                    <Sheet>
-                        <SheetTrigger class="px-3 py-2 border rounded text-sm">
+                    <BlazorBlueprint.Primitives.Sheet.BbSheet>
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetTrigger class="px-3 py-2 border rounded text-sm">
                             Open Sheet
-                        </SheetTrigger>
-                        <SheetPortal>
-                            <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                            <SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
-                                <SheetTitle class="text-lg font-semibold mb-2">Without AsChild</SheetTitle>
-                                <SheetDescription class="text-sm text-muted-foreground mb-4">
+                        </BlazorBlueprint.Primitives.Sheet.BbSheetTrigger>
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetOverlay class="fixed inset-0 bg-black/50 z-50" />
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
+                                <BlazorBlueprint.Primitives.Sheet.BbSheetTitle class="text-lg font-semibold mb-2">Without AsChild</BlazorBlueprint.Primitives.Sheet.BbSheetTitle>
+                                <BlazorBlueprint.Primitives.Sheet.BbSheetDescription class="text-sm text-muted-foreground mb-4">
                                     Trigger rendered its own button element.
-                                </SheetDescription>
-                                <SheetClose class="px-3 py-2 border rounded text-sm">Close</SheetClose>
-                            </SheetContent>
-                        </SheetPortal>
-                    </Sheet>
+                                </BlazorBlueprint.Primitives.Sheet.BbSheetDescription>
+                                <BlazorBlueprint.Primitives.Sheet.BbSheetClose class="px-3 py-2 border rounded text-sm">Close</BlazorBlueprint.Primitives.Sheet.BbSheetClose>
+                            </BlazorBlueprint.Primitives.Sheet.BbSheetContent>
+                        </BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                    </BlazorBlueprint.Primitives.Sheet.BbSheet>
                 </div>
 
                 <!-- With AsChild -->
@@ -52,25 +49,27 @@
                     <p class="text-sm text-muted-foreground">
                         Button receives click behavior via TriggerContext.
                     </p>
-                    <Sheet>
-                        <SheetTrigger AsChild>
-                            <Button Variant="ButtonVariant.Outline">Open Sheet</Button>
-                        </SheetTrigger>
-                        <SheetPortal>
-                            <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                            <SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
-                                <SheetTitle class="text-lg font-semibold mb-2">With AsChild</SheetTitle>
-                                <SheetDescription class="text-sm text-muted-foreground mb-4">
+                    <BlazorBlueprint.Primitives.Sheet.BbSheet>
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetTrigger AsChild>
+                            <BbButton Variant="ButtonVariant.Outline">Open Sheet</BbButton>
+                        </BlazorBlueprint.Primitives.Sheet.BbSheetTrigger>
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetOverlay class="fixed inset-0 bg-black/50 z-50" />
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
+                                <BlazorBlueprint.Primitives.Sheet.BbSheetTitle class="text-lg font-semibold mb-2">With AsChild</BlazorBlueprint.Primitives.Sheet.BbSheetTitle>
+                                <BlazorBlueprint.Primitives.Sheet.BbSheetDescription class="text-sm text-muted-foreground mb-4">
                                     Button component handles the trigger behavior.
-                                </SheetDescription>
-                                <SheetClose AsChild>
-                                    <Button Variant="ButtonVariant.Secondary">Close</Button>
-                                </SheetClose>
-                            </SheetContent>
-                        </SheetPortal>
-                    </Sheet>
+                                </BlazorBlueprint.Primitives.Sheet.BbSheetDescription>
+                                <BlazorBlueprint.Primitives.Sheet.BbSheetClose AsChild>
+                                    <BbButton Variant="ButtonVariant.Secondary">Close</BbButton>
+                                </BlazorBlueprint.Primitives.Sheet.BbSheetClose>
+                            </BlazorBlueprint.Primitives.Sheet.BbSheetContent>
+                        </BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                    </BlazorBlueprint.Primitives.Sheet.BbSheet>
                 </div>
             </div>
+
+            <CodeBlock Source="Primitives/Sheet/as-child.txt" />
         </section>
 
         <section class="space-y-4">
@@ -82,32 +81,34 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <Sheet>
-                    <SheetTrigger class="px-3 py-2 border rounded text-sm">
+                <BlazorBlueprint.Primitives.Sheet.BbSheet>
+                    <BlazorBlueprint.Primitives.Sheet.BbSheetTrigger class="px-3 py-2 border rounded text-sm">
                         Open Sheet
-                    </SheetTrigger>
+                    </BlazorBlueprint.Primitives.Sheet.BbSheetTrigger>
 
-                    <SheetPortal>
-                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
+                    <BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetOverlay class="fixed inset-0 bg-black/50 z-50" />
 
-                        <SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
-                            <SheetTitle class="text-lg font-semibold mb-2">
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetTitle class="text-lg font-semibold mb-2">
                                 Sheet Title
-                            </SheetTitle>
+                            </BlazorBlueprint.Primitives.Sheet.BbSheetTitle>
 
-                            <SheetDescription class="text-sm text-muted-foreground mb-4">
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetDescription class="text-sm text-muted-foreground mb-4">
                                 This is a basic sheet using the unstyled primitive components.
-                            </SheetDescription>
+                            </BlazorBlueprint.Primitives.Sheet.BbSheetDescription>
 
                             <div class="flex justify-end gap-2">
-                                <SheetClose class="px-3 py-2 border rounded text-sm">
+                                <BlazorBlueprint.Primitives.Sheet.BbSheetClose class="px-3 py-2 border rounded text-sm">
                                     Close
-                                </SheetClose>
+                                </BlazorBlueprint.Primitives.Sheet.BbSheetClose>
                             </div>
-                        </SheetContent>
-                    </SheetPortal>
-                </Sheet>
+                        </BlazorBlueprint.Primitives.Sheet.BbSheetContent>
+                    </BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                </BlazorBlueprint.Primitives.Sheet.BbSheet>
             </div>
+
+            <CodeBlock Source="Primitives/Sheet/basic.txt" />
         </section>
 
         <section class="space-y-4">
@@ -119,70 +120,72 @@
             </div>
 
             <div class="flex flex-wrap gap-2">
-                <Sheet Side="SheetSide.Top">
-                    <SheetTrigger class="px-3 py-2 border rounded text-sm">
-                        Top
-                    </SheetTrigger>
-                    <SheetPortal>
-                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                        <SheetContent class="fixed top-0 inset-x-0 z-50 border-b bg-background p-6">
-                            <SheetTitle class="text-lg font-semibold mb-2">Sheet from Top</SheetTitle>
-                            <SheetDescription class="text-sm text-muted-foreground">
+                <BlazorBlueprint.Primitives.Sheet.BbSheet Side="SheetSide.Top">
+                    <BlazorBlueprint.Primitives.Sheet.BbSheetTrigger class="inline-flex items-center justify-center px-3 py-2 border rounded text-sm">
+                        <LucideIcon Name="arrow-up" Size="16" />
+                    </BlazorBlueprint.Primitives.Sheet.BbSheetTrigger>
+                    <BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetOverlay class="fixed inset-0 bg-black/50 z-50" />
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetContent class="fixed top-0 inset-x-0 z-50 border-b bg-background p-6">
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetTitle class="text-lg font-semibold mb-2">Sheet from Top</BlazorBlueprint.Primitives.Sheet.BbSheetTitle>
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetDescription class="text-sm text-muted-foreground">
                                 This sheet slides in from the top of the screen.
-                            </SheetDescription>
-                            <SheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClose>
-                        </SheetContent>
-                    </SheetPortal>
-                </Sheet>
+                            </BlazorBlueprint.Primitives.Sheet.BbSheetDescription>
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</BlazorBlueprint.Primitives.Sheet.BbSheetClose>
+                        </BlazorBlueprint.Primitives.Sheet.BbSheetContent>
+                    </BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                </BlazorBlueprint.Primitives.Sheet.BbSheet>
 
-                <Sheet Side="SheetSide.Right">
-                    <SheetTrigger class="px-3 py-2 border rounded text-sm">
-                        Right
-                    </SheetTrigger>
-                    <SheetPortal>
-                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                        <SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm border-l bg-background p-6">
-                            <SheetTitle class="text-lg font-semibold mb-2">Sheet from Right</SheetTitle>
-                            <SheetDescription class="text-sm text-muted-foreground">
+                <BlazorBlueprint.Primitives.Sheet.BbSheet Side="SheetSide.Right">
+                    <BlazorBlueprint.Primitives.Sheet.BbSheetTrigger class="inline-flex items-center justify-center px-3 py-2 border rounded text-sm">
+                        <LucideIcon Name="arrow-right" Size="16" />
+                    </BlazorBlueprint.Primitives.Sheet.BbSheetTrigger>
+                    <BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetOverlay class="fixed inset-0 bg-black/50 z-50" />
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm border-l bg-background p-6">
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetTitle class="text-lg font-semibold mb-2">Sheet from Right</BlazorBlueprint.Primitives.Sheet.BbSheetTitle>
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetDescription class="text-sm text-muted-foreground">
                                 This sheet slides in from the right side (default).
-                            </SheetDescription>
-                            <SheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClose>
-                        </SheetContent>
-                    </SheetPortal>
-                </Sheet>
+                            </BlazorBlueprint.Primitives.Sheet.BbSheetDescription>
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</BlazorBlueprint.Primitives.Sheet.BbSheetClose>
+                        </BlazorBlueprint.Primitives.Sheet.BbSheetContent>
+                    </BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                </BlazorBlueprint.Primitives.Sheet.BbSheet>
 
-                <Sheet Side="SheetSide.Bottom">
-                    <SheetTrigger class="px-3 py-2 border rounded text-sm">
-                        Bottom
-                    </SheetTrigger>
-                    <SheetPortal>
-                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                        <SheetContent class="fixed bottom-0 inset-x-0 z-50 border-t bg-background p-6">
-                            <SheetTitle class="text-lg font-semibold mb-2">Sheet from Bottom</SheetTitle>
-                            <SheetDescription class="text-sm text-muted-foreground">
+                <BlazorBlueprint.Primitives.Sheet.BbSheet Side="SheetSide.Bottom">
+                    <BlazorBlueprint.Primitives.Sheet.BbSheetTrigger class="inline-flex items-center justify-center px-3 py-2 border rounded text-sm">
+                        <LucideIcon Name="arrow-down" Size="16" />
+                    </BlazorBlueprint.Primitives.Sheet.BbSheetTrigger>
+                    <BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetOverlay class="fixed inset-0 bg-black/50 z-50" />
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetContent class="fixed bottom-0 inset-x-0 z-50 border-t bg-background p-6">
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetTitle class="text-lg font-semibold mb-2">Sheet from Bottom</BlazorBlueprint.Primitives.Sheet.BbSheetTitle>
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetDescription class="text-sm text-muted-foreground">
                                 This sheet slides in from the bottom of the screen.
-                            </SheetDescription>
-                            <SheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClose>
-                        </SheetContent>
-                    </SheetPortal>
-                </Sheet>
+                            </BlazorBlueprint.Primitives.Sheet.BbSheetDescription>
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</BlazorBlueprint.Primitives.Sheet.BbSheetClose>
+                        </BlazorBlueprint.Primitives.Sheet.BbSheetContent>
+                    </BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                </BlazorBlueprint.Primitives.Sheet.BbSheet>
 
-                <Sheet Side="SheetSide.Left">
-                    <SheetTrigger class="px-3 py-2 border rounded text-sm">
-                        Left
-                    </SheetTrigger>
-                    <SheetPortal>
-                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                        <SheetContent class="fixed left-0 top-0 z-50 h-full w-3/4 sm:max-w-sm border-r bg-background p-6">
-                            <SheetTitle class="text-lg font-semibold mb-2">Sheet from Left</SheetTitle>
-                            <SheetDescription class="text-sm text-muted-foreground">
+                <BlazorBlueprint.Primitives.Sheet.BbSheet Side="SheetSide.Left">
+                    <BlazorBlueprint.Primitives.Sheet.BbSheetTrigger class="inline-flex items-center justify-center px-3 py-2 border rounded text-sm">
+                        <LucideIcon Name="arrow-left" Size="16" />
+                    </BlazorBlueprint.Primitives.Sheet.BbSheetTrigger>
+                    <BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetOverlay class="fixed inset-0 bg-black/50 z-50" />
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetContent class="fixed left-0 top-0 z-50 h-full w-3/4 sm:max-w-sm border-r bg-background p-6">
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetTitle class="text-lg font-semibold mb-2">Sheet from Left</BlazorBlueprint.Primitives.Sheet.BbSheetTitle>
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetDescription class="text-sm text-muted-foreground">
                                 This sheet slides in from the left side.
-                            </SheetDescription>
-                            <SheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClose>
-                        </SheetContent>
-                    </SheetPortal>
-                </Sheet>
+                            </BlazorBlueprint.Primitives.Sheet.BbSheetDescription>
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</BlazorBlueprint.Primitives.Sheet.BbSheetClose>
+                        </BlazorBlueprint.Primitives.Sheet.BbSheetContent>
+                    </BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                </BlazorBlueprint.Primitives.Sheet.BbSheet>
             </div>
+
+            <CodeBlock Source="Primitives/Sheet/sides.txt" />
         </section>
 
         <section class="space-y-4">
@@ -207,28 +210,30 @@
                 </div>
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
-                    <Sheet @bind-Open="isControlledOpen">
-                        <SheetPortal>
-                            <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
+                    <BlazorBlueprint.Primitives.Sheet.BbSheet @bind-Open="isControlledOpen">
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetOverlay class="fixed inset-0 bg-black/50 z-50" />
 
-                            <SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
-                                <SheetTitle class="text-lg font-semibold mb-2">
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
+                                <BlazorBlueprint.Primitives.Sheet.BbSheetTitle class="text-lg font-semibold mb-2">
                                     Controlled Sheet
-                                </SheetTitle>
+                                </BlazorBlueprint.Primitives.Sheet.BbSheetTitle>
 
-                                <SheetDescription class="text-sm text-muted-foreground mb-4">
+                                <BlazorBlueprint.Primitives.Sheet.BbSheetDescription class="text-sm text-muted-foreground mb-4">
                                     This sheet's state is controlled by the parent component. The "Close from Outside" button demonstrates external state control.
-                                </SheetDescription>
+                                </BlazorBlueprint.Primitives.Sheet.BbSheetDescription>
 
                                 <p class="mb-4">Open state: <strong>@isControlledOpen</strong></p>
 
-                                <SheetClose class="px-3 py-2 border rounded text-sm">
+                                <BlazorBlueprint.Primitives.Sheet.BbSheetClose class="px-3 py-2 border rounded text-sm">
                                     Close
-                                </SheetClose>
-                            </SheetContent>
-                        </SheetPortal>
-                    </Sheet>
+                                </BlazorBlueprint.Primitives.Sheet.BbSheetClose>
+                            </BlazorBlueprint.Primitives.Sheet.BbSheetContent>
+                        </BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                    </BlazorBlueprint.Primitives.Sheet.BbSheet>
                 </div>
+
+                <CodeBlock Source="Primitives/Sheet/controlled.txt" />
             </div>
         </section>
 
@@ -241,110 +246,77 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <Sheet>
-                    <SheetTrigger class="px-3 py-2 border rounded text-sm">
+                <BlazorBlueprint.Primitives.Sheet.BbSheet>
+                    <BlazorBlueprint.Primitives.Sheet.BbSheetTrigger class="px-3 py-2 border rounded text-sm">
                         Open Modal Sheet
-                    </SheetTrigger>
+                    </BlazorBlueprint.Primitives.Sheet.BbSheetTrigger>
 
-                    <SheetPortal>
-                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
+                    <BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetOverlay class="fixed inset-0 bg-black/50 z-50" />
 
-                        <SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
-                            <SheetTitle class="text-lg font-semibold mb-2">
+                        <BlazorBlueprint.Primitives.Sheet.BbSheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetTitle class="text-lg font-semibold mb-2">
                                 Modal Sheet
-                            </SheetTitle>
+                            </BlazorBlueprint.Primitives.Sheet.BbSheetTitle>
 
-                            <SheetDescription class="text-sm text-muted-foreground mb-4">
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetDescription class="text-sm text-muted-foreground mb-4">
                                 Try clicking the overlay or pressing Escape to close this sheet.
-                            </SheetDescription>
+                            </BlazorBlueprint.Primitives.Sheet.BbSheetDescription>
 
                             <ul class="text-sm space-y-1 mb-4">
-                                <li>✓ Click overlay to close</li>
-                                <li>✓ Press Escape to close</li>
-                                <li>✓ Click close button</li>
-                                <li>✓ Focus trapped inside sheet</li>
-                                <li>✓ Body scroll locked</li>
+                                <li>Click overlay to close</li>
+                                <li>Press Escape to close</li>
+                                <li>Click close button</li>
+                                <li>Focus trapped inside sheet</li>
+                                <li>Body scroll locked</li>
                             </ul>
 
-                            <SheetClose class="px-3 py-2 border rounded text-sm">
+                            <BlazorBlueprint.Primitives.Sheet.BbSheetClose class="px-3 py-2 border rounded text-sm">
                                 Close
-                            </SheetClose>
-                        </SheetContent>
-                    </SheetPortal>
-                </Sheet>
+                            </BlazorBlueprint.Primitives.Sheet.BbSheetClose>
+                        </BlazorBlueprint.Primitives.Sheet.BbSheetContent>
+                    </BlazorBlueprint.Primitives.Sheet.BbSheetPortal>
+                </BlazorBlueprint.Primitives.Sheet.BbSheet>
             </div>
         </section>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Accessibility Features</h2>
-                <p class="text-muted-foreground">
-                    Built-in accessibility features following WAI-ARIA design patterns.
-                </p>
-            </div>
-
-            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
-                <div>
-                    <h3 class="font-semibold mb-2">ARIA Attributes</h3>
-                    <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">role="dialog"</code> for screen readers</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">aria-labelledby</code> links title to sheet</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">aria-describedby</code> links description to sheet</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Automatic focus trap and restoration</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Body scroll lock when sheet is open</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Portal rendering for proper z-index stacking</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Direction-aware slide animations</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Keyboard Shortcuts</h2>
-                <p class="text-muted-foreground">
-                    Navigate and interact with sheets using keyboard.
-                </p>
-            </div>
-
-            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
-                <div class="grid gap-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Open sheet</span>
-                        <Kbd>Enter / Space</Kbd>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Close sheet</span>
-                        <Kbd>Escape</Kbd>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Navigate between elements</span>
-                        <Kbd>Tab</Kbd>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <AccessibilityList>
+            <AriaAttributes>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">role="dialog"</code> for screen readers
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-labelledby</code> links title to sheet
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-describedby</code> links description to sheet
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Automatic focus trap and restoration
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Body scroll lock when sheet is open
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Portal rendering for proper z-index stacking
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Direction-aware slide animations
+                </AccessibilityItem>
+            </AriaAttributes>
+            <KeyboardNavigation>
+                <KeyboardShortcutItem Description="Open sheet">
+                    <BbKbd>Enter</BbKbd>
+                    <BbKbd>Space</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Close sheet">
+                    <BbKbd>Escape</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Navigate between elements">
+                    <BbKbd>Tab</BbKbd>
+                </KeyboardShortcutItem>
+            </KeyboardNavigation>
+        </AccessibilityList>
 
         <section class="space-y-4">
             <div class="space-y-2">
@@ -355,188 +327,131 @@
             </div>
 
             <div class="space-y-4">
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">Sheet</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Open</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool?</code><br/>
-                                Controls whether the sheet is open (controlled mode).
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">OpenChanged</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>EventCallback&lt;bool&gt;</code><br/>
-                                Callback invoked when the open state changes.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">DefaultOpen</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>false</code><br/>
-                                Initial open state (uncontrolled mode).
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Side</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>SheetSide</code><br/>
-                                <strong>Default:</strong> <code>SheetSide.Right</code><br/>
-                                <strong>Options:</strong> Top, Right, Bottom, Left<br/>
-                                The side from which the sheet slides in.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Modal</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>true</code><br/>
-                                Whether the sheet is modal (blocks interaction with rest of page).
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="Sheet">
+                    <ApiParameter Name="Open" Type="bool?">
+                        Controls whether the sheet is open (controlled mode). When null, the sheet manages its own state (uncontrolled mode).
+                    </ApiParameter>
+                    <ApiParameter Name="OpenChanged" Type="EventCallback&lt;bool&gt;">
+                        Callback invoked when the open state changes. Use with <code>@@bind-Open</code> for two-way binding.
+                    </ApiParameter>
+                    <ApiParameter Name="DefaultOpen" Type="bool" Default="false">
+                        Initial open state when in uncontrolled mode.
+                    </ApiParameter>
+                    <ApiParameter Name="OnOpenChange" Type="EventCallback&lt;bool&gt;">
+                        Event callback invoked when the sheet open state changes. Receives the new open state as a parameter.
+                    </ApiParameter>
+                    <ApiParameter Name="Side" Type="SheetSide" Default="SheetSide.Right">
+                        The side from which the sheet slides in. Options: Top, Right, Bottom, Left.
+                    </ApiParameter>
+                    <ApiParameter Name="Modal" Type="bool" Default="true">
+                        Whether the sheet is modal (blocks interaction with rest of page).
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        Content rendered inside the sheet context. Typically includes SheetTrigger, SheetPortal, and other sheet parts.
+                    </ApiParameter>
+                </ApiReference>
 
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">SheetTrigger</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">ChildContent</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>RenderFragment?</code><br/>
-                                Button content that opens the sheet.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="SheetTrigger">
+                    <ApiParameter Name="AsChild" Type="bool" Default="false">
+                        When true, does not render its own button element. Instead passes trigger behavior via <code>TriggerContext</code> to child components.
+                    </ApiParameter>
+                    <ApiParameter Name="OnClick" Type="EventCallback&lt;MouseEventArgs&gt;">
+                        Custom click handler. If provided, this is called in addition to the default toggle behavior.
+                    </ApiParameter>
+                    <ApiParameter Name="CustomClickHandling" Type="bool" Default="false">
+                        Whether to use custom click handling. When true, only OnClick is invoked and the sheet does not toggle automatically.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        Content rendered inside the trigger button.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the trigger button element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
 
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">SheetPortal</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">ChildContent</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>RenderFragment?</code><br/>
-                                Content rendered at document body level for proper stacking.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="SheetPortal">
+                    <ApiParameter Name="Container" Type="string?">
+                        The container element to render the portal into. When null (default), renders into document body via PortalService. When set, renders inline within the current component tree.
+                    </ApiParameter>
+                    <ApiParameter Name="ForceMount" Type="bool" Default="false">
+                        Whether to force rendering in a portal. When false, portal is only used when sheet is open.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        Content rendered at document body level for proper stacking. Typically includes SheetOverlay and SheetContent.
+                    </ApiParameter>
+                </ApiReference>
 
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">SheetOverlay</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">CloseOnClick</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>true</code><br/>
-                                Whether clicking the overlay closes the sheet.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="SheetOverlay">
+                    <ApiParameter Name="CloseOnClick" Type="bool" Default="true">
+                        Whether clicking the overlay closes the sheet.
+                    </ApiParameter>
+                    <ApiParameter Name="OnClick" Type="EventCallback&lt;MouseEventArgs&gt;">
+                        Event callback invoked when the overlay is clicked.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        Content rendered within the overlay (typically empty for a simple backdrop).
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the overlay div element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
 
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">SheetContent</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">CloseOnEscape</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>true</code><br/>
-                                Whether pressing Escape closes the sheet.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">TrapFocus</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>true</code><br/>
-                                Whether to trap focus inside the sheet.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">LockScroll</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>true</code><br/>
-                                Whether to prevent body scroll when sheet is open.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="SheetContent">
+                    <ApiParameter Name="CloseOnEscape" Type="bool" Default="true">
+                        Whether pressing Escape closes the sheet.
+                    </ApiParameter>
+                    <ApiParameter Name="TrapFocus" Type="bool" Default="true">
+                        Whether to trap focus within the sheet.
+                    </ApiParameter>
+                    <ApiParameter Name="LockScroll" Type="bool" Default="true">
+                        Whether to lock body scroll when sheet is open.
+                    </ApiParameter>
+                    <ApiParameter Name="OnEscapeKeyDown" Type="EventCallback&lt;KeyboardEventArgs&gt;">
+                        Event callback invoked when Escape key is pressed.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        Content rendered inside the sheet panel.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the content container element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
 
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">SheetTitle / SheetDescription / SheetClose</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">ChildContent</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>RenderFragment?</code><br/>
-                                Content rendered inside the component.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+                <ApiReference ComponentName="SheetTitle">
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The title text or content. Linked to the sheet via <code>aria-labelledby</code>.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the title element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">When to Use Primitives</h2>
-                <p class="text-muted-foreground">
-                    Choose between primitives and styled components based on your needs.
-                </p>
-            </div>
+                <ApiReference ComponentName="SheetDescription">
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The description text or content. Linked to the sheet via <code>aria-describedby</code>.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the description element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
 
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="rounded-lg border p-4 space-y-3">
-                    <h3 class="font-semibold text-primary">Use Sheet Primitive</h3>
-                    <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Building a custom design system</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Need complete control over styling</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Want to apply your own CSS framework</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Creating unique visual designs</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="rounded-lg border p-4 space-y-3">
-                    <h3 class="font-semibold text-primary">Use Styled Component</h3>
-                    <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Want shadcn/ui design out of the box</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Need quick implementation</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Like the default styling</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Prefer convention over configuration</span>
-                        </li>
-                    </ul>
-                </div>
+                <ApiReference ComponentName="SheetClose">
+                    <ApiParameter Name="AsChild" Type="bool" Default="false">
+                        When true, does not render its own button element. Instead passes trigger behavior via <code>TriggerContext</code> to child components.
+                    </ApiParameter>
+                    <ApiParameter Name="PreventClose" Type="bool" Default="false">
+                        Whether to prevent the default close behavior. When true, only the OnClick handler is invoked.
+                    </ApiParameter>
+                    <ApiParameter Name="OnClick" Type="EventCallback&lt;MouseEventArgs&gt;">
+                        Custom click handler. Called after the sheet is closed.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        Content rendered inside the close button.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the close button element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
             </div>
         </section>
     </div>

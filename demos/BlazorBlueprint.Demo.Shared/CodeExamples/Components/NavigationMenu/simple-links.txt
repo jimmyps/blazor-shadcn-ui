@@ -1,0 +1,16 @@
+<BbNavigationMenu>
+    <BbNavigationMenuList>
+        <BbNavigationMenuItem>
+            <BbNavigationMenuLink Href="/">Home</BbNavigationMenuLink>
+        </BbNavigationMenuItem>
+        <BbNavigationMenuItem>
+            <BbNavigationMenuLink Href="/components">Components</BbNavigationMenuLink>
+        </BbNavigationMenuItem>
+        <BbNavigationMenuItem>
+            <BbNavigationMenuLink Href="/primitives">Primitives</BbNavigationMenuLink>
+        </BbNavigationMenuItem>
+        <BbNavigationMenuItem>
+            <BbNavigationMenuLink Href="/icons">Icons</BbNavigationMenuLink>
+        </BbNavigationMenuItem>
+    </BbNavigationMenuList>
+</BbNavigationMenu>

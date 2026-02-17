@@ -1,0 +1,75 @@
+@namespace BlazorBlueprint.Components
+@implements IDisposable
+
+@if (!string.IsNullOrWhiteSpace(GetSelectedText()))
+{
+    @if (ChildContent is not null)
+    {
+        @ChildContent(GetSelectedText()!)
+    }
+    else
+    {
+        @GetSelectedText()
+    }
+}
+else
+{
+    <span class="text-muted-foreground">@Placeholder</span>
+}
+
+@code {
+    [CascadingParameter]
+    private BlazorBlueprint.Primitives.Select.ISelectDisplayContext? SelectContext { get; set; }
+
+    /// <summary>
+    /// Gets or sets the placeholder text to display when no value is selected.
+    /// </summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// Gets or sets custom content to render when a value is selected.
+    /// The template receives the display text as <c>context</c>.
+    /// Use this for rich trigger display (e.g. icons, avatars).
+    /// When null, the display text is rendered as plain text.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<string>? ChildContent { get; set; }
+
+    private BlazorBlueprint.Primitives.Select.ISelectDisplayContext? _subscribedContext;
+    private readonly Action _handleStateChanged;
+
+    public BbSelectValue()
+    {
+        _handleStateChanged = () => InvokeAsync(StateHasChanged);
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (!ReferenceEquals(SelectContext, _subscribedContext))
+        {
+            if (_subscribedContext != null)
+            {
+                _subscribedContext.OnStateChanged -= _handleStateChanged;
+            }
+
+            _subscribedContext = SelectContext;
+
+            if (_subscribedContext != null)
+            {
+                _subscribedContext.OnStateChanged += _handleStateChanged;
+            }
+        }
+    }
+
+    private string? GetSelectedText() => SelectContext?.DisplayText;
+
+    public void Dispose()
+    {
+        if (_subscribedContext != null)
+        {
+            _subscribedContext.OnStateChanged -= _handleStateChanged;
+            _subscribedContext = null;
+        }
+    }
+}

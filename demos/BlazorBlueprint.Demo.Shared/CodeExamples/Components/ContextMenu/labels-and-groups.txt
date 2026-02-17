@@ -1,0 +1,13 @@
+<BbContextMenu>
+    <BbContextMenuTrigger>
+        <div>Right click here</div>
+    </BbContextMenuTrigger>
+    <BbContextMenuContent>
+        <BbContextMenuLabel>Edit</BbContextMenuLabel>
+        <BbContextMenuItem>Cut</BbContextMenuItem>
+        <BbContextMenuItem>Copy</BbContextMenuItem>
+        <BbContextMenuSeparator />
+        <BbContextMenuLabel>View</BbContextMenuLabel>
+        <BbContextMenuItem>Zoom In</BbContextMenuItem>
+    </BbContextMenuContent>
+</BbContextMenu>

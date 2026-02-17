@@ -1,0 +1,7 @@
+<BbSwitch Checked="true" Disabled="true" Id="disabled-on" class="...">
+    <BbSwitchThumb class="..." />
+</BbSwitch>
+
+<BbSwitch Checked="false" Disabled="true" Id="disabled-off" class="...">
+    <BbSwitchThumb class="..." />
+</BbSwitch>

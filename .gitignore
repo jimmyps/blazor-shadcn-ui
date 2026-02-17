@@ -43,10 +43,19 @@ NUL
 .env.local
 .env.*.local
 
+# Local test apps
+tests/BlazorBlueprint.IssueTester/
+
+# Local LLM docs
+.llms
+
 # Development Tools
 .playwright-mcp
 .devflow
 .claude
-DEV-TASKS.md
 .instructions
-.reviews
+.audits
+.scratchpad.md
+.plans
+DEV-TASKS.md
+themes

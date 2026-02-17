@@ -1,0 +1,23 @@
+<BbFormFieldMultiSelect TValue="string"
+                      Options="_languages"
+                      @bind-Values="_selectedLanguages"
+                      Label="Programming languages"
+                      Placeholder="Select languages..."
+                      SearchPlaceholder="Search languages..."
+                      HelperText="Select all languages you are proficient in."
+                      MatchTriggerWidth="true"
+                      InputClass="w-full" />
+
+@code {
+    private IEnumerable<string>? _selectedLanguages;
+
+    private readonly SelectOption<string>[] _languages =
+    [
+        new("csharp", "C#"),
+        new("typescript", "TypeScript"),
+        new("python", "Python")
+    ];
+
+    // No per-collection helper needed
+    // _languages.GetTexts(_selectedLanguages)
+}

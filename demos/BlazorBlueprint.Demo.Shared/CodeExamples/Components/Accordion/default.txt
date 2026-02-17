@@ -1,0 +1,14 @@
+<BbAccordion Type="AccordionType.Single" Collapsible="true" Class="w-full">
+    <BbAccordionItem Value="item-1">
+        <BbAccordionTrigger>Is it accessible?</BbAccordionTrigger>
+        <BbAccordionContent>
+            Yes. It adheres to the WAI-ARIA design pattern.
+        </BbAccordionContent>
+    </BbAccordionItem>
+    <BbAccordionItem Value="item-2">
+        <BbAccordionTrigger>Is it styled?</BbAccordionTrigger>
+        <BbAccordionContent>
+            Yes. It comes with default styles.
+        </BbAccordionContent>
+    </BbAccordionItem>
+</BbAccordion>

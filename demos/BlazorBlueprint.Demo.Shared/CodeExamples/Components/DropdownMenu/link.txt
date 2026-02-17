@@ -1,0 +1,7 @@
+<BbDropdownMenuItem Href="/components/select">Select Component</BbDropdownMenuItem>
+<BbDropdownMenuItem Href="/components/switch">Switch Component</BbDropdownMenuItem>
+
+@* External link — opens in new tab with rel="noopener noreferrer" *@
+<BbDropdownMenuItem Href="https://github.com" Target="_blank">
+    GitHub (new tab)
+</BbDropdownMenuItem>

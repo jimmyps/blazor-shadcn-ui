@@ -1,0 +1,14 @@
+<BbBarChart Data="@data" Horizontal="true" Height="200px">
+    <BbXAxis DataKey="browser" />
+    <BbYAxis Show="false" />
+    <BbBar DataKey="chrome" Name="Chrome" Color="var(--chart-1)"
+         Stacked="true" BorderRadius="8" />
+    <BbBar DataKey="safari" Name="Safari" Color="var(--chart-2)"
+         Stacked="true" BorderRadius="8" />
+    <BbBar DataKey="firefox" Name="Firefox" Color="var(--chart-3)"
+         Stacked="true" BorderRadius="8" />
+    <BbBar DataKey="edge" Name="Edge" Color="var(--chart-4)"
+         Stacked="true" BorderRadius="8" />
+    <BbBar DataKey="other" Name="Other" Color="var(--chart-5)"
+         Stacked="true" BorderRadius="8" />
+</BbBarChart>

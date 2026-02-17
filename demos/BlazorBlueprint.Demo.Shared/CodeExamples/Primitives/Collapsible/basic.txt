@@ -1,0 +1,8 @@
+<BbCollapsible>
+    <BbCollapsibleTrigger class="cursor-pointer">
+        Click to toggle (unstyled primitive)
+    </BbCollapsibleTrigger>
+    <BbCollapsibleContent class="mt-2">
+        This content is controlled by the headless primitive. Style it however you want!
+    </BbCollapsibleContent>
+</BbCollapsible>

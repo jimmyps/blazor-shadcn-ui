@@ -1,7 +1,7 @@
-namespace BlazorBlueprint.Components.InputField;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
-/// Identifies the kind of error that occurred in an <see cref="InputField{TValue}"/> component.
+/// Identifies the kind of error that occurred in an <see cref="BbInputField{TValue}"/> component.
 /// </summary>
 public enum InputFieldErrorKind
 {
@@ -11,12 +11,12 @@ public enum InputFieldErrorKind
     Parse,
 
     /// <summary>
-    /// The raw input string did not match the <see cref="InputField{TValue}.ValidationPattern"/> regex.
+    /// The raw input string did not match the <see cref="BbInputField{TValue}.ValidationPattern"/> regex.
     /// </summary>
     PatternValidation,
 
     /// <summary>
-    /// The parsed value was rejected by the <see cref="InputField{TValue}.Validation"/> function.
+    /// The parsed value was rejected by the <see cref="BbInputField{TValue}.Validation"/> function.
     /// </summary>
     ValueValidation
 }

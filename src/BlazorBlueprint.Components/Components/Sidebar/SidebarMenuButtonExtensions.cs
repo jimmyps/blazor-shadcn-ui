@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Sidebar;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Extension methods for converting SidebarMenuButton enums to their string representations.

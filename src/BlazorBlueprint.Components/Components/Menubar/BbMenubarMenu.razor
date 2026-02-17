@@ -1,0 +1,53 @@
+@namespace BlazorBlueprint.Components
+
+<div class="relative">
+    <CascadingValue Value="this" IsFixed="false">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+@code {
+    [CascadingParameter]
+    public BbMenubar? Context { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    internal string MenuId { get; } = Guid.NewGuid().ToString();
+    internal bool IsOpen => Context?.ActiveMenu == MenuId;
+
+    protected override void OnInitialized()
+    {
+        Context?.RegisterMenu(this);
+    }
+
+    internal void Open()
+    {
+        Context?.SetActiveMenu(MenuId);
+    }
+
+    internal void Close()
+    {
+        if (IsOpen)
+        {
+            Context?.SetActiveMenu(null);
+        }
+    }
+
+    internal void Toggle()
+    {
+        if (IsOpen)
+        {
+            Close();
+        }
+        else
+        {
+            Open();
+        }
+    }
+
+    public void Dispose()
+    {
+        Context?.UnregisterMenu(this);
+    }
+}

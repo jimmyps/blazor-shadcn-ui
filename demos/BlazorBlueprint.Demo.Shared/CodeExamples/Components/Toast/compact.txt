@@ -1,0 +1,27 @@
+// Compact default toast
+ToastService.Show(new ToastData
+{
+    Title = "Compact",
+    Description = "A smaller toast with reduced padding.",
+    Size = ToastSize.Compact
+});
+
+// Compact success toast
+ToastService.Show(new ToastData
+{
+    Title = "Saved",
+    Description = "Your changes have been saved.",
+    Variant = ToastVariant.Success,
+    Size = ToastSize.Compact
+});
+
+// Compact with action button
+ToastService.Show(new ToastData
+{
+    Title = "Deleted",
+    Description = "Item removed.",
+    Variant = ToastVariant.Destructive,
+    Size = ToastSize.Compact,
+    ActionText = "Undo",
+    OnAction = () => ToastService.Success("Item restored!")
+});

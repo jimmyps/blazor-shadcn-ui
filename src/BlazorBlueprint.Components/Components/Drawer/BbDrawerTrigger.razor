@@ -1,0 +1,26 @@
+@namespace BlazorBlueprint.Components
+
+<div @onclick="HandleClick" class="@CssClass">
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter]
+    public BbDrawer? Context { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string? CssClass => ClassNames.cn(Class);
+
+    private async Task HandleClick()
+    {
+        if (Context != null)
+        {
+            await Context.SetOpen(true);
+        }
+    }
+}

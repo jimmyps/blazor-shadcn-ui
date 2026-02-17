@@ -1,0 +1,3 @@
+<BbSkeleton Class="h-4 w-[250px]" />
+<BbSkeleton Class="h-4 w-[200px]" />
+<BbSkeleton Class="h-4 w-[150px]" />

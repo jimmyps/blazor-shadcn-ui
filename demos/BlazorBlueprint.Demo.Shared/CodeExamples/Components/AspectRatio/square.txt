@@ -1,0 +1,3 @@
+<BbAspectRatio Ratio="1">
+    <img src="image.jpg" alt="Description" class="rounded-md object-cover" />
+</BbAspectRatio>

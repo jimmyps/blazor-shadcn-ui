@@ -1,0 +1,44 @@
+<BbFormFieldCombobox TValue="string"
+                   @bind-Value="_compositionalValue"
+                   Label="Tech stack"
+                   Placeholder="Select a stack..."
+                   SearchPlaceholder="Search..."
+                   EmptyMessage="No stack found."
+                   HelperText="Choose your primary technology."
+                   MatchTriggerWidth="true"
+                   InputClass="w-full">
+    <BbComboboxItem Value="@("blazor")" Text="Blazor">
+        <div class="flex items-center gap-2">
+            <span class="inline-block h-2 w-2 rounded-full bg-purple-500"></span>
+            Blazor
+        </div>
+    </BbComboboxItem>
+    <BbComboboxItem Value="@("react")" Text="React">
+        <div class="flex items-center gap-2">
+            <span class="inline-block h-2 w-2 rounded-full bg-blue-500"></span>
+            React
+        </div>
+    </BbComboboxItem>
+    <BbComboboxItem Value="@("vue")" Text="Vue.js">
+        <div class="flex items-center gap-2">
+            <span class="inline-block h-2 w-2 rounded-full bg-green-500"></span>
+            Vue.js
+        </div>
+    </BbComboboxItem>
+    <BbComboboxItem Value="@("angular")" Text="Angular">
+        <div class="flex items-center gap-2">
+            <span class="inline-block h-2 w-2 rounded-full bg-red-500"></span>
+            Angular
+        </div>
+    </BbComboboxItem>
+    <BbComboboxItem Value="@("svelte")" Text="Svelte">
+        <div class="flex items-center gap-2">
+            <span class="inline-block h-2 w-2 rounded-full bg-orange-500"></span>
+            Svelte
+        </div>
+    </BbComboboxItem>
+</BbFormFieldCombobox>
+
+@code {
+    private string? _compositionalValue;
+}

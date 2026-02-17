@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Avatar;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the size variants for Avatar components.

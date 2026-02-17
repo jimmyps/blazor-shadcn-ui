@@ -1,0 +1,19 @@
+<BbCommand>
+    <BbCommandInput Placeholder="Type a command or search..." />
+    <BbCommandList>
+        <BbCommandEmpty>No results found.</BbCommandEmpty>
+        <BbCommandGroup Heading="Suggestions">
+            <BbCommandItem Value="calendar">Calendar</BbCommandItem>
+        </BbCommandGroup>
+        <BbCommandSeparator />
+        <BbCommandGroup Heading="File">
+            <BbCommandItem Value="new-file">
+                New File
+                <BbCommandShortcut>⌘N</BbCommandShortcut>
+            </BbCommandItem>
+            <BbCommandItem Value="save-as" Disabled="true">
+                Save As... (Disabled)
+            </BbCommandItem>
+        </BbCommandGroup>
+    </BbCommandList>
+</BbCommand>

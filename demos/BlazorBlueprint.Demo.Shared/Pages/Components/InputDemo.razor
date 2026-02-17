@@ -1,8 +1,4 @@
 @page "/components/input"
-@using BlazorBlueprint.Components.Input
-@using BlazorBlueprint.Components.Textarea
-@using BlazorBlueprint.Components.Select
-@using BlazorBlueprint.Components.Button
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>Input Component - Blazor Blueprint</PageTitle>
@@ -14,29 +10,6 @@
         <p class="text-xl text-muted-foreground">
             Displays a form input field or a component that looks like an input field.
         </p>
-        </div>
-    </div>
-
-    <!-- When to use -->
-    <div class="rounded-lg border bg-card p-6 space-y-4">
-        <h2 class="text-lg font-semibold">When to use Input</h2>
-        <p class="text-sm text-muted-foreground">
-            Use <code class="text-xs bg-muted px-1 py-0.5 rounded">Input</code> when you need a
-            straightforward string-based text field. The bound value is always <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-            &mdash; what the user types is exactly what you get back. No parsing, no formatting, no conversion.
-            Input also integrates with Blazor's <code class="text-xs bg-muted px-1 py-0.5 rounded">EditForm</code>
-            and <code class="text-xs bg-muted px-1 py-0.5 rounded">DataAnnotations</code> validation.
-        </p>
-        <div class="rounded-md border border-dashed p-4 space-y-1.5">
-            <p class="text-sm font-medium">Example scenario</p>
-            <p class="text-sm text-muted-foreground">
-                You're building a login form with email and password fields. The values are plain strings
-                &mdash; no numeric parsing or date formatting needed. You just want a styled text input
-                that hands you back exactly what the user typed.
-            </p>
-        </div>
-        <div class="bg-muted rounded-md p-4">
-            <pre class="text-sm font-mono whitespace-pre-wrap">&lt;Input Type="InputType.Email" @("@")bind-Value="email" Placeholder="you@example.com" /&gt;</pre>
         </div>
     </div>
 
@@ -60,8 +33,9 @@
             </p>
         </div>
         <div class="max-w-md">
-            <Input Type="InputType.Text" Placeholder="Enter your text..." />
+            <BbInput Type="InputType.Text" Placeholder="Enter your text..." />
         </div>
+        <CodeBlock Source="Components/Input/default.txt" />
     </div>
 
     <!-- Input Types -->
@@ -75,41 +49,42 @@
         <div class="space-y-4 max-w-md">
             <div class="space-y-2">
                 <label class="text-sm font-medium">Text</label>
-                <Input Type="InputType.Text" Placeholder="Enter text" />
+                <BbInput Type="InputType.Text" Placeholder="Enter text" />
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">Email</label>
-                <Input Type="InputType.Email" Placeholder="Enter email" />
+                <BbInput Type="InputType.Email" Placeholder="Enter email" />
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">Password</label>
-                <Input Type="InputType.Password" Placeholder="Enter password" />
+                <BbInput Type="InputType.Password" Placeholder="Enter password" />
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">Number</label>
-                <Input Type="InputType.Number" Placeholder="Enter number" />
+                <BbInput Type="InputType.Number" Placeholder="Enter number" />
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">Tel</label>
-                <Input Type="InputType.Tel" Placeholder="Enter phone number" />
+                <BbInput Type="InputType.Tel" Placeholder="Enter phone number" />
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">URL</label>
-                <Input Type="InputType.Url" Placeholder="https://example.com" />
+                <BbInput Type="InputType.Url" Placeholder="https://example.com" />
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">Search</label>
-                <Input Type="InputType.Search" Placeholder="Search..." />
+                <BbInput Type="InputType.Search" Placeholder="Search..." />
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">Date</label>
-                <Input Type="InputType.Date" />
+                <BbInput Type="InputType.Date" />
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">Time</label>
-                <Input Type="InputType.Time" />
+                <BbInput Type="InputType.Time" />
             </div>
         </div>
+        <CodeBlock Source="Components/Input/types.txt" />
     </div>
 
     <!-- File Input -->
@@ -123,12 +98,13 @@
         <div class="max-w-md">
             <div class="space-y-2">
                 <label class="text-sm font-medium">Upload file</label>
-                <Input Type="InputType.File" />
+                <BbInput Type="InputType.File" />
                 <p class="text-xs text-muted-foreground">
                     File inputs now have improved styling using file: pseudo-selectors.
                 </p>
             </div>
         </div>
+        <CodeBlock Source="Components/Input/file.txt" />
     </div>
 
     <!-- Disabled State -->
@@ -140,8 +116,9 @@
             </p>
         </div>
         <div class="max-w-md">
-            <Input Type="InputType.Text" Placeholder="Disabled input" Disabled="true" Value="Cannot edit this" />
+            <BbInput Type="InputType.Text" Placeholder="Disabled input" Disabled="true" Value="Cannot edit this" />
         </div>
+        <CodeBlock Source="Components/Input/disabled.txt" />
     </div>
 
     <!-- Required State -->
@@ -156,13 +133,14 @@
             <form class="space-y-4">
                 <div class="space-y-2">
                     <label class="text-sm font-medium">Username (required)</label>
-                    <Input Type="InputType.Text" Placeholder="Enter username" Required="true" />
+                    <BbInput Type="InputType.Text" Placeholder="Enter username" Required="true" />
                 </div>
                 <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90">
                     Submit
                 </button>
             </form>
         </div>
+        <CodeBlock Source="Components/Input/required.txt" />
     </div>
 
     <!-- With Label and Description -->
@@ -178,7 +156,7 @@
                 <label for="email-input" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Email
                 </label>
-                <Input Type="InputType.Email" Placeholder="m@example.com" AriaLabel="Email address" />
+                <BbInput Type="InputType.Email" Placeholder="m@example.com" AriaLabel="Email address" />
                 <p class="text-sm text-muted-foreground">
                     We'll never share your email with anyone else.
                 </p>
@@ -188,44 +166,49 @@
                 <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Password
                 </label>
-                <Input Type="InputType.Password" Placeholder="Enter your password" AriaLabel="Password" />
+                <BbInput Type="InputType.Password" Placeholder="Enter your password" AriaLabel="Password" />
                 <p class="text-sm text-muted-foreground">
                     Must be at least 8 characters.
                 </p>
             </div>
         </div>
+        <CodeBlock Source="Components/Input/with-label.txt" />
     </div>
 
-    <!-- ARIA Attributes -->
+    <!-- Auto-Generated ID -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Accessibility (ARIA)</h2>
+            <h2 class="text-2xl font-semibold">Auto-Generated ID</h2>
             <p class="text-sm text-muted-foreground">
-                Inputs with ARIA attributes for screen readers.
+                Input components always render with an <code class="text-xs bg-muted px-1 py-0.5 rounded">id</code> attribute.
+                When no <code class="text-xs bg-muted px-1 py-0.5 rounded">Id</code> is provided, a stable ID is auto-generated
+                (e.g., <code class="text-xs bg-muted px-1 py-0.5 rounded">input-a3f7c2d4</code>). User-provided IDs always take precedence.
+                For label <code class="text-xs bg-muted px-1 py-0.5 rounded">for</code> wiring, provide an explicit
+                <code class="text-xs bg-muted px-1 py-0.5 rounded">Id</code> or use a
+                <code class="text-xs bg-muted px-1 py-0.5 rounded">BbFormFieldInput</code> wrapper which handles this automatically.
             </p>
         </div>
         <div class="max-w-md space-y-4">
             <div class="space-y-2">
-                <label class="text-sm font-medium">With aria-label</label>
-                <Input Type="InputType.Text" AriaLabel="User's full name" Placeholder="John Doe" />
-            </div>
-
-            <div class="space-y-2">
-                <label id="username-label" class="text-sm font-medium">Username</label>
-                <Input Type="InputType.Text" AriaDescribedBy="username-help" Placeholder="johndoe" />
-                <p id="username-help" class="text-sm text-muted-foreground">
-                    Your username must be unique and 3-20 characters.
+                <label for="my-email" class="text-sm font-medium leading-none">
+                    Email (explicit Id — click label to focus)
+                </label>
+                <BbInput Id="my-email" Type="InputType.Email" Placeholder="m@example.com" />
+                <p class="text-xs text-muted-foreground">
+                    Rendered with <code class="text-xs bg-muted px-1 py-0.5 rounded">id="my-email"</code> — the label's
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">for="my-email"</code> wires the click-to-focus behavior.
                 </p>
             </div>
-
             <div class="space-y-2">
-                <label class="text-sm font-medium">Invalid input (error state styling)</label>
-                <Input Type="InputType.Email" AriaInvalid="true" Value="not-an-email" Placeholder="Email address" />
-                <p class="text-sm text-destructive">
-                    Please enter a valid email address. Note the red border applied via aria-invalid.
+                <BbInput Type="InputType.Text" Placeholder="Enter username" />
+                <p class="text-xs text-muted-foreground">
+                    No <code class="text-xs bg-muted px-1 py-0.5 rounded">Id</code> provided — auto-generated id like
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">input-a3f7c2d4</code> is visible in DevTools.
+                    Useful for programmatic access, accessibility tooling, and FormField wrappers.
                 </p>
             </div>
         </div>
+        <CodeBlock Source="Components/Input/auto-id.txt" />
     </div>
 
     <!-- Two-Way Binding Example -->
@@ -241,7 +224,7 @@
         <div class="max-w-md space-y-4">
             <div class="space-y-2">
                 <label class="text-sm font-medium">Type something</label>
-                <Input Type="InputType.Text" Value="@boundValue" ValueChanged="@((value) => boundValue = value)" Placeholder="Start typing..." />
+                <BbInput Type="InputType.Text" Value="@boundValue" ValueChanged="@((value) => boundValue = value)" Placeholder="Start typing..." />
                 <p class="text-xs text-muted-foreground">
                     Try typing text, then clearing it. The value returns to <code class="text-xs bg-muted px-1 py-0.5 rounded">null</code> instead of becoming an empty string.
                 </p>
@@ -258,6 +241,7 @@
                 }
             </div>
         </div>
+        <CodeBlock Source="Components/Input/two-way-binding.txt" />
     </div>
 
     <!-- Custom Styling -->
@@ -271,17 +255,18 @@
         <div class="space-y-4 max-w-md">
             <div class="space-y-2">
                 <label class="text-sm font-medium">Custom border color</label>
-                <Input Type="InputType.Text" Placeholder="Blue border" Class="border-blue-500 focus-visible:ring-blue-500" />
+                <BbInput Type="InputType.Text" Placeholder="Blue border" Class="border-blue-500 focus-visible:ring-blue-500" />
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">Rounded full</label>
-                <Input Type="InputType.Search" Placeholder="Search..." Class="rounded-full" />
+                <BbInput Type="InputType.Search" Placeholder="Search..." Class="rounded-full" />
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">Success state</label>
-                <Input Type="InputType.Text" Value="Valid input" Class="border-green-500 focus-visible:ring-green-500" />
+                <BbInput Type="InputType.Text" Value="Valid input" Class="border-green-500 focus-visible:ring-green-500" />
             </div>
         </div>
+        <CodeBlock Source="Components/Input/custom-styling.txt" />
     </div>
 
     <!-- Update Timing -->
@@ -296,7 +281,7 @@
         <div class="grid gap-6 md:grid-cols-3 max-w-4xl">
             <div class="space-y-2">
                 <label class="text-sm font-medium">Immediate (default)</label>
-                <Input Type="InputType.Text"
+                <BbInput Type="InputType.Text"
                        UpdateTiming="UpdateTiming.Immediate"
                        Value="@_immediateValue"
                        ValueChanged="@((v) => _immediateValue = v)"
@@ -308,7 +293,7 @@
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">OnChange (blur / Enter)</label>
-                <Input Type="InputType.Text"
+                <BbInput Type="InputType.Text"
                        UpdateTiming="UpdateTiming.OnChange"
                        Value="@_onChangeValue"
                        ValueChanged="@((v) => _onChangeValue = v)"
@@ -320,7 +305,7 @@
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">Debounced (500ms)</label>
-                <Input Type="InputType.Text"
+                <BbInput Type="InputType.Text"
                        UpdateTiming="UpdateTiming.Debounced"
                        DebounceInterval="500"
                        Value="@_debouncedValue"
@@ -332,6 +317,7 @@
                 </div>
             </div>
         </div>
+        <CodeBlock Source="Components/Input/update-timing.txt" />
     </div>
 
     <!-- Form Validation with EditForm -->
@@ -349,19 +335,19 @@
 
             <div class="space-y-2">
                 <label class="text-sm font-medium">Name</label>
-                <Input Type="InputType.Text" @bind-Value="formModel.Name" Placeholder="Enter your name" />
+                <BbInput Type="InputType.Text" @bind-Value="formModel.Name" Placeholder="Enter your name" />
                 <ValidationMessage For="@(() => formModel.Name)" class="text-sm text-destructive" />
             </div>
 
             <div class="space-y-2">
                 <label class="text-sm font-medium">Email</label>
-                <Input Type="InputType.Email" @bind-Value="formModel.Email" Placeholder="Enter your email" />
+                <BbInput Type="InputType.Email" @bind-Value="formModel.Email" Placeholder="Enter your email" />
                 <ValidationMessage For="@(() => formModel.Email)" class="text-sm text-destructive" />
             </div>
 
             <div class="flex gap-4">
-                <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</Button>
-                <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</Button>
+                <BbButton Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</BbButton>
+                <BbButton Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</BbButton>
             </div>
 
             @if (!string.IsNullOrEmpty(formMessage))
@@ -371,74 +357,76 @@
                 </div>
             }
         </EditForm>
+        <CodeBlock Source="Components/Input/form-validation.txt" />
     </div>
 
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Renders a native <code>&lt;input&gt;</code> element with the correct <code>type</code> attribute</AccessibilityItem>
+            <AccessibilityItem><code>aria-label</code> provides an accessible name when no visible label is present</AccessibilityItem>
+            <AccessibilityItem><code>aria-describedby</code> links helper or error text to the input for screen readers</AccessibilityItem>
+            <AccessibilityItem><code>aria-invalid="true"</code> is set automatically when validation fails or manually via the AriaInvalid parameter</AccessibilityItem>
+            <AccessibilityItem><code>disabled</code> attribute prevents interaction and is announced by assistive technologies</AccessibilityItem>
+            <AccessibilityItem><code>required</code> attribute signals mandatory fields to screen readers and enables native validation</AccessibilityItem>
+        </AriaAttributes>
+    </AccessibilityList>
+
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Type</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">InputType</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    The type of input. Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">Text</code>
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Value</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    The current value of the input. Supports two-way binding with @("@")bind-Value.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Placeholder</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Placeholder text shown when input is empty.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Disabled</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Whether the input is disabled. Default: false
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Required</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Whether the input is required for form validation. Default: false
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">ARIA Attributes</h3>
-                <p class="text-sm text-muted-foreground">
-                    <code class="text-xs bg-muted px-1 py-0.5 rounded">AriaLabel</code>,
-                    <code class="text-xs bg-muted px-1 py-0.5 rounded">AriaDescribedBy</code>,
-                    <code class="text-xs bg-muted px-1 py-0.5 rounded">AriaInvalid</code> for accessibility.
-                </p>
-            </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="Input">
+                <ApiParameter Name="Type" Type="InputType" Default="Text">
+                    The HTML input type. Supports Text, Email, Password, Number, Tel, Url, Search, Date, Time, and File.
+                </ApiParameter>
+                <ApiParameter Name="Value" Type="string?" Default="null">
+                    The current value of the input. Supports two-way binding with @@bind-Value. Empty or whitespace-only input is normalized to null.
+                </ApiParameter>
+                <ApiParameter Name="ValueChanged" Type="EventCallback&lt;string?&gt;" Default="">
+                    Callback invoked when the input value changes. Used with Value for two-way binding.
+                </ApiParameter>
+                <ApiParameter Name="ValueExpression" Type="Expression&lt;Func&lt;string?&gt;&gt;?" Default="null">
+                    Expression identifying the bound value. Used for EditForm validation integration.
+                </ApiParameter>
+                <ApiParameter Name="Placeholder" Type="string?" Default="null">
+                    Placeholder text displayed when the input is empty.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the input is disabled. Prevents interaction and reduces opacity.
+                </ApiParameter>
+                <ApiParameter Name="Required" Type="bool" Default="false">
+                    Whether the input is required for form validation. Sets the HTML5 required attribute.
+                </ApiParameter>
+                <ApiParameter Name="UpdateTiming" Type="UpdateTiming" Default="Immediate">
+                    Controls when ValueChanged fires. Immediate (every keystroke), OnChange (blur or Enter), or Debounced (after typing pauses).
+                </ApiParameter>
+                <ApiParameter Name="DebounceInterval" Type="int" Default="500">
+                    Debounce delay in milliseconds when UpdateTiming is Debounced. Ignored for other timing modes.
+                </ApiParameter>
+                <ApiParameter Name="Id" Type="string?" Default="auto-generated">
+                    The HTML id attribute. Used to associate the input with a label element. Auto-generated if not specified (e.g., <code>input-a3f7c2d4</code>).
+                </ApiParameter>
+                <ApiParameter Name="Name" Type="string?" Default="null">
+                    The HTML name attribute. Auto-derived from ValueExpression inside an EditForm when not set.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes appended to the input element for style overrides.
+                </ApiParameter>
+                <ApiParameter Name="AriaLabel" Type="string?" Default="null">
+                    Accessible name for the input when no visible label is present.
+                </ApiParameter>
+                <ApiParameter Name="AriaDescribedBy" Type="string?" Default="null">
+                    ID of the element containing help text or error messages for screen readers.
+                </ApiParameter>
+                <ApiParameter Name="AriaInvalid" Type="bool?" Default="null">
+                    Manually sets aria-invalid. When null, automatically determined from EditContext validation state.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {

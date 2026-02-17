@@ -1,0 +1,13 @@
+<BbCommandDialog @bind-Open="isOpen" Shortcut="Ctrl+J">
+    <BbCommandInput Placeholder="Type a command..." />
+    <BbCommandList>
+        <BbCommandEmpty>No results found.</BbCommandEmpty>
+        <BbCommandGroup Heading="Suggestions">
+            <BbCommandItem Value="calendar">
+                <Icon><LucideIcon Name="calendar" Size="16" /></Icon>
+                <ChildContent>Calendar</ChildContent>
+            </BbCommandItem>
+            <BbCommandItem Value="calculator">Calculator</BbCommandItem>
+        </BbCommandGroup>
+    </BbCommandList>
+</BbCommandDialog>

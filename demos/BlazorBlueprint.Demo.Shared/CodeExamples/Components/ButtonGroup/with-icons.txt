@@ -1,0 +1,14 @@
+<BbButtonGroup>
+    <BbButton Variant="ButtonVariant.Outline">
+        <LucideIcon Name="align-left" Size="16" />
+        Left
+    </BbButton>
+    <BbButton Variant="ButtonVariant.Outline">
+        <LucideIcon Name="align-center" Size="16" />
+        Center
+    </BbButton>
+    <BbButton Variant="ButtonVariant.Outline">
+        <LucideIcon Name="align-right" Size="16" />
+        Right
+    </BbButton>
+</BbButtonGroup>

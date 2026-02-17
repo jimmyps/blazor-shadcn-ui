@@ -1,0 +1,5 @@
+<BbPieChart Data="@data" Height="250px">
+    <BbChartTooltip />
+    <BbPie DataKey="visitors" NameKey="browser" OuterRadius="70"
+         ShowLabels="true" LabelFormatter="{c}" />
+</BbPieChart>

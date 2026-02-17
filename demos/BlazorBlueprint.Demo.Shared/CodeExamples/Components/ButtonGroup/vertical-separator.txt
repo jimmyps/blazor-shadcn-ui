@@ -1,0 +1,19 @@
+<BbButtonGroup Orientation="ButtonGroupOrientation.Vertical">
+    <BbButton Variant="ButtonVariant.Outline" Class="justify-start">
+        <LucideIcon Name="file" Size="16" />
+        New File
+    </BbButton>
+    <BbButton Variant="ButtonVariant.Outline" Class="justify-start">
+        <LucideIcon Name="folder" Size="16" />
+        New Folder
+    </BbButton>
+    <BbButtonGroupSeparator Orientation="SeparatorOrientation.Horizontal" />
+    <BbButton Variant="ButtonVariant.Outline" Class="justify-start">
+        <LucideIcon Name="download" Size="16" />
+        Download
+    </BbButton>
+    <BbButton Variant="ButtonVariant.Outline" Class="justify-start">
+        <LucideIcon Name="upload" Size="16" />
+        Upload
+    </BbButton>
+</BbButtonGroup>

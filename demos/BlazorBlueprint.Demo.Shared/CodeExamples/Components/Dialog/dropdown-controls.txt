@@ -1,0 +1,18 @@
+<BbDialog>
+    <BbDialogTrigger>Open Dialog with Dropdowns</BbDialogTrigger>
+    <BbDialogContent>
+        <BbDialogHeader>
+            <BbDialogTitle>Nested Dropdown Controls</BbDialogTitle>
+        </BbDialogHeader>
+        <div class="grid gap-4 py-4">
+            <BbSelect @bind-Value="selectedDialogFruit" TValue="string">
+                <BbSelectTrigger>
+                    <BbSelectValue Placeholder="Select a fruit..." />
+                </BbSelectTrigger>
+                <BbSelectContent>
+                    <BbSelectItem Value="@("apple")" Text="Apple" TValue="string">Apple</BbSelectItem>
+                </BbSelectContent>
+            </BbSelect>
+        </div>
+    </BbDialogContent>
+</BbDialog>

@@ -1,0 +1,27 @@
+<BbItemGroup>
+    <BbItem Variant="ItemVariant.Default">
+        <BbItemMedia Variant="ItemMediaVariant.Icon">
+            <LucideIcon Name="circle-check" Size="18" Class="text-green-600" />
+        </BbItemMedia>
+        <BbItemContent>
+            <BbItemTitle>Successfully saved</BbItemTitle>
+            <BbItemDescription>Your changes have been saved.</BbItemDescription>
+        </BbItemContent>
+        <BbItemActions>
+            <span class="text-xs text-muted-foreground">2m ago</span>
+        </BbItemActions>
+    </BbItem>
+    <BbItemSeparator />
+    <BbItem Variant="ItemVariant.Default">
+        <BbItemMedia Variant="ItemMediaVariant.Icon">
+            <LucideIcon Name="info" Size="18" Class="text-blue-600" />
+        </BbItemMedia>
+        <BbItemContent>
+            <BbItemTitle>New update available</BbItemTitle>
+            <BbItemDescription>Version 2.0 is now available.</BbItemDescription>
+        </BbItemContent>
+        <BbItemActions>
+            <span class="text-xs text-muted-foreground">1h ago</span>
+        </BbItemActions>
+    </BbItem>
+</BbItemGroup>

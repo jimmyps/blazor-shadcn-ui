@@ -1,0 +1,24 @@
+<BbItemGroup>
+    <BbItem Variant="ItemVariant.Outline" Size="ItemSize.Sm" AsChild="a" Href="#profile">
+        <BbItemMedia>
+            <LucideIcon Name="user" Size="18" />
+        </BbItemMedia>
+        <BbItemContent>
+            <BbItemTitle>Profile Settings</BbItemTitle>
+        </BbItemContent>
+        <BbItemActions>
+            <LucideIcon Name="chevron-right" Size="16" />
+        </BbItemActions>
+    </BbItem>
+    <BbItem Variant="ItemVariant.Outline" Size="ItemSize.Sm" AsChild="a" Href="#security">
+        <BbItemMedia>
+            <LucideIcon Name="shield" Size="18" />
+        </BbItemMedia>
+        <BbItemContent>
+            <BbItemTitle>Security & Privacy</BbItemTitle>
+        </BbItemContent>
+        <BbItemActions>
+            <LucideIcon Name="chevron-right" Size="16" />
+        </BbItemActions>
+    </BbItem>
+</BbItemGroup>

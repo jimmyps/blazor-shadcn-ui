@@ -1,0 +1,12 @@
+<!-- Entire group disabled -->
+<BbRadioGroup @bind-Value="disabledGroupValue" Disabled="true" AriaLabel="Disabled group">
+    <BbRadioGroupItem Value="@("option1")" Label="Option 1" />
+    <BbRadioGroupItem Value="@("option2")" Label="Option 2" />
+</BbRadioGroup>
+
+<!-- Individual item disabled -->
+<BbRadioGroup @bind-Value="individualDisabledValue" AriaLabel="Individual items disabled">
+    <BbRadioGroupItem Value="@("enabled1")" Label="Enabled Option 1" />
+    <BbRadioGroupItem Value="@("disabled")" Label="Disabled Option" Disabled="true" />
+    <BbRadioGroupItem Value="@("enabled2")" Label="Enabled Option 2" />
+</BbRadioGroup>

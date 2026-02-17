@@ -1,0 +1,2 @@
+<BbLabel For="basic-input">Your Name</BbLabel>
+<BbInput Id="basic-input" />

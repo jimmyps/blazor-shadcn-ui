@@ -1,0 +1,14 @@
+<div class="border rounded-lg p-6 space-y-4 max-w-sm">
+    <div class="text-center space-y-2">
+        <h3 class="text-lg font-semibold">Verify your phone</h3>
+        <p class="text-sm text-muted-foreground">
+            Enter the 6-digit code sent to your phone.
+        </p>
+    </div>
+    <div class="flex justify-center">
+        <BbInputOTP @bind-Value="verifyOtp" Length="6" />
+    </div>
+    <BbButton Class="w-full" Disabled="@(verifyOtp?.Length != 6)">
+        Verify
+    </BbButton>
+</div>

@@ -1,0 +1,12 @@
+<BbButtonGroup>
+    <BbButtonGroup>
+        <BbButton Variant="ButtonVariant.Outline">Archive</BbButton>
+        <BbButton Variant="ButtonVariant.Outline">Report</BbButton>
+    </BbButtonGroup>
+    <BbButtonGroup>
+        <BbButton Variant="ButtonVariant.Outline">Snooze</BbButton>
+        <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Icon" AriaLabel="More Options">
+            <LucideIcon Name="ellipsis" Size="16" />
+        </BbButton>
+    </BbButtonGroup>
+</BbButtonGroup>

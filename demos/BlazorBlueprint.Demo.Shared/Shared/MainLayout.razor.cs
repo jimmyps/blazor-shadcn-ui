@@ -1,12 +1,20 @@
 using BlazorBlueprint.Demo.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.JSInterop;
 
 namespace BlazorBlueprint.Demo.Shared;
 
-public partial class MainLayout : LayoutComponentBase
+public partial class MainLayout : LayoutComponentBase, IDisposable
 {
     [Inject]
     private CollapsibleStateService StateService { get; set; } = null!;
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = null!;
+
+    [Inject]
+    private IJSRuntime Js { get; set; } = null!;
 
     // State for each collapsible menu section
     private bool _primitivesMenuOpen;
@@ -19,6 +27,9 @@ public partial class MainLayout : LayoutComponentBase
     private const string ComponentsMenuKey = "sidebar-components-menu";
     private const string ChartsMenuKey = "sidebar-charts-menu";
     private const string IconsMenuKey = "sidebar-icons-menu";
+
+    protected override void OnInitialized() =>
+        NavigationManager.LocationChanged += OnLocationChanged;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -33,6 +44,24 @@ public partial class MainLayout : LayoutComponentBase
             // Trigger re-render with loaded state
             StateHasChanged();
         }
+    }
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        try
+        {
+            await Js.InvokeVoidAsync("eval", "document.getElementById('main-content')?.scrollTo(0, 0)");
+        }
+        catch (ObjectDisposedException)
+        {
+            // Component disposed during navigation
+        }
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+        GC.SuppressFinalize(this);
     }
 
     // Event handlers for state changes

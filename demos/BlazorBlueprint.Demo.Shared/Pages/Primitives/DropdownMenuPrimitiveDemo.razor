@@ -1,8 +1,7 @@
 @page "/primitives/dropdown-menu"
 @using BlazorBlueprint.Primitives.Services
-@using BlazorBlueprint.Primitives.DropdownMenu
-@using BlazorBlueprint.Components.Kbd
-
+@inject IKeyboardShortcutService KeyboardShortcuts
+@implements IAsyncDisposable
 <PageTitle>DropdownMenu Primitive - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -30,15 +29,15 @@
                     <p class="text-sm text-muted-foreground">
                         DropdownMenuTrigger renders its own button element.
                     </p>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu ItemClass="block px-2 py-1.5 cursor-pointer rounded hover:bg-accent focus:bg-accent focus:outline-none">
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                             Open Menu
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
-                            <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</DropdownMenuItem>
-                            <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger>
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
+                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>Item 1</BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>Item 2</BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent>
+                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu>
                 </div>
 
                 <!-- With AsChild -->
@@ -47,20 +46,22 @@
                     <p class="text-sm text-muted-foreground">
                         Button receives click behavior via TriggerContext.
                     </p>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger AsChild>
-                            <Button Variant="ButtonVariant.Outline">
+                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu ItemClass="block px-2 py-1.5 cursor-pointer rounded hover:bg-accent focus:bg-accent focus:outline-none">
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger AsChild>
+                            <BbButton Variant="ButtonVariant.Outline">
                                 Open Menu
                                 <LucideIcon Name="chevron-down" Size="16" Class="ml-2" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
-                            <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</DropdownMenuItem>
-                            <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                            </BbButton>
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger>
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
+                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>Item 1</BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>Item 2</BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent>
+                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu>
                 </div>
             </div>
+
+            <CodeBlock Source="Primitives/DropdownMenu/as-child.txt" />
         </section>
 
         <section class="space-y-4">
@@ -72,25 +73,21 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <DropdownMenu>
-                    <DropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu ItemClass="block px-2 py-1.5 cursor-pointer rounded hover:bg-accent focus:bg-accent focus:outline-none">
+                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                         Open Menu
-                    </DropdownMenuTrigger>
+                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger>
 
-                    <DropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
-                        <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
-                            Profile
-                        </DropdownMenuItem>
-                        <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
-                            Settings
-                        </DropdownMenuItem>
-                        <Separator class="my-1" />
-                        <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
-                            Logout
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>Profile</BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>Settings</BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                        <BbSeparator class="my-1" />
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem class="text-destructive">Logout</BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent>
+                </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu>
             </div>
+
+            <CodeBlock Source="Primitives/DropdownMenu/basic.txt" />
         </section>
 
         <section class="space-y-4">
@@ -113,65 +110,31 @@
                 </div>
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
-                    <DropdownMenu @bind-Open="isOpen">
-                        <DropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu @bind-Open="isOpen" ItemClass="block px-2 py-1.5 cursor-pointer rounded hover:bg-accent focus:bg-accent focus:outline-none">
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                             Controlled Menu
-                        </DropdownMenuTrigger>
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger>
 
-                        <DropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
-                            <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent" OnClick="@(() => HandleItemClick("Item 1"))">
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
+                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem OnClick="@(() => HandleItemClick("Item 1"))">
                                 Item 1
-                            </DropdownMenuItem>
-                            <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent" OnClick="@(() => HandleItemClick("Item 2"))">
+                            </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem OnClick="@(() => HandleItemClick("Item 2"))">
                                 Item 2
-                            </DropdownMenuItem>
-                            <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent" OnClick="@(() => HandleItemClick("Item 3"))">
+                            </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem OnClick="@(() => HandleItemClick("Item 3"))">
                                 Item 3
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                            </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent>
+                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu>
 
                     @if (!string.IsNullOrEmpty(lastClicked))
                     {
                         <p class="text-sm text-muted-foreground mt-3">Last clicked: @lastClicked</p>
                     }
                 </div>
-            </div>
-        </section>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Keyboard Navigation</h2>
-                <p class="text-muted-foreground">
-                    Full keyboard navigation with arrow keys, Home/End, Enter/Space, and Escape.
-                </p>
-            </div>
-
-            <div class="rounded-lg border bg-card p-6 max-w-md">
-                <DropdownMenu>
-                    <DropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
-                        Keyboard Test Menu
-                    </DropdownMenuTrigger>
-
-                    <DropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
-                        <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
-                            First Item
-                        </DropdownMenuItem>
-                        <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
-                            Second Item
-                        </DropdownMenuItem>
-                        <DropdownMenuItem class="px-2 py-1.5 rounded opacity-50 cursor-not-allowed" Disabled="true">
-                            Disabled Item
-                        </DropdownMenuItem>
-                        <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
-                            Third Item
-                        </DropdownMenuItem>
-                        <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
-                            Last Item
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-                <p class="text-sm text-muted-foreground mt-3">Try keyboard navigation!</p>
+                <CodeBlock Source="Primitives/DropdownMenu/controlled.txt" />
             </div>
         </section>
 
@@ -185,232 +148,322 @@
 
             <div class="rounded-lg border bg-card p-6">
                 <div class="flex gap-4 flex-wrap">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
-                            Bottom Start
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" class="min-w-32 p-1 border rounded-md bg-popover shadow-md">
-                            <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</DropdownMenuItem>
-                            <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu ItemClass="block px-2 py-1.5 cursor-pointer rounded hover:bg-accent focus:bg-accent focus:outline-none">
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger class="inline-flex items-center justify-center px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                            <LucideIcon Name="arrow-down" Size="16" />
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger>
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" class="min-w-32 p-1 border rounded-md bg-popover shadow-md">
+                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>Item 1</BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>Item 2</BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent>
+                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu>
 
-                    <DropdownMenu>
-                        <DropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
-                            Top Center
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent Side="@PopoverSide.Top" Align="@PopoverAlign.Center" class="min-w-32 p-1 border rounded-md bg-popover shadow-md">
-                            <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</DropdownMenuItem>
-                            <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu ItemClass="block px-2 py-1.5 cursor-pointer rounded hover:bg-accent focus:bg-accent focus:outline-none">
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger class="inline-flex items-center justify-center px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                            <LucideIcon Name="arrow-up" Size="16" />
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger>
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent Side="@PopoverSide.Top" Align="@PopoverAlign.Center" class="min-w-32 p-1 border rounded-md bg-popover shadow-md">
+                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>Item 1</BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>Item 2</BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent>
+                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu>
 
-                    <DropdownMenu>
-                        <DropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
-                            Right End
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent Side="@PopoverSide.Right" Align="@PopoverAlign.End" class="min-w-32 p-1 border rounded-md bg-popover shadow-md">
-                            <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</DropdownMenuItem>
-                            <DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu ItemClass="block px-2 py-1.5 cursor-pointer rounded hover:bg-accent focus:bg-accent focus:outline-none">
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger class="inline-flex items-center justify-center px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                            <LucideIcon Name="arrow-right" Size="16" />
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger>
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent Side="@PopoverSide.Right" Align="@PopoverAlign.End" class="min-w-32 p-1 border rounded-md bg-popover shadow-md">
+                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>Item 1</BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>Item 2</BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent>
+                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu>
                 </div>
             </div>
+
+            <CodeBlock Source="Primitives/DropdownMenu/positioning.txt" />
         </section>
 
         <section class="space-y-4">
             <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Accessibility Features</h2>
+                <h2 class="text-2xl font-semibold">Link Items</h2>
                 <p class="text-muted-foreground">
-                    Built-in accessibility features following WAI-ARIA design patterns.
+                    Use the Href parameter to render menu items as anchor elements for navigation.
                 </p>
             </div>
 
-            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
-                <div class="flex items-start gap-2">
-                    <span class="text-green-600 dark:text-green-400">✓</span>
-                    <span class="text-sm"><strong>ARIA attributes:</strong> role="menu", aria-expanded, aria-orientation applied</span>
-                </div>
-                <div class="flex items-start gap-2">
-                    <span class="text-green-600 dark:text-green-400">✓</span>
-                    <span class="text-sm"><strong>Keyboard navigation:</strong> Full arrow key support with Home/End</span>
-                </div>
-                <div class="flex items-start gap-2">
-                    <span class="text-green-600 dark:text-green-400">✓</span>
-                    <span class="text-sm"><strong>Screen reader support:</strong> Proper menu role and item announcements</span>
-                </div>
-                <div class="flex items-start gap-2">
-                    <span class="text-green-600 dark:text-green-400">✓</span>
-                    <span class="text-sm"><strong>Focus management:</strong> Roving tab index pattern</span>
-                </div>
-                <div class="flex items-start gap-2">
-                    <span class="text-green-600 dark:text-green-400">✓</span>
-                    <span class="text-sm"><strong>Click outside:</strong> Auto-close when clicking outside</span>
-                </div>
+            <div class="rounded-lg border bg-card p-6 max-w-md">
+                <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu ItemClass="block px-2 py-1.5 cursor-pointer rounded hover:bg-accent focus:bg-accent focus:outline-none">
+                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                        Resources
+                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger>
+                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem Href="/primitives/select">
+                            Select Primitive
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem Href="/primitives/switch">
+                            Switch Primitive
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                        <BbSeparator class="my-1" />
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem Href="https://github.com" Target="_blank">
+                            GitHub (new tab)
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent>
+                </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu>
             </div>
+
+            <CodeBlock Source="Primitives/DropdownMenu/link-items.txt" />
         </section>
 
         <section class="space-y-4">
             <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Keyboard Shortcuts</h2>
+                <h2 class="text-2xl font-semibold">Functional Keyboard Shortcuts</h2>
                 <p class="text-muted-foreground">
-                    Navigate and interact with menus using keyboard.
+                    Register global keyboard shortcuts via <code>IKeyboardShortcutService</code>.
+                    Shortcuts fire even when the menu is closed.
                 </p>
             </div>
 
-            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
-                <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium">Open menu</span>
-                    <Kbd>Enter / Space</Kbd>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium">Navigate items</span>
-                    <Kbd>Arrow Keys</Kbd>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium">First / Last item</span>
-                    <Kbd>Home / End</Kbd>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium">Select item</span>
-                    <Kbd>Enter</Kbd>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium">Close menu</span>
-                    <Kbd>Escape</Kbd>
+            <div class="flex items-start gap-4">
+                <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu ItemClass="block px-2 py-1.5 cursor-pointer rounded hover:bg-accent focus:bg-accent focus:outline-none">
+                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                        File Menu
+                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger>
+                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem OnClick="@(() => HandleShortcutsAction("New File"))">
+                            New File
+                            <span class="ml-auto text-xs text-muted-foreground">Ctrl+Shift+N</span>
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem OnClick="@(() => HandleShortcutsAction("Open"))">
+                            Open
+                            <span class="ml-auto text-xs text-muted-foreground">Ctrl+O</span>
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem OnClick="@(() => HandleShortcutsAction("Save"))">
+                            Save
+                            <span class="ml-auto text-xs text-muted-foreground">Ctrl+S</span>
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                        <BbSeparator class="my-1" />
+                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem OnClick="@(() => HandleShortcutsAction("Save As"))">
+                            Save As...
+                            <span class="ml-auto text-xs text-muted-foreground">Ctrl+Shift+S</span>
+                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent>
+                </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu>
+
+                @if (!string.IsNullOrEmpty(shortcutsAction))
+                {
+                    <div class="flex items-center gap-2 p-3 bg-primary/10 text-primary rounded-md animate-pulse">
+                        <span>Shortcut triggered: <strong>@shortcutsAction</strong></span>
+                    </div>
+                }
+            </div>
+
+            <div class="mt-4 p-4 bg-muted rounded-lg">
+                <p class="font-medium mb-3">Try these shortcuts (even with the menu closed):</p>
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <div class="flex items-center gap-2">
+                        <BbKbd Keys="Ctrl+Shift+N" /> <span class="text-muted-foreground">New File</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <BbKbd Keys="Ctrl+O" /> <span class="text-muted-foreground">Open</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <BbKbd Keys="Ctrl+S" /> <span class="text-muted-foreground">Save</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <BbKbd Keys="Ctrl+Shift+S" /> <span class="text-muted-foreground">Save As</span>
+                    </div>
                 </div>
             </div>
+
+            <CodeBlock Source="Primitives/DropdownMenu/keyboard-shortcuts.txt" />
         </section>
+
+        <AccessibilityList>
+            <AriaAttributes>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">role="menu"</code> on content container
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">role="menuitem"</code> on each menu item
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-haspopup="menu"</code> on trigger button
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-expanded</code> automatically applied to trigger reflecting open state
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-controls</code> linking trigger to content
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-disabled</code> on disabled menu items
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Focus management with roving tab index pattern
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Click outside closes menu when enabled
+                </AccessibilityItem>
+            </AriaAttributes>
+            <KeyboardNavigation>
+                <KeyboardShortcutItem Description="Open menu">
+                    <BbKbd>Enter / Space</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Navigate items">
+                    <BbKbd>Arrow Keys</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="First / Last item">
+                    <BbKbd>Home / End</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Select item">
+                    <BbKbd>Enter</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Close menu">
+                    <BbKbd>Escape</BbKbd>
+                </KeyboardShortcutItem>
+            </KeyboardNavigation>
+        </AccessibilityList>
 
         <section class="space-y-4">
             <div class="space-y-2">
                 <h2 class="text-2xl font-semibold">API Reference</h2>
-                <p class="text-muted-foreground">
-                    Component properties and parameters.
-                </p>
+                <p class="text-muted-foreground">Component properties and parameters.</p>
             </div>
-
             <div class="space-y-4">
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">DropdownMenu</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Open</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool?</code><br/>
-                                Controls whether the menu is open (controlled mode).
-                            </p>
-                        </div>
-                        <Separator />
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">OpenChanged</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>EventCallback&lt;bool&gt;</code><br/>
-                                Callback invoked when the open state changes.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="DropdownMenu">
+                    <ApiParameter Name="Open" Type="bool?" Default="null">
+                        Controls whether the dropdown menu is open (controlled mode). When null, the dropdown menu manages its own state (uncontrolled mode). Supports two-way binding with <code>@@bind-Open</code>.
+                    </ApiParameter>
+                    <ApiParameter Name="OpenChanged" Type="EventCallback&lt;bool&gt;">
+                        Event callback invoked when the open state changes.
+                    </ApiParameter>
+                    <ApiParameter Name="DefaultOpen" Type="bool" Default="false">
+                        Default open state when in uncontrolled mode.
+                    </ApiParameter>
+                    <ApiParameter Name="OnOpenChange" Type="EventCallback&lt;bool&gt;">
+                        Event callback invoked when the dropdown menu open state changes. Receives the new open state as a parameter.
+                    </ApiParameter>
+                    <ApiParameter Name="Modal" Type="bool" Default="true">
+                        Whether the dropdown menu can be dismissed by clicking outside or pressing Escape.
+                    </ApiParameter>
+                    <ApiParameter Name="Dir" Type="string" Default="&quot;ltr&quot;">
+                        Direction for the menu content layout. Can be "ltr" (left-to-right) or "rtl" (right-to-left).
+                    </ApiParameter>
+                    <ApiParameter Name="ItemClass" Type="string?">
+                        Default CSS classes applied to all DropdownMenuItem children. Items merge this with their own class attribute.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The child content to render within the dropdown menu context. Typically includes DropdownMenuTrigger and DropdownMenuContent.
+                    </ApiParameter>
+                </ApiReference>
 
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">DropdownMenuContent</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Side</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>"top" | "right" | "bottom" | "left"</code><br/>
-                                <strong>Default:</strong> <code>"bottom"</code><br/>
-                                Which side of the trigger to position the content.
-                            </p>
-                        </div>
-                        <Separator />
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Align</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>"start" | "center" | "end"</code><br/>
-                                <strong>Default:</strong> <code>"start"</code><br/>
-                                How to align the content relative to the trigger.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="DropdownMenuTrigger">
+                    <ApiParameter Name="AsChild" Type="bool" Default="false">
+                        When true, does not render its own button element. Instead passes trigger behavior via <code>TriggerContext</code> to child components.
+                    </ApiParameter>
+                    <ApiParameter Name="Disabled" Type="bool" Default="false">
+                        Whether the trigger is disabled.
+                    </ApiParameter>
+                    <ApiParameter Name="OnClick" Type="EventCallback&lt;MouseEventArgs&gt;">
+                        Custom click handler. If provided, this is called in addition to the default toggle behavior.
+                    </ApiParameter>
+                    <ApiParameter Name="CustomClickHandling" Type="bool" Default="false">
+                        Whether to use custom click handling. When true, only OnClick is invoked and default open behavior is skipped.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The content to display inside the trigger button.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the trigger button element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
 
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">DropdownMenuItem</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">OnClick</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>EventCallback</code><br/>
-                                Callback invoked when the item is clicked.
-                            </p>
-                        </div>
-                        <Separator />
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Disabled</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>false</code><br/>
-                                Whether the item is disabled.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+                <ApiReference ComponentName="DropdownMenuContent">
+                    <ApiParameter Name="Side" Type="PopoverSide" Default="PopoverSide.Bottom">
+                        Preferred side for positioning relative to the trigger (Top, Right, Bottom, Left).
+                    </ApiParameter>
+                    <ApiParameter Name="Align" Type="PopoverAlign" Default="PopoverAlign.Start">
+                        Alignment relative to the trigger (Start, Center, End).
+                    </ApiParameter>
+                    <ApiParameter Name="Offset" Type="int" Default="4">
+                        Offset distance from the trigger element in pixels.
+                    </ApiParameter>
+                    <ApiParameter Name="CloseOnEscape" Type="bool" Default="true">
+                        Whether pressing Escape should close the dropdown menu.
+                    </ApiParameter>
+                    <ApiParameter Name="CloseOnClickOutside" Type="bool" Default="true">
+                        Whether clicking outside should close the dropdown menu.
+                    </ApiParameter>
+                    <ApiParameter Name="Loop" Type="bool" Default="true">
+                        Whether to enable keyboard loop navigation (wrapping from last to first item).
+                    </ApiParameter>
+                    <ApiParameter Name="MatchTriggerWidth" Type="bool" Default="false">
+                        Whether the dropdown content should match the trigger width.
+                    </ApiParameter>
+                    <ApiParameter Name="Strategy" Type="PositioningStrategy" Default="PositioningStrategy.Absolute">
+                        CSS positioning strategy. Use Fixed to escape stacking contexts, or Absolute to scroll with a container.
+                    </ApiParameter>
+                    <ApiParameter Name="ZIndex" Type="int" Default="50">
+                        CSS z-index value for the dropdown menu.
+                    </ApiParameter>
+                    <ApiParameter Name="OnEscapeKeyDown" Type="EventCallback&lt;KeyboardEventArgs&gt;">
+                        Event callback invoked when Escape key is pressed.
+                    </ApiParameter>
+                    <ApiParameter Name="OnClickOutside" Type="EventCallback">
+                        Event callback invoked when clicking outside the dropdown menu.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The content to render inside the dropdown menu. Typically contains DropdownMenuItem, separators, etc.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the content container element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">When to Use Primitives</h2>
-                <p class="text-muted-foreground">
-                    Choose between primitives and styled components based on your needs.
-                </p>
-            </div>
+                <ApiReference ComponentName="DropdownMenuItem">
+                    <ApiParameter Name="Disabled" Type="bool" Default="false">
+                        Whether the menu item is disabled.
+                    </ApiParameter>
+                    <ApiParameter Name="OnClick" Type="EventCallback&lt;MouseEventArgs&gt;">
+                        Custom click handler invoked when the item is clicked. The menu closes after the handler executes unless CloseOnSelect is false.
+                    </ApiParameter>
+                    <ApiParameter Name="CloseOnSelect" Type="bool" Default="true">
+                        Whether to close the dropdown menu when this item is selected.
+                    </ApiParameter>
+                    <ApiParameter Name="Href" Type="string?">
+                        URL to navigate to. When set, the item renders as an anchor element instead of a div.
+                    </ApiParameter>
+                    <ApiParameter Name="Target" Type="string?">
+                        Anchor target attribute (e.g., "_blank"). Only applies when Href is set. Automatically adds <code>rel="noopener noreferrer"</code> for "_blank".
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The content to display inside the menu item.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the menu item element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
 
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="rounded-lg border p-4 space-y-3">
-                    <h3 class="font-semibold text-primary">Use DropdownMenu Primitive</h3>
-                    <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Building a custom design system</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Need complete control over styling</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Want to apply your own CSS framework</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Creating unique visual designs</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="rounded-lg border p-4 space-y-3">
-                    <h3 class="font-semibold text-primary">Use Styled Component</h3>
-                    <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Want shadcn/ui design out of the box</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Need quick implementation</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Like the default styling</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Prefer convention over configuration</span>
-                        </li>
-                    </ul>
-                </div>
+                <ApiReference ComponentName="DropdownMenuCheckboxItem">
+                    <ApiParameter Name="Checked" Type="bool">
+                        Whether the checkbox is checked. Supports two-way binding with <code>@@bind-Checked</code>.
+                    </ApiParameter>
+                    <ApiParameter Name="CheckedChanged" Type="EventCallback&lt;bool&gt;">
+                        Event callback for when the checked state changes.
+                    </ApiParameter>
+                    <ApiParameter Name="Disabled" Type="bool" Default="false">
+                        Whether the menu item is disabled.
+                    </ApiParameter>
+                    <ApiParameter Name="CloseOnSelect" Type="bool" Default="false">
+                        Whether to close the dropdown menu when this item is toggled. Default is false since checkbox items typically keep the menu open.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The content to display inside the checkbox menu item.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the checkbox menu item element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
             </div>
         </section>
     </div>
@@ -419,9 +472,61 @@
 @code {
     private bool isOpen = false;
     private string? lastClicked;
+    private string? shortcutsAction;
+
+    // Keyboard shortcut registrations
+    private IDisposable? _shortcutNew;
+    private IDisposable? _shortcutOpen;
+    private IDisposable? _shortcutSave;
+    private IDisposable? _shortcutSaveAs;
+    private CancellationTokenSource? _clearCts;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _shortcutNew = await KeyboardShortcuts.RegisterAsync("Ctrl+Shift+N", () => HandleShortcutAsync("New File"));
+            _shortcutOpen = await KeyboardShortcuts.RegisterAsync("Ctrl+O", () => HandleShortcutAsync("Open"));
+            _shortcutSave = await KeyboardShortcuts.RegisterAsync("Ctrl+S", () => HandleShortcutAsync("Save"));
+            _shortcutSaveAs = await KeyboardShortcuts.RegisterAsync("Ctrl+Shift+S", () => HandleShortcutAsync("Save As"));
+        }
+    }
 
     private void HandleItemClick(string item)
     {
         lastClicked = item;
+    }
+
+    private void HandleShortcutsAction(string action) => _ = HandleShortcutAsync(action);
+
+    private async Task HandleShortcutAsync(string action)
+    {
+        shortcutsAction = action;
+        await InvokeAsync(StateHasChanged);
+
+        _clearCts?.Cancel();
+        _clearCts = new CancellationTokenSource();
+
+        try
+        {
+            await Task.Delay(2000, _clearCts.Token);
+            shortcutsAction = null;
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (TaskCanceledException)
+        {
+            // Timer was cancelled, ignore
+        }
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        _clearCts?.Cancel();
+        _clearCts?.Dispose();
+        _shortcutNew?.Dispose();
+        _shortcutOpen?.Dispose();
+        _shortcutSave?.Dispose();
+        _shortcutSaveAs?.Dispose();
+        return ValueTask.CompletedTask;
     }
 }

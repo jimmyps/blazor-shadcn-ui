@@ -1,0 +1,11 @@
+<BbDropdownMenu>
+    <BbDropdownMenuTrigger AsChild="false">My Account</BbDropdownMenuTrigger>
+    <BbDropdownMenuContent>
+        <BbDropdownMenuLabel>My Account</BbDropdownMenuLabel>
+        <BbDropdownMenuSeparator />
+        <BbDropdownMenuItem>Profile</BbDropdownMenuItem>
+        <BbDropdownMenuItem>Billing</BbDropdownMenuItem>
+        <BbDropdownMenuSeparator />
+        <BbDropdownMenuItem Class="text-destructive">Logout</BbDropdownMenuItem>
+    </BbDropdownMenuContent>
+</BbDropdownMenu>

@@ -1,0 +1,11 @@
+<BbButtonGroup>
+    <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Icon" AriaLabel="Bold">
+        <LucideIcon Name="bold" Size="16" />
+    </BbButton>
+    <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Icon" AriaLabel="Italic">
+        <LucideIcon Name="italic" Size="16" />
+    </BbButton>
+    <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Icon" AriaLabel="Underline">
+        <LucideIcon Name="underline" Size="16" />
+    </BbButton>
+</BbButtonGroup>

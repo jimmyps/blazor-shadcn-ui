@@ -1,0 +1,11 @@
+<BbTabs @bind-Value="activeTab">
+    <BbTabsList Class="grid w-full grid-cols-3">
+        <BbTabsTrigger Value="morning">Morning</BbTabsTrigger>
+        <BbTabsTrigger Value="afternoon">Afternoon</BbTabsTrigger>
+        <BbTabsTrigger Value="evening">Evening</BbTabsTrigger>
+    </BbTabsList>
+
+    <BbTabsContent Value="morning">
+        <!-- Morning content -->
+    </BbTabsContent>
+</BbTabs>

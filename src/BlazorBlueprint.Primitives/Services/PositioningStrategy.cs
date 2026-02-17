@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Primitives.Services;
+namespace BlazorBlueprint.Primitives;
 
 /// <summary>
 /// Defines the CSS positioning strategy for floating elements.

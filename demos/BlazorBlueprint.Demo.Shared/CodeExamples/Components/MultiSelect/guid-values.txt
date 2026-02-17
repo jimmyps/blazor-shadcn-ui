@@ -1,0 +1,20 @@
+<BbMultiSelect TValue="Guid"
+             Options="projects"
+             @bind-Values="selectedProjects"
+             Placeholder="Select projects..."
+             SearchPlaceholder="Search projects..."
+             PopoverWidth="w-[300px]" />
+
+@code {
+    private IEnumerable<Guid>? selectedProjects;
+
+    private readonly SelectOption<Guid>[] projects =
+    [
+        new(Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890"), "Project Alpha"),
+        new(Guid.Parse("b2c3d4e5-f6a7-8901-bcde-f12345678901"), "Project Beta"),
+        ...
+    ];
+
+    // GetTexts works with any value type (int, Guid, enums, etc.)
+    string[] labels = projects.GetTexts(selectedProjects).ToArray();
+}

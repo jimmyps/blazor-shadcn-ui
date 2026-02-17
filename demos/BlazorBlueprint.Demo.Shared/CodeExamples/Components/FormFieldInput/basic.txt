@@ -1,0 +1,5 @@
+<BbFormFieldInput TValue="string"
+                   @bind-Value="name"
+                   Label="Full Name"
+                   HelperText="Enter your first and last name."
+                   Placeholder="John Doe" />

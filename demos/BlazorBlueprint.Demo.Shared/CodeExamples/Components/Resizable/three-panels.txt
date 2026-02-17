@@ -1,0 +1,7 @@
+<BbResizablePanelGroup Direction="ResizableDirection.Horizontal">
+    <BbResizablePanel DefaultSize="25">Sidebar</BbResizablePanel>
+    <BbResizableHandle />
+    <BbResizablePanel DefaultSize="50">Main Content</BbResizablePanel>
+    <BbResizableHandle />
+    <BbResizablePanel DefaultSize="25">Details</BbResizablePanel>
+</BbResizablePanelGroup>

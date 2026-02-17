@@ -1,0 +1,1 @@
+<BbNumericInput TValue="int" @bind-Value="_constrainedValue" Min="0" Max="100" Placeholder="0-100" />

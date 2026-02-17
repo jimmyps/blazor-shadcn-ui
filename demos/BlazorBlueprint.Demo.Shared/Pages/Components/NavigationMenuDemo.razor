@@ -1,8 +1,4 @@
 @page "/components/navigation-menu"
-@using BlazorBlueprint.Components.NavigationMenu
-@using BlazorBlueprint.Components.ResponsiveNav
-@using BlazorBlueprint.Components.Separator
-@using BlazorBlueprint.Icons.Lucide.Components
 
 <PageTitle>Navigation Menu Component - Blazor Blueprint</PageTitle>
 
@@ -26,17 +22,17 @@
             </p>
         </div>
         <div class="border rounded-lg overflow-visible">
-            <ResponsiveNavProvider>
+            <BbResponsiveNavProvider>
                 <header class="flex items-center justify-between p-4 bg-background rounded-lg">
                     <!-- Logo (always visible) -->
                     <a href="/" class="font-bold text-lg shrink-0">BlazorBlueprint</a>
 
                     <!-- Desktop navigation (hidden on mobile) -->
-                    <NavigationMenu Class="hidden md:flex">
-                        <NavigationMenuList>
-                            <NavigationMenuItem Value="resp-getting-started">
-                                <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
-                                <NavigationMenuContent>
+                    <BbNavigationMenu Class="hidden md:flex">
+                        <BbNavigationMenuList>
+                            <BbNavigationMenuItem Value="resp-getting-started">
+                                <BbNavigationMenuTrigger>Getting started</BbNavigationMenuTrigger>
+                                <BbNavigationMenuContent>
                                     <div class="grid gap-3 p-4 w-[400px]">
                                         <div class="p-3 rounded-lg hover:bg-accent">
                                             <a href="#" class="block font-medium mb-1">Introduction</a>
@@ -47,16 +43,16 @@
                                             <p class="text-sm text-muted-foreground">How to install and get started.</p>
                                         </div>
                                     </div>
-                                </NavigationMenuContent>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem>
-                                <NavigationMenuLink Href="/components">Components</NavigationMenuLink>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem>
-                                <NavigationMenuLink Href="/primitives">Primitives</NavigationMenuLink>
-                            </NavigationMenuItem>
-                        </NavigationMenuList>
-                    </NavigationMenu>
+                                </BbNavigationMenuContent>
+                            </BbNavigationMenuItem>
+                            <BbNavigationMenuItem>
+                                <BbNavigationMenuLink Href="/components">Components</BbNavigationMenuLink>
+                            </BbNavigationMenuItem>
+                            <BbNavigationMenuItem>
+                                <BbNavigationMenuLink Href="/primitives">Primitives</BbNavigationMenuLink>
+                            </BbNavigationMenuItem>
+                        </BbNavigationMenuList>
+                    </BbNavigationMenu>
 
                     <!-- Right side icons (always visible) -->
                     <div class="flex items-center gap-2">
@@ -77,11 +73,11 @@
                         <a href="#" class="hidden md:inline-flex text-sm text-muted-foreground hover:text-foreground px-2">Sign In</a>
 
                         <!-- Mobile hamburger (right-aligned) -->
-                        <ResponsiveNavTrigger />
+                        <BbResponsiveNavTrigger />
                     </div>
                 </header>
 
-                <ResponsiveNavContent>
+                <BbResponsiveNavContent>
                     <nav class="flex flex-col space-y-4">
                         <span class="text-sm font-medium text-muted-foreground">Getting started</span>
                         <div class="pl-4 space-y-2 border-l">
@@ -90,11 +86,11 @@
                         </div>
                         <a href="/components" class="text-lg font-medium hover:text-primary">Components</a>
                         <a href="/primitives" class="text-lg font-medium hover:text-primary">Primitives</a>
-                        <Separator />
+                        <BbSeparator />
                         <a href="#" class="text-sm text-muted-foreground hover:text-primary">Sign In</a>
                     </nav>
-                </ResponsiveNavContent>
-            </ResponsiveNavProvider>
+                </BbResponsiveNavContent>
+            </BbResponsiveNavProvider>
         </div>
         <div class="border rounded-lg p-4 bg-muted/50">
             <p class="text-sm text-muted-foreground">
@@ -104,6 +100,8 @@
                 Add <code class="text-xs bg-background px-1 py-0.5 rounded">Class="hidden md:flex"</code> to your NavigationMenu to hide it on mobile.
             </p>
         </div>
+
+        <CodeBlock Source="Components/NavigationMenu/responsive.txt" />
     </div>
 
     <!-- Basic Example -->
@@ -115,11 +113,11 @@
             </p>
         </div>
         <div class="border rounded-lg p-4">
-            <NavigationMenu>
-                <NavigationMenuList>
-                    <NavigationMenuItem Value="getting-started">
-                        <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
-                        <NavigationMenuContent>
+            <BbNavigationMenu>
+                <BbNavigationMenuList>
+                    <BbNavigationMenuItem Value="getting-started">
+                        <BbNavigationMenuTrigger>Getting started</BbNavigationMenuTrigger>
+                        <BbNavigationMenuContent>
                             <div class="grid gap-3 p-4 w-[400px]">
                                 <div class="p-3 rounded-lg hover:bg-accent">
                                     <a href="#" class="block font-medium mb-1">Introduction</a>
@@ -140,12 +138,12 @@
                                     </p>
                                 </div>
                             </div>
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
+                        </BbNavigationMenuContent>
+                    </BbNavigationMenuItem>
 
-                    <NavigationMenuItem Value="components">
-                        <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-                        <NavigationMenuContent>
+                    <BbNavigationMenuItem Value="components">
+                        <BbNavigationMenuTrigger>Components</BbNavigationMenuTrigger>
+                        <BbNavigationMenuContent>
                             <div class="grid gap-3 p-4 w-[500px] md:grid-cols-2">
                                 <div class="p-3 rounded-lg hover:bg-accent">
                                     <a href="/components/alert" class="block font-medium mb-1">Alert</a>
@@ -172,15 +170,17 @@
                                     </p>
                                 </div>
                             </div>
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
+                        </BbNavigationMenuContent>
+                    </BbNavigationMenuItem>
 
-                    <NavigationMenuItem>
-                        <NavigationMenuLink Href="/components">Documentation</NavigationMenuLink>
-                    </NavigationMenuItem>
-                </NavigationMenuList>
-            </NavigationMenu>
+                    <BbNavigationMenuItem>
+                        <BbNavigationMenuLink Href="/components">Documentation</BbNavigationMenuLink>
+                    </BbNavigationMenuItem>
+                </BbNavigationMenuList>
+            </BbNavigationMenu>
         </div>
+
+        <CodeBlock Source="Components/NavigationMenu/basic.txt" />
     </div>
 
     <!-- Simple Links -->
@@ -192,23 +192,25 @@
             </p>
         </div>
         <div class="border rounded-lg p-4">
-            <NavigationMenu>
-                <NavigationMenuList>
-                    <NavigationMenuItem>
-                        <NavigationMenuLink Href="/">Home</NavigationMenuLink>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem>
-                        <NavigationMenuLink Href="/components">Components</NavigationMenuLink>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem>
-                        <NavigationMenuLink Href="/primitives">Primitives</NavigationMenuLink>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem>
-                        <NavigationMenuLink Href="/icons">Icons</NavigationMenuLink>
-                    </NavigationMenuItem>
-                </NavigationMenuList>
-            </NavigationMenu>
+            <BbNavigationMenu>
+                <BbNavigationMenuList>
+                    <BbNavigationMenuItem>
+                        <BbNavigationMenuLink Href="/">Home</BbNavigationMenuLink>
+                    </BbNavigationMenuItem>
+                    <BbNavigationMenuItem>
+                        <BbNavigationMenuLink Href="/components">Components</BbNavigationMenuLink>
+                    </BbNavigationMenuItem>
+                    <BbNavigationMenuItem>
+                        <BbNavigationMenuLink Href="/primitives">Primitives</BbNavigationMenuLink>
+                    </BbNavigationMenuItem>
+                    <BbNavigationMenuItem>
+                        <BbNavigationMenuLink Href="/icons">Icons</BbNavigationMenuLink>
+                    </BbNavigationMenuItem>
+                </BbNavigationMenuList>
+            </BbNavigationMenu>
         </div>
+
+        <CodeBlock Source="Components/NavigationMenu/simple-links.txt" />
     </div>
 
     <!-- Keyboard Navigation -->
@@ -220,11 +222,11 @@
             </p>
         </div>
         <div class="border rounded-lg p-4">
-            <NavigationMenu EnableKeyboardNavigation="true">
-                <NavigationMenuList>
-                    <NavigationMenuItem Value="products">
-                        <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-                        <NavigationMenuContent>
+            <BbNavigationMenu EnableKeyboardNavigation="true">
+                <BbNavigationMenuList>
+                    <BbNavigationMenuItem Value="products">
+                        <BbNavigationMenuTrigger>Products</BbNavigationMenuTrigger>
+                        <BbNavigationMenuContent>
                             <div class="grid gap-3 p-4 w-[400px]">
                                 <div class="p-3 rounded-lg hover:bg-accent">
                                     <a href="#" class="block font-medium mb-1">Analytics</a>
@@ -245,12 +247,12 @@
                                     </p>
                                 </div>
                             </div>
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
+                        </BbNavigationMenuContent>
+                    </BbNavigationMenuItem>
 
-                    <NavigationMenuItem Value="resources">
-                        <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
-                        <NavigationMenuContent>
+                    <BbNavigationMenuItem Value="resources">
+                        <BbNavigationMenuTrigger>Resources</BbNavigationMenuTrigger>
+                        <BbNavigationMenuContent>
                             <div class="grid gap-3 p-4 w-[300px]">
                                 <div class="p-3 rounded-lg hover:bg-accent">
                                     <a href="#" class="block font-medium mb-1">Documentation</a>
@@ -265,120 +267,141 @@
                                     </p>
                                 </div>
                             </div>
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
+                        </BbNavigationMenuContent>
+                    </BbNavigationMenuItem>
 
-                    <NavigationMenuItem>
-                        <NavigationMenuLink Href="#">Pricing</NavigationMenuLink>
-                    </NavigationMenuItem>
-                </NavigationMenuList>
-            </NavigationMenu>
+                    <BbNavigationMenuItem>
+                        <BbNavigationMenuLink Href="#">Pricing</BbNavigationMenuLink>
+                    </BbNavigationMenuItem>
+                </BbNavigationMenuList>
+            </BbNavigationMenu>
         </div>
-        <div class="border rounded-lg p-6 space-y-4 bg-muted/50">
-            <div>
-                <h3 class="font-medium mb-2">At Trigger Level</h3>
-                <div class="space-y-1 text-sm">
-                    <p><kbd class="px-1.5 py-0.5 bg-background border rounded text-xs">ArrowRight</kbd> / <kbd class="px-1.5 py-0.5 bg-background border rounded text-xs">ArrowLeft</kbd> — Navigate between triggers</p>
-                    <p><kbd class="px-1.5 py-0.5 bg-background border rounded text-xs">ArrowDown</kbd> — Open dropdown and focus first item</p>
-                    <p><kbd class="px-1.5 py-0.5 bg-background border rounded text-xs">Enter</kbd> / <kbd class="px-1.5 py-0.5 bg-background border rounded text-xs">Space</kbd> — Toggle dropdown</p>
-                    <p><kbd class="px-1.5 py-0.5 bg-background border rounded text-xs">Escape</kbd> — Close dropdown</p>
-                </div>
-            </div>
-            <div>
-                <h3 class="font-medium mb-2">Within Dropdown Content</h3>
-                <div class="space-y-1 text-sm">
-                    <p><kbd class="px-1.5 py-0.5 bg-background border rounded text-xs">ArrowDown</kbd> / <kbd class="px-1.5 py-0.5 bg-background border rounded text-xs">ArrowUp</kbd> — Navigate between links</p>
-                    <p><kbd class="px-1.5 py-0.5 bg-background border rounded text-xs">Home</kbd> / <kbd class="px-1.5 py-0.5 bg-background border rounded text-xs">End</kbd> — Jump to first/last link</p>
-                    <p><kbd class="px-1.5 py-0.5 bg-background border rounded text-xs">Enter</kbd> — Follow focused link</p>
-                    <p><kbd class="px-1.5 py-0.5 bg-background border rounded text-xs">Escape</kbd> — Close dropdown, return focus to trigger</p>
-                </div>
-            </div>
-        </div>
+
+        <CodeBlock Source="Components/NavigationMenu/keyboard-navigation.txt" />
     </div>
 
-    <!-- Usage Notes -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Usage Notes</h2>
-        </div>
-        <div class="border rounded-lg p-6 space-y-3 bg-muted/50">
-            <p class="text-sm">
-                <strong>Structure:</strong> NavigationMenu → NavigationMenuList → NavigationMenuItem
-            </p>
-            <p class="text-sm">
-                <strong>Dropdowns:</strong> Use NavigationMenuTrigger + NavigationMenuContent for dropdown menus
-            </p>
-            <p class="text-sm">
-                <strong>Links:</strong> Use NavigationMenuLink for simple navigation links
-            </p>
-            <p class="text-sm">
-                <strong>Hover to open:</strong> Dropdowns open on hover and close when mouse leaves
-            </p>
-            <p class="text-sm">
-                <strong>Unique values:</strong> Give each NavigationMenuItem a unique Value prop for proper state management
-            </p>
-        </div>
-    </div>
+    <!-- Accessibility -->
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Uses semantic nav element as the root container</AccessibilityItem>
+            <AccessibilityItem>Triggers include aria-haspopup="menu" and aria-expanded for screen readers</AccessibilityItem>
+            <AccessibilityItem>Dropdown content uses role="menu" for proper menu semantics</AccessibilityItem>
+            <AccessibilityItem>Links use role="menuitem" with tabindex for focus management</AccessibilityItem>
+            <AccessibilityItem>Active link state indicated via NavLink active class matching</AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Navigate between triggers">
+                <BbKbd>ArrowLeft</BbKbd> / <BbKbd>ArrowRight</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Open dropdown and focus first item">
+                <BbKbd>ArrowDown</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Toggle dropdown open/closed">
+                <BbKbd>Enter</BbKbd> / <BbKbd>Space</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Navigate items within dropdown">
+                <BbKbd>ArrowUp</BbKbd> / <BbKbd>ArrowDown</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Jump to first/last item in dropdown">
+                <BbKbd>Home</BbKbd> / <BbKbd>End</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Close dropdown, return focus to trigger">
+                <BbKbd>Escape</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-semibold mb-2">Components</h3>
-                <div class="space-y-2 text-sm">
-                    <p><code class="bg-muted px-1 py-0.5 rounded">NavigationMenu</code> - Root container</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">NavigationMenuList</code> - List of menu items</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">NavigationMenuItem</code> - Individual menu item</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">NavigationMenuTrigger</code> - Dropdown trigger button</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">NavigationMenuContent</code> - Dropdown content panel</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">NavigationMenuLink</code> - Navigation link</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">NavigationMenuIndicator</code> - Visual active indicator</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">NavigationMenuViewport</code> - Styled viewport container</p>
-                </div>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">NavigationMenu.EnableKeyboardNavigation</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code> — Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">false</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="NavigationMenu">
+                <ApiParameter Name="EnableKeyboardNavigation" Type="bool" Default="false">
                     Enables keyboard navigation within dropdown menus. When true, users can navigate items with arrow keys, Home/End, and Escape.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">NavigationMenuItem.Value</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the navigation menu.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content to render inside the navigation menu. Typically contains NavigationMenuList.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="NavigationMenuList">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the list.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The navigation menu items.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="NavigationMenuItem">
+                <ApiParameter Name="Value" Type="string?">
                     Unique identifier for the menu item. Required for dropdown functionality.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">NavigationMenuLink.Href</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the item.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content of the menu item (trigger, content, or link).
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="NavigationMenuTrigger">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the trigger button.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content of the trigger button.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="NavigationMenuContent">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the dropdown content panel.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content to render in the dropdown.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="NavigationMenuLink">
+                <ApiParameter Name="Href" Type="string?">
                     The URL the link navigates to.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">NavigationMenuLink.Match</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">NavLinkMatch</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    How to match the URL for active state. Default: Prefix.
-                </p>
-            </div>
+                </ApiParameter>
+                <ApiParameter Name="Match" Type="NavLinkMatch" Default="Prefix">
+                    How to match the URL for active state.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the link.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content of the link.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="NavigationMenuIndicator">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the indicator.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="NavigationMenuViewport">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the outer container.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content to render inside the viewport.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
+
+@code {
+}

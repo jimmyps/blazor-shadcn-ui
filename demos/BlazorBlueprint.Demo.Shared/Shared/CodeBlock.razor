@@ -1,0 +1,39 @@
+<BbCollapsible>
+    <BbCollapsibleTrigger AsChild="false"
+        Class="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors py-2">
+        <LucideIcon Name="code-xml" Size="14" />
+        <span>View Code</span>
+        <LucideIcon Name="chevron-down" Size="14"
+            Class="transition-transform duration-200 group-data-[state=open]:rotate-180" />
+    </BbCollapsibleTrigger>
+    <BbCollapsibleContent>
+        <pre class="rounded-lg border bg-muted p-4 text-xs leading-relaxed overflow-x-auto"><code>@if (ChildContent is not null){@ChildContent}else{@sourceContent}</code></pre>
+    </BbCollapsibleContent>
+</BbCollapsible>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Source { get; set; }
+
+    private string? sourceContent;
+
+    protected override void OnInitialized()
+    {
+        if (ChildContent is null && !string.IsNullOrEmpty(Source))
+        {
+            sourceContent = LoadEmbeddedResource(Source);
+        }
+    }
+
+    private static string? LoadEmbeddedResource(string path)
+    {
+        var resourceName = "BlazorBlueprint.Demo.CodeExamples." + path.Replace('/', '.').Replace('\\', '.');
+        using var stream = typeof(CodeBlock).Assembly.GetManifestResourceStream(resourceName);
+        if (stream is null)
+        {
+            return $"[Source not found: {path}]";
+        }
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd().TrimEnd();
+    }
+}

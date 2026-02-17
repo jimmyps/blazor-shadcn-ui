@@ -1,0 +1,3 @@
+<BbToggleGroup TValue="string" Size="ToggleSize.Small">...</BbToggleGroup>
+<BbToggleGroup TValue="string" Size="ToggleSize.Default">...</BbToggleGroup>
+<BbToggleGroup TValue="string" Size="ToggleSize.Large">...</BbToggleGroup>

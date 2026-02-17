@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.NativeSelect;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Size variants for the NativeSelect component.

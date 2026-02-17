@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Button;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the HTML button type attribute value.

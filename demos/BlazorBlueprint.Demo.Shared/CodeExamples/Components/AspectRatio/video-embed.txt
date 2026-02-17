@@ -1,0 +1,5 @@
+<BbAspectRatio Ratio="16.0 / 9.0">
+    <div class="flex items-center justify-center bg-black rounded-md text-white">
+        <span>Video Player Placeholder</span>
+    </div>
+</BbAspectRatio>

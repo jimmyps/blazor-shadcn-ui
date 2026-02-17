@@ -1,0 +1,8 @@
+<BbMultiSelect TValue="string"
+             Options="countries"
+             @bind-Values="selectedCountries"
+             Placeholder="Select countries..."
+             SearchPlaceholder="Search country..."
+             MaxDisplayTags="2"
+             ShowSelectAll="true"
+             PopoverWidth="w-[280px]" />

@@ -1,0 +1,15 @@
+<BbCommand>
+    <BbCommandInput Placeholder="Search commands..." />
+    <BbCommandList>
+        <BbCommandGroup Heading="File">
+            <BbCommandItem Value="new">
+                New File
+                <BbCommandShortcut>⌘N</BbCommandShortcut>
+            </BbCommandItem>
+            <BbCommandItem Value="save">
+                Save File
+                <BbCommandShortcut>⌘S</BbCommandShortcut>
+            </BbCommandItem>
+        </BbCommandGroup>
+    </BbCommandList>
+</BbCommand>

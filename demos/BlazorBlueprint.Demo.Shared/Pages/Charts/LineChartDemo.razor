@@ -1,10 +1,8 @@
 @page "/charts/line"
-@using ApexCharts
-@using BlazorBlueprint.Components.Chart
-
+@using BlazorBlueprint.Icons.Lucide.Components
 <PageTitle>Line Chart - Blazor Blueprint</PageTitle>
 
-<div class="space-y-8 max-w-4xl">
+<div class="space-y-8 max-w-6xl">
     <div>
         <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">Line Chart</h1>
@@ -14,138 +12,204 @@
         </div>
     </div>
 
-    <!-- Default Line -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Default</h2>
-            <p class="text-sm text-muted-foreground">
-                Straight lines connecting data points.
-            </p>
+    <!-- Interactive Line Chart (full width hero) -->
+    <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+        <div class="flex items-start justify-between p-6">
+            <div class="flex flex-col space-y-1.5">
+                <h3 class="font-semibold leading-none tracking-tight">Line Chart - Interactive</h3>
+                <p class="text-sm text-muted-foreground">Showing total visitors for the last 3 months</p>
+            </div>
+            <div class="flex">
+                <div class="flex flex-col gap-1 border-l px-6 py-0.5">
+                    <span class="text-xs text-muted-foreground">Desktop</span>
+                    <span class="text-2xl font-bold leading-none">@_chartData.Sum(d => d.Desktop).ToString("N0")</span>
+                </div>
+                <div class="flex flex-col gap-1 border-l px-6 py-0.5">
+                    <span class="text-xs text-muted-foreground">Mobile</span>
+                    <span class="text-2xl font-bold leading-none">@_chartData.Sum(d => d.Mobile).ToString("N0")</span>
+                </div>
+            </div>
         </div>
-        <ChartContainer>
-            <LineChart TItem="TrendData"
-                       Items="@_trendData"
-                       Variant="LineChartVariant.Default"
-                       Height="300px">
-                <ApexPointSeries TItem="TrendData"
-                                 Items="@_trendData"
-                                 Name="Desktop"
-                                 SeriesType="SeriesType.Line"
-                                 XValue="@(item => item.Month)"
-                                 YValue="@(item => (decimal)item.Desktop)" />
-                <ApexPointSeries TItem="TrendData"
-                                 Items="@_trendData"
-                                 Name="Mobile"
-                                 SeriesType="SeriesType.Line"
-                                 XValue="@(item => item.Month)"
-                                 YValue="@(item => (decimal)item.Mobile)" />
-            </LineChart>
-        </ChartContainer>
+        <div class="p-6 pt-0">
+            <BbLineChart Data="@_chartData" Height="300px">
+                <BbXAxis DataKey="date" />
+                <BbYAxis />
+                <BbChartTooltip />
+                <BbLine DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Curve="CurveType.Smooth" ShowDots="false" />
+            </BbLineChart>
+        </div>
     </div>
+    <CodeBlock Source="Charts/LineChart/interactive.txt" />
 
-    <!-- Spline Line -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Spline</h2>
-            <p class="text-sm text-muted-foreground">
-                Smooth curved lines using spline interpolation.
-            </p>
-        </div>
-        <ChartContainer>
-            <LineChart TItem="TrendData"
-                       Items="@_trendData"
-                       Variant="LineChartVariant.Spline"
-                       Height="300px">
-                <ApexPointSeries TItem="TrendData"
-                                 Items="@_trendData"
-                                 Name="Desktop"
-                                 SeriesType="SeriesType.Line"
-                                 XValue="@(item => item.Month)"
-                                 YValue="@(item => (decimal)item.Desktop)" />
-                <ApexPointSeries TItem="TrendData"
-                                 Items="@_trendData"
-                                 Name="Mobile"
-                                 SeriesType="SeriesType.Line"
-                                 XValue="@(item => item.Month)"
-                                 YValue="@(item => (decimal)item.Mobile)" />
-            </LineChart>
-        </ChartContainer>
-    </div>
+    <!-- Grid of chart variants -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-    <!-- Stepline -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Stepline</h2>
-            <p class="text-sm text-muted-foreground">
-                Step lines for discrete data or constant values between points.
-            </p>
+        <!-- Default -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Line Chart</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbLineChart Data="@_monthlyData" Height="200px">
+                        <BbXAxis DataKey="month" />
+                        <BbYAxis Show="false" />
+                        <BbChartTooltip />
+                        <BbLine DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Curve="CurveType.Smooth" ShowDots="false" />
+                        <BbLine DataKey="mobile" Name="Mobile" Color="var(--chart-2)" Curve="CurveType.Smooth" ShowDots="false" />
+                    </BbLineChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/LineChart/default.txt" />
         </div>
-        <ChartContainer>
-            <LineChart TItem="TrendData"
-                       Items="@_trendData"
-                       Variant="LineChartVariant.Stepline"
-                       Height="300px">
-                <ApexPointSeries TItem="TrendData"
-                                 Items="@_trendData"
-                                 Name="Desktop"
-                                 SeriesType="SeriesType.Line"
-                                 XValue="@(item => item.Month)"
-                                 YValue="@(item => (decimal)item.Desktop)" />
-            </LineChart>
-        </ChartContainer>
-    </div>
 
-    <!-- Gradient -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Gradient</h2>
-            <p class="text-sm text-muted-foreground">
-                Lines with gradient fill beneath for visual emphasis.
-            </p>
+        <!-- Linear -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Line Chart - Linear</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbLineChart Data="@_monthlyData" Height="200px">
+                        <BbXAxis DataKey="month" />
+                        <BbYAxis Show="false" />
+                        <BbChartTooltip />
+                        <BbLine DataKey="desktop" Name="Desktop" Color="var(--chart-1)" ShowDots="false" />
+                        <BbLine DataKey="mobile" Name="Mobile" Color="var(--chart-2)" ShowDots="false" />
+                    </BbLineChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/LineChart/linear.txt" />
         </div>
-        <ChartContainer>
-            <LineChart TItem="TrendData"
-                       Items="@_trendData"
-                       Variant="LineChartVariant.Gradient"
-                       Height="300px">
-                <ApexPointSeries TItem="TrendData"
-                                 Items="@_trendData"
-                                 Name="Desktop"
-                                 SeriesType="SeriesType.Line"
-                                 XValue="@(item => item.Month)"
-                                 YValue="@(item => (decimal)item.Desktop)" />
-            </LineChart>
-        </ChartContainer>
-    </div>
 
-    <!-- Without Markers -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Without Markers</h2>
-            <p class="text-sm text-muted-foreground">
-                Clean lines without data point markers.
-            </p>
+        <!-- Step -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Line Chart - Step</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbLineChart Data="@_monthlyData" Height="200px">
+                        <BbXAxis DataKey="month" />
+                        <BbYAxis Show="false" />
+                        <BbChartTooltip />
+                        <BbLine DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Curve="CurveType.Step" ShowDots="false" />
+                    </BbLineChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/LineChart/step.txt" />
         </div>
-        <ChartContainer>
-            <LineChart TItem="TrendData"
-                       Items="@_trendData"
-                       Variant="LineChartVariant.Spline"
-                       ShowMarkers="false"
-                       Height="300px">
-                <ApexPointSeries TItem="TrendData"
-                                 Items="@_trendData"
-                                 Name="Desktop"
-                                 SeriesType="SeriesType.Line"
-                                 XValue="@(item => item.Month)"
-                                 YValue="@(item => (decimal)item.Desktop)" />
-                <ApexPointSeries TItem="TrendData"
-                                 Items="@_trendData"
-                                 Name="Mobile"
-                                 SeriesType="SeriesType.Line"
-                                 XValue="@(item => item.Month)"
-                                 YValue="@(item => (decimal)item.Mobile)" />
-            </LineChart>
-        </ChartContainer>
+
+        <!-- Multiple -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Line Chart - Multiple</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbLineChart Data="@_monthlyData" Height="200px">
+                        <BbXAxis DataKey="month" />
+                        <BbYAxis Show="false" />
+                        <BbChartTooltip />
+                        <BbChartLegend />
+                        <BbLine DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Curve="CurveType.Smooth" ShowDots="false" />
+                        <BbLine DataKey="mobile" Name="Mobile" Color="var(--chart-2)" Curve="CurveType.Smooth" ShowDots="false" />
+                    </BbLineChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/LineChart/multiple.txt" />
+        </div>
+
+        <!-- Dots -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Line Chart - Dots</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbLineChart Data="@_monthlyData" Height="200px">
+                        <BbXAxis DataKey="month" />
+                        <BbYAxis Show="false" />
+                        <BbChartTooltip />
+                        <BbLine DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Curve="CurveType.Smooth" />
+                        <BbLine DataKey="mobile" Name="Mobile" Color="var(--chart-2)" Curve="CurveType.Smooth" />
+                    </BbLineChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/LineChart/dots.txt" />
+        </div>
+
+        <!-- Custom Dots -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Line Chart - Custom Dots</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbLineChart Data="@_monthlyData" Height="200px">
+                        <BbXAxis DataKey="month" />
+                        <BbYAxis Show="false" />
+                        <BbChartTooltip />
+                        <BbLine DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Curve="CurveType.Smooth" DotSize="8" />
+                    </BbLineChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/LineChart/custom-dots.txt" />
+        </div>
     </div>
 
     <!-- API Reference -->
@@ -155,42 +219,62 @@
         </div>
         <div class="border rounded-lg p-6 space-y-4">
             <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Variant</h3>
+                <h3 class="font-mono text-sm font-semibold mb-2">Line.Curve</h3>
                 <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">LineChartVariant</code>
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">CurveType</code> (default: Linear)
                 </p>
                 <p class="text-sm text-muted-foreground">
-                    Options: Default, Spline, Stepline, Dashed, Gradient
+                    Curve interpolation type. Options: Linear, Smooth, Step, StepBefore, StepAfter.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">StrokeWidth</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">int</code> (default: 2)
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Width of the line in pixels.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">ShowMarkers</h3>
+                <h3 class="font-mono text-sm font-semibold mb-2">Line.ShowDots</h3>
                 <p class="text-sm text-muted-foreground mb-2">
                     Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code> (default: true)
                 </p>
                 <p class="text-sm text-muted-foreground">
-                    Whether to show markers at data points.
+                    Whether to show dot markers at data points.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">MarkerSize</h3>
+                <h3 class="font-mono text-sm font-semibold mb-2">Line.DotSize</h3>
                 <p class="text-sm text-muted-foreground mb-2">
                     Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">int</code> (default: 4)
                 </p>
                 <p class="text-sm text-muted-foreground">
-                    Size of markers in pixels.
+                    Size of data point dots in pixels.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Line.Dashed</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code> (default: false)
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    Whether the line should be rendered with a dashed stroke.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Line.StrokeWidth</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">int</code> (default: 2)
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    Line stroke width in pixels.
+                </p>
+            </div>
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">Line.Color</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    CSS color for the line. Use var(--chart-N) tokens for theme-aware colors.
                 </p>
             </div>
         </div>
@@ -198,14 +282,21 @@
 </div>
 
 @code {
-    public class TrendData
+    public class ChartData
+    {
+        public string Date { get; set; } = "";
+        public int Desktop { get; set; }
+        public int Mobile { get; set; }
+    }
+
+    public class MonthlyData
     {
         public string Month { get; set; } = "";
         public int Desktop { get; set; }
         public int Mobile { get; set; }
     }
 
-    private List<TrendData> _trendData =
+    private readonly List<MonthlyData> _monthlyData =
     [
         new() { Month = "Jan", Desktop = 186, Mobile = 80 },
         new() { Month = "Feb", Desktop = 305, Mobile = 200 },
@@ -213,5 +304,100 @@
         new() { Month = "Apr", Desktop = 73, Mobile = 190 },
         new() { Month = "May", Desktop = 209, Mobile = 130 },
         new() { Month = "Jun", Desktop = 214, Mobile = 140 }
+    ];
+
+    private readonly List<ChartData> _chartData =
+    [
+        new() { Date = "2024-04-01", Desktop = 222, Mobile = 150 },
+        new() { Date = "2024-04-02", Desktop = 97, Mobile = 180 },
+        new() { Date = "2024-04-03", Desktop = 167, Mobile = 120 },
+        new() { Date = "2024-04-04", Desktop = 242, Mobile = 260 },
+        new() { Date = "2024-04-05", Desktop = 373, Mobile = 290 },
+        new() { Date = "2024-04-06", Desktop = 301, Mobile = 340 },
+        new() { Date = "2024-04-07", Desktop = 245, Mobile = 180 },
+        new() { Date = "2024-04-08", Desktop = 409, Mobile = 320 },
+        new() { Date = "2024-04-09", Desktop = 59, Mobile = 110 },
+        new() { Date = "2024-04-10", Desktop = 261, Mobile = 190 },
+        new() { Date = "2024-04-11", Desktop = 327, Mobile = 350 },
+        new() { Date = "2024-04-12", Desktop = 292, Mobile = 210 },
+        new() { Date = "2024-04-13", Desktop = 342, Mobile = 380 },
+        new() { Date = "2024-04-14", Desktop = 137, Mobile = 220 },
+        new() { Date = "2024-04-15", Desktop = 120, Mobile = 170 },
+        new() { Date = "2024-04-16", Desktop = 138, Mobile = 190 },
+        new() { Date = "2024-04-17", Desktop = 446, Mobile = 360 },
+        new() { Date = "2024-04-18", Desktop = 364, Mobile = 410 },
+        new() { Date = "2024-04-19", Desktop = 243, Mobile = 180 },
+        new() { Date = "2024-04-20", Desktop = 89, Mobile = 150 },
+        new() { Date = "2024-04-21", Desktop = 137, Mobile = 200 },
+        new() { Date = "2024-04-22", Desktop = 224, Mobile = 170 },
+        new() { Date = "2024-04-23", Desktop = 138, Mobile = 230 },
+        new() { Date = "2024-04-24", Desktop = 387, Mobile = 290 },
+        new() { Date = "2024-04-25", Desktop = 215, Mobile = 250 },
+        new() { Date = "2024-04-26", Desktop = 75, Mobile = 130 },
+        new() { Date = "2024-04-27", Desktop = 383, Mobile = 420 },
+        new() { Date = "2024-04-28", Desktop = 122, Mobile = 180 },
+        new() { Date = "2024-04-29", Desktop = 315, Mobile = 240 },
+        new() { Date = "2024-04-30", Desktop = 454, Mobile = 380 },
+        new() { Date = "2024-05-01", Desktop = 165, Mobile = 220 },
+        new() { Date = "2024-05-02", Desktop = 293, Mobile = 310 },
+        new() { Date = "2024-05-03", Desktop = 247, Mobile = 190 },
+        new() { Date = "2024-05-04", Desktop = 385, Mobile = 420 },
+        new() { Date = "2024-05-05", Desktop = 481, Mobile = 390 },
+        new() { Date = "2024-05-06", Desktop = 498, Mobile = 520 },
+        new() { Date = "2024-05-07", Desktop = 388, Mobile = 300 },
+        new() { Date = "2024-05-08", Desktop = 149, Mobile = 210 },
+        new() { Date = "2024-05-09", Desktop = 227, Mobile = 180 },
+        new() { Date = "2024-05-10", Desktop = 293, Mobile = 330 },
+        new() { Date = "2024-05-11", Desktop = 335, Mobile = 270 },
+        new() { Date = "2024-05-12", Desktop = 197, Mobile = 240 },
+        new() { Date = "2024-05-13", Desktop = 197, Mobile = 160 },
+        new() { Date = "2024-05-14", Desktop = 448, Mobile = 490 },
+        new() { Date = "2024-05-15", Desktop = 473, Mobile = 380 },
+        new() { Date = "2024-05-16", Desktop = 338, Mobile = 400 },
+        new() { Date = "2024-05-17", Desktop = 499, Mobile = 420 },
+        new() { Date = "2024-05-18", Desktop = 315, Mobile = 350 },
+        new() { Date = "2024-05-19", Desktop = 235, Mobile = 180 },
+        new() { Date = "2024-05-20", Desktop = 177, Mobile = 230 },
+        new() { Date = "2024-05-21", Desktop = 82, Mobile = 140 },
+        new() { Date = "2024-05-22", Desktop = 81, Mobile = 120 },
+        new() { Date = "2024-05-23", Desktop = 252, Mobile = 290 },
+        new() { Date = "2024-05-24", Desktop = 294, Mobile = 220 },
+        new() { Date = "2024-05-25", Desktop = 201, Mobile = 250 },
+        new() { Date = "2024-05-26", Desktop = 213, Mobile = 170 },
+        new() { Date = "2024-05-27", Desktop = 420, Mobile = 460 },
+        new() { Date = "2024-05-28", Desktop = 233, Mobile = 190 },
+        new() { Date = "2024-05-29", Desktop = 78, Mobile = 130 },
+        new() { Date = "2024-05-30", Desktop = 340, Mobile = 280 },
+        new() { Date = "2024-05-31", Desktop = 178, Mobile = 230 },
+        new() { Date = "2024-06-01", Desktop = 178, Mobile = 200 },
+        new() { Date = "2024-06-02", Desktop = 470, Mobile = 410 },
+        new() { Date = "2024-06-03", Desktop = 103, Mobile = 160 },
+        new() { Date = "2024-06-04", Desktop = 439, Mobile = 380 },
+        new() { Date = "2024-06-05", Desktop = 88, Mobile = 140 },
+        new() { Date = "2024-06-06", Desktop = 294, Mobile = 250 },
+        new() { Date = "2024-06-07", Desktop = 323, Mobile = 370 },
+        new() { Date = "2024-06-08", Desktop = 385, Mobile = 320 },
+        new() { Date = "2024-06-09", Desktop = 438, Mobile = 480 },
+        new() { Date = "2024-06-10", Desktop = 155, Mobile = 200 },
+        new() { Date = "2024-06-11", Desktop = 92, Mobile = 150 },
+        new() { Date = "2024-06-12", Desktop = 492, Mobile = 420 },
+        new() { Date = "2024-06-13", Desktop = 81, Mobile = 130 },
+        new() { Date = "2024-06-14", Desktop = 426, Mobile = 380 },
+        new() { Date = "2024-06-15", Desktop = 307, Mobile = 350 },
+        new() { Date = "2024-06-16", Desktop = 371, Mobile = 310 },
+        new() { Date = "2024-06-17", Desktop = 475, Mobile = 520 },
+        new() { Date = "2024-06-18", Desktop = 107, Mobile = 170 },
+        new() { Date = "2024-06-19", Desktop = 341, Mobile = 290 },
+        new() { Date = "2024-06-20", Desktop = 408, Mobile = 450 },
+        new() { Date = "2024-06-21", Desktop = 169, Mobile = 210 },
+        new() { Date = "2024-06-22", Desktop = 317, Mobile = 270 },
+        new() { Date = "2024-06-23", Desktop = 480, Mobile = 530 },
+        new() { Date = "2024-06-24", Desktop = 132, Mobile = 180 },
+        new() { Date = "2024-06-25", Desktop = 141, Mobile = 190 },
+        new() { Date = "2024-06-26", Desktop = 434, Mobile = 380 },
+        new() { Date = "2024-06-27", Desktop = 448, Mobile = 490 },
+        new() { Date = "2024-06-28", Desktop = 149, Mobile = 200 },
+        new() { Date = "2024-06-29", Desktop = 103, Mobile = 160 },
+        new() { Date = "2024-06-30", Desktop = 446, Mobile = 400 }
     ];
 }

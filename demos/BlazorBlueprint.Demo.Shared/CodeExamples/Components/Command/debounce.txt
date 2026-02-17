@@ -1,0 +1,19 @@
+<!-- Debounced (default) -->
+<BbCommand>
+    <BbCommandInput Placeholder="Search (debounced)..." />
+    <BbCommandList>
+        <BbCommandGroup>
+            <BbCommandItem Value="apple">Apple</BbCommandItem>
+        </BbCommandGroup>
+    </BbCommandList>
+</BbCommand>
+
+<!-- Immediate filtering -->
+<BbCommand>
+    <BbCommandInput Placeholder="Search (immediate)..." DisableDebounce="true" />
+    <BbCommandList>
+        <BbCommandGroup>
+            <BbCommandItem Value="apple">Apple</BbCommandItem>
+        </BbCommandGroup>
+    </BbCommandList>
+</BbCommand>

@@ -1,0 +1,20 @@
+<BbHoverCard OpenDelay="300">
+    <BbHoverCardTrigger AsChild="false" Class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+        View Product
+    </BbHoverCardTrigger>
+    <BbHoverCardContent>
+        <div class="space-y-3">
+            <div class="h-32 w-full rounded-md bg-gradient-to-br from-orange-400 to-rose-400"></div>
+            <div class="space-y-1">
+                <h4 class="text-sm font-semibold">Premium Headphones</h4>
+                <p class="text-sm text-muted-foreground">
+                    High-quality wireless headphones with active noise cancellation.
+                </p>
+                <div class="flex items-center justify-between pt-2">
+                    <span class="text-lg font-bold">$299.99</span>
+                    <span class="text-xs text-muted-foreground">&#x2605;&#x2605;&#x2605;&#x2605;&#x2605; (4.8)</span>
+                </div>
+            </div>
+        </div>
+    </BbHoverCardContent>
+</BbHoverCard>

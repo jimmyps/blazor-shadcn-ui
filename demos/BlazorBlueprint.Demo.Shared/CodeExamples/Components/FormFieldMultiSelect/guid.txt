@@ -1,0 +1,21 @@
+<BbFormFieldMultiSelect TValue="Guid"
+                      Options="_projects"
+                      @bind-Values="_selectedProjects"
+                      Label="Projects"
+                      Placeholder="Select projects..."
+                      SearchPlaceholder="Search projects..."
+                      HelperText="Choose projects to include."
+                      MatchTriggerWidth="true"
+                      InputClass="w-full" />
+
+@code {
+    private IEnumerable<Guid>? _selectedProjects;
+
+    private readonly SelectOption<Guid>[] _projects =
+    [
+        new(Guid.Parse("..."), "Alpha"),
+        new(Guid.Parse("..."), "Beta")
+    ];
+
+    // _projects.GetTexts(_selectedProjects)
+}

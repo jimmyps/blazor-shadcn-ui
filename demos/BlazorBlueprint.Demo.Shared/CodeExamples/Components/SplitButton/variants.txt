@@ -1,0 +1,14 @@
+<BbSplitButton Variant="ButtonVariant.Default" OnClick="HandleSave">
+    <ChildContent>Default</ChildContent>
+    <DropdownContent>
+        <BbSplitButtonItem>Option 1</BbSplitButtonItem>
+        <BbSplitButtonItem>Option 2</BbSplitButtonItem>
+    </DropdownContent>
+</BbSplitButton>
+
+<BbSplitButton Variant="ButtonVariant.Destructive" OnClick="HandleSave">
+    <ChildContent>Destructive</ChildContent>
+    <DropdownContent>
+        <BbSplitButtonItem>Option 1</BbSplitButtonItem>
+    </DropdownContent>
+</BbSplitButton>

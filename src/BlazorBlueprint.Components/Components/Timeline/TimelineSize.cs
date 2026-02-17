@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Timeline;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the size variant for Timeline components.

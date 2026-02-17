@@ -1,0 +1,4 @@
+<label class="has-[[data-state=checked]]:border-primary">
+    <BbCheckbox @bind-Checked="cardChecked" Id="card-1" />
+    <div>Accept terms and conditions</div>
+</label>

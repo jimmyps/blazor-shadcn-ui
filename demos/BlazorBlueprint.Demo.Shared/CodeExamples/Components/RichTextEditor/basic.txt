@@ -1,0 +1,1 @@
+<BbRichTextEditor @bind-Value="basicValue" Placeholder="Start typing here..." />

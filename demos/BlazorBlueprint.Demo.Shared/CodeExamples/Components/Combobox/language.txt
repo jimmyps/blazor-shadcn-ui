@@ -1,0 +1,18 @@
+<BbCombobox TValue="string"
+         Options="languages"
+         @bind-Value="selectedLanguage"
+         Placeholder="Select language..."
+         SearchPlaceholder="Search language..."
+         EmptyMessage="No language found."
+         PopoverWidth="w-[250px]" />
+
+@code {
+    private string? selectedLanguage;
+
+    private readonly SelectOption<string>[] languages =
+    [
+        new("csharp", "C#"),
+        new("typescript", "TypeScript"),
+        new("python", "Python")
+    ];
+}

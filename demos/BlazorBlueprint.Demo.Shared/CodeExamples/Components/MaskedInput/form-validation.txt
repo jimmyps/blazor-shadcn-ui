@@ -1,0 +1,5 @@
+<EditForm Model="formModel" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <BbMaskedInput @bind-Value="formModel.Phone" Preset="MaskPreset.Phone" />
+    <ValidationMessage For="@(() => formModel.Phone)" />
+</EditForm>

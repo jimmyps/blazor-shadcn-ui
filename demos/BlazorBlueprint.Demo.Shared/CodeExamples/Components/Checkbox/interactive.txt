@@ -1,0 +1,6 @@
+<div class="flex items-center space-x-2">
+    <BbCheckbox @bind-Checked="interactiveChecked" Id="interactive" />
+    <label for="interactive" class="text-sm font-medium leading-none">
+        Toggle feature flag
+    </label>
+</div>

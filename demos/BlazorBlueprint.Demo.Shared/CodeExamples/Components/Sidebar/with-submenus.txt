@@ -1,0 +1,19 @@
+<BbSidebarMenu>
+    <BbSidebarMenuItem>
+        <BbSidebarMenuButton Tooltip="Team">
+            <span>Team</span>
+        </BbSidebarMenuButton>
+        <BbSidebarMenuSub>
+            <BbSidebarMenuSubItem>
+                <BbSidebarMenuSubButton>
+                    <span>Engineering</span>
+                </BbSidebarMenuSubButton>
+            </BbSidebarMenuSubItem>
+            <BbSidebarMenuSubItem>
+                <BbSidebarMenuSubButton>
+                    <span>Design</span>
+                </BbSidebarMenuSubButton>
+            </BbSidebarMenuSubItem>
+        </BbSidebarMenuSub>
+    </BbSidebarMenuItem>
+</BbSidebarMenu>

@@ -1,0 +1,7 @@
+<BbBarChart Data="@data" Horizontal="true" Height="200px">
+    <BbXAxis DataKey="month" LabelInside="true" LabelColor="white" />
+    <BbYAxis Show="false" />
+    <BbChartTooltip />
+    <BbBar DataKey="desktop" Name="Desktop" Color="var(--chart-1)"
+         ShowLabel="true" LabelPosition="LabelPosition.Right" BorderRadius="8" />
+</BbBarChart>

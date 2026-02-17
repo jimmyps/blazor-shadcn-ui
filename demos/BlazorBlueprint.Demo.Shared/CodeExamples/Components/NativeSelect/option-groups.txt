@@ -1,0 +1,8 @@
+<BbNativeSelect TValue="string" Placeholder="Select a car">
+    <optgroup label="Swedish Cars">
+        <option value="volvo">Volvo</option>
+    </optgroup>
+    <optgroup label="German Cars">
+        <option value="mercedes">Mercedes</option>
+    </optgroup>
+</BbNativeSelect>

@@ -1,0 +1,179 @@
+@namespace BlazorBlueprint.Components
+@using Microsoft.JSInterop
+@using BlazorBlueprint.Icons.Lucide.Components
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<div class="@ContainerCssClass" data-slot="rich-text-editor" id="@Id">
+    @if (Toolbar != ToolbarPreset.None && ToolbarContent == null)
+    {
+        <div class="@ToolbarCssClass" data-slot="toolbar">
+            <div class="flex items-center gap-0.5">
+                @if (Toolbar >= ToolbarPreset.Standard)
+                {
+                    <BbNativeSelect TValue="string"
+                                 Value="@_headerLevel"
+                                 ValueChanged="@HandleHeaderChangeAsync"
+                                 Disabled="@Disabled"
+                                 Size="NativeSelectSize.Small"
+                                 Class="w-auto min-w-[100px]">
+                        <option value="">Normal</option>
+                        <option value="1">Heading 1</option>
+                        <option value="2">Heading 2</option>
+                        <option value="3">Heading 3</option>
+                    </BbNativeSelect>
+                    <BbSeparator Orientation="SeparatorOrientation.Vertical" Class="h-6 mx-1" />
+                }
+
+                <BbToggle Pressed="@_isBold"
+                        PressedChanged="@(async _ => await ToggleFormatAsync("bold"))"
+                        Size="ToggleSize.Small"
+                        Disabled="@Disabled"
+                        Class="h-8 w-8 p-0"
+                        title="Bold (Ctrl+B)">
+                    <LucideIcon Name="bold" Size="16" />
+                </BbToggle>
+                <BbToggle Pressed="@_isItalic"
+                        PressedChanged="@(async _ => await ToggleFormatAsync("italic"))"
+                        Size="ToggleSize.Small"
+                        Disabled="@Disabled"
+                        Class="h-8 w-8 p-0"
+                        title="Italic (Ctrl+I)">
+                    <LucideIcon Name="italic" Size="16" />
+                </BbToggle>
+                <BbToggle Pressed="@_isUnderline"
+                        PressedChanged="@(async _ => await ToggleFormatAsync("underline"))"
+                        Size="ToggleSize.Small"
+                        Disabled="@Disabled"
+                        Class="h-8 w-8 p-0"
+                        title="Underline (Ctrl+U)">
+                    <LucideIcon Name="underline" Size="16" />
+                </BbToggle>
+
+                @if (Toolbar >= ToolbarPreset.Standard)
+                {
+                    <BbToggle Pressed="@_isStrike"
+                            PressedChanged="@(async _ => await ToggleFormatAsync("strike"))"
+                            Size="ToggleSize.Small"
+                            Disabled="@Disabled"
+                            Class="h-8 w-8 p-0"
+                            title="Strikethrough">
+                        <LucideIcon Name="strikethrough" Size="16" />
+                    </BbToggle>
+                }
+
+                <BbSeparator Orientation="SeparatorOrientation.Vertical" Class="h-6 mx-1" />
+
+                <BbToggle Pressed="@_isBulletList"
+                        PressedChanged="@(async _ => await ToggleFormatAsync("list", "bullet"))"
+                        Size="ToggleSize.Small"
+                        Disabled="@Disabled"
+                        Class="h-8 w-8 p-0"
+                        title="Bullet List">
+                    <LucideIcon Name="list" Size="16" />
+                </BbToggle>
+                <BbToggle Pressed="@_isOrderedList"
+                        PressedChanged="@(async _ => await ToggleFormatAsync("list", "ordered"))"
+                        Size="ToggleSize.Small"
+                        Disabled="@Disabled"
+                        Class="h-8 w-8 p-0"
+                        title="Numbered List">
+                    <LucideIcon Name="list-ordered" Size="16" />
+                </BbToggle>
+
+                @if (Toolbar >= ToolbarPreset.Standard)
+                {
+                    <BbSeparator Orientation="SeparatorOrientation.Vertical" Class="h-6 mx-1" />
+                    <BbButton Variant="ButtonVariant.Ghost"
+                            Size="ButtonSize.IconSmall"
+                            OnClick="@(async _ => await InsertLinkAsync())"
+                            Disabled="@Disabled"
+                            Class="h-8 w-8"
+                            AriaLabel="Insert Link"
+                            title="Insert Link">
+                        <LucideIcon Name="link" Size="16" />
+                    </BbButton>
+                }
+
+                @if (Toolbar == ToolbarPreset.Full)
+                {
+                    <BbSeparator Orientation="SeparatorOrientation.Vertical" Class="h-6 mx-1" />
+                    <BbToggle Pressed="@_isBlockquote"
+                            PressedChanged="@(async _ => await ToggleFormatAsync("blockquote"))"
+                            Size="ToggleSize.Small"
+                            Disabled="@Disabled"
+                            Class="h-8 w-8 p-0"
+                            title="Blockquote">
+                        <LucideIcon Name="quote" Size="16" />
+                    </BbToggle>
+                    <BbToggle Pressed="@_isCodeBlock"
+                            PressedChanged="@(async _ => await ToggleFormatAsync("code-block"))"
+                            Size="ToggleSize.Small"
+                            Disabled="@Disabled"
+                            Class="h-8 w-8 p-0"
+                            title="Code Block">
+                        <LucideIcon Name="code" Size="16" />
+                    </BbToggle>
+                }
+            </div>
+        </div>
+    }
+
+    @if (ToolbarContent != null)
+    {
+        <div class="@ToolbarCssClass" data-slot="custom-toolbar">
+            @ToolbarContent
+        </div>
+    }
+
+    <div @ref="_editorRef"
+         class="@EditorCssClass"
+         style="@EditorStyle"
+         aria-label="@AriaLabel"
+         aria-describedby="@AriaDescribedBy"
+         aria-invalid="@(AriaInvalid?.ToString()?.ToLower())"
+         data-slot="editor">
+    </div>
+
+    @* Link Dialog *@
+    <BbDialog @bind-Open="_linkDialogOpen">
+        <BbDialogContent Class="sm:max-w-md">
+            <BbDialogHeader>
+                <BbDialogTitle>@(_hasExistingLink ? "Edit Link" : "Insert Link")</BbDialogTitle>
+                <BbDialogDescription>
+                    @(_hasExistingLink ? "Update the URL or remove the link." : "Enter the URL for the selected text.")
+                </BbDialogDescription>
+            </BbDialogHeader>
+            <div class="grid gap-4 py-4">
+                <div class="grid gap-2">
+                    <BbLabel For="link-url">URL</BbLabel>
+                    <BbInput Id="link-url"
+                           Type="InputType.Url"
+                           Placeholder="https://example.com"
+                           @bind-Value="_linkUrl"
+                           @bind-Value:after="ValidateLinkUrl" />
+                    @if (!string.IsNullOrEmpty(_linkUrlError))
+                    {
+                        <p class="text-sm text-destructive">@_linkUrlError</p>
+                    }
+                </div>
+            </div>
+            <BbDialogFooter Class="flex-col sm:flex-row gap-2">
+                @if (_hasExistingLink)
+                {
+                    <BbButton Variant="ButtonVariant.Destructive"
+                            OnClick="RemoveLinkAsync"
+                            Class="sm:mr-auto">
+                        Remove Link
+                    </BbButton>
+                }
+                <BbButton Variant="ButtonVariant.Outline" OnClick="CloseLinkDialog">
+                    Cancel
+                </BbButton>
+                <BbButton OnClick="ApplyLinkAsync" Disabled="@(!IsValidUrl(_linkUrl))">
+                    @(_hasExistingLink ? "Update" : "Insert")
+                </BbButton>
+            </BbDialogFooter>
+        </BbDialogContent>
+    </BbDialog>
+</div>

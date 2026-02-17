@@ -1,0 +1,8 @@
+<BbCheckbox Checked="@allChecked" Indeterminate="@indeterminate"
+          CheckedChanged="@HandleParentChanged">
+    <BbCheckboxIndicator />
+</BbCheckbox>
+
+<BbCheckbox Checked="@child1" CheckedChanged="@(v => { child1 = v; UpdateParent(); })">
+    <BbCheckboxIndicator />
+</BbCheckbox>

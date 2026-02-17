@@ -1,0 +1,14 @@
+// Default (no icon)
+ToastService.Show("A general notification.", "Default");
+
+// Success (green accent, circle-check icon)
+ToastService.Success("Your changes have been saved.", "Success");
+
+// Info (blue accent, info icon)
+ToastService.Info("A new version is available.", "Info");
+
+// Warning (amber accent, triangle-alert icon)
+ToastService.Warning("Your session is about to expire.", "Warning");
+
+// Error / Destructive (red accent, circle-x icon)
+ToastService.Error("Something went wrong.", "Error");

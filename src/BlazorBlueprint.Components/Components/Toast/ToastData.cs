@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Toast;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Represents the data for a single toast notification.
@@ -24,6 +24,22 @@ public class ToastData
     /// The visual variant of the toast.
     /// </summary>
     public ToastVariant Variant { get; set; } = ToastVariant.Default;
+
+    /// <summary>
+    /// The size variant of the toast. Compact reduces padding and font sizes.
+    /// </summary>
+    public ToastSize Size { get; set; } = ToastSize.Default;
+
+    /// <summary>
+    /// Optional position override for this specific toast.
+    /// When null (default), uses the provider's position.
+    /// </summary>
+    public ToastPosition? Position { get; set; }
+
+    /// <summary>
+    /// Whether to show the variant-specific icon. Default variant has no icon regardless.
+    /// </summary>
+    public bool ShowIcon { get; set; } = true;
 
     /// <summary>
     /// Duration in milliseconds before auto-dismiss.

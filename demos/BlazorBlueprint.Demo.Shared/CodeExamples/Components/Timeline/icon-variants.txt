@@ -1,0 +1,21 @@
+<BbTimeline Align="TimelineAlign.Left">
+    <BbTimelineItem IconVariant="TimelineIconVariant.Solid">
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Solid Primary</BbTimelineTitle>
+                <BbTimelineDescription>Filled background with contrasting text.</BbTimelineDescription>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>
+
+<BbTimeline Align="TimelineAlign.Left">
+    <BbTimelineItem IconVariant="TimelineIconVariant.Outline">
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Outline Primary</BbTimelineTitle>
+                <BbTimelineDescription>Bordered style with transparent background.</BbTimelineDescription>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>

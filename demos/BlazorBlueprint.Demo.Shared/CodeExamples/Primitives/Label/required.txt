@@ -1,0 +1,9 @@
+<BbLabel For="required-input">
+    Username <span class="text-red-500">*</span>
+</BbLabel>
+<input type="text" id="required-input" required />
+
+<BbLabel For="optional-input">
+    Nickname <span class="text-muted-foreground text-xs">(optional)</span>
+</BbLabel>
+<input type="text" id="optional-input" />

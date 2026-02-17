@@ -1,0 +1,2 @@
+<BbEmpty Title="No results found"
+       Description="Try adjusting your search or filter to find what you're looking for." />

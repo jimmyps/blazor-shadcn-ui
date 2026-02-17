@@ -1,0 +1,22 @@
+<BbHoverCard>
+    <BbHoverCardTrigger AsChild="false" Class="underline">@nextjs</BbHoverCardTrigger>
+    <BbHoverCardContent>
+        <div class="flex justify-between space-x-4">
+            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-lg">
+                N
+            </div>
+            <div class="space-y-1 flex-1">
+                <h4 class="text-sm font-semibold">@nextjs</h4>
+                <p class="text-sm text-muted-foreground">
+                    The React Framework – created and maintained by @vercel.
+                </p>
+                <div class="flex items-center pt-2">
+                    <svg class="mr-1 h-4 w-4 opacity-70" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-xs text-muted-foreground">Joined December 2021</span>
+                </div>
+            </div>
+        </div>
+    </BbHoverCardContent>
+</BbHoverCard>

@@ -1,6 +1,4 @@
 @page "/components/file-upload"
-@using BlazorBlueprint.Components.FileUpload
-
 <PageTitle>FileUpload Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -21,10 +19,12 @@
                 Drag and drop files or click to browse.
             </p>
         </div>
-        <FileUpload @bind-Files="_basicFiles" />
+        <BbFileUpload @bind-Files="_basicFiles" />
         <p class="text-sm text-muted-foreground">
             Files: @(_basicFiles?.Count ?? 0)
         </p>
+
+        <CodeBlock Source="Components/FileUpload/basic.txt" />
     </div>
 
     <!-- Multiple Files -->
@@ -35,10 +35,12 @@
                 Upload up to 5 files at once.
             </p>
         </div>
-        <FileUpload @bind-Files="_multipleFiles" Multiple="true" MaxFileCount="5" />
+        <BbFileUpload @bind-Files="_multipleFiles" Multiple="true" MaxFileCount="5" />
         <p class="text-sm text-muted-foreground">
             Files: @(_multipleFiles?.Count ?? 0) / 5
         </p>
+
+        <CodeBlock Source="Components/FileUpload/multiple.txt" />
     </div>
 
     <!-- Images Only -->
@@ -49,10 +51,12 @@
                 Only accepts image files with preview.
             </p>
         </div>
-        <FileUpload @bind-Files="_imageFiles"
+        <BbFileUpload @bind-Files="_imageFiles"
                     Multiple="true"
                     Accept="image/*"
                     MaxFileCount="4" />
+
+        <CodeBlock Source="Components/FileUpload/images.txt" />
     </div>
 
     <!-- Documents -->
@@ -63,10 +67,12 @@
                 Accepts PDF, Word, and Excel files.
             </p>
         </div>
-        <FileUpload @bind-Files="_docFiles"
+        <BbFileUpload @bind-Files="_docFiles"
                     Multiple="true"
                     Accept=".pdf,.doc,.docx,.xls,.xlsx"
                     MaxFileSize="@(20 * 1024 * 1024)" />
+
+        <CodeBlock Source="Components/FileUpload/documents.txt" />
     </div>
 
     <!-- Custom Size Limit -->
@@ -77,7 +83,7 @@
                 Files larger than 1MB will be rejected.
             </p>
         </div>
-        <FileUpload @bind-Files="_smallFiles"
+        <BbFileUpload @bind-Files="_smallFiles"
                     Multiple="true"
                     MaxFileSize="@(1 * 1024 * 1024)"
                     OnValidationError="HandleValidationError" />
@@ -85,6 +91,8 @@
         {
             <p class="text-sm text-destructive">Last error: @_lastError</p>
         }
+
+        <CodeBlock Source="Components/FileUpload/size-limit.txt" />
     </div>
 
     <!-- No Preview -->
@@ -95,7 +103,9 @@
                 Image previews are disabled.
             </p>
         </div>
-        <FileUpload @bind-Files="_noPreviewFiles" Multiple="true" ShowPreview="false" />
+        <BbFileUpload @bind-Files="_noPreviewFiles" Multiple="true" ShowPreview="false" />
+
+        <CodeBlock Source="Components/FileUpload/no-preview.txt" />
     </div>
 
     <!-- Single File -->
@@ -106,7 +116,9 @@
                 Only one file at a time.
             </p>
         </div>
-        <FileUpload @bind-Files="_singleFile" Multiple="false" />
+        <BbFileUpload @bind-Files="_singleFile" Multiple="false" />
+
+        <CodeBlock Source="Components/FileUpload/single.txt" />
     </div>
 
     <!-- Disabled -->
@@ -114,51 +126,83 @@
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Disabled</h2>
         </div>
-        <FileUpload Disabled="true" />
+        <BbFileUpload Disabled="true" />
+
+        <CodeBlock Source="Components/FileUpload/disabled.txt" />
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">FileUpload Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Files:</strong> <code class="bg-muted px-1 py-0.5 rounded">IReadOnlyList&lt;FileUploadItem&gt;?</code> - Selected files</p>
-                    <p><strong>Multiple:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Allow multiple files. Default: false</p>
-                    <p><strong>Accept:</strong> <code class="bg-muted px-1 py-0.5 rounded">string?</code> - Accepted types (e.g., "image/*,.pdf")</p>
-                    <p><strong>MaxFileSize:</strong> <code class="bg-muted px-1 py-0.5 rounded">long</code> - Max file size in bytes. Default: 10MB</p>
-                    <p><strong>MaxFileCount:</strong> <code class="bg-muted px-1 py-0.5 rounded">int</code> - Max number of files. Default: 10</p>
-                    <p><strong>ShowPreview:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Show image previews. Default: true</p>
-                    <p><strong>Disabled:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disables the upload</p>
-                    <p><strong>OnValidationError:</strong> <code class="bg-muted px-1 py-0.5 rounded">EventCallback&lt;FileValidationError&gt;</code> - Validation error callback</p>
-                    <p><strong>DropzoneContent:</strong> <code class="bg-muted px-1 py-0.5 rounded">RenderFragment?</code> - Custom dropzone content</p>
-                </div>
-            </div>
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">FileUploadItem Properties</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>File:</strong> <code class="bg-muted px-1 py-0.5 rounded">IBrowserFile</code> - The browser file reference</p>
-                    <p><strong>Name:</strong> <code class="bg-muted px-1 py-0.5 rounded">string</code> - File name</p>
-                    <p><strong>Size:</strong> <code class="bg-muted px-1 py-0.5 rounded">long</code> - File size in bytes</p>
-                    <p><strong>ContentType:</strong> <code class="bg-muted px-1 py-0.5 rounded">string</code> - MIME type</p>
-                    <p><strong>FormattedSize:</strong> <code class="bg-muted px-1 py-0.5 rounded">string</code> - Human-readable size</p>
-                    <p><strong>IsImage:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Whether file is an image</p>
-                    <p><strong>PreviewUrl:</strong> <code class="bg-muted px-1 py-0.5 rounded">string?</code> - Data URL for preview</p>
-                </div>
-            </div>
-            <div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="FileUpload">
+                <ApiParameter Name="Files" Type="IReadOnlyList&lt;FileUploadItem&gt;?">
+                    Selected files.
+                </ApiParameter>
+                <ApiParameter Name="Multiple" Type="bool" Default="false">
+                    Allow multiple files.
+                </ApiParameter>
+                <ApiParameter Name="Accept" Type="string?">
+                    Accepted file types (e.g., "image/*,.pdf").
+                </ApiParameter>
+                <ApiParameter Name="MaxFileSize" Type="long" Default="10485760">
+                    Maximum file size in bytes (default: 10MB).
+                </ApiParameter>
+                <ApiParameter Name="MaxFileCount" Type="int" Default="10">
+                    Maximum number of files.
+                </ApiParameter>
+                <ApiParameter Name="ShowPreview" Type="bool" Default="true">
+                    Show image previews.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Disables the upload.
+                </ApiParameter>
+                <ApiParameter Name="OnValidationError" Type="EventCallback&lt;FileValidationError&gt;">
+                    Validation error callback.
+                </ApiParameter>
+                <ApiParameter Name="DropzoneContent" Type="RenderFragment?">
+                    Custom dropzone content.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="FileUploadItem">
+                <ApiParameter Name="File" Type="IBrowserFile">
+                    The browser file reference.
+                </ApiParameter>
+                <ApiParameter Name="Name" Type="string">
+                    File name.
+                </ApiParameter>
+                <ApiParameter Name="Size" Type="long">
+                    File size in bytes.
+                </ApiParameter>
+                <ApiParameter Name="ContentType" Type="string">
+                    MIME type.
+                </ApiParameter>
+                <ApiParameter Name="FormattedSize" Type="string">
+                    Human-readable size.
+                </ApiParameter>
+                <ApiParameter Name="IsImage" Type="bool">
+                    Whether file is an image.
+                </ApiParameter>
+                <ApiParameter Name="PreviewUrl" Type="string?">
+                    Data URL for preview.
+                </ApiParameter>
+            </ApiReference>
+
+            <div class="border rounded-lg p-6">
                 <h3 class="font-mono text-sm font-semibold mb-2">Validation Error Types</h3>
-                <div class="space-y-2 text-sm">
+                <div class="text-sm text-muted-foreground space-y-1">
                     <p><strong>FileTooLarge:</strong> File exceeds size limit</p>
                     <p><strong>InvalidType:</strong> File type not accepted</p>
                     <p><strong>TooManyFiles:</strong> Max file count exceeded</p>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {

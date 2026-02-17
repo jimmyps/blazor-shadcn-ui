@@ -1,0 +1,6 @@
+<BbSplitButton Disabled="true" OnClick="HandleSave">
+    <ChildContent>Save</ChildContent>
+    <DropdownContent>
+        <BbSplitButtonItem>Save As...</BbSplitButtonItem>
+    </DropdownContent>
+</BbSplitButton>

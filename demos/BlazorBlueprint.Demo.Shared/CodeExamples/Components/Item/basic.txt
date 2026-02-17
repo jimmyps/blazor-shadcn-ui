@@ -1,0 +1,11 @@
+<BbItem Variant="ItemVariant.Outline">
+    <BbItemContent>
+        <BbItemTitle>Basic Item</BbItemTitle>
+        <BbItemDescription>
+            A simple item with title and description.
+        </BbItemDescription>
+    </BbItemContent>
+    <BbItemActions>
+        <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small">Action</BbButton>
+    </BbItemActions>
+</BbItem>

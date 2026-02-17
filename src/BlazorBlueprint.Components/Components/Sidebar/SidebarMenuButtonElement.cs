@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Sidebar;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Element type to render for SidebarMenuButton.

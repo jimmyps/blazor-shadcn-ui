@@ -1,0 +1,19 @@
+<div class="w-64">
+    <BbCombobox TValue="string"
+             Options="frameworks"
+             @bind-Value="matchWidthValue1"
+             Placeholder="Select framework..."
+             SearchPlaceholder="Search..."
+             MatchTriggerWidth="true"
+             Class="w-full" />
+</div>
+
+<div class="w-96">
+    <BbCombobox TValue="string"
+             Options="countries"
+             @bind-Value="matchWidthValue2"
+             Placeholder="Select country..."
+             SearchPlaceholder="Search country..."
+             MatchTriggerWidth="true"
+             Class="w-full" />
+</div>

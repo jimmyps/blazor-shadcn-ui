@@ -1,0 +1,1 @@
+<BbTimePicker @bind-Value="_time24" Format="TimeFormat.Hour24" />

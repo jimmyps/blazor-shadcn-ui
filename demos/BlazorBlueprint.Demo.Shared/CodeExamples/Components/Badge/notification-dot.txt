@@ -1,0 +1,4 @@
+<BbBadge ShowDot>Default</BbBadge>
+<BbBadge ShowDot DotPosition="BadgeDotPosition.TopRight">Top Right</BbBadge>
+<BbBadge ShowDot DotPosition="BadgeDotPosition.TopLeft">Top Left</BbBadge>
+<BbBadge Variant="BadgeVariant.Outline" ShowDot DotClass="bg-green-500">Online</BbBadge>

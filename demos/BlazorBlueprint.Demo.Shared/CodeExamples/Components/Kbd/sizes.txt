@@ -1,0 +1,3 @@
+<BbKbd Size="KbdSize.Small" Keys="Ctrl" />
+<BbKbd Size="KbdSize.Default" Keys="Ctrl" />
+<BbKbd Size="KbdSize.Large" Keys="Ctrl" />

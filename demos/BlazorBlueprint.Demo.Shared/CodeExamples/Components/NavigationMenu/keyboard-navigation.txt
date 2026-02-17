@@ -1,0 +1,16 @@
+<BbNavigationMenu EnableKeyboardNavigation="true">
+    <BbNavigationMenuList>
+        <BbNavigationMenuItem Value="products">
+            <BbNavigationMenuTrigger>Products</BbNavigationMenuTrigger>
+            <BbNavigationMenuContent>
+                <div class="grid gap-3 p-4 w-[400px]">
+                    <a href="#">Analytics</a>
+                    <a href="#">Automation</a>
+                </div>
+            </BbNavigationMenuContent>
+        </BbNavigationMenuItem>
+        <BbNavigationMenuItem>
+            <BbNavigationMenuLink Href="#">Pricing</BbNavigationMenuLink>
+        </BbNavigationMenuItem>
+    </BbNavigationMenuList>
+</BbNavigationMenu>

@@ -1,0 +1,17 @@
+<BbHoverCard OpenDelay="200" CloseDelay="100">
+    <BbHoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+        Quick (200ms)
+    </BbHoverCardTrigger>
+    <BbHoverCardContent class="...">
+        Opens quickly with 200ms delay.
+    </BbHoverCardContent>
+</BbHoverCard>
+
+<BbHoverCard OpenDelay="1000" CloseDelay="500">
+    <BbHoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+        Slow (1000ms)
+    </BbHoverCardTrigger>
+    <BbHoverCardContent class="...">
+        Opens slowly with 1000ms delay.
+    </BbHoverCardContent>
+</BbHoverCard>

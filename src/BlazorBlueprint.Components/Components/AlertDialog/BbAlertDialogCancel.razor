@@ -1,0 +1,25 @@
+@namespace BlazorBlueprint.Components
+
+@*
+    Alert Dialog Cancel - the cancel button.
+    Closes the dialog when clicked.
+*@
+
+<BbDialogClose AsChild="@AsChild">
+    @ChildContent
+</BbDialogClose>
+
+@code {
+    /// <summary>
+    /// The content to render as the cancel button.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// When true, the cancel will not render a default button wrapper.
+    /// Instead, the child component receives close behavior via cascading context.
+    /// </summary>
+    [Parameter]
+    public bool AsChild { get; set; } = true;
+}

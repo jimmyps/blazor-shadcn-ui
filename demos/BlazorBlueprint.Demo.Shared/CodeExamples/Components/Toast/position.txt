@@ -1,0 +1,13 @@
+// Set position on the provider (global)
+<BbToastProvider Position="ToastPosition.BottomRight" />
+
+// Change position at runtime
+ToastService.SetPosition(ToastPosition.TopCenter);
+
+// Per-toast position override
+ToastService.Show(new ToastData
+{
+    Title = "Top-Left Toast",
+    Description = "This toast appears in the top-left corner.",
+    Position = ToastPosition.TopLeft
+});

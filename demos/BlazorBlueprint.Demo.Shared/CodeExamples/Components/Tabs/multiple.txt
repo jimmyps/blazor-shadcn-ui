@@ -1,0 +1,12 @@
+<BbTabs DefaultValue="overview">
+    <BbTabsList>
+        <BbTabsTrigger Value="overview">Overview</BbTabsTrigger>
+        <BbTabsTrigger Value="analytics">Analytics</BbTabsTrigger>
+        <BbTabsTrigger Value="reports">Reports</BbTabsTrigger>
+        <BbTabsTrigger Value="notifications">Notifications</BbTabsTrigger>
+    </BbTabsList>
+
+    <BbTabsContent Value="overview">
+        <!-- Overview content -->
+    </BbTabsContent>
+</BbTabs>

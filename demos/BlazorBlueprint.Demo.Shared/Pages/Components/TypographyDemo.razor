@@ -1,6 +1,4 @@
 @page "/components/typography"
-@using BlazorBlueprint.Components.Typography
-
 <PageTitle>Typography Components - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -22,8 +20,9 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <TypographyH1>The Joke Tax Chronicles</TypographyH1>
+            <BbTypographyH1>The Joke Tax Chronicles</BbTypographyH1>
         </div>
+        <CodeBlock Source="Components/Typography/h1.txt" />
     </div>
 
     <!-- H2 -->
@@ -35,8 +34,9 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <TypographyH2>The People of the Kingdom</TypographyH2>
+            <BbTypographyH2>The People of the Kingdom</BbTypographyH2>
         </div>
+        <CodeBlock Source="Components/Typography/h2.txt" />
     </div>
 
     <!-- H3 -->
@@ -48,8 +48,9 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <TypographyH3>The Joke Tax</TypographyH3>
+            <BbTypographyH3>The Joke Tax</BbTypographyH3>
         </div>
+        <CodeBlock Source="Components/Typography/h3.txt" />
     </div>
 
     <!-- H4 -->
@@ -61,8 +62,9 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <TypographyH4>People stopped telling jokes</TypographyH4>
+            <BbTypographyH4>People stopped telling jokes</BbTypographyH4>
         </div>
+        <CodeBlock Source="Components/Typography/h4.txt" />
     </div>
 
     <!-- Paragraph -->
@@ -74,11 +76,12 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <TypographyP>
+            <BbTypographyP>
                 The king, seeing how much happier his subjects were, googled for a alarm clock he could use.
                 He googled "alarm clock" into the search bar but because he made a typo, he ended up searching for "alarm cock" instead.
-            </TypographyP>
+            </BbTypographyP>
         </div>
+        <CodeBlock Source="Components/Typography/paragraph.txt" />
     </div>
 
     <!-- Lead -->
@@ -90,10 +93,11 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <TypographyLead>
+            <BbTypographyLead>
                 A modal dialog that interrupts the user with important content and expects a response.
-            </TypographyLead>
+            </BbTypographyLead>
         </div>
+        <CodeBlock Source="Components/Typography/lead.txt" />
     </div>
 
     <!-- Large -->
@@ -105,8 +109,9 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <TypographyLarge>Are you absolutely sure?</TypographyLarge>
+            <BbTypographyLarge>Are you absolutely sure?</BbTypographyLarge>
         </div>
+        <CodeBlock Source="Components/Typography/large.txt" />
     </div>
 
     <!-- Small -->
@@ -118,8 +123,9 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <TypographySmall>Email address</TypographySmall>
+            <BbTypographySmall>Email address</BbTypographySmall>
         </div>
+        <CodeBlock Source="Components/Typography/small.txt" />
     </div>
 
     <!-- Muted -->
@@ -131,8 +137,9 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <TypographyMuted>Enter your email address.</TypographyMuted>
+            <BbTypographyMuted>Enter your email address.</BbTypographyMuted>
         </div>
+        <CodeBlock Source="Components/Typography/muted.txt" />
     </div>
 
     <!-- Blockquote -->
@@ -144,10 +151,11 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <TypographyBlockquote>
+            <BbTypographyBlockquote>
                 "After all," he said, "everyone enjoys a good joke, so it's only fair that they should pay for the privilege."
-            </TypographyBlockquote>
+            </BbTypographyBlockquote>
         </div>
+        <CodeBlock Source="Components/Typography/blockquote.txt" />
     </div>
 
     <!-- Inline Code -->
@@ -160,9 +168,10 @@
         </div>
         <div class="border rounded-lg p-6">
             <p>
-                Use the <TypographyInlineCode>Button</TypographyInlineCode> component to create interactive buttons.
+                Use the <BbTypographyInlineCode>Button</BbTypographyInlineCode> component to create interactive buttons.
             </p>
         </div>
+        <CodeBlock Source="Components/Typography/inline-code.txt" />
     </div>
 
     <!-- Combined Example -->
@@ -174,22 +183,23 @@
             </p>
         </div>
         <div class="border rounded-lg p-6">
-            <TypographyH1>Getting Started</TypographyH1>
-            <TypographyLead>
+            <BbTypographyH1>Getting Started</BbTypographyH1>
+            <BbTypographyLead>
                 Learn how to install and use BlazorBlueprint components in your project.
-            </TypographyLead>
-            <TypographyH2>Installation</TypographyH2>
-            <TypographyP>
-                First, install the BlazorBlueprint package using the <TypographyInlineCode>dotnet add package</TypographyInlineCode> command:
-            </TypographyP>
-            <TypographyH3>NuGet Package Manager</TypographyH3>
-            <TypographyP>
+            </BbTypographyLead>
+            <BbTypographyH2>Installation</BbTypographyH2>
+            <BbTypographyP>
+                First, install the BlazorBlueprint package using the <BbTypographyInlineCode>dotnet add package</BbTypographyInlineCode> command:
+            </BbTypographyP>
+            <BbTypographyH3>NuGet Package Manager</BbTypographyH3>
+            <BbTypographyP>
                 You can also use the NuGet Package Manager in Visual Studio to search for and install the package.
-            </TypographyP>
-            <TypographyBlockquote>
+            </BbTypographyP>
+            <BbTypographyBlockquote>
                 "BlazorBlueprint provides a comprehensive set of UI components for Blazor applications."
-            </TypographyBlockquote>
-            <TypographyMuted>Last updated: January 2025</TypographyMuted>
+            </BbTypographyBlockquote>
+            <BbTypographyMuted>Last updated: January 2025</BbTypographyMuted>
         </div>
+        <CodeBlock Source="Components/Typography/combined.txt" />
     </div>
 </div>

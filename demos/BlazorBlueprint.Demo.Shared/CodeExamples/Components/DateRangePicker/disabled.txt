@@ -1,0 +1,1 @@
+<BbDateRangePicker Value="@(new DateRange(DateTime.Today.AddDays(-7), DateTime.Today))" Disabled="true" />

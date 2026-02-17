@@ -1,0 +1,6 @@
+<BbFormFieldInput TValue="DateTime?"
+                   @bind-Value="birthDate"
+                   Label="Date of Birth"
+                   HelperText="Optional. Used for age verification."
+                   Format="yyyy-MM-dd"
+                   Type="InputType.Date" />

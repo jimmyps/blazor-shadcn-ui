@@ -1,0 +1,14 @@
+<BbPagination State="paginationState"
+            PageSizes="@(new[] { 5, 10, 20, 50 })"
+            OnPageChanged="HandlePageChanged"
+            OnPageSizeChanged="HandlePageSizeChanged">
+    <BbPaginationInfo />
+    <BbPaginationContent>
+        <BbPaginationPageSizeSelector />
+        <BbPaginationPageDisplay />
+        <BbPaginationItem><BbPaginationFirst /></BbPaginationItem>
+        <BbPaginationItem><BbPaginationPrevious ShowText="false" /></BbPaginationItem>
+        <BbPaginationItem><BbPaginationNext ShowText="false" /></BbPaginationItem>
+        <BbPaginationItem><BbPaginationLast /></BbPaginationItem>
+    </BbPaginationContent>
+</BbPagination>

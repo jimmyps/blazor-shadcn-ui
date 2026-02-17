@@ -1,0 +1,13 @@
+<div class="border rounded-lg">
+    <div class="border-b bg-muted/50 px-6 py-3 flex gap-4">
+        <BbSkeleton Class="h-4 w-[150px]" />
+        <BbSkeleton Class="h-4 w-[100px]" />
+    </div>
+    @for (int i = 0; i < 5; i++)
+    {
+        <div class="px-6 py-4 flex gap-4 border-b">
+            <BbSkeleton Class="h-4 w-[150px]" />
+            <BbSkeleton Class="h-4 w-[100px]" />
+        </div>
+    }
+</div>

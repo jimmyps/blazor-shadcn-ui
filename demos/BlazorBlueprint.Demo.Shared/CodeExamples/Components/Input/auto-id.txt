@@ -1,0 +1,9 @@
+@* Explicit Id — label's for="my-email" wires click-to-focus *@
+<label for="my-email">Email</label>
+<BbInput Id="my-email" Type="InputType.Email" Placeholder="m@example.com" />
+
+@* No Id — auto-generated (e.g., input-a3f7c2d4), visible in DevTools *@
+<BbInput Type="InputType.Text" Placeholder="Enter username" />
+
+@* For automatic label wiring, use BbFormFieldInput instead *@
+<BbFormFieldInput Label="Username" @bind-Value="username" />

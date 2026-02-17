@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.ScrollArea;
+namespace BlazorBlueprint.Components;
 
 public enum ScrollAreaType
 {

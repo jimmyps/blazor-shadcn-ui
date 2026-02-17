@@ -1,0 +1,9 @@
+<BbFieldSet>
+    <BbFieldLegend>Contact Information</BbFieldLegend>
+    <BbFieldGroup>
+        <BbField>
+            <BbFieldLabel For="email">Email</BbFieldLabel>
+            <BbFieldContent><BbInput Id="email" Type="InputType.Email" /></BbFieldContent>
+        </BbField>
+    </BbFieldGroup>
+</BbFieldSet>

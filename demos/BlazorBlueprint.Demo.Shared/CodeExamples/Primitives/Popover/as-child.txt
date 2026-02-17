@@ -1,0 +1,21 @@
+@using BlazorBlueprint.Primitives.Popover
+
+<!-- Without AsChild -->
+<BbPopover>
+    <BbPopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+        Open Popover
+    </BbPopoverTrigger>
+    <BbPopoverContent class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+        <p class="text-sm">Without AsChild content</p>
+    </BbPopoverContent>
+</BbPopover>
+
+<!-- With AsChild -->
+<BbPopover>
+    <BbPopoverTrigger AsChild>
+        <BbButton Variant="ButtonVariant.Outline">Open Popover</BbButton>
+    </BbPopoverTrigger>
+    <BbPopoverContent class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+        <p class="text-sm">With AsChild content</p>
+    </BbPopoverContent>
+</BbPopover>

@@ -1,0 +1,75 @@
+@namespace BlazorBlueprint.Components
+@typeparam TValue
+@attribute [CascadingTypeParameter(nameof(TValue))]
+<CascadingValue Value="this" IsFixed="false">
+    <div class="@ContainerClass">
+        <BbPopover Open="_isOpen" OpenChanged="HandleOpenChanged">
+            <BbPopoverTrigger AsChild="false" role="combobox"
+                           aria-expanded="@GetIsOpen().ToString().ToLower()"
+                           aria-controls="@($"{Id}-listbox")"
+                           aria-haspopup="listbox"
+                           aria-describedby="@AriaDescribedBy"
+                           disabled="@Disabled"
+                           class="@ButtonCssClass">
+                <span class="@(Value is null ? "text-muted-foreground" : "")">
+                    @SelectedDisplayText
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="16"
+                     height="16"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     class="ml-2 h-4 w-4 shrink-0 opacity-50">
+                    <path d="m6 9 6 6 6-6" />
+                </svg>
+            </BbPopoverTrigger>
+            <BbPopoverContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" MatchTriggerWidth="@MatchTriggerWidth" OnContentReady="@HandleContentReady" Class="@(MatchTriggerWidth ? "!p-0" : $"{PopoverWidth} !p-0")">
+                @* Re-cascade through the portal so ComboboxItem can resolve the CascadingParameter *@
+                <CascadingValue Value="this" IsFixed="false">
+                <BbCommand>
+                    <BbCommandInput @ref="_commandInputRef" Placeholder="@SearchPlaceholder" />
+                    <BbCommandList>
+                        <BbCommandEmpty>@EmptyMessage</BbCommandEmpty>
+                        <BbCommandGroup>
+                            @if (Options is not null)
+                            {
+                                @foreach (var option in Options)
+                                {
+                                    var itemValue = option.Value;
+                                    var displayText = option.Text;
+                                    var selected = IsSelected(option);
+
+                                    <BbCommandItem Value="@itemValue?.ToString()" OnSelect="@(() => HandleSelect(option))" SearchText="@displayText">
+                                        @displayText
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                             width="16"
+                                             height="16"
+                                             viewBox="0 0 24 24"
+                                             fill="none"
+                                             stroke="currentColor"
+                                             stroke-width="2"
+                                             stroke-linecap="round"
+                                             stroke-linejoin="round"
+                                             class="@($"ml-auto h-4 w-4 shrink-0 {(selected ? "opacity-100" : "opacity-0")}")"
+                                             aria-label="@(selected ? "Selected" : "")">
+                                            <path d="M20 6 9 17l-5-5" />
+                                        </svg>
+                                    </BbCommandItem>
+                                }
+                            }
+                            else if (ChildContent is not null)
+                            {
+                                @ChildContent
+                            }
+                        </BbCommandGroup>
+                    </BbCommandList>
+                </BbCommand>
+                </CascadingValue>
+            </BbPopoverContent>
+        </BbPopover>
+    </div>
+</CascadingValue>

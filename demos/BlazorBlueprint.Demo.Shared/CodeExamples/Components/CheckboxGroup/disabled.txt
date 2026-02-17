@@ -1,0 +1,7 @@
+<BbCheckboxGroup TValue="string" @bind-Values="values" Disabled>
+    <BbCheckboxGroupItem Value="@("a")" Label="Option A" />
+</BbCheckboxGroup>
+
+<BbCheckboxGroup TValue="string" @bind-Values="values">
+    <BbCheckboxGroupItem Value="@("pro")" Label="Pro tier" Disabled />
+</BbCheckboxGroup>

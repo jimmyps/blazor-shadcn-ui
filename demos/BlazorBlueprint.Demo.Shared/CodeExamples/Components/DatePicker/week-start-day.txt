@@ -1,0 +1,2 @@
+<BbDatePicker @bind-Value="_sundayStart" FirstDayOfWeek="DayOfWeek.Sunday" />
+<BbDatePicker @bind-Value="_mondayStart" FirstDayOfWeek="DayOfWeek.Monday" />

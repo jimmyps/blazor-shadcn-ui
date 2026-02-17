@@ -1,0 +1,26 @@
+@namespace BlazorBlueprint.Primitives.Switch
+
+@* SwitchThumb - auto-syncs data-state from parent Switch *@
+<span data-state="@DataState"
+      @attributes="AdditionalAttributes">
+    @ChildContent
+</span>
+
+@code {
+    [CascadingParameter]
+    private BbSwitch? ParentSwitch { get; set; }
+
+    /// <summary>
+    /// Gets or sets the content to render inside the thumb.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional attributes to apply to the thumb element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string DataState => ParentSwitch?.Checked == true ? "checked" : "unchecked";
+}

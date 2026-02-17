@@ -1,0 +1,8 @@
+<BbCollapsible>
+    <BbCollapsibleTrigger AsChild="false">
+        Can I use this in my project?
+    </BbCollapsibleTrigger>
+    <BbCollapsibleContent>
+        Yes! This component is free to use.
+    </BbCollapsibleContent>
+</BbCollapsible>

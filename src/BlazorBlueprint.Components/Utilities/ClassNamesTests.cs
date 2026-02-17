@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Utilities;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Manual tests for ClassNames utility.

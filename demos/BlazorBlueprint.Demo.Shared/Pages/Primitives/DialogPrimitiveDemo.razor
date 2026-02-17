@@ -1,7 +1,4 @@
 @page "/primitives/dialog"
-@using BlazorBlueprint.Primitives.Dialog
-@using BlazorBlueprint.Components.Kbd
-
 <PageTitle>Dialog Primitive - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -29,21 +26,21 @@
                     <p class="text-sm text-muted-foreground">
                         DialogTrigger renders its own button element.
                     </p>
-                    <Dialog>
-                        <DialogTrigger class="px-3 py-2 border rounded text-sm">
+                    <BlazorBlueprint.Primitives.Dialog.BbDialog>
+                        <BlazorBlueprint.Primitives.Dialog.BbDialogTrigger class="px-3 py-2 border rounded text-sm">
                             Open Dialog
-                        </DialogTrigger>
-                        <DialogPortal>
-                            <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
-                            <DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
-                                <DialogTitle class="text-lg font-semibold mb-2">Without AsChild</DialogTitle>
-                                <DialogDescription class="text-sm text-muted-foreground mb-4">
+                        </BlazorBlueprint.Primitives.Dialog.BbDialogTrigger>
+                        <BlazorBlueprint.Primitives.Dialog.BbDialogPortal>
+                            <BlazorBlueprint.Primitives.Dialog.BbDialogOverlay class="fixed inset-0 bg-black/50 z-50" />
+                            <BlazorBlueprint.Primitives.Dialog.BbDialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
+                                <BlazorBlueprint.Primitives.Dialog.BbDialogTitle class="text-lg font-semibold mb-2">Without AsChild</BlazorBlueprint.Primitives.Dialog.BbDialogTitle>
+                                <BlazorBlueprint.Primitives.Dialog.BbDialogDescription class="text-sm text-muted-foreground mb-4">
                                     Trigger rendered its own button element.
-                                </DialogDescription>
-                                <DialogClose class="px-3 py-2 border rounded text-sm">Close</DialogClose>
-                            </DialogContent>
-                        </DialogPortal>
-                    </Dialog>
+                                </BlazorBlueprint.Primitives.Dialog.BbDialogDescription>
+                                <BlazorBlueprint.Primitives.Dialog.BbDialogClose class="px-3 py-2 border rounded text-sm">Close</BlazorBlueprint.Primitives.Dialog.BbDialogClose>
+                            </BlazorBlueprint.Primitives.Dialog.BbDialogContent>
+                        </BlazorBlueprint.Primitives.Dialog.BbDialogPortal>
+                    </BlazorBlueprint.Primitives.Dialog.BbDialog>
                 </div>
 
                 <!-- With AsChild -->
@@ -52,25 +49,27 @@
                     <p class="text-sm text-muted-foreground">
                         Button receives click behavior via TriggerContext.
                     </p>
-                    <Dialog>
-                        <DialogTrigger AsChild>
-                            <Button Variant="ButtonVariant.Outline">Open Dialog</Button>
-                        </DialogTrigger>
-                        <DialogPortal>
-                            <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
-                            <DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
-                                <DialogTitle class="text-lg font-semibold mb-2">With AsChild</DialogTitle>
-                                <DialogDescription class="text-sm text-muted-foreground mb-4">
+                    <BlazorBlueprint.Primitives.Dialog.BbDialog>
+                        <BlazorBlueprint.Primitives.Dialog.BbDialogTrigger AsChild>
+                            <BbButton Variant="ButtonVariant.Outline">Open Dialog</BbButton>
+                        </BlazorBlueprint.Primitives.Dialog.BbDialogTrigger>
+                        <BlazorBlueprint.Primitives.Dialog.BbDialogPortal>
+                            <BlazorBlueprint.Primitives.Dialog.BbDialogOverlay class="fixed inset-0 bg-black/50 z-50" />
+                            <BlazorBlueprint.Primitives.Dialog.BbDialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
+                                <BlazorBlueprint.Primitives.Dialog.BbDialogTitle class="text-lg font-semibold mb-2">With AsChild</BlazorBlueprint.Primitives.Dialog.BbDialogTitle>
+                                <BlazorBlueprint.Primitives.Dialog.BbDialogDescription class="text-sm text-muted-foreground mb-4">
                                     Button component handles the trigger behavior.
-                                </DialogDescription>
-                                <DialogClose AsChild>
-                                    <Button Variant="ButtonVariant.Secondary">Close</Button>
-                                </DialogClose>
-                            </DialogContent>
-                        </DialogPortal>
-                    </Dialog>
+                                </BlazorBlueprint.Primitives.Dialog.BbDialogDescription>
+                                <BlazorBlueprint.Primitives.Dialog.BbDialogClose AsChild>
+                                    <BbButton Variant="ButtonVariant.Secondary">Close</BbButton>
+                                </BlazorBlueprint.Primitives.Dialog.BbDialogClose>
+                            </BlazorBlueprint.Primitives.Dialog.BbDialogContent>
+                        </BlazorBlueprint.Primitives.Dialog.BbDialogPortal>
+                    </BlazorBlueprint.Primitives.Dialog.BbDialog>
                 </div>
             </div>
+
+            <CodeBlock Source="Primitives/Dialog/as-child.txt" />
         </section>
 
         <section class="space-y-4">
@@ -82,32 +81,34 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <Dialog>
-                    <DialogTrigger class="px-3 py-2 border rounded text-sm">
+                <BlazorBlueprint.Primitives.Dialog.BbDialog>
+                    <BlazorBlueprint.Primitives.Dialog.BbDialogTrigger class="px-3 py-2 border rounded text-sm">
                         Open Dialog
-                    </DialogTrigger>
+                    </BlazorBlueprint.Primitives.Dialog.BbDialogTrigger>
 
-                    <DialogPortal>
-                        <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
+                    <BlazorBlueprint.Primitives.Dialog.BbDialogPortal>
+                        <BlazorBlueprint.Primitives.Dialog.BbDialogOverlay class="fixed inset-0 bg-black/50 z-50" />
 
-                        <DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
-                            <DialogTitle class="text-lg font-semibold mb-2">
+                        <BlazorBlueprint.Primitives.Dialog.BbDialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
+                            <BlazorBlueprint.Primitives.Dialog.BbDialogTitle class="text-lg font-semibold mb-2">
                                 Dialog Title
-                            </DialogTitle>
+                            </BlazorBlueprint.Primitives.Dialog.BbDialogTitle>
 
-                            <DialogDescription class="text-sm text-muted-foreground mb-4">
+                            <BlazorBlueprint.Primitives.Dialog.BbDialogDescription class="text-sm text-muted-foreground mb-4">
                                 This is a basic dialog using the unstyled primitive components.
-                            </DialogDescription>
+                            </BlazorBlueprint.Primitives.Dialog.BbDialogDescription>
 
                             <div class="flex justify-end gap-2">
-                                <DialogClose class="px-3 py-2 border rounded text-sm">
+                                <BlazorBlueprint.Primitives.Dialog.BbDialogClose class="px-3 py-2 border rounded text-sm">
                                     Close
-                                </DialogClose>
+                                </BlazorBlueprint.Primitives.Dialog.BbDialogClose>
                             </div>
-                        </DialogContent>
-                    </DialogPortal>
-                </Dialog>
+                        </BlazorBlueprint.Primitives.Dialog.BbDialogContent>
+                    </BlazorBlueprint.Primitives.Dialog.BbDialogPortal>
+                </BlazorBlueprint.Primitives.Dialog.BbDialog>
             </div>
+
+            <CodeBlock Source="Primitives/Dialog/basic.txt" />
         </section>
 
         <section class="space-y-4">
@@ -132,28 +133,30 @@
                 </div>
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
-                    <Dialog @bind-Open="isControlledOpen">
-                        <DialogPortal>
-                            <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
+                    <BlazorBlueprint.Primitives.Dialog.BbDialog @bind-Open="isControlledOpen">
+                        <BlazorBlueprint.Primitives.Dialog.BbDialogPortal>
+                            <BlazorBlueprint.Primitives.Dialog.BbDialogOverlay class="fixed inset-0 bg-black/50 z-50" />
 
-                            <DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
-                                <DialogTitle class="text-lg font-semibold mb-2">
+                            <BlazorBlueprint.Primitives.Dialog.BbDialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
+                                <BlazorBlueprint.Primitives.Dialog.BbDialogTitle class="text-lg font-semibold mb-2">
                                     Controlled Dialog
-                                </DialogTitle>
+                                </BlazorBlueprint.Primitives.Dialog.BbDialogTitle>
 
-                                <DialogDescription class="text-sm text-muted-foreground mb-4">
+                                <BlazorBlueprint.Primitives.Dialog.BbDialogDescription class="text-sm text-muted-foreground mb-4">
                                     This dialog's state is controlled by the parent component. The "Close from Outside" button demonstrates external state control.
-                                </DialogDescription>
+                                </BlazorBlueprint.Primitives.Dialog.BbDialogDescription>
 
                                 <p class="mb-4">Open state: <strong>@isControlledOpen</strong></p>
 
-                                <DialogClose class="px-3 py-2 border rounded text-sm">
+                                <BlazorBlueprint.Primitives.Dialog.BbDialogClose class="px-3 py-2 border rounded text-sm">
                                     Close
-                                </DialogClose>
-                            </DialogContent>
-                        </DialogPortal>
-                    </Dialog>
+                                </BlazorBlueprint.Primitives.Dialog.BbDialogClose>
+                            </BlazorBlueprint.Primitives.Dialog.BbDialogContent>
+                        </BlazorBlueprint.Primitives.Dialog.BbDialogPortal>
+                    </BlazorBlueprint.Primitives.Dialog.BbDialog>
                 </div>
+
+                <CodeBlock Source="Primitives/Dialog/controlled.txt" />
             </div>
         </section>
 
@@ -166,22 +169,22 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <Dialog>
-                    <DialogTrigger class="px-3 py-2 border rounded text-sm">
+                <BlazorBlueprint.Primitives.Dialog.BbDialog>
+                    <BlazorBlueprint.Primitives.Dialog.BbDialogTrigger class="px-3 py-2 border rounded text-sm">
                         Open Modal Dialog
-                    </DialogTrigger>
+                    </BlazorBlueprint.Primitives.Dialog.BbDialogTrigger>
 
-                    <DialogPortal>
-                        <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
+                    <BlazorBlueprint.Primitives.Dialog.BbDialogPortal>
+                        <BlazorBlueprint.Primitives.Dialog.BbDialogOverlay class="fixed inset-0 bg-black/50 z-50" />
 
-                        <DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
-                            <DialogTitle class="text-lg font-semibold mb-2">
+                        <BlazorBlueprint.Primitives.Dialog.BbDialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
+                            <BlazorBlueprint.Primitives.Dialog.BbDialogTitle class="text-lg font-semibold mb-2">
                                 Modal Dialog
-                            </DialogTitle>
+                            </BlazorBlueprint.Primitives.Dialog.BbDialogTitle>
 
-                            <DialogDescription class="text-sm text-muted-foreground mb-4">
+                            <BlazorBlueprint.Primitives.Dialog.BbDialogDescription class="text-sm text-muted-foreground mb-4">
                                 Try clicking the overlay or pressing Escape to close this dialog.
-                            </DialogDescription>
+                            </BlazorBlueprint.Primitives.Dialog.BbDialogDescription>
 
                             <ul class="text-sm space-y-1 mb-4">
                                 <li>✓ Click overlay to close</li>
@@ -191,81 +194,60 @@
                                 <li>✓ Body scroll locked</li>
                             </ul>
 
-                            <DialogClose class="px-3 py-2 border rounded text-sm">
+                            <BlazorBlueprint.Primitives.Dialog.BbDialogClose class="px-3 py-2 border rounded text-sm">
                                 Close
-                            </DialogClose>
-                        </DialogContent>
-                    </DialogPortal>
-                </Dialog>
+                            </BlazorBlueprint.Primitives.Dialog.BbDialogClose>
+                        </BlazorBlueprint.Primitives.Dialog.BbDialogContent>
+                    </BlazorBlueprint.Primitives.Dialog.BbDialogPortal>
+                </BlazorBlueprint.Primitives.Dialog.BbDialog>
             </div>
         </section>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Accessibility Features</h2>
-                <p class="text-muted-foreground">
-                    Built-in accessibility features following WAI-ARIA design patterns.
-                </p>
-            </div>
-
-            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
-                <div>
-                    <h3 class="font-semibold mb-2">ARIA Attributes</h3>
-                    <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">role="dialog"</code> for screen readers</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">aria-labelledby</code> links title to dialog</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">aria-describedby</code> links description to dialog</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Automatic focus trap and restoration</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Body scroll lock when dialog is open</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Portal rendering for proper z-index stacking</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Keyboard Shortcuts</h2>
-                <p class="text-muted-foreground">
-                    Navigate and interact with dialogs using keyboard.
-                </p>
-            </div>
-
-            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
-                <div class="grid gap-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Open dialog</span>
-                        <Kbd>Enter / Space</Kbd>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Close dialog</span>
-                        <Kbd>Escape</Kbd>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Navigate between elements</span>
-                        <Kbd>Tab</Kbd>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <AccessibilityList>
+            <AriaAttributes>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">role="dialog"</code> for screen readers
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-modal="true"</code> indicates modal behavior
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-labelledby</code> links title to dialog
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-describedby</code> links description to dialog
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-haspopup="dialog"</code> on trigger button
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-expanded</code> on trigger reflects open state
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-controls</code> on trigger links to content
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Automatic focus trap and restoration
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Body scroll lock when dialog is open
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Portal rendering for proper z-index stacking
+                </AccessibilityItem>
+            </AriaAttributes>
+            <KeyboardNavigation>
+                <KeyboardShortcutItem Description="Open dialog (when trigger is focused)">
+                    <BbKbd>Enter</BbKbd> / <BbKbd>Space</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Close dialog">
+                    <BbKbd>Escape</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Navigate between elements">
+                    <BbKbd>Tab</BbKbd>
+                </KeyboardShortcutItem>
+            </KeyboardNavigation>
+        </AccessibilityList>
 
         <section class="space-y-4">
             <div class="space-y-2">
@@ -276,179 +258,131 @@
             </div>
 
             <div class="space-y-4">
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">Dialog</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Open</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool?</code><br/>
-                                Controls whether the dialog is open (controlled mode).
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">OpenChanged</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>EventCallback&lt;bool&gt;</code><br/>
-                                Callback invoked when the open state changes.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">DefaultOpen</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>false</code><br/>
-                                Initial open state (uncontrolled mode).
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Modal</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>true</code><br/>
-                                Whether the dialog is modal (blocks interaction with rest of page).
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="Dialog">
+                    <ApiParameter Name="Open" Type="bool?" Default="null">
+                        Controls whether the dialog is open (controlled mode). When null, the dialog manages its own state (uncontrolled mode).
+                    </ApiParameter>
+                    <ApiParameter Name="OpenChanged" Type="EventCallback&lt;bool&gt;">
+                        Callback invoked when the open state changes. Use with <code>@@bind-Open</code> for two-way binding.
+                    </ApiParameter>
+                    <ApiParameter Name="DefaultOpen" Type="bool" Default="false">
+                        Initial open state when in uncontrolled mode.
+                    </ApiParameter>
+                    <ApiParameter Name="OnOpenChange" Type="EventCallback&lt;bool&gt;">
+                        Event callback invoked when the dialog open state changes. Receives the new open state as a parameter.
+                    </ApiParameter>
+                    <ApiParameter Name="Modal" Type="bool" Default="true">
+                        Whether the dialog is modal (blocks interaction with rest of page).
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The child content to render within the dialog context. Typically includes DialogTrigger, DialogPortal, and other dialog parts.
+                    </ApiParameter>
+                </ApiReference>
 
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">DialogTrigger</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">ChildContent</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>RenderFragment?</code><br/>
-                                Button content that opens the dialog.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="DialogTrigger">
+                    <ApiParameter Name="AsChild" Type="bool" Default="false">
+                        When true, the trigger does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components.
+                    </ApiParameter>
+                    <ApiParameter Name="OnClick" Type="EventCallback&lt;MouseEventArgs&gt;">
+                        Custom click handler. If provided, this is called in addition to (or instead of) the default toggle behavior.
+                    </ApiParameter>
+                    <ApiParameter Name="CustomClickHandling" Type="bool" Default="false">
+                        Whether to use custom click handling. When true, only OnClick is invoked (dialog does not toggle).
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The content to display inside the trigger button.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the trigger button element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
 
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">DialogPortal</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">ChildContent</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>RenderFragment?</code><br/>
-                                Content rendered at document body level for proper stacking.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="DialogPortal">
+                    <ApiParameter Name="Container" Type="string?">
+                        The container element to render the portal into. When null (default), renders into document body via PortalService. When set, renders inline within the current component tree.
+                    </ApiParameter>
+                    <ApiParameter Name="ForceMount" Type="bool" Default="false">
+                        Whether to force rendering in a portal even when the dialog is closed.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        Content rendered at document body level for proper stacking (typically DialogOverlay and DialogContent).
+                    </ApiParameter>
+                </ApiReference>
 
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">DialogOverlay</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">CloseOnClick</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>true</code><br/>
-                                Whether clicking the overlay closes the dialog.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="DialogOverlay">
+                    <ApiParameter Name="CloseOnClick" Type="bool" Default="true">
+                        Whether clicking the overlay should close the dialog.
+                    </ApiParameter>
+                    <ApiParameter Name="OnClick" Type="EventCallback&lt;MouseEventArgs&gt;">
+                        Event callback invoked when the overlay is clicked.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        Content to render within the overlay (typically empty for a simple backdrop).
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the overlay div element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
 
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">DialogContent</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">CloseOnEscape</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>true</code><br/>
-                                Whether pressing Escape closes the dialog.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">TrapFocus</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>true</code><br/>
-                                Whether to trap focus inside the dialog.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">LockScroll</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>true</code><br/>
-                                Whether to prevent body scroll when dialog is open.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="DialogContent">
+                    <ApiParameter Name="CloseOnEscape" Type="bool" Default="true">
+                        Whether pressing Escape should close the dialog.
+                    </ApiParameter>
+                    <ApiParameter Name="TrapFocus" Type="bool" Default="true">
+                        Whether to trap focus within the dialog. Default is true for modal dialogs.
+                    </ApiParameter>
+                    <ApiParameter Name="LockScroll" Type="bool" Default="true">
+                        Whether to lock body scroll when dialog is open. Default is true for modal dialogs.
+                    </ApiParameter>
+                    <ApiParameter Name="OnEscapeKeyDown" Type="EventCallback&lt;KeyboardEventArgs&gt;">
+                        Event callback invoked when the Escape key is pressed.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The content to render inside the dialog.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the content container (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
 
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">DialogTitle / DialogDescription / DialogClose</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">ChildContent</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>RenderFragment?</code><br/>
-                                Content rendered inside the component.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+                <ApiReference ComponentName="DialogTitle">
+                    <ApiParameter Name="As" Type="string" Default="&quot;h2&quot;">
+                        The HTML element tag to use for the title.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The title content to display.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the title element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">When to Use Primitives</h2>
-                <p class="text-muted-foreground">
-                    Choose between primitives and styled components based on your needs.
-                </p>
-            </div>
+                <ApiReference ComponentName="DialogDescription">
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The description content to display.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the description element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
 
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="rounded-lg border p-4 space-y-3">
-                    <h3 class="font-semibold text-primary">Use Dialog Primitive</h3>
-                    <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Building a custom design system</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Need complete control over styling</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Want to apply your own CSS framework</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Creating unique visual designs</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="rounded-lg border p-4 space-y-3">
-                    <h3 class="font-semibold text-primary">Use Styled Component</h3>
-                    <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Want shadcn/ui design out of the box</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Need quick implementation</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Like the default styling</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Prefer convention over configuration</span>
-                        </li>
-                    </ul>
-                </div>
+                <ApiReference ComponentName="DialogClose">
+                    <ApiParameter Name="AsChild" Type="bool" Default="false">
+                        When true, the close does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components.
+                    </ApiParameter>
+                    <ApiParameter Name="PreventClose" Type="bool" Default="false">
+                        Whether to prevent the default close behavior. When true, only the OnClick handler is invoked.
+                    </ApiParameter>
+                    <ApiParameter Name="OnClick" Type="EventCallback&lt;MouseEventArgs&gt;">
+                        Custom click handler. Called after the dialog is closed.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The content to display inside the close button.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the close button element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
             </div>
         </section>
     </div>

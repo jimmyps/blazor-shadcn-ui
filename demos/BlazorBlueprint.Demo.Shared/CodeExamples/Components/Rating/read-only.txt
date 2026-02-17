@@ -1,0 +1,3 @@
+<BbRating Value="4" ReadOnly="true" />
+
+<BbRating Value="3.5" ReadOnly="true" AllowHalf="true" />

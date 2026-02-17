@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
-namespace BlazorBlueprint.Components.Utilities;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Provides Tailwind CSS class conflict resolution logic.

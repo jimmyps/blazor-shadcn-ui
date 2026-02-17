@@ -1,0 +1,6 @@
+<BbBarChart Data="@data" Height="300px">
+    <BbXAxis DataKey="date" />
+    <BbYAxis />
+    <BbChartTooltip />
+    <BbBar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" />
+</BbBarChart>

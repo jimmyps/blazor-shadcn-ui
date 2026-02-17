@@ -1,0 +1,15 @@
+<BbSheet Side="SheetSide.Top">
+    <BbSheetTrigger class="px-3 py-2 border rounded text-sm">Top</BbSheetTrigger>
+    <BbSheetPortal>
+        <BbSheetOverlay class="fixed inset-0 bg-black/50 z-50" />
+        <BbSheetContent class="fixed top-0 inset-x-0 z-50 border-b bg-background p-6">
+            <BbSheetTitle>Sheet from Top</BbSheetTitle>
+            <BbSheetDescription>This sheet slides in from the top.</BbSheetDescription>
+            <BbSheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</BbSheetClose>
+        </BbSheetContent>
+    </BbSheetPortal>
+</BbSheet>
+
+<BbSheet Side="SheetSide.Right">...</BbSheet>
+<BbSheet Side="SheetSide.Bottom">...</BbSheet>
+<BbSheet Side="SheetSide.Left">...</BbSheet>

@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.InputGroup;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the alignment positions for InputGroup addons.

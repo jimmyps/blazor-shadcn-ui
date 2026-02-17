@@ -1,0 +1,13 @@
+<BbItem Variant="ItemVariant.Default">
+    <BbItemContent>
+        <BbItemTitle>Default Item</BbItemTitle>
+        <BbItemDescription>Hover to see the subtle background effect.</BbItemDescription>
+    </BbItemContent>
+</BbItem>
+
+<BbItem Variant="ItemVariant.Outline">
+    <BbItemContent>
+        <BbItemTitle>Outline Item</BbItemTitle>
+        <BbItemDescription>Has a border and background on hover.</BbItemDescription>
+    </BbItemContent>
+</BbItem>

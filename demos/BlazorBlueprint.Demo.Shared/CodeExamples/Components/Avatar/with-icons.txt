@@ -1,0 +1,5 @@
+<BbAvatar>
+    <BbAvatarFallback>
+        <LucideIcon Name="user" Size="20" />
+    </BbAvatarFallback>
+</BbAvatar>

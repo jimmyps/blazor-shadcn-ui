@@ -1,0 +1,9 @@
+<BbRadioGroup @bind-Value="highlightedValue" AriaLabel="Select a plan">
+    <div class="flex items-start space-x-3 rounded-lg border p-4 cursor-pointer">
+        <BbRadioGroupItem Value="@("free")" Id="plan-free" />
+        <div class="flex-1">
+            <div class="text-sm font-medium">Free Plan</div>
+            <p class="text-sm text-muted-foreground">Basic features.</p>
+        </div>
+    </div>
+</BbRadioGroup>

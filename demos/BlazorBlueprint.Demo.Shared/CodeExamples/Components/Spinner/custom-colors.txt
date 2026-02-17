@@ -1,0 +1,5 @@
+<BbSpinner Class="text-blue-500" />
+
+<BbSpinner Class="text-green-500" />
+
+<BbSpinner Class="text-red-500" />

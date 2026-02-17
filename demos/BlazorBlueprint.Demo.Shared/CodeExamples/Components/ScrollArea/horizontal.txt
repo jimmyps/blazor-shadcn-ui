@@ -1,0 +1,5 @@
+<BbScrollArea Orientation="ScrollAreaOrientation.Horizontal">
+    <div class="flex w-max space-x-4">
+        <!-- Content... -->
+    </div>
+</BbScrollArea>

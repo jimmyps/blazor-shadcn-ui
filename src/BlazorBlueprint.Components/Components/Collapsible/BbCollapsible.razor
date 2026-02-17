@@ -1,0 +1,8 @@
+@namespace BlazorBlueprint.Components
+
+<BlazorBlueprint.Primitives.Collapsible.BbCollapsible Open="@_isOpen"
+                      OpenChanged="@HandleOpenChanged"
+                      Disabled="@Disabled"
+                      class="@CssClass">
+    @ChildContent
+</BlazorBlueprint.Primitives.Collapsible.BbCollapsible>

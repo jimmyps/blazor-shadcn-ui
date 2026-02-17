@@ -1,0 +1,26 @@
+<BbTimeline Align="TimelineAlign.Left">
+    <BbTimelineItem Status="TimelineStatus.Completed">
+        <IconContent>
+            <BbTimelineIcon Color="TimelineColor.Primary">
+                <LucideIcon Name="check" Size="16" />
+            </BbTimelineIcon>
+        </IconContent>
+        <ChildContent>
+            <div class="border rounded-lg shadow-sm overflow-hidden">
+                <div class="p-4 space-y-3">
+                    <div>
+                        <h3 class="text-lg font-bold">Feature Implementation</h3>
+                        <p class="text-sm text-muted-foreground">Added new dashboard analytics module.</p>
+                    </div>
+                    <p class="text-sm">
+                        This update introduces a comprehensive analytics dashboard...
+                    </p>
+                    <div class="flex gap-2">
+                        <BbButton Size="ButtonSize.Small">View Details</BbButton>
+                        <BbButton Size="ButtonSize.Small" Variant="ButtonVariant.Outline">Dismiss</BbButton>
+                    </div>
+                </div>
+            </div>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>

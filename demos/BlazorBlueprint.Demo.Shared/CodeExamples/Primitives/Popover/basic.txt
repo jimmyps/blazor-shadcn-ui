@@ -1,0 +1,13 @@
+<BbPopover>
+    <BbPopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+        Open Popover
+    </BbPopoverTrigger>
+    <BbPopoverContent class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+        <div class="space-y-2">
+            <h4 class="font-medium leading-none">Primitive Popover</h4>
+            <p class="text-sm text-muted-foreground">
+                This is a headless popover primitive with basic styling.
+            </p>
+        </div>
+    </BbPopoverContent>
+</BbPopover>

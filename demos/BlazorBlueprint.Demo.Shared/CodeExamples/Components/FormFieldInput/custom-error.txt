@@ -1,0 +1,7 @@
+<BbFormFieldInput TValue="decimal"
+                   @bind-Value="price"
+                   Label="Price"
+                   HelperText="Enter the product price in USD."
+                   ErrorText="Please enter a valid dollar amount."
+                   Format="N2"
+                   Placeholder="0.00" />

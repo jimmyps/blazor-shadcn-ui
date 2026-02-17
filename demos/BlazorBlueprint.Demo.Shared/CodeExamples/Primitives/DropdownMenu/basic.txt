@@ -1,0 +1,14 @@
+@using BlazorBlueprint.Primitives.DropdownMenu
+
+<BbDropdownMenu ItemClass="block px-2 py-1.5 cursor-pointer rounded hover:bg-accent focus:bg-accent focus:outline-none">
+    <BbDropdownMenuTrigger class="...">Open Menu</BbDropdownMenuTrigger>
+    <BbDropdownMenuContent class="...">
+        <BbDropdownMenuItem>Profile</BbDropdownMenuItem>
+        <BbDropdownMenuItem>Settings</BbDropdownMenuItem>
+        <BbSeparator />
+        <BbDropdownMenuItem class="text-destructive">Logout</BbDropdownMenuItem>
+    </BbDropdownMenuContent>
+</BbDropdownMenu>
+
+@* Per-item class is merged with ItemClass.
+   Logout gets: "px-2 py-1.5 cursor-pointer rounded hover:bg-accent text-destructive" *@

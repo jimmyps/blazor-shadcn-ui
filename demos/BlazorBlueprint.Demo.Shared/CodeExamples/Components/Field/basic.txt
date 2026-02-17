@@ -1,0 +1,7 @@
+<BbField>
+    <BbFieldLabel For="username">Username</BbFieldLabel>
+    <BbFieldContent>
+        <BbInput Id="username" Placeholder="Enter your username" />
+        <BbFieldDescription>Choose a unique username.</BbFieldDescription>
+    </BbFieldContent>
+</BbField>

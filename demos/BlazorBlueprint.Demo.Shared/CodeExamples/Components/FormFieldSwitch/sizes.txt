@@ -1,0 +1,3 @@
+<BbFormFieldSwitch @bind-Checked="small" Label="Small" Size="SwitchSize.Small" />
+<BbFormFieldSwitch @bind-Checked="medium" Label="Medium (default)" Size="SwitchSize.Medium" />
+<BbFormFieldSwitch @bind-Checked="large" Label="Large" Size="SwitchSize.Large" />

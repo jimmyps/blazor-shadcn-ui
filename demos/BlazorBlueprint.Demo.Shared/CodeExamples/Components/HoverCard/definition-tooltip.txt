@@ -1,0 +1,16 @@
+<BbHoverCard OpenDelay="200">
+    <BbHoverCardTrigger AsChild="false" Class="border-b border-dashed border-primary cursor-help">
+        Floating UI
+    </BbHoverCardTrigger>
+    <BbHoverCardContent>
+        <div class="space-y-2">
+            <h4 class="text-sm font-semibold">Floating UI</h4>
+            <p class="text-sm text-muted-foreground">
+                A low-level library for positioning floating elements like tooltips, popovers, and dropdowns. It provides smart positioning with collision detection and automatic adjustments.
+            </p>
+            <a href="https://floating-ui.com" target="_blank" class="text-xs text-primary hover:underline">
+                Learn more →
+            </a>
+        </div>
+    </BbHoverCardContent>
+</BbHoverCard>

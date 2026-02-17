@@ -1,0 +1,19 @@
+<BbTimeline Align="TimelineAlign.Left">
+    <BbTimelineItem ConnectorStyle="TimelineConnectorStyle.Solid">
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Step 1</BbTimelineTitle>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>
+
+<BbTimeline Align="TimelineAlign.Left">
+    <BbTimelineItem ConnectorStyle="TimelineConnectorStyle.Dashed">
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Step 1</BbTimelineTitle>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>

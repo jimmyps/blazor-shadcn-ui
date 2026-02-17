@@ -1,0 +1,36 @@
+@namespace BlazorBlueprint.Components
+
+@* BreadcrumbList is optional - items can be placed directly in Breadcrumb *@
+<CascadingValue Value="this" IsFixed="false">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private int _itemCount;
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// When true, automatically inserts <see cref="BbBreadcrumbSeparator"/> between each <see cref="BbBreadcrumbItem"/>.
+    /// </summary>
+    [Parameter]
+    public bool AutoSeparator { get; set; }
+
+    /// <summary>
+    /// Custom separator content to use when <see cref="AutoSeparator"/> is true.
+    /// If not provided, the default chevron-right icon is used.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? SeparatorContent { get; set; }
+
+    internal int RegisterItem()
+    {
+        return _itemCount++;
+    }
+
+    protected override void OnParametersSet()
+    {
+        _itemCount = 0;
+    }
+}

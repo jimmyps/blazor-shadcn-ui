@@ -1,0 +1,11 @@
+<EditForm Model="formModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="flex items-center space-x-2">
+        <BbCheckbox @bind-Checked="formModel.AcceptTerms" Id="terms" />
+        <label for="terms" class="text-sm font-medium leading-none">
+            I accept the terms and conditions
+        </label>
+    </div>
+    <ValidationMessage For="@(() => formModel.AcceptTerms)" />
+    <BbButton Type="ButtonType.Submit">Submit</BbButton>
+</EditForm>

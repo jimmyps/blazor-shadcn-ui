@@ -1,0 +1,1 @@
+<BbDatePicker @bind-Value="_noWeekendsDate" DisabledDates="@IsWeekend" />

@@ -1,6 +1,4 @@
 @page "/components/textarea"
-@using BlazorBlueprint.Components.Textarea
-@using BlazorBlueprint.Components.Input
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>Textarea Component - Blazor Blueprint</PageTitle>
@@ -27,8 +25,9 @@
             </p>
         </div>
         <div class="max-w-md">
-            <Textarea Placeholder="Type your message here." />
+            <BbTextarea Placeholder="Type your message here." />
         </div>
+        <CodeBlock Source="Components/Textarea/default.txt" />
     </div>
 
     <!-- Disabled State -->
@@ -40,8 +39,9 @@
             </p>
         </div>
         <div class="max-w-md">
-            <Textarea Placeholder="Disabled textarea" Disabled="true" Value="Cannot edit this text." />
+            <BbTextarea Placeholder="Disabled textarea" Disabled="true" Value="Cannot edit this text." />
         </div>
+        <CodeBlock Source="Components/Textarea/disabled.txt" />
     </div>
 
     <!-- Required State -->
@@ -56,13 +56,14 @@
             <form class="space-y-4">
                 <div class="space-y-2">
                     <label class="text-sm font-medium">Message (required)</label>
-                    <Textarea Placeholder="Enter your message" Required="true" />
+                    <BbTextarea Placeholder="Enter your message" Required="true" />
                 </div>
                 <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90">
                     Submit
                 </button>
             </form>
         </div>
+        <CodeBlock Source="Components/Textarea/required.txt" />
     </div>
 
     <!-- With Label and Description -->
@@ -78,7 +79,7 @@
                 <label for="bio-textarea" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Bio
                 </label>
-                <Textarea Placeholder="Tell us about yourself..." AriaLabel="Biography" />
+                <BbTextarea Placeholder="Tell us about yourself..." AriaLabel="Biography" />
                 <p class="text-sm text-muted-foreground">
                     Your bio will be displayed on your public profile.
                 </p>
@@ -88,12 +89,13 @@
                 <label class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Comments
                 </label>
-                <Textarea Placeholder="Leave a comment..." AriaLabel="Comments" />
+                <BbTextarea Placeholder="Leave a comment..." AriaLabel="Comments" />
                 <p class="text-sm text-muted-foreground">
                     Share your thoughts with the community.
                 </p>
             </div>
         </div>
+        <CodeBlock Source="Components/Textarea/with-label.txt" />
     </div>
 
     <!-- MaxLength -->
@@ -107,44 +109,37 @@
         <div class="max-w-md">
             <div class="space-y-2">
                 <label class="text-sm font-medium">Tweet (max 280 characters)</label>
-                <Textarea MaxLength="280" Placeholder="What's happening?" Value="@tweetValue" ValueChanged="@((value) => tweetValue = value)" />
+                <BbTextarea MaxLength="280" Placeholder="What's happening?" Value="@tweetValue" ValueChanged="@((value) => tweetValue = value)" />
                 <p class="text-xs text-muted-foreground">
                     @(tweetValue?.Length ?? 0) / 280 characters
                 </p>
             </div>
         </div>
+        <CodeBlock Source="Components/Textarea/character-limit.txt" />
     </div>
 
-    <!-- ARIA Attributes -->
+    <!-- Built-in Character Count -->
     <div class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Accessibility (ARIA)</h2>
+            <div class="flex items-center gap-2">
+                <h2 class="text-2xl font-semibold">Built-in Character Count</h2>
+                <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">v3</span>
+            </div>
             <p class="text-sm text-muted-foreground">
-                Textarea with ARIA attributes for screen readers.
+                Use <code class="text-xs bg-muted px-1 py-0.5 rounded">ShowCharacterCount="true"</code> to display a built-in character counter below the textarea. When <code class="text-xs bg-muted px-1 py-0.5 rounded">MaxLength</code> is set, it shows the count in a <code class="text-xs bg-muted px-1 py-0.5 rounded">current/max</code> format.
             </p>
         </div>
         <div class="max-w-md space-y-4">
             <div class="space-y-2">
-                <label class="text-sm font-medium">With aria-label</label>
-                <Textarea AriaLabel="User feedback" Placeholder="Share your feedback..." />
+                <label class="text-sm font-medium">With MaxLength</label>
+                <BbTextarea ShowCharacterCount="true" MaxLength="280" Placeholder="What's happening?" />
             </div>
-
             <div class="space-y-2">
-                <label id="description-label" class="text-sm font-medium">Description</label>
-                <Textarea AriaDescribedBy="description-help" Placeholder="Describe the issue..." />
-                <p id="description-help" class="text-sm text-muted-foreground">
-                    Please provide as much detail as possible.
-                </p>
-            </div>
-
-            <div class="space-y-2">
-                <label class="text-sm font-medium">Invalid textarea (error state styling)</label>
-                <Textarea AriaInvalid="true" Value="This text is invalid" Placeholder="Message" />
-                <p class="text-sm text-destructive">
-                    Please correct the error. Note the destructive border and ring applied via aria-invalid.
-                </p>
+                <label class="text-sm font-medium">Without MaxLength</label>
+                <BbTextarea ShowCharacterCount="true" Placeholder="Free-form text..." />
             </div>
         </div>
+        <CodeBlock Source="Components/Textarea/character-count.txt" />
     </div>
 
     <!-- Two-Way Binding Example -->
@@ -160,7 +155,7 @@
         <div class="max-w-md space-y-4">
             <div class="space-y-2">
                 <label class="text-sm font-medium">Type something</label>
-                <Textarea Value="@boundValue" ValueChanged="@((value) => boundValue = value)" Placeholder="Start typing..." />
+                <BbTextarea Value="@boundValue" ValueChanged="@((value) => boundValue = value)" Placeholder="Start typing..." />
                 <p class="text-xs text-muted-foreground">
                     Try typing text, then clearing it. The value returns to <code class="text-xs bg-muted px-1 py-0.5 rounded">null</code> instead of becoming an empty string.
                 </p>
@@ -180,6 +175,7 @@
                 </p>
             </div>
         </div>
+        <CodeBlock Source="Components/Textarea/two-way-binding.txt" />
     </div>
 
     <!-- Update Timing -->
@@ -194,7 +190,7 @@
         <div class="grid gap-6 md:grid-cols-3 max-w-4xl">
             <div class="space-y-2">
                 <label class="text-sm font-medium">Immediate (default)</label>
-                <Textarea UpdateTiming="UpdateTiming.Immediate"
+                <BbTextarea UpdateTiming="UpdateTiming.Immediate"
                           Value="@_immediateValue"
                           ValueChanged="@((v) => _immediateValue = v)"
                           Placeholder="Fires on every keystroke" />
@@ -205,7 +201,7 @@
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">OnChange (blur / Enter)</label>
-                <Textarea UpdateTiming="UpdateTiming.OnChange"
+                <BbTextarea UpdateTiming="UpdateTiming.OnChange"
                           Value="@_onChangeValue"
                           ValueChanged="@((v) => _onChangeValue = v)"
                           Placeholder="Fires on blur or Enter" />
@@ -216,7 +212,7 @@
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">Debounced (500ms)</label>
-                <Textarea UpdateTiming="UpdateTiming.Debounced"
+                <BbTextarea UpdateTiming="UpdateTiming.Debounced"
                           DebounceInterval="500"
                           Value="@_debouncedValue"
                           ValueChanged="@((v) => _debouncedValue = v)"
@@ -227,6 +223,7 @@
                 </div>
             </div>
         </div>
+        <CodeBlock Source="Components/Textarea/update-timing.txt" />
     </div>
 
     <!-- Custom Styling -->
@@ -240,17 +237,18 @@
         <div class="space-y-4 max-w-md">
             <div class="space-y-2">
                 <label class="text-sm font-medium">Custom border color</label>
-                <Textarea Placeholder="Blue border" Class="border-blue-500 focus-visible:ring-blue-500" />
+                <BbTextarea Placeholder="Blue border" Class="border-blue-500 focus-visible:ring-blue-500" />
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">Custom height</label>
-                <Textarea Placeholder="Taller textarea" Class="min-h-32" />
+                <BbTextarea Placeholder="Taller textarea" Class="min-h-32" />
             </div>
             <div class="space-y-2">
                 <label class="text-sm font-medium">Success state</label>
-                <Textarea Value="Valid message" Class="border-green-500 focus-visible:ring-green-500" />
+                <BbTextarea Value="Valid message" Class="border-green-500 focus-visible:ring-green-500" />
             </div>
         </div>
+        <CodeBlock Source="Components/Textarea/custom-styling.txt" />
     </div>
 
     <!-- Form Validation with EditForm -->
@@ -268,13 +266,13 @@
 
             <div class="space-y-2">
                 <label class="text-sm font-medium">Bio</label>
-                <Textarea @bind-Value="formModel.Bio" Placeholder="Tell us about yourself..." />
+                <BbTextarea @bind-Value="formModel.Bio" Placeholder="Tell us about yourself..." />
                 <ValidationMessage For="@(() => formModel.Bio)" class="text-sm text-destructive" />
             </div>
 
             <div class="flex gap-4">
-                <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</Button>
-                <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</Button>
+                <BbButton Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</BbButton>
+                <BbButton Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</BbButton>
             </div>
 
             @if (!string.IsNullOrEmpty(formMessage))
@@ -284,6 +282,7 @@
                 </div>
             }
         </EditForm>
+        <CodeBlock Source="Components/Textarea/form-validation.txt" />
     </div>
 
     <!-- API Reference -->
@@ -301,7 +300,7 @@
                     The current value of the textarea. Supports two-way binding with @("@")bind-Value.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">Placeholder</h3>
                 <p class="text-sm text-muted-foreground mb-2">
@@ -311,7 +310,7 @@
                     Placeholder text shown when textarea is empty.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">MaxLength</h3>
                 <p class="text-sm text-muted-foreground mb-2">
@@ -321,7 +320,7 @@
                     Maximum number of characters allowed. Browser will prevent exceeding this limit.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">Disabled</h3>
                 <p class="text-sm text-muted-foreground mb-2">
@@ -331,7 +330,7 @@
                     Whether the textarea is disabled. Default: false
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">Required</h3>
                 <p class="text-sm text-muted-foreground mb-2">
@@ -341,7 +340,7 @@
                     Whether the textarea is required for form validation. Default: false
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">ARIA Attributes</h3>
                 <p class="text-sm text-muted-foreground">
@@ -350,7 +349,7 @@
                     <code class="text-xs bg-muted px-1 py-0.5 rounded">AriaInvalid</code> for accessibility.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">UpdateTiming</h3>
                 <p class="text-sm text-muted-foreground mb-2">
@@ -360,7 +359,7 @@
                     Controls when ValueChanged fires. Options: Immediate (default), OnChange, Debounced.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">DebounceInterval</h3>
                 <p class="text-sm text-muted-foreground mb-2">
@@ -370,7 +369,17 @@
                     Debounce delay in milliseconds when UpdateTiming is Debounced. Default: 500
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
+            <div>
+                <h3 class="font-mono text-sm font-semibold mb-2">ShowCharacterCount</h3>
+                <p class="text-sm text-muted-foreground mb-2">
+                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code> — Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">false</code>
+                </p>
+                <p class="text-sm text-muted-foreground">
+                    When true, displays a character counter below the textarea. Shows current/max format when MaxLength is set.
+                </p>
+            </div>
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">Class</h3>
                 <p class="text-sm text-muted-foreground mb-2">

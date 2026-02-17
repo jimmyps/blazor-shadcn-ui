@@ -1,7 +1,5 @@
 @page "/components/popover"
 @using BlazorBlueprint.Primitives.Services
-@using BlazorBlueprint.Components.Popover
-
 <PageTitle>Popover Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -31,14 +29,14 @@
                 <p class="text-sm text-muted-foreground">
                     PopoverTrigger renders its own button with inline classes.
                 </p>
-                <Popover>
-                    <PopoverTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                <BbPopover>
+                    <BbPopoverTrigger AsChild="false" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                         Open Popover
-                    </PopoverTrigger>
-                    <PopoverContent>
+                    </BbPopoverTrigger>
+                    <BbPopoverContent>
                         <p class="text-sm">Basic popover content</p>
-                    </PopoverContent>
-                </Popover>
+                    </BbPopoverContent>
+                </BbPopover>
             </div>
 
             <!-- With AsChild -->
@@ -47,31 +45,33 @@
                 <p class="text-sm text-muted-foreground">
                     Button receives trigger behavior via TriggerContext.
                 </p>
-                <Popover>
-                    <PopoverTrigger AsChild>
-                        <Button Variant="ButtonVariant.Outline">
+                <BbPopover>
+                    <BbPopoverTrigger>
+                        <BbButton Variant="ButtonVariant.Outline">
                             <LucideIcon Name="settings" Size="16" />
                             Settings
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent>
+                        </BbButton>
+                    </BbPopoverTrigger>
+                    <BbPopoverContent>
                         <div class="space-y-2">
                             <h4 class="font-medium">Settings</h4>
                             <p class="text-sm text-muted-foreground">Configure your preferences</p>
                         </div>
-                    </PopoverContent>
-                </Popover>
+                    </BbPopoverContent>
+                </BbPopover>
             </div>
         </div>
+
+        <CodeBlock Source="Components/Popover/as-child.txt" />
     </section>
 
     <section class="space-y-4">
         <h2 class="text-2xl font-semibold mb-4">Basic Popover</h2>
-        <Popover>
-            <PopoverTrigger AsChild>
-                <Button Variant="ButtonVariant.Outline">Open Popover</Button>
-            </PopoverTrigger>
-            <PopoverContent>
+        <BbPopover>
+            <BbPopoverTrigger>
+                <BbButton Variant="ButtonVariant.Outline">Open Popover</BbButton>
+            </BbPopoverTrigger>
+            <BbPopoverContent>
                 <div class="grid gap-4">
                     <div class="space-y-2">
                         <h4 class="font-medium leading-none">Dimensions</h4>
@@ -90,68 +90,187 @@
                         </div>
                     </div>
                 </div>
-            </PopoverContent>
-        </Popover>
+            </BbPopoverContent>
+        </BbPopover>
+
+        <CodeBlock Source="Components/Popover/basic.txt" />
     </section>
 
     <section>
         <h2 class="text-2xl font-semibold mb-4">Positioning</h2>
         <div class="flex flex-wrap gap-4">
-            <Popover>
-                <PopoverTrigger AsChild>
-                    <Button Variant="ButtonVariant.Secondary">Top</Button>
-                </PopoverTrigger>
-                <PopoverContent Side="@PopoverSide.Top">
+            <BbPopover>
+                <BbPopoverTrigger>
+                    <BbButton Variant="ButtonVariant.Secondary">Top</BbButton>
+                </BbPopoverTrigger>
+                <BbPopoverContent Side="@PopoverSide.Top">
                     <p class="text-sm">Positioned on top</p>
-                </PopoverContent>
-            </Popover>
+                </BbPopoverContent>
+            </BbPopover>
 
-            <Popover>
-                <PopoverTrigger AsChild>
-                    <Button Variant="ButtonVariant.Secondary">Bottom</Button>
-                </PopoverTrigger>
-                <PopoverContent Side="@PopoverSide.Bottom">
+            <BbPopover>
+                <BbPopoverTrigger>
+                    <BbButton Variant="ButtonVariant.Secondary">Bottom</BbButton>
+                </BbPopoverTrigger>
+                <BbPopoverContent Side="@PopoverSide.Bottom">
                     <p class="text-sm">Positioned on bottom</p>
-                </PopoverContent>
-            </Popover>
+                </BbPopoverContent>
+            </BbPopover>
 
-            <Popover>
-                <PopoverTrigger AsChild>
-                    <Button Variant="ButtonVariant.Secondary">Left</Button>
-                </PopoverTrigger>
-                <PopoverContent Side="@PopoverSide.Left">
+            <BbPopover>
+                <BbPopoverTrigger>
+                    <BbButton Variant="ButtonVariant.Secondary">Left</BbButton>
+                </BbPopoverTrigger>
+                <BbPopoverContent Side="@PopoverSide.Left">
                     <p class="text-sm">Positioned on left</p>
-                </PopoverContent>
-            </Popover>
+                </BbPopoverContent>
+            </BbPopover>
 
-            <Popover>
-                <PopoverTrigger AsChild>
-                    <Button Variant="ButtonVariant.Secondary">Right</Button>
-                </PopoverTrigger>
-                <PopoverContent Side="@PopoverSide.Right">
+            <BbPopover>
+                <BbPopoverTrigger>
+                    <BbButton Variant="ButtonVariant.Secondary">Right</BbButton>
+                </BbPopoverTrigger>
+                <BbPopoverContent Side="@PopoverSide.Right">
                     <p class="text-sm">Positioned on right</p>
-                </PopoverContent>
-            </Popover>
+                </BbPopoverContent>
+            </BbPopover>
         </div>
+
+        <CodeBlock Source="Components/Popover/positioning.txt" />
     </section>
 
     <section>
         <h2 class="text-2xl font-semibold mb-4">Controlled Popover</h2>
         <div class="flex items-center gap-4">
-            <Popover @bind-Open="_isControlledOpen">
-                <PopoverTrigger AsChild>
-                    <Button>@(_isControlledOpen ? "Close" : "Open") Controlled</Button>
-                </PopoverTrigger>
-                <PopoverContent>
+            <BbPopover @bind-Open="_isControlledOpen">
+                <BbPopoverTrigger>
+                    <BbButton>@(_isControlledOpen ? "Close" : "Open") Controlled</BbButton>
+                </BbPopoverTrigger>
+                <BbPopoverContent>
                     <div class="space-y-2">
                         <p class="text-sm">This popover is controlled externally.</p>
                         <p class="text-sm font-medium">State: @(_isControlledOpen ? "Open" : "Closed")</p>
                     </div>
-                </PopoverContent>
-            </Popover>
-            <Button Variant="ButtonVariant.Outline" OnClick="() => _isControlledOpen = !_isControlledOpen">
+                </BbPopoverContent>
+            </BbPopover>
+            <BbButton Variant="ButtonVariant.Outline" OnClick="() => _isControlledOpen = !_isControlledOpen">
                 Toggle from Outside
-            </Button>
+            </BbButton>
+        </div>
+
+        <CodeBlock Source="Components/Popover/controlled.txt" />
+    </section>
+
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>
+                Trigger renders <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-haspopup="true"</code> to indicate a popup is available
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Trigger renders <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-expanded</code> reflecting the current open state
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Trigger renders <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-controls</code> linking to the popover content element
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Content container uses <code class="text-xs bg-muted px-1 py-0.5 rounded">role="group"</code> and receives focus with <code class="text-xs bg-muted px-1 py-0.5 rounded">tabindex="-1"</code>
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Content includes <code class="text-xs bg-muted px-1 py-0.5 rounded">data-state</code> attribute for open/closed styling hooks
+            </AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Close the popover">
+                <BbKbd>Escape</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Move focus into or within the popover">
+                <BbKbd>Tab</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="Popover">
+                <ApiParameter Name="Open" Type="bool?" Default="null">
+                    Controls whether the popover is open (controlled mode). When null, the popover manages its own state.
+                </ApiParameter>
+                <ApiParameter Name="OpenChanged" Type="EventCallback&lt;bool&gt;">
+                    Event callback invoked when the open state changes. Use with @@bind-Open for two-way binding.
+                </ApiParameter>
+                <ApiParameter Name="DefaultOpen" Type="bool" Default="false">
+                    Default open state when in uncontrolled mode.
+                </ApiParameter>
+                <ApiParameter Name="OnOpenChange" Type="EventCallback&lt;bool&gt;">
+                    Event callback invoked when the popover open state changes.
+                </ApiParameter>
+                <ApiParameter Name="Modal" Type="bool" Default="true">
+                    Whether the popover can be dismissed by clicking outside or pressing Escape.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The child content. Should include PopoverTrigger and PopoverContent components.
+                </ApiParameter>
+            </ApiReference>
+            <ApiReference ComponentName="PopoverTrigger">
+                <ApiParameter Name="AsChild" Type="bool" Default="true">
+                    When true, the trigger does not render its own button element. Instead, it passes trigger behavior via TriggerContext to child components.
+                </ApiParameter>
+                <ApiParameter Name="OnClick" Type="EventCallback&lt;MouseEventArgs&gt;">
+                    Custom click handler invoked in addition to the default toggle behavior.
+                </ApiParameter>
+                <ApiParameter Name="CustomClickHandling" Type="bool" Default="false">
+                    When true, only OnClick is invoked and the default popover toggle behavior is skipped.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The child content to render within the trigger.
+                </ApiParameter>
+            </ApiReference>
+            <ApiReference ComponentName="PopoverContent">
+                <ApiParameter Name="Side" Type="PopoverSide" Default="Bottom">
+                    Preferred side for positioning the content relative to the trigger. Options: Top, Right, Bottom, Left.
+                </ApiParameter>
+                <ApiParameter Name="Align" Type="PopoverAlign" Default="Center">
+                    Alignment of the content relative to the trigger. Options: Start, Center, End.
+                </ApiParameter>
+                <ApiParameter Name="Offset" Type="int" Default="4">
+                    Offset distance from the trigger element in pixels.
+                </ApiParameter>
+                <ApiParameter Name="MatchTriggerWidth" Type="bool" Default="false">
+                    Whether to match the popover width to the trigger element width.
+                </ApiParameter>
+                <ApiParameter Name="CloseOnEscape" Type="bool" Default="true">
+                    Whether pressing Escape should close the popover.
+                </ApiParameter>
+                <ApiParameter Name="CloseOnClickOutside" Type="bool" Default="true">
+                    Whether clicking outside should close the popover.
+                </ApiParameter>
+                <ApiParameter Name="Strategy" Type="PositioningStrategy" Default="Fixed">
+                    CSS positioning strategy. Use Fixed to escape stacking contexts, or Absolute to scroll with a container.
+                </ApiParameter>
+                <ApiParameter Name="ZIndex" Type="int" Default="9999">
+                    CSS z-index value for the popover content.
+                </ApiParameter>
+                <ApiParameter Name="OnEscapeKeyDown" Type="EventCallback&lt;KeyboardEventArgs&gt;">
+                    Event callback invoked when Escape key is pressed.
+                </ApiParameter>
+                <ApiParameter Name="OnClickOutside" Type="EventCallback">
+                    Event callback invoked when clicking outside the popover.
+                </ApiParameter>
+                <ApiParameter Name="OnContentReady" Type="EventCallback">
+                    Event callback invoked when the popover content is fully positioned and visible. Useful for focus management.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the content container.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content to render inside the popover.
+                </ApiParameter>
+            </ApiReference>
         </div>
     </section>
 </div>

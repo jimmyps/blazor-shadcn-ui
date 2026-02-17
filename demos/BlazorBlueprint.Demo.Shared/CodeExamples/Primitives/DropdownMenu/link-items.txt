@@ -1,0 +1,7 @@
+<BbDropdownMenuItem Href="/primitives/select">Select Primitive</BbDropdownMenuItem>
+<BbDropdownMenuItem Href="/primitives/switch">Switch Primitive</BbDropdownMenuItem>
+
+@* External link — opens in new tab with rel="noopener noreferrer" *@
+<BbDropdownMenuItem Href="https://github.com" Target="_blank">
+    GitHub (new tab)
+</BbDropdownMenuItem>

@@ -1,0 +1,1 @@
+<BbSlider Value="50" Disabled="true" />

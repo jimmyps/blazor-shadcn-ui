@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Input;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the type of input for an Input component.

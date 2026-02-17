@@ -59,7 +59,7 @@ public class PositioningService : IPositioningService, IAsyncDisposable
             flip = options.Flip,
             shift = options.Shift,
             padding = options.Padding,
-            strategy = options.Strategy,
+            strategy = options.Strategy.ToValue(),
             matchReferenceWidth = options.MatchReferenceWidth
         };
 
@@ -75,8 +75,8 @@ public class PositioningService : IPositioningService, IAsyncDisposable
                 ? origin.GetString()
                 : null,
             Strategy = result.TryGetProperty("strategy", out var strategy)
-                ? strategy.GetString() ?? options.Strategy
-                : options.Strategy
+                ? strategy.GetString() ?? options.Strategy.ToValue()
+                : options.Strategy.ToValue()
         };
     }
 
@@ -103,7 +103,7 @@ public class PositioningService : IPositioningService, IAsyncDisposable
             flip = options.Flip,
             shift = options.Shift,
             padding = options.Padding,
-            strategy = options.Strategy,
+            strategy = options.Strategy.ToValue(),
             matchReferenceWidth = options.MatchReferenceWidth
         };
 
@@ -128,7 +128,14 @@ public class PositioningService : IPositioningService, IAsyncDisposable
 
         if (_module != null)
         {
-            await _module.DisposeAsync();
+            try
+            {
+                await _module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnect
+            }
         }
 
         _moduleLock.Dispose();

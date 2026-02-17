@@ -1,0 +1,15 @@
+<BbTimeline>
+    <BbTimelineItem>
+        <TimeContent>
+            <BbTimelineTime Class="text-right pr-4">Jan 2024</BbTimelineTime>
+        </TimeContent>
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineHeader>
+                    <BbTimelineTitle>Project Kickoff</BbTimelineTitle>
+                </BbTimelineHeader>
+                <BbTimelineDescription>Initial planning and team formation.</BbTimelineDescription>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>

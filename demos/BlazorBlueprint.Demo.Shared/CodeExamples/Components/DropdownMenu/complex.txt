@@ -1,0 +1,16 @@
+<BbDropdownMenuContent Class="w-56">
+    <BbDropdownMenuLabel>My Account</BbDropdownMenuLabel>
+    <BbDropdownMenuSeparator />
+    <BbDropdownMenuGroup>
+        <BbDropdownMenuItem>
+            Profile
+            <BbDropdownMenuShortcut>⇧⌘P</BbDropdownMenuShortcut>
+        </BbDropdownMenuItem>
+        <BbDropdownMenuItem Disabled="true">
+            Keyboard shortcuts
+            <BbDropdownMenuShortcut>⌘K</BbDropdownMenuShortcut>
+        </BbDropdownMenuItem>
+    </BbDropdownMenuGroup>
+    <BbDropdownMenuSeparator />
+    <BbDropdownMenuItem>Log out</BbDropdownMenuItem>
+</BbDropdownMenuContent>

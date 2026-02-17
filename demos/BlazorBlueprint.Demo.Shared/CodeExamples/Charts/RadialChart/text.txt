@@ -1,0 +1,8 @@
+<BbRadialBarChart Data="@data" Height="250px"
+    InnerRadius="60%" OuterRadius="80%">
+    <BbChartTooltip />
+    <BbRadialBar DataKey="visitors" NameKey="browser"
+        Color="var(--chart-2)">
+        <BbCenterLabel Value="200" Title="Visitors" />
+    </BbRadialBar>
+</BbRadialBarChart>

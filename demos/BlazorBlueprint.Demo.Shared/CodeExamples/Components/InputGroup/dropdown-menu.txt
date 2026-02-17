@@ -1,0 +1,16 @@
+<BbDropdownMenu>
+    <BbInputGroup>
+        <BbInputGroupInput Placeholder="Enter file name" />
+        <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+            <BbDropdownMenuTrigger>
+                <BbInputGroupButton Variant="ButtonVariant.Ghost" Class="!px-1.5 !py-1.5 !rounded-md">
+                    <LucideIcon Name="chevron-down" Size="16" />
+                </BbInputGroupButton>
+            </BbDropdownMenuTrigger>
+        </BbInputGroupAddon>
+    </BbInputGroup>
+    <BbDropdownMenuContent Align="@PopoverAlign.End">
+        <BbDropdownMenuItem>Settings</BbDropdownMenuItem>
+        <BbDropdownMenuItem>Copy path</BbDropdownMenuItem>
+    </BbDropdownMenuContent>
+</BbDropdownMenu>

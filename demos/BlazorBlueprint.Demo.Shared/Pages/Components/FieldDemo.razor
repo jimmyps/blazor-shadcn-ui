@@ -1,11 +1,4 @@
 @page "/components/field"
-@using BlazorBlueprint.Components.Field
-@using BlazorBlueprint.Components.Input
-@using BlazorBlueprint.Components.Checkbox
-@using BlazorBlueprint.Components.RadioGroup
-@using BlazorBlueprint.Components.Switch
-@using BlazorBlueprint.Components.Select
-@using BlazorBlueprint.Components.Textarea
 @using BlazorBlueprint.Icons.Lucide.Components
 
 <PageTitle>Field - Blazor Blueprint</PageTitle>
@@ -16,34 +9,6 @@
         <p class="text-xl text-muted-foreground">
             Combine labels, controls, and help text to compose accessible form fields.
         </p>
-    </div>
-
-    <!-- When to use -->
-    <div class="rounded-lg border bg-card p-6 space-y-4">
-        <h2 class="text-lg font-semibold">When to use Field</h2>
-        <p class="text-sm text-muted-foreground">
-            Use <code class="text-xs bg-muted px-1 py-0.5 rounded">Field</code> when you need full control over
-            form layout, or when wrapping non-text controls like checkboxes, radios, switches, or selects.
-            Field is a layout primitive &mdash; it handles label, description, and error placement but has no
-            value binding or validation of its own.
-        </p>
-        <div class="rounded-md border border-dashed p-4 space-y-1.5">
-            <p class="text-sm font-medium">Example scenario</p>
-            <p class="text-sm text-muted-foreground">
-                You're building a settings page with a "Receive notifications" switch, a "Theme" radio group,
-                and a "Terms &amp; Conditions" checkbox. Each control needs a label, description, and consistent
-                spacing. Field gives you that layout structure while letting you use any control inside it.
-            </p>
-        </div>
-        <div class="bg-muted rounded-md p-4">
-            <pre class="text-sm font-mono whitespace-pre-wrap">&lt;Field&gt;
-    &lt;FieldLabel For="terms"&gt;Accept Terms&lt;/FieldLabel&gt;
-    &lt;FieldContent&gt;
-        &lt;Checkbox Id="terms" @("@")bind-Checked="accepted" /&gt;
-        &lt;FieldDescription&gt;You must accept to continue.&lt;/FieldDescription&gt;
-    &lt;/FieldContent&gt;
-&lt;/Field&gt;</pre>
-        </div>
     </div>
 
     <!-- Which input component? -->
@@ -69,48 +34,50 @@
         <div class="space-y-6">
             <!-- Simple Text Input -->
             <div class="space-y-2">
-                <Field>
-                    <FieldLabel For="username">Username</FieldLabel>
-                    <FieldContent>
-                        <Input Id="username" Type="InputType.Text" Placeholder="Enter your username" />
-                        <FieldDescription>Choose a unique username for your account.</FieldDescription>
-                    </FieldContent>
-                </Field>
+                <BbField>
+                    <BbFieldLabel For="username">Username</BbFieldLabel>
+                    <BbFieldContent>
+                        <BbInput Id="username" Type="InputType.Text" Placeholder="Enter your username" />
+                        <BbFieldDescription>Choose a unique username for your account.</BbFieldDescription>
+                    </BbFieldContent>
+                </BbField>
             </div>
 
             <!-- Email Input -->
             <div class="space-y-2">
-                <Field>
-                    <FieldLabel For="email">Email Address</FieldLabel>
-                    <FieldContent>
-                        <Input Id="email" Type="InputType.Email" Placeholder="you@example.com" />
-                        <FieldDescription>We'll never share your email with anyone else.</FieldDescription>
-                    </FieldContent>
-                </Field>
+                <BbField>
+                    <BbFieldLabel For="email">Email Address</BbFieldLabel>
+                    <BbFieldContent>
+                        <BbInput Id="email" Type="InputType.Email" Placeholder="you@example.com" />
+                        <BbFieldDescription>We'll never share your email with anyone else.</BbFieldDescription>
+                    </BbFieldContent>
+                </BbField>
             </div>
 
             <!-- Password Input -->
             <div class="space-y-2">
-                <Field>
-                    <FieldLabel For="password">Password</FieldLabel>
-                    <FieldContent>
-                        <Input Id="password" Type="InputType.Password" />
-                        <FieldDescription>Must be at least 8 characters long.</FieldDescription>
-                    </FieldContent>
-                </Field>
+                <BbField>
+                    <BbFieldLabel For="password">Password</BbFieldLabel>
+                    <BbFieldContent>
+                        <BbInput Id="password" Type="InputType.Password" />
+                        <BbFieldDescription>Must be at least 8 characters long.</BbFieldDescription>
+                    </BbFieldContent>
+                </BbField>
             </div>
 
             <!-- Textarea -->
             <div class="space-y-2">
-                <Field>
-                    <FieldLabel For="bio">Bio</FieldLabel>
-                    <FieldContent>
-                        <Textarea Id="bio" Placeholder="Tell us about yourself..." />
-                        <FieldDescription>Brief description for your profile. Maximum 500 characters.</FieldDescription>
-                    </FieldContent>
-                </Field>
+                <BbField>
+                    <BbFieldLabel For="bio">Bio</BbFieldLabel>
+                    <BbFieldContent>
+                        <BbTextarea Id="bio" Placeholder="Tell us about yourself..." />
+                        <BbFieldDescription>Brief description for your profile. Maximum 500 characters.</BbFieldDescription>
+                    </BbFieldContent>
+                </BbField>
             </div>
         </div>
+
+<CodeBlock Source="Components/Field/basic.txt" />
     </section>
 
     <!-- Validation Examples -->
@@ -125,41 +92,43 @@
         <div class="space-y-6">
             <!-- Single Error -->
             <div class="space-y-2">
-                <Field IsInvalid="true">
-                    <FieldLabel For="username-error">Username</FieldLabel>
-                    <FieldContent>
-                        <Input Id="username-error" Type="InputType.Text" Placeholder="Enter your username" Class="border-destructive" />
-                        <FieldError>
+                <BbField IsInvalid="true">
+                    <BbFieldLabel For="username-error">Username</BbFieldLabel>
+                    <BbFieldContent>
+                        <BbInput Id="username-error" Type="InputType.Text" Placeholder="Enter your username" Class="border-destructive" />
+                        <BbFieldError>
                             Username is already taken. Please choose another.
-                        </FieldError>
-                    </FieldContent>
-                </Field>
+                        </BbFieldError>
+                    </BbFieldContent>
+                </BbField>
             </div>
 
             <!-- Multiple Errors -->
             <div class="space-y-2">
-                <Field IsInvalid="true">
-                    <FieldLabel For="password-errors">Password</FieldLabel>
-                    <FieldContent>
-                        <Input Id="password-errors" Type="InputType.Password" Class="border-destructive" />
-                        <FieldError Errors="passwordErrors" />
-                    </FieldContent>
-                </Field>
+                <BbField IsInvalid="true">
+                    <BbFieldLabel For="password-errors">Password</BbFieldLabel>
+                    <BbFieldContent>
+                        <BbInput Id="password-errors" Type="InputType.Password" Class="border-destructive" />
+                        <BbFieldError Errors="passwordErrors" />
+                    </BbFieldContent>
+                </BbField>
             </div>
 
             <!-- Invalid Email -->
             <div class="space-y-2">
-                <Field IsInvalid="true">
-                    <FieldLabel For="email-invalid">Email Address</FieldLabel>
-                    <FieldContent>
-                        <Input Id="email-invalid" Type="InputType.Email" Value="invalid-email" Class="border-destructive" />
-                        <FieldError>
+                <BbField IsInvalid="true">
+                    <BbFieldLabel For="email-invalid">Email Address</BbFieldLabel>
+                    <BbFieldContent>
+                        <BbInput Id="email-invalid" Type="InputType.Email" Value="invalid-email" Class="border-destructive" />
+                        <BbFieldError>
                             Please enter a valid email address.
-                        </FieldError>
-                    </FieldContent>
-                </Field>
+                        </BbFieldError>
+                    </BbFieldContent>
+                </BbField>
             </div>
         </div>
+
+        <CodeBlock Source="Components/Field/validation.txt" />
     </section>
 
     <!-- Horizontal Orientation -->
@@ -174,28 +143,30 @@
         <div class="space-y-6">
             <!-- Horizontal Text Input -->
             <div class="space-y-2">
-                <Field Orientation="FieldOrientation.Horizontal">
-                    <FieldLabel For="name-horizontal" Class="w-32 pt-2">Full Name</FieldLabel>
-                    <FieldContent>
-                        <Input Id="name-horizontal" Type="InputType.Text" Placeholder="John Doe" />
-                        <FieldDescription>Enter your first and last name.</FieldDescription>
-                    </FieldContent>
-                </Field>
+                <BbField Orientation="FieldOrientation.Horizontal">
+                    <BbFieldLabel For="name-horizontal" Class="w-32 pt-2">Full Name</BbFieldLabel>
+                    <BbFieldContent>
+                        <BbInput Id="name-horizontal" Type="InputType.Text" Placeholder="John Doe" />
+                        <BbFieldDescription>Enter your first and last name.</BbFieldDescription>
+                    </BbFieldContent>
+                </BbField>
             </div>
 
             <!-- Horizontal with Checkbox -->
             <div class="space-y-2">
-                <Field Orientation="FieldOrientation.Horizontal">
-                    <FieldLabel For="terms-horizontal" Class="w-32">Accept Terms</FieldLabel>
-                    <FieldContent>
+                <BbField Orientation="FieldOrientation.Horizontal">
+                    <BbFieldLabel For="terms-horizontal" Class="w-32">Accept Terms</BbFieldLabel>
+                    <BbFieldContent>
                         <div class="flex items-center gap-2">
-                            <Checkbox Id="terms-horizontal" />
-                            <FieldDescription Class="!mb-0">I agree to the terms and conditions</FieldDescription>
+                            <BbCheckbox Id="terms-horizontal" />
+                            <BbFieldDescription Class="!mb-0">I agree to the terms and conditions</BbFieldDescription>
                         </div>
-                    </FieldContent>
-                </Field>
+                    </BbFieldContent>
+                </BbField>
             </div>
         </div>
+
+<CodeBlock Source="Components/Field/horizontal.txt" />
     </section>
 
     <!-- Responsive Orientation -->
@@ -210,15 +181,17 @@
         <div class="space-y-6">
             <!-- Responsive Layout -->
             <div class="space-y-2">
-                <Field Orientation="FieldOrientation.Responsive">
-                    <FieldLabel For="company-responsive" Class="w-full md:w-32 md:pt-2">Company</FieldLabel>
-                    <FieldContent>
-                        <Input Id="company-responsive" Type="InputType.Text" Placeholder="Acme Inc." />
-                        <FieldDescription>Your company or organization name.</FieldDescription>
-                    </FieldContent>
-                </Field>
+                <BbField Orientation="FieldOrientation.Responsive">
+                    <BbFieldLabel For="company-responsive" Class="w-full md:w-32 md:pt-2">Company</BbFieldLabel>
+                    <BbFieldContent>
+                        <BbInput Id="company-responsive" Type="InputType.Text" Placeholder="Acme Inc." />
+                        <BbFieldDescription>Your company or organization name.</BbFieldDescription>
+                    </BbFieldContent>
+                </BbField>
             </div>
         </div>
+
+<CodeBlock Source="Components/Field/responsive.txt" />
     </section>
 
     <!-- Field Groups -->
@@ -233,79 +206,81 @@
         <div class="space-y-6">
             <!-- Vertical Field Group -->
             <div class="space-y-2">
-                <FieldGroup Orientation="FieldGroupOrientation.Vertical">
-                    <Field>
-                        <FieldLabel For="first-name">First Name</FieldLabel>
-                        <FieldContent>
-                            <Input Id="first-name" Type="InputType.Text" Placeholder="John" />
-                        </FieldContent>
-                    </Field>
-                    <Field>
-                        <FieldLabel For="last-name">Last Name</FieldLabel>
-                        <FieldContent>
-                            <Input Id="last-name" Type="InputType.Text" Placeholder="Doe" />
-                        </FieldContent>
-                    </Field>
-                </FieldGroup>
+                <BbFieldGroup Orientation="FieldGroupOrientation.Vertical">
+                    <BbField>
+                        <BbFieldLabel For="first-name">First Name</BbFieldLabel>
+                        <BbFieldContent>
+                            <BbInput Id="first-name" Type="InputType.Text" Placeholder="John" />
+                        </BbFieldContent>
+                    </BbField>
+                    <BbField>
+                        <BbFieldLabel For="last-name">Last Name</BbFieldLabel>
+                        <BbFieldContent>
+                            <BbInput Id="last-name" Type="InputType.Text" Placeholder="Doe" />
+                        </BbFieldContent>
+                    </BbField>
+                </BbFieldGroup>
             </div>
 
             <!-- Horizontal Field Group -->
             <div class="space-y-2">
-                <FieldGroup Orientation="FieldGroupOrientation.Horizontal">
-                    <Field Class="flex-1">
-                        <FieldLabel For="city">City</FieldLabel>
-                        <FieldContent>
-                            <Input Id="city" Type="InputType.Text" Placeholder="New York" />
-                        </FieldContent>
-                    </Field>
-                    <Field Class="flex-1">
-                        <FieldLabel For="state">State</FieldLabel>
-                        <FieldContent>
-                            <Input Id="state" Type="InputType.Text" Placeholder="NY" />
-                        </FieldContent>
-                    </Field>
-                    <Field Class="w-32">
-                        <FieldLabel For="zip">ZIP</FieldLabel>
-                        <FieldContent>
-                            <Input Id="zip" Type="InputType.Text" Placeholder="10001" />
-                        </FieldContent>
-                    </Field>
-                </FieldGroup>
+                <BbFieldGroup Orientation="FieldGroupOrientation.Horizontal">
+                    <BbField Class="flex-1">
+                        <BbFieldLabel For="city">City</BbFieldLabel>
+                        <BbFieldContent>
+                            <BbInput Id="city" Type="InputType.Text" Placeholder="New York" />
+                        </BbFieldContent>
+                    </BbField>
+                    <BbField Class="flex-1">
+                        <BbFieldLabel For="state">State</BbFieldLabel>
+                        <BbFieldContent>
+                            <BbInput Id="state" Type="InputType.Text" Placeholder="NY" />
+                        </BbFieldContent>
+                    </BbField>
+                    <BbField Class="w-32">
+                        <BbFieldLabel For="zip">ZIP</BbFieldLabel>
+                        <BbFieldContent>
+                            <BbInput Id="zip" Type="InputType.Text" Placeholder="10001" />
+                        </BbFieldContent>
+                    </BbField>
+                </BbFieldGroup>
             </div>
 
             <!-- With Separator -->
             <div class="space-y-2">
-                <FieldGroup Orientation="FieldGroupOrientation.Vertical">
-                    <Field>
-                        <FieldLabel For="account-name">Account Name</FieldLabel>
-                        <FieldContent>
-                            <Input Id="account-name" Type="InputType.Text" />
-                        </FieldContent>
-                    </Field>
-                    <Field>
-                        <FieldLabel For="account-email">Account Email</FieldLabel>
-                        <FieldContent>
-                            <Input Id="account-email" Type="InputType.Email" />
-                        </FieldContent>
-                    </Field>
+                <BbFieldGroup Orientation="FieldGroupOrientation.Vertical">
+                    <BbField>
+                        <BbFieldLabel For="account-name">Account Name</BbFieldLabel>
+                        <BbFieldContent>
+                            <BbInput Id="account-name" Type="InputType.Text" />
+                        </BbFieldContent>
+                    </BbField>
+                    <BbField>
+                        <BbFieldLabel For="account-email">Account Email</BbFieldLabel>
+                        <BbFieldContent>
+                            <BbInput Id="account-email" Type="InputType.Email" />
+                        </BbFieldContent>
+                    </BbField>
 
-                    <FieldSeparator />
+                    <BbFieldSeparator />
 
-                    <Field>
-                        <FieldLabel For="billing-name">Billing Name</FieldLabel>
-                        <FieldContent>
-                            <Input Id="billing-name" Type="InputType.Text" />
-                        </FieldContent>
-                    </Field>
-                    <Field>
-                        <FieldLabel For="billing-address">Billing Address</FieldLabel>
-                        <FieldContent>
-                            <Input Id="billing-address" Type="InputType.Text" />
-                        </FieldContent>
-                    </Field>
-                </FieldGroup>
+                    <BbField>
+                        <BbFieldLabel For="billing-name">Billing Name</BbFieldLabel>
+                        <BbFieldContent>
+                            <BbInput Id="billing-name" Type="InputType.Text" />
+                        </BbFieldContent>
+                    </BbField>
+                    <BbField>
+                        <BbFieldLabel For="billing-address">Billing Address</BbFieldLabel>
+                        <BbFieldContent>
+                            <BbInput Id="billing-address" Type="InputType.Text" />
+                        </BbFieldContent>
+                    </BbField>
+                </BbFieldGroup>
             </div>
         </div>
+
+<CodeBlock Source="Components/Field/groups.txt" />
     </section>
 
     <!-- FieldSets -->
@@ -320,103 +295,105 @@
         <div class="space-y-6">
             <!-- Basic FieldSet -->
             <div class="space-y-2">
-                <FieldSet>
-                    <FieldLegend>Contact Information</FieldLegend>
-                    <FieldGroup>
-                        <Field>
-                            <FieldLabel For="contact-email">Email</FieldLabel>
-                            <FieldContent>
-                                <Input Id="contact-email" Type="InputType.Email" />
-                            </FieldContent>
-                        </Field>
-                        <Field>
-                            <FieldLabel For="contact-phone">Phone</FieldLabel>
-                            <FieldContent>
-                                <Input Id="contact-phone" Type="InputType.Tel" />
-                            </FieldContent>
-                        </Field>
-                    </FieldGroup>
-                </FieldSet>
+                <BbFieldSet>
+                    <BbFieldLegend>Contact Information</BbFieldLegend>
+                    <BbFieldGroup>
+                        <BbField>
+                            <BbFieldLabel For="contact-email">Email</BbFieldLabel>
+                            <BbFieldContent>
+                                <BbInput Id="contact-email" Type="InputType.Email" />
+                            </BbFieldContent>
+                        </BbField>
+                        <BbField>
+                            <BbFieldLabel For="contact-phone">Phone</BbFieldLabel>
+                            <BbFieldContent>
+                                <BbInput Id="contact-phone" Type="InputType.Tel" />
+                            </BbFieldContent>
+                        </BbField>
+                    </BbFieldGroup>
+                </BbFieldSet>
             </div>
 
             <!-- FieldSet with Radio Group -->
             <div class="space-y-2">
-                <FieldSet>
-                    <FieldLegend>How would you like to receive notifications?</FieldLegend>
-                    <RadioGroup @bind-Value="notificationMethod" TValue="string">
-                        <FieldGroup>
-                            <Field Orientation="FieldOrientation.Horizontal">
+                <BbFieldSet>
+                    <BbFieldLegend>How would you like to receive notifications?</BbFieldLegend>
+                    <BbRadioGroup @bind-Value="notificationMethod" TValue="string">
+                        <BbFieldGroup>
+                            <BbField Orientation="FieldOrientation.Horizontal">
                                 <div class="flex items-center gap-2">
-                                    <RadioGroupItem Value="@("email")" Id="notify-email" TValue="string" />
-                                    <FieldLabel For="notify-email" Class="font-normal">Email</FieldLabel>
+                                    <BbRadioGroupItem Value="@("email")" Id="notify-email" TValue="string" />
+                                    <BbFieldLabel For="notify-email" Class="font-normal">Email</BbFieldLabel>
                                 </div>
-                            </Field>
-                            <Field Orientation="FieldOrientation.Horizontal">
+                            </BbField>
+                            <BbField Orientation="FieldOrientation.Horizontal">
                                 <div class="flex items-center gap-2">
-                                    <RadioGroupItem Value="@("sms")" Id="notify-sms" TValue="string" />
-                                    <FieldLabel For="notify-sms" Class="font-normal">SMS</FieldLabel>
+                                    <BbRadioGroupItem Value="@("sms")" Id="notify-sms" TValue="string" />
+                                    <BbFieldLabel For="notify-sms" Class="font-normal">SMS</BbFieldLabel>
                                 </div>
-                            </Field>
-                            <Field Orientation="FieldOrientation.Horizontal">
+                            </BbField>
+                            <BbField Orientation="FieldOrientation.Horizontal">
                                 <div class="flex items-center gap-2">
-                                    <RadioGroupItem Value="@("push")" Id="notify-push" TValue="string" />
-                                    <FieldLabel For="notify-push" Class="font-normal">Push Notifications</FieldLabel>
+                                    <BbRadioGroupItem Value="@("push")" Id="notify-push" TValue="string" />
+                                    <BbFieldLabel For="notify-push" Class="font-normal">Push Notifications</BbFieldLabel>
                                 </div>
-                            </Field>
-                        </FieldGroup>
-                    </RadioGroup>
-                    <FieldDescription Class="mt-2">We'll send important updates to your preferred channel.</FieldDescription>
-                </FieldSet>
+                            </BbField>
+                        </BbFieldGroup>
+                    </BbRadioGroup>
+                    <BbFieldDescription Class="mt-2">We'll send important updates to your preferred channel.</BbFieldDescription>
+                </BbFieldSet>
             </div>
 
             <!-- Complex FieldSet with Multiple Sections -->
             <div class="space-y-2">
-                <FieldSet>
-                    <FieldLegend>User Profile</FieldLegend>
-                    <FieldGroup>
-                        <FieldGroup Orientation="FieldGroupOrientation.Horizontal">
-                            <Field Class="flex-1">
-                                <FieldLabel For="profile-first">First Name</FieldLabel>
-                                <FieldContent>
-                                    <Input Id="profile-first" Type="InputType.Text" />
-                                </FieldContent>
-                            </Field>
-                            <Field Class="flex-1">
-                                <FieldLabel For="profile-last">Last Name</FieldLabel>
-                                <FieldContent>
-                                    <Input Id="profile-last" Type="InputType.Text" />
-                                </FieldContent>
-                            </Field>
-                        </FieldGroup>
+                <BbFieldSet>
+                    <BbFieldLegend>User Profile</BbFieldLegend>
+                    <BbFieldGroup>
+                        <BbFieldGroup Orientation="FieldGroupOrientation.Horizontal">
+                            <BbField Class="flex-1">
+                                <BbFieldLabel For="profile-first">First Name</BbFieldLabel>
+                                <BbFieldContent>
+                                    <BbInput Id="profile-first" Type="InputType.Text" />
+                                </BbFieldContent>
+                            </BbField>
+                            <BbField Class="flex-1">
+                                <BbFieldLabel For="profile-last">Last Name</BbFieldLabel>
+                                <BbFieldContent>
+                                    <BbInput Id="profile-last" Type="InputType.Text" />
+                                </BbFieldContent>
+                            </BbField>
+                        </BbFieldGroup>
 
-                        <Field>
-                            <FieldLabel For="profile-username">Username</FieldLabel>
-                            <FieldContent>
-                                <Input Id="profile-username" Type="InputType.Text" />
-                                <FieldDescription>This will be your public display name.</FieldDescription>
-                            </FieldContent>
-                        </Field>
+                        <BbField>
+                            <BbFieldLabel For="profile-username">Username</BbFieldLabel>
+                            <BbFieldContent>
+                                <BbInput Id="profile-username" Type="InputType.Text" />
+                                <BbFieldDescription>This will be your public display name.</BbFieldDescription>
+                            </BbFieldContent>
+                        </BbField>
 
-                        <FieldSeparator />
+                        <BbFieldSeparator />
 
-                        <Field>
-                            <FieldLabel For="profile-bio">Biography</FieldLabel>
-                            <FieldContent>
-                                <Textarea Id="profile-bio" Placeholder="Tell us about yourself..." />
-                                <FieldDescription>Brief bio for your profile. Maximum 500 characters.</FieldDescription>
-                            </FieldContent>
-                        </Field>
+                        <BbField>
+                            <BbFieldLabel For="profile-bio">Biography</BbFieldLabel>
+                            <BbFieldContent>
+                                <BbTextarea Id="profile-bio" Placeholder="Tell us about yourself..." />
+                                <BbFieldDescription>Brief bio for your profile. Maximum 500 characters.</BbFieldDescription>
+                            </BbFieldContent>
+                        </BbField>
 
-                        <Field Orientation="FieldOrientation.Horizontal">
+                        <BbField Orientation="FieldOrientation.Horizontal">
                             <div class="flex items-center gap-2">
-                                <Checkbox Id="profile-public" />
-                                <FieldLabel For="profile-public" Class="font-normal">Make profile public</FieldLabel>
+                                <BbCheckbox Id="profile-public" />
+                                <BbFieldLabel For="profile-public" Class="font-normal">Make profile public</BbFieldLabel>
                             </div>
-                        </Field>
-                    </FieldGroup>
-                </FieldSet>
+                        </BbField>
+                    </BbFieldGroup>
+                </BbFieldSet>
             </div>
         </div>
+
+<CodeBlock Source="Components/Field/fieldsets.txt" />
     </section>
 
     <!-- Field with Title -->
@@ -431,77 +408,69 @@
         <div class="space-y-6">
             <!-- Settings with Title -->
             <div class="space-y-2">
-                <Field>
-                    <FieldContent>
-                        <FieldTitle>Email Notifications</FieldTitle>
+                <BbField>
+                    <BbFieldContent>
+                        <BbFieldTitle>Email Notifications</BbFieldTitle>
                         <div class="space-y-2">
                             <div class="flex items-center gap-2">
-                                <Checkbox Id="notify-updates" />
-                                <FieldLabel For="notify-updates" Class="font-normal">Product updates</FieldLabel>
+                                <BbCheckbox Id="notify-updates" />
+                                <BbFieldLabel For="notify-updates" Class="font-normal">Product updates</BbFieldLabel>
                             </div>
                             <div class="flex items-center gap-2">
-                                <Checkbox Id="notify-security" />
-                                <FieldLabel For="notify-security" Class="font-normal">Security alerts</FieldLabel>
+                                <BbCheckbox Id="notify-security" />
+                                <BbFieldLabel For="notify-security" Class="font-normal">Security alerts</BbFieldLabel>
                             </div>
                             <div class="flex items-center gap-2">
-                                <Checkbox Id="notify-marketing" />
-                                <FieldLabel For="notify-marketing" Class="font-normal">Marketing emails</FieldLabel>
+                                <BbCheckbox Id="notify-marketing" />
+                                <BbFieldLabel For="notify-marketing" Class="font-normal">Marketing emails</BbFieldLabel>
                             </div>
                         </div>
-                        <FieldDescription>Choose which emails you want to receive.</FieldDescription>
-                    </FieldContent>
-                </Field>
+                        <BbFieldDescription>Choose which emails you want to receive.</BbFieldDescription>
+                    </BbFieldContent>
+                </BbField>
             </div>
         </div>
+
+<CodeBlock Source="Components/Field/title.txt" />
     </section>
 
-    <!-- Usage Notes -->
-    <section class="space-y-6">
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Use FieldLabel with proper 'for' attribute to associate with inputs</AccessibilityItem>
+            <AccessibilityItem>FieldDescription should have an ID for aria-describedby</AccessibilityItem>
+            <AccessibilityItem>FieldError should have an ID for aria-describedby on invalid inputs</AccessibilityItem>
+            <AccessibilityItem>FieldSet provides semantic grouping for related controls</AccessibilityItem>
+            <AccessibilityItem>All components render proper semantic HTML elements</AccessibilityItem>
+        </AriaAttributes>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Usage Notes</h2>
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="Field">
+                <ApiParameter Name="Orientation" Type="FieldOrientation" Default="Vertical">
+                    Layout orientation: Vertical, Horizontal, or Responsive.
+                </ApiParameter>
+                <ApiParameter Name="IsInvalid" Type="bool" Default="false">
+                    When true, cascades invalid state to child inputs automatically.
+                </ApiParameter>
+            </ApiReference>
 
-        <div class="rounded-lg border p-6 space-y-4">
-            <div class="space-y-3">
-                <h3 class="font-semibold">Key Features</h3>
-                <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                    <li>Flexible layout with vertical, horizontal, and responsive orientations</li>
-                    <li>Automatic error state styling via data-invalid attribute</li>
-                    <li>Proper role="group" for accessibility</li>
-                    <li>Support for descriptions and multiple error messages</li>
-                    <li>FieldSet and FieldLegend for semantic grouping</li>
-                    <li>FieldGroup for consistent spacing of multiple fields</li>
-                    <li>FieldSeparator for visual section dividers</li>
-                    <li>Container query support for responsive layouts</li>
-                </ul>
-            </div>
+            <ApiReference ComponentName="FieldError">
+                <ApiParameter Name="Errors" Type="List&lt;string&gt;?">
+                    List of error messages to display. Alternatively use ChildContent for a single message.
+                </ApiParameter>
+            </ApiReference>
 
-            <div class="space-y-3">
-                <h3 class="font-semibold">Components</h3>
-                <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                    <li><strong>Field</strong> - Main container with orientation support</li>
-                    <li><strong>FieldLabel</strong> - Label element with for attribute</li>
-                    <li><strong>FieldContent</strong> - Flex column wrapper for controls and descriptions</li>
-                    <li><strong>FieldDescription</strong> - Helper text with muted styling</li>
-                    <li><strong>FieldError</strong> - Error message container with destructive styling</li>
-                    <li><strong>FieldSet</strong> - Semantic fieldset element for grouping</li>
-                    <li><strong>FieldLegend</strong> - Legend for fieldsets with variant options</li>
-                    <li><strong>FieldGroup</strong> - Layout wrapper for stacking fields</li>
-                    <li><strong>FieldTitle</strong> - Title element for complex field layouts</li>
-                    <li><strong>FieldSeparator</strong> - Visual divider between sections</li>
-                </ul>
-            </div>
-
-            <div class="space-y-3">
-                <h3 class="font-semibold">Accessibility</h3>
-                <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                    <li>Use FieldLabel with proper 'for' attribute to associate with inputs</li>
-                    <li>FieldDescription should have an ID for aria-describedby</li>
-                    <li>FieldError should have an ID for aria-describedby on invalid inputs</li>
-                    <li>FieldSet provides semantic grouping for related controls</li>
-                    <li>All components render proper semantic HTML elements</li>
-                </ul>
-            </div>
+            <ApiReference ComponentName="FieldGroup">
+                <ApiParameter Name="Orientation" Type="FieldGroupOrientation" Default="Vertical">
+                    Layout orientation: Vertical or Horizontal.
+                </ApiParameter>
+            </ApiReference>
         </div>
     </section>
 </div>

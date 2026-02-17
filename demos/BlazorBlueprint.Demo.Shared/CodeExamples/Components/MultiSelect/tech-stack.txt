@@ -1,0 +1,9 @@
+<BbMultiSelect TValue="string"
+             Options="technologies"
+             @bind-Values="selectedTechnologies"
+             Placeholder="Select technologies..."
+             SearchPlaceholder="Search..."
+             ShowSelectAll="true"
+             SelectAllLabel="Select All"
+             MaxDisplayTags="3"
+             PopoverWidth="w-[320px]" />

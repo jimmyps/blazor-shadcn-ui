@@ -1,0 +1,7 @@
+<BbSlider @bind-Value="value"
+        TrackClass="bg-green-200 dark:bg-green-900"
+        ThumbClass="border-green-500" />
+
+<BbSlider @bind-Value="value"
+        TrackClass="bg-blue-200 dark:bg-blue-900"
+        ThumbClass="border-blue-500 h-6 w-6" />

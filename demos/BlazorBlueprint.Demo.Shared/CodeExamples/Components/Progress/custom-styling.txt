@@ -1,0 +1,10 @@
+<!-- Taller progress bar -->
+<BbProgress Value="60" Class="h-6" />
+
+<!-- Custom colors -->
+<BbProgress Value="80"
+          Class="bg-blue-100 dark:bg-blue-900"
+          IndicatorClass="bg-blue-500" />
+
+<!-- Rounded full -->
+<BbProgress Value="45" Class="h-3 rounded-full" />

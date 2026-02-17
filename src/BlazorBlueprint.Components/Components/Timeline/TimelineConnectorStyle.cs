@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Timeline;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the line style for Timeline connectors.

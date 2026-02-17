@@ -1,0 +1,3 @@
+<BbInputGroupInput UpdateTiming="UpdateTiming.Immediate" />
+<BbInputGroupInput UpdateTiming="UpdateTiming.OnChange" />
+<BbInputGroupInput UpdateTiming="UpdateTiming.Debounced" DebounceInterval="500" />

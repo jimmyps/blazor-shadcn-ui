@@ -1,0 +1,9 @@
+<!-- Compact editor -->
+<BbMarkdownEditor @bind-Value="value"
+                MinHeight="100px"
+                Placeholder="A compact editor..." />
+
+<!-- Taller editor -->
+<BbMarkdownEditor @bind-Value="value"
+                MinHeight="300px"
+                Placeholder="A taller editor..." />

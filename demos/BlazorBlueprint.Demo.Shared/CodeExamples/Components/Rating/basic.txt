@@ -1,0 +1,1 @@
+<BbRating @bind-Value="rating" />

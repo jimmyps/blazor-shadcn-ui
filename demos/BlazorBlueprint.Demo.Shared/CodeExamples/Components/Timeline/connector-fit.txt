@@ -1,0 +1,20 @@
+<BbTimeline Align="TimelineAlign.Left" ConnectorFit="TimelineConnectorFit.Spaced">
+    <BbTimelineItem>
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Design</BbTimelineTitle>
+                <BbTimelineDescription>Created wireframes and mockups.</BbTimelineDescription>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>
+
+<BbTimeline Align="TimelineAlign.Left" ConnectorFit="TimelineConnectorFit.Connected">
+    <BbTimelineItem>
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Design</BbTimelineTitle>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>

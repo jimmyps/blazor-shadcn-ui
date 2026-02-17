@@ -1,0 +1,6 @@
+<EditForm Model="formModel">
+    <BbNativeSelect TValue="string" @bind-Value="formModel.Country" Placeholder="Select a country">
+        <option value="us">United States</option>
+    </BbNativeSelect>
+    <ValidationMessage For="@(() => formModel.Country)" />
+</EditForm>

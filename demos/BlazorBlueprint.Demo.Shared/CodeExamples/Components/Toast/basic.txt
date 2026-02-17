@@ -1,0 +1,10 @@
+@inject ToastService ToastService
+
+<BbButton OnClick="@ShowDefaultToast">Show Toast</BbButton>
+
+@code {
+    private void ShowDefaultToast()
+    {
+        ToastService.Show("Your message has been sent.");
+    }
+}

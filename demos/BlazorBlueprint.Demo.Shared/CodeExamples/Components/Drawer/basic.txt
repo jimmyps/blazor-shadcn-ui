@@ -1,0 +1,19 @@
+<BbDrawer>
+    <BbDrawerTrigger>
+        <BbButton Variant="ButtonVariant.Outline">Open Drawer</BbButton>
+    </BbDrawerTrigger>
+    <BbDrawerContent>
+        <BbDrawerHeader>
+            <BbDrawerTitle>Edit Profile</BbDrawerTitle>
+            <BbDrawerDescription>
+                Make changes to your profile here.
+            </BbDrawerDescription>
+        </BbDrawerHeader>
+        <BbDrawerFooter>
+            <BbButton>Save changes</BbButton>
+            <BbDrawerClose>
+                <BbButton Variant="ButtonVariant.Outline">Cancel</BbButton>
+            </BbDrawerClose>
+        </BbDrawerFooter>
+    </BbDrawerContent>
+</BbDrawer>

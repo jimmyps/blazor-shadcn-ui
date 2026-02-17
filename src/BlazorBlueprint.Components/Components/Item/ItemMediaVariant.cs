@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Item;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the visual style variants for the ItemMedia component.

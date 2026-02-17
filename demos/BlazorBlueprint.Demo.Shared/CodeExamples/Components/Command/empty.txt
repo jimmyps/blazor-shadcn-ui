@@ -1,0 +1,13 @@
+<BbCommand>
+    <BbCommandInput Placeholder="Try searching for xyz..." />
+    <BbCommandList>
+        <BbCommandEmpty>
+            <div class="flex flex-col items-center gap-2">
+                <p>No results found for your query.</p>
+            </div>
+        </BbCommandEmpty>
+        <BbCommandGroup>
+            <BbCommandItem Value="apple">Apple</BbCommandItem>
+        </BbCommandGroup>
+    </BbCommandList>
+</BbCommand>

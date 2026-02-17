@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Alert;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the visual style variant for an Alert component.

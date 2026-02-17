@@ -1,0 +1,20 @@
+<div class="w-72">
+    <BbMultiSelect TValue="string"
+                Options="languages"
+                @bind-Values="matchWidthLanguages"
+                Placeholder="Select languages..."
+                SearchPlaceholder="Search..."
+                MatchTriggerWidth="true"
+                Class="w-full" />
+</div>
+
+<div class="w-[500px]">
+    <BbMultiSelect TValue="string"
+                Options="technologies"
+                @bind-Values="matchWidthTechnologies"
+                Placeholder="Select technologies..."
+                SearchPlaceholder="Search..."
+                ShowSelectAll="true"
+                MatchTriggerWidth="true"
+                Class="w-full" />
+</div>

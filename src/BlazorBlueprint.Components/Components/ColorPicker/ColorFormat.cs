@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.ColorPicker;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the color format for the ColorPicker.

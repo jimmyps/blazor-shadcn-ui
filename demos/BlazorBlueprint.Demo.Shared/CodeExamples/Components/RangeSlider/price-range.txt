@@ -1,0 +1,6 @@
+<BbRangeSlider @bind-Value="priceRange"
+             Min="0"
+             Max="500"
+             Step="10"
+             ShowTooltips="true"
+             FormatValueFunc="@(v => $"${v:F0}")" />

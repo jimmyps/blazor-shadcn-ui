@@ -1,0 +1,42 @@
+@namespace BlazorBlueprint.Components
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+@if (ShowCharacterCount)
+{
+    <div class="space-y-1.5" data-textarea-wrapper>
+        <textarea
+            @ref="inputRef"
+            id="@EffectiveId"
+            name="@EffectiveName"
+            class="@CssClass"
+            value="@Value"
+            placeholder="@Placeholder"
+            disabled="@Disabled"
+            required="@Required"
+            maxlength="@MaxLength"
+            aria-label="@AriaLabel"
+            aria-describedby="@AriaDescribedBy"
+            aria-invalid="@EffectiveAriaInvalid"
+            data-slot="textarea-control"></textarea>
+        <p class="text-xs text-muted-foreground text-right" data-character-count>@CharacterCountText</p>
+    </div>
+}
+else
+{
+    <textarea
+        @ref="inputRef"
+        id="@EffectiveId"
+        name="@EffectiveName"
+        class="@CssClass"
+        value="@Value"
+        placeholder="@Placeholder"
+        disabled="@Disabled"
+        required="@Required"
+        maxlength="@MaxLength"
+        aria-label="@AriaLabel"
+        aria-describedby="@AriaDescribedBy"
+        aria-invalid="@EffectiveAriaInvalid"
+        data-slot="textarea-control"></textarea>
+}

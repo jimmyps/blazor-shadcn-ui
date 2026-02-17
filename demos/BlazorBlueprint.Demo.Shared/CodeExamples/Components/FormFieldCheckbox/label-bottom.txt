@@ -1,0 +1,4 @@
+<BbFormFieldCheckbox @bind-Checked="bottomLabel"
+                       Label="Enable feature"
+                       HelperText="This can be changed later."
+                       Orientation="FieldOrientation.VerticalEnd" />

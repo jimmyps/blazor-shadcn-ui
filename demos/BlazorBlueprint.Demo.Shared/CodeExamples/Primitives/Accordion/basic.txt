@@ -1,0 +1,12 @@
+@using BlazorBlueprint.Primitives.Accordion
+
+<BbAccordion DefaultValue="@(new HashSet<string> { "item-1" })" class="border rounded">
+    <BbAccordionItem Value="item-1" class="border-b last:border-0">
+        <BbAccordionTrigger class="w-full p-4 text-left cursor-pointer">
+            Is it accessible?
+        </BbAccordionTrigger>
+        <BbAccordionContent class="p-4 pt-0">
+            Yes. It adheres to the WAI-ARIA design pattern.
+        </BbAccordionContent>
+    </BbAccordionItem>
+</BbAccordion>

@@ -1,0 +1,29 @@
+<BbSidebarContent>
+    <BbSidebarGroup>
+        <BbSidebarGroupLabel>Platform</BbSidebarGroupLabel>
+        <BbSidebarGroupContent>
+            <BbSidebarMenu>
+                <BbSidebarMenuItem>
+                    <BbSidebarMenuButton Tooltip="Dashboard">
+                        <span>Dashboard</span>
+                    </BbSidebarMenuButton>
+                </BbSidebarMenuItem>
+            </BbSidebarMenu>
+        </BbSidebarGroupContent>
+    </BbSidebarGroup>
+
+    <BbSidebarSeparator />
+
+    <BbSidebarGroup>
+        <BbSidebarGroupLabel>Settings</BbSidebarGroupLabel>
+        <BbSidebarGroupContent>
+            <BbSidebarMenu>
+                <BbSidebarMenuItem>
+                    <BbSidebarMenuButton Tooltip="Profile">
+                        <span>Profile</span>
+                    </BbSidebarMenuButton>
+                </BbSidebarMenuItem>
+            </BbSidebarMenu>
+        </BbSidebarGroupContent>
+    </BbSidebarGroup>
+</BbSidebarContent>

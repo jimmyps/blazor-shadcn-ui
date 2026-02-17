@@ -1,0 +1,7 @@
+ToastService.Show(new ToastData
+{
+    Title = "Undo action",
+    Description = "Your post has been deleted.",
+    ActionText = "Undo",
+    OnAction = () => ToastService.Success("Post restored!")
+});

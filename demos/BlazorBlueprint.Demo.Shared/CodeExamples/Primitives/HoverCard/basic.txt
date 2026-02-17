@@ -1,0 +1,11 @@
+<BbHoverCard>
+    <BbHoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+        Hover me
+    </BbHoverCardTrigger>
+    <BbHoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[280px]">
+        <div class="font-semibold mb-2">Hover Card Content</div>
+        <p class="text-sm text-muted-foreground">
+            This content appears when you hover over the trigger.
+        </p>
+    </BbHoverCardContent>
+</BbHoverCard>

@@ -1,13 +1,15 @@
 @page "/primitives/hovercard"
 @using BlazorBlueprint.Primitives.Services
-@using BlazorBlueprint.Primitives.HoverCard
+<PageTitle>HoverCard Primitive - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
     <div>
-        <h1 class="text-4xl font-bold">HoverCard Primitive</h1>
-        <p class="text-xl text-muted-foreground">
-            Headless, unstyled hover card primitive with positioning and delay controls.
-        </p>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">HoverCard Primitive</h1>
+            <p class="text-xl text-muted-foreground">
+                Headless, unstyled hover card primitive with positioning and delay controls.
+            </p>
+        </div>
     </div>
 
     <div class="space-y-6">
@@ -27,14 +29,14 @@
                     <p class="text-sm text-muted-foreground">
                         HoverCardTrigger renders its own div element.
                     </p>
-                    <HoverCard>
-                        <HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+                        <BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
                             Hover me
-                        </HoverCardTrigger>
-                        <HoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+                        </BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger>
+                        <BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
                             <p class="text-sm">Without AsChild hover card</p>
-                        </HoverCardContent>
-                    </HoverCard>
+                        </BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent>
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
                 </div>
 
                 <!-- With AsChild -->
@@ -43,11 +45,11 @@
                     <p class="text-sm text-muted-foreground">
                         Button receives hover/focus behavior via TriggerContext.
                     </p>
-                    <HoverCard>
-                        <HoverCardTrigger AsChild>
-                            <Button Variant="ButtonVariant.Link">@@johndoe</Button>
-                        </HoverCardTrigger>
-                        <HoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+                        <BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger AsChild>
+                            <BbButton Variant="ButtonVariant.Link">@@johndoe</BbButton>
+                        </BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger>
+                        <BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
                             <div class="flex gap-3">
                                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-700"></div>
                                 <div>
@@ -55,194 +57,298 @@
                                     <p class="text-xs text-muted-foreground">Software Developer</p>
                                 </div>
                             </div>
-                        </HoverCardContent>
-                    </HoverCard>
+                        </BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent>
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
                 </div>
             </div>
+
+            <CodeBlock Source="Primitives/HoverCard/as-child.txt" />
         </section>
 
-        <h2 class="text-2xl font-semibold">Basic Usage</h2>
-        <p class="text-sm text-muted-foreground">
-            Hover over the trigger to show the hover card. Content appears after a delay.
-        </p>
+        <!-- Basic Usage -->
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Basic Usage</h2>
+                <p class="text-muted-foreground">
+                    Hover over the trigger to show the hover card. Content appears after a delay.
+                </p>
+            </div>
 
-        <div class="flex items-center gap-4">
-            <HoverCard>
-                <HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
-                    Hover me
-                </HoverCardTrigger>
+            <div class="flex items-center gap-4">
+                <BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+                        Hover me
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger>
 
-                <HoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[280px]">
-                    <div class="font-semibold mb-2">Hover Card Content</div>
-                    <p class="text-sm text-muted-foreground">
-                        This content appears when you hover over the trigger. It uses the primitive component with Tailwind classes.
-                    </p>
-                </HoverCardContent>
-            </HoverCard>
-        </div>
-    </div>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[280px]">
+                        <div class="font-semibold mb-2">Hover Card Content</div>
+                        <p class="text-sm text-muted-foreground">
+                            This content appears when you hover over the trigger. It uses the primitive component with Tailwind classes.
+                        </p>
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent>
+                </BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+            </div>
 
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Custom Delays</h2>
-        <p class="text-sm text-muted-foreground">
-            Control the open and close delays in milliseconds.
-        </p>
+            <CodeBlock Source="Primitives/HoverCard/basic.txt" />
+        </section>
 
-        <div class="flex items-center gap-8">
-            <HoverCard OpenDelay="200" CloseDelay="100">
-                <HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
-                    Quick (200ms)
-                </HoverCardTrigger>
+        <!-- Custom Delays -->
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Custom Delays</h2>
+                <p class="text-muted-foreground">
+                    Control the open and close delays in milliseconds.
+                </p>
+            </div>
 
-                <HoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
-                    <p class="text-sm">Opens quickly with 200ms delay.</p>
-                </HoverCardContent>
-            </HoverCard>
+            <div class="flex items-center gap-8">
+                <BlazorBlueprint.Primitives.HoverCard.BbHoverCard OpenDelay="200" CloseDelay="100">
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+                        Quick (200ms)
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger>
 
-            <HoverCard OpenDelay="1000" CloseDelay="500">
-                <HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
-                    Slow (1000ms)
-                </HoverCardTrigger>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+                        <p class="text-sm">Opens quickly with 200ms delay.</p>
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent>
+                </BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
 
-                <HoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
-                    <p class="text-sm">Opens slowly with 1000ms delay.</p>
-                </HoverCardContent>
-            </HoverCard>
-        </div>
-    </div>
+                <BlazorBlueprint.Primitives.HoverCard.BbHoverCard OpenDelay="1000" CloseDelay="500">
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+                        Slow (1000ms)
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger>
 
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Positioning</h2>
-        <p class="text-sm text-muted-foreground">
-            Control where the hover card appears relative to the trigger.
-        </p>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+                        <p class="text-sm">Opens slowly with 1000ms delay.</p>
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent>
+                </BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+            </div>
 
-        <div class="flex flex-wrap items-center gap-4">
-            <HoverCard>
-                <HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
-                    Bottom (default)
-                </HoverCardTrigger>
-                <HoverCardContent Side="@PopoverSide.Bottom" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
-                    Positioned at bottom
-                </HoverCardContent>
-            </HoverCard>
+            <CodeBlock Source="Primitives/HoverCard/custom-delays.txt" />
+        </section>
 
-            <HoverCard>
-                <HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
-                    Top
-                </HoverCardTrigger>
-                <HoverCardContent Side="@PopoverSide.Top" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
-                    Positioned at top
-                </HoverCardContent>
-            </HoverCard>
+        <!-- Positioning -->
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Positioning</h2>
+                <p class="text-muted-foreground">
+                    Control where the hover card appears relative to the trigger.
+                </p>
+            </div>
 
-            <HoverCard>
-                <HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
-                    Right
-                </HoverCardTrigger>
-                <HoverCardContent Side="@PopoverSide.Right" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
-                    Positioned at right
-                </HoverCardContent>
-            </HoverCard>
+            <div class="flex flex-wrap items-center gap-4">
+                <BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger class="inline-flex items-center justify-center px-4 py-2 border rounded cursor-pointer">
+                        <LucideIcon Name="arrow-down" Size="16" />
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent Side="@PopoverSide.Bottom" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
+                        Positioned at bottom
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent>
+                </BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
 
-            <HoverCard>
-                <HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
-                    Left
-                </HoverCardTrigger>
-                <HoverCardContent Side="@PopoverSide.Left" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
-                    Positioned at left
-                </HoverCardContent>
-            </HoverCard>
-        </div>
-    </div>
+                <BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger class="inline-flex items-center justify-center px-4 py-2 border rounded cursor-pointer">
+                        <LucideIcon Name="arrow-up" Size="16" />
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent Side="@PopoverSide.Top" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
+                        Positioned at top
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent>
+                </BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
 
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Alignment</h2>
-        <p class="text-sm text-muted-foreground">
-            Control the alignment of the hover card relative to the trigger.
-        </p>
+                <BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger class="inline-flex items-center justify-center px-4 py-2 border rounded cursor-pointer">
+                        <LucideIcon Name="arrow-right" Size="16" />
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent Side="@PopoverSide.Right" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
+                        Positioned at right
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent>
+                </BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
 
-        <div class="flex items-center gap-4">
-            <HoverCard>
-                <HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
-                    Start Aligned
-                </HoverCardTrigger>
-                <HoverCardContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
-                    Aligned to start
-                </HoverCardContent>
-            </HoverCard>
+                <BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger class="inline-flex items-center justify-center px-4 py-2 border rounded cursor-pointer">
+                        <LucideIcon Name="arrow-left" Size="16" />
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent Side="@PopoverSide.Left" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
+                        Positioned at left
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent>
+                </BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+            </div>
 
-            <HoverCard>
-                <HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
-                    Center Aligned
-                </HoverCardTrigger>
-                <HoverCardContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Center" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
-                    Centered
-                </HoverCardContent>
-            </HoverCard>
+            <CodeBlock Source="Primitives/HoverCard/positioning.txt" />
+        </section>
 
-            <HoverCard>
-                <HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
-                    End Aligned
-                </HoverCardTrigger>
-                <HoverCardContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.End" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
-                    Aligned to end
-                </HoverCardContent>
-            </HoverCard>
-        </div>
-    </div>
+        <!-- Alignment -->
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Alignment</h2>
+                <p class="text-muted-foreground">
+                    Control the alignment of the hover card relative to the trigger.
+                </p>
+            </div>
 
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Rich Content Example</h2>
-        <p class="text-sm text-muted-foreground">
-            Hover cards can contain any content including images, links, and formatted text.
-        </p>
+            <div class="flex items-center gap-4">
+                <BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+                        Start Aligned
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
+                        Aligned to start
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent>
+                </BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
 
-        <div class="flex items-center gap-2">
-            <p class="text-sm">Hover over</p>
-            <HoverCard>
-                <HoverCardTrigger class="text-primary underline cursor-pointer">
-                    @@username
-                </HoverCardTrigger>
+                <BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+                        Center Aligned
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Center" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
+                        Centered
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent>
+                </BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
 
-                <HoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[300px]">
-                    <div class="flex gap-3">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-700"></div>
-                        <div class="flex-1">
-                            <div class="font-semibold mb-1">Username</div>
-                            <p class="text-xs text-muted-foreground mb-2">
-                                Software developer interested in UI/UX design and web technologies.
-                            </p>
-                            <div class="flex gap-4 text-xs text-muted-foreground">
-                                <span><strong>1.2k</strong> followers</span>
-                                <span><strong>340</strong> following</span>
+                <BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+                        End Aligned
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.End" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
+                        Aligned to end
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent>
+                </BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+            </div>
+
+            <CodeBlock Source="Primitives/HoverCard/alignment.txt" />
+        </section>
+
+        <!-- Rich Content Example -->
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">Rich Content Example</h2>
+                <p class="text-muted-foreground">
+                    Hover cards can contain any content including images, links, and formatted text.
+                </p>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <p class="text-sm">Hover over</p>
+                <BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger class="text-primary underline cursor-pointer">
+                        @@username
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardTrigger>
+
+                    <BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[300px]">
+                        <div class="flex gap-3">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-700"></div>
+                            <div class="flex-1">
+                                <div class="font-semibold mb-1">Username</div>
+                                <p class="text-xs text-muted-foreground mb-2">
+                                    Software developer interested in UI/UX design and web technologies.
+                                </p>
+                                <div class="flex gap-4 text-xs text-muted-foreground">
+                                    <span><strong>1.2k</strong> followers</span>
+                                    <span><strong>340</strong> following</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </HoverCardContent>
-            </HoverCard>
-            <p class="text-sm">to see their profile.</p>
-        </div>
-    </div>
+                    </BlazorBlueprint.Primitives.HoverCard.BbHoverCardContent>
+                </BlazorBlueprint.Primitives.HoverCard.BbHoverCard>
+                <p class="text-sm">to see their profile.</p>
+            </div>
 
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Accessibility Features</h2>
-        <div class="rounded-lg border bg-card text-card-foreground p-4">
-            <h3 class="font-semibold mb-2">Interaction</h3>
-            <ul class="space-y-1 text-sm text-muted-foreground">
-                <li>Hover over trigger to show content (with configurable delay)</li>
-                <li>Move mouse away to hide content (with configurable delay)</li>
-                <li>Focus trigger with keyboard to show content immediately</li>
-                <li>Blur to hide content (with delay)</li>
-                <li>Hover over content to keep it open</li>
-            </ul>
+            <CodeBlock Source="Primitives/HoverCard/rich-content.txt" />
+        </section>
 
-            <h3 class="font-semibold mb-2 mt-4">ARIA Attributes</h3>
-            <ul class="space-y-1 text-sm text-muted-foreground">
-                <li><code>role="dialog"</code> on content container</li>
-                <li><code>aria-describedby</code> links content to trigger</li>
-            </ul>
-        </div>
+        <!-- Accessibility -->
+        <AccessibilityList>
+            <AriaAttributes>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">role="dialog"</code> on content container
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-describedby</code> links content to trigger
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">data-state</code> attribute on content for CSS styling (open)
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">data-side</code> attribute on content indicating positioning side
+                </AccessibilityItem>
+            </AriaAttributes>
+            <KeyboardNavigation>
+                <KeyboardShortcutItem Description="Navigate to trigger to show content immediately">
+                    <BbKbd>Tab</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Move focus away from trigger to hide content (with delay)">
+                    <BbKbd>Tab</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Hover over trigger to show content (with configurable delay)">
+                    <BbKbd>Hover</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Hover over content to keep it open">
+                    <BbKbd>Hover</BbKbd>
+                </KeyboardShortcutItem>
+            </KeyboardNavigation>
+        </AccessibilityList>
+
+        <!-- API Reference -->
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">API Reference</h2>
+                <p class="text-muted-foreground">Component properties and parameters.</p>
+            </div>
+            <div class="space-y-4">
+                <ApiReference ComponentName="HoverCard">
+                    <ApiParameter Name="Open" Type="bool?">
+                        Controls whether the hover card is open (controlled mode). When null, the hover card manages its own state. Supports two-way binding with <code>@@bind-Open</code>.
+                    </ApiParameter>
+                    <ApiParameter Name="OpenChanged" Type="EventCallback&lt;bool&gt;">
+                        Callback invoked when the open state changes. Used with <code>@@bind-Open</code> for two-way binding.
+                    </ApiParameter>
+                    <ApiParameter Name="DefaultOpen" Type="bool" Default="false">
+                        Default open state when in uncontrolled mode.
+                    </ApiParameter>
+                    <ApiParameter Name="OnOpenChange" Type="EventCallback&lt;bool&gt;">
+                        Event callback invoked when the hover card open state changes.
+                    </ApiParameter>
+                    <ApiParameter Name="OpenDelay" Type="int" Default="700">
+                        Delay in milliseconds before opening the hover card.
+                    </ApiParameter>
+                    <ApiParameter Name="CloseDelay" Type="int" Default="300">
+                        Delay in milliseconds before closing the hover card.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        Content rendered inside the hover card. Typically includes HoverCardTrigger and HoverCardContent.
+                    </ApiParameter>
+                </ApiReference>
+
+                <ApiReference ComponentName="HoverCardTrigger">
+                    <ApiParameter Name="AsChild" Type="bool" Default="false">
+                        When true, does not render its own div element. Instead passes trigger behavior via <code>TriggerContext</code> to child components.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        Content rendered inside the trigger element.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the trigger element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
+
+                <ApiReference ComponentName="HoverCardContent">
+                    <ApiParameter Name="Side" Type="PopoverSide" Default="Bottom">
+                        Preferred side for positioning relative to the trigger.
+                    </ApiParameter>
+                    <ApiParameter Name="Align" Type="PopoverAlign" Default="Center">
+                        Alignment relative to the trigger.
+                    </ApiParameter>
+                    <ApiParameter Name="Offset" Type="int" Default="4">
+                        Offset distance from the trigger element in pixels.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        Content to render inside the hover card.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the content container element (e.g. <code>class</code>, <code>style</code>).
+                    </ApiParameter>
+                </ApiReference>
+            </div>
+        </section>
     </div>
 </div>
 

@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Chart;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the position of the chart legend.

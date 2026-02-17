@@ -1,0 +1,9 @@
+<BbDropdownMenu @bind-Open="isOpen" ItemClass="...">
+    <BbDropdownMenuTrigger class="...">Controlled Menu</BbDropdownMenuTrigger>
+    <BbDropdownMenuContent class="...">
+        <BbDropdownMenuItem OnClick="@(() => HandleClick("Item 1"))">Item 1</BbDropdownMenuItem>
+        <BbDropdownMenuItem OnClick="@(() => HandleClick("Item 2"))">Item 2</BbDropdownMenuItem>
+    </BbDropdownMenuContent>
+</BbDropdownMenu>
+
+<button @onclick="() => isOpen = !isOpen">Toggle Menu</button>

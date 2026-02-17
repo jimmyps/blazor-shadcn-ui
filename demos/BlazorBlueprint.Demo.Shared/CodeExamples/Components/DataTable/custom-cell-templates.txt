@@ -1,0 +1,7 @@
+<BbDataTableColumn TData="Person" TValue="string" Property="@(p => p.Status)" Header="Status">
+    <CellTemplate Context="person">
+        <BbBadge Variant="@(person.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Outline)">
+            @person.Status
+        </BbBadge>
+    </CellTemplate>
+</BbDataTableColumn>

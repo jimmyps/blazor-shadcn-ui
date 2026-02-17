@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Rating;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the icon type for the Rating component.

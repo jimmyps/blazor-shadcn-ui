@@ -1,0 +1,18 @@
+<EditForm Model="selectFormModel" OnValidSubmit="HandleSelectFormSubmit">
+    <DataAnnotationsValidator />
+
+    <BbSelect @bind-Value="selectFormModel.Fruit"
+            TValue="string"
+            Options="@fruitOptions"
+            Placeholder="Select a fruit"
+            Class="w-[280px]" />
+    <ValidationMessage For="@(() => selectFormModel.Fruit)" />
+</EditForm>
+
+@code {
+    private class SelectFormModel
+    {
+        [Required(ErrorMessage = "Please select a fruit.")]
+        public string? Fruit { get; set; }
+    }
+}

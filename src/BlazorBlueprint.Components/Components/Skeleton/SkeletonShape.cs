@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Skeleton;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the shape variant for a Skeleton component.

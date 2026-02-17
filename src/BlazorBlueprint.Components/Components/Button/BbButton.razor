@@ -1,0 +1,111 @@
+@namespace BlazorBlueprint.Components
+
+@if (HasHref)
+{
+    <a href="@(IsDisabled ? null : Href)"
+       target="@Target"
+       rel="@Rel"
+       class="@CssClass"
+       tabindex="@(IsDisabled ? -1 : 0)"
+       aria-label="@AriaLabel"
+       aria-disabled="@(IsDisabled ? "true" : null)"
+       @onclick="HandleClick"
+       @onkeydown="HandleKeyDown"
+       @onmouseenter="HandleMouseEnter"
+       @onmouseleave="HandleMouseLeave"
+       @onfocus="HandleFocus"
+       @onblur="HandleBlur"
+       @attributes="AdditionalAttributes">
+        @if (Loading)
+        {
+            @if (LoadingTemplate != null)
+            {
+                <span class="me-2">@LoadingTemplate</span>
+            }
+            else
+            {
+                <svg class="me-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            }
+            @if (!string.IsNullOrEmpty(LoadingText))
+            {
+                @LoadingText
+            }
+            else
+            {
+                @ChildContent
+            }
+        }
+        else
+        {
+            @if (Icon != null && IconPosition == IconPosition.Start)
+            {
+                <span class="me-2">@Icon</span>
+            }
+            @ChildContent
+            @if (Icon != null && IconPosition == IconPosition.End)
+            {
+                <span class="ms-2">@Icon</span>
+            }
+        }
+    </a>
+}
+else
+{
+    <button
+        type="@HtmlType"
+        class="@CssClass"
+        id="@(TriggerContext?.TriggerId)"
+        @ref="_buttonRef"
+        disabled="@IsDisabled"
+        tabindex="@(IsDisabled ? -1 : 0)"
+        aria-label="@AriaLabel"
+        aria-disabled="@IsDisabled.ToString().ToLower()"
+        aria-haspopup="@(TriggerContext?.AriaHasPopup)"
+        aria-expanded="@(TriggerContext != null ? TriggerContext.IsOpen.ToString().ToLower() : null)"
+        aria-controls="@(TriggerContext?.AriaControls)"
+        @onclick="HandleClick"
+        @onkeydown="HandleKeyDown"
+        @onmouseenter="HandleMouseEnter"
+        @onmouseleave="HandleMouseLeave"
+        @onfocus="HandleFocus"
+        @onblur="HandleBlur"
+        @attributes="AdditionalAttributes">
+        @if (Loading)
+        {
+            @if (LoadingTemplate != null)
+            {
+                <span class="me-2">@LoadingTemplate</span>
+            }
+            else
+            {
+                <svg class="me-2 h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            }
+            @if (!string.IsNullOrEmpty(LoadingText))
+            {
+                @LoadingText
+            }
+            else
+            {
+                @ChildContent
+            }
+        }
+        else
+        {
+            @if (Icon != null && IconPosition == IconPosition.Start)
+            {
+                <span class="me-2">@Icon</span>
+            }
+            @ChildContent
+            @if (Icon != null && IconPosition == IconPosition.End)
+            {
+                <span class="ms-2">@Icon</span>
+            }
+        }
+    </button>
+}

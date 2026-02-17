@@ -1,0 +1,13 @@
+<!-- Integer values -->
+<BbRadioGroup @bind-Value="intValue" AriaLabel="Select a number">
+    <BbRadioGroupItem Value="1" Label="One" />
+    <BbRadioGroupItem Value="2" Label="Two" />
+    <BbRadioGroupItem Value="3" Label="Three" />
+</BbRadioGroup>
+
+<!-- Enum values -->
+<BbRadioGroup @bind-Value="sizeValue" AriaLabel="Select a size">
+    <BbRadioGroupItem Value="Size.Small" Label="Small" />
+    <BbRadioGroupItem Value="Size.Medium" Label="Medium" />
+    <BbRadioGroupItem Value="Size.Large" Label="Large" />
+</BbRadioGroup>

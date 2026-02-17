@@ -1,0 +1,10 @@
+<BbCommand OnValueChange="HandleSelect">
+    <BbCommandInput Placeholder="Type a command or search..." />
+    <BbCommandList>
+        <BbCommandEmpty>No results found.</BbCommandEmpty>
+        <BbCommandGroup>
+            <BbCommandItem Value="calendar">Calendar</BbCommandItem>
+            <BbCommandItem Value="settings">Settings</BbCommandItem>
+        </BbCommandGroup>
+    </BbCommandList>
+</BbCommand>

@@ -1,0 +1,5 @@
+<BbAspectRatio Ratio="16.0 / 9.0">
+    <div class="flex items-center justify-center bg-muted rounded-md">
+        <span class="text-muted-foreground">16:9</span>
+    </div>
+</BbAspectRatio>

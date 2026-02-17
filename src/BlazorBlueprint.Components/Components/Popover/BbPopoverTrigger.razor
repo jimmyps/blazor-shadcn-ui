@@ -1,0 +1,32 @@
+@namespace BlazorBlueprint.Components
+
+@* Styled PopoverTrigger wrapper - just passes through to primitive *@
+
+<BlazorBlueprint.Primitives.Popover.BbPopoverTrigger AsChild="@AsChild"
+                                                   OnClick="@OnClick"
+                                                   CustomClickHandling="@CustomClickHandling"
+                                                   @attributes="AdditionalAttributes">
+    @ChildContent
+</BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// When true, the trigger does not render its own button element.
+    /// Instead, it passes trigger behavior via TriggerContext to child components.
+    /// Use this when you want a custom component (like Button) to act as the trigger.
+    /// </summary>
+    [Parameter]
+    public bool AsChild { get; set; } = true;
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    [Parameter]
+    public bool CustomClickHandling { get; set; } = false;
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

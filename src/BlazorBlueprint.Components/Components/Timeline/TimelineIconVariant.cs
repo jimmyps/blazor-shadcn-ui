@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Timeline;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the visual style variant for Timeline icons.

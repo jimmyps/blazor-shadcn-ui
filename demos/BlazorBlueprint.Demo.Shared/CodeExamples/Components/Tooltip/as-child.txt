@@ -1,0 +1,10 @@
+<BbTooltip>
+    <BbTooltipTrigger>
+        <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Icon">
+            <LucideIcon Name="info" Size="16" />
+        </BbButton>
+    </BbTooltipTrigger>
+    <BbTooltipContent>
+        Additional information
+    </BbTooltipContent>
+</BbTooltip>

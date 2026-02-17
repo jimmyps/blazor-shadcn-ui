@@ -1,8 +1,4 @@
 @page "/components/form-field-switch"
-@using BlazorBlueprint.Components.FormFieldSwitch
-@using BlazorBlueprint.Components.Switch
-@using BlazorBlueprint.Components.Button
-@using BlazorBlueprint.Components.Field
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>FormFieldSwitch Component - Blazor Blueprint</PageTitle>
@@ -14,31 +10,6 @@
             <p class="text-xl text-muted-foreground">
                 A form field wrapper for Switch with built-in label, helper text, and error messages.
             </p>
-        </div>
-    </div>
-
-    <!-- When to use -->
-    <div class="rounded-lg border bg-card p-6 space-y-4">
-        <h2 class="text-lg font-semibold">When to use FormFieldSwitch</h2>
-        <p class="text-sm text-muted-foreground">
-            Use <code class="text-xs bg-muted px-1 py-0.5 rounded">FormFieldSwitch</code> when you want a complete,
-            ready-to-use toggle switch with label, helper text, and automatic error display. It composes
-            <a href="/components/switch" class="text-primary underline underline-offset-4 hover:text-primary/80">Switch</a>
-            with the <a href="/components/field" class="text-primary underline underline-offset-4 hover:text-primary/80">Field</a> component system
-            so you don't have to wire them up manually.
-        </p>
-        <div class="rounded-md border border-dashed p-4 space-y-1.5">
-            <p class="text-sm font-medium">Example scenario</p>
-            <p class="text-sm text-muted-foreground">
-                You're building a notification preferences page with toggles for email, push, and SMS notifications.
-                Each needs a label and helper text describing what it controls.
-                Instead of wiring up Field + FieldLabel + Switch + FieldDescription for each one,
-                you drop in a single <code class="text-xs bg-muted px-1 py-0.5 rounded">FormFieldSwitch</code> tag
-                and get all of that automatically.
-            </p>
-        </div>
-        <div class="bg-muted rounded-md p-4 space-y-2">
-            <pre class="text-sm font-mono whitespace-pre-wrap">&lt;FormFieldSwitch @("@")bind-Checked="emailNotifications" Label="Email notifications" HelperText="Receive updates via email" /&gt;</pre>
         </div>
     </div>
 
@@ -65,7 +36,7 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldSwitch @bind-Checked="_darkMode"
+            <BbFormFieldSwitch @bind-Checked="_darkMode"
                              Label="Dark mode"
                              HelperText="Toggle the application theme." />
         </div>
@@ -73,6 +44,7 @@
             <p class="text-sm font-medium mb-1">Checked:</p>
             <p class="text-sm font-mono">@_darkMode</p>
         </div>
+        <CodeBlock Source="Components/FormFieldSwitch/basic.txt" />
     </div>
 
     <!-- Horizontal Layout -->
@@ -84,11 +56,12 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldSwitch @bind-Checked="_notifications"
+            <BbFormFieldSwitch @bind-Checked="_notifications"
                              Label="Enable notifications"
                              HelperText="Receive push notifications."
                              Orientation="FieldOrientation.Horizontal" />
         </div>
+        <CodeBlock Source="Components/FormFieldSwitch/horizontal.txt" />
     </div>
 
     <!-- Size Variants -->
@@ -100,10 +73,11 @@
             </p>
         </div>
         <div class="max-w-md space-y-4">
-            <FormFieldSwitch @bind-Checked="_small" Label="Small" Size="SwitchSize.Small" />
-            <FormFieldSwitch @bind-Checked="_medium" Label="Medium (default)" Size="SwitchSize.Medium" />
-            <FormFieldSwitch @bind-Checked="_large" Label="Large" Size="SwitchSize.Large" />
+            <BbFormFieldSwitch @bind-Checked="_small" Label="Small" Size="SwitchSize.Small" />
+            <BbFormFieldSwitch @bind-Checked="_medium" Label="Medium (default)" Size="SwitchSize.Medium" />
+            <BbFormFieldSwitch @bind-Checked="_large" Label="Large" Size="SwitchSize.Large" />
         </div>
+        <CodeBlock Source="Components/FormFieldSwitch/sizes.txt" />
     </div>
 
     <!-- Disabled -->
@@ -115,11 +89,12 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldSwitch Checked="true"
+            <BbFormFieldSwitch Checked="true"
                              Label="Airplane mode"
                              HelperText="Managed by your administrator."
                              Disabled="true" />
         </div>
+        <CodeBlock Source="Components/FormFieldSwitch/disabled.txt" />
     </div>
 
     <!-- EditForm Integration -->
@@ -134,11 +109,11 @@
             <EditForm Model="_formModel" OnValidSubmit="HandleFormSubmit">
                 <DataAnnotationsValidator />
                 <div class="space-y-4">
-                    <FormFieldSwitch @bind-Checked="_formModel.AcceptMarketing"
+                    <BbFormFieldSwitch @bind-Checked="_formModel.AcceptMarketing"
                                      Label="Accept marketing emails" />
-                    <FormFieldSwitch @bind-Checked="_formModel.AcceptPrivacy"
+                    <BbFormFieldSwitch @bind-Checked="_formModel.AcceptPrivacy"
                                      Label="Accept privacy policy" />
-                    <Button Type="ButtonType.Submit">Submit</Button>
+                    <BbButton Type="ButtonType.Submit">Submit</BbButton>
                 </div>
             </EditForm>
             @if (_formSubmitted)
@@ -148,7 +123,61 @@
                 </div>
             }
         </div>
+        <CodeBlock Source="Components/FormFieldSwitch/editform.txt" />
     </div>
+
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Automatically associates label with input via generated ID</AccessibilityItem>
+            <AccessibilityItem>Description linked via aria-describedby</AccessibilityItem>
+            <AccessibilityItem>Validation errors displayed with aria-invalid</AccessibilityItem>
+        </AriaAttributes>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="FormFieldSwitch">
+                <ApiParameter Name="Label" Type="string?" Default="null">
+                    The label text displayed beside or above the switch.
+                </ApiParameter>
+                <ApiParameter Name="HelperText" Type="string?" Default="null">
+                    Helper text displayed below the switch. Hidden during error state.
+                </ApiParameter>
+                <ApiParameter Name="ErrorText" Type="string?" Default="null">
+                    Manual error text override. When the field is invalid and this is set, replaces auto-generated messages.
+                </ApiParameter>
+                <ApiParameter Name="Orientation" Type="FieldOrientation" Default="Vertical">
+                    Layout orientation of the field.
+                </ApiParameter>
+                <ApiParameter Name="Checked" Type="bool" Default="false">
+                    Whether the switch is checked (on). Use @@bind-Checked for two-way binding.
+                </ApiParameter>
+                <ApiParameter Name="CheckedChanged" Type="EventCallback&lt;bool&gt;">
+                    Callback invoked when the checked state changes.
+                </ApiParameter>
+                <ApiParameter Name="Size" Type="SwitchSize" Default="Medium">
+                    The size variant of the switch (Small, Medium, Large).
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the switch is disabled.
+                </ApiParameter>
+                <ApiParameter Name="InputClass" Type="string?" Default="null">
+                    Additional CSS classes applied to the inner Switch element.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes applied to the outer Field container.
+                </ApiParameter>
+                <ApiParameter Name="AriaLabel" Type="string?" Default="null">
+                    ARIA label for the control.
+                </ApiParameter>
+            </ApiReference>
+        </div>
+    </section>
 </div>
 
 @code {

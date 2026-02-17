@@ -1,0 +1,19 @@
+<BbSheet>
+    <BbSheetTrigger>
+        <BbButton Variant="ButtonVariant.Outline">
+            <LucideIcon Name="menu" Size="16" />
+            Open Menu
+        </BbButton>
+    </BbSheetTrigger>
+    <BbSheetContent Side="SheetSide.Left">
+        <BbSheetHeader>
+            <BbSheetTitle>With AsChild</BbSheetTitle>
+            <BbSheetDescription>Button component styled trigger.</BbSheetDescription>
+        </BbSheetHeader>
+        <BbSheetFooter>
+            <BbSheetClose>
+                <BbButton Variant="ButtonVariant.Outline">Close</BbButton>
+            </BbSheetClose>
+        </BbSheetFooter>
+    </BbSheetContent>
+</BbSheet>

@@ -1,0 +1,7 @@
+// Show multiple toasts
+ToastService.Show("First notification");
+ToastService.Show("Second notification", "Alert");
+ToastService.Error("Third notification is an error");
+
+// Dismiss all
+ToastService.DismissAll();

@@ -1,0 +1,26 @@
+<EditForm Model="_formModel" OnValidSubmit="HandleFormSubmit">
+    <DataAnnotationsValidator />
+    <BbFormFieldSelect TValue="string"
+                     @bind-Value="_formModel.Country"
+                     Label="Country"
+                     Placeholder="Select a country..."
+                     Options="@_countryOptions" />
+    <BbButton Type="ButtonType.Submit">Submit</BbButton>
+</EditForm>
+
+@code {
+    private readonly SelectOption<string>[] _countryOptions =
+    [
+        new("us", "United States"),
+        new("ca", "Canada"),
+        new("gb", "United Kingdom"),
+        new("de", "Germany"),
+        new("fr", "France")
+    ];
+
+    private class SelectFormModel
+    {
+        [Required(ErrorMessage = "Please select a country.")]
+        public string? Country { get; set; }
+    }
+}

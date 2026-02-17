@@ -1,0 +1,6 @@
+<BbEmpty Title="No messages"
+       Description="You don't have any messages yet.">
+    <Icon>
+        <LucideIcon Name="inbox" />
+    </Icon>
+</BbEmpty>

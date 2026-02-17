@@ -1,0 +1,8 @@
+<BbFormFieldMultiSelect TValue="string"
+                      Options="_languages"
+                      Values="@(new[] { "csharp", "typescript" })"
+                      Label="Required skills"
+                      HelperText="These skills are required for this role."
+                      MatchTriggerWidth="true"
+                      InputClass="w-full"
+                      Disabled="true" />

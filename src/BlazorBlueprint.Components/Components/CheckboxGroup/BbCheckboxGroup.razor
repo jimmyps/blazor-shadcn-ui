@@ -1,0 +1,21 @@
+@typeparam TValue
+@namespace BlazorBlueprint.Components
+@attribute [CascadingTypeParameter(nameof(TValue))]
+
+<CascadingValue Value="context">
+    <div class="@CssClass" role="group">
+        @if (ShowSelectAll)
+        {
+            <div class="flex items-center gap-2 pb-2 mb-1 border-b">
+                <BbCheckbox Checked="@IsAllSelected"
+                          Indeterminate="@IsIndeterminate"
+                          CheckedChanged="@HandleSelectAllChanged"
+                          Disabled="@Disabled" />
+                <span class="text-sm font-medium leading-none">
+                    @SelectAllLabel
+                </span>
+            </div>
+        }
+        @ChildContent
+    </div>
+</CascadingValue>

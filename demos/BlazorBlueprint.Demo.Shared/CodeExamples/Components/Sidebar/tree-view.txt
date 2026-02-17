@@ -1,0 +1,22 @@
+<BbSidebarMenu>
+    <BbSidebarMenuItem>
+        <BbSidebarMenuButton Tooltip="src">
+            <LucideIcon Name="folder" Size="16" />
+            <span>src</span>
+        </BbSidebarMenuButton>
+        <BbSidebarMenuSub>
+            <BbSidebarMenuSubItem>
+                <BbSidebarMenuSubButton>
+                    <LucideIcon Name="folder" Size="16" />
+                    <span>components</span>
+                </BbSidebarMenuSubButton>
+            </BbSidebarMenuSubItem>
+            <BbSidebarMenuSubItem>
+                <BbSidebarMenuSubButton>
+                    <LucideIcon Name="file-code" Size="16" />
+                    <span>index.tsx</span>
+                </BbSidebarMenuSubButton>
+            </BbSidebarMenuSubItem>
+        </BbSidebarMenuSub>
+    </BbSidebarMenuItem>
+</BbSidebarMenu>

@@ -1,0 +1,24 @@
+<EditForm Model="comboboxFormModel" OnValidSubmit="HandleComboboxFormSubmit">
+    <DataAnnotationsValidator />
+
+    <label class="text-sm font-medium">Framework</label>
+    <BbCombobox TValue="string"
+             Options="frameworks"
+             @bind-Value="comboboxFormModel.Framework"
+             Placeholder="Select framework..."
+             SearchPlaceholder="Search framework..."
+             EmptyMessage="No framework found."
+             Class="w-full"
+             MatchTriggerWidth="true" />
+    <ValidationMessage For="@(() => comboboxFormModel.Framework)" />
+
+    <BbButton Type="ButtonType.Submit">Submit</BbButton>
+</EditForm>
+
+@code {
+    private class ComboboxFormModel
+    {
+        [Required(ErrorMessage = "Please select a framework.")]
+        public string? Framework { get; set; }
+    }
+}

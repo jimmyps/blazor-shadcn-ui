@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Tooltip;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Provides context state for an individual Tooltip component and its sub-components.
@@ -21,8 +21,8 @@ namespace BlazorBlueprint.Components.Tooltip;
 /// <para>
 /// Components consuming this context:
 /// <list type="bullet">
-/// <item><see cref="TooltipTrigger"/> - Triggers tooltip on hover/focus</item>
-/// <item><see cref="TooltipContent"/> - Displays tooltip content when open</item>
+/// <item><see cref="BbTooltipTrigger"/> - Triggers tooltip on hover/focus</item>
+/// <item><see cref="BbTooltipContent"/> - Displays tooltip content when open</item>
 /// </list>
 /// </para>
 /// </remarks>
@@ -61,7 +61,7 @@ public class TooltipContext
     /// A delegate that sets the tooltip's open state, or <c>null</c> if no handler is set.
     /// </value>
     /// <remarks>
-    /// This method is provided by the parent <see cref="Tooltip"/> component and can be
+    /// This method is provided by the parent <see cref="BbTooltip"/> component and can be
     /// invoked by child components to manually show or hide the tooltip.
     /// <para>
     /// The method handles:

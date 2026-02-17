@@ -1,0 +1,5 @@
+<BbRating @bind-Value="rating" Size="RatingSize.Small" />
+
+<BbRating @bind-Value="rating" Size="RatingSize.Default" />
+
+<BbRating @bind-Value="rating" Size="RatingSize.Large" />

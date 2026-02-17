@@ -1,0 +1,5 @@
+<BbInputField TValue="string"
+            @bind-Value="_username"
+            @bind-Value:after="CheckUsernameAvailability"
+            UpdateTiming="UpdateTiming.Debounced"
+            DebounceInterval="300" />

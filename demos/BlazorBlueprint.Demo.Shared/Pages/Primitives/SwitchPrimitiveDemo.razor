@@ -1,15 +1,14 @@
 @page "/primitives/switch"
-@using BlazorBlueprint.Primitives.Switch
-@using BlazorBlueprint.Components.Kbd
-
 <PageTitle>Switch Primitive - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-    <div class="space-y-3">
-        <h1 class="text-4xl font-bold tracking-tight">Switch Primitive</h1>
-        <p class="text-xl text-muted-foreground">
-            Headless, unstyled switch primitive with full accessibility support.
-        </p>
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Switch Primitive</h1>
+            <p class="text-xl text-muted-foreground">
+                Headless, unstyled switch primitive with full accessibility support.
+            </p>
+        </div>
     </div>
 
     <div class="space-y-6">
@@ -23,15 +22,18 @@
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
                 <div class="flex items-center gap-3">
-                    <BlazorBlueprint.Primitives.Switch.Switch @bind-Checked="basicChecked"
+                    <BlazorBlueprint.Primitives.Switch.BbSwitch @bind-Checked="basicChecked"
                                      Id="basic"
                                      class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-input transition-colors data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted">
-                        <span class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" data-state="@(basicChecked ? "checked" : "unchecked")"></span>
-                    </BlazorBlueprint.Primitives.Switch.Switch>
+                        <BlazorBlueprint.Primitives.Switch.BbSwitchThumb
+                            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" />
+                    </BlazorBlueprint.Primitives.Switch.BbSwitch>
                     <label for="basic" class="cursor-pointer">Basic primitive switch</label>
                 </div>
                 <p class="text-sm text-muted-foreground mt-2">State: @(basicChecked ? "On" : "Off")</p>
             </div>
+
+            <CodeBlock Source="Primitives/Switch/basic.txt" />
         </section>
 
         <section class="space-y-4">
@@ -56,15 +58,18 @@
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
                     <div class="flex items-center gap-3">
-                        <BlazorBlueprint.Primitives.Switch.Switch @bind-Checked="controlledChecked" Id="controlled"
+                        <BlazorBlueprint.Primitives.Switch.BbSwitch @bind-Checked="controlledChecked" Id="controlled"
                                          class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-input transition-colors data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted">
-                            <span class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" data-state="@(controlledChecked ? "checked" : "unchecked")"></span>
-                        </BlazorBlueprint.Primitives.Switch.Switch>
+                            <BlazorBlueprint.Primitives.Switch.BbSwitchThumb
+                                class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" />
+                        </BlazorBlueprint.Primitives.Switch.BbSwitch>
                         <label for="controlled" class="cursor-pointer">
                             Controlled Switch (State: @(controlledChecked ? "On" : "Off"))
                         </label>
                     </div>
                 </div>
+
+                <CodeBlock Source="Primitives/Switch/controlled.txt" />
             </div>
         </section>
 
@@ -78,77 +83,59 @@
 
             <div class="rounded-lg border bg-card p-6 max-w-md space-y-3">
                 <div class="flex items-center gap-3">
-                    <BlazorBlueprint.Primitives.Switch.Switch Checked="true" Disabled="true" Id="disabled-on"
+                    <BlazorBlueprint.Primitives.Switch.BbSwitch Checked="true" Disabled="true" Id="disabled-on"
                                      class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-input transition-colors data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" data-state="checked"></span>
-                    </BlazorBlueprint.Primitives.Switch.Switch>
+                        <BlazorBlueprint.Primitives.Switch.BbSwitchThumb
+                            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" />
+                    </BlazorBlueprint.Primitives.Switch.BbSwitch>
                     <label for="disabled-on" class="opacity-50">Disabled (On)</label>
                 </div>
                 <div class="flex items-center gap-3">
-                    <BlazorBlueprint.Primitives.Switch.Switch Checked="false" Disabled="true" Id="disabled-off"
+                    <BlazorBlueprint.Primitives.Switch.BbSwitch Checked="false" Disabled="true" Id="disabled-off"
                                      class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-input transition-colors data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" data-state="unchecked"></span>
-                    </BlazorBlueprint.Primitives.Switch.Switch>
+                        <BlazorBlueprint.Primitives.Switch.BbSwitchThumb
+                            class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" />
+                    </BlazorBlueprint.Primitives.Switch.BbSwitch>
                     <label for="disabled-off" class="opacity-50">Disabled (Off)</label>
                 </div>
             </div>
+
+            <CodeBlock Source="Primitives/Switch/disabled.txt" />
         </section>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Accessibility Features</h2>
-                <p class="text-muted-foreground">
-                    Built-in accessibility features following WAI-ARIA design patterns.
-                </p>
-            </div>
-
-            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
-                <div class="flex items-start gap-2">
-                    <span class="text-green-600 dark:text-green-400">✓</span>
-                    <span class="text-sm"><strong>ARIA attributes:</strong> role="switch", aria-checked, data-state automatically applied</span>
-                </div>
-                <div class="flex items-start gap-2">
-                    <span class="text-green-600 dark:text-green-400">✓</span>
-                    <span class="text-sm"><strong>Keyboard navigation:</strong> Space and Enter keys work out of the box</span>
-                </div>
-                <div class="flex items-start gap-2">
-                    <span class="text-green-600 dark:text-green-400">✓</span>
-                    <span class="text-sm"><strong>Screen reader support:</strong> Proper switch role and state announcements</span>
-                </div>
-                <div class="flex items-start gap-2">
-                    <span class="text-green-600 dark:text-green-400">✓</span>
-                    <span class="text-sm"><strong>Focus management:</strong> Focus handling and focus ring built-in</span>
-                </div>
-                <div class="flex items-start gap-2">
-                    <span class="text-green-600 dark:text-green-400">✓</span>
-                    <span class="text-sm"><strong>Disabled state:</strong> Proper disabled attribute and aria-disabled behavior</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Keyboard Shortcuts</h2>
-                <p class="text-muted-foreground">
-                    Navigate and interact with switches using keyboard.
-                </p>
-            </div>
-
-            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
-                <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium">Toggle switch</span>
-                    <Kbd>Space</Kbd>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium">Toggle switch</span>
-                    <Kbd>Enter</Kbd>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium">Navigate to switch</span>
-                    <Kbd>Tab</Kbd>
-                </div>
-            </div>
-        </section>
+        <AccessibilityList>
+            <AriaAttributes>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">role="switch"</code> for screen readers
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-checked</code> indicates checked state (true/false)
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-disabled</code> indicates disabled state
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">data-state</code> attribute for CSS styling (checked|unchecked)
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">disabled</code> attribute for disabled state
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Focus management with visible focus indicators
+                </AccessibilityItem>
+            </AriaAttributes>
+            <KeyboardNavigation>
+                <KeyboardShortcutItem Description="Navigate to switch">
+                    <BbKbd>Tab</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Toggle switch">
+                    <BbKbd>Space</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Toggle switch">
+                    <BbKbd>Enter</BbKbd>
+                </KeyboardShortcutItem>
+            </KeyboardNavigation>
+        </AccessibilityList>
 
         <section class="space-y-4">
             <div class="space-y-2">
@@ -158,100 +145,33 @@
                 </p>
             </div>
 
-            <div class="rounded-lg border p-4">
-                <h3 class="font-semibold mb-3">Switch</h3>
-                <div class="space-y-3 text-sm">
-                    <div>
-                        <code class="text-xs bg-muted px-1 py-0.5 rounded">Checked</code>
-                        <p class="text-muted-foreground mt-1">
-                            <strong>Type:</strong> <code>bool</code><br/>
-                            <strong>Default:</strong> <code>false</code><br/>
-                            Controls whether the switch is on (checked). Supports two-way binding.
-                        </p>
-                    </div>
-                    <Separator />
-                    <div>
-                        <code class="text-xs bg-muted px-1 py-0.5 rounded">CheckedChanged</code>
-                        <p class="text-muted-foreground mt-1">
-                            <strong>Type:</strong> <code>EventCallback&lt;bool&gt;</code><br/>
-                            Callback invoked when the checked state changes.
-                        </p>
-                    </div>
-                    <Separator />
-                    <div>
-                        <code class="text-xs bg-muted px-1 py-0.5 rounded">Disabled</code>
-                        <p class="text-muted-foreground mt-1">
-                            <strong>Type:</strong> <code>bool</code><br/>
-                            <strong>Default:</strong> <code>false</code><br/>
-                            Prevents toggling when true.
-                        </p>
-                    </div>
-                    <Separator />
-                    <div>
-                        <code class="text-xs bg-muted px-1 py-0.5 rounded">Additional Attributes</code>
-                        <p class="text-muted-foreground mt-1">
-                            Any additional attributes (class, style, Id, aria-label, etc.) are passed to the button element.
-                        </p>
-                        <p class="text-muted-foreground mt-2">
-                            <strong>Auto-applied attributes:</strong> role="switch", aria-checked, aria-disabled, disabled, tabindex, data-state
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
+            <div class="space-y-4">
+                <ApiReference ComponentName="Switch">
+                    <ApiParameter Name="Checked" Type="bool" Default="false">
+                        Controls whether the switch is on (checked). Supports two-way binding with <code>@@bind-Checked</code>.
+                    </ApiParameter>
+                    <ApiParameter Name="CheckedChanged" Type="EventCallback&lt;bool&gt;">
+                        Callback invoked when the checked state changes.
+                    </ApiParameter>
+                    <ApiParameter Name="Disabled" Type="bool" Default="false">
+                        Prevents toggling when true. Sets <code>aria-disabled</code> and <code>disabled</code> attributes.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        Content rendered inside the switch (typically a <code>SwitchThumb</code>).
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the root button element (e.g. <code>class</code>, <code>style</code>, <code>Id</code>).
+                    </ApiParameter>
+                </ApiReference>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">When to Use Primitives</h2>
-                <p class="text-muted-foreground">
-                    Choose between primitives and styled components based on your needs.
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="rounded-lg border p-4 space-y-3">
-                    <h3 class="font-semibold text-primary">Use Switch Primitive</h3>
-                    <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Building a custom design system</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Need complete control over styling</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Want to apply your own CSS framework</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Creating unique visual designs</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="rounded-lg border p-4 space-y-3">
-                    <h3 class="font-semibold text-primary">Use Styled Component</h3>
-                    <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Want shadcn/ui design out of the box</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Need quick implementation</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Like the default styling</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-blue-600 dark:text-blue-400">●</span>
-                            <span>Prefer convention over configuration</span>
-                        </li>
-                    </ul>
-                </div>
+                <ApiReference ComponentName="SwitchThumb">
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        Optional content to render inside the thumb.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the span element (e.g. <code>class</code>, <code>style</code>). Auto-applies <code>data-state</code> synced from parent Switch.
+                    </ApiParameter>
+                </ApiReference>
             </div>
         </section>
     </div>

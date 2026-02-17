@@ -1,0 +1,8 @@
+<!-- v3: Label parameter auto-wires the label element -->
+<BbRadioGroupItem Value="@("option")" Label="Option A" />
+
+<!-- Previously required manual label wiring -->
+<div class="flex items-center space-x-2">
+    <BbRadioGroupItem Value="@("option")" Id="my-id" />
+    <BbLabel For="my-id">Option A</BbLabel>
+</div>

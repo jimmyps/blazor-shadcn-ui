@@ -1,0 +1,4 @@
+<BbCollapsible Disabled>
+    <BbCollapsibleTrigger>...</BbCollapsibleTrigger>
+    <BbCollapsibleContent>...</BbCollapsibleContent>
+</BbCollapsible>

@@ -1,0 +1,1 @@
+<BbInputField TValue="string" @bind-Value="_stringValue" />

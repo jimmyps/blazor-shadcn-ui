@@ -1,0 +1,10 @@
+<EditForm Model="formModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <BbInputGroup>
+        <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
+            <LucideIcon Name="at-sign" Size="16" />
+        </BbInputGroupAddon>
+        <BbInputGroupInput @bind-Value="formModel.Email" />
+    </BbInputGroup>
+    <ValidationMessage For="@(() => formModel.Email)" />
+</EditForm>

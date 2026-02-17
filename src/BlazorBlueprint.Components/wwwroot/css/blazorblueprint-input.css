@@ -5,13 +5,56 @@
 /* Configure source paths for scanning Razor files */
 @source "../../Components";
 
-/* Component structural variables */
+/* Component structural variables & default theme tokens */
+/* Alert defaults let users drop in a raw tweakcn/shadcn theme without defining
+   the BB-specific --alert-* variables. Un-layered :root in the user's theme
+   automatically overrides these @layer base values via CSS cascade. */
 @layer base {
   :root {
     --sidebar-width: 16rem;
     --sidebar-width-mobile: 18rem;
     --sidebar-width-icon: 3rem;
+
+    /* Default alert colors — override in your theme to customize */
+    --alert-success: oklch(0.55 0.20 142);
+    --alert-success-foreground: oklch(0.30 0.09 142);
+    --alert-success-bg: oklch(0.993 0.003 142);
+    --alert-info: oklch(0.50 0.20 255);
+    --alert-info-foreground: oklch(0.30 0.10 255);
+    --alert-info-bg: oklch(0.993 0.003 255);
+    --alert-warning: oklch(0.68 0.18 55);
+    --alert-warning-foreground: oklch(0.35 0.10 55);
+    --alert-warning-bg: oklch(0.995 0.003 55);
+    --alert-danger: var(--destructive, oklch(0.55 0.22 27));
+    --alert-danger-foreground: var(--destructive-foreground, oklch(0.30 0.12 27));
+    --alert-danger-bg: oklch(0.993 0.003 27);
   }
+
+  .dark {
+    --alert-success: oklch(0.60 0.18 142);
+    --alert-success-foreground: oklch(0.90 0.06 142);
+    --alert-success-bg: oklch(0.18 0.008 142);
+    --alert-info: oklch(0.55 0.18 255);
+    --alert-info-foreground: oklch(0.90 0.05 255);
+    --alert-info-bg: oklch(0.18 0.008 255);
+    --alert-warning: oklch(0.65 0.16 55);
+    --alert-warning-foreground: oklch(0.92 0.06 55);
+    --alert-warning-bg: oklch(0.19 0.008 55);
+    --alert-danger: var(--destructive, oklch(0.55 0.20 27));
+    --alert-danger-foreground: var(--destructive-foreground, oklch(0.90 0.06 27));
+    --alert-danger-bg: oklch(0.18 0.008 27);
+  }
+}
+
+/* Tracking variants relative to --tracking-normal from the user's theme.
+   Ensures tracking-tight, tracking-wider, etc. respect the theme's base tracking. */
+@theme inline {
+  --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
+  --tracking-tight: calc(var(--tracking-normal) - 0.025em);
+  --tracking-normal: var(--tracking-normal);
+  --tracking-wide: calc(var(--tracking-normal) + 0.025em);
+  --tracking-wider: calc(var(--tracking-normal) + 0.05em);
+  --tracking-widest: calc(var(--tracking-normal) + 0.1em);
 }
 
 /* Required for keyboard navigation visual feedback in Select/Combobox/DropdownMenu */
@@ -93,49 +136,6 @@
   .aspect-ratio-content > * {
     width: 100% !important;
     height: 100% !important;
-  }
-}
-
-/* Chart tooltip styles - theme-aware ApexCharts tooltip */
-@layer components {
-  .blazorblueprint-chart-tooltip {
-    background-color: var(--popover) !important;
-    color: var(--popover-foreground) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 0.375rem !important;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
-  }
-
-  .blazorblueprint-chart-tooltip .apexcharts-tooltip-title {
-    background-color: var(--muted) !important;
-    color: var(--foreground) !important;
-    border-bottom: 1px solid var(--border) !important;
-    padding: 0.5rem 0.75rem !important;
-    font-weight: 500 !important;
-  }
-
-  .blazorblueprint-chart-tooltip .apexcharts-tooltip-series-group {
-    background-color: transparent !important;
-    color: var(--popover-foreground) !important;
-    padding: 0.25rem 0.75rem !important;
-  }
-
-  .blazorblueprint-chart-tooltip .apexcharts-tooltip-text-y-label,
-  .blazorblueprint-chart-tooltip .apexcharts-tooltip-text-y-value {
-    color: var(--popover-foreground) !important;
-  }
-
-  .blazorblueprint-chart-tooltip .apexcharts-tooltip-marker {
-    margin-right: 0.5rem !important;
-  }
-
-  /* Chart legend styles - theme-aware ApexCharts legend */
-  .apexcharts-legend-text {
-    color: var(--foreground) !important;
-  }
-
-  .apexcharts-legend-series {
-    color: var(--foreground) !important;
   }
 }
 
@@ -303,58 +303,59 @@
 }
 
 /* DateRangePicker responsive layout — desktop (≥640px)
-   Un-layered to prevent cascade conflicts when consumer Tailwind CSS loads after component CSS.
-   Both builds use @layer utilities; the consumer's base utilities can override the component's
-   responsive variants within the combined layer. Un-layered CSS always wins over layered CSS. */
-@media (min-width: 40rem) {
-  [data-drp] {
-    width: auto;
-  }
+   Doubled data-attribute selectors give specificity 0,2,0 which beats single-class Tailwind
+   utilities (0,1,0) regardless of source order, keeping these rules inside the layer system. */
+@layer utilities {
+  @media (min-width: 40rem) {
+    [data-drp][data-drp] {
+      width: auto;
+    }
 
-  [data-drp-body] {
-    flex-direction: row;
-  }
+    [data-drp-body][data-drp-body] {
+      flex-direction: row;
+    }
 
-  [data-drp-presets] {
-    flex-direction: column;
-    overflow-x: visible;
-    border-bottom-width: 0;
-    border-right-style: var(--tw-border-style);
-    border-right-width: 1px;
-    min-width: 140px;
-  }
+    [data-drp-presets][data-drp-presets] {
+      flex-direction: column;
+      overflow-x: visible;
+      border-bottom-width: 0;
+      border-right-style: var(--tw-border-style);
+      border-right-width: 1px;
+      min-width: 140px;
+    }
 
-  [data-drp-presets-label] {
-    display: block;
-  }
+    [data-drp-presets-label][data-drp-presets-label] {
+      display: block;
+    }
 
-  [data-drp-calendar] {
-    padding: calc(var(--spacing) * 3);
-  }
+    [data-drp-calendar][data-drp-calendar] {
+      padding: calc(var(--spacing) * 3);
+    }
 
-  [data-drp-mobile-nav] {
-    display: none;
-  }
+    [data-drp-mobile-nav][data-drp-mobile-nav] {
+      display: none;
+    }
 
-  [data-drp-desktop-spacer] {
-    display: block;
-  }
+    [data-drp-desktop-spacer][data-drp-desktop-spacer] {
+      display: block;
+    }
 
-  [data-drp-calendar-2] {
-    display: block;
-    padding: calc(var(--spacing) * 3);
-  }
+    [data-drp-calendar-2][data-drp-calendar-2] {
+      display: block;
+      padding: calc(var(--spacing) * 3);
+    }
 
-  [data-drp-cell] {
-    flex: none;
-  }
+    [data-drp-cell][data-drp-cell] {
+      flex: none;
+    }
 
-  [data-drp-preset-btn] {
-    flex-shrink: 1;
-    white-space: normal;
-  }
+    [data-drp-preset-btn][data-drp-preset-btn] {
+      flex-shrink: 1;
+      white-space: normal;
+    }
 
-  [data-drp-day-btn] {
-    width: calc(var(--spacing) * 9);
+    [data-drp-day-btn][data-drp-day-btn] {
+      width: calc(var(--spacing) * 9);
+    }
   }
 }

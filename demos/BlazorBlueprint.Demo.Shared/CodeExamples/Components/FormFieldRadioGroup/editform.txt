@@ -1,0 +1,11 @@
+<EditForm Model="formModel" OnValidSubmit="HandleFormSubmit">
+    <DataAnnotationsValidator />
+    <BbFormFieldRadioGroup TValue="string"
+                         @bind-Value="formModel.ContactMethod"
+                         Label="Preferred contact method">
+        <BbRadioGroupItem Value="@("email")" Label="Email" />
+        <BbRadioGroupItem Value="@("sms")" Label="SMS" />
+        <BbRadioGroupItem Value="@("phone")" Label="Phone" />
+    </BbFormFieldRadioGroup>
+    <BbButton Type="ButtonType.Submit">Submit</BbButton>
+</EditForm>

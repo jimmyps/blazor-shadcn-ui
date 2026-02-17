@@ -1,6 +1,4 @@
 @page "/components/kbd"
-@using BlazorBlueprint.Components.Kbd
-
 <PageTitle>Kbd Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -22,8 +20,10 @@
             </p>
         </div>
         <div class="flex items-center gap-2">
-            <Kbd Keys="K" />
+            <BbKbd Keys="K" />
         </div>
+
+        <CodeBlock Source="Components/Kbd/basic.txt" />
     </div>
 
     <!-- Key Combinations -->
@@ -36,24 +36,26 @@
         </div>
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-1">
-                <Kbd Keys="Ctrl" />
+                <BbKbd Keys="Ctrl" />
                 <span class="text-muted-foreground">+</span>
-                <Kbd Keys="C" />
+                <BbKbd Keys="C" />
                 <span class="text-sm text-muted-foreground ml-2">Copy</span>
             </div>
             <div class="flex items-center gap-1">
-                <Kbd Keys="Ctrl" />
+                <BbKbd Keys="Ctrl" />
                 <span class="text-muted-foreground">+</span>
-                <Kbd Keys="V" />
+                <BbKbd Keys="V" />
                 <span class="text-sm text-muted-foreground ml-2">Paste</span>
             </div>
             <div class="flex items-center gap-1">
-                <Kbd Keys="Ctrl" />
+                <BbKbd Keys="Ctrl" />
                 <span class="text-muted-foreground">+</span>
-                <Kbd Keys="Z" />
+                <BbKbd Keys="Z" />
                 <span class="text-sm text-muted-foreground ml-2">Undo</span>
             </div>
         </div>
+
+        <CodeBlock Source="Components/Kbd/combinations.txt" />
     </div>
 
     <!-- Mac Style -->
@@ -66,17 +68,19 @@
         </div>
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-1">
-                <Kbd>⌘</Kbd>
-                <Kbd>I</Kbd>
+                <BbKbd>⌘</BbKbd>
+                <BbKbd>I</BbKbd>
                 <span class="text-sm text-muted-foreground ml-2">Command palette</span>
             </div>
             <div class="flex items-center gap-1">
-                <Kbd>⌘</Kbd>
-                <Kbd>⇧</Kbd>
-                <Kbd>P</Kbd>
+                <BbKbd>⌘</BbKbd>
+                <BbKbd>⇧</BbKbd>
+                <BbKbd>P</BbKbd>
                 <span class="text-sm text-muted-foreground ml-2">Quick actions</span>
             </div>
         </div>
+
+        <CodeBlock Source="Components/Kbd/mac-style.txt" />
     </div>
 
     <!-- Sizes -->
@@ -89,18 +93,20 @@
         </div>
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
-                <Kbd Size="KbdSize.Small" Keys="Ctrl" />
+                <BbKbd Size="KbdSize.Small" Keys="Ctrl" />
                 <span class="text-xs text-muted-foreground">Small</span>
             </div>
             <div class="flex items-center gap-2">
-                <Kbd Size="KbdSize.Default" Keys="Ctrl" />
+                <BbKbd Size="KbdSize.Default" Keys="Ctrl" />
                 <span class="text-sm text-muted-foreground">Default</span>
             </div>
             <div class="flex items-center gap-2">
-                <Kbd Size="KbdSize.Large" Keys="Ctrl" />
+                <BbKbd Size="KbdSize.Large" Keys="Ctrl" />
                 <span class="text-muted-foreground">Large</span>
             </div>
         </div>
+
+        <CodeBlock Source="Components/Kbd/sizes.txt" />
     </div>
 
     <!-- In Context -->
@@ -112,9 +118,11 @@
             </p>
         </div>
         <p class="text-sm">
-            Press <Kbd>Ctrl</Kbd> + <Kbd>I</Kbd> to open the command palette,
-            or use <Kbd>Esc</Kbd> to close any open dialog.
+            Press <BbKbd>Ctrl</BbKbd> + <BbKbd>I</BbKbd> to open the command palette,
+            or use <BbKbd>Esc</BbKbd> to close any open dialog.
         </p>
+
+        <CodeBlock Source="Components/Kbd/in-context.txt" />
     </div>
 
     <!-- Special Keys -->
@@ -126,17 +134,61 @@
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
-            <Kbd>Enter ↵</Kbd>
-            <Kbd>Tab ⇥</Kbd>
-            <Kbd>Shift ⇧</Kbd>
-            <Kbd>Esc</Kbd>
-            <Kbd>Space</Kbd>
-            <Kbd>Backspace ⌫</Kbd>
-            <Kbd>Delete</Kbd>
-            <Kbd>↑</Kbd>
-            <Kbd>↓</Kbd>
-            <Kbd>←</Kbd>
-            <Kbd>→</Kbd>
+            <BbKbd>Enter ↵</BbKbd>
+            <BbKbd>Tab ⇥</BbKbd>
+            <BbKbd>Shift ⇧</BbKbd>
+            <BbKbd>Esc</BbKbd>
+            <BbKbd>Space</BbKbd>
+            <BbKbd>Backspace ⌫</BbKbd>
+            <BbKbd>Delete</BbKbd>
+            <BbKbd>↑</BbKbd>
+            <BbKbd>↓</BbKbd>
+            <BbKbd>←</BbKbd>
+            <BbKbd>→</BbKbd>
         </div>
+
+        <CodeBlock Source="Components/Kbd/special-keys.txt" />
     </div>
+
+    <!-- Accessibility -->
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>
+                Renders as a native <code>&lt;kbd&gt;</code> HTML element, which is semantically recognized by assistive technologies as keyboard input.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Uses <code>pointer-events-none</code> and <code>select-none</code> to indicate the element is presentational, not interactive.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Uses monospace font (<code>font-mono</code>) for visual distinction of keyboard keys from surrounding text.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Ensure key combination descriptions include visible text labels (e.g., "Copy", "Paste") alongside the key indicators for clarity.
+            </AccessibilityItem>
+        </AriaAttributes>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="Kbd">
+                <ApiParameter Name="Keys" Type="string?">
+                    The keyboard keys to display (e.g., "Ctrl", "C", "Shift"). Used when ChildContent is not provided.
+                </ApiParameter>
+                <ApiParameter Name="Size" Type="KbdSize" Default="Default">
+                    The size variant of the kbd element. Options: Small, Default, Large.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the kbd element.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    Custom content for the keyboard shortcut display. When provided, takes precedence over the Keys parameter.
+                </ApiParameter>
+            </ApiReference>
+        </div>
+    </section>
 </div>

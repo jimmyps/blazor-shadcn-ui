@@ -1,0 +1,11 @@
+@foreach (var item in faqItems)
+{
+    <BbCollapsible>
+        <BbCollapsibleTrigger AsChild="false">
+            @item.Question
+        </BbCollapsibleTrigger>
+        <BbCollapsibleContent>
+            @item.Answer
+        </BbCollapsibleContent>
+    </BbCollapsible>
+}

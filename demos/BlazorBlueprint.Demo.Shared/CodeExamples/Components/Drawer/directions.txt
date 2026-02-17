@@ -1,0 +1,11 @@
+<BbDrawer Direction="DrawerDirection.Top">
+    <BbDrawerTrigger>
+        <BbButton Variant="ButtonVariant.Outline">Top</BbButton>
+    </BbDrawerTrigger>
+    <BbDrawerContent ShowHandle="false">
+        <BbDrawerHeader>
+            <BbDrawerTitle>Top Drawer</BbDrawerTitle>
+            <BbDrawerDescription>This slides from the top.</BbDrawerDescription>
+        </BbDrawerHeader>
+    </BbDrawerContent>
+</BbDrawer>

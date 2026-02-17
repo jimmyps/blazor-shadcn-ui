@@ -1,0 +1,9 @@
+<BbFormFieldRadioGroup TValue="string"
+                         Value="@("medium")"
+                         Label="Font size"
+                         HelperText="Locked by your administrator."
+                         Disabled="true">
+    <BbRadioGroupItem Value="@("small")" Label="Small" />
+    <BbRadioGroupItem Value="@("medium")" Label="Medium" />
+    <BbRadioGroupItem Value="@("large")" Label="Large" />
+</BbFormFieldRadioGroup>

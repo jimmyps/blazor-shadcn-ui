@@ -1,0 +1,15 @@
+<BbContextMenu>
+    <BbContextMenuTrigger>
+        <div>Right click here</div>
+    </BbContextMenuTrigger>
+    <BbContextMenuContent>
+        <BbContextMenuItem>
+            <Icon><LucideIcon Name="scissors" Size="16" /></Icon>
+            <ChildContent>Cut</ChildContent>
+        </BbContextMenuItem>
+        <BbContextMenuItem>
+            <Icon><LucideIcon Name="copy" Size="16" /></Icon>
+            <ChildContent>Copy</ChildContent>
+        </BbContextMenuItem>
+    </BbContextMenuContent>
+</BbContextMenu>

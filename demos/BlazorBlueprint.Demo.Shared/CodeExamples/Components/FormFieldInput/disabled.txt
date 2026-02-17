@@ -1,0 +1,5 @@
+<BbFormFieldInput TValue="string"
+                   Value="@("readonly@example.com")"
+                   Label="Email (locked)"
+                   HelperText="Contact support to change your email."
+                   Disabled="true" />

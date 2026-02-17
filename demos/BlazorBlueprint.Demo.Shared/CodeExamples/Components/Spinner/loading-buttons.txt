@@ -1,0 +1,4 @@
+<BbButton Disabled="true">
+    <BbSpinner Size="SpinnerSize.Small" Class="mr-2" />
+    Please wait
+</BbButton>

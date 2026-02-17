@@ -1,0 +1,13 @@
+<BbDropdownMenuContent>
+    <BbDropdownMenuLabel>File Operations</BbDropdownMenuLabel>
+    <BbDropdownMenuGroup>
+        <BbDropdownMenuItem>New File</BbDropdownMenuItem>
+        <BbDropdownMenuItem>Open</BbDropdownMenuItem>
+    </BbDropdownMenuGroup>
+    <BbDropdownMenuSeparator />
+    <BbDropdownMenuLabel>Edit Operations</BbDropdownMenuLabel>
+    <BbDropdownMenuGroup>
+        <BbDropdownMenuItem>Cut</BbDropdownMenuItem>
+        <BbDropdownMenuItem>Copy</BbDropdownMenuItem>
+    </BbDropdownMenuGroup>
+</BbDropdownMenuContent>

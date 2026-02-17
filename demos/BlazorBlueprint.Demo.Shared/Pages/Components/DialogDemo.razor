@@ -1,9 +1,5 @@
 @page "/components/dialog"
-@using BlazorBlueprint.Components.Dialog
-@using BlazorBlueprint.Components.Combobox
-@using BlazorBlueprint.Components.MultiSelect
-@using BlazorBlueprint.Components.DatePicker
-
+@inject DialogService DialogService
 <PageTitle>Dialog Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -25,21 +21,23 @@
             A basic dialog with title, description, and action buttons.
         </p>
 
-        <Dialog>
-            <DialogTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+        <BbDialog>
+            <BbDialogTrigger AsChild="false" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                 Open Dialog
-            </DialogTrigger>
+            </BbDialogTrigger>
 
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Are you absolutely sure?</DialogTitle>
-                    <DialogDescription>
+            <BbDialogContent>
+                <BbDialogHeader>
+                    <BbDialogTitle>Are you absolutely sure?</BbDialogTitle>
+                    <BbDialogDescription>
                         This action cannot be undone. This will permanently delete your account
                         and remove your data from our servers.
-                    </DialogDescription>
-                </DialogHeader>
-            </DialogContent>
-        </Dialog>
+                    </BbDialogDescription>
+                </BbDialogHeader>
+            </BbDialogContent>
+        </BbDialog>
+
+        <CodeBlock Source="Components/Dialog/simple.txt" />
     </div>
 
     <div class="space-y-4">
@@ -48,18 +46,18 @@
             Dialog with action buttons in the footer using DialogFooter component.
         </p>
 
-        <Dialog>
-            <DialogTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+        <BbDialog>
+            <BbDialogTrigger AsChild="false" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                 Edit Profile
-            </DialogTrigger>
+            </BbDialogTrigger>
 
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Edit profile</DialogTitle>
-                    <DialogDescription>
+            <BbDialogContent>
+                <BbDialogHeader>
+                    <BbDialogTitle>Edit profile</BbDialogTitle>
+                    <BbDialogDescription>
                         Make changes to your profile here. Click save when you're done.
-                    </DialogDescription>
-                </DialogHeader>
+                    </BbDialogDescription>
+                </BbDialogHeader>
 
                 <div class="grid gap-4 py-4">
                     <div class="grid grid-cols-4 items-center gap-4">
@@ -80,14 +78,16 @@
                     </div>
                 </div>
 
-                <DialogFooter>
+                <BbDialogFooter>
                     <button type="submit"
                             class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                         Save changes
                     </button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                </BbDialogFooter>
+            </BbDialogContent>
+        </BbDialog>
+
+        <CodeBlock Source="Components/Dialog/with-footer.txt" />
     </div>
 
     <div class="space-y-4">
@@ -103,15 +103,15 @@
             </button>
         </div>
 
-        <Dialog @bind-Open="isDialogOpen">
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Controlled Dialog</DialogTitle>
-                    <DialogDescription>
+        <BbDialog @bind-Open="isDialogOpen">
+            <BbDialogContent>
+                <BbDialogHeader>
+                    <BbDialogTitle>Controlled Dialog</BbDialogTitle>
+                    <BbDialogDescription>
                         This dialog's open state is controlled from the parent component.
                         You can programmatically open and close it.
-                    </DialogDescription>
-                </DialogHeader>
+                    </BbDialogDescription>
+                </BbDialogHeader>
 
                 <div class="py-4">
                     <p class="text-sm">
@@ -119,7 +119,7 @@
                     </p>
                 </div>
 
-                <DialogFooter>
+                <BbDialogFooter>
                     <button @onclick="() => isDialogOpen = false"
                             class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                         Cancel
@@ -128,9 +128,11 @@
                             class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                         Save
                     </button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                </BbDialogFooter>
+            </BbDialogContent>
+        </BbDialog>
+
+        <CodeBlock Source="Components/Dialog/controlled.txt" />
     </div>
 
     <div class="space-y-4">
@@ -139,18 +141,18 @@
             Customize the dialog width using the Class parameter.
         </p>
 
-        <Dialog>
-            <DialogTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+        <BbDialog>
+            <BbDialogTrigger AsChild="false" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                 Open Wide Dialog
-            </DialogTrigger>
+            </BbDialogTrigger>
 
-            <DialogContent Class="max-w-3xl">
-                <DialogHeader>
-                    <DialogTitle>Wide Dialog</DialogTitle>
-                    <DialogDescription>
+            <BbDialogContent Class="max-w-3xl">
+                <BbDialogHeader>
+                    <BbDialogTitle>Wide Dialog</BbDialogTitle>
+                    <BbDialogDescription>
                         This dialog uses a custom max-width class to be wider than the default.
-                    </DialogDescription>
-                </DialogHeader>
+                    </BbDialogDescription>
+                </BbDialogHeader>
 
                 <div class="py-4">
                     <p class="text-sm">
@@ -158,8 +160,10 @@
                         This example uses <code class="bg-muted px-1 py-0.5 rounded">max-w-3xl</code> instead of the default <code class="bg-muted px-1 py-0.5 rounded">max-w-lg</code>.
                     </p>
                 </div>
-            </DialogContent>
-        </Dialog>
+            </BbDialogContent>
+        </BbDialog>
+
+        <CodeBlock Source="Components/Dialog/custom-width.txt" />
     </div>
 
     <div class="space-y-4">
@@ -168,30 +172,32 @@
             Hide the default close button using ShowClose="false".
         </p>
 
-        <Dialog>
-            <DialogTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+        <BbDialog>
+            <BbDialogTrigger AsChild="false" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                 Open Dialog
-            </DialogTrigger>
+            </BbDialogTrigger>
 
-            <DialogContent ShowClose="false">
-                <DialogHeader>
-                    <DialogTitle>Confirm Action</DialogTitle>
-                    <DialogDescription>
+            <BbDialogContent ShowClose="false">
+                <BbDialogHeader>
+                    <BbDialogTitle>Confirm Action</BbDialogTitle>
+                    <BbDialogDescription>
                         This dialog doesn't have a close button in the top-right corner.
                         You must use one of the action buttons or press Escape to close.
-                    </DialogDescription>
-                </DialogHeader>
+                    </BbDialogDescription>
+                </BbDialogHeader>
 
-                <DialogFooter Class="mt-4">
-                    <BlazorBlueprint.Primitives.Dialog.DialogClose class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                <BbDialogFooter Class="mt-4">
+                    <BlazorBlueprint.Primitives.Dialog.BbDialogClose class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                         Cancel
-                    </BlazorBlueprint.Primitives.Dialog.DialogClose>
-                    <BlazorBlueprint.Primitives.Dialog.DialogClose class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                    </BlazorBlueprint.Primitives.Dialog.BbDialogClose>
+                    <BlazorBlueprint.Primitives.Dialog.BbDialogClose class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                         Confirm
-                    </BlazorBlueprint.Primitives.Dialog.DialogClose>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                    </BlazorBlueprint.Primitives.Dialog.BbDialogClose>
+                </BbDialogFooter>
+            </BbDialogContent>
+        </BbDialog>
+
+        <CodeBlock Source="Components/Dialog/without-close.txt" />
     </div>
 
     <div class="space-y-4">
@@ -207,19 +213,19 @@
                 <p class="text-sm text-muted-foreground">
                     DialogTrigger renders its own button element with inline classes.
                 </p>
-                <Dialog>
-                    <DialogTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                <BbDialog>
+                    <BbDialogTrigger AsChild="false" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                         Open Dialog
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Without AsChild</DialogTitle>
-                            <DialogDescription>
+                    </BbDialogTrigger>
+                    <BbDialogContent>
+                        <BbDialogHeader>
+                            <BbDialogTitle>Without AsChild</BbDialogTitle>
+                            <BbDialogDescription>
                                 This dialog uses inline CSS classes on the trigger.
-                            </DialogDescription>
-                        </DialogHeader>
-                    </DialogContent>
-                </Dialog>
+                            </BbDialogDescription>
+                        </BbDialogHeader>
+                    </BbDialogContent>
+                </BbDialog>
             </div>
 
             <!-- With AsChild -->
@@ -228,52 +234,33 @@
                 <p class="text-sm text-muted-foreground">
                     Button component receives trigger behavior via TriggerContext.
                 </p>
-                <Dialog>
-                    <DialogTrigger AsChild>
-                        <Button Variant="ButtonVariant.Destructive">
+                <BbDialog>
+                    <BbDialogTrigger>
+                        <BbButton Variant="ButtonVariant.Destructive">
                             <LucideIcon Name="trash-2" Size="16" />
                             Delete Account
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Delete Account</DialogTitle>
-                            <DialogDescription>
+                        </BbButton>
+                    </BbDialogTrigger>
+                    <BbDialogContent>
+                        <BbDialogHeader>
+                            <BbDialogTitle>Delete Account</BbDialogTitle>
+                            <BbDialogDescription>
                                 This action cannot be undone. This will permanently delete your account.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <DialogFooter>
-                            <DialogClose AsChild>
-                                <Button Variant="ButtonVariant.Outline">Cancel</Button>
-                            </DialogClose>
-                            <Button Variant="ButtonVariant.Destructive">Delete</Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                            </BbDialogDescription>
+                        </BbDialogHeader>
+                        <BbDialogFooter>
+                            <BbDialogClose>
+                                <BbButton Variant="ButtonVariant.Outline">Cancel</BbButton>
+                            </BbDialogClose>
+                            <BbButton Variant="ButtonVariant.Destructive">Delete</BbButton>
+                        </BbDialogFooter>
+                    </BbDialogContent>
+                </BbDialog>
             </div>
         </div>
 
-        <div class="bg-muted p-4 rounded-md mt-4">
-            <p class="text-sm font-medium mb-2">Code Example:</p>
-            <pre class="text-sm overflow-x-auto"><code>&lt;Dialog&gt;
-    &lt;DialogTrigger AsChild&gt;
-        &lt;Button Variant="ButtonVariant.Destructive"&gt;
-            Delete Account
-        &lt;/Button&gt;
-    &lt;/DialogTrigger&gt;
-    &lt;DialogContent&gt;
-        &lt;DialogHeader&gt;
-            &lt;DialogTitle&gt;Delete Account&lt;/DialogTitle&gt;
-        &lt;/DialogHeader&gt;
-        &lt;DialogFooter&gt;
-            &lt;DialogClose AsChild&gt;
-                &lt;Button Variant="ButtonVariant.Outline"&gt;Cancel&lt;/Button&gt;
-            &lt;/DialogClose&gt;
-            &lt;Button Variant="ButtonVariant.Destructive"&gt;Delete&lt;/Button&gt;
-        &lt;/DialogFooter&gt;
-    &lt;/DialogContent&gt;
-&lt;/Dialog&gt;</code></pre>
-        </div>
+        <CodeBlock Source="Components/Dialog/as-child.txt" />
+
     </div>
 
     <div class="space-y-4">
@@ -283,43 +270,41 @@
             where each dropdown renders its floating content above the dialog overlay.
         </p>
 
-        <Dialog>
-            <DialogTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+        <BbDialog>
+            <BbDialogTrigger AsChild="false" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                 Open Dialog with Dropdowns
-            </DialogTrigger>
+            </BbDialogTrigger>
 
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Nested Dropdown Controls</DialogTitle>
-                    <DialogDescription>
+            <BbDialogContent>
+                <BbDialogHeader>
+                    <BbDialogTitle>Nested Dropdown Controls</BbDialogTitle>
+                    <BbDialogDescription>
                         Select, Combobox, and MultiSelect all use nested portals to render above the dialog.
-                    </DialogDescription>
-                </DialogHeader>
+                    </BbDialogDescription>
+                </BbDialogHeader>
 
                 <div class="grid gap-4 py-4">
                     <div class="space-y-2">
                         <label class="text-sm font-medium">Select</label>
-                        <Select @bind-Value="selectedDialogFruit" TValue="string" Class="w-full">
-                            <SelectTrigger>
-                                <SelectValue Placeholder="Select a fruit..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem Value="@("apple")" Text="Apple" TValue="string">Apple</SelectItem>
-                                <SelectItem Value="@("banana")" Text="Banana" TValue="string">Banana</SelectItem>
-                                <SelectItem Value="@("blueberry")" Text="Blueberry" TValue="string">Blueberry</SelectItem>
-                                <SelectItem Value="@("grapes")" Text="Grapes" TValue="string">Grapes</SelectItem>
-                                <SelectItem Value="@("pineapple")" Text="Pineapple" TValue="string">Pineapple</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <BbSelect @bind-Value="selectedDialogFruit" TValue="string" Class="w-full">
+                            <BbSelectTrigger>
+                                <BbSelectValue Placeholder="Select a fruit..." />
+                            </BbSelectTrigger>
+                            <BbSelectContent>
+                                <BbSelectItem Value="@("apple")" Text="Apple" TValue="string">Apple</BbSelectItem>
+                                <BbSelectItem Value="@("banana")" Text="Banana" TValue="string">Banana</BbSelectItem>
+                                <BbSelectItem Value="@("blueberry")" Text="Blueberry" TValue="string">Blueberry</BbSelectItem>
+                                <BbSelectItem Value="@("grapes")" Text="Grapes" TValue="string">Grapes</BbSelectItem>
+                                <BbSelectItem Value="@("pineapple")" Text="Pineapple" TValue="string">Pineapple</BbSelectItem>
+                            </BbSelectContent>
+                        </BbSelect>
                     </div>
 
                     <div class="space-y-2">
                         <label class="text-sm font-medium">Combobox</label>
-                        <Combobox TItem="ComboboxFramework"
-                                  Items="comboboxFrameworks"
+                        <BbCombobox TValue="string"
+                                  Options="comboboxFrameworks"
                                   @bind-Value="selectedComboboxFramework"
-                                  ValueSelector="@(f => f.Value)"
-                                  DisplaySelector="@(f => f.Label)"
                                   Placeholder="Select framework..."
                                   SearchPlaceholder="Search framework..."
                                   EmptyMessage="No framework found."
@@ -328,11 +313,9 @@
 
                     <div class="space-y-2">
                         <label class="text-sm font-medium">MultiSelect</label>
-                        <MultiSelect TItem="string"
-                                     Items="multiSelectTechnologies"
+                        <BbMultiSelect TValue="string"
+                                     Options="multiSelectTechnologies"
                                      @bind-Values="selectedTechnologies"
-                                     ValueSelector="@(t => t)"
-                                     DisplaySelector="@(t => t)"
                                      Placeholder="Select technologies..."
                                      SearchPlaceholder="Search technologies..."
                                      EmptyMessage="No technologies found."
@@ -340,16 +323,18 @@
                     </div>
                 </div>
 
-                <DialogFooter>
-                    <BlazorBlueprint.Primitives.Dialog.DialogClose class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                <BbDialogFooter>
+                    <BlazorBlueprint.Primitives.Dialog.BbDialogClose class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                         Cancel
-                    </BlazorBlueprint.Primitives.Dialog.DialogClose>
+                    </BlazorBlueprint.Primitives.Dialog.BbDialogClose>
                     <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                         Confirm
                     </button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                </BbDialogFooter>
+            </BbDialogContent>
+        </BbDialog>
+
+        <CodeBlock Source="Components/Dialog/dropdown-controls.txt" />
     </div>
 
     <div class="space-y-4">
@@ -359,102 +344,277 @@
             using fixed positioning and elevated z-index.
         </p>
 
-        <Dialog>
-            <DialogTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+        <BbDialog>
+            <BbDialogTrigger AsChild="false" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                 Open Dialog with DatePicker
-            </DialogTrigger>
+            </BbDialogTrigger>
 
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Schedule Event</DialogTitle>
-                    <DialogDescription>
+            <BbDialogContent>
+                <BbDialogHeader>
+                    <BbDialogTitle>Schedule Event</BbDialogTitle>
+                    <BbDialogDescription>
                         Pick a date for the event using the DatePicker below.
-                    </DialogDescription>
-                </DialogHeader>
+                    </BbDialogDescription>
+                </BbDialogHeader>
 
                 <div class="grid gap-4 py-4">
                     <div class="space-y-2">
                         <label class="text-sm font-medium">Event Date</label>
-                        <DatePicker @bind-Value="dialogDatePickerValue" Class="w-full" />
+                        <BbDatePicker @bind-Value="dialogDatePickerValue" Class="w-full" />
                     </div>
                 </div>
 
-                <DialogFooter>
-                    <BlazorBlueprint.Primitives.Dialog.DialogClose class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                <BbDialogFooter>
+                    <BlazorBlueprint.Primitives.Dialog.BbDialogClose class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                         Cancel
-                    </BlazorBlueprint.Primitives.Dialog.DialogClose>
+                    </BlazorBlueprint.Primitives.Dialog.BbDialogClose>
                     <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                         Confirm
                     </button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                </BbDialogFooter>
+            </BbDialogContent>
+        </BbDialog>
+
+        <CodeBlock Source="Components/Dialog/datepicker.txt" />
     </div>
 
     <div class="space-y-4">
-        <h2 class="text-2xl font-semibold">Features</h2>
-        <ul class="list-disc list-inside space-y-2 text-sm">
-            <li>Full keyboard navigation support</li>
-            <li>Focus is automatically trapped within the dialog</li>
-            <li>Can be controlled or uncontrolled</li>
-            <li>Manages screen reader announcements with ARIA</li>
-            <li>Scroll lock on body when dialog is open</li>
-            <li>Respects prefers-reduced-motion</li>
-        </ul>
+        <h2 class="text-2xl font-semibold">Confirm Service <span class="text-xs font-normal text-primary bg-primary/10 px-1.5 py-0.5 rounded">New</span></h2>
+        <p class="text-sm text-muted-foreground">
+            Use <code>DialogService.Confirm()</code> for one-line programmatic confirm dialogs.
+            No markup, no state variables — just an async call that returns <code>true</code> or <code>false</code>.
+        </p>
+
+        <div class="flex items-center gap-4">
+            <BbButton OnClick="HandleConfirmDelete">Delete Item</BbButton>
+            <BbButton Variant="ButtonVariant.Destructive" OnClick="HandleDestructiveDelete">Destructive Delete</BbButton>
+            <span class="text-sm text-muted-foreground">Result: @confirmResult</span>
+        </div>
+
+        <CodeBlock Source="Components/Dialog/confirm-service.txt" />
     </div>
 
     <div class="space-y-4">
-        <h2 class="text-2xl font-semibold">Installation</h2>
+        <h2 class="text-2xl font-semibold">Form in Dialog</h2>
+        <p class="text-sm text-muted-foreground">
+            Dialog with bound input fields. Typing should feel instant with no flicker — keyboard events
+            are handled in JavaScript, and only Escape triggers a C# interop call.
+        </p>
 
+        <BbDialog>
+            <BbDialogTrigger>
+                <BbButton>Open Form Dialog</BbButton>
+            </BbDialogTrigger>
+
+            <BbDialogContent>
+                <BbDialogHeader>
+                    <BbDialogTitle>Create Account</BbDialogTitle>
+                    <BbDialogDescription>
+                        Fill in the details below to create a new account.
+                    </BbDialogDescription>
+                </BbDialogHeader>
+
+                <div class="grid gap-4 py-4">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">First Name</label>
+                        <BbInput @bind-Value="formFirstName" Placeholder="Enter first name..." />
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Last Name</label>
+                        <BbInput @bind-Value="formLastName" Placeholder="Enter last name..." />
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Email</label>
+                        <BbInput @bind-Value="formEmail" Type="InputType.Email" Placeholder="you@example.com" />
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Bio</label>
+                        <BbTextarea @bind-Value="formBio" Placeholder="Tell us about yourself..." />
+                    </div>
+                </div>
+
+                <BbDialogFooter>
+                    <BbDialogClose>
+                        <BbButton Variant="ButtonVariant.Outline">Cancel</BbButton>
+                    </BbDialogClose>
+                    <BbButton OnClick="HandleCreateAccount">Create Account</BbButton>
+                </BbDialogFooter>
+            </BbDialogContent>
+        </BbDialog>
+    </div>
+
+    <div class="space-y-4">
+        <h2 class="text-2xl font-semibold">Nested Dialog</h2>
+        <p class="text-sm text-muted-foreground">
+            A dialog that opens another dialog. Pressing Escape should close only the innermost dialog.
+            Press Escape again to close the outer dialog.
+        </p>
+
+        <BbDialog @bind-Open="outerDialogOpen">
+            <BbDialogTrigger>
+                <BbButton Variant="ButtonVariant.Outline">Open Outer Dialog</BbButton>
+            </BbDialogTrigger>
+
+            <BbDialogContent>
+                <BbDialogHeader>
+                    <BbDialogTitle>Outer Dialog</BbDialogTitle>
+                    <BbDialogDescription>
+                        This is the outer dialog. Click the button below to open a nested dialog inside.
+                    </BbDialogDescription>
+                </BbDialogHeader>
+
+                <div class="py-4 space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Outer Input</label>
+                        <BbInput @bind-Value="outerDialogInput" Placeholder="Type here..." />
+                    </div>
+
+                    <BbDialog @bind-Open="innerDialogOpen">
+                        <BbDialogTrigger>
+                            <BbButton Variant="ButtonVariant.Secondary">Open Inner Dialog</BbButton>
+                        </BbDialogTrigger>
+
+                        <BbDialogContent>
+                            <BbDialogHeader>
+                                <BbDialogTitle>Inner Dialog</BbDialogTitle>
+                                <BbDialogDescription>
+                                    This is the nested inner dialog. Press Escape — only this dialog should close.
+                                </BbDialogDescription>
+                            </BbDialogHeader>
+
+                            <div class="py-4 space-y-2">
+                                <label class="text-sm font-medium">Inner Input</label>
+                                <BbInput @bind-Value="innerDialogInput" Placeholder="Type in the inner dialog..." />
+                            </div>
+
+                            <BbDialogFooter>
+                                <BbDialogClose>
+                                    <BbButton Variant="ButtonVariant.Outline">Close Inner</BbButton>
+                                </BbDialogClose>
+                            </BbDialogFooter>
+                        </BbDialogContent>
+                    </BbDialog>
+                </div>
+
+                <BbDialogFooter>
+                    <BbDialogClose>
+                        <BbButton Variant="ButtonVariant.Outline">Close Outer</BbButton>
+                    </BbDialogClose>
+                </BbDialogFooter>
+            </BbDialogContent>
+        </BbDialog>
+    </div>
+
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Focus is automatically trapped within the dialog</AccessibilityItem>
+            <AccessibilityItem>Manages screen reader announcements with role="dialog" and aria-modal</AccessibilityItem>
+            <AccessibilityItem>Scroll lock on body when dialog is open</AccessibilityItem>
+            <AccessibilityItem>Respects prefers-reduced-motion for animations</AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Close the dialog">
+                <BbKbd>Escape</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Move focus to next element">
+                <BbKbd>Tab</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Move focus to previous element">
+                <BbKbd>Shift+Tab</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
         <div class="space-y-2">
-            <p class="text-sm text-muted-foreground">Add the following using statement to your _Imports.razor:</p>
-            <div class="bg-muted p-4 rounded-md">
-                <code class="text-sm">@@using BlazorBlueprint.Components.Dialog</code>
-            </div>
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-    </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="Dialog">
+                <ApiParameter Name="Open" Type="bool?" Default="null">
+                    Controls whether the dialog is open (controlled mode). When null, the dialog manages its own state.
+                </ApiParameter>
+                <ApiParameter Name="DefaultOpen" Type="bool" Default="false">
+                    Default open state when in uncontrolled mode.
+                </ApiParameter>
+                <ApiParameter Name="Modal" Type="bool" Default="true">
+                    Whether the dialog can be dismissed by clicking outside or pressing Escape.
+                </ApiParameter>
+                <ApiParameter Name="OnOpenChange" Type="EventCallback&lt;bool&gt;">
+                    Event callback invoked when the dialog open state changes.
+                </ApiParameter>
+            </ApiReference>
 
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold">Usage</h2>
+            <ApiReference ComponentName="DialogContent">
+                <ApiParameter Name="ShowClose" Type="bool" Default="true">
+                    Whether to show the close button (X icon).
+                </ApiParameter>
+                <ApiParameter Name="CloseOnEscape" Type="bool" Default="true">
+                    Whether pressing Escape should close the dialog.
+                </ApiParameter>
+                <ApiParameter Name="TrapFocus" Type="bool" Default="true">
+                    Whether to trap focus within the dialog.
+                </ApiParameter>
+                <ApiParameter Name="LockScroll" Type="bool" Default="true">
+                    Whether to lock body scroll when dialog is open.
+                </ApiParameter>
+            </ApiReference>
 
-        <div class="bg-muted p-4 rounded-md">
-            <pre class="text-sm overflow-x-auto"><code>&lt;Dialog&gt;
-    &lt;DialogTrigger&gt;Open&lt;/DialogTrigger&gt;
-    &lt;DialogContent&gt;
-        &lt;DialogHeader&gt;
-            &lt;DialogTitle&gt;Are you absolutely sure?&lt;/DialogTitle&gt;
-            &lt;DialogDescription&gt;
-                This action cannot be undone.
-            &lt;/DialogDescription&gt;
-        &lt;/DialogHeader&gt;
-    &lt;/DialogContent&gt;
-&lt;/Dialog&gt;</code></pre>
+            <ApiReference ComponentName="DialogTrigger">
+                <ApiParameter Name="AsChild" Type="bool" Default="true">
+                    When true, passes trigger behavior to child components instead of rendering its own button.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {
+    private string confirmResult = "None";
     private bool isDialogOpen = false;
     private DateTime? dialogDatePickerValue;
     private string? selectedComboboxFramework;
     private string? selectedDialogFruit;
     private IEnumerable<string>? selectedTechnologies = new List<string>();
 
-    private readonly List<string> multiSelectTechnologies = new()
-    {
-        "Blazor", "React", "Vue", "Angular", "Svelte", "Next.js", "Nuxt", "SolidJS", "Astro", "Remix"
-    };
+    // Form in Dialog
+    private string? formFirstName;
+    private string? formLastName;
+    private string? formEmail;
+    private string? formBio;
 
-    private readonly List<ComboboxFramework> comboboxFrameworks = new()
-    {
-        new ComboboxFramework { Value = "blazor", Label = "Blazor" },
-        new ComboboxFramework { Value = "react", Label = "React" },
-        new ComboboxFramework { Value = "vue", Label = "Vue" },
-        new ComboboxFramework { Value = "angular", Label = "Angular" },
-        new ComboboxFramework { Value = "svelte", Label = "Svelte" },
-        new ComboboxFramework { Value = "nextjs", Label = "Next.js" },
-        new ComboboxFramework { Value = "nuxt", Label = "Nuxt" }
-    };
+    // Nested Dialog
+    private bool outerDialogOpen;
+    private bool innerDialogOpen;
+    private string? outerDialogInput;
+    private string? innerDialogInput;
+
+    private readonly SelectOption<string>[] multiSelectTechnologies =
+    [
+        new("Blazor", "Blazor"),
+        new("React", "React"),
+        new("Vue", "Vue"),
+        new("Angular", "Angular"),
+        new("Svelte", "Svelte"),
+        new("Next.js", "Next.js"),
+        new("Nuxt", "Nuxt"),
+        new("SolidJS", "SolidJS"),
+        new("Astro", "Astro"),
+        new("Remix", "Remix")
+    ];
+
+    private readonly SelectOption<string>[] comboboxFrameworks =
+    [
+        new("blazor", "Blazor"),
+        new("react", "React"),
+        new("vue", "Vue"),
+        new("angular", "Angular"),
+        new("svelte", "Svelte"),
+        new("nextjs", "Next.js"),
+        new("nuxt", "Nuxt")
+    ];
 
     private void HandleSave()
     {
@@ -462,12 +622,35 @@
         isDialogOpen = false;
     }
 
-    private string GetComboboxFrameworkLabel(string? value) =>
-        comboboxFrameworks.FirstOrDefault(f => f.Value == value)?.Label ?? value ?? "";
-
-    public class ComboboxFramework
+    private void HandleCreateAccount()
     {
-        public required string Value { get; set; }
-        public required string Label { get; set; }
+        // Handle account creation
+    }
+
+    private string GetComboboxFrameworkLabel(string? value) =>
+        comboboxFrameworks.FirstOrDefault(f => f.Value == value)?.Text ?? value ?? "";
+
+    private async Task HandleConfirmDelete()
+    {
+        var confirmed = await DialogService.Confirm(
+            "Delete item?",
+            "This action cannot be undone. The item will be permanently removed.");
+
+        confirmResult = confirmed ? "Confirmed" : "Cancelled";
+    }
+
+    private async Task HandleDestructiveDelete()
+    {
+        var confirmed = await DialogService.Confirm(
+            "Delete item?",
+            "This action cannot be undone.",
+            new ConfirmDialogOptions
+            {
+                ConfirmText = "Yes, delete",
+                CancelText = "Keep it",
+                Destructive = true
+            });
+
+        confirmResult = confirmed ? "Deleted!" : "Kept";
     }
 }

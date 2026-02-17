@@ -1,0 +1,8 @@
+<BbBadge Variant="BadgeVariant.Default">
+    <LucideIcon Name="check" Size="12" Class="mr-1" />
+    Verified
+</BbBadge>
+<BbBadge Variant="BadgeVariant.Destructive">
+    <LucideIcon Name="x" Size="12" Class="mr-1" />
+    Closed
+</BbBadge>

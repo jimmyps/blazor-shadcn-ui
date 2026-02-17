@@ -1,0 +1,6 @@
+ToastService.Show(new ToastData
+{
+    Title = "Brand Notification",
+    Description = "Custom brand colors.",
+    Class = "border-purple-500/30 bg-gradient-to-r from-purple-600 to-pink-600 text-white"
+});

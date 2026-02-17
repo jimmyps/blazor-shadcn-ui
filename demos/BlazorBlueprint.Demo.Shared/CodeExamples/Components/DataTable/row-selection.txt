@@ -1,0 +1,6 @@
+<BbDataTable TData="Person" Data="@people" SelectionMode="DataTableSelectionMode.Multiple" @bind-SelectedItems="@selectedPeople">
+    <Columns>
+        <BbDataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+        <BbDataTableColumn TData="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+    </Columns>
+</BbDataTable>

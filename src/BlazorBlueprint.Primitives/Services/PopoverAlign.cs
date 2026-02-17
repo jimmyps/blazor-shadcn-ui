@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Primitives.Services;
+namespace BlazorBlueprint.Primitives;
 
 /// <summary>
 /// Defines the alignment of a positioned element relative to its trigger.

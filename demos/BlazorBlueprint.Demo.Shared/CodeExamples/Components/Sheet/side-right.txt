@@ -1,0 +1,16 @@
+<BbSheet>
+    <BbSheetTrigger>
+        <BbButton Variant="ButtonVariant.Outline">Open Sheet</BbButton>
+    </BbSheetTrigger>
+    <BbSheetContent>
+        <BbSheetHeader>
+            <BbSheetTitle>Edit profile</BbSheetTitle>
+            <BbSheetDescription>
+                Make changes to your profile here.
+            </BbSheetDescription>
+        </BbSheetHeader>
+        <BbSheetFooter>
+            <BbButton>Save changes</BbButton>
+        </BbSheetFooter>
+    </BbSheetContent>
+</BbSheet>

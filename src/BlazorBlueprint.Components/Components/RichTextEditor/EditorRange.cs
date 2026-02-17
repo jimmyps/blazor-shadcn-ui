@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.RichTextEditor;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Represents a selection range in the rich text editor.

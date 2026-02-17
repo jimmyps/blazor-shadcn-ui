@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.CurrencyInput;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Provides a catalog of supported currencies.

@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace BlazorBlueprint.Components.RichTextEditor;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Event arguments for selection change events in the rich text editor.

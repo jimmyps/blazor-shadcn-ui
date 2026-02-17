@@ -1,0 +1,9 @@
+<button @onclick='@(() => value = "Small")'>Select Small</button>
+<button @onclick='@(() => value = "Medium")'>Select Medium</button>
+
+<BbRadioGroup @bind-Value="value" AriaLabel="Size selection"
+            ItemClass="h-4 w-4 rounded-full border-2 cursor-pointer ...">
+    <BbRadioGroupItem Value="Small" />
+    <BbRadioGroupItem Value="Medium" />
+    <BbRadioGroupItem Value="Large" />
+</BbRadioGroup>

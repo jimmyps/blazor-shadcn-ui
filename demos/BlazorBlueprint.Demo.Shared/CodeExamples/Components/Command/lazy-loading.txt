@@ -1,0 +1,16 @@
+<BbCommand>
+    <BbCommandInput Placeholder="Search icons..." />
+    <BbCommandList>
+        <BbCommandEmpty>No icons found.</BbCommandEmpty>
+        <BbCommandVirtualizedGroup TItem="(string Name, int Index)"
+            Heading="Lucide"
+            Items="lucideIcons"
+            ItemValue="@(icon => icon.Name)"
+            ItemSearchText="@(icon => icon.Name)"
+            EnableLazyLoading="true">
+            <ItemTemplate Context="icon">
+                <span>@icon.Name</span>
+            </ItemTemplate>
+        </BbCommandVirtualizedGroup>
+    </BbCommandList>
+</BbCommand>

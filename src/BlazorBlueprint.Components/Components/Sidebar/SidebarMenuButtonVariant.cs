@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Sidebar;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Style variants for SidebarMenuButton.

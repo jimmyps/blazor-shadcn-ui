@@ -1,0 +1,11 @@
+<BbRadialBarChart Data="@data" Height="250px"
+    InnerRadius="40%" OuterRadius="80%">
+    <BbChartTooltip />
+    <BbRadialBar DataKey="desktop" NameKey="month"
+        Color="var(--chart-1)" Stacked="true"
+        ShowBackground="true" />
+    <BbRadialBar DataKey="mobile" NameKey="month"
+        Color="var(--chart-2)" Stacked="true">
+        <BbCenterLabel Value="1,830" Title="Visitors" />
+    </BbRadialBar>
+</BbRadialBarChart>

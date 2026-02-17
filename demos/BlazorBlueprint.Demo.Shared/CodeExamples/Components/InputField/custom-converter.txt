@@ -1,0 +1,1 @@
+<BbInputField TValue="double" @bind-Value="_value" Converter="_percentConverter" />

@@ -1,0 +1,21 @@
+<BbSidebarProvider>
+    <div class="flex h-full w-full flex-col">
+        <!-- Site Header -->
+        <header class="flex h-14 items-center border-b px-6">
+            <span>Company Name</span>
+        </header>
+
+        <!-- Sidebar and Content -->
+        <div class="flex flex-1 overflow-hidden">
+            <BbSidebar>
+                <BbSidebarContent>
+                    <!-- Sidebar menu -->
+                </BbSidebarContent>
+            </BbSidebar>
+            <div class="flex flex-1 flex-col">
+                <BbSidebarTrigger />
+                <!-- Main content -->
+            </div>
+        </div>
+    </div>
+</BbSidebarProvider>

@@ -1,0 +1,12 @@
+<BbDataTableColumn TData="Person" TValue="string" Property="@(p => p.Email)" Header="Actions">
+    <CellTemplate Context="person">
+        <BbDialog>
+            <BbDialogTrigger>
+                <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small">Edit Role</BbButton>
+            </BbDialogTrigger>
+            <BbDialogContent>
+                <BbCombobox TValue="string" Options="roleOptions" @bind-Value="selectedCellRole" />
+            </BbDialogContent>
+        </BbDialog>
+    </CellTemplate>
+</BbDataTableColumn>

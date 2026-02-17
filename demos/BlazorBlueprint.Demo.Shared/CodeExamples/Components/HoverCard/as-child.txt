@@ -1,0 +1,16 @@
+<BbHoverCard>
+    <BbHoverCardTrigger>
+        <BbButton Variant="ButtonVariant.Link">@johndoe</BbButton>
+    </BbHoverCardTrigger>
+    <BbHoverCardContent>
+        <div class="flex gap-3">
+            <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white font-bold">
+                JD
+            </div>
+            <div>
+                <h4 class="text-sm font-semibold">John Doe</h4>
+                <p class="text-xs text-muted-foreground">Software Developer</p>
+            </div>
+        </div>
+    </BbHoverCardContent>
+</BbHoverCard>

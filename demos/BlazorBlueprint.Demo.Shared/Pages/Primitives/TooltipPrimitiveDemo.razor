@@ -1,13 +1,10 @@
 @page "/primitives/tooltip"
-@using BlazorBlueprint.Primitives.Tooltip
 @using BlazorBlueprint.Primitives.Services
-@using BlazorBlueprint.Components.Kbd
-
 <PageTitle>Tooltip Primitive - Blazor Blueprint</PageTitle>
 
-<div class="space-y-6">
+<div class="space-y-8 max-w-4xl">
     <div class="space-y-3">
-        <h1 class="text-4xl font-bold">Tooltip Primitive</h1>
+        <h1 class="text-4xl font-bold tracking-tight">Tooltip Primitive</h1>
         <p class="text-xl text-muted-foreground">
             Headless, unstyled tooltip primitive with full accessibility support and positioning.
         </p>
@@ -30,14 +27,14 @@
                     <p class="text-sm text-muted-foreground">
                         TooltipTrigger renders its own span element.
                     </p>
-                    <Tooltip>
-                        <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltip>
+                        <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                             Hover me
-                        </TooltipTrigger>
-                        <TooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
+                        </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
+                        <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
                             Without AsChild tooltip
-                        </TooltipContent>
-                    </Tooltip>
+                        </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
                 </div>
 
                 <!-- With AsChild -->
@@ -46,18 +43,20 @@
                     <p class="text-sm text-muted-foreground">
                         Button receives hover/focus behavior via TriggerContext.
                     </p>
-                    <Tooltip>
-                        <TooltipTrigger AsChild>
-                            <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Icon">
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltip>
+                        <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger AsChild>
+                            <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Icon">
                                 <LucideIcon Name="info" Size="16" />
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
+                            </BbButton>
+                        </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
+                        <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
                             With AsChild tooltip
-                        </TooltipContent>
-                    </Tooltip>
+                        </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
                 </div>
             </div>
+
+            <CodeBlock Source="Primitives/Tooltip/as-child.txt" />
         </section>
 
         <!-- Basic Example -->
@@ -69,16 +68,18 @@
             </p>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <BlazorBlueprint.Primitives.Tooltip.BbTooltip>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Hover me
-                    </TooltipTrigger>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
 
-                    <TooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
                         This is a tooltip
-                    </TooltipContent>
-                </Tooltip>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
             </div>
+
+            <CodeBlock Source="Primitives/Tooltip/basic.txt" />
         </section>
 
         <!-- Controlled State Example -->
@@ -98,16 +99,18 @@
                     </span>
                 </div>
 
-                <Tooltip @bind-Open="isOpen">
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <BlazorBlueprint.Primitives.Tooltip.BbTooltip @bind-Open="isOpen">
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Controlled Tooltip
-                    </TooltipTrigger>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
 
-                    <TooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
                         This tooltip is controlled externally
-                    </TooltipContent>
-                </Tooltip>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
             </div>
+
+            <CodeBlock Source="Primitives/Tooltip/controlled.txt" />
         </section>
 
         <!-- Positioning Example -->
@@ -118,42 +121,44 @@
             </p>
 
             <div class="rounded-lg border bg-card p-6 flex gap-4 flex-wrap">
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
-                        Top
-                    </TooltipTrigger>
-                    <TooltipContent Side="@PopoverSide.Top" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                <BlazorBlueprint.Primitives.Tooltip.BbTooltip>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger class="inline-flex items-center justify-center px-4 py-2 border rounded cursor-pointer">
+                        <LucideIcon Name="arrow-up" Size="16" />
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent Side="@PopoverSide.Top" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Top positioned
-                    </TooltipContent>
-                </Tooltip>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
 
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
-                        Bottom
-                    </TooltipTrigger>
-                    <TooltipContent Side="@PopoverSide.Bottom" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                <BlazorBlueprint.Primitives.Tooltip.BbTooltip>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger class="inline-flex items-center justify-center px-4 py-2 border rounded cursor-pointer">
+                        <LucideIcon Name="arrow-down" Size="16" />
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent Side="@PopoverSide.Bottom" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Bottom positioned
-                    </TooltipContent>
-                </Tooltip>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
 
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
-                        Left
-                    </TooltipTrigger>
-                    <TooltipContent Side="@PopoverSide.Left" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                <BlazorBlueprint.Primitives.Tooltip.BbTooltip>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger class="inline-flex items-center justify-center px-4 py-2 border rounded cursor-pointer">
+                        <LucideIcon Name="arrow-left" Size="16" />
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent Side="@PopoverSide.Left" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Left positioned
-                    </TooltipContent>
-                </Tooltip>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
 
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
-                        Right
-                    </TooltipTrigger>
-                    <TooltipContent Side="@PopoverSide.Right" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                <BlazorBlueprint.Primitives.Tooltip.BbTooltip>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger class="inline-flex items-center justify-center px-4 py-2 border rounded cursor-pointer">
+                        <LucideIcon Name="arrow-right" Size="16" />
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent Side="@PopoverSide.Right" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Right positioned
-                    </TooltipContent>
-                </Tooltip>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
             </div>
+
+            <CodeBlock Source="Primitives/Tooltip/positioning.txt" />
         </section>
 
         <!-- Delay Duration Example -->
@@ -164,33 +169,35 @@
             </p>
 
             <div class="rounded-lg border bg-card p-6 flex gap-4 flex-wrap">
-                <Tooltip DelayDuration="0">
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <BlazorBlueprint.Primitives.Tooltip.BbTooltip DelayDuration="0">
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Instant (0ms)
-                    </TooltipTrigger>
-                    <TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Shows immediately
-                    </TooltipContent>
-                </Tooltip>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
 
-                <Tooltip DelayDuration="700">
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <BlazorBlueprint.Primitives.Tooltip.BbTooltip DelayDuration="700">
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Default (700ms)
-                    </TooltipTrigger>
-                    <TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Shows after 700ms
-                    </TooltipContent>
-                </Tooltip>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
 
-                <Tooltip DelayDuration="1500">
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <BlazorBlueprint.Primitives.Tooltip.BbTooltip DelayDuration="1500">
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Slow (1500ms)
-                    </TooltipTrigger>
-                    <TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Shows after 1.5 seconds
-                    </TooltipContent>
-                </Tooltip>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
             </div>
+
+            <CodeBlock Source="Primitives/Tooltip/delay.txt" />
         </section>
 
         <!-- Alignment Example -->
@@ -201,36 +208,38 @@
             </p>
 
             <div class="rounded-lg border bg-card p-6 flex gap-4 flex-wrap">
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <BlazorBlueprint.Primitives.Tooltip.BbTooltip>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Top Start
-                    </TooltipTrigger>
-                    <TooltipContent Side="@PopoverSide.Top" Align="@PopoverAlign.Start" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent Side="@PopoverSide.Top" Align="@PopoverAlign.Start" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Aligned to start
-                    </TooltipContent>
-                </Tooltip>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
 
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <BlazorBlueprint.Primitives.Tooltip.BbTooltip>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Top Center
-                    </TooltipTrigger>
-                    <TooltipContent Side="@PopoverSide.Top" Align="@PopoverAlign.Center" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent Side="@PopoverSide.Top" Align="@PopoverAlign.Center" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Centered (default)
-                    </TooltipContent>
-                </Tooltip>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
 
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <BlazorBlueprint.Primitives.Tooltip.BbTooltip>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Top End
-                    </TooltipTrigger>
-                    <TooltipContent Side="@PopoverSide.Top" Align="@PopoverAlign.End" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent Side="@PopoverSide.Top" Align="@PopoverAlign.End" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Aligned to end
-                    </TooltipContent>
-                </Tooltip>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
             </div>
+
+            <CodeBlock Source="Primitives/Tooltip/alignment.txt" />
         </section>
 
-        <!-- Focus and Accessibility -->
+        <!-- Focus and Accessibility Demo -->
         <section class="space-y-4">
             <h2 class="text-2xl font-semibold">Focus and Accessibility</h2>
             <p class="text-muted-foreground">
@@ -242,35 +251,132 @@
                     Try tabbing to the triggers below to see tooltips appear on focus:
                 </p>
                 <div class="flex gap-4">
-                    <Tooltip>
-                        <TooltipTrigger Focusable="true" class="px-4 py-2 border rounded cursor-pointer">
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltip>
+                        <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger Focusable="true" class="px-4 py-2 border rounded cursor-pointer">
                             Focusable trigger
-                        </TooltipTrigger>
-                        <TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                        </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
+                        <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                             Shows on focus
-                        </TooltipContent>
-                    </Tooltip>
+                        </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
 
-                    <Tooltip>
-                        <TooltipTrigger Focusable="true" class="px-4 py-2 border rounded cursor-pointer">
+                    <BlazorBlueprint.Primitives.Tooltip.BbTooltip>
+                        <BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger Focusable="true" class="px-4 py-2 border rounded cursor-pointer">
                             Another trigger
-                        </TooltipTrigger>
-                        <TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                        </BlazorBlueprint.Primitives.Tooltip.BbTooltipTrigger>
+                        <BlazorBlueprint.Primitives.Tooltip.BbTooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                             Also shows on focus
-                        </TooltipContent>
-                    </Tooltip>
+                        </BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+                    </BlazorBlueprint.Primitives.Tooltip.BbTooltip>
                 </div>
             </div>
+        </section>
 
-            <div class="bg-muted p-4 rounded-md space-y-2">
-                <h3 class="font-semibold">Accessibility Features:</h3>
-                <ul class="text-sm space-y-1">
-                    <li><Kbd>Tab</Kbd> - Navigate to trigger</li>
-                    <li><Kbd>Hover</Kbd> - Show tooltip on mouse over</li>
-                    <li><strong>ARIA:</strong> role="tooltip" and aria-describedby for screen readers</li>
-                    <li><strong>Delay:</strong> 700ms default delay prevents accidental tooltips</li>
-                    <li><strong>Scoped IDs:</strong> Unique IDs for multiple tooltips on same page</li>
-                </ul>
+        <AccessibilityList>
+            <AriaAttributes>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">role="tooltip"</code> on content for screen readers
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-describedby</code> links trigger to tooltip content
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">data-state</code> attribute for CSS styling (open)
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Scoped unique IDs for multiple tooltips on the same page
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    700ms default delay prevents accidental tooltip display
+                </AccessibilityItem>
+            </AriaAttributes>
+            <KeyboardNavigation>
+                <KeyboardShortcutItem Description="Navigate to trigger">
+                    <BbKbd>Tab</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Show tooltip on focus">
+                    <BbKbd>Focus</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Show tooltip on hover">
+                    <BbKbd>Hover</BbKbd>
+                </KeyboardShortcutItem>
+            </KeyboardNavigation>
+        </AccessibilityList>
+
+        <section class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">API Reference</h2>
+                <p class="text-muted-foreground">Component properties and parameters.</p>
+            </div>
+            <div class="space-y-4">
+                <ApiReference ComponentName="Tooltip">
+                    <ApiParameter Name="Open" Type="bool?">
+                        Controls whether the tooltip is open (controlled mode). When null, the tooltip manages its own state (uncontrolled mode). Supports two-way binding with <code>@@bind-Open</code>.
+                    </ApiParameter>
+                    <ApiParameter Name="OpenChanged" Type="EventCallback&lt;bool&gt;">
+                        Event callback invoked when the open state changes.
+                    </ApiParameter>
+                    <ApiParameter Name="DefaultOpen" Type="bool" Default="false">
+                        Default open state when in uncontrolled mode.
+                    </ApiParameter>
+                    <ApiParameter Name="DelayDuration" Type="int" Default="700">
+                        The delay in milliseconds before showing the tooltip.
+                    </ApiParameter>
+                    <ApiParameter Name="HideDelay" Type="int" Default="0">
+                        The delay in milliseconds before hiding the tooltip after mouse leaves.
+                    </ApiParameter>
+                    <ApiParameter Name="Placement" Type="string" Default="&quot;top&quot;">
+                        The placement position for the tooltip (top, bottom, left, right).
+                    </ApiParameter>
+                    <ApiParameter Name="Class" Type="string?">
+                        Additional CSS classes to apply to the root element.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The child content to render inside the tooltip container.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the root element.
+                    </ApiParameter>
+                </ApiReference>
+
+                <ApiReference ComponentName="TooltipTrigger">
+                    <ApiParameter Name="AsChild" Type="bool" Default="false">
+                        When true, the trigger does not render its own span element. Instead, it passes trigger behavior via TriggerContext to child components.
+                    </ApiParameter>
+                    <ApiParameter Name="Focusable" Type="bool" Default="true">
+                        Whether the trigger should be keyboard focusable. Set to false if child content is already focusable.
+                    </ApiParameter>
+                    <ApiParameter Name="OnMouseEnter" Type="EventCallback&lt;MouseEventArgs&gt;">
+                        Custom mouse enter handler. Called in addition to the default show behavior.
+                    </ApiParameter>
+                    <ApiParameter Name="OnMouseLeave" Type="EventCallback&lt;MouseEventArgs&gt;">
+                        Custom mouse leave handler. Called in addition to the default hide behavior.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The content to display inside the trigger.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the trigger element.
+                    </ApiParameter>
+                </ApiReference>
+
+                <ApiReference ComponentName="TooltipContent">
+                    <ApiParameter Name="Side" Type="PopoverSide?">
+                        Preferred side for positioning. If not set, uses the Placement from the parent Tooltip context. Default is Top.
+                    </ApiParameter>
+                    <ApiParameter Name="Align" Type="PopoverAlign?">
+                        Alignment relative to trigger. If not set, uses the Placement from the parent Tooltip context. Default is Center.
+                    </ApiParameter>
+                    <ApiParameter Name="Offset" Type="int" Default="8">
+                        Offset distance from the trigger element in pixels.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The content to render inside the tooltip.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the content container.
+                    </ApiParameter>
+                </ApiReference>
             </div>
         </section>
     </div>

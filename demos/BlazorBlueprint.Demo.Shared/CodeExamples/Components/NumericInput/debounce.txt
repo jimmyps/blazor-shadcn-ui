@@ -1,0 +1,10 @@
+<BbNumericInput TValue="int"
+              Value="@_debouncedInt"
+              ValueChanged="@((v) => _debouncedInt = v)"
+              Placeholder="Type to see delay" />
+
+<BbNumericInput TValue="int"
+              DisableDebounce="true"
+              Value="@_immediateInt"
+              ValueChanged="@((v) => _immediateInt = v)"
+              Placeholder="Updates instantly" />

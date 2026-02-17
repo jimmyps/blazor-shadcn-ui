@@ -1,0 +1,12 @@
+<div class="flex items-center space-x-2">
+    <BbCheckbox @bind-Checked="option1" Id="option1" />
+    <label for="option1" class="text-sm font-medium leading-none">
+        Email notifications
+    </label>
+</div>
+<div class="flex items-center space-x-2">
+    <BbCheckbox @bind-Checked="option2" Id="option2" />
+    <label for="option2" class="text-sm font-medium leading-none">
+        SMS notifications
+    </label>
+</div>

@@ -1,0 +1,1 @@
+<BbKbd Keys="Ctrl" /> + <BbKbd Keys="C" />

@@ -1,0 +1,1 @@
+<BbTextarea Required="true" Placeholder="Enter your message" />

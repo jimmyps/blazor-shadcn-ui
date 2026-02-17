@@ -1,6 +1,4 @@
 @page "/components/collapsible"
-@using BlazorBlueprint.Components.Collapsible
-
 <PageTitle>Collapsible Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -32,17 +30,17 @@
                 <p class="text-sm text-muted-foreground">
                     CollapsibleTrigger renders its own button with inline classes.
                 </p>
-                <Collapsible Class="border rounded-lg max-w-sm">
+                <BbCollapsible Class="border rounded-lg max-w-sm">
                     <div class="px-4 py-3">
-                        <CollapsibleTrigger Class="flex w-full h-9 items-center justify-between text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                        <BbCollapsibleTrigger AsChild="false" Class="flex w-full h-9 items-center justify-between text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md px-3 [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
                             <span>Show more</span>
                             <LucideIcon Name="chevron-down" Size="16" />
-                        </CollapsibleTrigger>
+                        </BbCollapsibleTrigger>
                     </div>
-                    <CollapsibleContent Class="px-4 pb-4">
+                    <BbCollapsibleContent Class="px-4 pb-4">
                         <p class="text-sm text-muted-foreground">Hidden content revealed!</p>
-                    </CollapsibleContent>
-                </Collapsible>
+                    </BbCollapsibleContent>
+                </BbCollapsible>
             </div>
 
             <!-- With AsChild -->
@@ -51,21 +49,22 @@
                 <p class="text-sm text-muted-foreground">
                     Button receives trigger behavior via TriggerContext.
                 </p>
-                <Collapsible Class="border rounded-lg max-w-sm">
+                <BbCollapsible Class="border rounded-lg max-w-sm">
                     <div class="px-4 py-3">
-                        <CollapsibleTrigger AsChild>
-                            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" Class="w-full justify-between">
+                        <BbCollapsibleTrigger>
+                            <BbButton Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" Class="w-full justify-between">
                                 <span>Toggle Section</span>
                                 <LucideIcon Name="chevron-down" Size="16" />
-                            </Button>
-                        </CollapsibleTrigger>
+                            </BbButton>
+                        </BbCollapsibleTrigger>
                     </div>
-                    <CollapsibleContent Class="px-4 pb-4">
+                    <BbCollapsibleContent Class="px-4 pb-4">
                         <p class="text-sm text-muted-foreground">Content using Button with AsChild!</p>
-                    </CollapsibleContent>
-                </Collapsible>
+                    </BbCollapsibleContent>
+                </BbCollapsible>
             </div>
         </div>
+        <CodeBlock Source="Components/Collapsible/as-child.txt" />
     </div>
 
     <!-- Basic Usage -->
@@ -77,20 +76,21 @@
             </p>
         </div>
         <div class="max-w-md">
-            <Collapsible Class="border rounded-lg">
+            <BbCollapsible Class="border rounded-lg">
                 <div class="px-4 py-3">
-                    <CollapsibleTrigger Class="flex w-full items-center justify-between rounded-md hover:bg-accent hover:text-accent-foreground [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                    <BbCollapsibleTrigger AsChild="false" Class="flex w-full items-center justify-between rounded-md hover:bg-accent hover:text-accent-foreground [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
                         <span>Can I use this in my project?</span>
                         <LucideIcon Name="chevron-down" Size="16" />
-                    </CollapsibleTrigger>
+                    </BbCollapsibleTrigger>
                 </div>
-                <CollapsibleContent Class="px-4 pb-4">
+                <BbCollapsibleContent Class="px-4 pb-4">
                     <div class="text-sm text-muted-foreground">
                         Yes! This component is free to use in your projects.
                     </div>
-                </CollapsibleContent>
-            </Collapsible>
+                </BbCollapsibleContent>
+            </BbCollapsible>
         </div>
+        <CodeBlock Source="Components/Collapsible/basic.txt" />
     </div>
 
     <!-- Controlled Collapsible -->
@@ -103,26 +103,27 @@
         </div>
         <div class="max-w-md space-y-4">
             <div class="flex gap-2">
-                <Button Size="ButtonSize.Small" @onclick="@(() => isControlledOpen = true)">Open</Button>
-                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" @onclick="@(() => isControlledOpen = false)">Close</Button>
-                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Secondary" @onclick="@(() => isControlledOpen = !isControlledOpen)">Toggle</Button>
+                <BbButton Size="ButtonSize.Small" @onclick="@(() => isControlledOpen = true)">Open</BbButton>
+                <BbButton Size="ButtonSize.Small" Variant="ButtonVariant.Outline" @onclick="@(() => isControlledOpen = false)">Close</BbButton>
+                <BbButton Size="ButtonSize.Small" Variant="ButtonVariant.Secondary" @onclick="@(() => isControlledOpen = !isControlledOpen)">Toggle</BbButton>
             </div>
-            <Collapsible Open="@isControlledOpen"
+            <BbCollapsible Open="@isControlledOpen"
                          OpenChanged="@((bool open) => isControlledOpen = open)"
                          Class="border rounded-lg">
                 <div class="px-4 py-3">
-                    <CollapsibleTrigger Class="flex w-full items-center justify-between rounded-md hover:bg-accent hover:text-accent-foreground">
+                    <BbCollapsibleTrigger AsChild="false" Class="flex w-full items-center justify-between rounded-md hover:bg-accent hover:text-accent-foreground">
                         <span>Controlled Content (@(isControlledOpen ? "Open" : "Closed"))</span>
                         <LucideIcon Name="@(isControlledOpen ? "chevron-up" : "chevron-down")" Size="16" />
-                    </CollapsibleTrigger>
+                    </BbCollapsibleTrigger>
                 </div>
-                <CollapsibleContent Class="px-4 pb-4">
+                <BbCollapsibleContent Class="px-4 pb-4">
                     <div class="text-sm">
                         The parent component controls this collapsible's state.
                     </div>
-                </CollapsibleContent>
-            </Collapsible>
+                </BbCollapsibleContent>
+            </BbCollapsible>
         </div>
+        <CodeBlock Source="Components/Collapsible/controlled.txt" />
     </div>
 
     <!-- Disabled State -->
@@ -134,20 +135,21 @@
             </p>
         </div>
         <div class="max-w-md">
-            <Collapsible Disabled Class="border rounded-lg opacity-50">
+            <BbCollapsible Disabled Class="border rounded-lg opacity-50">
                 <div class="px-4 py-3">
-                    <CollapsibleTrigger Class="flex w-full items-center justify-between rounded-md hover:bg-accent hover:text-accent-foreground [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                    <BbCollapsibleTrigger AsChild="false" Class="flex w-full items-center justify-between rounded-md hover:bg-accent hover:text-accent-foreground [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
                         <span>Disabled Collapsible</span>
                         <LucideIcon Name="chevron-down" Size="16" />
-                    </CollapsibleTrigger>
+                    </BbCollapsibleTrigger>
                 </div>
-                <CollapsibleContent Class="px-4 pb-4">
+                <BbCollapsibleContent Class="px-4 pb-4">
                     <div class="text-sm">
                         This content cannot be toggled.
                     </div>
-                </CollapsibleContent>
-            </Collapsible>
+                </BbCollapsibleContent>
+            </BbCollapsible>
         </div>
+        <CodeBlock Source="Components/Collapsible/disabled.txt" />
     </div>
 
     <!-- Accordion Style -->
@@ -161,21 +163,22 @@
         <div class="max-w-md space-y-2">
             @foreach (var item in faqItems)
             {
-                <Collapsible Class="border rounded-lg">
+                <BbCollapsible Class="border rounded-lg">
                     <div class="px-4 py-3">
-                        <CollapsibleTrigger Class="flex w-full items-center justify-between text-left [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                        <BbCollapsibleTrigger AsChild="false" Class="flex w-full items-center justify-between text-left [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
                             <span class="font-medium">@item.Question</span>
                             <LucideIcon Name="chevron-down" Size="16" />
-                        </CollapsibleTrigger>
+                        </BbCollapsibleTrigger>
                     </div>
-                    <CollapsibleContent Class="px-4 pb-4 border-t">
+                    <BbCollapsibleContent Class="px-4 pb-4 border-t">
                         <div class="pt-4 text-sm text-muted-foreground">
                             @item.Answer
                         </div>
-                    </CollapsibleContent>
-                </Collapsible>
+                    </BbCollapsibleContent>
+                </BbCollapsible>
             }
         </div>
+        <CodeBlock Source="Components/Collapsible/accordion.txt" />
     </div>
 
     <!-- With Icons and Badges -->
@@ -187,18 +190,18 @@
             </p>
         </div>
         <div class="max-w-md space-y-2">
-            <Collapsible Class="border rounded-lg">
+            <BbCollapsible Class="border rounded-lg">
                 <div class="px-4 py-3">
-                    <CollapsibleTrigger Class="flex w-full items-center justify-between [&>svg]:transition-transform [&>svg]:duration-200 data-[state=open]:[&>svg]:rotate-180">
+                    <BbCollapsibleTrigger AsChild="false" Class="flex w-full items-center justify-between [&>svg]:transition-transform [&>svg]:duration-200 data-[state=open]:[&>svg]:rotate-180">
                         <div class="flex items-center gap-2">
                             <LucideIcon Name="star" Size="16" />
                             <span class="font-medium">Premium Features</span>
-                            <Badge Variant="BadgeVariant.Default" Class="text-[10px] px-1.5 py-0">New</Badge>
+                            <BbBadge Variant="BadgeVariant.Default" Class="text-[10px] px-1.5 py-0">New</BbBadge>
                         </div>
                         <LucideIcon Name="chevron-down" Size="16" />
-                    </CollapsibleTrigger>
+                    </BbCollapsibleTrigger>
                 </div>
-                <CollapsibleContent Class="px-4 pb-4">
+                <BbCollapsibleContent Class="px-4 pb-4">
                     <div class="space-y-2 text-sm">
                         <div class="flex items-center gap-2">
                             <LucideIcon Name="check" Size="14" Class="text-green-500" />
@@ -213,9 +216,10 @@
                             <span>Custom branding</span>
                         </div>
                     </div>
-                </CollapsibleContent>
-            </Collapsible>
+                </BbCollapsibleContent>
+            </BbCollapsible>
         </div>
+        <CodeBlock Source="Components/Collapsible/icons-badges.txt" />
     </div>
 
     <!-- Nested Collapsibles -->
@@ -227,46 +231,47 @@
             </p>
         </div>
         <div class="max-w-md">
-            <Collapsible Class="border rounded-lg">
+            <BbCollapsible Class="border rounded-lg">
                 <div class="px-4 py-3">
-                    <CollapsibleTrigger Class="flex w-full items-center justify-between [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                    <BbCollapsibleTrigger AsChild="false" Class="flex w-full items-center justify-between [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
                         <span class="font-medium">Parent Section</span>
                         <LucideIcon Name="chevron-down" Size="16" />
-                    </CollapsibleTrigger>
+                    </BbCollapsibleTrigger>
                 </div>
-                <CollapsibleContent Class="px-4 pb-4">
+                <BbCollapsibleContent Class="px-4 pb-4">
                     <div class="space-y-2">
                         <p class="text-sm text-muted-foreground mb-2">
                             This parent contains nested collapsibles.
                         </p>
 
-                        <Collapsible Class="border rounded-md">
+                        <BbCollapsible Class="border rounded-md">
                             <div class="px-3 py-2 bg-muted/50">
-                                <CollapsibleTrigger Class="flex w-full items-center justify-between text-sm [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                                <BbCollapsibleTrigger AsChild="false" Class="flex w-full items-center justify-between text-sm [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
                                     <span>Child Section 1</span>
                                     <LucideIcon Name="chevron-down" Size="14" />
-                                </CollapsibleTrigger>
+                                </BbCollapsibleTrigger>
                             </div>
-                            <CollapsibleContent Class="px-3 py-2 text-sm text-muted-foreground">
+                            <BbCollapsibleContent Class="px-3 py-2 text-sm text-muted-foreground">
                                 Nested content for child section 1.
-                            </CollapsibleContent>
-                        </Collapsible>
+                            </BbCollapsibleContent>
+                        </BbCollapsible>
 
-                        <Collapsible Class="border rounded-md">
+                        <BbCollapsible Class="border rounded-md">
                             <div class="px-3 py-2 bg-muted/50">
-                                <CollapsibleTrigger Class="flex w-full items-center justify-between text-sm [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                                <BbCollapsibleTrigger AsChild="false" Class="flex w-full items-center justify-between text-sm [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
                                     <span>Child Section 2</span>
                                     <LucideIcon Name="chevron-down" Size="14" />
-                                </CollapsibleTrigger>
+                                </BbCollapsibleTrigger>
                             </div>
-                            <CollapsibleContent Class="px-3 py-2 text-sm text-muted-foreground">
+                            <BbCollapsibleContent Class="px-3 py-2 text-sm text-muted-foreground">
                                 Nested content for child section 2.
-                            </CollapsibleContent>
-                        </Collapsible>
+                            </BbCollapsibleContent>
+                        </BbCollapsible>
                     </div>
-                </CollapsibleContent>
-            </Collapsible>
+                </BbCollapsibleContent>
+            </BbCollapsible>
         </div>
+        <CodeBlock Source="Components/Collapsible/nested.txt" />
     </div>
 
     <!-- With Animations -->
@@ -278,49 +283,46 @@
             </p>
         </div>
         <div class="max-w-md">
-            <Collapsible Class="border rounded-lg overflow-hidden">
+            <BbCollapsible Class="border rounded-lg overflow-hidden">
                 <div class="px-4 py-3">
-                    <CollapsibleTrigger Class="flex w-full items-center justify-between rounded-md hover:bg-accent hover:text-accent-foreground [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                    <BbCollapsibleTrigger AsChild="false" Class="flex w-full items-center justify-between rounded-md hover:bg-accent hover:text-accent-foreground [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
                         <span>Animated Content</span>
                         <LucideIcon Name="chevron-down" Size="16" />
-                    </CollapsibleTrigger>
+                    </BbCollapsibleTrigger>
                 </div>
-                <CollapsibleContent Class="px-4 pb-4 transition-all duration-300 ease-in-out">
+                <BbCollapsibleContent Class="px-4 pb-4 transition-all duration-300 ease-in-out">
                     <div class="text-sm animate-in fade-in duration-500">
                         <p class="mb-2">This content animates smoothly when expanding and collapsing.</p>
                         <p class="text-muted-foreground">CSS transitions create a polished user experience.</p>
                     </div>
-                </CollapsibleContent>
-            </Collapsible>
+                </BbCollapsibleContent>
+            </BbCollapsible>
         </div>
+        <CodeBlock Source="Components/Collapsible/animations.txt" />
     </div>
 
     <!-- Accessibility Notes -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Accessibility Notes</h2>
-            <p class="text-sm text-muted-foreground">
-                Best practices for accessible collapsibles.
-            </p>
-        </div>
-        <div class="border rounded-lg p-6 space-y-3 bg-muted/50">
-            <p class="text-sm">
-                ✓ <strong>Keyboard navigation:</strong> Trigger responds to Space and Enter keys.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>ARIA attributes:</strong> aria-expanded reflects the current state.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Screen readers:</strong> Content uses region role and aria-hidden.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Focus management:</strong> Focus remains on trigger after expanding/collapsing.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Semantic HTML:</strong> Proper button elements for triggers.
-            </p>
-        </div>
-    </div>
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>
+                <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-expanded</code> reflects the current state
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Content uses region role and <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-hidden</code>
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Focus remains on trigger after expanding/collapsing
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Proper button elements for triggers
+            </AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Activate trigger">
+                <BbKbd>Space</BbKbd> or <BbKbd>Enter</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
 
     <!-- API Reference -->
     <div class="space-y-4">
@@ -342,7 +344,7 @@
                             Controls whether the collapsible is expanded.
                         </p>
                     </div>
-                    <Separator />
+                    <BbSeparator />
                     <div>
                         <p class="font-mono text-sm font-medium mb-1">OpenChanged</p>
                         <p class="text-sm text-muted-foreground">
@@ -352,7 +354,7 @@
                             Callback invoked when the open state changes.
                         </p>
                     </div>
-                    <Separator />
+                    <BbSeparator />
                     <div>
                         <p class="font-mono text-sm font-medium mb-1">Disabled</p>
                         <p class="text-sm text-muted-foreground">
@@ -366,7 +368,7 @@
                 </div>
             </div>
 
-            <Separator />
+            <BbSeparator />
 
             <!-- CollapsibleTrigger -->
             <div>
@@ -382,7 +384,7 @@
                 </div>
             </div>
 
-            <Separator />
+            <BbSeparator />
 
             <!-- CollapsibleContent -->
             <div>

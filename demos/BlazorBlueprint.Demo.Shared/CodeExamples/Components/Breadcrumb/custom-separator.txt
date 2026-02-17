@@ -1,0 +1,13 @@
+<BbBreadcrumb>
+    <BbBreadcrumbItem>
+        <BbBreadcrumbLink Href="/">Home</BbBreadcrumbLink>
+    </BbBreadcrumbItem>
+    <BbBreadcrumbSeparator>/</BbBreadcrumbSeparator>
+    <BbBreadcrumbItem>
+        <BbBreadcrumbLink Href="/components">Components</BbBreadcrumbLink>
+    </BbBreadcrumbItem>
+    <BbBreadcrumbSeparator>/</BbBreadcrumbSeparator>
+    <BbBreadcrumbItem>
+        <BbBreadcrumbPage>Breadcrumb</BbBreadcrumbPage>
+    </BbBreadcrumbItem>
+</BbBreadcrumb>

@@ -1,0 +1,11 @@
+<BbButton Disabled="@isLoading" OnClick="@HandleClick">
+    @if (isLoading)
+    {
+        <BbSpinner Size="SpinnerSize.Small" Class="mr-2" />
+        <span>Processing...</span>
+    }
+    else
+    {
+        <span>Submit</span>
+    }
+</BbButton>

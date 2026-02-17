@@ -1,5 +1,4 @@
 @page "/components/masked-input"
-@using BlazorBlueprint.Components.MaskedInput
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>MaskedInput Component - Blazor Blueprint</PageTitle>
@@ -23,11 +22,12 @@
             </p>
         </div>
         <div class="w-64">
-            <MaskedInput @ref="_phoneRef" @bind-Value="_phone" Preset="MaskPreset.Phone" />
+            <BbMaskedInput @ref="_phoneRef" @bind-Value="_phone" Preset="MaskPreset.Phone" />
         </div>
         <p class="text-sm text-muted-foreground">
             Unmasked: @_phone | Masked: @(_phoneRef?.MaskedValue ?? "")
         </p>
+        <CodeBlock Source="Components/MaskedInput/phone.txt" />
     </div>
 
     <!-- Social Security Number -->
@@ -39,7 +39,7 @@
             </p>
         </div>
         <div class="w-48">
-            <MaskedInput @bind-Value="_ssn" Preset="MaskPreset.SSN" />
+            <BbMaskedInput @bind-Value="_ssn" Preset="MaskPreset.SSN" />
         </div>
         <p class="text-sm text-muted-foreground">Unmasked: @_ssn</p>
     </div>
@@ -53,7 +53,7 @@
             </p>
         </div>
         <div class="w-72">
-            <MaskedInput @bind-Value="_creditCard" Preset="MaskPreset.CreditCard" />
+            <BbMaskedInput @bind-Value="_creditCard" Preset="MaskPreset.CreditCard" />
         </div>
         <p class="text-sm text-muted-foreground">Unmasked: @_creditCard</p>
     </div>
@@ -67,7 +67,7 @@
             </p>
         </div>
         <div class="w-40">
-            <MaskedInput @bind-Value="_date" Preset="MaskPreset.Date" />
+            <BbMaskedInput @bind-Value="_date" Preset="MaskPreset.Date" />
         </div>
         <p class="text-sm text-muted-foreground">Unmasked: @_date</p>
     </div>
@@ -81,7 +81,7 @@
             </p>
         </div>
         <div class="w-32">
-            <MaskedInput @bind-Value="_time" Preset="MaskPreset.Time" />
+            <BbMaskedInput @bind-Value="_time" Preset="MaskPreset.Time" />
         </div>
         <p class="text-sm text-muted-foreground">Unmasked: @_time</p>
     </div>
@@ -95,7 +95,7 @@
             </p>
         </div>
         <div class="w-36">
-            <MaskedInput @bind-Value="_time24" Preset="MaskPreset.Time24" />
+            <BbMaskedInput @bind-Value="_time24" Preset="MaskPreset.Time24" />
         </div>
         <p class="text-sm text-muted-foreground">Unmasked: @_time24</p>
     </div>
@@ -109,7 +109,7 @@
             </p>
         </div>
         <div class="w-40">
-            <MaskedInput @bind-Value="_zipCode" Preset="MaskPreset.ZipCode" />
+            <BbMaskedInput @bind-Value="_zipCode" Preset="MaskPreset.ZipCode" />
         </div>
         <p class="text-sm text-muted-foreground">Unmasked: @_zipCode</p>
     </div>
@@ -123,7 +123,7 @@
             </p>
         </div>
         <div class="w-40">
-            <MaskedInput @bind-Value="_ein" Preset="MaskPreset.EIN" />
+            <BbMaskedInput @bind-Value="_ein" Preset="MaskPreset.EIN" />
         </div>
         <p class="text-sm text-muted-foreground">Unmasked: @_ein</p>
     </div>
@@ -137,9 +137,10 @@
             </p>
         </div>
         <div class="w-40">
-            <MaskedInput @bind-Value="_custom" Preset="MaskPreset.Custom" Mask="AAA-9999" />
+            <BbMaskedInput @bind-Value="_custom" Preset="MaskPreset.Custom" Mask="AAA-9999" />
         </div>
         <p class="text-sm text-muted-foreground">Unmasked: @_custom</p>
+        <CodeBlock Source="Components/MaskedInput/custom-mask.txt" />
     </div>
 
     <!-- License Plate -->
@@ -151,7 +152,7 @@
             </p>
         </div>
         <div class="w-40">
-            <MaskedInput @bind-Value="_plate" Preset="MaskPreset.Custom" Mask="***-****" />
+            <BbMaskedInput @bind-Value="_plate" Preset="MaskPreset.Custom" Mask="***-****" />
         </div>
         <p class="text-sm text-muted-foreground">Unmasked: @_plate</p>
     </div>
@@ -165,9 +166,10 @@
             </p>
         </div>
         <div class="w-64">
-            <MaskedInput @bind-Value="_hiddenMask" Preset="MaskPreset.Phone" ShowMask="false" Placeholder="Enter phone number" />
+            <BbMaskedInput @bind-Value="_hiddenMask" Preset="MaskPreset.Phone" ShowMask="false" Placeholder="Enter phone number" />
         </div>
         <p class="text-sm text-muted-foreground">Unmasked: @_hiddenMask</p>
+        <CodeBlock Source="Components/MaskedInput/without-mask-display.txt" />
     </div>
 
     <!-- Custom Placeholder Char -->
@@ -179,7 +181,7 @@
             </p>
         </div>
         <div class="w-64">
-            <MaskedInput @bind-Value="_customPlaceholder" Preset="MaskPreset.Phone" PlaceholderChar="@('#')" />
+            <BbMaskedInput @bind-Value="_customPlaceholder" Preset="MaskPreset.Phone" PlaceholderChar="@('#')" />
         </div>
         <p class="text-sm text-muted-foreground">Unmasked: @_customPlaceholder</p>
     </div>
@@ -193,7 +195,7 @@
             </p>
         </div>
         <div class="w-64">
-            <MaskedInput @bind-Value="_prefilled" Preset="MaskPreset.Phone" />
+            <BbMaskedInput @bind-Value="_prefilled" Preset="MaskPreset.Phone" />
         </div>
         <p class="text-sm text-muted-foreground">Unmasked: @_prefilled</p>
     </div>
@@ -204,7 +206,7 @@
             <h2 class="text-2xl font-semibold">Disabled</h2>
         </div>
         <div class="w-64">
-            <MaskedInput Value="5551234567" Preset="MaskPreset.Phone" Disabled="true" />
+            <BbMaskedInput Value="5551234567" Preset="MaskPreset.Phone" Disabled="true" />
         </div>
     </div>
 
@@ -223,13 +225,13 @@
 
             <div class="space-y-2">
                 <label class="text-sm font-medium">Phone Number</label>
-                <MaskedInput @bind-Value="maskedFormModel.Phone" Preset="MaskPreset.Phone" />
+                <BbMaskedInput @bind-Value="maskedFormModel.Phone" Preset="MaskPreset.Phone" />
                 <ValidationMessage For="@(() => maskedFormModel.Phone)" class="text-sm text-destructive" />
             </div>
 
             <div class="flex gap-4">
-                <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</Button>
-                <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetMaskedForm">Reset</Button>
+                <BbButton Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</BbButton>
+                <BbButton Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetMaskedForm">Reset</BbButton>
             </div>
 
             @if (!string.IsNullOrEmpty(maskedFormMessage))
@@ -239,25 +241,40 @@
                 </div>
             }
         </EditForm>
+        <CodeBlock Source="Components/MaskedInput/form-validation.txt" />
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="MaskedInput">
+                <ApiParameter Name="Value" Type="string">
+                    Unmasked value (raw input).
+                </ApiParameter>
+                <ApiParameter Name="Preset" Type="MaskPreset">
+                    Predefined mask (Phone, SSN, CreditCard, Date, Time, Time24, ZipCode, EIN, Custom).
+                </ApiParameter>
+                <ApiParameter Name="Mask" Type="string?">
+                    Custom mask pattern (when Preset is Custom).
+                </ApiParameter>
+                <ApiParameter Name="PlaceholderChar" Type="char" Default="_">
+                    Character for unfilled positions.
+                </ApiParameter>
+                <ApiParameter Name="ShowMask" Type="bool" Default="true">
+                    Show mask when empty.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool">
+                    Disables the input.
+                </ApiParameter>
+            </ApiReference>
+        </div>
+
         <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">MaskedInput Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Value:</strong> <code class="bg-muted px-1 py-0.5 rounded">string</code> - Unmasked value (raw input)</p>
-                    <p><strong>Preset:</strong> <code class="bg-muted px-1 py-0.5 rounded">MaskPreset</code> - Predefined mask (Phone, SSN, CreditCard, Date, Time, Time24, ZipCode, EIN, Custom)</p>
-                    <p><strong>Mask:</strong> <code class="bg-muted px-1 py-0.5 rounded">string?</code> - Custom mask pattern (when Preset is Custom)</p>
-                    <p><strong>PlaceholderChar:</strong> <code class="bg-muted px-1 py-0.5 rounded">char</code> - Character for unfilled positions. Default: '_'</p>
-                    <p><strong>ShowMask:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Show mask when empty. Default: true</p>
-                    <p><strong>Disabled:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disables the input</p>
-                </div>
-            </div>
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">Mask Characters</h3>
                 <div class="space-y-2 text-sm">
@@ -275,7 +292,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {
@@ -293,7 +310,7 @@
     private string _customPlaceholder = "";
     private string _prefilled = "5551234567";
 
-    private MaskedInput? _phoneRef;
+    private BbMaskedInput? _phoneRef;
     private MaskedFormModel maskedFormModel = new();
     private string? maskedFormMessage;
 

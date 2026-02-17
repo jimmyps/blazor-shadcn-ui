@@ -1,0 +1,22 @@
+<BbMultiSelect TValue="int"
+             Options="permissions"
+             @bind-Values="selectedPermissions"
+             Placeholder="Select permissions..."
+             SearchPlaceholder="Search permissions..."
+             ShowSelectAll="true"
+             PopoverWidth="w-[300px]" />
+
+@code {
+    private IEnumerable<int>? selectedPermissions;
+
+    private readonly SelectOption<int>[] permissions =
+    [
+        new(1, "Read"),
+        new(2, "Write"),
+        new(3, "Delete"),
+        new(4, "Admin")
+    ];
+
+    // GetTexts works with any value type (int, Guid, enums, etc.)
+    string[] labels = permissions.GetTexts(selectedPermissions).ToArray();
+}

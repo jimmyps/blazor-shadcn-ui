@@ -1,10 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
-namespace BlazorBlueprint.Components.Converters;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
-/// Provides type conversion for <see cref="InputField.InputField{TValue}"/> components.
+/// Provides type conversion for <see cref="BbInputField{TValue}"/> components.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -42,7 +42,7 @@ public class InputConverter<TValue>
     /// Gets or sets the global (app-wide) parse function for converting a string to <typeparamref name="TValue"/>.
     /// </summary>
     /// <remarks>
-    /// Set once at startup in Program.cs. Applies to all <see cref="InputField.InputField{TValue}"/>
+    /// Set once at startup in Program.cs. Applies to all <see cref="BbInputField{TValue}"/>
     /// components unless overridden by an instance-level <see cref="GetFunc"/>.
     /// </remarks>
     public static Func<string, TValue>? GlobalGetFunc
@@ -55,7 +55,7 @@ public class InputConverter<TValue>
     /// Gets or sets the global (app-wide) format function for converting <typeparamref name="TValue"/> to a string.
     /// </summary>
     /// <remarks>
-    /// Set once at startup in Program.cs. Applies to all <see cref="InputField.InputField{TValue}"/>
+    /// Set once at startup in Program.cs. Applies to all <see cref="BbInputField{TValue}"/>
     /// components unless overridden by an instance-level <see cref="SetFunc"/>.
     /// </remarks>
     public static Func<TValue, string?>? GlobalSetFunc

@@ -24,29 +24,29 @@
                 Simple radio group with two-way binding.
             </p>
         </div>
-        <RadioGroup @bind-Value="selectedOption" AriaLabel="Choose an option">
-            <div class="flex items-center gap-3">
-                <RadioGroupItem Value="@("default")" Id="r1" />
-                <label for="r1" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Default
-                </label>
-            </div>
-            <div class="flex items-center gap-3">
-                <RadioGroupItem Value="@("comfortable")" Id="r2" />
-                <label for="r2" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Comfortable
-                </label>
-            </div>
-            <div class="flex items-center gap-3">
-                <RadioGroupItem Value="@("compact")" Id="r3" />
-                <label for="r3" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Compact
-                </label>
-            </div>
-        </RadioGroup>
+        <BbRadioGroup @bind-Value="selectedOption" AriaLabel="Choose an option">
+            <BbRadioGroupItem Value="@("default")" Label="Default" />
+            <BbRadioGroupItem Value="@("comfortable")" Label="Comfortable" />
+            <BbRadioGroupItem Value="@("compact")" Label="Compact" />
+        </BbRadioGroup>
         <p class="text-sm text-muted-foreground">
             Selected value: <strong>@(selectedOption ?? "none")</strong>
         </p>
+        <CodeBlock Source="Components/RadioGroup/basic.txt" />
+    </div>
+
+    <!-- Label Parameter -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <div class="flex items-center gap-2">
+                <h2 class="text-2xl font-semibold">Label Parameter</h2>
+                <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">v3</span>
+            </div>
+            <p class="text-sm text-muted-foreground">
+                Use the <code class="text-xs bg-muted px-1 py-0.5 rounded">Label</code> parameter on <code class="text-xs bg-muted px-1 py-0.5 rounded">RadioGroupItem</code> to automatically generate an associated label with proper <code class="text-xs bg-muted px-1 py-0.5 rounded">for</code> attribute wiring — no manual label setup needed.
+            </p>
+        </div>
+        <CodeBlock Source="Components/RadioGroup/label.txt" />
     </div>
 
     <!-- Disabled State -->
@@ -60,48 +60,24 @@
         <div class="space-y-6">
             <div>
                 <h3 class="text-lg font-medium mb-3">Disabled Group</h3>
-                <RadioGroup @bind-Value="disabledGroupValue" Disabled="true" AriaLabel="Disabled group">
-                    <div class="flex items-center gap-3">
-                        <RadioGroupItem Value="@("option1")" Id="d1" />
-                        <label for="d1" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Option 1
-                        </label>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <RadioGroupItem Value="@("option2")" Id="d2" />
-                        <label for="d2" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Option 2
-                        </label>
-                    </div>
-                </RadioGroup>
+                <BbRadioGroup @bind-Value="disabledGroupValue" Disabled="true" AriaLabel="Disabled group">
+                    <BbRadioGroupItem Value="@("option1")" Label="Option 1" />
+                    <BbRadioGroupItem Value="@("option2")" Label="Option 2" />
+                </BbRadioGroup>
             </div>
             <div>
                 <h3 class="text-lg font-medium mb-3">Individual Item Disabled</h3>
-                <RadioGroup @bind-Value="individualDisabledValue" AriaLabel="Individual items disabled">
-                    <div class="flex items-center gap-3">
-                        <RadioGroupItem Value="@("enabled1")" Id="id1" />
-                        <label for="id1" class="text-sm font-medium leading-none">
-                            Enabled Option 1
-                        </label>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <RadioGroupItem Value="@("disabled")" Id="id2" Disabled="true" />
-                        <label for="id2" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Disabled Option
-                        </label>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <RadioGroupItem Value="@("enabled2")" Id="id3" />
-                        <label for="id3" class="text-sm font-medium leading-none">
-                            Enabled Option 2
-                        </label>
-                    </div>
-                </RadioGroup>
+                <BbRadioGroup @bind-Value="individualDisabledValue" AriaLabel="Individual items disabled">
+                    <BbRadioGroupItem Value="@("enabled1")" Label="Enabled Option 1" />
+                    <BbRadioGroupItem Value="@("disabled")" Label="Disabled Option" Disabled="true" />
+                    <BbRadioGroupItem Value="@("enabled2")" Label="Enabled Option 2" />
+                </BbRadioGroup>
                 <p class="text-sm text-muted-foreground mt-3">
                     Selected: <strong>@(individualDisabledValue ?? "none")</strong>
                 </p>
             </div>
         </div>
+        <CodeBlock Source="Components/RadioGroup/disabled.txt" />
     </div>
 
     <!-- Form Validation -->
@@ -117,32 +93,17 @@
 
             <div class="space-y-3">
                 <label class="text-sm font-medium">Notification Preference *</label>
-                <RadioGroup @bind-Value="formModel.NotificationPreference" AriaLabel="Choose notification preference">
-                    <div class="flex items-center gap-3">
-                        <RadioGroupItem Value="@("email")" Id="form-email" />
-                        <label for="form-email" class="text-sm font-medium leading-none">
-                            Email
-                        </label>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <RadioGroupItem Value="@("sms")" Id="form-sms" />
-                        <label for="form-sms" class="text-sm font-medium leading-none">
-                            SMS
-                        </label>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <RadioGroupItem Value="@("push")" Id="form-push" />
-                        <label for="form-push" class="text-sm font-medium leading-none">
-                            Push Notifications
-                        </label>
-                    </div>
-                </RadioGroup>
+                <BbRadioGroup @bind-Value="formModel.NotificationPreference" AriaLabel="Choose notification preference">
+                    <BbRadioGroupItem Value="@("email")" Label="Email" />
+                    <BbRadioGroupItem Value="@("sms")" Label="SMS" />
+                    <BbRadioGroupItem Value="@("push")" Label="Push Notifications" />
+                </BbRadioGroup>
                 <ValidationMessage For="@(() => formModel.NotificationPreference)" class="text-sm text-destructive" />
             </div>
 
             <div class="flex gap-4">
-                <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</Button>
-                <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</Button>
+                <BbButton Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</BbButton>
+                <BbButton Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</BbButton>
             </div>
 
             @if (!string.IsNullOrEmpty(formMessage))
@@ -152,6 +113,7 @@
                 </div>
             }
         </EditForm>
+        <CodeBlock Source="Components/RadioGroup/form-validation.txt" />
     </div>
 
     <!-- Different Value Types -->
@@ -165,57 +127,28 @@
         <div class="space-y-6">
             <div>
                 <h3 class="text-lg font-medium mb-3">Integer Values</h3>
-                <RadioGroup @bind-Value="intValue" AriaLabel="Select a number">
-                    <div class="flex items-center gap-3">
-                        <RadioGroupItem Value="1" Id="int1" />
-                        <label for="int1" class="text-sm font-medium leading-none">
-                            One
-                        </label>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <RadioGroupItem Value="2" Id="int2" />
-                        <label for="int2" class="text-sm font-medium leading-none">
-                            Two
-                        </label>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <RadioGroupItem Value="3" Id="int3" />
-                        <label for="int3" class="text-sm font-medium leading-none">
-                            Three
-                        </label>
-                    </div>
-                </RadioGroup>
+                <BbRadioGroup @bind-Value="intValue" AriaLabel="Select a number">
+                    <BbRadioGroupItem Value="1" Label="One" />
+                    <BbRadioGroupItem Value="2" Label="Two" />
+                    <BbRadioGroupItem Value="3" Label="Three" />
+                </BbRadioGroup>
                 <p class="text-sm text-muted-foreground mt-3">
                     Selected: <strong>@intValue</strong>
                 </p>
             </div>
             <div>
                 <h3 class="text-lg font-medium mb-3">Enum Values</h3>
-                <RadioGroup @bind-Value="sizeValue" AriaLabel="Select a size">
-                    <div class="flex items-center gap-3">
-                        <RadioGroupItem Value="Size.Small" Id="size-small" />
-                        <label for="size-small" class="text-sm font-medium leading-none">
-                            Small
-                        </label>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <RadioGroupItem Value="Size.Medium" Id="size-medium" />
-                        <label for="size-medium" class="text-sm font-medium leading-none">
-                            Medium
-                        </label>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <RadioGroupItem Value="Size.Large" Id="size-large" />
-                        <label for="size-large" class="text-sm font-medium leading-none">
-                            Large
-                        </label>
-                    </div>
-                </RadioGroup>
+                <BbRadioGroup @bind-Value="sizeValue" AriaLabel="Select a size">
+                    <BbRadioGroupItem Value="Size.Small" Label="Small" />
+                    <BbRadioGroupItem Value="Size.Medium" Label="Medium" />
+                    <BbRadioGroupItem Value="Size.Large" Label="Large" />
+                </BbRadioGroup>
                 <p class="text-sm text-muted-foreground mt-3">
                     Selected: <strong>@sizeValue</strong>
                 </p>
             </div>
         </div>
+        <CodeBlock Source="Components/RadioGroup/value-types.txt" />
     </div>
 
     <!-- Highlighted Container -->
@@ -226,12 +159,12 @@
                 Radio items within highlighted containers. Click anywhere in the container to select.
             </p>
         </div>
-        <RadioGroup @bind-Value="highlightedValue" AriaLabel="Select a plan">
+        <BbRadioGroup @bind-Value="highlightedValue" AriaLabel="Select a plan">
             <div
                 @onclick="@(() => highlightedValue = "free")"
                 class="@($"flex items-start space-x-3 rounded-lg border p-4 cursor-pointer transition-colors {(highlightedValue == "free" ? "border-primary bg-primary/5" : "border-input")}")">
                 <div @onclick:stopPropagation class="mt-0.5">
-                    <RadioGroupItem Value="@("free")" Id="plan-free" />
+                    <BbRadioGroupItem Value="@("free")" Id="plan-free" />
                 </div>
                 <div class="flex-1">
                     <div class="text-sm font-medium leading-none">
@@ -246,7 +179,7 @@
                 @onclick="@(() => highlightedValue = "pro")"
                 class="@($"flex items-start space-x-3 rounded-lg border p-4 cursor-pointer transition-colors {(highlightedValue == "pro" ? "border-primary bg-primary/5" : "border-input")}")">
                 <div @onclick:stopPropagation class="mt-0.5">
-                    <RadioGroupItem Value="@("pro")" Id="plan-pro" />
+                    <BbRadioGroupItem Value="@("pro")" Id="plan-pro" />
                 </div>
                 <div class="flex-1">
                     <div class="text-sm font-medium leading-none">
@@ -257,48 +190,118 @@
                     </p>
                 </div>
             </div>
-        </RadioGroup>
+        </BbRadioGroup>
         <p class="text-sm text-muted-foreground">
             Selected plan: <strong>@(highlightedValue ?? "none")</strong>
         </p>
+        <CodeBlock Source="Components/RadioGroup/container.txt" />
     </div>
 
-    <!-- Accessibility Notes -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Accessibility</h2>
-            <p class="text-sm text-muted-foreground">
-                Keyboard navigation and screen reader support.
-            </p>
-        </div>
-        <div class="space-y-2 text-sm">
-            <p>✓ Tab key focuses the selected radio button (or first if none selected)</p>
-            <p>✓ Arrow keys (Up/Down/Left/Right) navigate between options and select</p>
-            <p>✓ Space and Enter keys select the focused radio button</p>
-            <p>✓ Disabled items are not focusable (tabindex="-1")</p>
-            <p>✓ ARIA attributes set correctly (role="radiogroup", role="radio", aria-checked)</p>
-            <p>✓ Focus ring appears on keyboard focus (focus-visible:ring-2)</p>
-            <p>✓ Color contrast meets WCAG 2.1 AA standards</p>
-            <p>✓ Semantic label association using htmlFor attribute</p>
-            <p>✓ Screen readers announce radio state and group membership</p>
-        </div>
-    </div>
+    <!-- Accessibility -->
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>
+                <code class="text-xs bg-muted px-1 py-0.5 rounded">role="radiogroup"</code> on the container and <code class="text-xs bg-muted px-1 py-0.5 rounded">role="radio"</code> on each item
+            </AccessibilityItem>
+            <AccessibilityItem>
+                <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-checked</code> reflects the checked state of each radio item
+            </AccessibilityItem>
+            <AccessibilityItem>
+                <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-label</code> on the group provides an accessible name for screen readers
+            </AccessibilityItem>
+            <AccessibilityItem>
+                <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-invalid</code> set when form validation fails
+            </AccessibilityItem>
+            <AccessibilityItem>
+                <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-describedby</code> links the group to descriptive text
+            </AccessibilityItem>
+            <AccessibilityItem>
+                <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-disabled</code> set on disabled items
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Disabled items are not focusable (<code class="text-xs bg-muted px-1 py-0.5 rounded">tabindex="-1"</code>)
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Semantic label association using <code class="text-xs bg-muted px-1 py-0.5 rounded">for</code> attribute when using the Label parameter
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Focus ring appears on keyboard focus (<code class="text-xs bg-muted px-1 py-0.5 rounded">focus-visible:ring-2</code>)
+            </AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Focus the selected radio button (or first if none selected)">
+                <BbKbd>Tab</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Navigate between options and select">
+                <BbKbd>Arrow Keys</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Select the focused radio button">
+                <BbKbd>Space</BbKbd> / <BbKbd>Enter</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
 
-    <!-- Browser Compatibility -->
-    <div class="space-y-4">
+    <!-- API Reference -->
+    <section class="space-y-4">
         <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Browser Compatibility</h2>
-            <p class="text-sm text-muted-foreground">
-                Tested and verified across modern browsers.
-            </p>
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="space-y-2 text-sm">
-            <p>✓ Chrome 120+ (compatible)</p>
-            <p>✓ Firefox 120+ (compatible)</p>
-            <p>✓ Edge 120+ (compatible)</p>
-            <p>✓ Safari 17+ (compatible)</p>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="RadioGroup<TValue>">
+                <ApiParameter Name="TValue" Type="type parameter">
+                    The type of the value associated with radio group items (e.g., string, int, enum).
+                </ApiParameter>
+                <ApiParameter Name="Value" Type="TValue">
+                    The currently selected value. Supports two-way binding with <code class="text-xs bg-muted px-1 py-0.5 rounded">@@bind-Value</code>.
+                </ApiParameter>
+                <ApiParameter Name="ValueChanged" Type="EventCallback&lt;TValue&gt;">
+                    Callback invoked when the selected value changes.
+                </ApiParameter>
+                <ApiParameter Name="ValueExpression" Type="Expression&lt;Func&lt;TValue&gt;&gt;?">
+                    Expression identifying the bound value, used for form validation integration.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Disables all radio items in the group.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes applied to the radio group container.
+                </ApiParameter>
+                <ApiParameter Name="AriaLabel" Type="string?">
+                    Accessible label for the radio group, announced by screen readers.
+                </ApiParameter>
+                <ApiParameter Name="AriaDescribedBy" Type="string?">
+                    IDs of elements that describe the radio group for accessibility.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content of the radio group. Should contain <code class="text-xs bg-muted px-1 py-0.5 rounded">RadioGroupItem</code> components.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="RadioGroupItem<TValue>">
+                <ApiParameter Name="Value" Type="TValue">
+                    Required. The value associated with this radio item. When selected, this becomes the group's value.
+                </ApiParameter>
+                <ApiParameter Name="Label" Type="string?">
+                    Text label displayed next to the radio button with automatic <code class="text-xs bg-muted px-1 py-0.5 rounded">for</code> attribute wiring.
+                </ApiParameter>
+                <ApiParameter Name="Id" Type="string?">
+                    The HTML id attribute. Auto-generated when Label is provided.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Disables this individual radio item.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes applied to the radio item button.
+                </ApiParameter>
+                <ApiParameter Name="AriaLabel" Type="string?">
+                    Accessible label for the radio item when no visible label is present.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
+
 </div>
 
 @code {

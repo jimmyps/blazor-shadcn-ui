@@ -1,0 +1,24 @@
+<BbFormFieldCombobox TValue="string"
+                   Options="_frameworks"
+                   @bind-Value="_selectedFramework"
+                   Label="Framework"
+                   Placeholder="Select framework..."
+                   SearchPlaceholder="Search framework..."
+                   EmptyMessage="No framework found."
+                   HelperText="Choose your preferred framework."
+                   MatchTriggerWidth="true"
+                   InputClass="w-full" />
+
+@code {
+    private string? _selectedFramework;
+
+    private readonly SelectOption<string>[] _frameworks =
+    [
+        new("next.js", "Next.js"),
+        new("sveltekit", "SvelteKit"),
+        new("blazor", "Blazor")
+    ];
+
+    // Look up display text — no per-collection helper needed
+    // _frameworks.GetText(_selectedFramework)
+}

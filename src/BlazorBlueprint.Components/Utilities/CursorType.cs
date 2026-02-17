@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace BlazorBlueprint.Components.Utilities;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the cursor style to display when hovering over an element.

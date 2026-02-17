@@ -1,0 +1,31 @@
+<BbSidebarProvider>
+    <div class="flex h-full w-full">
+        <BbSidebar>
+            <BbSidebarHeader>
+                <BbSidebarHeaderContent>
+                    <div>Logo</div>
+                    <BbSidebarHeaderInfo>
+                        <span>Acme Inc</span>
+                    </BbSidebarHeaderInfo>
+                </BbSidebarHeaderContent>
+            </BbSidebarHeader>
+
+            <BbSidebarContent>
+                <BbSidebarMenu>
+                    <BbSidebarMenuItem>
+                        <BbSidebarMenuButton Tooltip="Home">
+                            <span>Home</span>
+                        </BbSidebarMenuButton>
+                    </BbSidebarMenuItem>
+                </BbSidebarMenu>
+            </BbSidebarContent>
+        </BbSidebar>
+
+        <BbSidebarInset>
+            <header>
+                <BbSidebarTrigger />
+                <h1>Dashboard</h1>
+            </header>
+        </BbSidebarInset>
+    </div>
+</BbSidebarProvider>

@@ -1,0 +1,102 @@
+@namespace BlazorBlueprint.Components
+@using BlazorBlueprint.Primitives.Services
+@inject IKeyboardShortcutService KeyboardShortcuts
+@implements IMenubarItem
+@implements IDisposable
+@implements IAsyncDisposable
+
+<div @ref="_itemRef"
+     role="menuitem"
+     class="@CssClass"
+     tabindex="-1"
+     @onclick="HandleClick">
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter]
+    public BbMenubarMenu? Menu { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public bool Inset { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    /// <summary>
+    /// Keyboard shortcut to auto-register (e.g., "Ctrl+N", "Ctrl+Shift+T").
+    /// When set, automatically registers the shortcut via IKeyboardShortcutService
+    /// and invokes OnClick when pressed.
+    /// </summary>
+    [Parameter]
+    public string? Shortcut { get; set; }
+
+    private ElementReference _itemRef;
+    private IDisposable? shortcutRegistration;
+
+    public bool IsDisabled => Disabled;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !string.IsNullOrEmpty(Shortcut) && !Disabled)
+        {
+            shortcutRegistration = await KeyboardShortcuts.RegisterAsync(Shortcut, async () =>
+            {
+                if (!Disabled)
+                {
+                    await OnClick.InvokeAsync();
+                }
+            });
+        }
+    }
+
+    public async Task FocusAsync()
+    {
+        try
+        {
+            await _itemRef.FocusAsync();
+        }
+        catch
+        {
+            // Ignore focus errors
+        }
+    }
+
+    private async Task HandleClick()
+    {
+        if (!Disabled)
+        {
+            await OnClick.InvokeAsync();
+            Menu?.Close();
+        }
+    }
+
+    public void Dispose()
+    {
+        shortcutRegistration?.Dispose();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        shortcutRegistration?.Dispose();
+        await ValueTask.CompletedTask;
+    }
+
+    private string CssClass => ClassNames.cn(
+        "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none",
+        "focus:bg-accent focus:text-accent-foreground",
+        "hover:bg-accent hover:text-accent-foreground",
+        Disabled ? "pointer-events-none opacity-50" : null,
+        Inset ? "pl-8" : null,
+        Class
+    );
+}

@@ -1,0 +1,4 @@
+<BbLabel For="required-username">
+    Username <span class="text-destructive">*</span>
+</BbLabel>
+<BbInput Id="required-username" Required />

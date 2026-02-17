@@ -1,0 +1,13 @@
+@using BlazorBlueprint.Primitives.RadioGroup
+
+<BbRadioGroup @bind-Value="selectedValue" AriaLabel="Options"
+            ItemClass="h-4 w-4 rounded-full border-2 cursor-pointer ...">
+    @foreach (var option in options)
+    {
+        <BbRadioGroupItem Value="@option" Id="@($"opt-{option}")">
+            <span class="your-indicator-classes"
+                  data-state="@(selectedValue == option ? "checked" : "unchecked")"></span>
+        </BbRadioGroupItem>
+        <label for="@($"opt-{option}")">@option</label>
+    }
+</BbRadioGroup>

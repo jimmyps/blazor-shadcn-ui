@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.InputOTP;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Size variants for the InputOTP component.

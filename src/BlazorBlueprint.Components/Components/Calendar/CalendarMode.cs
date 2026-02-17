@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace BlazorBlueprint.Components.Calendar;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the selection mode for the Calendar component.

@@ -1,0 +1,6 @@
+<EditForm Model="formModel" OnValidSubmit="HandleFormSubmit">
+    <DataAnnotationsValidator />
+    <BbFormFieldCheckbox @bind-Checked="formModel.AgreeToTerms"
+                       Label="I agree to the terms of service" />
+    <BbButton Type="ButtonType.Submit">Submit</BbButton>
+</EditForm>

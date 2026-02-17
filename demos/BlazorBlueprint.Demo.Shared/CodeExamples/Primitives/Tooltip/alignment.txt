@@ -1,0 +1,13 @@
+<BbTooltip>
+    <BbTooltipTrigger>Top Start</BbTooltipTrigger>
+    <BbTooltipContent Side="@PopoverSide.Top" Align="@PopoverAlign.Start">
+        Aligned to start
+    </BbTooltipContent>
+</BbTooltip>
+
+<BbTooltip>
+    <BbTooltipTrigger>Top Center</BbTooltipTrigger>
+    <BbTooltipContent Side="@PopoverSide.Top" Align="@PopoverAlign.Center">
+        Centered (default)
+    </BbTooltipContent>
+</BbTooltip>

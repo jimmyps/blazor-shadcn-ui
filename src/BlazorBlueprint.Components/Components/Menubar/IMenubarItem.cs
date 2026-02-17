@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Menubar;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Interface for menubar items to support keyboard navigation.

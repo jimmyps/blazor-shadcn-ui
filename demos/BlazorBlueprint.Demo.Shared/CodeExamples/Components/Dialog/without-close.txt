@@ -1,0 +1,15 @@
+<BbDialog>
+    <BbDialogTrigger>Open Dialog</BbDialogTrigger>
+    <BbDialogContent ShowClose="false">
+        <BbDialogHeader>
+            <BbDialogTitle>Confirm Action</BbDialogTitle>
+            <BbDialogDescription>
+                You must use action buttons or press Escape to close.
+            </BbDialogDescription>
+        </BbDialogHeader>
+        <BbDialogFooter>
+            <BbDialogClose>Cancel</BbDialogClose>
+            <BbDialogClose>Confirm</BbDialogClose>
+        </BbDialogFooter>
+    </BbDialogContent>
+</BbDialog>

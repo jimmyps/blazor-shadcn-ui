@@ -1,0 +1,14 @@
+<BbTimeline Align="TimelineAlign.Left">
+    <BbTimelineItem IsCollapsible="true" DefaultOpen="true">
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>v2.0 Release</BbTimelineTitle>
+            </BbTimelineContent>
+        </ChildContent>
+        <DetailContent>
+            <BbTimelineContent>
+                <BbTimelineDescription>Major release with breaking changes.</BbTimelineDescription>
+            </BbTimelineContent>
+        </DetailContent>
+    </BbTimelineItem>
+</BbTimeline>

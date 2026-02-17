@@ -1,8 +1,4 @@
 @page "/components/calendar"
-@using BlazorBlueprint.Components.Calendar
-@using BlazorBlueprint.Components.Kbd
-@using BlazorBlueprint.Components.Separator
-
 <PageTitle>Calendar Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -24,70 +20,12 @@
             </p>
         </div>
         <div class="border rounded-lg w-fit">
-            <Calendar @bind-Selected="_selectedDate" />
+            <BbCalendar @bind-Selected="_selectedDate" />
         </div>
         <p class="text-sm text-muted-foreground">
             Selected: @(_selectedDate?.ToString("MMMM d, yyyy") ?? "None")
         </p>
-    </div>
-
-    <!-- Keyboard Navigation -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Keyboard Navigation</h2>
-            <p class="text-sm text-muted-foreground">
-                The calendar is fully accessible via keyboard. Click on the calendar below and try the keyboard shortcuts.
-            </p>
-        </div>
-        <div class="flex flex-col lg:flex-row gap-6">
-            <div class="border rounded-lg w-fit">
-                <Calendar @bind-Selected="_keyboardDate" />
-            </div>
-            <div class="border rounded-lg p-4 space-y-3 flex-1">
-                <h3 class="font-semibold text-sm">Keyboard Shortcuts</h3>
-                <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-                    <div class="flex items-center gap-2">
-                        <Kbd Keys="Arrow Keys" />
-                        <span class="text-muted-foreground">Navigate days</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <Kbd Keys="Enter" />
-                        <span class="text-muted-foreground">Select date</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <Kbd Keys="Home" />
-                        <span class="text-muted-foreground">First day of month</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <Kbd Keys="End" />
-                        <span class="text-muted-foreground">Last day of month</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <Kbd Keys="Page Up" />
-                        <span class="text-muted-foreground">Previous month</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <Kbd Keys="Page Down" />
-                        <span class="text-muted-foreground">Next month</span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <Kbd Keys="Shift" />
-                        <span class="text-muted-foreground">+</span>
-                        <Kbd Keys="Page Up" />
-                        <span class="text-muted-foreground ml-1">Previous year</span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <Kbd Keys="Shift" />
-                        <span class="text-muted-foreground">+</span>
-                        <Kbd Keys="Page Down" />
-                        <span class="text-muted-foreground ml-1">Next year</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <p class="text-sm text-muted-foreground">
-            Selected: @(_keyboardDate?.ToString("MMMM d, yyyy") ?? "None")
-        </p>
+        <CodeBlock Source="Components/Calendar/basic.txt" />
     </div>
 
     <!-- With Preselected Date -->
@@ -99,11 +37,12 @@
             </p>
         </div>
         <div class="border rounded-lg w-fit">
-            <Calendar @bind-Selected="_preselectedDate" />
+            <BbCalendar @bind-Selected="_preselectedDate" />
         </div>
         <p class="text-sm text-muted-foreground">
             Selected: @(_preselectedDate?.ToString("MMMM d, yyyy") ?? "None")
         </p>
+        <CodeBlock Source="Components/Calendar/preselected.txt" />
     </div>
 
     <!-- Simple Header -->
@@ -115,11 +54,12 @@
             </p>
         </div>
         <div class="border rounded-lg w-fit">
-            <Calendar @bind-Selected="_simpleHeaderDate" ShowMonthYearDropdowns="false" />
+            <BbCalendar @bind-Selected="_simpleHeaderDate" ShowMonthYearDropdowns="false" />
         </div>
         <p class="text-sm text-muted-foreground">
             Selected: @(_simpleHeaderDate?.ToString("MMMM d, yyyy") ?? "None")
         </p>
+        <CodeBlock Source="Components/Calendar/simple-header.txt" />
     </div>
 
     <!-- Date Constraints -->
@@ -131,13 +71,14 @@
             </p>
         </div>
         <div class="border rounded-lg w-fit">
-            <Calendar @bind-Selected="_constrainedDate"
+            <BbCalendar @bind-Selected="_constrainedDate"
                       MinDate="@_minDate"
                       MaxDate="@_maxDate" />
         </div>
         <p class="text-sm text-muted-foreground">
             Only dates between @_minDate.ToString("MMM d") and @_maxDate.ToString("MMM d, yyyy") are selectable.
         </p>
+        <CodeBlock Source="Components/Calendar/constraints.txt" />
     </div>
 
     <!-- Disabled Dates -->
@@ -149,12 +90,13 @@
             </p>
         </div>
         <div class="border rounded-lg w-fit">
-            <Calendar @bind-Selected="_noWeekendsDate"
+            <BbCalendar @bind-Selected="_noWeekendsDate"
                       DisabledDates="@IsWeekend" />
         </div>
         <p class="text-sm text-muted-foreground">
             Weekends are disabled. Selected: @(_noWeekendsDate?.ToString("MMMM d, yyyy") ?? "None")
         </p>
+        <CodeBlock Source="Components/Calendar/disabled-dates.txt" />
     </div>
 
     <!-- First Day of Week -->
@@ -169,100 +111,84 @@
             <div>
                 <p class="text-sm font-medium mb-2">Sunday (default)</p>
                 <div class="border rounded-lg w-fit">
-                    <Calendar @bind-Selected="_sundayStart" FirstDayOfWeek="DayOfWeek.Sunday" />
+                    <BbCalendar @bind-Selected="_sundayStart" FirstDayOfWeek="DayOfWeek.Sunday" />
                 </div>
             </div>
             <div>
                 <p class="text-sm font-medium mb-2">Monday</p>
                 <div class="border rounded-lg w-fit">
-                    <Calendar @bind-Selected="_mondayStart" FirstDayOfWeek="DayOfWeek.Monday" />
+                    <BbCalendar @bind-Selected="_mondayStart" FirstDayOfWeek="DayOfWeek.Monday" />
                 </div>
             </div>
         </div>
+        <CodeBlock Source="Components/Calendar/week-start.txt" />
     </div>
 
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Uses role="grid" for the calendar table</AccessibilityItem>
+            <AccessibilityItem>Day cells use aria-selected for the current selection</AccessibilityItem>
+            <AccessibilityItem>Disabled dates are marked with aria-disabled</AccessibilityItem>
+            <AccessibilityItem>Navigation buttons have descriptive aria-label attributes</AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Navigate days">
+                <BbKbd>Arrow Keys</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Select date">
+                <BbKbd>Enter</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="First day of month">
+                <BbKbd>Home</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Last day of month">
+                <BbKbd>End</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Previous / Next month">
+                <BbKbd>Page Up</BbKbd> / <BbKbd>Page Down</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Previous / Next year">
+                <BbKbd>Shift+Page Up</BbKbd> / <BbKbd>Shift+Page Down</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
+
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Selected</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">DateTime?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+        <div class="space-y-4">
+            <ApiReference ComponentName="Calendar">
+                <ApiParameter Name="Selected" Type="DateTime?" Default="null">
                     The currently selected date. Use @@bind-Selected for two-way binding.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">MinDate</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">DateTime?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="MinDate" Type="DateTime?" Default="null">
                     The minimum selectable date. Dates before this are disabled.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">MaxDate</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">DateTime?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="MaxDate" Type="DateTime?" Default="null">
                     The maximum selectable date. Dates after this are disabled.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">DisabledDates</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">Func&lt;DateTime, bool&gt;?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="DisabledDates" Type="Func&lt;DateTime, bool&gt;?" Default="null">
                     Function to determine if a date should be disabled.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">FirstDayOfWeek</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">DayOfWeek</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Which day the week starts on. Default: Sunday.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">ShowMonthYearDropdowns</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Whether to show month/year dropdown selectors. When false, displays a simple text header. Default: true.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">OnSelect</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">EventCallback&lt;DateTime&gt;</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="FirstDayOfWeek" Type="DayOfWeek" Default="DayOfWeek.Sunday">
+                    Which day the week starts on.
+                </ApiParameter>
+                <ApiParameter Name="ShowMonthYearDropdowns" Type="bool" Default="true">
+                    Whether to show month/year dropdown selectors. When false, displays a simple text header.
+                </ApiParameter>
+                <ApiParameter Name="OnSelect" Type="EventCallback&lt;DateTime&gt;">
                     Callback when a date is selected.
-                </p>
-            </div>
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {
     private DateTime? _selectedDate;
-    private DateTime? _keyboardDate;
     private DateTime? _preselectedDate = DateTime.Today;
     private DateTime? _simpleHeaderDate;
     private DateTime? _constrainedDate;

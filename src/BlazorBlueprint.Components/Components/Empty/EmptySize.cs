@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Empty;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Size variants for the Empty component.

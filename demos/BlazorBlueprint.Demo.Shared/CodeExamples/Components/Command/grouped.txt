@@ -1,0 +1,13 @@
+<BbCommand>
+    <BbCommandInput Placeholder="Search commands..." />
+    <BbCommandList>
+        <BbCommandEmpty>No results found.</BbCommandEmpty>
+        <BbCommandGroup Heading="Suggestions">
+            <BbCommandItem Value="calendar">Calendar</BbCommandItem>
+        </BbCommandGroup>
+        <BbCommandSeparator />
+        <BbCommandGroup Heading="Settings">
+            <BbCommandItem Value="profile">Profile</BbCommandItem>
+        </BbCommandGroup>
+    </BbCommandList>
+</BbCommand>

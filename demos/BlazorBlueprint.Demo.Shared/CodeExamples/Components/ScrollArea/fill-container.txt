@@ -1,0 +1,17 @@
+<div class="h-[400px] border rounded-md flex flex-col">
+    <div class="flex h-12 items-center border-b px-4 shrink-0">
+        <h4 class="text-sm font-medium">Header</h4>
+    </div>
+    <BbScrollArea FillContainer="true" Class="px-4">
+        <div class="space-y-4 py-4">
+            @for (int i = 1; i <= 30; i++)
+            {
+                <div class="text-sm">Item @i</div>
+                <BbSeparator />
+            }
+        </div>
+    </BbScrollArea>
+    <div class="flex h-12 items-center border-t px-4 shrink-0">
+        <span class="text-sm text-muted-foreground">Footer</span>
+    </div>
+</div>

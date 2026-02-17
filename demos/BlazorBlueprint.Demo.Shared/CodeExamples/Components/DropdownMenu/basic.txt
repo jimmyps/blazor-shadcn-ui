@@ -1,0 +1,7 @@
+<BbDropdownMenu>
+    <BbDropdownMenuTrigger AsChild="false">Open Menu</BbDropdownMenuTrigger>
+    <BbDropdownMenuContent>
+        <BbDropdownMenuItem OnClick="@(() => HandleAction("Profile"))">Profile</BbDropdownMenuItem>
+        <BbDropdownMenuItem OnClick="@(() => HandleAction("Settings"))">Settings</BbDropdownMenuItem>
+    </BbDropdownMenuContent>
+</BbDropdownMenu>

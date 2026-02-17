@@ -1,0 +1,4 @@
+<BbBadge Variant="BadgeVariant.Default">Default</BbBadge>
+<BbBadge Variant="BadgeVariant.Secondary">Secondary</BbBadge>
+<BbBadge Variant="BadgeVariant.Destructive">Destructive</BbBadge>
+<BbBadge Variant="BadgeVariant.Outline">Outline</BbBadge>

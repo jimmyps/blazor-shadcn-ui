@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Spinner;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the size options for a Spinner component.

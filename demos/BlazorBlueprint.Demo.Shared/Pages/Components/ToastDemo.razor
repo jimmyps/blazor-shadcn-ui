@@ -1,7 +1,4 @@
 @page "/components/toast"
-@using BlazorBlueprint.Components.Toast
-@using BlazorBlueprint.Components.Button
-@using BlazorBlueprint.Components.Separator
 @inject ToastService ToastService
 
 <PageTitle>Toast Component - Blazor Blueprint</PageTitle>
@@ -21,14 +18,12 @@
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Setup</h2>
             <p class="text-sm text-muted-foreground">
-                To use toasts, you need to add the ToastProvider and register the ToastService.
+                Add the ToastProvider to your root layout. The ToastService is automatically registered when you call <code class="text-xs bg-muted px-1 py-0.5 rounded">AddBlazorBlueprintComponents()</code>.
             </p>
         </div>
         <div class="border rounded-lg p-6 space-y-4 bg-muted/50">
-            <p class="text-sm font-medium">1. Register the service in Program.cs:</p>
-            <pre class="text-sm bg-muted p-3 rounded overflow-x-auto"><code>builder.Services.AddScoped&lt;ToastService&gt;();</code></pre>
-            <p class="text-sm font-medium">2. Add ToastProvider to your layout:</p>
-            <pre class="text-sm bg-muted p-3 rounded overflow-x-auto"><code>&lt;ToastProvider Position="ToastPosition.BottomRight" /&gt;</code></pre>
+            <p class="text-sm font-medium">Add ToastProvider to your layout:</p>
+            <pre class="text-sm bg-muted p-3 rounded overflow-x-auto"><code>&lt;BbToastProvider Position="ToastPosition.BottomRight" PauseOnHover="true" /&gt;</code></pre>
         </div>
     </div>
 
@@ -41,16 +36,18 @@
             </p>
         </div>
         <div class="flex flex-wrap gap-4">
-            <Button OnClick="@ShowDefaultToast">
+            <BbButton OnClick="@ShowDefaultToast">
                 Show Toast
-            </Button>
-            <Button Variant="ButtonVariant.Outline" OnClick="@ShowTitleToast">
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Outline" OnClick="@ShowTitleToast">
                 With Title
-            </Button>
-            <Button Variant="ButtonVariant.Destructive" OnClick="@ShowErrorToast">
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Destructive" OnClick="@ShowErrorToast">
                 Error Toast
-            </Button>
+            </BbButton>
         </div>
+
+        <CodeBlock Source="Components/Toast/basic.txt" />
     </div>
 
     <!-- Toast Variants -->
@@ -58,17 +55,71 @@
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Variants</h2>
             <p class="text-sm text-muted-foreground">
-                Toasts come in default and destructive variants.
+                Toasts come in 5 variants, each with automatic icons for semantic variants. Use the factory methods on <code class="text-xs bg-muted px-1 py-0.5 rounded">ToastService</code> for convenience.
             </p>
         </div>
         <div class="flex flex-wrap gap-4">
-            <Button Variant="ButtonVariant.Secondary" OnClick="@(() => ToastService.Success("Your changes have been saved.", "Success"))">
+            <BbButton Variant="ButtonVariant.Outline" OnClick="@(() => ToastService.Show("A general notification.", "Default"))">
+                Default
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Secondary" OnClick="@(() => ToastService.Success("Your changes have been saved.", "Success"))">
                 Success
-            </Button>
-            <Button Variant="ButtonVariant.Destructive" OnClick="@(() => ToastService.Error("Something went wrong.", "Error"))">
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Secondary" OnClick="@(() => ToastService.Info("A new version is available.", "Info"))">
+                Info
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Secondary" OnClick="@(() => ToastService.Warning("Your session is about to expire.", "Warning"))">
+                Warning
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Destructive" OnClick="@(() => ToastService.Error("Something went wrong.", "Error"))">
                 Error
-            </Button>
+            </BbButton>
         </div>
+
+        <CodeBlock Source="Components/Toast/variants.txt" />
+    </div>
+
+    <!-- Compact Size -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Compact Size</h2>
+            <p class="text-sm text-muted-foreground">
+                Use <code class="text-xs bg-muted px-1 py-0.5 rounded">ToastSize.Compact</code> for smaller toasts with reduced padding and font sizes. Ideal for dialog-embedded or dense layouts.
+            </p>
+        </div>
+        <div class="flex flex-wrap gap-4">
+            <BbButton Variant="ButtonVariant.Outline" OnClick="@ShowCompactToast">
+                Compact Toast
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Outline" OnClick="@ShowCompactSuccessToast">
+                Compact Success
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Outline" OnClick="@ShowCompactWithAction">
+                Compact with Action
+            </BbButton>
+        </div>
+
+        <CodeBlock Source="Components/Toast/compact.txt" />
+    </div>
+
+    <!-- Auto Icons -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Auto Icons</h2>
+            <p class="text-sm text-muted-foreground">
+                Semantic variants (Success, Info, Warning, Destructive) automatically display icons. Set <code class="text-xs bg-muted px-1 py-0.5 rounded">ShowIcon = false</code> to hide them.
+            </p>
+        </div>
+        <div class="flex flex-wrap gap-4">
+            <BbButton Variant="ButtonVariant.Secondary" OnClick="@(() => ToastService.Success("With auto icon.", "Success"))">
+                With Icon
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Outline" OnClick="@ShowNoIconToast">
+                Without Icon
+            </BbButton>
+        </div>
+
+        <CodeBlock Source="Components/Toast/auto-icons.txt" />
     </div>
 
     <!-- With Action -->
@@ -79,9 +130,11 @@
                 Toasts can include an action button.
             </p>
         </div>
-        <Button OnClick="@ShowActionToast">
+        <BbButton OnClick="@ShowActionToast">
             Show with Action
-        </Button>
+        </BbButton>
+
+        <CodeBlock Source="Components/Toast/with-action.txt" />
     </div>
 
     <!-- Position Options -->
@@ -89,23 +142,28 @@
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Position</h2>
             <p class="text-sm text-muted-foreground">
-                Configure where toasts appear on the screen via the ToastProvider.
+                Configure where toasts appear on the screen via the ToastProvider, or override per-toast.
             </p>
         </div>
         <div class="border rounded-lg p-6 space-y-4 bg-muted/50">
-            <p class="text-sm font-medium">Available positions:</p>
+            <p class="text-sm font-medium">Provider position (all toasts):</p>
             <div class="grid grid-cols-3 gap-2 text-center text-sm">
-                @foreach (var pos in _positions)
+                @foreach (var pos in positions)
                 {
-                    <Button Variant="@(_selectedPosition == pos.Value ? ButtonVariant.Default : ButtonVariant.Outline)"
+                    <BbButton Variant="@(selectedPosition == pos.Value ? ButtonVariant.Default : ButtonVariant.Outline)"
                             OnClick="@(() => ShowPositionToast(pos.Value))">
                         @pos.Label
-                    </Button>
+                    </BbButton>
                 }
             </div>
-            <p class="text-sm font-medium mt-4">Example:</p>
-            <pre class="text-sm bg-muted p-3 rounded overflow-x-auto"><code>&lt;ToastProvider Position="ToastPosition.@(_selectedPosition)" /&gt;</code></pre>
+            <p class="text-sm font-medium mt-4">Per-toast position override:</p>
+            <BbButton Variant="ButtonVariant.Outline" OnClick="@ShowPerToastPosition">
+                Show in Top-Left
+            </BbButton>
+            <pre class="text-sm bg-muted p-3 rounded overflow-x-auto"><code>&lt;BbToastProvider Position="ToastPosition.@(selectedPosition)" /&gt;</code></pre>
         </div>
+
+        <CodeBlock Source="Components/Toast/position.txt" />
     </div>
 
     <!-- Custom Duration -->
@@ -113,20 +171,22 @@
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">Custom Duration</h2>
             <p class="text-sm text-muted-foreground">
-                Control how long the toast is displayed.
+                Control how long the toast is displayed. Hover over a toast to pause its auto-dismiss timer (when <code class="text-xs bg-muted px-1 py-0.5 rounded">PauseOnHover</code> is enabled).
             </p>
         </div>
         <div class="flex flex-wrap gap-4">
-            <Button Variant="ButtonVariant.Outline" OnClick="@(() => ToastService.Show("This disappears quickly!", duration: 2000))">
+            <BbButton Variant="ButtonVariant.Outline" OnClick="@(() => ToastService.Show("This disappears quickly!", duration: 2000))">
                 2 seconds
-            </Button>
-            <Button Variant="ButtonVariant.Outline" OnClick="@(() => ToastService.Show("This stays longer.", duration: 10000))">
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Outline" OnClick="@(() => ToastService.Show("This stays longer.", duration: 10000))">
                 10 seconds
-            </Button>
-            <Button Variant="ButtonVariant.Outline" OnClick="@ShowPersistentToast">
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Outline" OnClick="@ShowPersistentToast">
                 Persistent (no auto-dismiss)
-            </Button>
+            </BbButton>
         </div>
+
+        <CodeBlock Source="Components/Toast/custom-duration.txt" />
     </div>
 
     <!-- Programmatic Control -->
@@ -138,13 +198,15 @@
             </p>
         </div>
         <div class="flex flex-wrap gap-4">
-            <Button Variant="ButtonVariant.Outline" OnClick="@ShowMultipleToasts">
+            <BbButton Variant="ButtonVariant.Outline" OnClick="@ShowMultipleToasts">
                 Show 3 Toasts
-            </Button>
-            <Button Variant="ButtonVariant.Secondary" OnClick="@(() => ToastService.DismissAll())">
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Secondary" OnClick="@(() => ToastService.DismissAll())">
                 Dismiss All
-            </Button>
+            </BbButton>
         </div>
+
+        <CodeBlock Source="Components/Toast/programmatic-control.txt" />
     </div>
 
     <!-- Custom Styling -->
@@ -156,63 +218,103 @@
             </p>
         </div>
         <div class="flex flex-wrap gap-4">
-            <Button Variant="ButtonVariant.Outline" OnClick="@ShowSuccessStyledToast">
-                Success Style
-            </Button>
-            <Button Variant="ButtonVariant.Outline" OnClick="@ShowBrandStyledToast">
+            <BbButton Variant="ButtonVariant.Outline" OnClick="@ShowBrandStyledToast">
                 Brand Style
-            </Button>
+            </BbButton>
         </div>
+
+        <CodeBlock Source="Components/Toast/custom-styling.txt" />
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-semibold mb-2">ToastService Methods</h3>
-                <div class="space-y-2 text-sm">
-                    <p><code class="bg-muted px-1 py-0.5 rounded">Show(ToastData toast)</code> - Show a toast with full control</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">Show(description, title?, variant?, duration?)</code> - Quick toast</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">Success(description, title?)</code> - Show success toast</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">Error(description, title?)</code> - Show error toast</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">Dismiss(id)</code> - Dismiss specific toast</p>
-                    <p><code class="bg-muted px-1 py-0.5 rounded">DismissAll()</code> - Dismiss all toasts</p>
-                </div>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-semibold mb-2">ToastProvider Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Position:</strong> <code class="bg-muted px-1 py-0.5 rounded">ToastPosition</code> - Where toasts appear (TopRight, TopLeft, TopCenter, BottomRight, BottomLeft, BottomCenter)</p>
-                    <p><strong>MaxToasts:</strong> <code class="bg-muted px-1 py-0.5 rounded">int</code> - Maximum visible toasts. Default: 5</p>
-                </div>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-semibold mb-2">ToastData Properties</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Title:</strong> Optional title text</p>
-                    <p><strong>Description:</strong> Main message content</p>
-                    <p><strong>Variant:</strong> Default or Destructive</p>
-                    <p><strong>Duration:</strong> Auto-dismiss time in ms (0 for no auto-dismiss). Default: 5000</p>
-                    <p><strong>ShowClose:</strong> Show close button. Default: true</p>
-                    <p><strong>ActionText:</strong> Optional action button text</p>
-                    <p><strong>OnAction:</strong> Action button callback</p>
-                </div>
-            </div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="ToastService Methods">
+                <ApiParameter Name="Show(ToastData toast)" Type="void">
+                    Show a toast with full control
+                </ApiParameter>
+                <ApiParameter Name="Show(description, title?, variant?, duration?)" Type="void">
+                    Quick toast
+                </ApiParameter>
+                <ApiParameter Name="Success(description, title?)" Type="void">
+                    Show success toast (green accent, circle-check icon)
+                </ApiParameter>
+                <ApiParameter Name="Info(description, title?)" Type="void">
+                    Show info toast (blue accent, info icon)
+                </ApiParameter>
+                <ApiParameter Name="Warning(description, title?)" Type="void">
+                    Show warning toast (amber accent, triangle-alert icon)
+                </ApiParameter>
+                <ApiParameter Name="Error(description, title?)" Type="void">
+                    Show error toast (red accent, circle-x icon)
+                </ApiParameter>
+                <ApiParameter Name="Dismiss(id)" Type="void">
+                    Dismiss specific toast
+                </ApiParameter>
+                <ApiParameter Name="DismissAll()" Type="void">
+                    Dismiss all toasts
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="BbToastProvider">
+                <ApiParameter Name="Position" Type="ToastPosition" Default="BottomRight">
+                    Where toasts appear (TopRight, TopLeft, TopCenter, BottomRight, BottomLeft, BottomCenter)
+                </ApiParameter>
+                <ApiParameter Name="MaxToasts" Type="int" Default="5">
+                    Maximum visible toasts.
+                </ApiParameter>
+                <ApiParameter Name="PauseOnHover" Type="bool" Default="true">
+                    Pause auto-dismiss when the mouse hovers over a toast.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="ToastData">
+                <ApiParameter Name="Title" Type="string?">
+                    Optional title text
+                </ApiParameter>
+                <ApiParameter Name="Description" Type="string">
+                    Main message content
+                </ApiParameter>
+                <ApiParameter Name="Variant" Type="ToastVariant" Default="Default">
+                    Default, Success, Info, Warning, or Destructive
+                </ApiParameter>
+                <ApiParameter Name="Size" Type="ToastSize" Default="Default">
+                    Default or Compact
+                </ApiParameter>
+                <ApiParameter Name="Position" Type="ToastPosition?">
+                    Per-toast position override. When set, renders in a separate container.
+                </ApiParameter>
+                <ApiParameter Name="ShowIcon" Type="bool" Default="true">
+                    Show variant-specific icon (Default variant has no icon).
+                </ApiParameter>
+                <ApiParameter Name="Duration" Type="int" Default="5000">
+                    Auto-dismiss time in ms (0 for no auto-dismiss).
+                </ApiParameter>
+                <ApiParameter Name="ShowClose" Type="bool" Default="true">
+                    Show close button.
+                </ApiParameter>
+                <ApiParameter Name="ActionText" Type="string?">
+                    Optional action button text
+                </ApiParameter>
+                <ApiParameter Name="OnAction" Type="Action?">
+                    Action button callback
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {
-    private ToastPosition _selectedPosition = ToastPosition.BottomRight;
+    private ToastPosition selectedPosition = ToastPosition.BottomRight;
 
     private readonly record struct PositionOption(string Label, ToastPosition Value);
 
-    private static readonly PositionOption[] _positions =
+    private static readonly PositionOption[] positions =
     [
         new("TopLeft", ToastPosition.TopLeft),
         new("TopCenter", ToastPosition.TopCenter),
@@ -224,7 +326,7 @@
 
     private void ShowPositionToast(ToastPosition position)
     {
-        _selectedPosition = position;
+        selectedPosition = position;
         ToastService.SetPosition(position);
         ToastService.Show($"Position set to {position}");
     }
@@ -268,17 +370,63 @@
     private void ShowMultipleToasts()
     {
         ToastService.Show("First notification");
-        ToastService.Show("Second notification", "Alert");
+        ToastService.Info("Second notification is informational", "Info");
         ToastService.Error("Third notification is an error");
     }
 
-    private void ShowSuccessStyledToast()
+    private void ShowCompactToast()
+    {
+        ToastService.Show(new ToastData
+        {
+            Title = "Compact",
+            Description = "A smaller toast with reduced padding.",
+            Size = ToastSize.Compact
+        });
+    }
+
+    private void ShowCompactSuccessToast()
+    {
+        ToastService.Show(new ToastData
+        {
+            Title = "Saved",
+            Description = "Your changes have been saved.",
+            Variant = ToastVariant.Success,
+            Size = ToastSize.Compact
+        });
+    }
+
+    private void ShowCompactWithAction()
+    {
+        ToastService.Show(new ToastData
+        {
+            Title = "Deleted",
+            Description = "Item removed.",
+            Variant = ToastVariant.Destructive,
+            Size = ToastSize.Compact,
+            ActionText = "Undo",
+            OnAction = () => ToastService.Success("Item restored!")
+        });
+    }
+
+    private void ShowNoIconToast()
     {
         ToastService.Show(new ToastData
         {
             Title = "Success",
-            Description = "A custom-styled success toast using the Class property.",
-            Class = "border-green-500/30 bg-green-600 text-white"
+            Description = "Saved without the icon.",
+            Variant = ToastVariant.Success,
+            ShowIcon = false
+        });
+    }
+
+    private void ShowPerToastPosition()
+    {
+        ToastService.Show(new ToastData
+        {
+            Title = "Top-Left Toast",
+            Description = "This toast appears in the top-left corner.",
+            Variant = ToastVariant.Info,
+            Position = ToastPosition.TopLeft
         });
     }
 

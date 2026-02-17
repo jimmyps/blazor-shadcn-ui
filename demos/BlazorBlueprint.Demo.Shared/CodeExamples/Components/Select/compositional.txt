@@ -1,0 +1,12 @@
+<BbSelect @bind-Value="selectedFruitComposed" TValue="string" Class="w-[280px]">
+    <BbSelectTrigger>
+        <BbSelectValue Placeholder="Select a fruit" />
+    </BbSelectTrigger>
+    <BbSelectContent>
+        <BbSelectItem Value="@("apple")" Text="🍎 Apple" />
+        <BbSelectItem Value="@("banana")" Text="🍌 Banana" />
+        <BbSelectItem Value="@("blueberry")" Text="🫐 Blueberry" />
+        <BbSelectItem Value="@("grapes")" Text="🍇 Grapes" />
+        <BbSelectItem Value="@("pineapple")" Text="🍍 Pineapple" />
+    </BbSelectContent>
+</BbSelect>

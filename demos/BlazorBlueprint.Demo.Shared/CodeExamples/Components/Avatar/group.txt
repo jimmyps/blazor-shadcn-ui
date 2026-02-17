@@ -1,0 +1,17 @@
+<BbAvatarGroup>
+    <BbAvatar>
+        <BbAvatarFallback>AB</BbAvatarFallback>
+    </BbAvatar>
+    <BbAvatar>
+        <BbAvatarFallback>CD</BbAvatarFallback>
+    </BbAvatar>
+    <BbAvatar>
+        <BbAvatarFallback>EF</BbAvatarFallback>
+    </BbAvatar>
+    <BbAvatar>
+        <BbAvatarFallback>GH</BbAvatarFallback>
+    </BbAvatar>
+    <BbAvatar>
+        <BbAvatarFallback Class="bg-primary text-primary-foreground">+5</BbAvatarFallback>
+    </BbAvatar>
+</BbAvatarGroup>

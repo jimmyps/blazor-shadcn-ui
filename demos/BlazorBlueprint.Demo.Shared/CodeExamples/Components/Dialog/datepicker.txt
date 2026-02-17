@@ -1,0 +1,14 @@
+<BbDialog>
+    <BbDialogTrigger>Open Dialog with DatePicker</BbDialogTrigger>
+    <BbDialogContent>
+        <BbDialogHeader>
+            <BbDialogTitle>Schedule Event</BbDialogTitle>
+            <BbDialogDescription>
+                Pick a date for the event.
+            </BbDialogDescription>
+        </BbDialogHeader>
+        <div class="grid gap-4 py-4">
+            <BbDatePicker @bind-Value="dialogDatePickerValue" Class="w-full" />
+        </div>
+    </BbDialogContent>
+</BbDialog>

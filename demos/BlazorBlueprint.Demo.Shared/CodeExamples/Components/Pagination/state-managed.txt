@@ -1,0 +1,11 @@
+<BbPagination State="paginationState" OnPageChanged="HandlePageChanged"
+            Class="flex items-center justify-between">
+    <BbPaginationInfo />
+    <BbPaginationContent>
+        <BbPaginationItem><BbPaginationFirst /></BbPaginationItem>
+        <BbPaginationItem><BbPaginationPrevious ShowText="false" /></BbPaginationItem>
+        <BbPaginationItem><BbPaginationPageDisplay /></BbPaginationItem>
+        <BbPaginationItem><BbPaginationNext ShowText="false" /></BbPaginationItem>
+        <BbPaginationItem><BbPaginationLast /></BbPaginationItem>
+    </BbPaginationContent>
+</BbPagination>

@@ -1,0 +1,8 @@
+<BbTooltip Placement="@PopoverPlacement.Top">
+    <BbTooltipTrigger AsChild="false" Class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium">
+        Top
+    </BbTooltipTrigger>
+    <BbTooltipContent ShowArrow="true">
+        Arrow on top
+    </BbTooltipContent>
+</BbTooltip>

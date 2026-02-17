@@ -1,0 +1,6 @@
+<BbAccordion @bind-Value="controlledValue" Type="AccordionType.Single" Collapsible="true">
+    <BbAccordionItem Value="controlled-1">
+        <BbAccordionTrigger>Controlled Item 1</BbAccordionTrigger>
+        <BbAccordionContent>This item's state is controlled externally.</BbAccordionContent>
+    </BbAccordionItem>
+</BbAccordion>

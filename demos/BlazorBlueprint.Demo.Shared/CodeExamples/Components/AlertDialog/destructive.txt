@@ -1,0 +1,19 @@
+<BbAlertDialog>
+    <BbAlertDialogTrigger>
+        <BbButton Variant="ButtonVariant.Destructive">Delete Account</BbButton>
+    </BbAlertDialogTrigger>
+    <BbAlertDialogContent>
+        <BbAlertDialogHeader>
+            <BbAlertDialogTitle>Delete Account</BbAlertDialogTitle>
+            <BbAlertDialogDescription>This will permanently remove your data.</BbAlertDialogDescription>
+        </BbAlertDialogHeader>
+        <BbAlertDialogFooter>
+            <BbAlertDialogCancel>
+                <BbButton Variant="ButtonVariant.Outline">Cancel</BbButton>
+            </BbAlertDialogCancel>
+            <BbAlertDialogAction>
+                <BbButton Variant="ButtonVariant.Destructive">Delete</BbButton>
+            </BbAlertDialogAction>
+        </BbAlertDialogFooter>
+    </BbAlertDialogContent>
+</BbAlertDialog>

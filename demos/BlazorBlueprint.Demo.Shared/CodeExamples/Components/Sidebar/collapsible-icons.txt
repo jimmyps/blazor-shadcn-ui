@@ -1,0 +1,14 @@
+<BbSidebarProvider DefaultOpen="false">
+    <BbSidebar Collapsible="true">
+        <BbSidebarContent>
+            <BbSidebarMenu>
+                <BbSidebarMenuItem>
+                    <BbSidebarMenuButton Tooltip="Dashboard">
+                        <LucideIcon Name="layout-dashboard" Size="16" />
+                        <span>Dashboard</span>
+                    </BbSidebarMenuButton>
+                </BbSidebarMenuItem>
+            </BbSidebarMenu>
+        </BbSidebarContent>
+    </BbSidebar>
+</BbSidebarProvider>

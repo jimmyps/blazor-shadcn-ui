@@ -1,0 +1,215 @@
+@namespace BlazorBlueprint.Components
+@implements IAsyncDisposable
+@inject ToastService ToastService
+
+@*
+    Toast Provider - renders the toast container and manages toast lifecycle.
+    Place this component once at the root of your application (e.g., in MainLayout).
+*@
+
+@* Main toast stack (toasts without per-toast position overrides) *@
+<div class="@GetContainerCssClass(EffectivePosition)">
+    @foreach (var toast in GetToastsForPosition(null))
+    {
+        <BbToast Data="@toast"
+                 Class="@toast.Class"
+                 OnDismiss="@(() => HandleDismiss(toast.Id))"
+                 OnPause="@(() => HandlePause(toast.Id))"
+                 OnResume="@(() => HandleResume(toast.Id))" />
+    }
+</div>
+
+@* Per-toast position containers *@
+@foreach (var position in GetCustomPositions())
+{
+    <div class="@GetContainerCssClass(position)">
+        @foreach (var toast in GetToastsForPosition(position))
+        {
+            <BbToast Data="@toast"
+                     Class="@toast.Class"
+                     OnDismiss="@(() => HandleDismiss(toast.Id))"
+                     OnPause="@(() => HandlePause(toast.Id))"
+                     OnResume="@(() => HandleResume(toast.Id))" />
+        }
+    </div>
+}
+
+@code {
+    private System.Timers.Timer? autoCloseTimer;
+    private readonly Dictionary<string, long> elapsedMs = new();
+    private readonly HashSet<string> pausedToasts = new();
+    private readonly object timerLock = new();
+
+    /// <summary>
+    /// The position of the toast container on the screen.
+    /// </summary>
+    [Parameter]
+    public ToastPosition Position { get; set; } = ToastPosition.BottomRight;
+
+    /// <summary>
+    /// Maximum number of toasts to display at once.
+    /// Older toasts are removed when limit is reached.
+    /// </summary>
+    [Parameter]
+    public int MaxToasts { get; set; } = 5;
+
+    /// <summary>
+    /// Whether to pause auto-dismiss when the mouse hovers over a toast.
+    /// </summary>
+    [Parameter]
+    public bool PauseOnHover { get; set; } = true;
+
+    /// <summary>
+    /// Additional CSS classes to apply to the container.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ToastService.OnChange += HandleToastsChanged;
+        StartAutoCloseTimer();
+    }
+
+    private void HandleToastsChanged()
+    {
+        lock (timerLock)
+        {
+            // Initialize elapsed tracking for new toasts
+            foreach (var toast in ToastService.Toasts)
+            {
+                if (!elapsedMs.ContainsKey(toast.Id))
+                {
+                    elapsedMs[toast.Id] = 0;
+                }
+            }
+
+            // Clean up stale entries
+            var activeIds = new HashSet<string>(ToastService.Toasts.Select(t => t.Id));
+            var staleIds = elapsedMs.Keys.Where(id => !activeIds.Contains(id)).ToList();
+            foreach (var id in staleIds)
+            {
+                elapsedMs.Remove(id);
+                pausedToasts.Remove(id);
+            }
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void HandleDismiss(string id)
+    {
+        ToastService.Dismiss(id);
+    }
+
+    private void HandlePause(string id)
+    {
+        if (!PauseOnHover)
+        {
+            return;
+        }
+
+        lock (timerLock)
+        {
+            pausedToasts.Add(id);
+        }
+    }
+
+    private void HandleResume(string id)
+    {
+        if (!PauseOnHover)
+        {
+            return;
+        }
+
+        lock (timerLock)
+        {
+            pausedToasts.Remove(id);
+        }
+    }
+
+    private void StartAutoCloseTimer()
+    {
+        autoCloseTimer = new System.Timers.Timer(1000);
+        autoCloseTimer.Elapsed += (sender, args) =>
+        {
+            var toastsToRemove = new List<string>();
+
+            lock (timerLock)
+            {
+                foreach (var toast in ToastService.Toasts)
+                {
+                    if (toast.Duration <= 0)
+                    {
+                        continue;
+                    }
+
+                    if (!elapsedMs.ContainsKey(toast.Id))
+                    {
+                        elapsedMs[toast.Id] = 0;
+                    }
+
+                    if (!pausedToasts.Contains(toast.Id))
+                    {
+                        elapsedMs[toast.Id] += 1000;
+                    }
+
+                    if (elapsedMs[toast.Id] >= toast.Duration)
+                    {
+                        toastsToRemove.Add(toast.Id);
+                    }
+                }
+            }
+
+            foreach (var id in toastsToRemove)
+            {
+                ToastService.Dismiss(id);
+            }
+        };
+        autoCloseTimer.Start();
+    }
+
+    private ToastPosition EffectivePosition => ToastService.Position ?? Position;
+
+    private IEnumerable<ToastPosition> GetCustomPositions()
+    {
+        return ToastService.Toasts
+            .Where(t => t.Position.HasValue)
+            .Select(t => t.Position!.Value)
+            .Distinct();
+    }
+
+    private IEnumerable<ToastData> GetToastsForPosition(ToastPosition? position)
+    {
+        if (position.HasValue)
+        {
+            return ToastService.Toasts.Where(t => t.Position == position);
+        }
+
+        return ToastService.Toasts.Where(t => !t.Position.HasValue);
+    }
+
+    private string GetContainerCssClass(ToastPosition position) => ClassNames.cn(
+        "fixed z-[100] flex max-h-screen w-full flex-col-reverse gap-2 p-4 sm:flex-col md:max-w-[420px]",
+        position switch
+        {
+            ToastPosition.TopRight => "top-0 right-0",
+            ToastPosition.TopLeft => "top-0 left-0",
+            ToastPosition.TopCenter => "top-0 left-1/2 -translate-x-1/2",
+            ToastPosition.BottomRight => "bottom-0 right-0",
+            ToastPosition.BottomLeft => "bottom-0 left-0",
+            ToastPosition.BottomCenter => "bottom-0 left-1/2 -translate-x-1/2",
+            _ => "bottom-0 right-0"
+        },
+        Class
+    );
+
+    public ValueTask DisposeAsync()
+    {
+        ToastService.OnChange -= HandleToastsChanged;
+        autoCloseTimer?.Stop();
+        autoCloseTimer?.Dispose();
+        GC.SuppressFinalize(this);
+        return ValueTask.CompletedTask;
+    }
+}

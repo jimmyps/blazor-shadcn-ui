@@ -1,5 +1,4 @@
 @page "/components/combobox"
-@using BlazorBlueprint.Components.Combobox
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>Combobox Component - Blazor Blueprint</PageTitle>
@@ -7,7 +6,10 @@
 <div class="space-y-8 max-w-4xl">
     <div>
         <div class="space-y-3">
-        <h1 class="text-4xl font-bold tracking-tight">Combobox Component</h1>
+        <div class="flex items-center gap-3">
+            <h1 class="text-4xl font-bold tracking-tight">Combobox Component</h1>
+            <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">v3</span>
+        </div>
         <p class="text-xl text-muted-foreground">
             A searchable select component that combines autocomplete with a dropdown interface.
         </p>
@@ -25,20 +27,20 @@
         </p>
 
         <div class="flex flex-col gap-2">
-            <Combobox TItem="Framework"
-                     Items="frameworks"
+            <BbCombobox TValue="string"
+                     Options="frameworks"
                      @bind-Value="selectedFramework"
-                     ValueSelector="@(f => f.Value)"
-                     DisplaySelector="@(f => f.Label)"
                      Placeholder="Select framework..."
                      SearchPlaceholder="Search framework..."
                      EmptyMessage="No framework found."
                      PopoverWidth="w-[200px]" />
-            @if (!string.IsNullOrEmpty(selectedFramework))
-            {
-                <p class="text-sm">Selected: <strong>@GetFrameworkLabel(selectedFramework)</strong></p>
-            }
+            <div class="rounded-lg border p-4 bg-muted/50 space-y-1">
+                <p class="text-sm"><span class="font-medium">Selected value:</span> <span class="font-mono">@(string.IsNullOrEmpty(selectedFramework) ? "(none)" : selectedFramework)</span></p>
+                <p class="text-sm"><span class="font-medium">Selected text:</span> @(string.IsNullOrEmpty(selectedFramework) ? "(none)" : frameworks.GetText(selectedFramework))</p>
+            </div>
         </div>
+
+        <CodeBlock Source="Components/Combobox/basic.txt" />
     </section>
 
     <!-- Language Selector -->
@@ -49,20 +51,20 @@
         </p>
 
         <div class="flex flex-col gap-2">
-            <Combobox TItem="ProgrammingLanguage"
-                     Items="languages"
+            <BbCombobox TValue="string"
+                     Options="languages"
                      @bind-Value="selectedLanguage"
-                     ValueSelector="@(l => l.Value)"
-                     DisplaySelector="@(l => l.Label)"
                      Placeholder="Select language..."
                      SearchPlaceholder="Search language..."
                      EmptyMessage="No language found."
                      PopoverWidth="w-[250px]" />
-            @if (!string.IsNullOrEmpty(selectedLanguage))
-            {
-                <p class="text-sm">Selected: <strong>@GetLanguageLabel(selectedLanguage)</strong></p>
-            }
+            <div class="rounded-lg border p-4 bg-muted/50 space-y-1">
+                <p class="text-sm"><span class="font-medium">Selected value:</span> <span class="font-mono">@(string.IsNullOrEmpty(selectedLanguage) ? "(none)" : selectedLanguage)</span></p>
+                <p class="text-sm"><span class="font-medium">Selected text:</span> @(string.IsNullOrEmpty(selectedLanguage) ? "(none)" : languages.GetText(selectedLanguage))</p>
+            </div>
         </div>
+
+        <CodeBlock Source="Components/Combobox/language.txt" />
     </section>
 
     <!-- Country Selector -->
@@ -73,20 +75,98 @@
         </p>
 
         <div class="flex flex-col gap-2">
-            <Combobox TItem="Country"
-                     Items="countries"
+            <BbCombobox TValue="string"
+                     Options="countries"
                      @bind-Value="selectedCountry"
-                     ValueSelector="@(c => c.Code)"
-                     DisplaySelector="@(c => c.Name)"
                      Placeholder="Select country..."
                      SearchPlaceholder="Search country..."
                      EmptyMessage="No country found."
                      PopoverWidth="w-[280px]" />
-            @if (!string.IsNullOrEmpty(selectedCountry))
-            {
-                <p class="text-sm">Selected: <strong>@GetCountryName(selectedCountry)</strong> (@selectedCountry)</p>
-            }
+            <div class="rounded-lg border p-4 bg-muted/50 space-y-1">
+                <p class="text-sm"><span class="font-medium">Selected value:</span> <span class="font-mono">@(string.IsNullOrEmpty(selectedCountry) ? "(none)" : selectedCountry)</span></p>
+                <p class="text-sm"><span class="font-medium">Selected text:</span> @(string.IsNullOrEmpty(selectedCountry) ? "(none)" : countries.GetText(selectedCountry))</p>
+            </div>
         </div>
+
+        <CodeBlock Source="Components/Combobox/country.txt" />
+    </section>
+
+    <!-- Non-String Value Types -->
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">Non-String Value Types</h2>
+        <p class="text-sm text-muted-foreground">
+            Bind to <code class="text-xs bg-muted px-1 py-0.5 rounded">int?</code> values using
+            <code class="text-xs bg-muted px-1 py-0.5 rounded">TValue="int?"</code>.
+            The component handles conversion automatically.
+        </p>
+
+        <div class="flex flex-col gap-2">
+            <BbCombobox TValue="int?"
+                     Options="priorities"
+                     @bind-Value="selectedPriority"
+                     Placeholder="Select priority..."
+                     SearchPlaceholder="Search priority..."
+                     EmptyMessage="No priority found."
+                     PopoverWidth="w-[200px]" />
+            <div class="rounded-lg border p-4 bg-muted/50 space-y-1">
+                <p class="text-sm"><span class="font-medium">Selected value:</span> <span class="font-mono">@(selectedPriority.HasValue ? selectedPriority.Value.ToString() : "(none)")</span></p>
+                <p class="text-sm"><span class="font-medium">Selected text:</span> @(selectedPriority.HasValue ? priorities.GetText(selectedPriority) : "(none)")</p>
+            </div>
+        </div>
+
+        <CodeBlock Source="Components/Combobox/non-string-values.txt" />
+    </section>
+
+    <!-- Enum Values -->
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">Enum Values</h2>
+        <p class="text-sm text-muted-foreground">
+            Bind to a nullable enum using
+            <code class="text-xs bg-muted px-1 py-0.5 rounded">TValue="Status?"</code>.
+            Each option maps an enum value to a display label.
+        </p>
+
+        <div class="flex flex-col gap-2">
+            <BbCombobox TValue="Status?"
+                     Options="statusOptions"
+                     @bind-Value="selectedStatus"
+                     Placeholder="Select status..."
+                     SearchPlaceholder="Search status..."
+                     EmptyMessage="No status found."
+                     PopoverWidth="w-[200px]" />
+            <div class="rounded-lg border p-4 bg-muted/50 space-y-1">
+                <p class="text-sm"><span class="font-medium">Selected value:</span> <span class="font-mono">@(selectedStatus.HasValue ? selectedStatus.Value.ToString() : "(none)")</span></p>
+                <p class="text-sm"><span class="font-medium">Selected text:</span> @(selectedStatus.HasValue ? statusOptions.GetText(selectedStatus) : "(none)")</p>
+            </div>
+        </div>
+
+        <CodeBlock Source="Components/Combobox/enum-values.txt" />
+    </section>
+
+    <!-- Guid Values -->
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">Guid Values</h2>
+        <p class="text-sm text-muted-foreground">
+            Bind to a <code class="text-xs bg-muted px-1 py-0.5 rounded">Guid?</code> value using
+            <code class="text-xs bg-muted px-1 py-0.5 rounded">TValue="Guid?"</code>.
+            Useful for selecting entities identified by GUIDs such as projects, tenants, or resources.
+        </p>
+
+        <div class="flex flex-col gap-2">
+            <BbCombobox TValue="Guid?"
+                     Options="projects"
+                     @bind-Value="selectedProject"
+                     Placeholder="Select project..."
+                     SearchPlaceholder="Search project..."
+                     EmptyMessage="No project found."
+                     PopoverWidth="w-[280px]" />
+            <div class="rounded-lg border p-4 bg-muted/50 space-y-1">
+                <p class="text-sm"><span class="font-medium">Selected value:</span> <span class="font-mono">@(selectedProject.HasValue ? selectedProject.Value.ToString() : "(none)")</span></p>
+                <p class="text-sm"><span class="font-medium">Selected text:</span> @(selectedProject.HasValue ? projects.GetText(selectedProject) : "(none)")</p>
+            </div>
+        </div>
+
+        <CodeBlock Source="Components/Combobox/guid-values.txt" />
     </section>
 
     <!-- Match Trigger Width -->
@@ -100,11 +180,9 @@
         <div class="flex flex-col gap-4">
             <div class="w-64">
                 <label class="text-sm font-medium mb-2 block">Fixed width container (w-64)</label>
-                <Combobox TItem="Framework"
-                         Items="frameworks"
+                <BbCombobox TValue="string"
+                         Options="frameworks"
                          @bind-Value="matchWidthValue1"
-                         ValueSelector="@(f => f.Value)"
-                         DisplaySelector="@(f => f.Label)"
                          Placeholder="Select framework..."
                          SearchPlaceholder="Search..."
                          MatchTriggerWidth="true"
@@ -113,17 +191,17 @@
 
             <div class="w-96">
                 <label class="text-sm font-medium mb-2 block">Wider container (w-96)</label>
-                <Combobox TItem="Country"
-                         Items="countries"
+                <BbCombobox TValue="string"
+                         Options="countries"
                          @bind-Value="matchWidthValue2"
-                         ValueSelector="@(c => c.Code)"
-                         DisplaySelector="@(c => c.Name)"
                          Placeholder="Select country..."
                          SearchPlaceholder="Search country..."
                          MatchTriggerWidth="true"
                          Class="w-full" />
             </div>
         </div>
+
+        <CodeBlock Source="Components/Combobox/match-trigger-width.txt" />
     </section>
 
     <!-- Disabled State -->
@@ -133,14 +211,14 @@
             Combobox in disabled state.
         </p>
 
-        <Combobox TItem="Framework"
-                 Items="frameworks"
+        <BbCombobox TValue="string"
+                 Options="frameworks"
                  @bind-Value="disabledValue"
-                 ValueSelector="@(f => f.Value)"
-                 DisplaySelector="@(f => f.Label)"
                  Placeholder="Disabled combobox"
                  Disabled="true"
                  PopoverWidth="w-[200px]" />
+
+        <CodeBlock Source="Components/Combobox/disabled.txt" />
     </section>
 
     <!-- Form Validation with EditForm -->
@@ -157,11 +235,9 @@
 
             <div class="space-y-2">
                 <label class="text-sm font-medium">Framework</label>
-                <Combobox TItem="Framework"
-                         Items="frameworks"
+                <BbCombobox TValue="string"
+                         Options="frameworks"
                          @bind-Value="comboboxFormModel.Framework"
-                         ValueSelector="@(f => f.Value)"
-                         DisplaySelector="@(f => f.Label)"
                          Placeholder="Select framework..."
                          SearchPlaceholder="Search framework..."
                          EmptyMessage="No framework found."
@@ -171,8 +247,8 @@
             </div>
 
             <div class="flex gap-4">
-                <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</Button>
-                <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetComboboxForm">Reset</Button>
+                <BbButton Type="ButtonType.Submit" Variant="ButtonVariant.Default">Submit</BbButton>
+                <BbButton Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetComboboxForm">Reset</BbButton>
             </div>
 
             @if (!string.IsNullOrEmpty(comboboxFormMessage))
@@ -182,6 +258,8 @@
                 </div>
             }
         </EditForm>
+
+        <CodeBlock Source="Components/Combobox/form-validation.txt" />
     </section>
 
     <!-- Form Example -->
@@ -194,11 +272,9 @@
         <div class="space-y-4 max-w-md border rounded-lg p-6">
             <div class="space-y-2">
                 <label class="text-sm font-medium">Framework</label>
-                <Combobox TItem="Framework"
-                         Items="frameworks"
+                <BbCombobox TValue="string"
+                         Options="frameworks"
                          @bind-Value="formFramework"
-                         ValueSelector="@(f => f.Value)"
-                         DisplaySelector="@(f => f.Label)"
                          Placeholder="Select framework..."
                          SearchPlaceholder="Search framework..."
                          Class="w-full"
@@ -208,11 +284,9 @@
 
             <div class="space-y-2">
                 <label class="text-sm font-medium">Language</label>
-                <Combobox TItem="ProgrammingLanguage"
-                         Items="languages"
+                <BbCombobox TValue="string"
+                         Options="languages"
                          @bind-Value="formLanguage"
-                         ValueSelector="@(l => l.Value)"
-                         DisplaySelector="@(l => l.Label)"
                          Placeholder="Select language..."
                          SearchPlaceholder="Search language..."
                          Class="w-full"
@@ -221,17 +295,169 @@
             </div>
 
             <div class="pt-4 border-t">
-                <Button Variant="ButtonVariant.Default" OnClick="HandleFormSubmit">
+                <BbButton Variant="ButtonVariant.Default" OnClick="HandleFormSubmit">
                     Submit
-                </Button>
+                </BbButton>
                 @if (formSubmitted)
                 {
-                    <p class="text-sm text-green-600 mt-2">
-                        ✓ Form submitted! Framework: <strong>@GetFrameworkLabel(formFramework)</strong>,
-                        Language: <strong>@GetLanguageLabel(formLanguage)</strong>
-                    </p>
+                    <div class="text-sm text-green-600 mt-2 space-y-1">
+                        <p>Form submitted!</p>
+                        <p><span class="font-medium">Framework value:</span> <span class="font-mono">@formFramework</span> | <span class="font-medium">text:</span> @frameworks.GetText(formFramework)</p>
+                        <p><span class="font-medium">Language value:</span> <span class="font-mono">@formLanguage</span> | <span class="font-medium">text:</span> @languages.GetText(formLanguage)</p>
+                    </div>
                 }
             </div>
+        </div>
+
+        <CodeBlock Source="Components/Combobox/form-integration.txt" />
+    </section>
+
+    <!-- Compositional Mode -->
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">Compositional Mode</h2>
+        <p class="text-sm text-muted-foreground">
+            For full control over item rendering, use <code class="bg-muted px-1 py-0.5 rounded text-sm">ComboboxItem</code> children
+            instead of the <code class="bg-muted px-1 py-0.5 rounded text-sm">Options</code> parameter.
+            Search, keyboard navigation, and selection work identically.
+        </p>
+
+        <div class="flex flex-col gap-2">
+            <BbCombobox TValue="string"
+                     @bind-Value="compositionalValue"
+                     Placeholder="Select a stack..."
+                     SearchPlaceholder="Search..."
+                     EmptyMessage="No stack found."
+                     PopoverWidth="w-[280px]">
+                <BbComboboxItem Value="@("blazor")" Text="Blazor">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block h-2 w-2 rounded-full bg-purple-500"></span>
+                        Blazor
+                    </div>
+                </BbComboboxItem>
+                <BbComboboxItem Value="@("react")" Text="React">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block h-2 w-2 rounded-full bg-blue-500"></span>
+                        React
+                    </div>
+                </BbComboboxItem>
+                <BbComboboxItem Value="@("vue")" Text="Vue.js">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block h-2 w-2 rounded-full bg-green-500"></span>
+                        Vue.js
+                    </div>
+                </BbComboboxItem>
+                <BbComboboxItem Value="@("angular")" Text="Angular">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block h-2 w-2 rounded-full bg-red-500"></span>
+                        Angular
+                    </div>
+                </BbComboboxItem>
+                <BbComboboxItem Value="@("svelte")" Text="Svelte">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block h-2 w-2 rounded-full bg-orange-500"></span>
+                        Svelte
+                    </div>
+                </BbComboboxItem>
+            </BbCombobox>
+            <div class="rounded-lg border p-4 bg-muted/50 space-y-1">
+                <p class="text-sm"><span class="font-medium">Selected value:</span> <span class="font-mono">@(string.IsNullOrEmpty(compositionalValue) ? "(none)" : compositionalValue)</span></p>
+                <p class="text-sm"><span class="font-medium">Selected text:</span> @(string.IsNullOrEmpty(compositionalValue) ? "(none)" : GetCompositionalLabel(compositionalValue))</p>
+            </div>
+        </div>
+
+        <CodeBlock Source="Components/Combobox/compositional.txt" />
+    </section>
+
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>
+                role="combobox" on the trigger input
+            </AccessibilityItem>
+            <AccessibilityItem>
+                aria-expanded indicates dropdown state
+            </AccessibilityItem>
+            <AccessibilityItem>
+                aria-activedescendant tracks focused option
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Search input filters options in real-time
+            </AccessibilityItem>
+        </AriaAttributes>
+        <KeyboardNavigation>
+            <KeyboardShortcutItem Description="Open dropdown">
+                <BbKbd>Enter</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Navigate options">
+                <BbKbd>Arrow Keys</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Select option">
+                <BbKbd>Enter</BbKbd>
+            </KeyboardShortcutItem>
+            <KeyboardShortcutItem Description="Close dropdown">
+                <BbKbd>Escape</BbKbd>
+            </KeyboardShortcutItem>
+        </KeyboardNavigation>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="Combobox&lt;TValue&gt;">
+                <ApiParameter Name="Options" Type="IEnumerable&lt;SelectOption&lt;TValue&gt;&gt;?">
+                    Collection of options for data-driven mode. When null, uses compositional mode with ChildContent.
+                </ApiParameter>
+                <ApiParameter Name="Value" Type="TValue?">
+                    Currently selected value. Supports two-way binding with <code>@@bind-Value</code>.
+                </ApiParameter>
+                <ApiParameter Name="ValueChanged" Type="EventCallback&lt;TValue?&gt;">
+                    Callback invoked when the selected value changes.
+                </ApiParameter>
+                <ApiParameter Name="Placeholder" Type="string" Default="&quot;Select an option...&quot;">
+                    Placeholder text shown when no item is selected.
+                </ApiParameter>
+                <ApiParameter Name="SearchPlaceholder" Type="string" Default="&quot;Search...&quot;">
+                    Placeholder text shown in the search input.
+                </ApiParameter>
+                <ApiParameter Name="EmptyMessage" Type="string" Default="&quot;No results found.&quot;">
+                    Message displayed when no items match the search.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the combobox is disabled.
+                </ApiParameter>
+                <ApiParameter Name="MatchTriggerWidth" Type="bool" Default="false">
+                    Whether to match dropdown width to the trigger element width.
+                </ApiParameter>
+                <ApiParameter Name="PopoverWidth" Type="string" Default="&quot;w-[200px]&quot;">
+                    Width of the popover. Ignored when MatchTriggerWidth is true.
+                </ApiParameter>
+                <ApiParameter Name="ActiveClass" Type="string?" Default="&quot;bg-accent text-accent-foreground&quot;">
+                    CSS classes applied to the trigger when the dropdown is open. Set to <code>null</code> or empty to disable.
+                    Use to match the context (e.g., <code>"bg-sidebar-accent text-sidebar-accent-foreground"</code> in sidebars).
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    Content for compositional mode. Use ComboboxItem components as children.
+                </ApiParameter>
+            </ApiReference>
+
+            <ApiReference ComponentName="ComboboxItem&lt;TValue&gt;">
+                <ApiParameter Name="Value" Type="TValue">
+                    The value of this item. Required.
+                </ApiParameter>
+                <ApiParameter Name="Text" Type="string">
+                    Display text for filtering and trigger display. Required.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether this item is disabled.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    Custom content to render. When null, renders Text as plain text.
+                </ApiParameter>
+            </ApiReference>
         </div>
     </section>
 </div>
@@ -246,6 +472,11 @@
     // Country example
     private string? selectedCountry;
 
+    // Non-string value type examples
+    private int? selectedPriority;
+    private Status? selectedStatus;
+    private Guid? selectedProject;
+
     // Disabled example
     private string? disabledValue = "next.js";
 
@@ -258,58 +489,93 @@
     private string? formLanguage;
     private bool formSubmitted;
 
-    private readonly List<Framework> frameworks = new()
+    private readonly SelectOption<string>[] frameworks =
+    [
+        new("next.js", "Next.js"),
+        new("sveltekit", "SvelteKit"),
+        new("nuxt.js", "Nuxt.js"),
+        new("remix", "Remix"),
+        new("astro", "Astro"),
+        new("gatsby", "Gatsby"),
+        new("blazor", "Blazor")
+    ];
+
+    private readonly SelectOption<string>[] languages =
+    [
+        new("csharp", "C#"),
+        new("typescript", "TypeScript"),
+        new("javascript", "JavaScript"),
+        new("python", "Python"),
+        new("java", "Java"),
+        new("go", "Go"),
+        new("rust", "Rust"),
+        new("php", "PHP"),
+        new("ruby", "Ruby"),
+        new("swift", "Swift")
+    ];
+
+    private readonly SelectOption<string>[] countries =
+    [
+        new("US", "United States"),
+        new("GB", "United Kingdom"),
+        new("CA", "Canada"),
+        new("AU", "Australia"),
+        new("DE", "Germany"),
+        new("FR", "France"),
+        new("JP", "Japan"),
+        new("CN", "China"),
+        new("IN", "India"),
+        new("BR", "Brazil"),
+        new("MX", "Mexico"),
+        new("ES", "Spain"),
+        new("IT", "Italy"),
+        new("NL", "Netherlands"),
+        new("SE", "Sweden")
+    ];
+
+    private readonly SelectOption<int?>[] priorities =
+    [
+        new(1, "Low"),
+        new(2, "Medium"),
+        new(3, "High"),
+        new(4, "Critical")
+    ];
+
+    private readonly SelectOption<Status?>[] statusOptions =
+    [
+        new(Status.Active, "Active"),
+        new(Status.Inactive, "Inactive"),
+        new(Status.Pending, "Pending"),
+        new(Status.Archived, "Archived")
+    ];
+
+    private static readonly Guid ProjectAlphaId = Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
+    private static readonly Guid ProjectBetaId = Guid.Parse("b2c3d4e5-f6a7-8901-bcde-f12345678901");
+    private static readonly Guid ProjectGammaId = Guid.Parse("c3d4e5f6-a7b8-9012-cdef-123456789012");
+    private static readonly Guid ProjectDeltaId = Guid.Parse("d4e5f6a7-b8c9-0123-defa-234567890123");
+
+    private readonly SelectOption<Guid?>[] projects =
+    [
+        new(ProjectAlphaId, "Project Alpha"),
+        new(ProjectBetaId, "Project Beta"),
+        new(ProjectGammaId, "Project Gamma"),
+        new(ProjectDeltaId, "Project Delta")
+    ];
+
+    // Compositional mode example
+    private string? compositionalValue;
+
+    private static readonly Dictionary<string, string> compositionalLabels = new()
     {
-        new Framework { Value = "next.js", Label = "Next.js" },
-        new Framework { Value = "sveltekit", Label = "SvelteKit" },
-        new Framework { Value = "nuxt.js", Label = "Nuxt.js" },
-        new Framework { Value = "remix", Label = "Remix" },
-        new Framework { Value = "astro", Label = "Astro" },
-        new Framework { Value = "gatsby", Label = "Gatsby" },
-        new Framework { Value = "blazor", Label = "Blazor" }
+        ["blazor"] = "Blazor",
+        ["react"] = "React",
+        ["vue"] = "Vue.js",
+        ["angular"] = "Angular",
+        ["svelte"] = "Svelte"
     };
 
-    private readonly List<ProgrammingLanguage> languages = new()
-    {
-        new ProgrammingLanguage { Value = "csharp", Label = "C#" },
-        new ProgrammingLanguage { Value = "typescript", Label = "TypeScript" },
-        new ProgrammingLanguage { Value = "javascript", Label = "JavaScript" },
-        new ProgrammingLanguage { Value = "python", Label = "Python" },
-        new ProgrammingLanguage { Value = "java", Label = "Java" },
-        new ProgrammingLanguage { Value = "go", Label = "Go" },
-        new ProgrammingLanguage { Value = "rust", Label = "Rust" },
-        new ProgrammingLanguage { Value = "php", Label = "PHP" },
-        new ProgrammingLanguage { Value = "ruby", Label = "Ruby" },
-        new ProgrammingLanguage { Value = "swift", Label = "Swift" }
-    };
-
-    private readonly List<Country> countries = new()
-    {
-        new Country { Code = "US", Name = "United States" },
-        new Country { Code = "GB", Name = "United Kingdom" },
-        new Country { Code = "CA", Name = "Canada" },
-        new Country { Code = "AU", Name = "Australia" },
-        new Country { Code = "DE", Name = "Germany" },
-        new Country { Code = "FR", Name = "France" },
-        new Country { Code = "JP", Name = "Japan" },
-        new Country { Code = "CN", Name = "China" },
-        new Country { Code = "IN", Name = "India" },
-        new Country { Code = "BR", Name = "Brazil" },
-        new Country { Code = "MX", Name = "Mexico" },
-        new Country { Code = "ES", Name = "Spain" },
-        new Country { Code = "IT", Name = "Italy" },
-        new Country { Code = "NL", Name = "Netherlands" },
-        new Country { Code = "SE", Name = "Sweden" }
-    };
-
-    private string GetFrameworkLabel(string? value) =>
-        frameworks.FirstOrDefault(f => f.Value == value)?.Label ?? value ?? "";
-
-    private string GetLanguageLabel(string? value) =>
-        languages.FirstOrDefault(l => l.Value == value)?.Label ?? value ?? "";
-
-    private string GetCountryName(string? code) =>
-        countries.FirstOrDefault(c => c.Code == code)?.Name ?? code ?? "";
+    private string GetCompositionalLabel(string? value) =>
+        value is not null && compositionalLabels.TryGetValue(value, out var label) ? label : "(none)";
 
     private void HandleFormSubmit()
     {
@@ -322,7 +588,7 @@
 
     private void HandleComboboxFormSubmit()
     {
-        comboboxFormMessage = $"Form submitted! Framework: {GetFrameworkLabel(comboboxFormModel.Framework)}";
+        comboboxFormMessage = $"Submitted value: {comboboxFormModel.Framework} | Submitted text: {frameworks.GetText(comboboxFormModel.Framework)}";
     }
 
     private void ResetComboboxForm()
@@ -331,23 +597,7 @@
         comboboxFormMessage = null;
     }
 
-    public class Framework
-    {
-        public required string Value { get; set; }
-        public required string Label { get; set; }
-    }
-
-    public class ProgrammingLanguage
-    {
-        public required string Value { get; set; }
-        public required string Label { get; set; }
-    }
-
-    public class Country
-    {
-        public required string Code { get; set; }
-        public required string Name { get; set; }
-    }
+    public enum Status { Active, Inactive, Pending, Archived }
 
     private class ComboboxFormModel
     {

@@ -1,0 +1,9 @@
+<BbAlert Variant="AlertVariant.Success">
+    <Icon>
+        <LucideIcon Name="circle-check" Class="h-4 w-4" />
+    </Icon>
+    <ChildContent>
+        <BbAlertTitle>Success</BbAlertTitle>
+        <BbAlertDescription>Your changes have been saved.</BbAlertDescription>
+    </ChildContent>
+</BbAlert>

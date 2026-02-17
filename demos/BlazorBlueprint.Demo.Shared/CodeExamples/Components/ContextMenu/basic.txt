@@ -1,0 +1,14 @@
+<BbContextMenu>
+    <BbContextMenuTrigger>
+        <div>Right click here</div>
+    </BbContextMenuTrigger>
+    <BbContextMenuContent>
+        <BbContextMenuItem OnClick="HandleAction">
+            Back
+            <BbContextMenuShortcut>Ctrl+[</BbContextMenuShortcut>
+        </BbContextMenuItem>
+        <BbContextMenuItem Disabled="true">Forward</BbContextMenuItem>
+        <BbContextMenuSeparator />
+        <BbContextMenuItem>Save Page As...</BbContextMenuItem>
+    </BbContextMenuContent>
+</BbContextMenu>

@@ -1,0 +1,7 @@
+<BbMultiSelect TValue="string"
+             Options="frameworks"
+             @bind-Values="autoCloseFrameworks"
+             Placeholder="Select frameworks..."
+             SearchPlaceholder="Search..."
+             AutoClose="false"
+             PopoverWidth="w-[280px]" />

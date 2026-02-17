@@ -1,0 +1,22 @@
+@namespace BlazorBlueprint.Components
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+<input
+    @ref="_inputRef"
+    id="@EffectiveId"
+    name="@EffectiveName"
+    type="text"
+    inputmode="@InputMode"
+    class="@CssClass"
+    value="@_displayValue"
+    @oninput="HandleInput"
+    placeholder="@EffectivePlaceholder"
+    disabled="@Disabled"
+    required="@Required"
+    aria-label="@AriaLabel"
+    aria-describedby="@AriaDescribedBy"
+    aria-invalid="@EffectiveAriaInvalid"
+    @onfocus="HandleFocus"
+    @onblur="HandleBlur" />

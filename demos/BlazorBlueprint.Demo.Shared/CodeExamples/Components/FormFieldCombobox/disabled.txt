@@ -1,0 +1,9 @@
+<BbFormFieldCombobox TValue="string"
+                   Options="_frameworks"
+                   Value="@("blazor")"
+                   Label="Framework"
+                   Placeholder="Select..."
+                   HelperText="Locked to your project's framework."
+                   MatchTriggerWidth="true"
+                   InputClass="w-full"
+                   Disabled="true" />

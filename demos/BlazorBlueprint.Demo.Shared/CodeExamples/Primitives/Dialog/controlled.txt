@@ -1,0 +1,18 @@
+<button @onclick="() => isOpen = true">Open Dialog</button>
+<button @onclick="() => isOpen = false">Close from Outside</button>
+
+<BbDialog @bind-Open="isOpen">
+    <BbDialogPortal>
+        <BbDialogOverlay class="fixed inset-0 bg-black/50 z-50" />
+        <BbDialogContent class="...">
+            <BbDialogTitle>Controlled Dialog</BbDialogTitle>
+            <BbDialogDescription>...</BbDialogDescription>
+            <p>Open state: <strong>@isOpen</strong></p>
+            <BbDialogClose>Close</BbDialogClose>
+        </BbDialogContent>
+    </BbDialogPortal>
+</BbDialog>
+
+@code {
+    private bool isOpen = false;
+}

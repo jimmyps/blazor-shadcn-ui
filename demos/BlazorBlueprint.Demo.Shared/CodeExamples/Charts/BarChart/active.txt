@@ -1,0 +1,6 @@
+<BbBarChart Data="@data" Horizontal="true" Height="200px">
+    <BbXAxis DataKey="browser" />
+    <BbYAxis Show="false" />
+    <BbChartTooltip />
+    <BbBar DataKey="visitors" Name="Visitors" FillKey="fill" BorderRadius="8" />
+</BbBarChart>

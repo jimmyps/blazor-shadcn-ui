@@ -1,0 +1,19 @@
+<BbAlertDialog>
+    <BbAlertDialogTrigger>
+        <BbButton Variant="ButtonVariant.Outline">Show Dialog</BbButton>
+    </BbAlertDialogTrigger>
+    <BbAlertDialogContent>
+        <BbAlertDialogHeader>
+            <BbAlertDialogTitle>Are you sure?</BbAlertDialogTitle>
+            <BbAlertDialogDescription>This action cannot be undone.</BbAlertDialogDescription>
+        </BbAlertDialogHeader>
+        <BbAlertDialogFooter>
+            <BbAlertDialogCancel>
+                <BbButton Variant="ButtonVariant.Outline">Cancel</BbButton>
+            </BbAlertDialogCancel>
+            <BbAlertDialogAction>
+                <BbButton>Continue</BbButton>
+            </BbAlertDialogAction>
+        </BbAlertDialogFooter>
+    </BbAlertDialogContent>
+</BbAlertDialog>

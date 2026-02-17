@@ -1,0 +1,6 @@
+<BbFormFieldInput TValue="string"
+                   @bind-Value="username"
+                   Label="Username"
+                   HelperText="Required. Choose a unique username."
+                   Required="true"
+                   Placeholder="johndoe" />

@@ -1,0 +1,1 @@
+<BbDatePicker @bind-Value="_customPlaceholder" Placeholder="Select birth date" />

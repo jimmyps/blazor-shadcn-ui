@@ -1,10 +1,8 @@
 @page "/components/tooltip"
 @using BlazorBlueprint.Primitives.Services
-@using BlazorBlueprint.Components.Tooltip
-
 <PageTitle>Tooltip Component - Blazor Blueprint</PageTitle>
 
-<TooltipProvider>
+<BbTooltipProvider>
     <div class="space-y-8 max-w-4xl">
         <div>
         <div class="space-y-3">
@@ -34,14 +32,14 @@
                     <p class="text-sm text-muted-foreground">
                         TooltipTrigger renders its own span element.
                     </p>
-                    <Tooltip>
-                        <TooltipTrigger Class="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                    <BbTooltip>
+                        <BbTooltipTrigger AsChild="false" Class="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
                             Hover me
-                        </TooltipTrigger>
-                        <TooltipContent>
+                        </BbTooltipTrigger>
+                        <BbTooltipContent>
                             <p>Tooltip with inline classes</p>
-                        </TooltipContent>
-                    </Tooltip>
+                        </BbTooltipContent>
+                    </BbTooltip>
                 </div>
 
                 <!-- With AsChild -->
@@ -50,18 +48,20 @@
                     <p class="text-sm text-muted-foreground">
                         Button receives hover/focus behavior via TriggerContext.
                     </p>
-                    <Tooltip>
-                        <TooltipTrigger AsChild>
-                            <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Icon">
+                    <BbTooltip>
+                        <BbTooltipTrigger>
+                            <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Icon">
                                 <LucideIcon Name="info" Size="16" />
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
+                            </BbButton>
+                        </BbTooltipTrigger>
+                        <BbTooltipContent>
                             Additional information
-                        </TooltipContent>
-                    </Tooltip>
+                        </BbTooltipContent>
+                    </BbTooltip>
                 </div>
             </div>
+
+            <CodeBlock Source="Components/Tooltip/as-child.txt" />
         </div>
 
         <!-- Basic Usage -->
@@ -73,15 +73,17 @@
                 </p>
             </div>
             <div class="flex gap-4">
-                <Tooltip>
-                    <TooltipTrigger Class="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                <BbTooltip>
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
                         Hover me
-                    </TooltipTrigger>
-                    <TooltipContent>
+                    </BbTooltipTrigger>
+                    <BbTooltipContent>
                         <p>This is a tooltip</p>
-                    </TooltipContent>
-                </Tooltip>
+                    </BbTooltipContent>
+                </BbTooltip>
             </div>
+
+            <CodeBlock Source="Components/Tooltip/basic.txt" />
         </div>
 
         <!-- Placements -->
@@ -93,42 +95,93 @@
                 </p>
             </div>
             <div class="flex flex-wrap gap-4">
-                <Tooltip Placement="@PopoverPlacement.Top">
-                    <TooltipTrigger Class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 cursor-pointer">
+                <BbTooltip Placement="@PopoverPlacement.Top">
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 cursor-pointer">
                         Top
-                    </TooltipTrigger>
-                    <TooltipContent>
+                    </BbTooltipTrigger>
+                    <BbTooltipContent>
                         Tooltip on top
-                    </TooltipContent>
-                </Tooltip>
+                    </BbTooltipContent>
+                </BbTooltip>
 
-                <Tooltip Placement="@PopoverPlacement.Bottom">
-                    <TooltipTrigger Class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 cursor-pointer">
+                <BbTooltip Placement="@PopoverPlacement.Bottom">
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 cursor-pointer">
                         Bottom
-                    </TooltipTrigger>
-                    <TooltipContent>
+                    </BbTooltipTrigger>
+                    <BbTooltipContent>
                         Tooltip on bottom
-                    </TooltipContent>
-                </Tooltip>
+                    </BbTooltipContent>
+                </BbTooltip>
 
-                <Tooltip Placement="@PopoverPlacement.Left">
-                    <TooltipTrigger Class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 cursor-pointer">
+                <BbTooltip Placement="@PopoverPlacement.Left">
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 cursor-pointer">
                         Left
-                    </TooltipTrigger>
-                    <TooltipContent>
+                    </BbTooltipTrigger>
+                    <BbTooltipContent>
                         Tooltip on left
-                    </TooltipContent>
-                </Tooltip>
+                    </BbTooltipContent>
+                </BbTooltip>
 
-                <Tooltip Placement="@PopoverPlacement.Right">
-                    <TooltipTrigger Class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 cursor-pointer">
+                <BbTooltip Placement="@PopoverPlacement.Right">
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 cursor-pointer">
                         Right
-                    </TooltipTrigger>
-                    <TooltipContent>
+                    </BbTooltipTrigger>
+                    <BbTooltipContent>
                         Tooltip on right
-                    </TooltipContent>
-                </Tooltip>
+                    </BbTooltipContent>
+                </BbTooltip>
             </div>
+
+            <CodeBlock Source="Components/Tooltip/placements.txt" />
+        </div>
+
+        <!-- With Arrow -->
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">With Arrow</h2>
+                <p class="text-sm text-muted-foreground">
+                    Add a directional arrow pointing toward the trigger using <code class="text-xs bg-muted px-1 py-0.5 rounded">ShowArrow</code>.
+                </p>
+            </div>
+            <div class="flex flex-wrap gap-4">
+                <BbTooltip Placement="@PopoverPlacement.Top">
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 cursor-pointer">
+                        Top
+                    </BbTooltipTrigger>
+                    <BbTooltipContent ShowArrow="true">
+                        Arrow on top
+                    </BbTooltipContent>
+                </BbTooltip>
+
+                <BbTooltip Placement="@PopoverPlacement.Bottom">
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 cursor-pointer">
+                        Bottom
+                    </BbTooltipTrigger>
+                    <BbTooltipContent ShowArrow="true">
+                        Arrow on bottom
+                    </BbTooltipContent>
+                </BbTooltip>
+
+                <BbTooltip Placement="@PopoverPlacement.Left">
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 cursor-pointer">
+                        Left
+                    </BbTooltipTrigger>
+                    <BbTooltipContent ShowArrow="true">
+                        Arrow on left
+                    </BbTooltipContent>
+                </BbTooltip>
+
+                <BbTooltip Placement="@PopoverPlacement.Right">
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 cursor-pointer">
+                        Right
+                    </BbTooltipTrigger>
+                    <BbTooltipContent ShowArrow="true">
+                        Arrow on right
+                    </BbTooltipContent>
+                </BbTooltip>
+            </div>
+
+            <CodeBlock Source="Components/Tooltip/with-arrow.txt" />
         </div>
 
         <!-- With Icons -->
@@ -142,28 +195,30 @@
             <div class="flex items-center gap-6">
                 <div class="flex items-center gap-2">
                     <span>Username</span>
-                    <Tooltip>
-                        <TooltipTrigger>
+                    <BbTooltip>
+                        <BbTooltipTrigger AsChild="false">
                             <LucideIcon Name="info" Size="16" Class="cursor-help text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
+                        </BbTooltipTrigger>
+                        <BbTooltipContent>
                             Choose a unique username for your account
-                        </TooltipContent>
-                    </Tooltip>
+                        </BbTooltipContent>
+                    </BbTooltip>
                 </div>
 
                 <div class="flex items-center gap-2">
                     <span>Email</span>
-                    <Tooltip>
-                        <TooltipTrigger>
+                    <BbTooltip>
+                        <BbTooltipTrigger AsChild="false">
                             <LucideIcon Name="info" Size="16" Class="cursor-help text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
+                        </BbTooltipTrigger>
+                        <BbTooltipContent>
                             We'll never share your email with anyone
-                        </TooltipContent>
-                    </Tooltip>
+                        </BbTooltipContent>
+                    </BbTooltip>
                 </div>
             </div>
+
+            <CodeBlock Source="Components/Tooltip/icon-tooltips.txt" />
         </div>
 
         <!-- Toolbar Example -->
@@ -175,62 +230,64 @@
                 </p>
             </div>
             <div class="border rounded-lg p-2 inline-flex gap-1">
-                <Tooltip>
-                    <TooltipTrigger Class="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                <BbTooltip>
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
                         <LucideIcon Name="bold" Size="16" />
-                    </TooltipTrigger>
-                    <TooltipContent>
+                    </BbTooltipTrigger>
+                    <BbTooltipContent>
                         Bold (Ctrl+B)
-                    </TooltipContent>
-                </Tooltip>
+                    </BbTooltipContent>
+                </BbTooltip>
 
-                <Tooltip>
-                    <TooltipTrigger Class="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                <BbTooltip>
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
                         <LucideIcon Name="italic" Size="16" />
-                    </TooltipTrigger>
-                    <TooltipContent>
+                    </BbTooltipTrigger>
+                    <BbTooltipContent>
                         Italic (Ctrl+I)
-                    </TooltipContent>
-                </Tooltip>
+                    </BbTooltipContent>
+                </BbTooltip>
 
-                <Tooltip>
-                    <TooltipTrigger Class="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                <BbTooltip>
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
                         <LucideIcon Name="underline" Size="16" />
-                    </TooltipTrigger>
-                    <TooltipContent>
+                    </BbTooltipTrigger>
+                    <BbTooltipContent>
                         Underline (Ctrl+U)
-                    </TooltipContent>
-                </Tooltip>
+                    </BbTooltipContent>
+                </BbTooltip>
 
-                <Separator Orientation="SeparatorOrientation.Vertical" Class="mx-1 h-8" />
+                <BbSeparator Orientation="SeparatorOrientation.Vertical" Class="mx-1 h-8" />
 
-                <Tooltip>
-                    <TooltipTrigger Class="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                <BbTooltip>
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
                         <LucideIcon Name="align-left" Size="16" />
-                    </TooltipTrigger>
-                    <TooltipContent>
+                    </BbTooltipTrigger>
+                    <BbTooltipContent>
                         Align Left
-                    </TooltipContent>
-                </Tooltip>
+                    </BbTooltipContent>
+                </BbTooltip>
 
-                <Tooltip>
-                    <TooltipTrigger Class="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                <BbTooltip>
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
                         <LucideIcon Name="align-center" Size="16" />
-                    </TooltipTrigger>
-                    <TooltipContent>
+                    </BbTooltipTrigger>
+                    <BbTooltipContent>
                         Align Center
-                    </TooltipContent>
-                </Tooltip>
+                    </BbTooltipContent>
+                </BbTooltip>
 
-                <Tooltip>
-                    <TooltipTrigger Class="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                <BbTooltip>
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
                         <LucideIcon Name="align-right" Size="16" />
-                    </TooltipTrigger>
-                    <TooltipContent>
+                    </BbTooltipTrigger>
+                    <BbTooltipContent>
                         Align Right
-                    </TooltipContent>
-                </Tooltip>
+                    </BbTooltipContent>
+                </BbTooltip>
             </div>
+
+            <CodeBlock Source="Components/Tooltip/toolbar.txt" />
         </div>
 
         <!-- Rich Content -->
@@ -242,12 +299,12 @@
                 </p>
             </div>
             <div class="flex gap-4">
-                <Tooltip>
-                    <TooltipTrigger Class="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
+                <BbTooltip>
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer">
                         <LucideIcon Name="package" Size="16" Class="mr-2" />
                         Premium Plan
-                    </TooltipTrigger>
-                    <TooltipContent Class="max-w-xs">
+                    </BbTooltipTrigger>
+                    <BbTooltipContent Class="max-w-xs">
                         <div class="space-y-1">
                             <p class="font-semibold">Premium Features</p>
                             <ul class="text-xs space-y-0.5 text-muted-foreground">
@@ -256,135 +313,87 @@
                                 <li>• Advanced analytics</li>
                             </ul>
                         </div>
-                    </TooltipContent>
-                </Tooltip>
+                    </BbTooltipContent>
+                </BbTooltip>
 
-                <Tooltip>
-                    <TooltipTrigger Class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors cursor-help">
+                <BbTooltip>
+                    <BbTooltipTrigger AsChild="false" Class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors cursor-help">
                         <LucideIcon Name="zap" Size="12" Class="mr-1" />
                         Performance
-                    </TooltipTrigger>
-                    <TooltipContent>
+                    </BbTooltipTrigger>
+                    <BbTooltipContent>
                         <div class="text-xs">
                             <p class="font-medium mb-1">Optimized for Speed</p>
                             <p class="text-muted-foreground">Loads 40% faster than competitors</p>
                         </div>
-                    </TooltipContent>
-                </Tooltip>
+                    </BbTooltipContent>
+                </BbTooltip>
             </div>
+
+            <CodeBlock Source="Components/Tooltip/rich-content.txt" />
         </div>
 
-        <!-- Accessibility Notes -->
-        <div class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Accessibility Notes</h2>
-                <p class="text-sm text-muted-foreground">
-                    Best practices for accessible tooltips.
-                </p>
-            </div>
-            <div class="border rounded-lg p-6 space-y-3 bg-muted/50">
-                <p class="text-sm">
-                    ✓ <strong>Hover AND focus:</strong> Tooltips appear on both hover and keyboard focus.
-                </p>
-                <p class="text-sm">
-                    ✓ <strong>Delayed appearance:</strong> 700ms delay prevents accidental tooltips during mouse movement.
-                </p>
-                <p class="text-sm">
-                    ✓ <strong>ARIA role:</strong> role="tooltip" helps screen readers identify the popup.
-                </p>
-                <p class="text-sm">
-                    ✓ <strong>Non-essential content:</strong> Tooltips should enhance, not replace, essential information.
-                </p>
-                <p class="text-sm">
-                    ✓ <strong>Discovery mode:</strong> After seeing one tooltip, subsequent tooltips appear faster.
-                </p>
-            </div>
-        </div>
+        <!-- Accessibility -->
+        <AccessibilityList>
+            <AriaAttributes>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">role="tooltip"</code> helps screen readers identify the popup
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Tooltips appear on both hover and keyboard focus
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    700ms delay prevents accidental tooltips during mouse movement
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Tooltips should enhance, not replace, essential information
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    After seeing one tooltip, subsequent tooltips appear faster (discovery mode)
+                </AccessibilityItem>
+            </AriaAttributes>
+            <KeyboardNavigation>
+                <KeyboardShortcutItem Description="Show tooltip">
+                    <BbKbd>Focus</BbKbd>
+                </KeyboardShortcutItem>
+            </KeyboardNavigation>
+        </AccessibilityList>
 
         <!-- API Reference -->
-        <div class="space-y-4">
+        <section class="space-y-4">
             <div class="space-y-2">
                 <h2 class="text-2xl font-semibold">API Reference</h2>
+                <p class="text-muted-foreground">Component properties and parameters.</p>
             </div>
-            <div class="border rounded-lg p-6 space-y-6">
-                <!-- TooltipProvider -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-3">TooltipProvider</h3>
-                    <div class="space-y-3">
-                        <div>
-                            <p class="font-mono text-sm font-medium mb-1">DelayDuration</p>
-                            <p class="text-sm text-muted-foreground">
-                                Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">int</code> |
-                                Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">700</code>
-                            </p>
-                            <p class="text-sm text-muted-foreground mt-1">
-                                Duration in ms before showing tooltips.
-                            </p>
-                        </div>
-                        <Separator />
-                        <div>
-                            <p class="font-mono text-sm font-medium mb-1">SkipDelayDuration</p>
-                            <p class="text-sm text-muted-foreground">
-                                Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">int</code> |
-                                Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">300</code>
-                            </p>
-                            <p class="text-sm text-muted-foreground mt-1">
-                                Duration to skip delay for subsequent tooltips.
-                            </p>
-                        </div>
-                    </div>
-                </div>
 
-                <Separator />
+            <div class="space-y-4">
+                <ApiReference ComponentName="TooltipProvider">
+                    <ApiParameter Name="DelayDuration" Type="int" Default="700">
+                        Duration in ms before showing tooltips.
+                    </ApiParameter>
+                    <ApiParameter Name="SkipDelayDuration" Type="int" Default="300">
+                        Duration to skip delay for subsequent tooltips.
+                    </ApiParameter>
+                </ApiReference>
 
-                <!-- Tooltip -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-3">Tooltip</h3>
-                    <div>
-                        <p class="font-mono text-sm font-medium mb-1">Placement</p>
-                        <p class="text-sm text-muted-foreground">
-                            Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string</code> |
-                            Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">"top"</code>
-                        </p>
-                        <p class="text-sm text-muted-foreground mt-1">
-                            Position of tooltip: "top", "bottom", "left", "right", or variants like "top-start", "bottom-end".
-                        </p>
-                    </div>
-                </div>
+                <ApiReference ComponentName="Tooltip">
+                    <ApiParameter Name="Placement" Type="string" Default="&quot;top&quot;">
+                        Position of tooltip: "top", "bottom", "left", "right", or variants like "top-start", "bottom-end".
+                    </ApiParameter>
+                </ApiReference>
 
-                <Separator />
+                <ApiReference ComponentName="TooltipTrigger">
+                    <ApiParameter Name="Focusable" Type="bool" Default="true">
+                        Whether to add tabindex="0" for keyboard focus. Set false if child is already focusable.
+                    </ApiParameter>
+                </ApiReference>
 
-                <!-- TooltipTrigger -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-3">TooltipTrigger</h3>
-                    <div>
-                        <p class="font-mono text-sm font-medium mb-1">Focusable</p>
-                        <p class="text-sm text-muted-foreground">
-                            Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code> |
-                            Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">true</code>
-                        </p>
-                        <p class="text-sm text-muted-foreground mt-1">
-                            Whether to add tabindex="0" for keyboard focus. Set false if child is already focusable.
-                        </p>
-                    </div>
-                </div>
-
-                <Separator />
-
-                <!-- TooltipContent -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-3">TooltipContent</h3>
-                    <div>
-                        <p class="font-mono text-sm font-medium mb-1">Class</p>
-                        <p class="text-sm text-muted-foreground">
-                            Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                        </p>
-                        <p class="text-sm text-muted-foreground mt-1">
-                            Additional CSS classes for the tooltip content container.
-                        </p>
-                    </div>
-                </div>
+                <ApiReference ComponentName="TooltipContent">
+                    <ApiParameter Name="Class" Type="string?">
+                        Additional CSS classes for the tooltip content container.
+                    </ApiParameter>
+                </ApiReference>
             </div>
-        </div>
+        </section>
     </div>
-</TooltipProvider>
+</BbTooltipProvider>

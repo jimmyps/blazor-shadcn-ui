@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorBlueprint.Components.Command;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Metadata for a registered command item.

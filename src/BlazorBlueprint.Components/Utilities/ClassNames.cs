@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace BlazorBlueprint.Components.Utilities;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Provides a utility for combining CSS class names intelligently.

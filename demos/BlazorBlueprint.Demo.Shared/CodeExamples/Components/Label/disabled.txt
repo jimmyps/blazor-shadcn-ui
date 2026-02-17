@@ -1,0 +1,2 @@
+<BbInput Id="disabled-input" Disabled Class="peer" />
+<BbLabel For="disabled-input">Disabled Field Label</BbLabel>

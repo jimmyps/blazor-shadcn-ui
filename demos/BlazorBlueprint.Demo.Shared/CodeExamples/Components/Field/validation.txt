@@ -1,0 +1,10 @@
+<BbField IsInvalid="true">
+    <BbFieldLabel For="username">Username</BbFieldLabel>
+    <BbFieldContent>
+        <BbInput Id="username" />
+        <BbFieldError>Username is already taken.</BbFieldError>
+    </BbFieldContent>
+</BbField>
+
+@* IsInvalid cascades to child inputs automatically. *@
+@* No need to set AriaInvalid or Class="border-destructive" on each input. *@

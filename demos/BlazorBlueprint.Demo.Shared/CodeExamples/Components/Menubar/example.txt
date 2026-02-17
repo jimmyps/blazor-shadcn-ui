@@ -1,0 +1,7 @@
+<BbMenubarItem Shortcut="Ctrl+Shift+T" OnClick="@(() => HandleAction("New Tab"))">
+    New Tab
+    <BbMenubarShortcut>Ctrl+Shift+T</BbMenubarShortcut>
+</BbMenubarItem>
+
+@* The Shortcut parameter auto-registers the keyboard shortcut globally. *@
+@* No need to manually inject IKeyboardShortcutService or manage disposal. *@

@@ -1,0 +1,18 @@
+<BbTimeline>
+    <BbTimelineItem Status="TimelineStatus.Completed">
+        <IconContent>
+            <BbTimelineIcon Color="TimelineColor.Primary">
+                <LucideIcon Name="check" Size="16" />
+            </BbTimelineIcon>
+        </IconContent>
+        <TimeContent>
+            <BbTimelineTime Class="text-right pr-4">9:00 AM</BbTimelineTime>
+        </TimeContent>
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Code Review Approved</BbTimelineTitle>
+                <BbTimelineDescription>All review comments addressed.</BbTimelineDescription>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>

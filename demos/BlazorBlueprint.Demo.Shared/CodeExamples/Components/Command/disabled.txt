@@ -1,0 +1,10 @@
+<BbCommand>
+    <BbCommandInput Placeholder="Search commands..." />
+    <BbCommandList>
+        <BbCommandEmpty>No results found.</BbCommandEmpty>
+        <BbCommandGroup>
+            <BbCommandItem Value="cut">Cut</BbCommandItem>
+            <BbCommandItem Value="paste" Disabled="true">Paste (Disabled)</BbCommandItem>
+        </BbCommandGroup>
+    </BbCommandList>
+</BbCommand>

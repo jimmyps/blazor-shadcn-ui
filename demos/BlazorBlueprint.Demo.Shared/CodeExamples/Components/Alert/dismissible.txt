@@ -1,0 +1,18 @@
+@if (_showAlert)
+{
+    <BbAlert Variant="AlertVariant.Info"
+           Dismissible="true"
+           OnDismiss="@(() => _showAlert = false)">
+        <Icon>
+            <LucideIcon Name="info" Class="h-4 w-4" />
+        </Icon>
+        <ChildContent>
+            <BbAlertTitle>Info</BbAlertTitle>
+            <BbAlertDescription>This alert can be dismissed.</BbAlertDescription>
+        </ChildContent>
+    </BbAlert>
+}
+
+@code {
+    private bool _showAlert = true;
+}

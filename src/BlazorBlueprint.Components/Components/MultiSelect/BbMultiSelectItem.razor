@@ -1,0 +1,31 @@
+@namespace BlazorBlueprint.Components
+@typeparam TValue
+@using BlazorBlueprint.Icons.Lucide.Components
+
+@if (IsVisible)
+{
+    <div @key="Value"
+         role="option"
+         aria-selected="@IsSelected.ToString().ToLower()"
+         aria-disabled="@(Disabled ? "true" : "false")"
+         @onclick="HandleClick"
+         @onclick:stopPropagation="true"
+         class="@ItemCssClassValue">
+        <BlazorBlueprint.Primitives.Checkbox.BbCheckbox Checked="@IsSelected"
+                  class="@CheckboxCssClassValue"
+                  AriaLabel="@Text">
+            @if (IsSelected)
+            {
+                <LucideIcon Name="check" Size="14" Class="h-3.5 w-3.5 stroke-current" />
+            }
+        </BlazorBlueprint.Primitives.Checkbox.BbCheckbox>
+        @if (ChildContent is not null)
+        {
+            @ChildContent
+        }
+        else
+        {
+            <span>@Text</span>
+        }
+    </div>
+}

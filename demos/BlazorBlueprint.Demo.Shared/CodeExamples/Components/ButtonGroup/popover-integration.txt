@@ -1,0 +1,16 @@
+<BbButtonGroup>
+    <BbButton Variant="ButtonVariant.Outline">
+        <LucideIcon Name="bot" Size="16" />
+        Copilot
+    </BbButton>
+    <BbPopover>
+        <BbPopoverTrigger>
+            <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Icon" Class="!rounded-l-none">
+                <LucideIcon Name="chevron-down" Size="16" />
+            </BbButton>
+        </BbPopoverTrigger>
+        <BbPopoverContent>
+            <!-- Content -->
+        </BbPopoverContent>
+    </BbPopover>
+</BbButtonGroup>

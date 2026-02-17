@@ -1,0 +1,5 @@
+<BbLabel For="email-field">Email Address</BbLabel>
+<BbInput Id="email-field" Type="InputType.Email" />
+
+<BbLabel For="password-field">Password</BbLabel>
+<BbInput Id="password-field" Type="InputType.Password" />

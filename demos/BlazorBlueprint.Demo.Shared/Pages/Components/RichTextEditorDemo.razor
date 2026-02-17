@@ -1,10 +1,4 @@
 @page "/components/rich-text-editor"
-@using BlazorBlueprint.Components.RichTextEditor
-@using BlazorBlueprint.Components.Card
-@using BlazorBlueprint.Components.Button
-@using BlazorBlueprint.Components.Label
-@using BlazorBlueprint.Components.Kbd
-
 <PageTitle>Rich Text Editor - Blazor Blueprint</PageTitle>
 
 <div class="space-y-10 max-w-4xl">
@@ -25,9 +19,10 @@
         </div>
 
         <div class="space-y-4">
-            <RichTextEditor @bind-Value="basicValue" Placeholder="Start typing here..." />
+            <BbRichTextEditor @bind-Value="basicValue" Placeholder="Start typing here..." />
             @RenderHtmlOutput(basicValue)
         </div>
+        <CodeBlock Source="Components/RichTextEditor/basic.txt" />
     </section>
 
     @* With Label *@
@@ -41,13 +36,14 @@
 
         <div class="space-y-4">
             <div class="space-y-2">
-                <Label For="description-editor">Description</Label>
-                <RichTextEditor @bind-Value="labeledValue"
+                <BbLabel For="description-editor">Description</BbLabel>
+                <BbRichTextEditor @bind-Value="labeledValue"
                                 Id="description-editor"
                                 Placeholder="Enter a description..." />
             </div>
             @RenderHtmlOutput(labeledValue)
         </div>
+        <CodeBlock Source="Components/RichTextEditor/with-label.txt" />
     </section>
 
     @* Toolbar Presets *@
@@ -62,8 +58,8 @@
         <div class="grid gap-6">
             <div class="space-y-4">
                 <div class="space-y-2">
-                    <Label>Simple Toolbar</Label>
-                    <RichTextEditor @bind-Value="simpleValue"
+                    <BbLabel>Simple Toolbar</BbLabel>
+                    <BbRichTextEditor @bind-Value="simpleValue"
                                     Toolbar="ToolbarPreset.Simple"
                                     Placeholder="Basic formatting only..." />
                 </div>
@@ -72,8 +68,8 @@
 
             <div class="space-y-4">
                 <div class="space-y-2">
-                    <Label>Standard Toolbar (Default)</Label>
-                    <RichTextEditor @bind-Value="standardValue"
+                    <BbLabel>Standard Toolbar (Default)</BbLabel>
+                    <BbRichTextEditor @bind-Value="standardValue"
                                     Toolbar="ToolbarPreset.Standard"
                                     Placeholder="Common formatting options..." />
                 </div>
@@ -82,8 +78,8 @@
 
             <div class="space-y-4">
                 <div class="space-y-2">
-                    <Label>Full Toolbar</Label>
-                    <RichTextEditor @bind-Value="fullValue"
+                    <BbLabel>Full Toolbar</BbLabel>
+                    <BbRichTextEditor @bind-Value="fullValue"
                                     Toolbar="ToolbarPreset.Full"
                                     Placeholder="All formatting options..." />
                 </div>
@@ -92,14 +88,15 @@
 
             <div class="space-y-4">
                 <div class="space-y-2">
-                    <Label>No Toolbar</Label>
-                    <RichTextEditor @bind-Value="noToolbarValue"
+                    <BbLabel>No Toolbar</BbLabel>
+                    <BbRichTextEditor @bind-Value="noToolbarValue"
                                     Toolbar="ToolbarPreset.None"
                                     Placeholder="Plain editor without toolbar..." />
                 </div>
                 @RenderHtmlOutput(noToolbarValue)
             </div>
         </div>
+        <CodeBlock Source="Components/RichTextEditor/toolbar-presets.txt" />
     </section>
 
     @* Toolbar Features Demo *@
@@ -115,9 +112,9 @@
             <div class="space-y-3">
                 <h3 class="font-semibold">Available Formatting (Full Toolbar)</h3>
                 <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                    <li><strong>Bold</strong> - Select text and click B or press <Kbd>Ctrl+B</Kbd></li>
-                    <li><em>Italic</em> - Select text and click I or press <Kbd>Ctrl+I</Kbd></li>
-                    <li><u>Underline</u> - Select text and click U or press <Kbd>Ctrl+U</Kbd></li>
+                    <li><strong>Bold</strong> - Select text and click B or press <BbKbd>Ctrl+B</BbKbd></li>
+                    <li><em>Italic</em> - Select text and click I or press <BbKbd>Ctrl+I</BbKbd></li>
+                    <li><u>Underline</u> - Select text and click U or press <BbKbd>Ctrl+U</BbKbd></li>
                     <li><s>Strikethrough</s> - Select text and click the strikethrough button</li>
                     <li>Headers - H1, H2, H3 heading levels via dropdown</li>
                     <li>Bullet List - Click the bullet list icon</li>
@@ -130,7 +127,7 @@
         </div>
 
         <div class="space-y-4">
-            <RichTextEditor @bind-Value="toolbarDemoValue"
+            <BbRichTextEditor @bind-Value="toolbarDemoValue"
                             Toolbar="ToolbarPreset.Full"
                             Placeholder="Try out the toolbar features..." />
             @RenderHtmlOutput(toolbarDemoValue)
@@ -147,9 +144,10 @@
         </div>
 
         <div class="space-y-4">
-            <RichTextEditor @bind-Value="prePopulatedValue" />
+            <BbRichTextEditor @bind-Value="prePopulatedValue" />
             @RenderHtmlOutput(prePopulatedValue)
         </div>
+        <CodeBlock Source="Components/RichTextEditor/pre-populated.txt" />
     </section>
 
     @* Height Control *@
@@ -164,8 +162,8 @@
         <div class="grid gap-6">
             <div class="space-y-4">
                 <div class="space-y-2">
-                    <Label>MaxHeight="200px" (scrollbar appears after 200px)</Label>
-                    <RichTextEditor @bind-Value="maxHeightValue"
+                    <BbLabel>MaxHeight="200px" (scrollbar appears after 200px)</BbLabel>
+                    <BbRichTextEditor @bind-Value="maxHeightValue"
                                     MaxHeight="200px"
                                     Placeholder="Type a lot of content to see the scrollbar..." />
                 </div>
@@ -174,14 +172,15 @@
 
             <div class="space-y-4">
                 <div class="space-y-2">
-                    <Label>Height="150px" (fixed height, always shows scrollbar when needed)</Label>
-                    <RichTextEditor @bind-Value="fixedHeightValue"
+                    <BbLabel>Height="150px" (fixed height, always shows scrollbar when needed)</BbLabel>
+                    <BbRichTextEditor @bind-Value="fixedHeightValue"
                                     Height="150px"
                                     Placeholder="Fixed height editor..." />
                 </div>
                 @RenderHtmlOutput(fixedHeightValue)
             </div>
         </div>
+        <CodeBlock Source="Components/RichTextEditor/height-control.txt" />
     </section>
 
     @* Disabled State *@
@@ -193,8 +192,9 @@
             </p>
         </div>
 
-        <RichTextEditor Value="<p>This editor is <strong>disabled</strong> and cannot be edited.</p>"
+        <BbRichTextEditor Value="<p>This editor is <strong>disabled</strong> and cannot be edited.</p>"
                         Disabled="true" />
+        <CodeBlock Source="Components/RichTextEditor/disabled.txt" />
     </section>
 
     @* Form Integration *@
@@ -206,26 +206,26 @@
             </p>
         </div>
 
-        <Card>
-            <CardHeader>
-                <CardTitle>Submit Feedback</CardTitle>
-                <CardDescription>Share your thoughts with us using rich text formatting.</CardDescription>
-            </CardHeader>
-            <CardContent Class="space-y-4">
+        <BbCard>
+            <BbCardHeader>
+                <BbCardTitle>Submit Feedback</BbCardTitle>
+                <BbCardDescription>Share your thoughts with us using rich text formatting.</BbCardDescription>
+            </BbCardHeader>
+            <BbCardContent Class="space-y-4">
                 <div class="space-y-2">
-                    <Label For="feedback-editor">Your Feedback</Label>
-                    <RichTextEditor @bind-Value="feedbackValue"
+                    <BbLabel For="feedback-editor">Your Feedback</BbLabel>
+                    <BbRichTextEditor @bind-Value="feedbackValue"
                                     Id="feedback-editor"
                                     Placeholder="What's on your mind?" />
                 </div>
                 @RenderHtmlOutput(feedbackValue)
-            </CardContent>
-            <CardFooter>
-                <Button OnClick="HandleSubmit" Disabled="@string.IsNullOrWhiteSpace(feedbackValue)">
+            </BbCardContent>
+            <BbCardFooter>
+                <BbButton OnClick="HandleSubmit" Disabled="@string.IsNullOrWhiteSpace(feedbackValue)">
                     Submit Feedback
-                </Button>
-            </CardFooter>
-        </Card>
+                </BbButton>
+            </BbCardFooter>
+        </BbCard>
 
         @if (submitted)
         {
@@ -233,6 +233,7 @@
                 Feedback submitted successfully!
             </div>
         }
+        <CodeBlock Source="Components/RichTextEditor/form-integration.txt" />
     </section>
 
     @* Usage Notes *@
@@ -284,7 +285,7 @@
                 <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
                     <li>Supports ARIA labels and descriptions</li>
                     <li>Keyboard shortcuts for common formatting</li>
-                    <li>Associate with Label component using Id parameter</li>
+                    <li>Associate with Label component using <code class="text-xs bg-muted px-1 py-0.5 rounded">Id</code> parameter</li>
                     <li>Supports disabled and read-only states</li>
                     <li>Focus and blur event callbacks</li>
                 </ul>

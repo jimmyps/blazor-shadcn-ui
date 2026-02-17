@@ -1,0 +1,10 @@
+<BbFormFieldMultiSelect TValue="string"
+                      Options="_technologies"
+                      @bind-Values="_selectedTechnologies"
+                      Label="Tech stack"
+                      Placeholder="Select technologies..."
+                      SearchPlaceholder="Search..."
+                      ShowSelectAll="false"
+                      MaxDisplayTags="2"
+                      MatchTriggerWidth="true"
+                      InputClass="w-full" />

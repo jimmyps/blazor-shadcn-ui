@@ -1,0 +1,14 @@
+<BbPopover>
+    <BbPopoverTrigger>
+        <BbButton Variant="ButtonVariant.Outline">
+            <LucideIcon Name="settings" Size="16" />
+            Settings
+        </BbButton>
+    </BbPopoverTrigger>
+    <BbPopoverContent>
+        <div class="space-y-2">
+            <h4 class="font-medium">Settings</h4>
+            <p class="text-sm text-muted-foreground">Configure your preferences</p>
+        </div>
+    </BbPopoverContent>
+</BbPopover>

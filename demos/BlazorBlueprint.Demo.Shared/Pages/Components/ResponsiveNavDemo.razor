@@ -1,8 +1,6 @@
 @page "/components/responsive-nav"
-@using BlazorBlueprint.Components.NavigationMenu
-@using BlazorBlueprint.Components.ResponsiveNav
-@using BlazorBlueprint.Components.Separator
 @using BlazorBlueprint.Icons.Lucide.Components
+@using Microsoft.AspNetCore.Components.Routing
 
 <PageTitle>Responsive Navigation - Blazor Blueprint</PageTitle>
 
@@ -26,24 +24,24 @@
             </p>
         </div>
         <div class="border rounded-lg overflow-hidden">
-            <ResponsiveNavProvider>
+            <BbResponsiveNavProvider>
                 <header class="flex items-center justify-between p-4 border-b bg-background">
                     <div class="flex items-center gap-4">
                         <a href="/" class="font-bold text-lg">BlazorBlueprint</a>
 
                         <!-- Mobile trigger - hidden on desktop -->
-                        <ResponsiveNavTrigger />
+                        <BbResponsiveNavTrigger />
                     </div>
 
                     <!-- Desktop navigation - hidden on mobile -->
-                    <NavigationMenu Class="hidden md:flex">
-                        <NavigationMenuList>
-                            <NavigationMenuItem>
-                                <NavigationMenuLink Href="/docs">Documentation</NavigationMenuLink>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem Value="components">
-                                <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-                                <NavigationMenuContent>
+                    <BbNavigationMenu Class="hidden md:flex">
+                        <BbNavigationMenuList>
+                            <BbNavigationMenuItem>
+                                <BbNavigationMenuLink Href="/docs">Documentation</BbNavigationMenuLink>
+                            </BbNavigationMenuItem>
+                            <BbNavigationMenuItem Value="components">
+                                <BbNavigationMenuTrigger>Components</BbNavigationMenuTrigger>
+                                <BbNavigationMenuContent>
                                     <div class="grid gap-3 p-4 w-[400px]">
                                         <div class="p-3 rounded-lg hover:bg-accent">
                                             <a href="/components/button" class="block font-medium mb-1">Button</a>
@@ -54,13 +52,13 @@
                                             <p class="text-sm text-muted-foreground">Modal dialogs for interactions.</p>
                                         </div>
                                     </div>
-                                </NavigationMenuContent>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem>
-                                <NavigationMenuLink Href="/primitives">Primitives</NavigationMenuLink>
-                            </NavigationMenuItem>
-                        </NavigationMenuList>
-                    </NavigationMenu>
+                                </BbNavigationMenuContent>
+                            </BbNavigationMenuItem>
+                            <BbNavigationMenuItem>
+                                <BbNavigationMenuLink Href="/primitives">Primitives</BbNavigationMenuLink>
+                            </BbNavigationMenuItem>
+                        </BbNavigationMenuList>
+                    </BbNavigationMenu>
 
                     <div class="hidden md:block">
                         <a href="/login" class="text-sm text-muted-foreground hover:text-foreground">Sign In</a>
@@ -68,7 +66,7 @@
                 </header>
 
                 <!-- Mobile navigation in Sheet -->
-                <ResponsiveNavContent>
+                <BbResponsiveNavContent>
                     <nav class="flex flex-col space-y-4">
                         <a href="/docs" class="text-lg font-medium hover:text-primary">Documentation</a>
                         <div class="space-y-2">
@@ -79,11 +77,11 @@
                             </div>
                         </div>
                         <a href="/primitives" class="text-lg font-medium hover:text-primary">Primitives</a>
-                        <Separator />
+                        <BbSeparator />
                         <a href="/login" class="text-sm text-muted-foreground hover:text-primary">Sign In</a>
                     </nav>
-                </ResponsiveNavContent>
-            </ResponsiveNavProvider>
+                </BbResponsiveNavContent>
+            </BbResponsiveNavProvider>
         </div>
     </div>
 
@@ -96,33 +94,33 @@
             </p>
         </div>
         <div class="border rounded-lg overflow-hidden">
-            <ResponsiveNavProvider>
+            <BbResponsiveNavProvider>
                 <header class="flex items-center justify-between p-4 border-b bg-background">
                     <div class="flex items-center gap-4">
                         <LucideIcon Name="rocket" Size="24" Class="text-primary" />
                         <span class="font-bold">Acme Inc</span>
-                        <ResponsiveNavTrigger />
+                        <BbResponsiveNavTrigger />
                     </div>
 
-                    <NavigationMenu Class="hidden md:flex">
-                        <NavigationMenuList>
-                            <NavigationMenuItem>
-                                <NavigationMenuLink Href="#">Products</NavigationMenuLink>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem>
-                                <NavigationMenuLink Href="#">Solutions</NavigationMenuLink>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem>
-                                <NavigationMenuLink Href="#">Pricing</NavigationMenuLink>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem>
-                                <NavigationMenuLink Href="#">About</NavigationMenuLink>
-                            </NavigationMenuItem>
-                        </NavigationMenuList>
-                    </NavigationMenu>
+                    <BbNavigationMenu Class="hidden md:flex">
+                        <BbNavigationMenuList>
+                            <BbNavigationMenuItem>
+                                <BbNavigationMenuLink Href="#">Products</BbNavigationMenuLink>
+                            </BbNavigationMenuItem>
+                            <BbNavigationMenuItem>
+                                <BbNavigationMenuLink Href="#">Solutions</BbNavigationMenuLink>
+                            </BbNavigationMenuItem>
+                            <BbNavigationMenuItem>
+                                <BbNavigationMenuLink Href="#">Pricing</BbNavigationMenuLink>
+                            </BbNavigationMenuItem>
+                            <BbNavigationMenuItem>
+                                <BbNavigationMenuLink Href="#">About</BbNavigationMenuLink>
+                            </BbNavigationMenuItem>
+                        </BbNavigationMenuList>
+                    </BbNavigationMenu>
                 </header>
 
-                <ResponsiveNavContent>
+                <BbResponsiveNavContent>
                     <Header>
                         <div class="flex items-center gap-3">
                             <LucideIcon Name="rocket" Size="24" Class="text-primary" />
@@ -143,9 +141,35 @@
                             <a href="#" class="text-sm text-muted-foreground hover:text-primary">Support</a>
                         </div>
                     </Footer>
-                </ResponsiveNavContent>
-            </ResponsiveNavProvider>
+                </BbResponsiveNavContent>
+            </BbResponsiveNavProvider>
         </div>
+    </div>
+
+    <!-- Shared Items -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Shared Items</h2>
+            <p class="text-sm text-muted-foreground">
+                Use <code class="text-xs bg-muted px-1 py-0.5 rounded">ResponsiveNavItems</code> with a
+                <code class="text-xs bg-muted px-1 py-0.5 rounded">NavItemDefinition</code> array to define navigation links once.
+                The component automatically renders a desktop NavigationMenu and a mobile sheet from the same data.
+            </p>
+        </div>
+        <div class="border rounded-lg overflow-hidden">
+            <BbResponsiveNavProvider>
+                <header class="flex items-center justify-between p-4 border-b bg-background">
+                    <div class="flex items-center gap-4">
+                        <LucideIcon Name="compass" Size="24" Class="text-primary" />
+                        <span class="font-bold">Shared Nav</span>
+                        <BbResponsiveNavTrigger />
+                    </div>
+                    <BbResponsiveNavItems Items="@sharedNavItems" />
+                </header>
+            </BbResponsiveNavProvider>
+        </div>
+
+        <CodeBlock Source="Components/ResponsiveNav/shared-items.txt" />
     </div>
 
     <!-- Usage Notes -->
@@ -186,7 +210,7 @@
                     <p><code class="bg-muted px-1 py-0.5 rounded">ResponsiveNavContent</code> - Mobile sheet content wrapper</p>
                 </div>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">ResponsiveNavTrigger.Class</h3>
                 <p class="text-sm text-muted-foreground mb-2">
@@ -196,7 +220,7 @@
                     Additional CSS classes for the trigger button.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">ResponsiveNavContent.Side</h3>
                 <p class="text-sm text-muted-foreground mb-2">
@@ -206,7 +230,7 @@
                     The side from which the mobile sheet slides in.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">ResponsiveNavContent.ShowClose</h3>
                 <p class="text-sm text-muted-foreground mb-2">
@@ -216,7 +240,7 @@
                     Whether to show the close button in the sheet.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">ResponsiveNavContent.CloseOnNavigate</h3>
                 <p class="text-sm text-muted-foreground mb-2">
@@ -226,7 +250,7 @@
                     Whether to close the mobile menu when navigation occurs.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">ResponsiveNavContent.Header</h3>
                 <p class="text-sm text-muted-foreground mb-2">
@@ -236,7 +260,7 @@
                     Optional header content for the mobile menu.
                 </p>
             </div>
-            <Separator />
+            <BbSeparator />
             <div>
                 <h3 class="font-mono text-sm font-semibold mb-2">ResponsiveNavContent.Footer</h3>
                 <p class="text-sm text-muted-foreground mb-2">
@@ -249,3 +273,22 @@
         </div>
     </div>
 </div>
+
+@code {
+    private static readonly NavItemDefinition[] sharedNavItems =
+    [
+        new() { Text = "Documentation", Href = "/docs" },
+        new()
+        {
+            Text = "Components",
+            Children =
+            [
+                new() { Text = "Button", Href = "/components/button", Description = "Interactive buttons with variants and sizes." },
+                new() { Text = "Dialog", Href = "/components/dialog", Description = "Modal dialogs for user interactions." },
+                new() { Text = "Input", Href = "/components/input", Description = "Text input fields with validation." }
+            ]
+        },
+        new() { Text = "Primitives", Href = "/primitives" },
+        new() { Text = "Icons", Href = "/icons" }
+    ];
+}

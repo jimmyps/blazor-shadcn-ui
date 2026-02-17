@@ -1,0 +1,10 @@
+// 2 seconds
+ToastService.Show("This disappears quickly!", duration: 2000);
+
+// Persistent (no auto-dismiss)
+ToastService.Show(new ToastData
+{
+    Title = "Persistent Toast",
+    Description = "This toast won't auto-dismiss.",
+    Duration = 0
+});

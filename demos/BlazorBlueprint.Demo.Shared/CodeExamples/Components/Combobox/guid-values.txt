@@ -1,0 +1,16 @@
+<BbCombobox TValue="Guid?"
+         Options="projects"
+         @bind-Value="selectedProject"
+         Placeholder="Select project..."
+         SearchPlaceholder="Search project..."
+         EmptyMessage="No project found."
+         PopoverWidth="w-[280px]" />
+
+@code {
+    private Guid? selectedProject;
+
+    // ... (Guid arrays as before)
+
+    // GetText works with any value type (int?, Guid?, enums, etc.)
+    string label = projects.GetText(selectedProject);
+}

@@ -1,0 +1,21 @@
+<BbDrawer>
+    <BbDrawerTrigger>
+        <BbButton Variant="ButtonVariant.Outline">Open Action Sheet</BbButton>
+    </BbDrawerTrigger>
+    <BbDrawerContent>
+        <BbDrawerHeader>
+            <BbDrawerTitle>Actions</BbDrawerTitle>
+            <BbDrawerDescription>Choose an action to perform.</BbDrawerDescription>
+        </BbDrawerHeader>
+        <div class="px-2 pb-4 space-y-1">
+            <BbDrawerItem OnClick="@HandleShare">
+                <Icon><LucideIcon Name="share" Size="20" /></Icon>
+                <ChildContent>Share</ChildContent>
+            </BbDrawerItem>
+            <BbDrawerItem OnClick="@HandleEdit">
+                <Icon><LucideIcon Name="pencil" Size="20" /></Icon>
+                <ChildContent>Edit</ChildContent>
+            </BbDrawerItem>
+        </div>
+    </BbDrawerContent>
+</BbDrawer>

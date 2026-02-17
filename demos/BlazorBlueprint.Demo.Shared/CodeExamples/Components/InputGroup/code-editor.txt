@@ -1,0 +1,24 @@
+<BbInputGroup>
+    <BbInputGroupAddon Align="InputGroupAlign.BlockStart" Class="order-1 border-b !py-3">
+        <BbInputGroupText Class="font-mono font-medium gap-1.5">
+            <LucideIcon Name="file-code" Size="16" />
+            script.js
+        </BbInputGroupText>
+        <BbInputGroupButton Variant="ButtonVariant.Ghost" Class="ml-auto !px-2 !py-2 !rounded-md">
+            <LucideIcon Name="refresh-cw" Size="16" />
+        </BbInputGroupButton>
+        <BbInputGroupButton Variant="ButtonVariant.Ghost" Class="!px-2 !py-2 !rounded-md">
+            <LucideIcon Name="copy" Size="16" />
+        </BbInputGroupButton>
+    </BbInputGroupAddon>
+    <BbInputGroupTextarea
+        Placeholder="console.log('Hello, world!');"
+        Rows="8"
+        Class="min-h-[200px] font-mono text-sm order-2 !border-0" />
+    <BbInputGroupAddon Align="InputGroupAlign.BlockEnd" Class="order-3 border-t !py-3">
+        <BbInputGroupText>Line 1, Column 1</BbInputGroupText>
+        <BbInputGroupButton Class="ml-auto !px-3 !py-1.5 !rounded-md">
+            Run <LucideIcon Name="corner-down-left" Size="16" />
+        </BbInputGroupButton>
+    </BbInputGroupAddon>
+</BbInputGroup>

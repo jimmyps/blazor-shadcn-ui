@@ -9,7 +9,9 @@ namespace BlazorBlueprint.Primitives.Services;
 public class FocusManager : IFocusManager, IAsyncDisposable
 {
     private readonly IJSRuntime _jsRuntime;
+    private readonly SemaphoreSlim _moduleLock = new(1, 1);
     private IJSObjectReference? _module;
+    private bool _disposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FocusManager"/> class.
@@ -22,12 +24,22 @@ public class FocusManager : IFocusManager, IAsyncDisposable
 
     private async Task<IJSObjectReference> GetModuleAsync()
     {
-        if (_module == null)
+        ObjectDisposedException.ThrowIf(_disposed, nameof(FocusManager));
+
+        await _moduleLock.WaitAsync();
+        try
         {
-            _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/BlazorBlueprint.Primitives/js/primitives/focus-trap.js");
+            if (_module == null)
+            {
+                _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/BlazorBlueprint.Primitives/js/primitives/focus-trap.js");
+            }
+            return _module;
         }
-        return _module;
+        finally
+        {
+            _moduleLock.Release();
+        }
     }
 
     /// <inheritdoc />
@@ -74,12 +86,27 @@ public class FocusManager : IFocusManager, IAsyncDisposable
     /// </summary>
     public async ValueTask DisposeAsync()
     {
+        if (_disposed)
+        {
+            return;
+        }
+
         GC.SuppressFinalize(this);
+        _disposed = true;
 
         if (_module != null)
         {
-            await _module.DisposeAsync();
+            try
+            {
+                await _module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnect
+            }
         }
+
+        _moduleLock.Dispose();
     }
 
     private sealed class FocusTrapHandle : IAsyncDisposable

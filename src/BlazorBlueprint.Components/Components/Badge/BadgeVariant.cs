@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Badge;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the visual style variant for a Badge component.

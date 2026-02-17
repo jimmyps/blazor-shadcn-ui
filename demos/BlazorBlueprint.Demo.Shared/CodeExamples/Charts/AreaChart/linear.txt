@@ -1,0 +1,13 @@
+<BbAreaChart Data="@data" Height="200px">
+    <BbXAxis DataKey="month" />
+    <BbYAxis Show="false" />
+    <BbChartTooltip />
+    <BbArea DataKey="desktop" Name="Desktop" Color="var(--chart-1)">
+        <BbFill>
+            <BbLinearGradient>
+                <BbGradientStop Offset="0" Color="var(--chart-1)" Opacity="0.4" />
+                <BbGradientStop Offset="1" Color="var(--chart-1)" Opacity="0.05" />
+            </BbLinearGradient>
+        </BbFill>
+    </BbArea>
+</BbAreaChart>

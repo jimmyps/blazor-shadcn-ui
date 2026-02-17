@@ -1,0 +1,18 @@
+<BbButtonGroup>
+    <BbButtonGroup>
+        <BbSelect @bind-Value="selectedCurrency" TValue="string">
+            <BbSelectTrigger Class="!rounded-r-none">
+                <BbSelectValue Placeholder="$" />
+            </BbSelectTrigger>
+            <BbSelectContent>
+                <BbSelectItem Value="$" Text="$ US Dollar" />
+            </BbSelectContent>
+        </BbSelect>
+        <BbInput Placeholder="10.00" Class="!rounded-l-none !border-l-0" />
+    </BbButtonGroup>
+    <BbButtonGroup>
+        <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Icon">
+            <LucideIcon Name="arrow-right" Size="16" />
+        </BbButton>
+    </BbButtonGroup>
+</BbButtonGroup>

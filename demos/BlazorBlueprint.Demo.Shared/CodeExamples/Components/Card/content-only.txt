@@ -1,0 +1,9 @@
+<BbCard>
+    <BbCardHeader>
+        <BbCardTitle>Notifications</BbCardTitle>
+        <BbCardDescription>You have 3 unread messages.</BbCardDescription>
+    </BbCardHeader>
+    <BbCardContent>
+        <!-- Content without footer -->
+    </BbCardContent>
+</BbCard>

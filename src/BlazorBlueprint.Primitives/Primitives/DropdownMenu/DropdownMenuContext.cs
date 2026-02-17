@@ -40,6 +40,12 @@ public class DropdownMenuContext : PrimitiveContextWithEvents<DropdownMenuState>
     }
 
     /// <summary>
+    /// Gets or sets default CSS classes to apply to all items in the menu.
+    /// Cascaded from the parent DropdownMenu's ItemClass parameter.
+    /// </summary>
+    public string? ItemClass { get; set; }
+
+    /// <summary>
     /// Gets the ID for the dropdown menu trigger button.
     /// </summary>
     public string TriggerId => GetScopedId("trigger");

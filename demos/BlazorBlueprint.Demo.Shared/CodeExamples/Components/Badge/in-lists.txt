@@ -1,0 +1,7 @@
+<div class="p-4 flex items-center justify-between">
+    <div class="space-y-1">
+        <h4 class="text-sm font-medium">Project Alpha</h4>
+        <p class="text-sm text-muted-foreground">Active development</p>
+    </div>
+    <BbBadge Variant="BadgeVariant.Default">In Progress</BbBadge>
+</div>

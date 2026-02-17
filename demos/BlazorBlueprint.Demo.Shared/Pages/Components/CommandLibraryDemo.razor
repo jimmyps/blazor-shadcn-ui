@@ -1,6 +1,4 @@
 @page "/components/command-library"
-@using BlazorBlueprint.Components.Command
-@using BlazorBlueprint.Components.Kbd
 @using BlazorBlueprint.Icons.Lucide
 @using BlazorBlueprint.Icons.Lucide.Data
 @using BlazorBlueprint.Icons.Heroicons.Components
@@ -36,8 +34,8 @@
             <LucideIcon Name="search" Size="16" />
             <span>Search library...</span>
             <span class="ml-auto flex items-center gap-1 text-xs">
-                <Kbd>Ctrl</Kbd>
-                <Kbd>I</Kbd>
+                <BbKbd>Ctrl</BbKbd>
+                <BbKbd>I</BbKbd>
             </span>
         </button>
     </section>
@@ -71,17 +69,17 @@
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @onclick="CloseModal"></div>
 
         <div class="relative w-full max-w-2xl mx-4 z-10">
-            <BlazorBlueprint.Components.Command.Command Class="border rounded-lg shadow-2xl bg-background" OnValueChange="HandleCommandSelect">
-                <BlazorBlueprint.Components.Command.CommandInput Placeholder="Search primitives, components, and icons..." AutoFocus="true" />
-                <BlazorBlueprint.Components.Command.CommandList Class="max-h-[400px]">
-                    <BlazorBlueprint.Components.Command.CommandEmpty>
+            <BlazorBlueprint.Components.BbCommand Class="border rounded-lg shadow-2xl bg-background" OnValueChange="HandleCommandSelect">
+                <BbCommandInput Placeholder="Search primitives, components, and icons..." AutoFocus="true" />
+                <BbCommandList Class="max-h-[400px]">
+                    <BbCommandEmpty>
                         <div class="flex flex-col items-center gap-2 py-6">
                             <LucideIcon Name="search-x" Size="32" Class="text-muted-foreground" />
                             <p class="text-sm text-muted-foreground">No items found.</p>
                         </div>
-                    </BlazorBlueprint.Components.Command.CommandEmpty>
+                    </BbCommandEmpty>
 
-                    <BlazorBlueprint.Components.Command.CommandVirtualizedGroup TItem="LibraryItem"
+                    <BbCommandVirtualizedGroup TItem="LibraryItem"
                         Heading="Primitives"
                         Items="Primitives"
                         ItemValue="@(item => item.Url)"
@@ -92,11 +90,11 @@
                             @item.Name
                             <span class="ml-auto text-xs text-muted-foreground">Headless</span>
                         </ItemTemplate>
-                    </BlazorBlueprint.Components.Command.CommandVirtualizedGroup>
+                    </BbCommandVirtualizedGroup>
 
-                    <BlazorBlueprint.Components.Command.CommandSeparator />
+                    <BbCommandSeparator />
 
-                    <BlazorBlueprint.Components.Command.CommandVirtualizedGroup TItem="LibraryItem"
+                    <BbCommandVirtualizedGroup TItem="LibraryItem"
                         Heading="Components"
                         Items="Components"
                         ItemValue="@(item => item.Url)"
@@ -107,11 +105,11 @@
                             @item.Name
                             <span class="ml-auto text-xs text-muted-foreground">Styled</span>
                         </ItemTemplate>
-                    </BlazorBlueprint.Components.Command.CommandVirtualizedGroup>
+                    </BbCommandVirtualizedGroup>
 
-                    <BlazorBlueprint.Components.Command.CommandSeparator />
+                    <BbCommandSeparator />
 
-                    <BlazorBlueprint.Components.Command.CommandVirtualizedGroup TItem="string"
+                    <BbCommandVirtualizedGroup TItem="string"
                         Heading="Lucide Icons"
                         Items="AllLucideIcons"
                         ItemValue="@(name => $"/icons/lucide?search={name}")"
@@ -122,11 +120,11 @@
                             @FormatIconName(iconName)
                             <span class="ml-auto text-xs text-muted-foreground">Lucide</span>
                         </ItemTemplate>
-                    </BlazorBlueprint.Components.Command.CommandVirtualizedGroup>
+                    </BbCommandVirtualizedGroup>
 
-                    <BlazorBlueprint.Components.Command.CommandSeparator />
+                    <BbCommandSeparator />
 
-                    <BlazorBlueprint.Components.Command.CommandVirtualizedGroup TItem="string"
+                    <BbCommandVirtualizedGroup TItem="string"
                         Heading="Heroicons"
                         Items="AllHeroIcons"
                         ItemValue="@(name => $"/icons/heroicons?search={name}")"
@@ -137,11 +135,11 @@
                             @FormatIconName(iconName)
                             <span class="ml-auto text-xs text-muted-foreground">Heroicons</span>
                         </ItemTemplate>
-                    </BlazorBlueprint.Components.Command.CommandVirtualizedGroup>
+                    </BbCommandVirtualizedGroup>
 
-                    <BlazorBlueprint.Components.Command.CommandSeparator />
+                    <BbCommandSeparator />
 
-                    <BlazorBlueprint.Components.Command.CommandVirtualizedGroup TItem="string"
+                    <BbCommandVirtualizedGroup TItem="string"
                         Heading="Feather Icons"
                         Items="AllFeatherIcons"
                         ItemValue="@(name => $"/icons/feather?search={name}")"
@@ -152,9 +150,9 @@
                             @FormatIconName(iconName)
                             <span class="ml-auto text-xs text-muted-foreground">Feather</span>
                         </ItemTemplate>
-                    </BlazorBlueprint.Components.Command.CommandVirtualizedGroup>
-                </BlazorBlueprint.Components.Command.CommandList>
-            </BlazorBlueprint.Components.Command.Command>
+                    </BbCommandVirtualizedGroup>
+                </BbCommandList>
+            </BlazorBlueprint.Components.BbCommand>
         </div>
     </div>
 }

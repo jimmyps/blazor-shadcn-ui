@@ -1,0 +1,5 @@
+<BbSpinner Size="SpinnerSize.Small" />
+
+<BbSpinner Size="SpinnerSize.Default" />
+
+<BbSpinner Size="SpinnerSize.Large" />

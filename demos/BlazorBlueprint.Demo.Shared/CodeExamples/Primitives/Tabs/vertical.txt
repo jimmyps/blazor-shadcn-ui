@@ -1,0 +1,15 @@
+<BbTabs DefaultValue="general" Orientation="TabsOrientation.Vertical">
+    <div class="flex gap-4">
+        <BbTabsList class="flex flex-col gap-1 p-1 bg-muted rounded-md w-[150px]">
+            <BbTabsTrigger Value="general" class="...">General</BbTabsTrigger>
+            <BbTabsTrigger Value="security" class="...">Security</BbTabsTrigger>
+            <BbTabsTrigger Value="notifications" class="...">Notifications</BbTabsTrigger>
+        </BbTabsList>
+
+        <div class="flex-1">
+            <BbTabsContent Value="general" class="...">General Settings</BbTabsContent>
+            <BbTabsContent Value="security" class="...">Security Settings</BbTabsContent>
+            <BbTabsContent Value="notifications" class="...">Notification Settings</BbTabsContent>
+        </div>
+    </div>
+</BbTabs>

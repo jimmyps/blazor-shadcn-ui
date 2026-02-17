@@ -1,0 +1,9 @@
+<BbResizablePanelGroup Direction="ResizableDirection.Vertical">
+    <BbResizablePanel DefaultSize="30">
+        Header
+    </BbResizablePanel>
+    <BbResizableHandle />
+    <BbResizablePanel DefaultSize="70">
+        Content
+    </BbResizablePanel>
+</BbResizablePanelGroup>

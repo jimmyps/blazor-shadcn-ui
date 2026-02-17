@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.RichTextEditor;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Defines the preset toolbar configurations for the rich text editor.

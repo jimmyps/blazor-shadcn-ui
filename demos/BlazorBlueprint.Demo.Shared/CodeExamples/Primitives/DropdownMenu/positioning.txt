@@ -1,0 +1,7 @@
+<BbDropdownMenuContent Side="@PopoverSide.Top" Align="@PopoverAlign.Center" class="...">
+    ...
+</BbDropdownMenuContent>
+
+<BbDropdownMenuContent Side="@PopoverSide.Right" Align="@PopoverAlign.End" class="...">
+    ...
+</BbDropdownMenuContent>

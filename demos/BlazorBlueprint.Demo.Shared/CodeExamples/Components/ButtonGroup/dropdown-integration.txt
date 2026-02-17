@@ -1,0 +1,12 @@
+<BbButtonGroup>
+    <BbButton Variant="ButtonVariant.Outline">Snooze</BbButton>
+    <BbDropdownMenu>
+        <BbDropdownMenuTrigger AsChild="false" Class="!rounded-l-none">
+            <LucideIcon Name="ellipsis" Size="16" />
+        </BbDropdownMenuTrigger>
+        <BbDropdownMenuContent>
+            <BbDropdownMenuItem>Mark as Read</BbDropdownMenuItem>
+            <BbDropdownMenuItem>Archive</BbDropdownMenuItem>
+        </BbDropdownMenuContent>
+    </BbDropdownMenu>
+</BbButtonGroup>

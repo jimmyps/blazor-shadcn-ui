@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Menubar;
+namespace BlazorBlueprint.Components;
 
 public enum MenubarContentAlign
 {

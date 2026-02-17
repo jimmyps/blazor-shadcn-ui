@@ -1,0 +1,9 @@
+<BbDropdownMenuCheckboxItem @bind-Checked="showStatusBar">
+    Status Bar
+</BbDropdownMenuCheckboxItem>
+<BbDropdownMenuCheckboxItem @bind-Checked="showPanel">
+    Panel
+</BbDropdownMenuCheckboxItem>
+<BbDropdownMenuCheckboxItem Disabled="true" Checked="false">
+    Word Wrap (Disabled)
+</BbDropdownMenuCheckboxItem>

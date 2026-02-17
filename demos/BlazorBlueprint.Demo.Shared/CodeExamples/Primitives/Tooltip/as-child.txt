@@ -1,0 +1,23 @@
+@using BlazorBlueprint.Primitives.Tooltip
+
+<!-- Without AsChild -->
+<BbTooltip>
+    <BbTooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+        Hover me
+    </BbTooltipTrigger>
+    <BbTooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
+        Without AsChild tooltip
+    </BbTooltipContent>
+</BbTooltip>
+
+<!-- With AsChild -->
+<BbTooltip>
+    <BbTooltipTrigger AsChild>
+        <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Icon">
+            <LucideIcon Name="info" Size="16" />
+        </BbButton>
+    </BbTooltipTrigger>
+    <BbTooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
+        With AsChild tooltip
+    </BbTooltipContent>
+</BbTooltip>

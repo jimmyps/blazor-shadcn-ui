@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Utilities;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Extension methods for converting <see cref="CursorType"/> to Tailwind CSS class strings.

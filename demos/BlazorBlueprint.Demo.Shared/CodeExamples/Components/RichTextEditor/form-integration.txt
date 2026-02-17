@@ -1,0 +1,7 @@
+<BbLabel For="feedback-editor">Your Feedback</BbLabel>
+<BbRichTextEditor @bind-Value="feedbackValue"
+                Id="feedback-editor"
+                Placeholder="What's on your mind?" />
+<BbButton OnClick="HandleSubmit" Disabled="@string.IsNullOrWhiteSpace(feedbackValue)">
+    Submit Feedback
+</BbButton>

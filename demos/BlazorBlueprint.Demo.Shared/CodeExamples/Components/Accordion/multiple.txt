@@ -1,0 +1,14 @@
+<BbAccordion Type="AccordionType.Multiple">
+    <BbAccordionItem Value="features-1">
+        <BbAccordionTrigger>Performance</BbAccordionTrigger>
+        <BbAccordionContent>
+            <p class="mb-2">Blazing fast rendering with optimized algorithms.</p>
+            <ul class="list-disc list-inside space-y-1">
+                <li>Minimal re-renders</li>
+                <li>Virtual scrolling support</li>
+                <li>Lazy loading capabilities</li>
+            </ul>
+        </BbAccordionContent>
+    </BbAccordionItem>
+    @* ... more items *@
+</BbAccordion>

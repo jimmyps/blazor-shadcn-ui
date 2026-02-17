@@ -1,0 +1,4 @@
+<!-- Buttons automatically adapt to dark mode via CSS variables -->
+<BbButton Variant="ButtonVariant.Default">Default</BbButton>
+<BbButton Variant="ButtonVariant.Outline">Outline</BbButton>
+<BbButton Variant="ButtonVariant.Ghost">Ghost</BbButton>

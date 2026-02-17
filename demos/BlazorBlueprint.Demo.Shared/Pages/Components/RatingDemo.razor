@@ -1,6 +1,4 @@
 @page "/components/rating"
-@using BlazorBlueprint.Components.Rating
-
 <PageTitle>Rating Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -21,8 +19,9 @@
                 Click to rate, click the same star again to clear.
             </p>
         </div>
-        <Rating @bind-Value="_starValue" />
+        <BbRating @bind-Value="_starValue" />
         <p class="text-sm text-muted-foreground">Rating: @_starValue / 5</p>
+        <CodeBlock Source="Components/Rating/basic.txt" />
     </div>
 
     <!-- Heart Rating -->
@@ -33,8 +32,9 @@
                 Using heart icons instead of stars.
             </p>
         </div>
-        <Rating @bind-Value="_heartValue" Icon="RatingIcon.Heart" />
+        <BbRating @bind-Value="_heartValue" Icon="RatingIcon.Heart" />
         <p class="text-sm text-muted-foreground">Rating: @_heartValue / 5</p>
+        <CodeBlock Source="Components/Rating/heart.txt" />
     </div>
 
     <!-- Circle Rating -->
@@ -45,8 +45,9 @@
                 Using circle icons.
             </p>
         </div>
-        <Rating @bind-Value="_circleValue" Icon="RatingIcon.Circle" />
+        <BbRating @bind-Value="_circleValue" Icon="RatingIcon.Circle" />
         <p class="text-sm text-muted-foreground">Rating: @_circleValue / 5</p>
+        <CodeBlock Source="Components/Rating/circle.txt" />
     </div>
 
     <!-- Half Rating -->
@@ -57,8 +58,9 @@
                 Allows half-star ratings for more precision. Use arrow keys for precise control.
             </p>
         </div>
-        <Rating @bind-Value="_halfValue" AllowHalf="true" />
+        <BbRating @bind-Value="_halfValue" AllowHalf="true" />
         <p class="text-sm text-muted-foreground">Rating: @_halfValue / 5</p>
+        <CodeBlock Source="Components/Rating/half.txt" />
     </div>
 
     <!-- Custom Max -->
@@ -69,8 +71,9 @@
                 Rating with 10 stars maximum.
             </p>
         </div>
-        <Rating @bind-Value="_maxValue" Max="10" Size="RatingSize.Small" />
+        <BbRating @bind-Value="_maxValue" Max="10" Size="RatingSize.Small" />
         <p class="text-sm text-muted-foreground">Rating: @_maxValue / 10</p>
+        <CodeBlock Source="Components/Rating/custom-max.txt" />
     </div>
 
     <!-- Sizes -->
@@ -84,17 +87,18 @@
         <div class="space-y-4">
             <div class="flex items-center gap-4">
                 <span class="text-sm text-muted-foreground w-16">Small:</span>
-                <Rating @bind-Value="_sizeSmall" Size="RatingSize.Small" />
+                <BbRating @bind-Value="_sizeSmall" Size="RatingSize.Small" />
             </div>
             <div class="flex items-center gap-4">
                 <span class="text-sm text-muted-foreground w-16">Default:</span>
-                <Rating @bind-Value="_sizeDefault" Size="RatingSize.Default" />
+                <BbRating @bind-Value="_sizeDefault" Size="RatingSize.Default" />
             </div>
             <div class="flex items-center gap-4">
                 <span class="text-sm text-muted-foreground w-16">Large:</span>
-                <Rating @bind-Value="_sizeLarge" Size="RatingSize.Large" />
+                <BbRating @bind-Value="_sizeLarge" Size="RatingSize.Large" />
             </div>
         </div>
+        <CodeBlock Source="Components/Rating/sizes.txt" />
     </div>
 
     <!-- Read-Only -->
@@ -107,18 +111,19 @@
         </div>
         <div class="space-y-2">
             <div class="flex items-center gap-2">
-                <Rating Value="4" ReadOnly="true" />
+                <BbRating Value="4" ReadOnly="true" />
                 <span class="text-sm text-muted-foreground">4.0</span>
             </div>
             <div class="flex items-center gap-2">
-                <Rating Value="3.5" ReadOnly="true" AllowHalf="true" />
+                <BbRating Value="3.5" ReadOnly="true" AllowHalf="true" />
                 <span class="text-sm text-muted-foreground">3.5</span>
             </div>
             <div class="flex items-center gap-2">
-                <Rating Value="2" ReadOnly="true" Icon="RatingIcon.Heart" />
+                <BbRating Value="2" ReadOnly="true" Icon="RatingIcon.Heart" />
                 <span class="text-sm text-muted-foreground">2.0</span>
             </div>
         </div>
+        <CodeBlock Source="Components/Rating/read-only.txt" />
     </div>
 
     <!-- No Clear -->
@@ -129,8 +134,9 @@
                 Cannot clear the rating once set (minimum 1 star).
             </p>
         </div>
-        <Rating @bind-Value="_noClearValue" AllowClear="false" />
+        <BbRating @bind-Value="_noClearValue" AllowClear="false" />
         <p class="text-sm text-muted-foreground">Rating: @_noClearValue / 5</p>
+        <CodeBlock Source="Components/Rating/no-clear.txt" />
     </div>
 
     <!-- Disabled -->
@@ -141,58 +147,55 @@
                 A disabled rating component.
             </p>
         </div>
-        <Rating Value="3" Disabled="true" />
-    </div>
-
-    <!-- Keyboard Navigation -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Keyboard Navigation</h2>
-            <p class="text-sm text-muted-foreground">
-                Focus the rating and use keyboard to navigate.
-            </p>
-        </div>
-        <Rating @bind-Value="_keyboardValue" AllowHalf="true" />
-        <p class="text-sm text-muted-foreground">
-            Value: @_keyboardValue - Use Arrow keys, number keys (1-5), Home/End
-        </p>
+        <BbRating Value="3" Disabled="true" />
+        <CodeBlock Source="Components/Rating/disabled.txt" />
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Rating Parameters</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Value:</strong> <code class="bg-muted px-1 py-0.5 rounded">double</code> - Current rating value</p>
-                    <p><strong>Max:</strong> <code class="bg-muted px-1 py-0.5 rounded">int</code> - Maximum rating. Default: 5</p>
-                    <p><strong>AllowHalf:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Enable half ratings. Default: false</p>
-                    <p><strong>AllowClear:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Allow clearing by clicking same value. Default: true</p>
-                    <p><strong>ReadOnly:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Display-only mode. Default: false</p>
-                    <p><strong>Disabled:</strong> <code class="bg-muted px-1 py-0.5 rounded">bool</code> - Disables the rating. Default: false</p>
-                    <p><strong>Icon:</strong> <code class="bg-muted px-1 py-0.5 rounded">RatingIcon</code> - Icon type (Star, Heart, Circle). Default: Star</p>
-                    <p><strong>Size:</strong> <code class="bg-muted px-1 py-0.5 rounded">RatingSize</code> - Icon size (Small, Default, Large). Default: Default</p>
-                    <p><strong>ActiveColor:</strong> <code class="bg-muted px-1 py-0.5 rounded">string?</code> - Custom color for filled icons</p>
-                    <p><strong>InactiveColor:</strong> <code class="bg-muted px-1 py-0.5 rounded">string?</code> - Custom color for empty icons</p>
-                    <p><strong>IconTemplate:</strong> <code class="bg-muted px-1 py-0.5 rounded">RenderFragment&lt;RatingIconContext&gt;?</code> - Custom icon template</p>
-                </div>
-            </div>
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Keyboard Navigation</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Arrow Right/Up:</strong> Increase rating</p>
-                    <p><strong>Arrow Left/Down:</strong> Decrease rating</p>
-                    <p><strong>Home:</strong> Clear rating (if AllowClear)</p>
-                    <p><strong>End:</strong> Set to maximum</p>
-                    <p><strong>1-9:</strong> Set specific rating value</p>
-                    <p><strong>0:</strong> Clear rating (if AllowClear)</p>
-                </div>
-            </div>
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="Rating">
+                <ApiParameter Name="Value" Type="double">
+                    Current rating value.
+                </ApiParameter>
+                <ApiParameter Name="Max" Type="int" Default="5">
+                    Maximum rating.
+                </ApiParameter>
+                <ApiParameter Name="AllowHalf" Type="bool" Default="false">
+                    Enable half ratings.
+                </ApiParameter>
+                <ApiParameter Name="AllowClear" Type="bool" Default="true">
+                    Allow clearing by clicking same value.
+                </ApiParameter>
+                <ApiParameter Name="ReadOnly" Type="bool" Default="false">
+                    Display-only mode.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Disables the rating.
+                </ApiParameter>
+                <ApiParameter Name="Icon" Type="RatingIcon" Default="Star">
+                    Icon type (Star, Heart, Circle).
+                </ApiParameter>
+                <ApiParameter Name="Size" Type="RatingSize" Default="Default">
+                    Icon size (Small, Default, Large).
+                </ApiParameter>
+                <ApiParameter Name="ActiveColor" Type="string?">
+                    Custom color for filled icons.
+                </ApiParameter>
+                <ApiParameter Name="InactiveColor" Type="string?">
+                    Custom color for empty icons.
+                </ApiParameter>
+                <ApiParameter Name="IconTemplate" Type="RenderFragment<RatingIconContext>?">
+                    Custom icon template.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
 
 @code {
@@ -205,5 +208,4 @@
     private double _sizeDefault = 3;
     private double _sizeLarge = 3;
     private double _noClearValue = 1;
-    private double _keyboardValue = 2.5;
 }

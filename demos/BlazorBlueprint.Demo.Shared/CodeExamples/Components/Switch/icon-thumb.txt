@@ -1,0 +1,29 @@
+<BbSwitch @bind-Checked="iconTheme" Size="SwitchSize.Large"
+        ThumbCheckedClass="bg-slate-800 text-white"
+        ThumbUncheckedClass="bg-amber-400 text-amber-900">
+    <ThumbContent>
+        @if (context)
+        {
+            <LucideIcon Name="moon" Size="14" />
+        }
+        else
+        {
+            <LucideIcon Name="sun" Size="14" />
+        }
+    </ThumbContent>
+</BbSwitch>
+
+<BbSwitch @bind-Checked="iconSound" Size="SwitchSize.Large"
+        ThumbCheckedClass="bg-primary text-primary-foreground"
+        ThumbUncheckedClass="text-muted-foreground">
+    <ThumbContent>
+        @if (context)
+        {
+            <LucideIcon Name="volume-2" Size="14" />
+        }
+        else
+        {
+            <LucideIcon Name="volume-x" Size="14" />
+        }
+    </ThumbContent>
+</BbSwitch>

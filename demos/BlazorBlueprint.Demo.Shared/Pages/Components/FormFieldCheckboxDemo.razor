@@ -1,7 +1,4 @@
 @page "/components/form-field-checkbox"
-@using BlazorBlueprint.Components.FormFieldCheckbox
-@using BlazorBlueprint.Components.Button
-@using BlazorBlueprint.Components.Field
 @using System.ComponentModel.DataAnnotations
 
 <PageTitle>FormFieldCheckbox Component - Blazor Blueprint</PageTitle>
@@ -13,31 +10,6 @@
             <p class="text-xl text-muted-foreground">
                 A form field wrapper for Checkbox with built-in label, helper text, and error messages.
             </p>
-        </div>
-    </div>
-
-    <!-- When to use -->
-    <div class="rounded-lg border bg-card p-6 space-y-4">
-        <h2 class="text-lg font-semibold">When to use FormFieldCheckbox</h2>
-        <p class="text-sm text-muted-foreground">
-            Use <code class="text-xs bg-muted px-1 py-0.5 rounded">FormFieldCheckbox</code> when you want a complete,
-            ready-to-use checkbox with label, helper text, and automatic error display. It composes
-            <a href="/components/checkbox" class="text-primary underline underline-offset-4 hover:text-primary/80">Checkbox</a>
-            with the <a href="/components/field" class="text-primary underline underline-offset-4 hover:text-primary/80">Field</a> component system
-            so you don't have to wire them up manually.
-        </p>
-        <div class="rounded-md border border-dashed p-4 space-y-1.5">
-            <p class="text-sm font-medium">Example scenario</p>
-            <p class="text-sm text-muted-foreground">
-                You're building a settings page with "Enable notifications" and "Accept terms" checkboxes.
-                Each needs a label, helper text, and validation error display for required fields.
-                Instead of wiring up Field + FieldLabel + Checkbox + FieldDescription + FieldError for each one,
-                you drop in a single <code class="text-xs bg-muted px-1 py-0.5 rounded">FormFieldCheckbox</code> tag
-                and get all of that automatically.
-            </p>
-        </div>
-        <div class="bg-muted rounded-md p-4 space-y-2">
-            <pre class="text-sm font-mono whitespace-pre-wrap">&lt;FormFieldCheckbox @("@")bind-Checked="acceptTerms" Label="Accept terms" HelperText="You must agree to continue" /&gt;</pre>
         </div>
     </div>
 
@@ -64,7 +36,7 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldCheckbox @bind-Checked="_acceptTerms"
+            <BbFormFieldCheckbox @bind-Checked="_acceptTerms"
                                Label="Accept terms and conditions"
                                HelperText="You must accept before continuing." />
         </div>
@@ -72,6 +44,7 @@
             <p class="text-sm font-medium mb-1">Checked:</p>
             <p class="text-sm font-mono">@_acceptTerms</p>
         </div>
+        <CodeBlock Source="Components/FormFieldCheckbox/basic.txt" />
     </div>
 
     <!-- Horizontal Layout -->
@@ -83,11 +56,12 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldCheckbox @bind-Checked="_newsletter"
+            <BbFormFieldCheckbox @bind-Checked="_newsletter"
                                Label="Subscribe to newsletter"
                                HelperText="Get weekly updates."
                                Orientation="FieldOrientation.Horizontal" />
         </div>
+        <CodeBlock Source="Components/FormFieldCheckbox/horizontal.txt" />
     </div>
 
     <!-- Label on Right -->
@@ -99,10 +73,11 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldCheckbox @bind-Checked="_rightLabel"
+            <BbFormFieldCheckbox @bind-Checked="_rightLabel"
                                Label="I agree to the terms and conditions"
                                HelperText="Required to continue." />
         </div>
+        <CodeBlock Source="Components/FormFieldCheckbox/label-right.txt" />
     </div>
 
     <!-- Label on Bottom -->
@@ -114,11 +89,12 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldCheckbox @bind-Checked="_bottomLabel"
+            <BbFormFieldCheckbox @bind-Checked="_bottomLabel"
                                Label="Enable feature"
                                HelperText="This can be changed later."
                                Orientation="FieldOrientation.VerticalEnd" />
         </div>
+        <CodeBlock Source="Components/FormFieldCheckbox/label-bottom.txt" />
     </div>
 
     <!-- Indeterminate (Select All) -->
@@ -131,22 +107,23 @@
             </p>
         </div>
         <div class="max-w-md space-y-3">
-            <FormFieldCheckbox Checked="@_selectAllChecked"
+            <BbFormFieldCheckbox Checked="@_selectAllChecked"
                                CheckedChanged="HandleSelectAllChanged"
                                Indeterminate="@_selectAllIndeterminate"
                                Label="Select all permissions" />
             <div class="ml-6 space-y-1">
-                <FormFieldCheckbox Checked="@_permRead"
+                <BbFormFieldCheckbox Checked="@_permRead"
                                    CheckedChanged="@(v => { _permRead = v; UpdatePermSelectAll(); })"
                                    Label="Read" />
-                <FormFieldCheckbox Checked="@_permWrite"
+                <BbFormFieldCheckbox Checked="@_permWrite"
                                    CheckedChanged="@(v => { _permWrite = v; UpdatePermSelectAll(); })"
                                    Label="Write" />
-                <FormFieldCheckbox Checked="@_permDelete"
+                <BbFormFieldCheckbox Checked="@_permDelete"
                                    CheckedChanged="@(v => { _permDelete = v; UpdatePermSelectAll(); })"
                                    Label="Delete" />
             </div>
         </div>
+        <CodeBlock Source="Components/FormFieldCheckbox/indeterminate.txt" />
     </div>
 
     <!-- Error Text -->
@@ -159,10 +136,11 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldCheckbox @bind-Checked="_errorDemo"
+            <BbFormFieldCheckbox @bind-Checked="_errorDemo"
                                Label="Required checkbox"
                                ErrorText="@(_errorDemoError)" />
         </div>
+        <CodeBlock Source="Components/FormFieldCheckbox/error-text.txt" />
     </div>
 
     <!-- Disabled -->
@@ -174,11 +152,12 @@
             </p>
         </div>
         <div class="max-w-md">
-            <FormFieldCheckbox Checked="true"
+            <BbFormFieldCheckbox Checked="true"
                                Label="Locked preference"
                                HelperText="Contact support to change."
                                Disabled="true" />
         </div>
+        <CodeBlock Source="Components/FormFieldCheckbox/disabled.txt" />
     </div>
 
     <!-- EditForm Integration -->
@@ -194,9 +173,9 @@
             <EditForm Model="_formModel" OnValidSubmit="HandleFormSubmit">
                 <DataAnnotationsValidator />
                 <div class="space-y-4">
-                    <FormFieldCheckbox @bind-Checked="_formModel.AgreeToTerms"
+                    <BbFormFieldCheckbox @bind-Checked="_formModel.AgreeToTerms"
                                        Label="I agree to the terms of service" />
-                    <Button Type="ButtonType.Submit">Submit</Button>
+                    <BbButton Type="ButtonType.Submit">Submit</BbButton>
                 </div>
             </EditForm>
             @if (_formSubmitted)
@@ -206,7 +185,61 @@
                 </div>
             }
         </div>
+        <CodeBlock Source="Components/FormFieldCheckbox/edit-form.txt" />
     </div>
+
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>Automatically associates label with input via generated ID</AccessibilityItem>
+            <AccessibilityItem>Description linked via aria-describedby</AccessibilityItem>
+            <AccessibilityItem>Validation errors displayed with aria-invalid</AccessibilityItem>
+        </AriaAttributes>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="FormFieldCheckbox">
+                <ApiParameter Name="Label" Type="string?" Default="null">
+                    The label text displayed above or beside the checkbox.
+                </ApiParameter>
+                <ApiParameter Name="HelperText" Type="string?" Default="null">
+                    Helper text displayed below the checkbox. Hidden during error state.
+                </ApiParameter>
+                <ApiParameter Name="ErrorText" Type="string?" Default="null">
+                    Manual error text override. When the field is invalid and this is set, replaces auto-generated messages.
+                </ApiParameter>
+                <ApiParameter Name="Orientation" Type="FieldOrientation" Default="HorizontalEnd">
+                    Layout orientation. Default places the label after the checkbox.
+                </ApiParameter>
+                <ApiParameter Name="Checked" Type="bool" Default="false">
+                    Whether the checkbox is checked. Use @@bind-Checked for two-way binding.
+                </ApiParameter>
+                <ApiParameter Name="CheckedChanged" Type="EventCallback&lt;bool&gt;">
+                    Callback invoked when the checked state changes.
+                </ApiParameter>
+                <ApiParameter Name="Indeterminate" Type="bool" Default="false">
+                    Whether the checkbox is in an indeterminate state.
+                </ApiParameter>
+                <ApiParameter Name="Disabled" Type="bool" Default="false">
+                    Whether the checkbox is disabled.
+                </ApiParameter>
+                <ApiParameter Name="InputClass" Type="string?" Default="null">
+                    Additional CSS classes applied to the inner Checkbox element.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?" Default="null">
+                    Additional CSS classes applied to the outer Field container.
+                </ApiParameter>
+                <ApiParameter Name="AriaLabel" Type="string?" Default="null">
+                    ARIA label for the control.
+                </ApiParameter>
+            </ApiReference>
+        </div>
+    </section>
 </div>
 
 @code {

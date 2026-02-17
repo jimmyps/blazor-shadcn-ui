@@ -1,0 +1,4 @@
+<BbNativeSelect TValue="string" @bind-Value="_selectedFruit" Placeholder="Select a fruit">
+    <option value="apple">Apple</option>
+    <option value="banana">Banana</option>
+</BbNativeSelect>

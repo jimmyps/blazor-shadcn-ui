@@ -1,6 +1,4 @@
 @page "/components/aspect-ratio"
-@using BlazorBlueprint.Components.AspectRatio
-
 <PageTitle>Aspect Ratio Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -22,12 +20,14 @@
             </p>
         </div>
         <div class="w-[450px]">
-            <AspectRatio Ratio="16.0 / 9.0">
+            <BbAspectRatio Ratio="16.0 / 9.0">
                 <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
                      alt="Photo by Drew Beamer"
                      class="rounded-md object-cover" />
-            </AspectRatio>
+            </BbAspectRatio>
         </div>
+
+        <CodeBlock Source="Components/AspectRatio/16-9.txt" />
     </div>
 
     <!-- 4:3 Example -->
@@ -39,12 +39,14 @@
             </p>
         </div>
         <div class="w-[300px]">
-            <AspectRatio Ratio="4.0 / 3.0">
+            <BbAspectRatio Ratio="4.0 / 3.0">
                 <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
                      alt="Photo by Drew Beamer"
                      class="rounded-md object-cover" />
-            </AspectRatio>
+            </BbAspectRatio>
         </div>
+
+        <CodeBlock Source="Components/AspectRatio/4-3.txt" />
     </div>
 
     <!-- 1:1 Square -->
@@ -56,12 +58,14 @@
             </p>
         </div>
         <div class="w-[200px]">
-            <AspectRatio Ratio="1">
+            <BbAspectRatio Ratio="1">
                 <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
                      alt="Photo by Drew Beamer"
                      class="rounded-md object-cover" />
-            </AspectRatio>
+            </BbAspectRatio>
         </div>
+
+        <CodeBlock Source="Components/AspectRatio/square.txt" />
     </div>
 
     <!-- 21:9 Ultrawide -->
@@ -73,12 +77,14 @@
             </p>
         </div>
         <div class="w-full max-w-[600px]">
-            <AspectRatio Ratio="21.0 / 9.0">
+            <BbAspectRatio Ratio="21.0 / 9.0">
                 <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
                      alt="Photo by Drew Beamer"
                      class="rounded-md object-cover" />
-            </AspectRatio>
+            </BbAspectRatio>
         </div>
+
+        <CodeBlock Source="Components/AspectRatio/ultrawide.txt" />
     </div>
 
     <!-- With Placeholder Content -->
@@ -90,12 +96,14 @@
             </p>
         </div>
         <div class="w-[300px]">
-            <AspectRatio Ratio="16.0 / 9.0">
+            <BbAspectRatio Ratio="16.0 / 9.0">
                 <div class="flex items-center justify-center bg-muted rounded-md">
                     <span class="text-muted-foreground">16:9</span>
                 </div>
-            </AspectRatio>
+            </BbAspectRatio>
         </div>
+
+        <CodeBlock Source="Components/AspectRatio/placeholder.txt" />
     </div>
 
     <!-- Video Embed -->
@@ -107,11 +115,13 @@
             </p>
         </div>
         <div class="w-full max-w-[500px]">
-            <AspectRatio Ratio="16.0 / 9.0">
+            <BbAspectRatio Ratio="16.0 / 9.0">
                 <div class="flex items-center justify-center bg-black rounded-md text-white">
                     <span>Video Player Placeholder</span>
                 </div>
-            </AspectRatio>
+            </BbAspectRatio>
         </div>
+
+        <CodeBlock Source="Components/AspectRatio/video-embed.txt" />
     </div>
 </div>

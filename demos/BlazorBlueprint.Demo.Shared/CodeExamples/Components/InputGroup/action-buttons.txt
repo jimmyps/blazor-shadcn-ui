@@ -1,0 +1,15 @@
+<BbInputGroup>
+    <BbInputGroupInput Placeholder="Search products..." />
+    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+        <BbInputGroupButton Class="!px-2.5 !py-0.5 !rounded-sm">Search</BbInputGroupButton>
+    </BbInputGroupAddon>
+</BbInputGroup>
+
+<BbInputGroup>
+    <BbInputGroupInput Value="sk-1234567890abcdef" />
+    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+        <BbInputGroupButton Variant="ButtonVariant.Ghost" Class="!px-1.5 !py-1.5 !rounded-md">
+            <LucideIcon Name="copy" Size="16" />
+        </BbInputGroupButton>
+    </BbInputGroupAddon>
+</BbInputGroup>

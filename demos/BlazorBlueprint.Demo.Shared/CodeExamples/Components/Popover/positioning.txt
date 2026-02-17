@@ -1,0 +1,8 @@
+<BbPopover>
+    <BbPopoverTrigger>
+        <BbButton Variant="ButtonVariant.Secondary">Top</BbButton>
+    </BbPopoverTrigger>
+    <BbPopoverContent Side="@PopoverSide.Top">
+        <p class="text-sm">Positioned on top</p>
+    </BbPopoverContent>
+</BbPopover>

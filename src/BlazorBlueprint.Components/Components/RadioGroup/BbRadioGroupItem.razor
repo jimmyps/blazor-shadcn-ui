@@ -1,0 +1,30 @@
+@typeparam TValue
+@namespace BlazorBlueprint.Components
+
+@if (HasLabel)
+{
+    <div class="flex items-center gap-2">
+        <BlazorBlueprint.Primitives.RadioGroup.BbRadioGroupItem TValue="TValue"
+            @ref="primitiveRef"
+            Value="@Value"
+            Disabled="@Disabled"
+            Id="@Id"
+            AriaLabel="@AriaLabel"
+            class="@CssClass">
+            <span class="@CircleIndicatorClass"></span>
+        </BlazorBlueprint.Primitives.RadioGroup.BbRadioGroupItem>
+        <label for="@Id" class="@LabelCssClass">@Label</label>
+    </div>
+}
+else
+{
+    <BlazorBlueprint.Primitives.RadioGroup.BbRadioGroupItem TValue="TValue"
+        @ref="primitiveRef"
+        Value="@Value"
+        Disabled="@Disabled"
+        Id="@Id"
+        AriaLabel="@AriaLabel"
+        class="@CssClass">
+        <span class="@CircleIndicatorClass"></span>
+    </BlazorBlueprint.Primitives.RadioGroup.BbRadioGroupItem>
+}

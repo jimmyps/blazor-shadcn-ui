@@ -1,7 +1,4 @@
 @page "/components/label"
-@using BlazorBlueprint.Components.Label
-@using BlazorBlueprint.Components.Input
-
 <PageTitle>Label Component - Blazor Blueprint</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -26,9 +23,10 @@
             </p>
         </div>
         <div class="max-w-md space-y-2">
-            <Label For="basic-input">Your Name</Label>
-            <Input Id="basic-input" Placeholder="Enter your name" />
+            <BbLabel For="basic-input">Your Name</BbLabel>
+            <BbInput Id="basic-input" Placeholder="Enter your name" />
         </div>
+        <CodeBlock Source="Components/Label/basic.txt" />
     </div>
 
     <!-- Form Fields -->
@@ -41,25 +39,26 @@
         </div>
         <div class="max-w-md space-y-6">
             <div class="space-y-2">
-                <Label For="email-field">Email Address</Label>
-                <Input Id="email-field" Type="InputType.Email" Placeholder="you@example.com" />
+                <BbLabel For="email-field">Email Address</BbLabel>
+                <BbInput Id="email-field" Type="InputType.Email" Placeholder="you@example.com" />
             </div>
 
             <div class="space-y-2">
-                <Label For="password-field">Password</Label>
-                <Input Id="password-field" Type="InputType.Password" Placeholder="••••••••" />
+                <BbLabel For="password-field">Password</BbLabel>
+                <BbInput Id="password-field" Type="InputType.Password" Placeholder="••••••••" />
             </div>
 
             <div class="space-y-2">
-                <Label For="url-field">Website URL</Label>
-                <Input Id="url-field" Type="InputType.Url" Placeholder="https://example.com" />
+                <BbLabel For="url-field">Website URL</BbLabel>
+                <BbInput Id="url-field" Type="InputType.Url" Placeholder="https://example.com" />
             </div>
 
             <div class="space-y-2">
-                <Label For="date-field">Birth Date</Label>
-                <Input Id="date-field" Type="InputType.Date" />
+                <BbLabel For="date-field">Birth Date</BbLabel>
+                <BbInput Id="date-field" Type="InputType.Date" />
             </div>
         </div>
+        <CodeBlock Source="Components/Label/form-fields.txt" />
     </div>
 
     <!-- Required Fields -->
@@ -72,19 +71,20 @@
         </div>
         <div class="max-w-md space-y-6">
             <div class="space-y-2">
-                <Label For="required-username">
+                <BbLabel For="required-username">
                     Username <span class="text-destructive">*</span>
-                </Label>
-                <Input Id="required-username" Required Placeholder="Enter username" />
+                </BbLabel>
+                <BbInput Id="required-username" Required Placeholder="Enter username" />
             </div>
 
             <div class="space-y-2">
-                <Label For="required-email">
-                    Email <Badge Variant="BadgeVariant.Destructive" Class="ml-2 text-[10px] px-1 py-0">Required</Badge>
-                </Label>
-                <Input Id="required-email" Type="InputType.Email" Required Placeholder="you@example.com" />
+                <BbLabel For="required-email">
+                    Email <BbBadge Variant="BadgeVariant.Destructive" Class="ml-2 text-[10px] px-1 py-0">Required</BbBadge>
+                </BbLabel>
+                <BbInput Id="required-email" Type="InputType.Email" Required Placeholder="you@example.com" />
             </div>
         </div>
+        <CodeBlock Source="Components/Label/required.txt" />
     </div>
 
     <!-- Checkbox Labels -->
@@ -97,26 +97,27 @@
         </div>
         <div class="max-w-md space-y-4">
             <div class="flex items-center space-x-2">
-                <Checkbox Id="terms-checkbox" />
-                <Label For="terms-checkbox" Class="cursor-pointer">
+                <BbCheckbox Id="terms-checkbox" />
+                <BbLabel For="terms-checkbox" Class="cursor-pointer">
                     Accept terms and conditions
-                </Label>
+                </BbLabel>
             </div>
 
             <div class="flex items-center space-x-2">
-                <Checkbox Id="marketing-checkbox" />
-                <Label For="marketing-checkbox" Class="cursor-pointer">
+                <BbCheckbox Id="marketing-checkbox" />
+                <BbLabel For="marketing-checkbox" Class="cursor-pointer">
                     Send me marketing emails
-                </Label>
+                </BbLabel>
             </div>
 
             <div class="flex items-center space-x-2">
-                <Checkbox Id="newsletter-checkbox" />
-                <Label For="newsletter-checkbox" Class="cursor-pointer">
+                <BbCheckbox Id="newsletter-checkbox" />
+                <BbLabel For="newsletter-checkbox" Class="cursor-pointer">
                     Subscribe to newsletter
-                </Label>
+                </BbLabel>
             </div>
         </div>
+        <CodeBlock Source="Components/Label/checkbox.txt" />
     </div>
 
     <!-- Disabled State -->
@@ -129,16 +130,17 @@
         </div>
         <div class="max-w-md space-y-6">
             <div class="space-y-2">
-                <Input Id="disabled-input" Disabled Class="peer" />
-                <Label For="disabled-input">Disabled Field Label</Label>
+                <BbInput Id="disabled-input" Disabled Class="peer" />
+                <BbLabel For="disabled-input">Disabled Field Label</BbLabel>
                 <p class="text-xs text-muted-foreground">Notice how the label appears muted when the input is disabled.</p>
             </div>
 
             <div class="flex items-center space-x-2">
-                <Checkbox Id="disabled-checkbox" Disabled Class="peer" />
-                <Label For="disabled-checkbox">Disabled Checkbox Option</Label>
+                <BbCheckbox Id="disabled-checkbox" Disabled Class="peer" />
+                <BbLabel For="disabled-checkbox">Disabled Checkbox Option</BbLabel>
             </div>
         </div>
+        <CodeBlock Source="Components/Label/disabled.txt" />
     </div>
 
     <!-- Custom Styling -->
@@ -151,25 +153,26 @@
         </div>
         <div class="max-w-md space-y-6">
             <div class="space-y-2">
-                <Label For="large-label-input" Class="text-lg font-bold">Large Bold Label</Label>
-                <Input Id="large-label-input" />
+                <BbLabel For="large-label-input" Class="text-lg font-bold">Large Bold Label</BbLabel>
+                <BbInput Id="large-label-input" />
             </div>
 
             <div class="space-y-2">
-                <Label For="small-label-input" Class="text-xs text-muted-foreground font-normal">Small Muted Label</Label>
-                <Input Id="small-label-input" />
+                <BbLabel For="small-label-input" Class="text-xs text-muted-foreground font-normal">Small Muted Label</BbLabel>
+                <BbInput Id="small-label-input" />
             </div>
 
             <div class="space-y-2">
-                <Label For="colored-label-input" Class="text-blue-600 dark:text-blue-400">Colored Label</Label>
-                <Input Id="colored-label-input" />
+                <BbLabel For="colored-label-input" Class="text-blue-600 dark:text-blue-400">Colored Label</BbLabel>
+                <BbInput Id="colored-label-input" />
             </div>
 
             <div class="space-y-2">
-                <Label For="uppercase-label-input" Class="uppercase tracking-wide">Uppercase Label</Label>
-                <Input Id="uppercase-label-input" />
+                <BbLabel For="uppercase-label-input" Class="uppercase tracking-wide">Uppercase Label</BbLabel>
+                <BbInput Id="uppercase-label-input" />
             </div>
         </div>
+        <CodeBlock Source="Components/Label/custom-styling.txt" />
     </div>
 
     <!-- Descriptive Labels -->
@@ -182,21 +185,22 @@
         </div>
         <div class="max-w-md space-y-6">
             <div class="space-y-2">
-                <Label For="display-name">Display Name</Label>
-                <Input Id="display-name" Placeholder="John Doe" />
+                <BbLabel For="display-name">Display Name</BbLabel>
+                <BbInput Id="display-name" Placeholder="John Doe" />
                 <p class="text-xs text-muted-foreground">
                     This is your public display name. It can be your real name or a pseudonym.
                 </p>
             </div>
 
             <div class="space-y-2">
-                <Label For="bio">Bio</Label>
-                <Input Id="bio" Placeholder="Tell us about yourself" />
+                <BbLabel For="bio">Bio</BbLabel>
+                <BbInput Id="bio" Placeholder="Tell us about yourself" />
                 <p class="text-xs text-muted-foreground">
                     Brief description for your profile. Max 160 characters.
                 </p>
             </div>
         </div>
+        <CodeBlock Source="Components/Label/with-descriptions.txt" />
     </div>
 
     <!-- Form Layout Example -->
@@ -209,114 +213,93 @@
         </div>
         <div class="max-w-md border rounded-lg p-6 space-y-6">
             <div class="space-y-2">
-                <Label For="form-name">
+                <BbLabel For="form-name">
                     Full Name <span class="text-destructive">*</span>
-                </Label>
-                <Input Id="form-name" Required Placeholder="John Doe" />
+                </BbLabel>
+                <BbInput Id="form-name" Required Placeholder="John Doe" />
             </div>
 
             <div class="space-y-2">
-                <Label For="form-email">
+                <BbLabel For="form-email">
                     Email Address <span class="text-destructive">*</span>
-                </Label>
-                <Input Id="form-email" Type="InputType.Email" Required Placeholder="john@example.com" />
+                </BbLabel>
+                <BbInput Id="form-email" Type="InputType.Email" Required Placeholder="john@example.com" />
             </div>
 
             <div class="space-y-2">
-                <Label For="form-phone">Phone Number</Label>
-                <Input Id="form-phone" Type="InputType.Tel" Placeholder="+1 (555) 123-4567" />
+                <BbLabel For="form-phone">Phone Number</BbLabel>
+                <BbInput Id="form-phone" Type="InputType.Tel" Placeholder="+1 (555) 123-4567" />
             </div>
 
-            <Separator />
+            <BbSeparator />
 
             <div class="space-y-3">
-                <Label>Preferences</Label>
+                <BbLabel>Preferences</BbLabel>
                 <div class="space-y-2">
                     <div class="flex items-center space-x-2">
-                        <Checkbox Id="form-newsletter" />
-                        <Label For="form-newsletter" Class="cursor-pointer font-normal">
+                        <BbCheckbox Id="form-newsletter" />
+                        <BbLabel For="form-newsletter" Class="cursor-pointer font-normal">
                             Subscribe to newsletter
-                        </Label>
+                        </BbLabel>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <Checkbox Id="form-updates" />
-                        <Label For="form-updates" Class="cursor-pointer font-normal">
+                        <BbCheckbox Id="form-updates" />
+                        <BbLabel For="form-updates" Class="cursor-pointer font-normal">
                             Receive product updates
-                        </Label>
+                        </BbLabel>
                     </div>
                 </div>
             </div>
 
             <div class="flex gap-3">
-                <Button Variant="ButtonVariant.Default">Submit</Button>
-                <Button Variant="ButtonVariant.Outline">Cancel</Button>
+                <BbButton Variant="ButtonVariant.Default">Submit</BbButton>
+                <BbButton Variant="ButtonVariant.Outline">Cancel</BbButton>
             </div>
         </div>
+        <CodeBlock Source="Components/Label/complete-form.txt" />
     </div>
 
-    <!-- Accessibility Notes -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Accessibility Notes</h2>
-            <p class="text-sm text-muted-foreground">
-                Best practices for accessible labels.
-            </p>
-        </div>
-        <div class="border rounded-lg p-6 space-y-3 bg-muted/50">
-            <p class="text-sm">
-                ✓ <strong>Always use For attribute:</strong> Associate labels with form controls explicitly.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Descriptive text:</strong> Labels should clearly describe the form field's purpose.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Required indicators:</strong> Use visual indicators for required fields, but also use HTML5 required attribute.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Help text:</strong> Place additional context below the input using aria-describedby.
-            </p>
-            <p class="text-sm">
-                ✓ <strong>Error messages:</strong> Link errors to inputs with aria-describedby for screen readers.
-            </p>
-        </div>
-    </div>
+    <!-- Accessibility -->
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>
+                Always use For attribute to associate labels with form controls explicitly.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Labels should clearly describe the form field's purpose with descriptive text.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Use visual indicators for required fields, but also use HTML5 required attribute.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Place additional context below the input using <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-describedby</code>.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Link errors to inputs with <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-describedby</code> for screen readers.
+            </AccessibilityItem>
+        </AriaAttributes>
+    </AccessibilityList>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">For</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="Label">
+                <ApiParameter Name="For" Type="string?">
                     The ID of the form element this label is associated with (maps to htmlFor attribute).
                     Clicking the label will focus/activate the associated control.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Class</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
                     Additional CSS classes to apply to the label element.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">ChildContent</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">RenderFragment?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
                     The content to display inside the label (text, icons, indicators, etc.).
-                </p>
-            </div>
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>

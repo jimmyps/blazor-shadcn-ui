@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Carousel;
+namespace BlazorBlueprint.Components;
 
 public enum CarouselOrientation
 {

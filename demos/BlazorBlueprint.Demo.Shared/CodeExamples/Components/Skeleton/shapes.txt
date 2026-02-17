@@ -1,0 +1,2 @@
+<BbSkeleton Shape="SkeletonShape.Rectangular" Class="h-12 w-12" />
+<BbSkeleton Shape="SkeletonShape.Circular" Class="h-12 w-12" />

@@ -1,0 +1,26 @@
+<BbSelect TValue="string" @bind-Value="_country" Class="w-full">
+    <BbSelectTrigger>
+        <BbSelectValue Placeholder="Select a country...">
+            <!-- @context = display text (e.g. "United States") -->
+            <span class="flex items-center gap-2">
+                @GetCountryFlag(_country) @context
+            </span>
+        </BbSelectValue>
+    </BbSelectTrigger>
+    <BbSelectContent>
+        <BbSelectItem Value="@("us")" Text="United States">
+            <div class="flex items-center gap-2">
+                <span>&#x1F1FA;&#x1F1F8;</span> <span>United States</span>
+            </div>
+        </BbSelectItem>
+        ...
+    </BbSelectContent>
+</BbSelect>
+
+@code {
+    private static string GetCountryFlag(string? country) => country switch
+    {
+        "us" => "&#x1F1FA;&#x1F1F8;", "ca" => "&#x1F1E8;&#x1F1E6;", "gb" => "&#x1F1EC;&#x1F1E7;",
+        "de" => "&#x1F1E9;&#x1F1EA;", "fr" => "&#x1F1EB;&#x1F1F7;", _ => ""
+    };
+}

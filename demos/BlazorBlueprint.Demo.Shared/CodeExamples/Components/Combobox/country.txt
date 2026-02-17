@@ -1,0 +1,18 @@
+<BbCombobox TValue="string"
+         Options="countries"
+         @bind-Value="selectedCountry"
+         Placeholder="Select country..."
+         SearchPlaceholder="Search country..."
+         EmptyMessage="No country found."
+         PopoverWidth="w-[280px]" />
+
+@code {
+    private string? selectedCountry;
+
+    private readonly SelectOption<string>[] countries =
+    [
+        new("US", "United States"),
+        new("GB", "United Kingdom"),
+        new("CA", "Canada")
+    ];
+}

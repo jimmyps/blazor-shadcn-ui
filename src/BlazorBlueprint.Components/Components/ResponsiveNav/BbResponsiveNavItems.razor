@@ -1,0 +1,100 @@
+@namespace BlazorBlueprint.Components
+@using Microsoft.AspNetCore.Components.Routing
+
+@* Desktop navigation - hidden on mobile *@
+<BbNavigationMenu Class="@ClassNames.cn("hidden md:flex", DesktopClass)">
+    <BbNavigationMenuList>
+        @foreach (var item in Items)
+        {
+            @if (item.Children is { Count: > 0 })
+            {
+                <BbNavigationMenuItem Value="@item.Text.ToLowerInvariant()">
+                    <BbNavigationMenuTrigger>@item.Text</BbNavigationMenuTrigger>
+                    <BbNavigationMenuContent>
+                        <div class="grid gap-3 p-4 w-[400px]">
+                            @foreach (var child in item.Children)
+                            {
+                                <a href="@child.Href" class="block p-3 rounded-lg hover:bg-accent">
+                                    <span class="block font-medium mb-1">@child.Text</span>
+                                    @if (!string.IsNullOrEmpty(child.Description))
+                                    {
+                                        <p class="text-sm text-muted-foreground">@child.Description</p>
+                                    }
+                                </a>
+                            }
+                        </div>
+                    </BbNavigationMenuContent>
+                </BbNavigationMenuItem>
+            }
+            else
+            {
+                <BbNavigationMenuItem>
+                    <BbNavigationMenuLink Href="@item.Href" Match="@item.Match">@item.Text</BbNavigationMenuLink>
+                </BbNavigationMenuItem>
+            }
+        }
+    </BbNavigationMenuList>
+</BbNavigationMenu>
+
+@* Mobile navigation in Sheet *@
+<BbResponsiveNavContent Header="@MobileHeader" Footer="@MobileFooter" Side="@Side">
+    <nav class="@ClassNames.cn("flex flex-col space-y-4", MobileClass)">
+        @foreach (var item in Items)
+        {
+            @if (item.Children is { Count: > 0 })
+            {
+                <div class="space-y-2">
+                    <span class="text-sm font-medium text-muted-foreground">@item.Text</span>
+                    <div class="pl-4 space-y-2 border-l">
+                        @foreach (var child in item.Children)
+                        {
+                            <NavLink href="@child.Href" Match="@child.Match" class="block text-sm hover:text-primary">@child.Text</NavLink>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <NavLink href="@item.Href" Match="@item.Match" class="text-lg font-medium hover:text-primary">@item.Text</NavLink>
+            }
+        }
+    </nav>
+</BbResponsiveNavContent>
+
+@code {
+    /// <summary>
+    /// The shared navigation items to render in both desktop and mobile views.
+    /// </summary>
+    [Parameter]
+    public IReadOnlyList<NavItemDefinition> Items { get; set; } = [];
+
+    /// <summary>
+    /// Additional CSS classes for the desktop NavigationMenu.
+    /// </summary>
+    [Parameter]
+    public string? DesktopClass { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes for the mobile nav element.
+    /// </summary>
+    [Parameter]
+    public string? MobileClass { get; set; }
+
+    /// <summary>
+    /// Optional header content for the mobile sheet.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? MobileHeader { get; set; }
+
+    /// <summary>
+    /// Optional footer content for the mobile sheet.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? MobileFooter { get; set; }
+
+    /// <summary>
+    /// The side from which the mobile sheet slides in. Default is Left.
+    /// </summary>
+    [Parameter]
+    public SheetSide Side { get; set; } = SheetSide.Left;
+}

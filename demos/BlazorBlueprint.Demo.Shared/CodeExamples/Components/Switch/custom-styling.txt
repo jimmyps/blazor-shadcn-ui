@@ -1,0 +1,10 @@
+<!-- Track styling -->
+<BbSwitch @bind-Checked="styled1" Class="shadow-lg" />
+
+<!-- Thumb always colored -->
+<BbSwitch @bind-Checked="styled2" ThumbClass="bg-primary" />
+
+<!-- State-dependent thumb color -->
+<BbSwitch @bind-Checked="styled3"
+        ThumbCheckedClass="bg-green-500"
+        ThumbUncheckedClass="bg-red-500" />

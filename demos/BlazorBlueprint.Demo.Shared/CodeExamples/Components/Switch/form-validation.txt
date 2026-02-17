@@ -1,0 +1,4 @@
+<EditForm Model="formModel">
+    <BbSwitch @bind-Checked="formModel.AcceptTerms" Id="terms" />
+    <ValidationMessage For="@(() => formModel.AcceptTerms)" />
+</EditForm>

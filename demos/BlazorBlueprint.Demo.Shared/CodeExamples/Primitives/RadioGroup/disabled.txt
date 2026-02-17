@@ -1,0 +1,5 @@
+<BbRadioGroup Value="@value" Disabled="true" AriaLabel="Disabled group"
+            ItemClass="... cursor-not-allowed">
+    <BbRadioGroupItem Value="Option A" />
+    <BbRadioGroupItem Value="Option B" />
+</BbRadioGroup>

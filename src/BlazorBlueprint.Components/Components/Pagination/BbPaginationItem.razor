@@ -1,0 +1,15 @@
+@namespace BlazorBlueprint.Components
+
+<li class="@CssClass">
+    @ChildContent
+</li>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string? CssClass => ClassNames.cn(Class);
+}

@@ -1,0 +1,4 @@
+<BbFormFieldCheckbox Checked="true"
+                       Label="Locked preference"
+                       HelperText="Contact support to change."
+                       Disabled="true" />

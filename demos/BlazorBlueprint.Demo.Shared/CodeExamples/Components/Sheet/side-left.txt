@@ -1,0 +1,13 @@
+<BbSheet Side="SheetSide.Left">
+    <BbSheetTrigger>
+        <BbButton Variant="ButtonVariant.Outline">Open from Left</BbButton>
+    </BbSheetTrigger>
+    <BbSheetContent>
+        <BbSheetHeader>
+            <BbSheetTitle>Navigation Menu</BbSheetTitle>
+            <BbSheetDescription>
+                Browse through the application sections.
+            </BbSheetDescription>
+        </BbSheetHeader>
+    </BbSheetContent>
+</BbSheet>

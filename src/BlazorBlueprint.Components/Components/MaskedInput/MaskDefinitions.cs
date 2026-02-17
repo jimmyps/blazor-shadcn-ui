@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.MaskedInput;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Provides mask pattern definitions.

@@ -1,8 +1,4 @@
 @page "/components/item"
-@using BlazorBlueprint.Components.Item
-@using BlazorBlueprint.Components.Button
-@using BlazorBlueprint.Components.Avatar
-@using BlazorBlueprint.Components.Badge
 @using BlazorBlueprint.Icons
 
 <PageTitle>Item Component - Blazor Blueprint</PageTitle>
@@ -28,17 +24,18 @@
                 A simple item with title and description.
             </p>
         </div>
-        <Item Variant="ItemVariant.Outline">
-            <ItemContent>
-                <ItemTitle>Basic Item</ItemTitle>
-                <ItemDescription>
+        <BbItem Variant="ItemVariant.Outline">
+            <BbItemContent>
+                <BbItemTitle>Basic Item</BbItemTitle>
+                <BbItemDescription>
                     A simple item with title and description.
-                </ItemDescription>
-            </ItemContent>
-            <ItemActions>
-                <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small">Action</Button>
-            </ItemActions>
-        </Item>
+                </BbItemDescription>
+            </BbItemContent>
+            <BbItemActions>
+                <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small">Action</BbButton>
+            </BbItemActions>
+        </BbItem>
+        <CodeBlock Source="Components/Item/basic.txt" />
     </div>
 
     <!-- Notification List Example -->
@@ -49,59 +46,60 @@
                 Items displaying notifications with icons, titles, descriptions, and timestamps.
             </p>
         </div>
-        <ItemGroup>
-            <Item Variant="ItemVariant.Default">
-                <ItemMedia Variant="ItemMediaVariant.Icon">
+        <BbItemGroup>
+            <BbItem Variant="ItemVariant.Default">
+                <BbItemMedia Variant="ItemMediaVariant.Icon">
                     <LucideIcon Name="circle-check" Size="18" Class="text-green-600" />
-                </ItemMedia>
-                <ItemContent>
-                    <ItemTitle>Successfully saved</ItemTitle>
-                    <ItemDescription>Your changes have been saved to the database.</ItemDescription>
-                </ItemContent>
-                <ItemActions>
+                </BbItemMedia>
+                <BbItemContent>
+                    <BbItemTitle>Successfully saved</BbItemTitle>
+                    <BbItemDescription>Your changes have been saved to the database.</BbItemDescription>
+                </BbItemContent>
+                <BbItemActions>
                     <span class="text-xs text-muted-foreground">2m ago</span>
-                </ItemActions>
-            </Item>
-            <ItemSeparator />
-            <Item Variant="ItemVariant.Default">
-                <ItemMedia Variant="ItemMediaVariant.Icon">
+                </BbItemActions>
+            </BbItem>
+            <BbItemSeparator />
+            <BbItem Variant="ItemVariant.Default">
+                <BbItemMedia Variant="ItemMediaVariant.Icon">
                     <LucideIcon Name="info" Size="18" Class="text-blue-600" />
-                </ItemMedia>
-                <ItemContent>
-                    <ItemTitle>New update available</ItemTitle>
-                    <ItemDescription>Version 2.0 is now available for download.</ItemDescription>
-                </ItemContent>
-                <ItemActions>
+                </BbItemMedia>
+                <BbItemContent>
+                    <BbItemTitle>New update available</BbItemTitle>
+                    <BbItemDescription>Version 2.0 is now available for download.</BbItemDescription>
+                </BbItemContent>
+                <BbItemActions>
                     <span class="text-xs text-muted-foreground">1h ago</span>
-                </ItemActions>
-            </Item>
-            <ItemSeparator />
-            <Item Variant="ItemVariant.Default">
-                <ItemMedia Variant="ItemMediaVariant.Icon">
+                </BbItemActions>
+            </BbItem>
+            <BbItemSeparator />
+            <BbItem Variant="ItemVariant.Default">
+                <BbItemMedia Variant="ItemMediaVariant.Icon">
                     <LucideIcon Name="circle-alert" Size="18" Class="text-yellow-600" />
-                </ItemMedia>
-                <ItemContent>
-                    <ItemTitle>Warning: Storage limit</ItemTitle>
-                    <ItemDescription>You're approaching your storage limit. Consider upgrading your plan.</ItemDescription>
-                </ItemContent>
-                <ItemActions>
+                </BbItemMedia>
+                <BbItemContent>
+                    <BbItemTitle>Warning: Storage limit</BbItemTitle>
+                    <BbItemDescription>You're approaching your storage limit. Consider upgrading your plan.</BbItemDescription>
+                </BbItemContent>
+                <BbItemActions>
                     <span class="text-xs text-muted-foreground">3h ago</span>
-                </ItemActions>
-            </Item>
-            <ItemSeparator />
-            <Item Variant="ItemVariant.Default">
-                <ItemMedia Variant="ItemMediaVariant.Icon">
+                </BbItemActions>
+            </BbItem>
+            <BbItemSeparator />
+            <BbItem Variant="ItemVariant.Default">
+                <BbItemMedia Variant="ItemMediaVariant.Icon">
                     <LucideIcon Name="circle-x" Size="18" Class="text-red-600" />
-                </ItemMedia>
-                <ItemContent>
-                    <ItemTitle>Error: Failed to sync</ItemTitle>
-                    <ItemDescription>Could not sync your data. Please check your connection.</ItemDescription>
-                </ItemContent>
-                <ItemActions>
+                </BbItemMedia>
+                <BbItemContent>
+                    <BbItemTitle>Error: Failed to sync</BbItemTitle>
+                    <BbItemDescription>Could not sync your data. Please check your connection.</BbItemDescription>
+                </BbItemContent>
+                <BbItemActions>
                     <span class="text-xs text-muted-foreground">1d ago</span>
-                </ItemActions>
-            </Item>
-        </ItemGroup>
+                </BbItemActions>
+            </BbItem>
+        </BbItemGroup>
+        <CodeBlock Source="Components/Item/notification-list.txt" />
     </div>
 
     <!-- Settings Items Example -->
@@ -112,52 +110,53 @@
                 Clickable settings rows with icons and descriptions using AsChild to render as links.
             </p>
         </div>
-        <ItemGroup>
-            <Item Variant="ItemVariant.Outline" Size="ItemSize.Sm" AsChild="a" Href="#profile">
-                <ItemMedia>
+        <BbItemGroup>
+            <BbItem Variant="ItemVariant.Outline" Size="ItemSize.Sm" AsChild="a" Href="#profile">
+                <BbItemMedia>
                     <LucideIcon Name="user" Size="18" />
-                </ItemMedia>
-                <ItemContent>
-                    <ItemTitle>Profile Settings</ItemTitle>
-                </ItemContent>
-                <ItemActions>
+                </BbItemMedia>
+                <BbItemContent>
+                    <BbItemTitle>Profile Settings</BbItemTitle>
+                </BbItemContent>
+                <BbItemActions>
                     <LucideIcon Name="chevron-right" Size="16" />
-                </ItemActions>
-            </Item>
-            <Item Variant="ItemVariant.Outline" Size="ItemSize.Sm" AsChild="a" Href="#notifications">
-                <ItemMedia>
+                </BbItemActions>
+            </BbItem>
+            <BbItem Variant="ItemVariant.Outline" Size="ItemSize.Sm" AsChild="a" Href="#notifications">
+                <BbItemMedia>
                     <LucideIcon Name="bell" Size="18" />
-                </ItemMedia>
-                <ItemContent>
-                    <ItemTitle>Notification Settings</ItemTitle>
-                </ItemContent>
-                <ItemActions>
+                </BbItemMedia>
+                <BbItemContent>
+                    <BbItemTitle>Notification Settings</BbItemTitle>
+                </BbItemContent>
+                <BbItemActions>
                     <LucideIcon Name="chevron-right" Size="16" />
-                </ItemActions>
-            </Item>
-            <Item Variant="ItemVariant.Outline" Size="ItemSize.Sm" AsChild="a" Href="#security">
-                <ItemMedia>
+                </BbItemActions>
+            </BbItem>
+            <BbItem Variant="ItemVariant.Outline" Size="ItemSize.Sm" AsChild="a" Href="#security">
+                <BbItemMedia>
                     <LucideIcon Name="shield" Size="18" />
-                </ItemMedia>
-                <ItemContent>
-                    <ItemTitle>Security & Privacy</ItemTitle>
-                </ItemContent>
-                <ItemActions>
+                </BbItemMedia>
+                <BbItemContent>
+                    <BbItemTitle>Security & Privacy</BbItemTitle>
+                </BbItemContent>
+                <BbItemActions>
                     <LucideIcon Name="chevron-right" Size="16" />
-                </ItemActions>
-            </Item>
-            <Item Variant="ItemVariant.Outline" Size="ItemSize.Sm" AsChild="a" Href="#billing">
-                <ItemMedia>
+                </BbItemActions>
+            </BbItem>
+            <BbItem Variant="ItemVariant.Outline" Size="ItemSize.Sm" AsChild="a" Href="#billing">
+                <BbItemMedia>
                     <LucideIcon Name="credit-card" Size="18" />
-                </ItemMedia>
-                <ItemContent>
-                    <ItemTitle>Billing & Plans</ItemTitle>
-                </ItemContent>
-                <ItemActions>
+                </BbItemMedia>
+                <BbItemContent>
+                    <BbItemTitle>Billing & Plans</BbItemTitle>
+                </BbItemContent>
+                <BbItemActions>
                     <LucideIcon Name="chevron-right" Size="16" />
-                </ItemActions>
-            </Item>
-        </ItemGroup>
+                </BbItemActions>
+            </BbItem>
+        </BbItemGroup>
+        <CodeBlock Source="Components/Item/settings.txt" />
     </div>
 
     <!-- User Profile Cards Example -->
@@ -168,59 +167,60 @@
                 User items with avatars, names, roles, and action buttons.
             </p>
         </div>
-        <ItemGroup>
-            <Item Variant="ItemVariant.Outline">
-                <ItemMedia Variant="ItemMediaVariant.Image">
-                    <Avatar>
-                        <AvatarFallback>JD</AvatarFallback>
-                    </Avatar>
-                </ItemMedia>
-                <ItemContent>
-                    <ItemTitle>
+        <BbItemGroup>
+            <BbItem Variant="ItemVariant.Outline">
+                <BbItemMedia Variant="ItemMediaVariant.Image">
+                    <BbAvatar>
+                        <BbAvatarFallback>JD</BbAvatarFallback>
+                    </BbAvatar>
+                </BbItemMedia>
+                <BbItemContent>
+                    <BbItemTitle>
                         John Doe
-                        <Badge Variant="BadgeVariant.Default">Admin</Badge>
-                    </ItemTitle>
-                    <ItemDescription>john.doe@example.com</ItemDescription>
-                </ItemContent>
-                <ItemActions>
-                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small">View Profile</Button>
-                </ItemActions>
-            </Item>
-            <Item Variant="ItemVariant.Outline">
-                <ItemMedia Variant="ItemMediaVariant.Image">
-                    <Avatar>
-                        <AvatarFallback>SM</AvatarFallback>
-                    </Avatar>
-                </ItemMedia>
-                <ItemContent>
-                    <ItemTitle>
+                        <BbBadge Variant="BadgeVariant.Default">Admin</BbBadge>
+                    </BbItemTitle>
+                    <BbItemDescription>john.doe@example.com</BbItemDescription>
+                </BbItemContent>
+                <BbItemActions>
+                    <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small">View Profile</BbButton>
+                </BbItemActions>
+            </BbItem>
+            <BbItem Variant="ItemVariant.Outline">
+                <BbItemMedia Variant="ItemMediaVariant.Image">
+                    <BbAvatar>
+                        <BbAvatarFallback>SM</BbAvatarFallback>
+                    </BbAvatar>
+                </BbItemMedia>
+                <BbItemContent>
+                    <BbItemTitle>
                         Sarah Miller
-                        <Badge Variant="BadgeVariant.Secondary">Editor</Badge>
-                    </ItemTitle>
-                    <ItemDescription>sarah.miller@example.com</ItemDescription>
-                </ItemContent>
-                <ItemActions>
-                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small">View Profile</Button>
-                </ItemActions>
-            </Item>
-            <Item Variant="ItemVariant.Outline">
-                <ItemMedia Variant="ItemMediaVariant.Image">
-                    <Avatar>
-                        <AvatarFallback>MJ</AvatarFallback>
-                    </Avatar>
-                </ItemMedia>
-                <ItemContent>
-                    <ItemTitle>
+                        <BbBadge Variant="BadgeVariant.Secondary">Editor</BbBadge>
+                    </BbItemTitle>
+                    <BbItemDescription>sarah.miller@example.com</BbItemDescription>
+                </BbItemContent>
+                <BbItemActions>
+                    <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small">View Profile</BbButton>
+                </BbItemActions>
+            </BbItem>
+            <BbItem Variant="ItemVariant.Outline">
+                <BbItemMedia Variant="ItemMediaVariant.Image">
+                    <BbAvatar>
+                        <BbAvatarFallback>MJ</BbAvatarFallback>
+                    </BbAvatar>
+                </BbItemMedia>
+                <BbItemContent>
+                    <BbItemTitle>
                         Mike Johnson
-                        <Badge Variant="BadgeVariant.Outline">Viewer</Badge>
-                    </ItemTitle>
-                    <ItemDescription>mike.johnson@example.com</ItemDescription>
-                </ItemContent>
-                <ItemActions>
-                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small">View Profile</Button>
-                </ItemActions>
-            </Item>
-        </ItemGroup>
+                        <BbBadge Variant="BadgeVariant.Outline">Viewer</BbBadge>
+                    </BbItemTitle>
+                    <BbItemDescription>mike.johnson@example.com</BbItemDescription>
+                </BbItemContent>
+                <BbItemActions>
+                    <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small">View Profile</BbButton>
+                </BbItemActions>
+            </BbItem>
+        </BbItemGroup>
+        <CodeBlock Source="Components/Item/user-profile-cards.txt" />
     </div>
 
     <!-- Variants Showcase -->
@@ -234,32 +234,33 @@
         <div class="space-y-3">
             <div class="space-y-2">
                 <h3 class="text-lg font-medium">Default Variant</h3>
-                <Item Variant="ItemVariant.Default">
-                    <ItemContent>
-                        <ItemTitle>Default Item</ItemTitle>
-                        <ItemDescription>Hover to see the subtle background effect.</ItemDescription>
-                    </ItemContent>
-                </Item>
+                <BbItem Variant="ItemVariant.Default">
+                    <BbItemContent>
+                        <BbItemTitle>Default Item</BbItemTitle>
+                        <BbItemDescription>Hover to see the subtle background effect.</BbItemDescription>
+                    </BbItemContent>
+                </BbItem>
             </div>
             <div class="space-y-2">
                 <h3 class="text-lg font-medium">Outline Variant</h3>
-                <Item Variant="ItemVariant.Outline">
-                    <ItemContent>
-                        <ItemTitle>Outline Item</ItemTitle>
-                        <ItemDescription>Has a border and background on hover.</ItemDescription>
-                    </ItemContent>
-                </Item>
+                <BbItem Variant="ItemVariant.Outline">
+                    <BbItemContent>
+                        <BbItemTitle>Outline Item</BbItemTitle>
+                        <BbItemDescription>Has a border and background on hover.</BbItemDescription>
+                    </BbItemContent>
+                </BbItem>
             </div>
             <div class="space-y-2">
                 <h3 class="text-lg font-medium">Muted Variant</h3>
-                <Item Variant="ItemVariant.Muted">
-                    <ItemContent>
-                        <ItemTitle>Muted Item</ItemTitle>
-                        <ItemDescription>Subtle background color with darker hover state.</ItemDescription>
-                    </ItemContent>
-                </Item>
+                <BbItem Variant="ItemVariant.Muted">
+                    <BbItemContent>
+                        <BbItemTitle>Muted Item</BbItemTitle>
+                        <BbItemDescription>Subtle background color with darker hover state.</BbItemDescription>
+                    </BbItemContent>
+                </BbItem>
             </div>
         </div>
+        <CodeBlock Source="Components/Item/variants.txt" />
     </div>
 
     <!-- Sizes Showcase -->
@@ -273,23 +274,24 @@
         <div class="space-y-3">
             <div class="space-y-2">
                 <h3 class="text-lg font-medium">Default Size</h3>
-                <Item Variant="ItemVariant.Outline" Size="ItemSize.Default">
-                    <ItemContent>
-                        <ItemTitle>Default Size</ItemTitle>
-                        <ItemDescription>Standard padding for most use cases.</ItemDescription>
-                    </ItemContent>
-                </Item>
+                <BbItem Variant="ItemVariant.Outline" Size="ItemSize.Default">
+                    <BbItemContent>
+                        <BbItemTitle>Default Size</BbItemTitle>
+                        <BbItemDescription>Standard padding for most use cases.</BbItemDescription>
+                    </BbItemContent>
+                </BbItem>
             </div>
             <div class="space-y-2">
                 <h3 class="text-lg font-medium">Small Size</h3>
-                <Item Variant="ItemVariant.Outline" Size="ItemSize.Sm">
-                    <ItemContent>
-                        <ItemTitle>Small Size</ItemTitle>
-                        <ItemDescription>Compact padding for dense layouts.</ItemDescription>
-                    </ItemContent>
-                </Item>
+                <BbItem Variant="ItemVariant.Outline" Size="ItemSize.Sm">
+                    <BbItemContent>
+                        <BbItemTitle>Small Size</BbItemTitle>
+                        <BbItemDescription>Compact padding for dense layouts.</BbItemDescription>
+                    </BbItemContent>
+                </BbItem>
             </div>
         </div>
+        <CodeBlock Source="Components/Item/sizes.txt" />
     </div>
 
     <!-- AsChild Example -->
@@ -303,32 +305,33 @@
         <div class="space-y-3">
             <div class="space-y-2">
                 <h3 class="text-lg font-medium">As Anchor Tag</h3>
-                <Item Variant="ItemVariant.Outline" AsChild="a" Href="https://github.com" target="_blank">
-                    <ItemMedia>
+                <BbItem Variant="ItemVariant.Outline" AsChild="a" Href="https://github.com" target="_blank">
+                    <BbItemMedia>
                         <LucideIcon Name="github" Size="18" />
-                    </ItemMedia>
-                    <ItemContent>
-                        <ItemTitle>View on GitHub</ItemTitle>
-                        <ItemDescription>Opens in a new tab</ItemDescription>
-                    </ItemContent>
-                    <ItemActions>
+                    </BbItemMedia>
+                    <BbItemContent>
+                        <BbItemTitle>View on GitHub</BbItemTitle>
+                        <BbItemDescription>Opens in a new tab</BbItemDescription>
+                    </BbItemContent>
+                    <BbItemActions>
                         <LucideIcon Name="external-link" Size="16" />
-                    </ItemActions>
-                </Item>
+                    </BbItemActions>
+                </BbItem>
             </div>
             <div class="space-y-2">
                 <h3 class="text-lg font-medium">As Button</h3>
-                <Item Variant="ItemVariant.Outline" AsChild="button" @onclick="@(() => {})">
-                    <ItemMedia>
+                <BbItem Variant="ItemVariant.Outline" AsChild="button" @onclick="@(() => {})">
+                    <BbItemMedia>
                         <LucideIcon Name="star" Size="18" />
-                    </ItemMedia>
-                    <ItemContent>
-                        <ItemTitle>Mark as Favorite</ItemTitle>
-                        <ItemDescription>Click to toggle favorite status</ItemDescription>
-                    </ItemContent>
-                </Item>
+                    </BbItemMedia>
+                    <BbItemContent>
+                        <BbItemTitle>Mark as Favorite</BbItemTitle>
+                        <BbItemDescription>Click to toggle favorite status</BbItemDescription>
+                    </BbItemContent>
+                </BbItem>
             </div>
         </div>
+        <CodeBlock Source="Components/Item/as-child.txt" />
     </div>
 
     <!-- Complex Example with Header and Footer -->
@@ -339,26 +342,150 @@
                 Using ItemHeader and ItemFooter for advanced layouts.
             </p>
         </div>
-        <Item Variant="ItemVariant.Outline" Class="flex-wrap">
-            <ItemMedia Variant="ItemMediaVariant.Image">
-                <Avatar>
-                    <AvatarFallback>TR</AvatarFallback>
-                </Avatar>
-            </ItemMedia>
-            <ItemContent>
-                <ItemTitle>Task Report</ItemTitle>
-                <ItemDescription>Monthly summary of completed tasks and projects.</ItemDescription>
-            </ItemContent>
-            <ItemActions>
-                <Badge Variant="BadgeVariant.Default">New</Badge>
-            </ItemActions>
-            <ItemFooter Class="mt-3">
+        <BbItem Variant="ItemVariant.Outline" Class="flex-wrap">
+            <BbItemMedia Variant="ItemMediaVariant.Image">
+                <BbAvatar>
+                    <BbAvatarFallback>TR</BbAvatarFallback>
+                </BbAvatar>
+            </BbItemMedia>
+            <BbItemContent>
+                <BbItemTitle>Task Report</BbItemTitle>
+                <BbItemDescription>Monthly summary of completed tasks and projects.</BbItemDescription>
+            </BbItemContent>
+            <BbItemActions>
+                <BbBadge Variant="BadgeVariant.Default">New</BbBadge>
+            </BbItemActions>
+            <BbItemFooter Class="mt-3">
                 <div class="flex gap-2">
-                    <Button Variant="ButtonVariant.Default" Size="ButtonSize.Small">Download PDF</Button>
-                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small">Share</Button>
+                    <BbButton Variant="ButtonVariant.Default" Size="ButtonSize.Small">Download PDF</BbButton>
+                    <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small">Share</BbButton>
                 </div>
                 <span class="text-xs text-muted-foreground">Generated today</span>
-            </ItemFooter>
-        </Item>
+            </BbItemFooter>
+        </BbItem>
+        <CodeBlock Source="Components/Item/complex-layout.txt" />
     </div>
+
+    <!-- Accessibility -->
+    <AccessibilityList>
+        <AriaAttributes>
+            <AccessibilityItem>
+                <code>ItemGroup</code> renders with <code>role="list"</code> for semantic grouping of items.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Uses <code>data-slot</code> attributes on each sub-component for consistent identification.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                When using <code>AsChild="a"</code>, the item renders as a native anchor element with full keyboard navigation support.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                When using <code>AsChild="button"</code>, the item renders as a native button element with <code>type="button"</code>.
+            </AccessibilityItem>
+            <AccessibilityItem>
+                Interactive items (links or buttons) include hover state transitions for visual feedback.
+            </AccessibilityItem>
+        </AriaAttributes>
+    </AccessibilityList>
+
+    <!-- API Reference -->
+    <section class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
+        </div>
+        <div class="space-y-4">
+            <ApiReference ComponentName="Item">
+                <ApiParameter Name="Variant" Type="ItemVariant" Default="Default">
+                    The visual style variant. Options: Default, Outline, Muted.
+                </ApiParameter>
+                <ApiParameter Name="Size" Type="ItemSize" Default="Default">
+                    The size of the item. Options: Default, Sm.
+                </ApiParameter>
+                <ApiParameter Name="AsChild" Type="string?">
+                    The element type to render as (e.g., "a", "button"). When set, the component renders as that element instead of a div.
+                </ApiParameter>
+                <ApiParameter Name="Href" Type="string?">
+                    The href attribute when rendering as an anchor (AsChild="a").
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the item element.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content to be rendered inside the item.
+                </ApiParameter>
+            </ApiReference>
+            <ApiReference ComponentName="ItemGroup">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the group container.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content to be rendered inside the group.
+                </ApiParameter>
+            </ApiReference>
+            <ApiReference ComponentName="ItemContent">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the content container.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content to be rendered inside the container.
+                </ApiParameter>
+            </ApiReference>
+            <ApiReference ComponentName="ItemMedia">
+                <ApiParameter Name="Variant" Type="ItemMediaVariant" Default="Default">
+                    The visual style variant of the media. Options: Default, Icon, Image.
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the media container.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content to be rendered inside the media container.
+                </ApiParameter>
+            </ApiReference>
+            <ApiReference ComponentName="ItemTitle">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the title.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content to be rendered as the title.
+                </ApiParameter>
+            </ApiReference>
+            <ApiReference ComponentName="ItemDescription">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the description.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content to be rendered as the description.
+                </ApiParameter>
+            </ApiReference>
+            <ApiReference ComponentName="ItemActions">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the actions container.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content to be rendered inside the actions container.
+                </ApiParameter>
+            </ApiReference>
+            <ApiReference ComponentName="ItemHeader">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the header.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content to be rendered in the header.
+                </ApiParameter>
+            </ApiReference>
+            <ApiReference ComponentName="ItemFooter">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the footer.
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    The content to be rendered in the footer.
+                </ApiParameter>
+            </ApiReference>
+            <ApiReference ComponentName="ItemSeparator">
+                <ApiParameter Name="Class" Type="string?">
+                    Additional CSS classes to apply to the separator.
+                </ApiParameter>
+            </ApiReference>
+        </div>
+    </section>
 </div>

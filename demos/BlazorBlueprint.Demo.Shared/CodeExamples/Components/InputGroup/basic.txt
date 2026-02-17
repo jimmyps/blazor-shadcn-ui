@@ -1,0 +1,16 @@
+<BbInputGroup>
+    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
+        <LucideIcon Name="search" Size="16" />
+    </BbInputGroupAddon>
+    <BbInputGroupInput Placeholder="Search..." />
+</BbInputGroup>
+
+<BbInputGroup>
+    <BbInputGroupAddon Align="InputGroupAlign.InlineStart">
+        <LucideIcon Name="at-sign" Size="16" />
+    </BbInputGroupAddon>
+    <BbInputGroupInput Type="InputType.Email" Placeholder="name@example.com" />
+    <BbInputGroupAddon Align="InputGroupAlign.InlineEnd">
+        <LucideIcon Name="circle-check" Size="16" />
+    </BbInputGroupAddon>
+</BbInputGroup>

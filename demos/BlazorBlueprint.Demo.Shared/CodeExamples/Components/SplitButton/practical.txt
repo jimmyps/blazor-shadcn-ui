@@ -1,0 +1,20 @@
+<BbSplitButton OnClick="HandleMerge">
+    <ChildContent>
+        <LucideIcon Name="git-merge" Size="16" Class="mr-2" />
+        Merge pull request
+    </ChildContent>
+    <DropdownContent>
+        <BbSplitButtonItem>
+            <div class="flex flex-col">
+                <span class="font-medium">Create a merge commit</span>
+                <span class="text-xs text-muted-foreground">All commits will be added.</span>
+            </div>
+        </BbSplitButtonItem>
+        <BbSplitButtonItem>
+            <div class="flex flex-col">
+                <span class="font-medium">Squash and merge</span>
+                <span class="text-xs text-muted-foreground">Commits will be combined.</span>
+            </div>
+        </BbSplitButtonItem>
+    </DropdownContent>
+</BbSplitButton>

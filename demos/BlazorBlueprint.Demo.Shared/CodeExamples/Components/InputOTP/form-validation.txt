@@ -1,0 +1,6 @@
+<EditForm Model="otpFormModel" OnValidSubmit="HandleOTPFormSubmit">
+    <DataAnnotationsValidator />
+    <BbInputOTP @bind-Value="otpFormModel.VerificationCode" Length="6" />
+    <ValidationMessage For="@(() => otpFormModel.VerificationCode)" />
+    <BbButton Type="ButtonType.Submit">Verify</BbButton>
+</EditForm>

@@ -1,0 +1,18 @@
+<BbCard>
+    <BbCardHeader>
+        <BbCardTitle>Submit Feedback</BbCardTitle>
+        <BbCardDescription>Share your thoughts with us using markdown formatting.</BbCardDescription>
+    </BbCardHeader>
+    <BbCardContent Class="space-y-4">
+        <BbLabel For="feedback-editor">Your Feedback</BbLabel>
+        <BbMarkdownEditor @bind-Value="feedbackValue"
+                        Id="feedback-editor"
+                        Placeholder="What's on your mind?" />
+    </BbCardContent>
+    <BbCardFooter>
+        <BbButton OnClick="HandleSubmit"
+                Disabled="@string.IsNullOrWhiteSpace(feedbackValue)">
+            Submit Feedback
+        </BbButton>
+    </BbCardFooter>
+</BbCard>

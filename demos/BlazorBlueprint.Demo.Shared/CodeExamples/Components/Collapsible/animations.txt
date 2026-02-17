@@ -1,0 +1,8 @@
+<BbCollapsible>
+    <BbCollapsibleTrigger AsChild="false">Animated Content</BbCollapsibleTrigger>
+    <BbCollapsibleContent Class="transition-all duration-300 ease-in-out">
+        <div class="animate-in fade-in duration-500">
+            This content animates smoothly.
+        </div>
+    </BbCollapsibleContent>
+</BbCollapsible>

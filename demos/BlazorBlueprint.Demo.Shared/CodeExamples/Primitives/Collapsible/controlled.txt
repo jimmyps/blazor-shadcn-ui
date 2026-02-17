@@ -1,0 +1,15 @@
+<button @onclick="@(() => isOpen = true)">Open</button>
+<button @onclick="@(() => isOpen = false)">Close</button>
+
+<BbCollapsible @bind-Open="isOpen">
+    <BbCollapsibleTrigger class="cursor-pointer">
+        Controlled Primitive (State: @(isOpen ? "Open" : "Closed"))
+    </BbCollapsibleTrigger>
+    <BbCollapsibleContent class="mt-2">
+        External buttons control this primitive's state.
+    </BbCollapsibleContent>
+</BbCollapsible>
+
+@code {
+    private bool isOpen = false;
+}

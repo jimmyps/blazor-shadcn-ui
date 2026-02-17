@@ -1,0 +1,2 @@
+<BbToggleGroup TValue="string" Variant="ToggleVariant.Default">...</BbToggleGroup>
+<BbToggleGroup TValue="string" Variant="ToggleVariant.Outline">...</BbToggleGroup>

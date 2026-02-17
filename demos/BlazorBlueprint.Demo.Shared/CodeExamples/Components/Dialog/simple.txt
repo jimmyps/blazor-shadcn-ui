@@ -1,0 +1,11 @@
+<BbDialog>
+    <BbDialogTrigger>Open Dialog</BbDialogTrigger>
+    <BbDialogContent>
+        <BbDialogHeader>
+            <BbDialogTitle>Are you absolutely sure?</BbDialogTitle>
+            <BbDialogDescription>
+                This action cannot be undone.
+            </BbDialogDescription>
+        </BbDialogHeader>
+    </BbDialogContent>
+</BbDialog>

@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Primitives.Table;
+namespace BlazorBlueprint.Primitives;
 
 /// <summary>
 /// Manages pagination configuration and state for a table.

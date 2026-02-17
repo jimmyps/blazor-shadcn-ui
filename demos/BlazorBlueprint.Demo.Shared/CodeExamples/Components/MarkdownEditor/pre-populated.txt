@@ -1,0 +1,11 @@
+<BbMarkdownEditor @bind-Value="prePopulatedValue" />
+
+@code {
+    private string prePopulatedValue = @"# Welcome to the Markdown Editor
+
+This is a **bold** statement and this is *italic* text.
+
+## Features
+- Write markdown with toolbar assistance
+- Preview rendered output instantly";
+}

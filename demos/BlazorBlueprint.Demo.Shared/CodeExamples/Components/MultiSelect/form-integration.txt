@@ -1,0 +1,27 @@
+<div class="space-y-4 max-w-md border rounded-lg p-6">
+    <div class="space-y-2">
+        <label class="text-sm font-medium">Skills</label>
+        <BbMultiSelect TValue="string"
+                    Options="languages"
+                    @bind-Values="formSkills"
+                    Placeholder="Select your skills..."
+                    SearchPlaceholder="Search skills..."
+                    ShowSelectAll="true"
+                    MatchTriggerWidth="true" />
+    </div>
+
+    <div class="space-y-2">
+        <label class="text-sm font-medium">Preferred Frameworks</label>
+        <BbMultiSelect TValue="string"
+                    Options="frameworks"
+                    @bind-Values="formFrameworks"
+                    Placeholder="Select frameworks..."
+                    SearchPlaceholder="Search frameworks..."
+                    MaxDisplayTags="2"
+                    MatchTriggerWidth="true" />
+    </div>
+
+    <BbButton Variant="ButtonVariant.Default" OnClick="HandleFormSubmit">
+        Submit
+    </BbButton>
+</div>

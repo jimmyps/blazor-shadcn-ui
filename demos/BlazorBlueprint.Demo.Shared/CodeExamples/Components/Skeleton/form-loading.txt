@@ -1,0 +1,13 @@
+<div class="border rounded-lg p-6 space-y-6">
+    @for (int i = 0; i < 3; i++)
+    {
+        <div class="space-y-2">
+            <BbSkeleton Class="h-4 w-[100px]" />
+            <BbSkeleton Class="h-10 w-full" />
+        </div>
+    }
+    <div class="flex gap-3">
+        <BbSkeleton Class="h-10 w-24" />
+        <BbSkeleton Class="h-10 w-24" />
+    </div>
+</div>

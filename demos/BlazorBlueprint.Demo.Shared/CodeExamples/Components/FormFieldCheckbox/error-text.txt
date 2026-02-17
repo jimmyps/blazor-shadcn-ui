@@ -1,0 +1,3 @@
+<BbFormFieldCheckbox @bind-Checked="errorDemo"
+                       Label="Required checkbox"
+                       ErrorText="@(errorDemoError)" />

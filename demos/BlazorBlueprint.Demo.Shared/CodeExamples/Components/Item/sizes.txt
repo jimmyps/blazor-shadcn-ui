@@ -1,0 +1,13 @@
+<BbItem Variant="ItemVariant.Outline" Size="ItemSize.Default">
+    <BbItemContent>
+        <BbItemTitle>Default Size</BbItemTitle>
+        <BbItemDescription>Standard padding for most use cases.</BbItemDescription>
+    </BbItemContent>
+</BbItem>
+
+<BbItem Variant="ItemVariant.Outline" Size="ItemSize.Sm">
+    <BbItemContent>
+        <BbItemTitle>Small Size</BbItemTitle>
+        <BbItemDescription>Compact padding for dense layouts.</BbItemDescription>
+    </BbItemContent>
+</BbItem>

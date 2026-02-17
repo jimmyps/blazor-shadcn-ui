@@ -1,0 +1,8 @@
+<BbBarChart Data="@data" Height="200px">
+    <BbXAxis DataKey="month" />
+    <BbYAxis Show="false" />
+    <BbChartTooltip />
+    <BbChartLegend />
+    <BbBar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Stacked="true" />
+    <BbBar DataKey="mobile" Name="Mobile" Color="var(--chart-2)" Stacked="true" BorderRadius="4" />
+</BbBarChart>

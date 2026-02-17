@@ -1,0 +1,14 @@
+<BbDialog @bind-Open="isDialogOpen">
+    <BbDialogContent>
+        <BbDialogHeader>
+            <BbDialogTitle>Controlled Dialog</BbDialogTitle>
+            <BbDialogDescription>
+                This dialog's open state is controlled from the parent component.
+            </BbDialogDescription>
+        </BbDialogHeader>
+        <BbDialogFooter>
+            <button @onclick="() => isDialogOpen = false">Cancel</button>
+            <button @onclick="HandleSave">Save</button>
+        </BbDialogFooter>
+    </BbDialogContent>
+</BbDialog>

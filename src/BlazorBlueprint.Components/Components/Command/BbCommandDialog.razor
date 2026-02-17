@@ -1,0 +1,106 @@
+@namespace BlazorBlueprint.Components
+@using BlazorBlueprint.Primitives.Services
+@inject IKeyboardShortcutService KeyboardShortcuts
+@implements IAsyncDisposable
+
+<BbDialog @bind-Open="_isOpen" OnOpenChange="HandleOpenChange">
+    <BbDialogContent Class="@ClassNames.cn("overflow-hidden p-0 shadow-lg", Class)">
+        <BlazorBlueprint.Components.BbCommand OnValueChange="HandleValueChange">
+            @ChildContent
+        </BlazorBlueprint.Components.BbCommand>
+    </BbDialogContent>
+</BbDialog>
+
+@code {
+    private bool _isOpen;
+    private IDisposable? _shortcutRegistration;
+
+    /// <summary>
+    /// The content to render inside the command dialog (CommandInput, CommandList, etc.).
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes to apply to the dialog content.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Controls whether the dialog is open.
+    /// </summary>
+    [Parameter]
+    public bool Open { get; set; }
+
+    /// <summary>
+    /// Event callback invoked when the open state changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<bool> OpenChanged { get; set; }
+
+    /// <summary>
+    /// Keyboard shortcut to toggle the dialog open/closed (e.g., "Ctrl+K").
+    /// Automatically registers and unregisters with the keyboard shortcut service.
+    /// </summary>
+    [Parameter]
+    public string? Shortcut { get; set; }
+
+    /// <summary>
+    /// Event callback invoked when a command item is selected.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnValueChange { get; set; }
+
+    /// <summary>
+    /// Whether to close the dialog when a command item is selected. Default: true.
+    /// </summary>
+    [Parameter]
+    public bool CloseOnSelect { get; set; } = true;
+
+    protected override void OnParametersSet()
+    {
+        _isOpen = Open;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !string.IsNullOrEmpty(Shortcut))
+        {
+            _shortcutRegistration = await KeyboardShortcuts.RegisterAsync(Shortcut, () =>
+            {
+                _isOpen = !_isOpen;
+                StateHasChanged();
+                return Task.CompletedTask;
+            });
+        }
+    }
+
+    private async Task HandleOpenChange(bool open)
+    {
+        _isOpen = open;
+        if (OpenChanged.HasDelegate)
+        {
+            await OpenChanged.InvokeAsync(open);
+        }
+    }
+
+    private async Task HandleValueChange(string value)
+    {
+        if (OnValueChange.HasDelegate)
+        {
+            await OnValueChange.InvokeAsync(value);
+        }
+
+        if (CloseOnSelect)
+        {
+            await HandleOpenChange(false);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _shortcutRegistration?.Dispose();
+        await ValueTask.CompletedTask;
+    }
+}

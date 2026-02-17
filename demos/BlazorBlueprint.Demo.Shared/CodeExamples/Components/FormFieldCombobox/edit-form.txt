@@ -1,0 +1,14 @@
+<EditForm Model="_formModel" OnValidSubmit="HandleFormSubmit">
+    <DataAnnotationsValidator />
+    <div class="space-y-4">
+        <BbFormFieldCombobox TValue="string"
+                           Options="_languages"
+                           @bind-Value="_formModel.Language"
+                           Label="Primary language"
+                           Placeholder="Select a language..."
+                           SearchPlaceholder="Search languages..."
+                           MatchTriggerWidth="true"
+                           InputClass="w-full" />
+        <BbButton Type="ButtonType.Submit">Submit</BbButton>
+    </div>
+</EditForm>

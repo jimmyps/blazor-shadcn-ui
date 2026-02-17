@@ -1,4 +1,4 @@
-namespace BlazorBlueprint.Components.Resizable;
+namespace BlazorBlueprint.Components;
 
 /// <summary>
 /// Direction for resizable panels.

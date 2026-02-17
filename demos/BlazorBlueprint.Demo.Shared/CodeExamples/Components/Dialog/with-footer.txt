@@ -1,0 +1,14 @@
+<BbDialog>
+    <BbDialogTrigger>Edit Profile</BbDialogTrigger>
+    <BbDialogContent>
+        <BbDialogHeader>
+            <BbDialogTitle>Edit profile</BbDialogTitle>
+            <BbDialogDescription>
+                Make changes to your profile here.
+            </BbDialogDescription>
+        </BbDialogHeader>
+        <BbDialogFooter>
+            <button type="submit">Save changes</button>
+        </BbDialogFooter>
+    </BbDialogContent>
+</BbDialog>

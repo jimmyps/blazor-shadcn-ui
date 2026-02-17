@@ -1,0 +1,23 @@
+@using BlazorBlueprint.Primitives.HoverCard
+
+<!-- Without AsChild -->
+<BbHoverCard>
+    <BbHoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+        Hover me
+    </BbHoverCardTrigger>
+    <BbHoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+        <p class="text-sm">Without AsChild hover card</p>
+    </BbHoverCardContent>
+</BbHoverCard>
+
+<!-- With AsChild -->
+<BbHoverCard>
+    <BbHoverCardTrigger AsChild>
+        <BbButton Variant="ButtonVariant.Link">@johndoe</BbButton>
+    </BbHoverCardTrigger>
+    <BbHoverCardContent class="bg-popover ...">
+        <div class="flex gap-3">
+            ...profile content...
+        </div>
+    </BbHoverCardContent>
+</BbHoverCard>

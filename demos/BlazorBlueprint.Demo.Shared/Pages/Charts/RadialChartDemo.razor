@@ -1,10 +1,11 @@
 @page "/charts/radial"
-@using ApexCharts
-@using BlazorBlueprint.Components.Chart
-
+@using BlazorBlueprint.Icons.Lucide.Components
 <PageTitle>Radial Chart - Blazor Blueprint</PageTitle>
 
-<div class="space-y-8 max-w-4xl">
+<div class="space-y-8 max-w-6xl">
+    <div class="rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-4 text-sm text-yellow-700 dark:text-yellow-400">
+        This page is a <strong>work in progress</strong>. The radial chart components are under active development and may not render correctly yet.
+    </div>
     <div>
         <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">Radial Chart</h1>
@@ -14,242 +15,203 @@
         </div>
     </div>
 
-    <!-- Default Radial -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Default</h2>
-            <p class="text-sm text-muted-foreground">
-                Full circle radial bar.
-            </p>
-        </div>
-        <div class="max-w-sm mx-auto">
-            <ChartContainer>
-                <RadialChart TItem="ProgressData"
-                             Items="@_progressData"
-                             Variant="RadialChartVariant.Default"
-                             CenterLabel="Progress"
-                             CenterValue="75%"
-                             Height="300px">
-                    <ApexPointSeries TItem="ProgressData"
-                                     Items="@_progressData"
-                                     Name="Progress"
-                                     SeriesType="SeriesType.RadialBar"
-                                     XValue="@(item => item.Label)"
-                                     YValue="@(item => (decimal)item.Value)" />
-                </RadialChart>
-            </ChartContainer>
-        </div>
-    </div>
+    <!-- Grid of chart variants -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-    <!-- Semi Circle -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Semi Circle</h2>
-            <p class="text-sm text-muted-foreground">
-                Half-circle gauge style.
-            </p>
-        </div>
-        <div class="max-w-sm mx-auto">
-            <ChartContainer>
-                <RadialChart TItem="ProgressData"
-                             Items="@_progressData"
-                             Variant="RadialChartVariant.SemiCircle"
-                             CenterLabel="Complete"
-                             CenterValue="75%"
-                             Height="250px">
-                    <ApexPointSeries TItem="ProgressData"
-                                     Items="@_progressData"
-                                     Name="Progress"
-                                     SeriesType="SeriesType.RadialBar"
-                                     XValue="@(item => item.Label)"
-                                     YValue="@(item => (decimal)item.Value)" />
-                </RadialChart>
-            </ChartContainer>
-        </div>
-    </div>
-
-    <!-- Gauge -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Gauge</h2>
-            <p class="text-sm text-muted-foreground">
-                Speedometer-style gauge.
-            </p>
-        </div>
-        <div class="max-w-sm mx-auto">
-            <ChartContainer>
-                <RadialChart TItem="ProgressData"
-                             Items="@_progressData"
-                             Variant="RadialChartVariant.Gauge"
-                             CenterLabel="Speed"
-                             CenterValue="75"
-                             Height="300px">
-                    <ApexPointSeries TItem="ProgressData"
-                                     Items="@_progressData"
-                                     Name="Speed"
-                                     SeriesType="SeriesType.RadialBar"
-                                     XValue="@(item => item.Label)"
-                                     YValue="@(item => (decimal)item.Value)" />
-                </RadialChart>
-            </ChartContainer>
-        </div>
-    </div>
-
-    <!-- Gradient -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Gradient</h2>
-            <p class="text-sm text-muted-foreground">
-                Radial bar with gradient fill.
-            </p>
-        </div>
-        <div class="max-w-sm mx-auto">
-            <ChartContainer>
-                <RadialChart TItem="ProgressData"
-                             Items="@_progressData"
-                             Variant="RadialChartVariant.Gradient"
-                             CenterLabel="Score"
-                             CenterValue="75"
-                             Height="300px">
-                    <ApexPointSeries TItem="ProgressData"
-                                     Items="@_progressData"
-                                     Name="Score"
-                                     SeriesType="SeriesType.RadialBar"
-                                     XValue="@(item => item.Label)"
-                                     YValue="@(item => (decimal)item.Value)" />
-                </RadialChart>
-            </ChartContainer>
-        </div>
-    </div>
-
-    <!-- Multiple Radial Bars -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Multiple Values</h2>
-            <p class="text-sm text-muted-foreground">
-                Compare multiple progress values.
-            </p>
-        </div>
-        <div class="max-w-sm mx-auto">
-            <ChartContainer>
-                <RadialChart TItem="ProgressData"
-                             Items="@_multiProgressData"
-                             Variant="RadialChartVariant.Default"
-                             Height="300px">
-                    <ApexPointSeries TItem="ProgressData"
-                                     Items="@_multiProgressData"
-                                     Name="Progress"
-                                     SeriesType="SeriesType.RadialBar"
-                                     XValue="@(item => item.Label)"
-                                     YValue="@(item => (decimal)item.Value)" />
-                </RadialChart>
-            </ChartContainer>
-        </div>
-    </div>
-
-    <!-- Custom Angles -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Custom Angles</h2>
-            <p class="text-sm text-muted-foreground">
-                Customize start and end angles.
-            </p>
-        </div>
-        <div class="max-w-sm mx-auto">
-            <ChartContainer>
-                <RadialChart TItem="ProgressData"
-                             Items="@_progressData"
-                             StartAngle="-180"
-                             EndAngle="0"
-                             CenterLabel="Battery"
-                             CenterValue="75%"
-                             Height="250px">
-                    <ApexPointSeries TItem="ProgressData"
-                                     Items="@_progressData"
-                                     Name="Battery"
-                                     SeriesType="SeriesType.RadialBar"
-                                     XValue="@(item => item.Label)"
-                                     YValue="@(item => (decimal)item.Value)" />
-                </RadialChart>
-            </ChartContainer>
-        </div>
-    </div>
-
-    <!-- API Reference -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">API Reference</h2>
-        </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Variant</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">RadialChartVariant</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Options: Default, SemiCircle, Gauge, Gradient
-                </p>
+        <!-- Radial Chart -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radial Chart</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadialBarChart Data="@_browserData" Height="250px">
+                        <BbChartTooltip />
+                        <BbRadialBar DataKey="visitors" NameKey="browser" />
+                    </BbRadialBarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
             </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">CenterLabel / CenterValue</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Text to display in the chart center.
-                </p>
+            <CodeBlock Source="Charts/RadialChart/default.txt" />
+        </div>
+
+        <!-- Label -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radial Chart - Label</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadialBarChart Data="@_browserData" Height="250px">
+                        <BbChartTooltip />
+                        <BbRadialBar DataKey="visitors" NameKey="browser" ShowLabels="true" />
+                    </BbRadialBarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
             </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">StartAngle / EndAngle</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">int?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Custom start and end angles in degrees.
-                </p>
+            <CodeBlock Source="Charts/RadialChart/label.txt" />
+        </div>
+
+        <!-- Grid -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radial Chart - Grid</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadialBarChart Data="@_browserData" Height="250px">
+                        <BbChartTooltip />
+                        <BbRadialBar DataKey="visitors" NameKey="browser" ShowBackground="true" />
+                    </BbRadialBarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
             </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">HollowSize</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">int</code> (default: 55)
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Size of the hollow center as a percentage.
-                </p>
+            <CodeBlock Source="Charts/RadialChart/grid.txt" />
+        </div>
+
+        <!-- Text -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radial Chart - Text</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadialBarChart Data="@_safariData" Height="250px" InnerRadius="60%" OuterRadius="80%">
+                        <BbChartTooltip />
+                        <BbRadialBar DataKey="visitors" NameKey="browser" Color="var(--chart-2)">
+                            <BbCenterLabel Value="200" Title="Visitors" />
+                        </BbRadialBar>
+                    </BbRadialBarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
             </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">TrackBackground</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string</code> (default: "var(--muted)")
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    Color of the unfilled portion.
-                </p>
+            <CodeBlock Source="Charts/RadialChart/text.txt" />
+        </div>
+
+        <!-- Shape -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radial Chart - Shape</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadialBarChart Data="@_safariShapeData" Height="250px" InnerRadius="40%" OuterRadius="80%">
+                        <BbChartTooltip />
+                        <BbRadialBar DataKey="visitors" NameKey="browser" Color="var(--chart-2)" ShowBackground="true">
+                            <BbCenterLabel Value="1,260" Title="Visitors" />
+                        </BbRadialBar>
+                    </BbRadialBarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
             </div>
+            <CodeBlock Source="Charts/RadialChart/shape.txt" />
+        </div>
+
+        <!-- Stacked -->
+        <div>
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <h3 class="font-semibold leading-none tracking-tight">Radial Chart - Stacked</h3>
+                    <p class="text-sm text-muted-foreground">January - June 2024</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <BbRadialBarChart Data="@_stackedData" Height="250px" InnerRadius="40%" OuterRadius="80%">
+                        <BbChartTooltip />
+                        <BbRadialBar DataKey="desktop" NameKey="month" Color="var(--chart-1)" Stacked="true" ShowBackground="true" />
+                        <BbRadialBar DataKey="mobile" NameKey="month" Color="var(--chart-2)" Stacked="true">
+                            <BbCenterLabel Value="1,830" Title="Visitors" />
+                        </BbRadialBar>
+                    </BbRadialBarChart>
+                </div>
+                <div class="flex flex-col gap-2 p-6 pt-0">
+                    <div class="flex gap-2 items-center font-medium leading-none">
+                        Trending up by 5.2% this month <LucideIcon Name="trending-up" Size="16" />
+                    </div>
+                    <div class="text-sm text-muted-foreground leading-none">
+                        Showing total visitors for the last 6 months
+                    </div>
+                </div>
+            </div>
+            <CodeBlock Source="Charts/RadialChart/stacked.txt" />
         </div>
     </div>
 </div>
 
 @code {
-    public class ProgressData
+    public class BrowserData
     {
-        public string Label { get; set; } = "";
-        public int Value { get; set; }
+        public string Browser { get; set; } = "";
+        public int Visitors { get; set; }
     }
 
-    private List<ProgressData> _progressData =
+    public class MonthlyData
+    {
+        public string Month { get; set; } = "";
+        public int Desktop { get; set; }
+        public int Mobile { get; set; }
+    }
+
+    private readonly List<BrowserData> _browserData =
     [
-        new() { Label = "Progress", Value = 75 }
+        new() { Browser = "Chrome", Visitors = 275 },
+        new() { Browser = "Safari", Visitors = 200 },
+        new() { Browser = "Firefox", Visitors = 187 },
+        new() { Browser = "Edge", Visitors = 173 },
+        new() { Browser = "Other", Visitors = 90 }
     ];
 
-    private List<ProgressData> _multiProgressData =
+    private readonly List<BrowserData> _safariData =
     [
-        new() { Label = "Tasks", Value = 85 },
-        new() { Label = "Goals", Value = 65 },
-        new() { Label = "Revenue", Value = 90 }
+        new() { Browser = "Safari", Visitors = 200 }
+    ];
+
+    private readonly List<BrowserData> _safariShapeData =
+    [
+        new() { Browser = "Safari", Visitors = 1260 }
+    ];
+
+    private readonly List<MonthlyData> _stackedData =
+    [
+        new() { Month = "January", Desktop = 1260, Mobile = 570 }
     ];
 }

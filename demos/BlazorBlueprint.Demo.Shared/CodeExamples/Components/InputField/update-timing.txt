@@ -1,0 +1,3 @@
+<BbInputField TValue="int" UpdateTiming="UpdateTiming.Immediate" />
+<BbInputField TValue="int" UpdateTiming="UpdateTiming.OnChange" />
+<BbInputField TValue="int" UpdateTiming="UpdateTiming.Debounced" DebounceInterval="500" />

@@ -1,0 +1,10 @@
+<BbFormFieldSelect TValue="string"
+                 @bind-Value="_fruit"
+                 Label="Favorite fruit"
+                 Placeholder="Select a fruit..."
+                 HelperText="Pick one from the list.">
+    <BbSelectItem Value="@("apple")" Text="Apple">Apple</BbSelectItem>
+    <BbSelectItem Value="@("banana")" Text="Banana">Banana</BbSelectItem>
+    <BbSelectItem Value="@("cherry")" Text="Cherry">Cherry</BbSelectItem>
+    <BbSelectItem Value="@("grape")" Text="Grape">Grape</BbSelectItem>
+</BbFormFieldSelect>

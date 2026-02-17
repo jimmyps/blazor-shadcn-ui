@@ -1,0 +1,23 @@
+<BbTimeline Align="TimelineAlign.Left">
+    <BbTimelineItem>
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Design</BbTimelineTitle>
+                <BbTimelineDescription>Created wireframes and mockups.</BbTimelineDescription>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>
+
+<BbTimeline Align="TimelineAlign.Alternate">
+    <BbTimelineItem>
+        <TimeContent>
+            <BbTimelineTime Class="text-right pr-4">Q1 2024</BbTimelineTime>
+        </TimeContent>
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Planning</BbTimelineTitle>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>

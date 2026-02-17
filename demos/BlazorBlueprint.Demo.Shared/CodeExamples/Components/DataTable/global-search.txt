@@ -1,0 +1,7 @@
+<BbDataTable TData="Person" Data="@people" InitialPageSize="10">
+    <Columns>
+        <BbDataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+        <BbDataTableColumn TData="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+        <BbDataTableColumn TData="Person" TValue="string" Property="@(p => p.Role)" Header="Role" />
+    </Columns>
+</BbDataTable>

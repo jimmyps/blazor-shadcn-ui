@@ -1,0 +1,1 @@
+<BbInputOTP @bind-Value="otpValue" OnComplete="HandleComplete" />

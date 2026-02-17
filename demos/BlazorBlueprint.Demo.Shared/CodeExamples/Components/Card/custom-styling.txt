@@ -1,0 +1,9 @@
+<BbCard Class="border-2 border-primary">
+    <BbCardHeader>
+        <BbCardTitle>Featured Card</BbCardTitle>
+        <BbCardDescription>With custom border color</BbCardDescription>
+    </BbCardHeader>
+    <BbCardContent>
+        <p>This card has a custom border using the Class parameter.</p>
+    </BbCardContent>
+</BbCard>

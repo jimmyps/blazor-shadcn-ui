@@ -1,0 +1,17 @@
+<BbTabs @bind-Value="controlledValue">
+    <BbTabsList class="...">
+        <BbTabsTrigger Value="account" class="...">Account</BbTabsTrigger>
+        <BbTabsTrigger Value="password" class="...">Password</BbTabsTrigger>
+    </BbTabsList>
+
+    <BbTabsContent Value="account" class="...">
+        Account Settings
+    </BbTabsContent>
+    <BbTabsContent Value="password" class="...">
+        Password Settings
+    </BbTabsContent>
+</BbTabs>
+
+@code {
+    private string? controlledValue = "account";
+}

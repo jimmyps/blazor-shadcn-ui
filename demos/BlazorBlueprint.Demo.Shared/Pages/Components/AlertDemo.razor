@@ -1,6 +1,4 @@
 @page "/components/alert"
-@using BlazorBlueprint.Components.Alert
-@using BlazorBlueprint.Components.Separator
 @using BlazorBlueprint.Icons.Lucide.Components
 
 <PageTitle>Alert Component - Blazor Blueprint</PageTitle>
@@ -25,70 +23,72 @@
         </div>
         <div class="space-y-4">
             <!-- Default -->
-            <Alert>
+            <BbAlert>
                 <Icon>
                     <LucideIcon Name="terminal" Class="h-4 w-4" />
                 </Icon>
                 <ChildContent>
-                    <AlertTitle>Default</AlertTitle>
-                    <AlertDescription>
+                    <BbAlertTitle>Default</BbAlertTitle>
+                    <BbAlertDescription>
                         A neutral alert for general informational messages.
-                    </AlertDescription>
+                    </BbAlertDescription>
                 </ChildContent>
-            </Alert>
+            </BbAlert>
 
             <!-- Success -->
-            <Alert Variant="AlertVariant.Success">
+            <BbAlert Variant="AlertVariant.Success">
                 <Icon>
                     <LucideIcon Name="circle-check" Class="h-4 w-4" />
                 </Icon>
                 <ChildContent>
-                    <AlertTitle>Success</AlertTitle>
-                    <AlertDescription>
+                    <BbAlertTitle>Success</BbAlertTitle>
+                    <BbAlertDescription>
                         Your changes have been saved successfully.
-                    </AlertDescription>
+                    </BbAlertDescription>
                 </ChildContent>
-            </Alert>
+            </BbAlert>
 
             <!-- Info -->
-            <Alert Variant="AlertVariant.Info">
+            <BbAlert Variant="AlertVariant.Info">
                 <Icon>
                     <LucideIcon Name="info" Class="h-4 w-4" />
                 </Icon>
                 <ChildContent>
-                    <AlertTitle>Information</AlertTitle>
-                    <AlertDescription>
+                    <BbAlertTitle>Information</BbAlertTitle>
+                    <BbAlertDescription>
                         This feature is currently in beta. Some functionality may change.
-                    </AlertDescription>
+                    </BbAlertDescription>
                 </ChildContent>
-            </Alert>
+            </BbAlert>
 
             <!-- Warning -->
-            <Alert Variant="AlertVariant.Warning">
+            <BbAlert Variant="AlertVariant.Warning">
                 <Icon>
                     <LucideIcon Name="triangle-alert" Class="h-4 w-4" />
                 </Icon>
                 <ChildContent>
-                    <AlertTitle>Warning</AlertTitle>
-                    <AlertDescription>
+                    <BbAlertTitle>Warning</BbAlertTitle>
+                    <BbAlertDescription>
                         Your account is approaching its storage limit.
-                    </AlertDescription>
+                    </BbAlertDescription>
                 </ChildContent>
-            </Alert>
+            </BbAlert>
 
             <!-- Danger -->
-            <Alert Variant="AlertVariant.Danger">
+            <BbAlert Variant="AlertVariant.Danger">
                 <Icon>
                     <LucideIcon Name="circle-alert" Class="h-4 w-4" />
                 </Icon>
                 <ChildContent>
-                    <AlertTitle>Danger</AlertTitle>
-                    <AlertDescription>
+                    <BbAlertTitle>Danger</BbAlertTitle>
+                    <BbAlertDescription>
                         Your session has expired. Please log in again.
-                    </AlertDescription>
+                    </BbAlertDescription>
                 </ChildContent>
-            </Alert>
+            </BbAlert>
         </div>
+
+        <CodeBlock Source="Components/Alert/variants.txt" />
     </div>
 
     <!-- With Accent Border -->
@@ -100,42 +100,44 @@
             </p>
         </div>
         <div class="space-y-4">
-            <Alert Variant="AlertVariant.Warning" AccentBorder="true">
+            <BbAlert Variant="AlertVariant.Warning" AccentBorder="true">
                 <Icon>
                     <LucideIcon Name="triangle-alert" Class="h-4 w-4" />
                 </Icon>
                 <ChildContent>
-                    <AlertTitle>Note</AlertTitle>
-                    <AlertDescription>
-                        Each component has its own namespace (e.g., <code class="text-xs bg-muted px-1 py-0.5 rounded">BlazorBlueprint.Components.Button</code>, <code class="text-xs bg-muted px-1 py-0.5 rounded">BlazorBlueprint.Components.Dialog</code>). Import only the components you use to keep your imports clean.
-                    </AlertDescription>
+                    <BbAlertTitle>Note</BbAlertTitle>
+                    <BbAlertDescription>
+                        Each component has its own namespace (e.g., <code class="text-xs bg-muted px-1 py-0.5 rounded">BlazorBlueprint.Components.BbButton</code>, <code class="text-xs bg-muted px-1 py-0.5 rounded">BlazorBlueprint.Components.BbDialog</code>). Import only the components you use to keep your imports clean.
+                    </BbAlertDescription>
                 </ChildContent>
-            </Alert>
+            </BbAlert>
 
-            <Alert Variant="AlertVariant.Info" AccentBorder="true">
+            <BbAlert Variant="AlertVariant.Info" AccentBorder="true">
                 <Icon>
                     <LucideIcon Name="info" Class="h-4 w-4" />
                 </Icon>
                 <ChildContent>
-                    <AlertTitle>Tip</AlertTitle>
-                    <AlertDescription>
+                    <BbAlertTitle>Tip</BbAlertTitle>
+                    <BbAlertDescription>
                         You can customize the theme colors by modifying the CSS variables in your theme file.
-                    </AlertDescription>
+                    </BbAlertDescription>
                 </ChildContent>
-            </Alert>
+            </BbAlert>
 
-            <Alert Variant="AlertVariant.Danger" AccentBorder="true">
+            <BbAlert Variant="AlertVariant.Danger" AccentBorder="true">
                 <Icon>
                     <LucideIcon Name="circle-alert" Class="h-4 w-4" />
                 </Icon>
                 <ChildContent>
-                    <AlertTitle>Breaking Change</AlertTitle>
-                    <AlertDescription>
+                    <BbAlertTitle>Breaking Change</BbAlertTitle>
+                    <BbAlertDescription>
                         The <code class="text-xs bg-muted px-1 py-0.5 rounded">Destructive</code> variant has been replaced with <code class="text-xs bg-muted px-1 py-0.5 rounded">Danger</code>.
-                    </AlertDescription>
+                    </BbAlertDescription>
                 </ChildContent>
-            </Alert>
+            </BbAlert>
         </div>
+
+        <CodeBlock Source="Components/Alert/accent-border.txt" />
     </div>
 
     <!-- Without Icons -->
@@ -147,20 +149,70 @@
             </p>
         </div>
         <div class="space-y-4">
-            <Alert>
-                <AlertTitle>Heads up!</AlertTitle>
-                <AlertDescription>
+            <BbAlert>
+                <BbAlertTitle>Heads up!</BbAlertTitle>
+                <BbAlertDescription>
                     You can add components to your app using the CLI.
-                </AlertDescription>
-            </Alert>
+                </BbAlertDescription>
+            </BbAlert>
 
-            <Alert Variant="AlertVariant.Warning" AccentBorder="true">
-                <AlertTitle>Note</AlertTitle>
-                <AlertDescription>
+            <BbAlert Variant="AlertVariant.Warning" AccentBorder="true">
+                <BbAlertTitle>Note</BbAlertTitle>
+                <BbAlertDescription>
                     Remember to save your work before leaving the page.
-                </AlertDescription>
-            </Alert>
+                </BbAlertDescription>
+            </BbAlert>
         </div>
+
+        <CodeBlock Source="Components/Alert/without-icons.txt" />
+    </div>
+
+    <!-- Dismissible -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <div class="flex items-center gap-2">
+                <h2 class="text-2xl font-semibold">Dismissible</h2>
+                <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">v3</span>
+            </div>
+            <p class="text-sm text-muted-foreground">
+                Use <code class="text-xs bg-muted px-1 py-0.5 rounded">Dismissible="true"</code> to show a close button. Handle the <code class="text-xs bg-muted px-1 py-0.5 rounded">OnDismiss</code> callback to remove or hide the alert.
+            </p>
+        </div>
+        <div class="space-y-4">
+            @if (_showDismissibleAlert)
+            {
+                <BbAlert Variant="AlertVariant.Info" Dismissible="true" OnDismiss="@(() => _showDismissibleAlert = false)">
+                    <Icon>
+                        <LucideIcon Name="info" Class="h-4 w-4" />
+                    </Icon>
+                    <ChildContent>
+                        <BbAlertTitle>Dismissible Alert</BbAlertTitle>
+                        <BbAlertDescription>
+                            Click the X button to dismiss this alert.
+                        </BbAlertDescription>
+                    </ChildContent>
+                </BbAlert>
+            }
+            else
+            {
+                <BbButton Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="@(() => _showDismissibleAlert = true)">
+                    Show Alert Again
+                </BbButton>
+            }
+
+            <BbAlert Variant="AlertVariant.Warning" Dismissible="true" AccentBorder="true">
+                <Icon>
+                    <LucideIcon Name="triangle-alert" Class="h-4 w-4" />
+                </Icon>
+                <ChildContent>
+                    <BbAlertTitle>Warning</BbAlertTitle>
+                    <BbAlertDescription>
+                        This dismissible alert also uses the accent border style.
+                    </BbAlertDescription>
+                </ChildContent>
+            </BbAlert>
+        </div>
+        <CodeBlock Source="Components/Alert/dismissible.txt" />
     </div>
 
     <!-- Custom Styling -->
@@ -172,77 +224,69 @@
             </p>
         </div>
         <div class="space-y-4">
-            <Alert Class="border-purple-500/30 bg-purple-500/10 [&>svg]:text-purple-500">
+            <BbAlert Class="border-purple-500/30 bg-purple-500/10 [&>svg]:text-purple-500">
                 <Icon>
                     <LucideIcon Name="sparkles" Class="h-4 w-4" />
                 </Icon>
                 <ChildContent>
-                    <AlertTitle>New Feature</AlertTitle>
-                    <AlertDescription>
+                    <BbAlertTitle>New Feature</BbAlertTitle>
+                    <BbAlertDescription>
                         A custom-styled alert using the Class parameter to apply purple theming.
-                    </AlertDescription>
+                    </BbAlertDescription>
                 </ChildContent>
-            </Alert>
+            </BbAlert>
 
-            <Alert Class="border-pink-500/30 bg-gradient-to-r from-pink-500/10 to-purple-500/10 [&>svg]:text-pink-500">
+            <BbAlert Class="border-pink-500/30 bg-gradient-to-r from-pink-500/10 to-purple-500/10 [&>svg]:text-pink-500">
                 <Icon>
                     <LucideIcon Name="heart" Class="h-4 w-4" />
                 </Icon>
                 <ChildContent>
-                    <AlertTitle>Brand Alert</AlertTitle>
-                    <AlertDescription>
+                    <BbAlertTitle>Brand Alert</BbAlertTitle>
+                    <BbAlertDescription>
                         Alerts can be styled with gradients and custom colors to match your brand.
-                    </AlertDescription>
+                    </BbAlertDescription>
                 </ChildContent>
-            </Alert>
+            </BbAlert>
         </div>
+
+        <CodeBlock Source="Components/Alert/custom-styling.txt" />
     </div>
 
     <!-- API Reference -->
-    <div class="space-y-4">
+    <section class="space-y-4">
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">API Reference</h2>
+            <p class="text-muted-foreground">Component properties and parameters.</p>
         </div>
-        <div class="border rounded-lg p-6 space-y-4">
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Variant</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">AlertVariant</code> — Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">Default</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+
+        <div class="space-y-4">
+            <ApiReference ComponentName="Alert">
+                <ApiParameter Name="Variant" Type="AlertVariant" Default="Default">
                     The visual style variant. Options: Default, Success, Info, Warning, Danger.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">AccentBorder</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">bool</code> — Default: <code class="text-xs bg-muted px-1 py-0.5 rounded">false</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
-                    When true, displays a thick left border in the variant's accent color with a subtle tinted background.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Icon</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">RenderFragment?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="AccentBorder" Type="bool" Default="false">
+                    When true, displays a thick left border with a subtle tinted background.
+                </ApiParameter>
+                <ApiParameter Name="Dismissible" Type="bool" Default="false">
+                    When true, displays a close button in the top-right corner.
+                </ApiParameter>
+                <ApiParameter Name="OnDismiss" Type="EventCallback">
+                    Callback invoked when the dismiss button is clicked.
+                </ApiParameter>
+                <ApiParameter Name="Icon" Type="RenderFragment?">
                     Optional icon to display in the alert.
-                </p>
-            </div>
-            <Separator />
-            <div>
-                <h3 class="font-mono text-sm font-semibold mb-2">Class</h3>
-                <p class="text-sm text-muted-foreground mb-2">
-                    Type: <code class="text-xs bg-muted px-1 py-0.5 rounded">string?</code>
-                </p>
-                <p class="text-sm text-muted-foreground">
+                </ApiParameter>
+                <ApiParameter Name="Class" Type="string?">
                     Additional CSS classes to apply to the alert.
-                </p>
-            </div>
+                </ApiParameter>
+                <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                    Content of the alert. Should contain AlertTitle and AlertDescription.
+                </ApiParameter>
+            </ApiReference>
         </div>
-    </div>
+    </section>
 </div>
+
+@code {
+    private bool _showDismissibleAlert = true;
+}

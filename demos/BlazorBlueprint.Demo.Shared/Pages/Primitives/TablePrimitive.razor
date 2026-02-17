@@ -1,10 +1,6 @@
 @page "/primitives/table"
 @using BlazorBlueprint.Primitives.Services
 @using BlazorBlueprint.Primitives.Table
-@using BlazorBlueprint.Primitives.Popover
-@using BlazorBlueprint.Primitives.DropdownMenu
-@using BlazorBlueprint.Components.Button
-@using BlazorBlueprint.Components.Kbd
 @using BlazorBlueprint.Icons.Lucide.Components
 
 <PageTitle>Table Primitive - Blazor Blueprint</PageTitle>
@@ -27,27 +23,27 @@
         </div>
 
         <div class="rounded-md border">
-            <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
-                <TableHeader Class="[&_tr]:border-b">
-                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody Class="[&_tr:last-child]:border-0">
+            <BlazorBlueprint.Primitives.Table.BbTable TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
+                <BlazorBlueprint.Primitives.Table.BbTableHeader Class="[&_tr]:border-b">
+                    <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                        <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                        <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                        <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                        <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                    </BlazorBlueprint.Primitives.Table.BbTableRow>
+                </BlazorBlueprint.Primitives.Table.BbTableHeader>
+                <BlazorBlueprint.Primitives.Table.BbTableBody Class="[&_tr:last-child]:border-0">
                     @foreach (var person in people)
                     {
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                        </TableRow>
+                        <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Name</BlazorBlueprint.Primitives.Table.BbTableCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Email</BlazorBlueprint.Primitives.Table.BbTableCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Age</BlazorBlueprint.Primitives.Table.BbTableCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Department</BlazorBlueprint.Primitives.Table.BbTableCell>
+                        </BlazorBlueprint.Primitives.Table.BbTableRow>
                     }
-                </TableBody>
-            </Table>
+                </BlazorBlueprint.Primitives.Table.BbTableBody>
+            </BlazorBlueprint.Primitives.Table.BbTable>
         </div>
     </section>
 
@@ -59,60 +55,60 @@
         </div>
 
         <div class="rounded-md border">
-            <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
-                <TableHeader Class="[&_tr]:border-b">
-                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</TableHeaderCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody Class="[&_tr:last-child]:border-0">
+            <BlazorBlueprint.Primitives.Table.BbTable TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
+                <BlazorBlueprint.Primitives.Table.BbTableHeader Class="[&_tr]:border-b">
+                    <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                        <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                        <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                        <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                        <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                    </BlazorBlueprint.Primitives.Table.BbTableRow>
+                </BlazorBlueprint.Primitives.Table.BbTableHeader>
+                <BlazorBlueprint.Primitives.Table.BbTableBody Class="[&_tr:last-child]:border-0">
                     @foreach (var person in people)
                     {
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableCell Class="p-4 align-middle font-medium">@person.Name</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                            <TableCell Class="p-4 align-middle text-right">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger>
-                                        <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="h-8 w-8" AriaLabel="Open menu">
+                        <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle font-medium">@person.Name</BlazorBlueprint.Primitives.Table.BbTableCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Email</BlazorBlueprint.Primitives.Table.BbTableCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Department</BlazorBlueprint.Primitives.Table.BbTableCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle text-right">
+                                <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu>
+                                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger>
+                                        <BbButton Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="h-8 w-8" AriaLabel="Open menu">
                                             <LucideIcon Name="ellipsis" Size="16" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent Class="w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md" Align="PopoverAlign.End">
-                                        <BlazorBlueprint.Components.DropdownMenu.DropdownMenuLabel Class="px-2 py-1.5 text-sm font-semibold">Actions</BlazorBlueprint.Components.DropdownMenu.DropdownMenuLabel>
-                                        <BlazorBlueprint.Components.DropdownMenu.DropdownMenuSeparator Class="my-1 h-px bg-muted" />
-                                        <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                        </BbButton>
+                                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger>
+                                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent Class="w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md" Align="PopoverAlign.End">
+                                        <BbDropdownMenuLabel Class="px-2 py-1.5 text-sm font-semibold">Actions</BbDropdownMenuLabel>
+                                        <BbDropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                           OnClick="@(() => HandleViewDetails(person))">
                                             <LucideIcon Name="eye" Size="16" Class="mr-2" />
                                             View details
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                           OnClick="@(() => HandleEdit(person))">
                                             <LucideIcon Name="pencil" Size="16" Class="mr-2" />
                                             Edit
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                           OnClick="@(() => HandleDuplicate(person))">
                                             <LucideIcon Name="copy" Size="16" Class="mr-2" />
                                             Duplicate
-                                        </DropdownMenuItem>
-                                        <BlazorBlueprint.Components.DropdownMenu.DropdownMenuSeparator Class="my-1 h-px bg-muted" />
-                                        <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground text-destructive"
+                                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                                        <BbDropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground text-destructive"
                                                           OnClick="@(() => HandleDelete(person))">
                                             <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
                                             Delete
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </TableCell>
-                        </TableRow>
+                                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent>
+                                </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu>
+                            </BlazorBlueprint.Primitives.Table.BbTableCell>
+                        </BlazorBlueprint.Primitives.Table.BbTableRow>
                     }
-                </TableBody>
-            </Table>
+                </BlazorBlueprint.Primitives.Table.BbTableBody>
+            </BlazorBlueprint.Primitives.Table.BbTable>
         </div>
 
         @if (!string.IsNullOrEmpty(actionMessage))
@@ -131,10 +127,10 @@
         </div>
 
         <div class="rounded-md border">
-            <Table TData="Person" Data="@GetSortedPeople()" @bind-State="@sortableTableState" Class="w-full caption-bottom text-sm">
-                <TableHeader Class="[&_tr]:border-b">
-                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                        <TableHeaderCell TData="Person" ColumnId="name" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+            <BlazorBlueprint.Primitives.Table.BbTable TData="Person" Data="@GetSortedPeople()" @bind-State="@sortableTableState" Class="w-full caption-bottom text-sm">
+                <BlazorBlueprint.Primitives.Table.BbTableHeader Class="[&_tr]:border-b">
+                    <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                        <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" ColumnId="name" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
                             <div class="flex items-center gap-2">
                                 <span>Name</span>
                                 @if (sortableTableState.Sorting.SortedColumn == "name")
@@ -149,8 +145,8 @@
                                     }
                                 }
                             </div>
-                        </TableHeaderCell>
-                        <TableHeaderCell TData="Person" ColumnId="email" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+                        </BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                        <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" ColumnId="email" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
                             <div class="flex items-center gap-2">
                                 <span>Email</span>
                                 @if (sortableTableState.Sorting.SortedColumn == "email")
@@ -165,8 +161,8 @@
                                     }
                                 }
                             </div>
-                        </TableHeaderCell>
-                        <TableHeaderCell TData="Person" ColumnId="age" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+                        </BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                        <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" ColumnId="age" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
                             <div class="flex items-center gap-2">
                                 <span>Age</span>
                                 @if (sortableTableState.Sorting.SortedColumn == "age")
@@ -181,8 +177,8 @@
                                     }
                                 }
                             </div>
-                        </TableHeaderCell>
-                        <TableHeaderCell TData="Person" ColumnId="department" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+                        </BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                        <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" ColumnId="department" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
                             <div class="flex items-center gap-2">
                                 <span>Department</span>
                                 @if (sortableTableState.Sorting.SortedColumn == "department")
@@ -197,21 +193,21 @@
                                     }
                                 }
                             </div>
-                        </TableHeaderCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody Class="[&_tr:last-child]:border-0">
+                        </BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                    </BlazorBlueprint.Primitives.Table.BbTableRow>
+                </BlazorBlueprint.Primitives.Table.BbTableHeader>
+                <BlazorBlueprint.Primitives.Table.BbTableBody Class="[&_tr:last-child]:border-0">
                     @foreach (var person in GetSortedPeople())
                     {
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                        </TableRow>
+                        <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Name</BlazorBlueprint.Primitives.Table.BbTableCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Email</BlazorBlueprint.Primitives.Table.BbTableCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Age</BlazorBlueprint.Primitives.Table.BbTableCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Department</BlazorBlueprint.Primitives.Table.BbTableCell>
+                        </BlazorBlueprint.Primitives.Table.BbTableRow>
                     }
-                </TableBody>
-            </Table>
+                </BlazorBlueprint.Primitives.Table.BbTableBody>
+            </BlazorBlueprint.Primitives.Table.BbTable>
         </div>
 
         <div class="rounded-lg border bg-card p-4">
@@ -232,33 +228,33 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <Table TData="Person" Data="@largePeopleDataset" @bind-State="@paginatedTableState"
+                <BlazorBlueprint.Primitives.Table.BbTable TData="Person" Data="@largePeopleDataset" @bind-State="@paginatedTableState"
                        OnPageChange="@HandlePaginationChange"
                        OnPageSizeChange="@HandlePaginationChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
+                    <BlazorBlueprint.Primitives.Table.BbTableHeader Class="[&_tr]:border-b">
+                        <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                        </BlazorBlueprint.Primitives.Table.BbTableRow>
+                    </BlazorBlueprint.Primitives.Table.BbTableHeader>
+                    <BlazorBlueprint.Primitives.Table.BbTableBody Class="[&_tr:last-child]:border-0">
                         @foreach (var person in GetPaginatedData())
                         {
-                            <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                                <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                            </TableRow>
+                            <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Name</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Email</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Age</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Department</BlazorBlueprint.Primitives.Table.BbTableCell>
+                            </BlazorBlueprint.Primitives.Table.BbTableRow>
                         }
-                    </TableBody>
-                </Table>
+                    </BlazorBlueprint.Primitives.Table.BbTableBody>
+                </BlazorBlueprint.Primitives.Table.BbTable>
             </div>
 
-            <TablePagination TData="Person" State="@paginatedTableState.Pagination"
+            <BlazorBlueprint.Primitives.Table.BbTablePagination TData="Person" State="@paginatedTableState.Pagination"
                              OnPageChange="@HandlePaginationChange"
                              OnPageSizeChange="@HandlePaginationChange">
                 <PaginationTemplate Context="context">
@@ -281,39 +277,39 @@
                                 Page @context.State.CurrentPage of @context.State.TotalPages
                             </div>
                             <div class="flex items-center space-x-2">
-                                <Button Variant="ButtonVariant.Outline"
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToFirstPage"
                                         Disabled="@(!context.State.CanGoPrevious)"
                                         AriaLabel="Go to first page">
                                     <LucideIcon Name="chevrons-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
+                                </BbButton>
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToPreviousPage"
                                         Disabled="@(!context.State.CanGoPrevious)"
                                         AriaLabel="Go to previous page">
                                     <LucideIcon Name="chevron-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
+                                </BbButton>
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToNextPage"
                                         Disabled="@(!context.State.CanGoNext)"
                                         AriaLabel="Go to next page">
                                     <LucideIcon Name="chevron-right" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
+                                </BbButton>
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToLastPage"
                                         Disabled="@(!context.State.CanGoNext)"
                                         AriaLabel="Go to last page">
                                     <LucideIcon Name="chevrons-right" Size="16" />
-                                </Button>
+                                </BbButton>
                             </div>
                         </div>
                     </div>
                 </PaginationTemplate>
-            </TablePagination>
+            </BlazorBlueprint.Primitives.Table.BbTablePagination>
         </div>
     </section>
 
@@ -335,33 +331,33 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <Table TData="Person" Data="@people" @bind-State="@selectableTableState"
+                <BlazorBlueprint.Primitives.Table.BbTable TData="Person" Data="@people" @bind-State="@selectableTableState"
                        SelectionMode="SelectionMode.Multiple"
                        EnableKeyboardNavigation="@enableKeyboardNavigation"
                        OnSelectionChange="@HandleSelectionChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 w-12 px-4">
+                    <BlazorBlueprint.Primitives.Table.BbTableHeader Class="[&_tr]:border-b">
+                        <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 w-12 px-4">
                                 <input type="checkbox"
                                        checked="@selectAllChecked"
                                        @onchange="@((e) => { selectAllChecked = (bool)(e.Value ?? false); HandleSelectAllChanged(); })"
                                        class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                                        aria-label="Select all" />
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
+                            </BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                        </BlazorBlueprint.Primitives.Table.BbTableRow>
+                    </BlazorBlueprint.Primitives.Table.BbTableHeader>
+                    <BlazorBlueprint.Primitives.Table.BbTableBody Class="[&_tr:last-child]:border-0">
                         @foreach (var person in people)
                         {
                             var isSelected = selectableTableState.Selection.IsSelected(person);
-                            <TableRow TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
-                                <TableCell Class="w-12 px-4">
+                            <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="w-12 px-4">
                                     <input type="checkbox"
                                            checked="@isSelected"
                                            @onchange="@(() => ToggleRowSelection(person))"
@@ -370,49 +366,49 @@
                                            tabindex="-1"
                                            class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                                            aria-label="@($"Select {person.Name}")" />
-                                </TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                                <TableCell Class="p-4 align-middle text-right" @onclick:stopPropagation="true">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger>
-                                            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="h-8 w-8" AriaLabel="Open menu">
+                                </BlazorBlueprint.Primitives.Table.BbTableCell>
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Name</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Email</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Age</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Department</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle text-right" @onclick:stopPropagation="true">
+                                    <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu>
+                                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger>
+                                            <BbButton Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="h-8 w-8" AriaLabel="Open menu">
                                                 <LucideIcon Name="ellipsis" Size="16" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent Class="w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md" Align="PopoverAlign.End">
-                                            <BlazorBlueprint.Components.DropdownMenu.DropdownMenuLabel Class="px-2 py-1.5 text-sm font-semibold">Actions</BlazorBlueprint.Components.DropdownMenu.DropdownMenuLabel>
-                                            <BlazorBlueprint.Components.DropdownMenu.DropdownMenuSeparator Class="my-1 h-px bg-muted" />
-                                            <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                            </BbButton>
+                                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuTrigger>
+                                        <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent Class="w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md" Align="PopoverAlign.End">
+                                            <BbDropdownMenuLabel Class="px-2 py-1.5 text-sm font-semibold">Actions</BbDropdownMenuLabel>
+                                            <BbDropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                               OnClick="@(() => HandleViewDetails(person))">
                                                 <LucideIcon Name="eye" Size="16" Class="mr-2" />
                                                 View details
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                            </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                               OnClick="@(() => HandleEdit(person))">
                                                 <LucideIcon Name="pencil" Size="16" Class="mr-2" />
                                                 Edit
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                            </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                               OnClick="@(() => HandleDuplicate(person))">
                                                 <LucideIcon Name="copy" Size="16" Class="mr-2" />
                                                 Duplicate
-                                            </DropdownMenuItem>
-                                            <BlazorBlueprint.Components.DropdownMenu.DropdownMenuSeparator Class="my-1 h-px bg-muted" />
-                                            <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground text-destructive"
+                                            </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                                            <BbDropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                            <BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground text-destructive"
                                                               OnClick="@(() => HandleDelete(person))">
                                                 <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
                                                 Delete
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
+                                            </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuItem>
+                                        </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenuContent>
+                                    </BlazorBlueprint.Primitives.DropdownMenu.BbDropdownMenu>
+                                </BlazorBlueprint.Primitives.Table.BbTableCell>
+                            </BlazorBlueprint.Primitives.Table.BbTableRow>
                         }
-                    </TableBody>
-                </Table>
+                    </BlazorBlueprint.Primitives.Table.BbTableBody>
+                </BlazorBlueprint.Primitives.Table.BbTable>
             </div>
 
             <div class="rounded-lg border bg-card p-4">
@@ -442,22 +438,22 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <Table TData="Person" Data="@GetSortedCombinedData()" @bind-State="@combinedTableState"
+                <BlazorBlueprint.Primitives.Table.BbTable TData="Person" Data="@GetSortedCombinedData()" @bind-State="@combinedTableState"
                        SelectionMode="SelectionMode.Multiple"
                        OnPageChange="@HandleCombinedPaginationChange"
                        OnPageSizeChange="@HandleCombinedPaginationChange"
                        OnSelectionChange="@HandleCombinedSelectionChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 w-12 px-4">
+                    <BlazorBlueprint.Primitives.Table.BbTableHeader Class="[&_tr]:border-b">
+                        <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 w-12 px-4">
                                 <input type="checkbox"
                                        checked="@combinedSelectAllChecked"
                                        @onchange="@((e) => { combinedSelectAllChecked = (bool)(e.Value ?? false); HandleCombinedSelectAllChanged(); })"
                                        class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                                        aria-label="Select all on page" />
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center justify-between gap-2">
                                     <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
                                          @onclick="@(() => combinedTableState.Sorting.ToggleSort("name"))">
@@ -474,14 +470,14 @@
                                             }
                                         }
                                     </div>
-                                    <Popover>
-                                        <PopoverTrigger>
+                                    <BlazorBlueprint.Primitives.Popover.BbPopover>
+                                        <BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
                                             <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedNameFilter) ? "text-primary" : "text-muted-foreground")"
                                                     aria-label="Filter name">
                                                 <LucideIcon Name="filter" Size="14" />
                                             </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                        </BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
+                                        <BlazorBlueprint.Primitives.Popover.BbPopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
                                             <div class="space-y-2">
                                                 <h4 class="font-medium text-sm">Filter by Name</h4>
                                                 <input type="text"
@@ -498,11 +494,11 @@
                                                     </button>
                                                 }
                                             </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                        </BlazorBlueprint.Primitives.Popover.BbPopoverContent>
+                                    </BlazorBlueprint.Primitives.Popover.BbPopover>
                                 </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center justify-between gap-2">
                                     <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
                                          @onclick="@(() => combinedTableState.Sorting.ToggleSort("email"))">
@@ -519,14 +515,14 @@
                                             }
                                         }
                                     </div>
-                                    <Popover>
-                                        <PopoverTrigger>
+                                    <BlazorBlueprint.Primitives.Popover.BbPopover>
+                                        <BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
                                             <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedEmailFilter) ? "text-primary" : "text-muted-foreground")"
                                                     aria-label="Filter email">
                                                 <LucideIcon Name="filter" Size="14" />
                                             </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                        </BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
+                                        <BlazorBlueprint.Primitives.Popover.BbPopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
                                             <div class="space-y-2">
                                                 <h4 class="font-medium text-sm">Filter by Email</h4>
                                                 <input type="text"
@@ -543,11 +539,11 @@
                                                     </button>
                                                 }
                                             </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                        </BlazorBlueprint.Primitives.Popover.BbPopoverContent>
+                                    </BlazorBlueprint.Primitives.Popover.BbPopover>
                                 </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center justify-between gap-2">
                                     <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
                                          @onclick="@(() => combinedTableState.Sorting.ToggleSort("age"))">
@@ -564,14 +560,14 @@
                                             }
                                         }
                                     </div>
-                                    <Popover>
-                                        <PopoverTrigger>
+                                    <BlazorBlueprint.Primitives.Popover.BbPopover>
+                                        <BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
                                             <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedAgeFilter) ? "text-primary" : "text-muted-foreground")"
                                                     aria-label="Filter age">
                                                 <LucideIcon Name="filter" Size="14" />
                                             </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                        </BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
+                                        <BlazorBlueprint.Primitives.Popover.BbPopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
                                             <div class="space-y-2">
                                                 <h4 class="font-medium text-sm">Filter by Age</h4>
                                                 <input type="text"
@@ -588,11 +584,11 @@
                                                     </button>
                                                 }
                                             </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                        </BlazorBlueprint.Primitives.Popover.BbPopoverContent>
+                                    </BlazorBlueprint.Primitives.Popover.BbPopover>
                                 </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center justify-between gap-2">
                                     <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
                                          @onclick="@(() => combinedTableState.Sorting.ToggleSort("department"))">
@@ -609,14 +605,14 @@
                                             }
                                         }
                                     </div>
-                                    <Popover>
-                                        <PopoverTrigger>
+                                    <BlazorBlueprint.Primitives.Popover.BbPopover>
+                                        <BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
                                             <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedDepartmentFilter) ? "text-primary" : "text-muted-foreground")"
                                                     aria-label="Filter department">
                                                 <LucideIcon Name="filter" Size="14" />
                                             </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                        </BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
+                                        <BlazorBlueprint.Primitives.Popover.BbPopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
                                             <div class="space-y-2">
                                                 <h4 class="font-medium text-sm">Filter by Department</h4>
                                                 <input type="text"
@@ -633,18 +629,18 @@
                                                     </button>
                                                 }
                                             </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                        </BlazorBlueprint.Primitives.Popover.BbPopoverContent>
+                                    </BlazorBlueprint.Primitives.Popover.BbPopover>
                                 </div>
-                            </TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
+                            </BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                        </BlazorBlueprint.Primitives.Table.BbTableRow>
+                    </BlazorBlueprint.Primitives.Table.BbTableHeader>
+                    <BlazorBlueprint.Primitives.Table.BbTableBody Class="[&_tr:last-child]:border-0">
                         @foreach (var person in GetCombinedPageData())
                         {
                             var isSelected = combinedTableState.Selection.IsSelected(person);
-                            <TableRow TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
-                                <TableCell Class="w-12 px-4">
+                            <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="w-12 px-4">
                                     <input type="checkbox"
                                            checked="@isSelected"
                                            @onchange="@(() => ToggleCombinedRowSelection(person))"
@@ -653,18 +649,18 @@
                                            tabindex="-1"
                                            class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                                            aria-label="@($"Select {person.Name}")" />
-                                </TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                            </TableRow>
+                                </BlazorBlueprint.Primitives.Table.BbTableCell>
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Name</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Email</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Age</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Department</BlazorBlueprint.Primitives.Table.BbTableCell>
+                            </BlazorBlueprint.Primitives.Table.BbTableRow>
                         }
-                    </TableBody>
-                </Table>
+                    </BlazorBlueprint.Primitives.Table.BbTableBody>
+                </BlazorBlueprint.Primitives.Table.BbTable>
             </div>
 
-            <TablePagination TData="Person" State="@combinedTableState.Pagination"
+            <BlazorBlueprint.Primitives.Table.BbTablePagination TData="Person" State="@combinedTableState.Pagination"
                              OnPageChange="@HandleCombinedPaginationChange"
                              OnPageSizeChange="@HandleCombinedPaginationChange">
                 <PaginationTemplate Context="context">
@@ -695,39 +691,39 @@
                                 Page @context.State.CurrentPage of @context.State.TotalPages
                             </div>
                             <div class="flex items-center space-x-2">
-                                <Button Variant="ButtonVariant.Outline"
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToFirstPage"
                                         Disabled="@(!context.State.CanGoPrevious)"
                                         AriaLabel="Go to first page">
                                     <LucideIcon Name="chevrons-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
+                                </BbButton>
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToPreviousPage"
                                         Disabled="@(!context.State.CanGoPrevious)"
                                         AriaLabel="Go to previous page">
                                     <LucideIcon Name="chevron-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
+                                </BbButton>
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToNextPage"
                                         Disabled="@(!context.State.CanGoNext)"
                                         AriaLabel="Go to next page">
                                     <LucideIcon Name="chevron-right" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
+                                </BbButton>
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToLastPage"
                                         Disabled="@(!context.State.CanGoNext)"
                                         AriaLabel="Go to last page">
                                     <LucideIcon Name="chevrons-right" Size="16" />
-                                </Button>
+                                </BbButton>
                             </div>
                         </div>
                     </div>
                 </PaginationTemplate>
-            </TablePagination>
+            </BlazorBlueprint.Primitives.Table.BbTablePagination>
 
             <div class="rounded-lg border bg-card p-4">
                 <h3 class="font-semibold mb-2">Current State</h3>
@@ -752,23 +748,23 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <Table TData="Person" Data="@GetFilteredPeople()" @bind-State="@filteredTableState"
+                <BlazorBlueprint.Primitives.Table.BbTable TData="Person" Data="@GetFilteredPeople()" @bind-State="@filteredTableState"
                        OnPageChange="@HandleFilteredPaginationChange"
                        OnPageSizeChange="@HandleFilteredPaginationChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                    <BlazorBlueprint.Primitives.Table.BbTableHeader Class="[&_tr]:border-b">
+                        <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center gap-2">
                                     <span>Name</span>
-                                    <Popover>
-                                        <PopoverTrigger>
+                                    <BlazorBlueprint.Primitives.Popover.BbPopover>
+                                        <BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
                                             <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(nameFilter) ? "text-primary" : "text-muted-foreground")"
                                                     aria-label="Filter name">
                                                 <LucideIcon Name="filter" Size="14" />
                                             </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                        </BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
+                                        <BlazorBlueprint.Primitives.Popover.BbPopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
                                             <div class="space-y-2">
                                                 <h4 class="font-medium text-sm">Filter by Name</h4>
                                                 <input type="text"
@@ -785,21 +781,21 @@
                                                     </button>
                                                 }
                                             </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                        </BlazorBlueprint.Primitives.Popover.BbPopoverContent>
+                                    </BlazorBlueprint.Primitives.Popover.BbPopover>
                                 </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center gap-2">
                                     <span>Email</span>
-                                    <Popover>
-                                        <PopoverTrigger>
+                                    <BlazorBlueprint.Primitives.Popover.BbPopover>
+                                        <BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
                                             <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(emailFilter) ? "text-primary" : "text-muted-foreground")"
                                                     aria-label="Filter email">
                                                 <LucideIcon Name="filter" Size="14" />
                                             </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                        </BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
+                                        <BlazorBlueprint.Primitives.Popover.BbPopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
                                             <div class="space-y-2">
                                                 <h4 class="font-medium text-sm">Filter by Email</h4>
                                                 <input type="text"
@@ -816,21 +812,21 @@
                                                     </button>
                                                 }
                                             </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                        </BlazorBlueprint.Primitives.Popover.BbPopoverContent>
+                                    </BlazorBlueprint.Primitives.Popover.BbPopover>
                                 </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center gap-2">
                                     <span>Department</span>
-                                    <Popover>
-                                        <PopoverTrigger>
+                                    <BlazorBlueprint.Primitives.Popover.BbPopover>
+                                        <BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
                                             <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(departmentFilter) ? "text-primary" : "text-muted-foreground")"
                                                     aria-label="Filter department">
                                                 <LucideIcon Name="filter" Size="14" />
                                             </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                        </BlazorBlueprint.Primitives.Popover.BbPopoverTrigger>
+                                        <BlazorBlueprint.Primitives.Popover.BbPopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
                                             <div class="space-y-2">
                                                 <h4 class="font-medium text-sm">Filter by Department</h4>
                                                 <input type="text"
@@ -847,13 +843,13 @@
                                                     </button>
                                                 }
                                             </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                        </BlazorBlueprint.Primitives.Popover.BbPopoverContent>
+                                    </BlazorBlueprint.Primitives.Popover.BbPopover>
                                 </div>
-                            </TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
+                            </BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                        </BlazorBlueprint.Primitives.Table.BbTableRow>
+                    </BlazorBlueprint.Primitives.Table.BbTableHeader>
+                    <BlazorBlueprint.Primitives.Table.BbTableBody Class="[&_tr:last-child]:border-0">
                         @{
                             var filteredPeople = GetFilteredPageData().ToList();
                         }
@@ -861,26 +857,26 @@
                         {
                             @foreach (var person in filteredPeople)
                             {
-                                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                                    <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                                    <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                                    <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                                </TableRow>
+                                <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                    <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Name</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                    <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Email</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                    <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Department</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                </BlazorBlueprint.Primitives.Table.BbTableRow>
                             }
                         }
                         else
                         {
-                            <TableRow TData="Person" Class="border-b">
-                                <TableCell Class="p-4 align-middle text-center text-muted-foreground" colspan="3">
+                            <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b">
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle text-center text-muted-foreground" colspan="3">
                                     No results found
-                                </TableCell>
-                            </TableRow>
+                                </BlazorBlueprint.Primitives.Table.BbTableCell>
+                            </BlazorBlueprint.Primitives.Table.BbTableRow>
                         }
-                    </TableBody>
-                </Table>
+                    </BlazorBlueprint.Primitives.Table.BbTableBody>
+                </BlazorBlueprint.Primitives.Table.BbTable>
             </div>
 
-            <TablePagination TData="Person" State="@filteredTableState.Pagination"
+            <BlazorBlueprint.Primitives.Table.BbTablePagination TData="Person" State="@filteredTableState.Pagination"
                              OnPageChange="@HandleFilteredPaginationChange"
                              OnPageSizeChange="@HandleFilteredPaginationChange">
                 <PaginationTemplate Context="context">
@@ -903,39 +899,39 @@
                                 Page @context.State.CurrentPage of @context.State.TotalPages
                             </div>
                             <div class="flex items-center space-x-2">
-                                <Button Variant="ButtonVariant.Outline"
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToFirstPage"
                                         Disabled="@(!context.State.CanGoPrevious)"
                                         AriaLabel="Go to first page">
                                     <LucideIcon Name="chevrons-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
+                                </BbButton>
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToPreviousPage"
                                         Disabled="@(!context.State.CanGoPrevious)"
                                         AriaLabel="Go to previous page">
                                     <LucideIcon Name="chevron-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
+                                </BbButton>
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToNextPage"
                                         Disabled="@(!context.State.CanGoNext)"
                                         AriaLabel="Go to next page">
                                     <LucideIcon Name="chevron-right" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
+                                </BbButton>
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToLastPage"
                                         Disabled="@(!context.State.CanGoNext)"
                                         AriaLabel="Go to last page">
                                     <LucideIcon Name="chevrons-right" Size="16" />
-                                </Button>
+                                </BbButton>
                             </div>
                         </div>
                     </div>
                 </PaginationTemplate>
-            </TablePagination>
+            </BlazorBlueprint.Primitives.Table.BbTablePagination>
 
             <div class="rounded-lg border bg-card p-4">
                 <h3 class="font-semibold mb-2">Filter State</h3>
@@ -979,19 +975,19 @@
             </div>
 
             <div class="rounded-md border">
-                <Table TData="Person" Data="@GetGloballyFilteredPeople()" @bind-State="@globalSearchTableState"
+                <BlazorBlueprint.Primitives.Table.BbTable TData="Person" Data="@GetGloballyFilteredPeople()" @bind-State="@globalSearchTableState"
                        OnPageChange="@HandleGlobalSearchPaginationChange"
                        OnPageSizeChange="@HandleGlobalSearchPaginationChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
+                    <BlazorBlueprint.Primitives.Table.BbTableHeader Class="[&_tr]:border-b">
+                        <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                            <BlazorBlueprint.Primitives.Table.BbTableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</BlazorBlueprint.Primitives.Table.BbTableHeaderCell>
+                        </BlazorBlueprint.Primitives.Table.BbTableRow>
+                    </BlazorBlueprint.Primitives.Table.BbTableHeader>
+                    <BlazorBlueprint.Primitives.Table.BbTableBody Class="[&_tr:last-child]:border-0">
                         @{
                             var globalFilteredPeople = GetGlobalSearchPageData().ToList();
                         }
@@ -999,27 +995,27 @@
                         {
                             @foreach (var person in globalFilteredPeople)
                             {
-                                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                                    <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                                    <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                                    <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                                    <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                                </TableRow>
+                                <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                    <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Name</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                    <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Email</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                    <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Age</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                    <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle">@person.Department</BlazorBlueprint.Primitives.Table.BbTableCell>
+                                </BlazorBlueprint.Primitives.Table.BbTableRow>
                             }
                         }
                         else
                         {
-                            <TableRow TData="Person" Class="border-b">
-                                <TableCell Class="p-4 align-middle text-center text-muted-foreground" colspan="4">
+                            <BlazorBlueprint.Primitives.Table.BbTableRow TData="Person" Class="border-b">
+                                <BlazorBlueprint.Primitives.Table.BbTableCell Class="p-4 align-middle text-center text-muted-foreground" colspan="4">
                                     No results found for "@globalSearchFilter"
-                                </TableCell>
-                            </TableRow>
+                                </BlazorBlueprint.Primitives.Table.BbTableCell>
+                            </BlazorBlueprint.Primitives.Table.BbTableRow>
                         }
-                    </TableBody>
-                </Table>
+                    </BlazorBlueprint.Primitives.Table.BbTableBody>
+                </BlazorBlueprint.Primitives.Table.BbTable>
             </div>
 
-            <TablePagination TData="Person" State="@globalSearchTableState.Pagination"
+            <BlazorBlueprint.Primitives.Table.BbTablePagination TData="Person" State="@globalSearchTableState.Pagination"
                              OnPageChange="@HandleGlobalSearchPaginationChange"
                              OnPageSizeChange="@HandleGlobalSearchPaginationChange">
                 <PaginationTemplate Context="context">
@@ -1042,39 +1038,39 @@
                                 Page @context.State.CurrentPage of @context.State.TotalPages
                             </div>
                             <div class="flex items-center space-x-2">
-                                <Button Variant="ButtonVariant.Outline"
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToFirstPage"
                                         Disabled="@(!context.State.CanGoPrevious)"
                                         AriaLabel="Go to first page">
                                     <LucideIcon Name="chevrons-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
+                                </BbButton>
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToPreviousPage"
                                         Disabled="@(!context.State.CanGoPrevious)"
                                         AriaLabel="Go to previous page">
                                     <LucideIcon Name="chevron-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
+                                </BbButton>
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToNextPage"
                                         Disabled="@(!context.State.CanGoNext)"
                                         AriaLabel="Go to next page">
                                     <LucideIcon Name="chevron-right" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
+                                </BbButton>
+                                <BbButton Variant="ButtonVariant.Outline"
                                         Size="ButtonSize.Icon"
                                         OnClick="@context.GoToLastPage"
                                         Disabled="@(!context.State.CanGoNext)"
                                         AriaLabel="Go to last page">
                                     <LucideIcon Name="chevrons-right" Size="16" />
-                                </Button>
+                                </BbButton>
                             </div>
                         </div>
                     </div>
                 </PaginationTemplate>
-            </TablePagination>
+            </BlazorBlueprint.Primitives.Table.BbTablePagination>
 
             <div class="rounded-lg border bg-card p-4">
                 <h3 class="font-semibold mb-2">Search Results</h3>
@@ -1086,72 +1082,36 @@
         </div>
     </section>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Accessibility Features</h2>
-                <p class="text-muted-foreground">
-                    Built-in accessibility features following WAI-ARIA design patterns.
-                </p>
-            </div>
-
-            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
-                <div>
-                    <h3 class="font-semibold mb-2">ARIA Attributes</h3>
-                    <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">role="grid"</code> for screen readers</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">aria-sort</code> indicates column sort direction</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">aria-selected</code> indicates row selection state</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">aria-rowcount</code> for total row count</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Focusable rows with visible focus indicator</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Keyboard Shortcuts</h2>
-                <p class="text-muted-foreground">
-                    Navigate and interact with the table using keyboard.
-                </p>
-            </div>
-
-            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
-                <div class="grid gap-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Navigate to next row</span>
-                        <Kbd>ArrowDown</Kbd>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Navigate to previous row</span>
-                        <Kbd>ArrowUp</Kbd>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Toggle row selection</span>
-                        <Kbd>Enter / Space</Kbd>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Sort column</span>
-                        <span class="text-sm text-muted-foreground">Click header</span>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <AccessibilityList>
+            <AriaAttributes>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">role="grid"</code> for screen readers
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-sort</code> indicates column sort direction
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-selected</code> indicates row selection state
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">aria-rowcount</code> for total row count
+                </AccessibilityItem>
+                <AccessibilityItem>
+                    Focusable rows with visible focus indicator
+                </AccessibilityItem>
+            </AriaAttributes>
+            <KeyboardNavigation>
+                <KeyboardShortcutItem Description="Navigate to next row">
+                    <BbKbd>ArrowDown</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Navigate to previous row">
+                    <BbKbd>ArrowUp</BbKbd>
+                </KeyboardShortcutItem>
+                <KeyboardShortcutItem Description="Toggle row selection">
+                    <BbKbd>Enter / Space</BbKbd>
+                </KeyboardShortcutItem>
+            </KeyboardNavigation>
+        </AccessibilityList>
 
         <section class="space-y-4">
             <div class="space-y-2">
@@ -1162,96 +1122,68 @@
             </div>
 
             <div class="space-y-4">
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">Table</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Data</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>IEnumerable&lt;TData&gt;</code><br/>
-                                The data source for the table.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">State</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>TableState&lt;TData&gt;?</code><br/>
-                                The table state for controlled mode. Use with @@bind-State for two-way binding.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">SelectionMode</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>SelectionMode</code><br/>
-                                <strong>Default:</strong> <code>None</code><br/>
-                                The selection mode: None, Single, or Multiple.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">EnableKeyboardNavigation</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>true</code><br/>
-                                Enables keyboard navigation for table rows (arrow keys to navigate, Enter/Space to select).
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">ManualPagination</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>false</code><br/>
-                                When true, the table will not automatically set TotalItems.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">OnSelectionChange</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>EventCallback&lt;IReadOnlyCollection&lt;TData&gt;&gt;</code><br/>
-                                Callback invoked when the selection changes.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">OnSortChange</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>EventCallback&lt;(string, SortDirection)&gt;</code><br/>
-                                Callback invoked when sorting changes.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="Table&lt;TData&gt;">
+                    <ApiParameter Name="Data" Type="IEnumerable&lt;TData&gt;">
+                        The data source for the table.
+                    </ApiParameter>
+                    <ApiParameter Name="State" Type="TableState&lt;TData&gt;?">
+                        The table state for controlled mode. Use with <code>@@bind-State</code> for two-way binding.
+                    </ApiParameter>
+                    <ApiParameter Name="SelectionMode" Type="SelectionMode" Default="None">
+                        The selection mode: None, Single, or Multiple.
+                    </ApiParameter>
+                    <ApiParameter Name="EnableKeyboardNavigation" Type="bool" Default="true">
+                        Enables keyboard navigation for table rows (arrow keys to navigate, Enter/Space to select).
+                    </ApiParameter>
+                    <ApiParameter Name="ManualPagination" Type="bool" Default="false">
+                        When true, the table will not automatically set TotalItems.
+                    </ApiParameter>
+                    <ApiParameter Name="OnSelectionChange" Type="EventCallback&lt;IReadOnlyCollection&lt;TData&gt;&gt;">
+                        Callback invoked when the selection changes.
+                    </ApiParameter>
+                    <ApiParameter Name="OnSortChange" Type="EventCallback&lt;(string, SortDirection)&gt;">
+                        Callback invoked when sorting changes.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The table content (TableHeader, TableBody).
+                    </ApiParameter>
+                    <ApiParameter Name="Class" Type="string?">
+                        Additional CSS classes for the table element.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the table element.
+                    </ApiParameter>
+                </ApiReference>
 
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">TableRow</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Item</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>TData?</code><br/>
-                                The data item for this row. Required for selection to work.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Class</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>string?</code><br/>
-                                Additional CSS classes to apply to the row.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="TableRow&lt;TData&gt;">
+                    <ApiParameter Name="Item" Type="TData?">
+                        The data item for this row. Required for selection to work.
+                    </ApiParameter>
+                    <ApiParameter Name="Class" Type="string?">
+                        Additional CSS classes to apply to the row.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The row content (TableCell or TableHeaderCell elements).
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the row element.
+                    </ApiParameter>
+                </ApiReference>
 
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">TableHeaderCell</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">ColumnId</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>string?</code><br/>
-                                The column identifier. When provided, clicking the header toggles sorting.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <ApiReference ComponentName="TableHeaderCell&lt;TData&gt;">
+                    <ApiParameter Name="ColumnId" Type="string?">
+                        The column identifier. When provided, clicking the header toggles sorting.
+                    </ApiParameter>
+                    <ApiParameter Name="Class" Type="string?">
+                        Additional CSS classes for the header cell.
+                    </ApiParameter>
+                    <ApiParameter Name="ChildContent" Type="RenderFragment?">
+                        The header cell content.
+                    </ApiParameter>
+                    <ApiParameter Name="AdditionalAttributes" Type="Dictionary&lt;string, object&gt;?">
+                        Additional HTML attributes applied to the header cell element.
+                    </ApiParameter>
+                </ApiReference>
             </div>
         </section>
     </div>

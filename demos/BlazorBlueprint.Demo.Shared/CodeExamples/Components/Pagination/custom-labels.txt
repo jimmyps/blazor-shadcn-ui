@@ -1,0 +1,11 @@
+<BbPagination State="paginationState">
+    <BbPaginationInfo Format="Items {0} to {1} (Total: {2})" EmptyText="No data available" />
+    <BbPaginationContent>
+        <BbPaginationPageSizeSelector Label="Items per page" ShowLabel="true" />
+        <BbPaginationPageDisplay Format="{0} / {1}" />
+        <BbPaginationItem><BbPaginationFirst /></BbPaginationItem>
+        <BbPaginationItem><BbPaginationPrevious ShowText="false" /></BbPaginationItem>
+        <BbPaginationItem><BbPaginationNext ShowText="false" /></BbPaginationItem>
+        <BbPaginationItem><BbPaginationLast /></BbPaginationItem>
+    </BbPaginationContent>
+</BbPagination>

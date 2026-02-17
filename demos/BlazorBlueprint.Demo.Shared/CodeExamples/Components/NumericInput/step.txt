@@ -1,0 +1,1 @@
+<BbNumericInput TValue="int" @bind-Value="_steppedValue" Step="5" Min="0" Max="100" Placeholder="Step: 5" />

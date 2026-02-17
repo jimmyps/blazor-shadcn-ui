@@ -1,0 +1,112 @@
+@namespace BlazorBlueprint.Components
+
+@* Styled TooltipContent - wrapper with shadcn Tailwind classes *@
+<BlazorBlueprint.Primitives.Tooltip.BbTooltipContent class="@CssClass"
+                                                  Side="@Side"
+                                                  Align="@Align"
+                                                  Offset="@Offset">
+    @ChildContent
+    @if (ShowArrow)
+    {
+        <div class="@ArrowClass"></div>
+    }
+</BlazorBlueprint.Primitives.Tooltip.BbTooltipContent>
+
+@code {
+    [CascadingParameter]
+    private BlazorBlueprint.Primitives.Tooltip.TooltipContext? Context { get; set; }
+
+    /// <summary>
+    /// The content to render inside the tooltip.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes to apply to the content container.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Preferred side for positioning.
+    /// If not set, uses the Placement from the parent Tooltip context.
+    /// </summary>
+    [Parameter]
+    public PopoverSide? Side { get; set; }
+
+    /// <summary>
+    /// Alignment relative to trigger.
+    /// If not set, uses the Placement from the parent Tooltip context.
+    /// </summary>
+    [Parameter]
+    public PopoverAlign? Align { get; set; }
+
+    /// <summary>
+    /// Offset distance from the trigger in pixels.
+    /// Default is 8.
+    /// </summary>
+    [Parameter]
+    public int Offset { get; set; } = 8;
+
+    /// <summary>
+    /// Whether to show a directional arrow pointing toward the trigger element.
+    /// </summary>
+    [Parameter]
+    public bool ShowArrow { get; set; }
+
+    /// <summary>
+    /// Gets the effective side for CSS class computation.
+    /// Uses Side parameter if set, otherwise derives from context's Placement.
+    /// </summary>
+    private PopoverSide EffectiveSide
+    {
+        get
+        {
+            if (Side.HasValue)
+            {
+                return Side.Value;
+            }
+
+            var placement = Context?.Placement ?? "top";
+            var basePlacement = placement.Split('-')[0];
+
+            return basePlacement switch
+            {
+                "top" => PopoverSide.Top,
+                "bottom" => PopoverSide.Bottom,
+                "left" => PopoverSide.Left,
+                "right" => PopoverSide.Right,
+                _ => PopoverSide.Top
+            };
+        }
+    }
+
+    private string CssClass => ClassNames.cn(
+        "z-50 rounded-md border bg-popover px-3 py-1.5",
+        ShowArrow ? "relative" : "overflow-hidden",
+        "text-sm text-popover-foreground shadow-md",
+        "animate-in fade-in-0 zoom-in-95 max-w-md",
+        EffectiveSide switch
+        {
+            PopoverSide.Top => "slide-in-from-bottom-2",
+            PopoverSide.Bottom => "slide-in-from-top-2",
+            PopoverSide.Left => "slide-in-from-right-2",
+            PopoverSide.Right => "slide-in-from-left-2",
+            _ => "slide-in-from-bottom-2"
+        },
+        Class
+    );
+
+    private string ArrowClass => ClassNames.cn(
+        "absolute h-2 w-2 rotate-45 bg-popover",
+        EffectiveSide switch
+        {
+            PopoverSide.Top => "bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 border-b border-r border-border",
+            PopoverSide.Bottom => "top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 border-t border-l border-border",
+            PopoverSide.Left => "right-0 top-1/2 translate-x-1/2 -translate-y-1/2 border-t border-r border-border",
+            PopoverSide.Right => "left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 border-b border-l border-border",
+            _ => "bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 border-b border-r border-border"
+        }
+    );
+}

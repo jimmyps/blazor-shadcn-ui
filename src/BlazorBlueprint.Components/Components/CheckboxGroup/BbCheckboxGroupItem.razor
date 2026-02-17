@@ -1,0 +1,16 @@
+@typeparam TValue
+@namespace BlazorBlueprint.Components
+
+<div class="@CssClass">
+    <BbCheckbox Id="@itemId"
+              Checked="@IsChecked"
+              CheckedChanged="@HandleCheckedChanged"
+              Disabled="@IsDisabled" />
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label for="@itemId" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            @Label
+        </label>
+    }
+    @ChildContent
+</div>

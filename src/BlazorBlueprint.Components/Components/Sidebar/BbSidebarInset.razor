@@ -1,0 +1,12 @@
+@namespace BlazorBlueprint.Components
+@implements IAsyncDisposable
+
+@*
+    SidebarInset component that provides the main content area.
+    Automatically adjusts margins based on sidebar state and variant.
+    Optionally resets scroll position on navigation.
+*@
+
+<main @ref="mainRef" class="@GetClasses()" @attributes="AdditionalAttributes">
+    @ChildContent
+</main>

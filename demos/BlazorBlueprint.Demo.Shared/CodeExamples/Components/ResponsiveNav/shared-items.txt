@@ -1,0 +1,31 @@
+@code {
+    private static readonly NavItemDefinition[] sharedNavItems =
+    [
+        new() { Text = "Documentation", Href = "/docs" },
+        new()
+        {
+            Text = "Components",
+            Children =
+            [
+                new() { Text = "Button", Href = "/components/button",
+                        Description = "Interactive buttons with variants and sizes." },
+                new() { Text = "Dialog", Href = "/components/dialog",
+                        Description = "Modal dialogs for user interactions." },
+                new() { Text = "Input", Href = "/components/input",
+                        Description = "Text input fields with validation." }
+            ]
+        },
+        new() { Text = "Primitives", Href = "/primitives" },
+        new() { Text = "Icons", Href = "/icons" }
+    ];
+}
+
+<BbResponsiveNavProvider>
+    <header class="flex items-center justify-between p-4 border-b">
+        <BbResponsiveNavTrigger />
+        <BbResponsiveNavItems Items="@sharedNavItems" />
+    </header>
+</BbResponsiveNavProvider>
+
+@* Define navigation once — renders both desktop NavigationMenu *@
+@* and mobile Sheet automatically. *@

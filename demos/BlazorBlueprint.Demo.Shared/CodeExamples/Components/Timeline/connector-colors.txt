@@ -1,0 +1,10 @@
+<BbTimeline>
+    <BbTimelineItem IconColor="TimelineColor.Primary" ConnectorColor="TimelineColor.Accent">
+        <ChildContent>
+            <BbTimelineContent>
+                <BbTimelineTitle>Accent Connector</BbTimelineTitle>
+                <BbTimelineDescription>This item uses an accent-colored connector line.</BbTimelineDescription>
+            </BbTimelineContent>
+        </ChildContent>
+    </BbTimelineItem>
+</BbTimeline>

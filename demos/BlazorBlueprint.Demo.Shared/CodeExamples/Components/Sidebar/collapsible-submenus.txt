@@ -1,0 +1,21 @@
+<BbSidebarMenu>
+    <BbSidebarMenuItem>
+        <BbCollapsible>
+            <BbSidebarMenuButton Tooltip="Models">
+                <span>Models</span>
+                <BbSidebarMenuChevron>
+                    <LucideIcon Name="chevron-right" Size="16" />
+                </BbSidebarMenuChevron>
+            </BbSidebarMenuButton>
+            <BbCollapsibleContent>
+                <BbSidebarMenuSub>
+                    <BbSidebarMenuSubItem>
+                        <BbSidebarMenuSubButton>
+                            <span>Genesis</span>
+                        </BbSidebarMenuSubButton>
+                    </BbSidebarMenuSubItem>
+                </BbSidebarMenuSub>
+            </BbCollapsibleContent>
+        </BbCollapsible>
+    </BbSidebarMenuItem>
+</BbSidebarMenu>
