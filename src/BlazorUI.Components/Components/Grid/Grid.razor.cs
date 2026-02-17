@@ -148,10 +148,19 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public RenderFragment? Columns { get; set; }
 
     /// <summary>
-    /// Gets or sets the template to display while the grid is loading.
+    /// Gets or sets the template to display while the grid is loading data.
+    /// This is shown when IsLoading is true (e.g., during data fetch operations).
     /// </summary>
     [Parameter]
     public RenderFragment? LoadingTemplate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the template to display while the grid is initializing.
+    /// This is shown during first-time setup (downloading scripts, building grid options).
+    /// If not provided, a default "Initializing grid..." message is displayed.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? InitializingTemplate { get; set; }
 
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the grid container.
@@ -1284,36 +1293,16 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         return string.Join("; ", styles);
     }
     
-    private string GetLoaderStyle()
-    {
-        // Loader styles: absolute positioning over grid with white background
-        // Initially visible (display: flex), will be hidden via JavaScript when grid is ready
-        var styles = new List<string>
-        {
-            "position: absolute",
-            "top: 0",
-            "left: 0",
-            "right: 0",
-            "bottom: 0",
-            "z-index: 10",
-            "background: hsl(var(--background))",
-            "display: flex",
-            "align-items: center",
-            "justify-content: center"
-        };
-
-        return string.Join("; ", styles);
-    }
-    
     /// <summary>
     /// Internal JSInvokable method called when grid initialization is complete.
-    /// Updates internal state without triggering Blazor re-render.
+    /// Updates internal state and triggers a re-render to hide the initializing template.
     /// </summary>
     [JSInvokable]
     public void OnGridReadyInternal()
     {
-        // Update internal state silently - no StateHasChanged() call
+        // Update internal state and trigger re-render to hide initializing template
         _initialized = true;
+        StateHasChanged();
         
         // Invoke user-facing callback if needed
         OnGridReady?.Invoke();

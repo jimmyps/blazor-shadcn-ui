@@ -7,7 +7,35 @@
 
 <CascadingValue Value="this" IsFixed="true">
     <div class="@ContainerCssClass" style="@InlineStyle">
-        @if (_columns.Count == 0 && _columnsRegistered)
+        @if (!_initialized && !_columnsRegistered)
+        {
+            @* Initializing state - shown during first-time setup (script loading, grid building) *@
+            @if (InitializingTemplate != null)
+            {
+                @InitializingTemplate
+            }
+            else
+            {
+                <div class="flex items-center justify-center p-8 text-muted-foreground">
+                    <div class="text-sm">Initializing grid...</div>
+                </div>
+            }
+        }
+        else if (IsLoading)
+        {
+            @* Loading state - shown when fetching/refreshing data *@
+            @if (LoadingTemplate != null)
+            {
+                @LoadingTemplate
+            }
+            else
+            {
+                <div class="flex items-center justify-center p-8 text-muted-foreground">
+                    <div class="text-sm">Loading...</div>
+                </div>
+            }
+        }
+        else if (_columns.Count == 0 && _columnsRegistered)
         {
             <div class="text-sm text-muted-foreground p-4">
                 No columns defined. Add GridColumn components inside the Columns parameter.
@@ -15,24 +43,8 @@
         }
         else
         {
-            <div class="relative">
-                @* Grid loader - always present in DOM, hidden via JavaScript when grid is ready *@
-                <div class="grid-loader" style="@GetLoaderStyle()">
-                    @if (LoadingTemplate != null)
-                    {
-                        @LoadingTemplate
-                    }
-                    else
-                    {
-                        <div class="flex items-center justify-center p-8 text-muted-foreground">
-                            <div class="text-sm">Loading...</div>
-                        </div>
-                    }
-                </div>
-                
-                @* AG Grid requires explicit height and theme class *@
-                <div @ref="_gridContainer" class="@GetGridCssClass()" style="@GetGridContainerStyle()"></div>
-            </div>
+            @* AG Grid requires explicit height and theme class *@
+            <div @ref="_gridContainer" class="@GetGridCssClass()" style="@GetGridContainerStyle()"></div>
         }
     </div>
     

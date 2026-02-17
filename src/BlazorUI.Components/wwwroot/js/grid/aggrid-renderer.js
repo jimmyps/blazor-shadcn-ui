@@ -19,9 +19,6 @@ import { themeAlpine, themeBalham, themeQuartz } from 'ag-grid-community';
 
 import { createShadcnTheme } from './theme-shadcn.js';
 
-// Constants
-const GRID_LOADER_SELECTOR = '.grid-loader';
-
 // ModuleRegistry.registerModules([AllCommunityModule]);
 
 // Track if Server-Side Row Model has been loaded (only load once)
@@ -295,15 +292,7 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
         // Create AG Grid instance - returns the API directly
         const gridApi = agCreateGrid(element, gridOptions);
         
-        // Hide the loader when grid is ready
-        // Look for .grid-loader in the parent container
-        const loaderElement = element.parentElement?.querySelector(GRID_LOADER_SELECTOR);
-        if (loaderElement) {
-            // Hide loader via DOM manipulation (no Blazor re-render)
-            loaderElement.style.display = 'none';
-        }
-        
-        // Notify Blazor that grid is ready (without triggering StateHasChanged)
+        // Notify Blazor that grid is ready (triggers state change to hide initializing template)
         if (dotNetRef && typeof dotNetRef.invokeMethodAsync === 'function') {
             try {
                 await dotNetRef.invokeMethodAsync('OnGridReadyInternal');
