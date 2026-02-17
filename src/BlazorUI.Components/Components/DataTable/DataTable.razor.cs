@@ -387,7 +387,7 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// Registers a column with the data table during component initialization.
     /// Called internally by DataTableColumn components when they are initialized.
     /// </summary>
-    /// <typeparam name="TValue">The type of the column's property value.</typeparam>
+    /// <typeparam name="TValue">The type of value returned by the column's property accessor.</typeparam>
     /// <param name="column">The column component to register.</param>
     internal void RegisterColumn<TValue>(DataTableColumn<TData, TValue> column) where TValue : notnull
     {
@@ -418,7 +418,7 @@ public partial class DataTable<TData> : ComponentBase where TData : class
 
     /// <summary>
     /// Processes the data through the complete pipeline: preprocessing, filtering, sorting, and pagination.
-    /// Updates both the filtered and final processed data collections.
+    /// Updates the _filteredData collection (after filtering) and _processedData collection (after pagination).
     /// </summary>
     private async Task ProcessDataAsync()
     {
