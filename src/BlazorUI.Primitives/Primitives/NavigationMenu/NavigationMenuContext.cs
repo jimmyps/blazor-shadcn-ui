@@ -278,6 +278,12 @@ public class NavigationMenuContext : PrimitiveContextWithEvents<NavigationMenuSt
         }
     }
 
+    /// <summary>
+    /// Releases all resources used by the <see cref="NavigationMenuContext"/>.
+    /// </summary>
+    /// <remarks>
+    /// Disposes the close timer and marks the context as disposed to prevent further operations.
+    /// </remarks>
     public void Dispose()
     {
         _disposed = true;
