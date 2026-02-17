@@ -15,7 +15,10 @@ public partial class FilterValue : ComponentBase
         {
             if (Condition.Value is List<string> list)
                 return list;
-            return new List<string>();
+            
+            // Initialize to empty list if not already a list
+            Condition.Value = new List<string>();
+            return (List<string>)Condition.Value;
         }
         set
         {

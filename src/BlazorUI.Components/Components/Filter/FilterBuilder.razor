@@ -79,7 +79,7 @@
                 
                 @* Conditions *@
                 <div class="space-y-3">
-                    @foreach (var condition in CurrentFilters.Conditions)
+                    @foreach (var condition in _workingFilters.Conditions)
                     {
                         <FilterConditionRow Condition="@condition"
                                            AvailableFields="@_fields"
