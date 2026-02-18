@@ -27,6 +27,7 @@
 
 ### BbAccordionTrigger (BlazorBlueprint.Primitives.Accordion)
   - AdditionalAttributes : Dictionary<String, Object> [CaptureUnmatchedValues]
+  - As : String
   - ChildContent : RenderFragment
   - Class : String
   - Item : BbAccordionItem [CascadingParameter]
@@ -371,6 +372,7 @@
 
 ### BbSheetTitle (BlazorBlueprint.Primitives.Sheet)
   - AdditionalAttributes : Dictionary<String, Object> [CaptureUnmatchedValues]
+  - As : String
   - ChildContent : RenderFragment
   - Context : SheetContext [CascadingParameter]
 
