@@ -1,0 +1,65 @@
+@rendermode InteractiveAuto
+
+<Card Class="h-full">
+    <CardHeader>
+        <CardTitle>Invite Team Member</CardTitle>
+    </CardHeader>
+    <CardContent>
+        <div class="space-y-4">
+            <div class="flex items-center gap-4">
+                <Avatar Size="AvatarSize.Large">
+                    <AvatarFallback>JD</AvatarFallback>
+                </Avatar>
+                <div class="flex-1">
+                    <Input Type="InputType.Email" Placeholder="john@example.com" @bind-Value="email" />
+                </div>
+            </div>
+            
+            <div>
+                <Label>Role</Label>
+                <Select @bind-Value="role">
+                    <SelectTrigger>
+                        <SelectValue Placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem Value="@("admin")">Admin</SelectItem>
+                        <SelectItem Value="@("editor")">Editor</SelectItem>
+                        <SelectItem Value="@("viewer")">Viewer</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            
+            <div class="space-y-2">
+                <Label>Permissions</Label>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2">
+                        <Checkbox Id="perm1" @bind-Checked="canEdit" />
+                        <Label For="perm1">Can edit content</Label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <Checkbox Id="perm2" @bind-Checked="canDelete" />
+                        <Label For="perm2">Can delete content</Label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <Checkbox Id="perm3" />
+                        <Label For="perm3">Can manage users</Label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <Checkbox Id="perm4" />
+                        <Label For="perm4">Can view analytics</Label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </CardContent>
+    <CardFooter>
+        <Button Class="w-full">Send Invite</Button>
+    </CardFooter>
+</Card>
+
+@code {
+    private string email = "";
+    private string role = "editor";
+    private bool canEdit = true;
+    private bool canDelete = true;
+}

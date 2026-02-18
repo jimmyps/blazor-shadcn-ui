@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <RootNamespace>NeoUI.Web.Client</RootNamespace>
+    <AssemblyName>NeoUI.Web.Client</AssemblyName>
+    <ResolveStaticWebAssetsInputsDependsOn>
+      RemoveIndexHtmlFromStaticAssets;
+      $(ResolveStaticWebAssetsInputsDependsOn)
+    </ResolveStaticWebAssetsInputsDependsOn>
+    <Configurations>Debug;Release;DebugWasm</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugWasm|AnyCPU'">
+    <DefineConstants>$(DefineConstants);WASM_STANDALONE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NeoUI.Web.Shared\NeoUI.Web.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- NeoBlazorUI NuGet Packages -->
+    <PackageReference Include="NeoBlazorUI.Components" Version="2.5.0" />
+    <PackageReference Include="NeoBlazorUI.Primitives" Version="2.4.0" />
+    <PackageReference Include="NeoBlazorUI.Icons.Lucide" Version="2.0.0" />
+    
+    <!-- Blazor WebAssembly -->
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- Remove index.html from static assets when used as project reference -->
+  <Target Name="RemoveIndexHtmlFromStaticAssets" Condition="'$(IsPublishing)' != 'true'">
+    <ItemGroup>
+      <Content Remove="wwwroot\index.html" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Build Tailwind CSS using npm -->
+  <Target Name="BuildTailwindCSS" BeforeTargets="BeforeBuild">
+    <Exec Command="npm run build:css" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+</Project>

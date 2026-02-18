@@ -1,0 +1,101 @@
+<section class="py-16 md:py-24 bg-muted/30">
+    <div class="container max-w-screen-2xl">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-semibold tracking-tight sm:text-4xl mb-4">
+                Enterprise-Grade Architecture
+            </h2>
+            <p class="text-muted-foreground max-w-[700px] mx-auto">
+                Built with production-ready patterns and best practices for scalable Blazor applications.
+            </p>
+        </div>
+        
+        <div class="space-y-6">
+            <Card>
+                <CardHeader>
+                    <div class="flex items-center gap-3">
+                        <LucideIcon Name="layout"" Class="h-8 w-8 text-primary" />
+                        <CardTitle>Portal Architecture</CardTitle>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-muted-foreground mb-4">
+                        Advanced portal system for overlays like dialogs, popovers, and tooltips. Proper z-index management and 
+                        accessibility features ensure components render correctly in any context.
+                    </p>
+                    <div class="bg-muted/50 p-4 rounded-md font-mono text-sm">
+                        <div class="text-muted-foreground">// Dialogs and overlays render in portal</div>
+                        <div>&lt;Dialog&gt;</div>
+                        <div class="pl-4">&lt;DialogTrigger&gt;Open&lt;/DialogTrigger&gt;</div>
+                        <div class="pl-4">&lt;DialogContent&gt;...&lt;/DialogContent&gt;</div>
+                        <div>&lt;/Dialog&gt;</div>
+                    </div>
+                </CardContent>
+            </Card>
+            
+            <Card>
+                <CardHeader>
+                    <div class="flex items-center gap-3">
+                        <LucideIcon Name="shield-check"" Class="h-8 w-8 text-primary" />
+                        <CardTitle>Type-Safe Components</CardTitle>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-muted-foreground mb-4">
+                        Strongly-typed parameters with enums for variants and sizes. Compile-time safety ensures you catch 
+                        issues before runtime with full IntelliSense support.
+                    </p>
+                    <div class="bg-muted/50 p-4 rounded-md font-mono text-sm">
+                        <div>&lt;Button </div>
+                        <div class="pl-4">Variant="ButtonVariant.Destructive"</div>
+                        <div class="pl-4">Size="ButtonSize.Large"&gt;</div>
+                        <div class="pl-4">Delete Account</div>
+                        <div>&lt;/Button&gt;</div>
+                    </div>
+                </CardContent>
+            </Card>
+            
+            <Card>
+                <CardHeader>
+                    <div class="flex items-center gap-3">
+                        <LucideIcon Name="paintbrush"" Class="h-8 w-8 text-primary" />
+                        <CardTitle>Zero-Config CSS Variables</CardTitle>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-muted-foreground mb-4">
+                        Theme system built on CSS variables for instant theme switching. No JavaScript required—themes 
+                        change by updating a single data attribute.
+                    </p>
+                    <div class="bg-muted/50 p-4 rounded-md font-mono text-sm">
+                        <div class="text-muted-foreground">// Themes via CSS variables</div>
+                        <div>:root &#123;</div>
+                        <div class="pl-4">--primary: 222.2 47.4% 11.2%;</div>
+                        <div class="pl-4">--background: 0 0% 100%;</div>
+                        <div>&#125;</div>
+                    </div>
+                </CardContent>
+            </Card>
+            
+            <Card>
+                <CardHeader>
+                    <div class="flex items-center gap-3">
+                        <LucideIcon Name="zap"" Class="h-8 w-8 text-primary" />
+                        <CardTitle>All Render Modes</CardTitle>
+                </div>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-muted-foreground mb-4">
+                        Seamless support for Server, WebAssembly, Auto, and Static SSR. Components automatically adapt 
+                        to the render mode with proper interactivity detection.
+                    </p>
+                    <div class="bg-muted/50 p-4 rounded-md font-mono text-sm">
+                        <div class="text-muted-foreground">// Works with any render mode</div>
+                        <div>@@rendermode InteractiveAuto</div>
+                        <div>@@rendermode InteractiveServer</div>
+                        <div>@@rendermode InteractiveWebAssembly</div>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    </div>
+</section>

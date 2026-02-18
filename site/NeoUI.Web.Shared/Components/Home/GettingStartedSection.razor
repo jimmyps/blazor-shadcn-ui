@@ -1,0 +1,76 @@
+<section class="py-16 md:py-24">
+    <div class="container max-w-screen-2xl">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-semibold tracking-tight sm:text-4xl mb-4">
+                Get Started in 3 Steps
+            </h2>
+            <p class="text-muted-foreground max-w-[700px] mx-auto">
+                From zero to production-ready UI in minutes.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card>
+                <CardHeader>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
+                            1
+                        </div>
+                        <CardTitle>Install via NuGet</CardTitle>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-muted-foreground mb-4">
+                        Add the NeoBlazorUI packages to your project. That's it—no additional configuration needed.
+                    </p>
+                    <div class="bg-muted/50 p-4 rounded-md font-mono text-sm overflow-x-auto">
+                        <div>dotnet add package NeoBlazorUI.Components</div>
+                        <div>dotnet add package NeoBlazorUI.Primitives</div>
+                    </div>
+                </CardContent>
+            </Card>
+            
+            <Card>
+                <CardHeader>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
+                            2
+                        </div>
+                        <CardTitle>Reference CSS</CardTitle>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-muted-foreground mb-4">
+                        Add the CSS reference to your App.razor or index.html file.
+                    </p>
+                    <div class="bg-muted/50 p-4 rounded-md font-mono text-sm overflow-x-auto">
+                        <div>&lt;link href="_content/NeoBlazorUI.Components/blazorui.css"</div>
+                        <div class="pl-6">rel="stylesheet" /&gt;</div>
+                    </div>
+                </CardContent>
+            </Card>
+            
+            <Card>
+                <CardHeader>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
+                            3
+                        </div>
+                        <CardTitle>Build</CardTitle>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-muted-foreground mb-4">
+                        Start using components in your Razor files. Full IntelliSense and type safety included.
+                    </p>
+                    <div class="bg-muted/50 p-4 rounded-md font-mono text-sm overflow-x-auto">
+                        <div>&lt;Button&gt;Click me&lt;/Button&gt;</div>
+                        <div>&lt;Card&gt;</div>
+                        <div class="pl-4">&lt;CardHeader&gt;Title&lt;/CardHeader&gt;</div>
+                        <div>&lt;/Card&gt;</div>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+    </div>
+</section>

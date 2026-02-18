@@ -1,0 +1,52 @@
+@rendermode InteractiveAuto
+
+<Card Class="h-full">
+    <CardHeader>
+        <CardTitle>Recent Activity</CardTitle>
+    </CardHeader>
+    <CardContent Class="p-0">
+        <ScrollArea Class="h-[400px]">
+            <div class="p-6 space-y-4">
+                @foreach (var activity in activities)
+                {
+                    <div class="flex gap-4">
+                        <Avatar>
+                            <AvatarFallback>@activity.Initials</AvatarFallback>
+                        </Avatar>
+                        <div class="flex-1 space-y-1">
+                            <p class="text-sm">
+                                <span class="font-medium">@activity.User</span>
+                                <span class="text-muted-foreground"> @activity.Action</span>
+                            </p>
+                            <p class="text-xs text-muted-foreground">@activity.Time</p>
+                        </div>
+                    </div>
+                    @if (activity != activities.Last())
+                    {
+                        <Separator />
+                    }
+                }
+            </div>
+        </ScrollArea>
+    </CardContent>
+</Card>
+
+@code {
+    private class Activity
+    {
+        public string User { get; set; } = "";
+        public string Initials { get; set; } = "";
+        public string Action { get; set; } = "";
+        public string Time { get; set; } = "";
+    }
+
+    private List<Activity> activities = new()
+    {
+        new() { User = "Sarah Chen", Initials = "SC", Action = "deployed to production", Time = "2 minutes ago" },
+        new() { User = "Mike Johnson", Initials = "MJ", Action = "merged pull request #234", Time = "15 minutes ago" },
+        new() { User = "Emma Davis", Initials = "ED", Action = "created new component", Time = "1 hour ago" },
+        new() { User = "Alex Kim", Initials = "AK", Action = "updated documentation", Time = "2 hours ago" },
+        new() { User = "Lisa Park", Initials = "LP", Action = "fixed critical bug", Time = "3 hours ago" },
+        new() { User = "Tom Wilson", Initials = "TW", Action = "reviewed code changes", Time = "4 hours ago" },
+    };
+}

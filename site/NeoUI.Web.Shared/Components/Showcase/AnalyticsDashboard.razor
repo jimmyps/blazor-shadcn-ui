@@ -1,0 +1,54 @@
+@rendermode InteractiveAuto
+
+<Card Class="h-full">
+    <CardHeader>
+        <div class="flex items-center justify-between">
+            <CardTitle>Revenue Analytics</CardTitle>
+            <Tabs Value="@selectedPeriod" OnValueChange="OnPeriodChanged">
+                <TabsList>
+                    <TabsTrigger Value="7D">7D</TabsTrigger>
+                    <TabsTrigger Value="30D">30D</TabsTrigger>
+                    <TabsTrigger Value="90D">90D</TabsTrigger>
+                    <TabsTrigger Value="1Y">1Y</TabsTrigger>
+                </TabsList>
+            </Tabs>
+        </div>
+    </CardHeader>
+    <CardContent>
+        <div class="grid grid-cols-3 gap-4 mb-6">
+            <div>
+                <p class="text-sm text-muted-foreground">Revenue</p>
+                <p class="text-2xl font-semibold">$45,231</p>
+                <p class="text-xs text-green-600">+12.5%</p>
+            </div>
+            <div>
+                <p class="text-sm text-muted-foreground">Users</p>
+                <p class="text-2xl font-semibold">1,234</p>
+                <p class="text-xs text-green-600">+8.2%</p>
+            </div>
+            <div>
+                <p class="text-sm text-muted-foreground">Conversion</p>
+                <p class="text-2xl font-semibold">3.2%</p>
+                <p class="text-xs text-red-600">-0.5%</p>
+            </div>
+        </div>
+        <div class="h-[200px] bg-muted/50 rounded-md flex items-center justify-center">
+            <p class="text-sm text-muted-foreground">Chart visualization</p>
+        </div>
+    </CardContent>
+    <CardFooter>
+        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" Class="ml-auto">
+            <LucideIcon Name="download"" Class="mr-2 h-4 w-4" />
+            Export
+        </Button>
+    </CardFooter>
+</Card>
+
+@code {
+    private string selectedPeriod = "30D";
+
+    private void OnPeriodChanged(string period)
+    {
+        selectedPeriod = period;
+    }
+}

@@ -1,0 +1,102 @@
+@rendermode InteractiveAuto
+
+<Card Class="h-full">
+    <CardHeader>
+        <div class="flex items-center justify-between mb-4">
+            <CardTitle>Pricing Plans</CardTitle>
+        </div>
+        <RadioGroup Value="@selectedPlan" OnValueChange="OnPlanChanged" Class="flex gap-4">
+            <div class="flex items-center space-x-2">
+                <RadioGroupItem Value="@("starter")" Id="starter" TValue="string" />
+                <Label For="starter">Starter</Label>
+            </div>
+            <div class="flex items-center space-x-2">
+                <RadioGroupItem Value="@("pro")" Id="pro" TValue="string" />
+                <Label For="pro">Pro</Label>
+            </div>
+            <div class="flex items-center space-x-2">
+                <RadioGroupItem Value="@("enterprise")" Id="enterprise" TValue="string" />
+                <Label For="enterprise">Enterprise</Label>
+            </div>
+        </RadioGroup>
+    </CardHeader>
+    <CardContent>
+        <div class="grid grid-cols-3 gap-6">
+            <div class="space-y-4 p-4 rounded-lg border @(selectedPlan == "starter" ? "border-primary" : "")">
+                <div>
+                    <h3 class="font-semibold">Starter</h3>
+                    <p class="text-2xl font-bold mt-2">$9<span class="text-sm text-muted-foreground">/mo</span></p>
+                </div>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex items-center gap-2">
+                        <LucideIcon Name="check"" Class="h-4 w-4 text-primary" />
+                        <span>Up to 10 users</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <LucideIcon Name="check"" Class="h-4 w-4 text-primary" />
+                        <span>Basic features</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <LucideIcon Name="check"" Class="h-4 w-4 text-primary" />
+                        <span>Email support</span>
+                    </li>
+                </ul>
+                <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" Class="w-full">Select</Button>
+            </div>
+            
+            <div class="space-y-4 p-4 rounded-lg border @(selectedPlan == "pro" ? "border-primary" : "") relative">
+                <Badge Class="absolute -top-2 -right-2">Popular</Badge>
+                <div>
+                    <h3 class="font-semibold">Pro</h3>
+                    <p class="text-2xl font-bold mt-2">$29<span class="text-sm text-muted-foreground">/mo</span></p>
+                </div>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex items-center gap-2">
+                        <LucideIcon Name="check"" Class="h-4 w-4 text-primary" />
+                        <span>Unlimited users</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <LucideIcon Name="check"" Class="h-4 w-4 text-primary" />
+                        <span>All features</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <LucideIcon Name="check"" Class="h-4 w-4 text-primary" />
+                        <span>Priority support</span>
+                    </li>
+                </ul>
+                <Button Size="ButtonSize.Small" Class="w-full">Select</Button>
+            </div>
+            
+            <div class="space-y-4 p-4 rounded-lg border @(selectedPlan == "enterprise" ? "border-primary" : "")">
+                <div>
+                    <h3 class="font-semibold">Enterprise</h3>
+                    <p class="text-2xl font-bold mt-2">Custom</p>
+                </div>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex items-center gap-2">
+                        <LucideIcon Name="check"" Class="h-4 w-4 text-primary" />
+                        <span>Custom solutions</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <LucideIcon Name="check"" Class="h-4 w-4 text-primary" />
+                        <span>SLA guarantee</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <LucideIcon Name="check"" Class="h-4 w-4 text-primary" />
+                        <span>Dedicated support</span>
+                    </li>
+                </ul>
+                <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small" Class="w-full">Contact Sales</Button>
+            </div>
+        </div>
+    </CardContent>
+</Card>
+
+@code {
+    private string selectedPlan = "pro";
+
+    private void OnPlanChanged(string plan)
+    {
+        selectedPlan = plan;
+    }
+}

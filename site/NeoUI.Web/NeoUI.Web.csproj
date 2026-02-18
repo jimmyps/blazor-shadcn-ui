@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>NeoUI.Web</RootNamespace>
+    <AssemblyName>NeoUI.Web</AssemblyName>
+    <NoWarn>CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NeoUI.Web.Shared\NeoUI.Web.Shared.csproj" />
+    <ProjectReference Include="..\NeoUI.Web.Client\NeoUI.Web.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- NeoBlazorUI NuGet Packages -->
+    <PackageReference Include="NeoBlazorUI.Components" Version="2.5.0" />
+    <PackageReference Include="NeoBlazorUI.Primitives" Version="2.4.0" />
+    <PackageReference Include="NeoBlazorUI.Icons.Lucide" Version="2.0.0" />
+    
+    <!-- Blazor Host -->
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,90 @@
+@rendermode InteractiveAuto
+
+<Card Class="h-full">
+    <CardHeader>
+        <CardTitle>Theme Switcher</CardTitle>
+        <p class="text-sm text-muted-foreground">Choose your preferred theme combination</p>
+    </CardHeader>
+    <CardContent>
+        <div class="space-y-6">
+            <div>
+                <Label Class="mb-3 block">Base Color</Label>
+                <div class="flex gap-2">
+                    @foreach (var color in baseColors)
+                    {
+                        <button 
+                            class="h-10 w-10 rounded-md border-2 @(selectedBase == color ? "border-primary" : "border-transparent")"
+                            style="background-color: @GetBaseColor(color)"
+                            @onclick="() => selectedBase = color">
+                        </button>
+                    }
+                </div>
+            </div>
+            
+            <div>
+                <Label Class="mb-3 block">Primary Color</Label>
+                <div class="grid grid-cols-9 gap-2">
+                    @foreach (var color in primaryColors)
+                    {
+                        <button 
+                            class="h-10 w-10 rounded-md border-2 @(selectedPrimary == color ? "border-primary ring-2 ring-offset-2 ring-primary" : "border-transparent")"
+                            style="background-color: @GetPrimaryColor(color)"
+                            @onclick="() => selectedPrimary = color">
+                        </button>
+                    }
+                </div>
+            </div>
+            
+            <div class="pt-4 border-t">
+                <p class="text-sm mb-3">Preview:</p>
+                <div class="p-4 rounded-lg border space-y-3">
+                    <Button Size="ButtonSize.Small">Sample Button</Button>
+                    <div class="p-3 rounded border bg-card">
+                        <p class="text-sm">Card with current theme</p>
+                    </div>
+                </div>
+                <p class="text-xs text-muted-foreground mt-2">Current: @selectedBase + @selectedPrimary</p>
+            </div>
+        </div>
+    </CardContent>
+</Card>
+
+@code {
+    private string[] baseColors = { "zinc", "slate", "gray", "neutral", "stone" };
+    private string[] primaryColors = { "blue", "red", "rose", "orange", "amber", "yellow", "lime", "green", "emerald", "teal", "cyan", "sky", "indigo", "violet", "purple", "fuchsia", "pink" };
+    
+    private string selectedBase = "zinc";
+    private string selectedPrimary = "blue";
+
+    private string GetBaseColor(string color) => color switch
+    {
+        "zinc" => "#71717a",
+        "slate" => "#64748b",
+        "gray" => "#6b7280",
+        "neutral" => "#737373",
+        "stone" => "#78716c",
+        _ => "#71717a"
+    };
+
+    private string GetPrimaryColor(string color) => color switch
+    {
+        "blue" => "#3b82f6",
+        "red" => "#ef4444",
+        "rose" => "#f43f5e",
+        "orange" => "#f97316",
+        "amber" => "#f59e0b",
+        "yellow" => "#eab308",
+        "lime" => "#84cc16",
+        "green" => "#22c55e",
+        "emerald" => "#10b981",
+        "teal" => "#14b8a6",
+        "cyan" => "#06b6d4",
+        "sky" => "#0ea5e9",
+        "indigo" => "#6366f1",
+        "violet" => "#8b5cf6",
+        "purple" => "#a855f7",
+        "fuchsia" => "#d946ef",
+        "pink" => "#ec4899",
+        _ => "#3b82f6"
+    };
+}

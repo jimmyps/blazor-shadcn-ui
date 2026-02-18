@@ -1,0 +1,77 @@
+@rendermode InteractiveAuto
+
+<Card Class="h-full">
+    <CardHeader>
+        <CardTitle>Settings</CardTitle>
+    </CardHeader>
+    <CardContent>
+        <div class="space-y-6">
+            <div class="flex items-center justify-between">
+                <div class="space-y-0.5">
+                    <Label>Email notifications</Label>
+                    <p class="text-sm text-muted-foreground">Receive emails about your account activity</p>
+                </div>
+                <Switch @bind-Checked="emailNotifications" />
+            </div>
+            
+            <Separator />
+            
+            <div class="space-y-2">
+                <Label>Theme</Label>
+                <Select Value="@("Dark")">
+                    <SelectTrigger>
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem Value="@("Light")">Light</SelectItem>
+                        <SelectItem Value="@("Dark")">Dark</SelectItem>
+                        <SelectItem Value="@("SystemDefault")">System</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            
+            <div class="space-y-2">
+                <Label>Language</Label>
+                <Select Value="@("English")">
+                    <SelectTrigger>
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem Value="@("English")">English</SelectItem>
+                        <SelectItem Value="@("Spanish")">Spanish</SelectItem>
+                        <SelectItem Value="@("French")">French</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            
+            <div class="space-y-2">
+                <Label>Timezone</Label>
+                <Select Value="@("UTC-8")">
+                    <SelectTrigger>
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem Value="@("UTC-8")">Pacific Time (UTC-8)</SelectItem>
+                        <SelectItem Value="@("UTC-5")">Eastern Time (UTC-5)</SelectItem>
+                        <SelectItem Value="@("UTC+0")">GMT (UTC+0)</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            
+            <Separator />
+            
+            <div class="flex items-center justify-between">
+                <div class="space-y-0.5">
+                    <Label>Auto-save</Label>
+                    <p class="text-sm text-muted-foreground">Automatically save your work</p>
+                </div>
+                <Switch @bind-Checked="autoSave" />
+            </div>
+        </div>
+    </CardContent>
+</Card>
+
+@code {
+    private bool emailNotifications = true;
+    private bool autoSave = true;
+}

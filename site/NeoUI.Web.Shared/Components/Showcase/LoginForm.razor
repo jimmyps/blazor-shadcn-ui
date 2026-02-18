@@ -1,0 +1,54 @@
+@rendermode InteractiveAuto
+@inject IToastService ToastService
+
+<Card Class="h-full">
+    <CardHeader>
+        <CardTitle>Welcome back</CardTitle>
+    </CardHeader>
+    <CardContent>
+        <div class="space-y-4">
+            <div>
+                <Label>Email</Label>
+                <div class="relative">
+                    <LucideIcon Name="mail"" Class="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input Type="InputType.Email" Placeholder="john@example.com" Class="pl-10" @bind-Value="email" />
+                </div>
+            </div>
+            
+            <div>
+                <Label>Password</Label>
+                <div class="relative">
+                    <LucideIcon Name="lock"" Class="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input Type="InputType.Password" Placeholder="••••••••" Class="pl-10" @bind-Value="password" />
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <Checkbox Id="remember" @bind-Checked="rememberMe" />
+                <Label For="remember">Remember me</Label>
+            </div>
+        </div>
+    </CardContent>
+    <CardFooter Class="flex flex-col gap-2">
+        <Button Class="w-full" OnClick="HandleSignIn">Sign In</Button>
+        <Button Variant="ButtonVariant.Link" Size="ButtonSize.Small">Forgot password?</Button>
+    </CardFooter>
+</Card>
+
+@code {
+    private string email = "";
+    private string password = "";
+    private bool rememberMe = false;
+
+    private void HandleSignIn()
+    {
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+        {
+            ToastService.Show("Please enter both email and password", variant: ToastVariant.Destructive);
+        }
+        else
+        {
+            ToastService.Show("Successfully signed in!", variant: ToastVariant.Default);
+        }
+    }
+}

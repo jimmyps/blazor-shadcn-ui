@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>NeoUI.Web.Shared</RootNamespace>
+    <AssemblyName>NeoUI.Web.Shared</AssemblyName>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- NeoBlazorUI NuGet Packages -->
+    <PackageReference Include="NeoBlazorUI.Components" Version="2.5.0" />
+    <PackageReference Include="NeoBlazorUI.Primitives" Version="2.4.0" />
+    <PackageReference Include="NeoBlazorUI.Icons.Lucide" Version="2.0.0" />
+    
+    <!-- Blazor Dependencies -->
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.2" />
+  </ItemGroup>
+
+</Project>

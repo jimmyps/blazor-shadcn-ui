@@ -1,0 +1,44 @@
+@rendermode InteractiveAuto
+
+<Card Class="h-full">
+    <CardHeader>
+        <CardTitle>Payment Method</CardTitle>
+    </CardHeader>
+    <CardContent>
+        <div class="space-y-4">
+            <div>
+                <Label>Card number</Label>
+                <Input Type="InputType.Text" Placeholder="•••• •••• •••• ••••" Value="@cardNumber" />
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <Label>Expiry</Label>
+                    <Input Type="InputType.Text" Placeholder="MM/YY" />
+                </div>
+                <div>
+                    <Label>CVV</Label>
+                    <Input Type="InputType.Password" Placeholder="•••" />
+                </div>
+            </div>
+            
+            <div>
+                <Label>Cardholder name</Label>
+                <Input Type="InputType.Text" Placeholder="John Doe" />
+            </div>
+            
+            <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                <LucideIcon Name="lock"" Class="h-4 w-4" />
+                <span>Secured by Stripe</span>
+                <Badge Variant="BadgeVariant.Secondary" Class="ml-auto">Visa</Badge>
+            </div>
+        </div>
+    </CardContent>
+    <CardFooter>
+        <Button Class="w-full">Save Payment Method</Button>
+    </CardFooter>
+</Card>
+
+@code {
+    private string cardNumber = "•••• •••• •••• 4242";
+}

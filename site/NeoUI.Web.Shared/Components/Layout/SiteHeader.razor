@@ -1,0 +1,28 @@
+<header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div class="container flex h-14 max-w-screen-2xl items-center">
+        <div class="mr-4 flex">
+            <a href="/" class="mr-6 flex items-center space-x-2">
+                <LucideIcon Name="component"" Class="h-6 w-6" />
+                <span class="font-bold">NeoBlazorUI</span>
+            </a>
+        </div>
+        <div class="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+            <nav class="hidden md:flex items-center space-x-6 text-sm font-medium">
+                <a href="/docs" class="transition-colors hover:text-foreground/80 text-foreground/60">Docs</a>
+                <a href="/components" class="transition-colors hover:text-foreground/80 text-foreground/60">Components</a>
+                <a href="/blocks" class="transition-colors hover:text-foreground/80 text-foreground/60">Blocks</a>
+                <a href="/charts" class="transition-colors hover:text-foreground/80 text-foreground/60">Charts</a>
+            </nav>
+            <div class="flex items-center space-x-2">
+                <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
+                    <LucideIcon Name="search"" Class="h-4 w-4" />
+                </Button>
+                <ThemeSwitcher />
+                <DarkModeToggle />
+                <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Href="https://github.com/jimmyps/blazor-shadcn-ui" Target="_blank">
+                    <LucideIcon Name="github"" Class="h-4 w-4" />
+                </Button>
+            </div>
+        </div>
+    </div>
+</header>

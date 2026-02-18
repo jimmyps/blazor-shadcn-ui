@@ -1,0 +1,10 @@
+{
+  "name": "neoui-web-client",
+  "version": "1.0.0",
+  "scripts": {
+    "build:css": "tailwindcss -i ./styles/app.css -o ./wwwroot/css/app.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}
