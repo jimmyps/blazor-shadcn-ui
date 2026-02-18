@@ -1,10 +1,13 @@
+@using BlazorUI.Components.Button
 @using BlazorUI.Components.Popover
 @using BlazorUI.Components.Tooltip
-@using BlazorUI.Demo.Services
+@using BlazorUI.Components.Services.Theming
 @using BlazorUI.Icons.Lucide.Components
 @using BlazorUI.Primitives.Services
 @inject ThemeService ThemeService
 @implements IDisposable
+
+@namespace BlazorUI.Components.Theme
 
 <TooltipProvider>
     <Popover>

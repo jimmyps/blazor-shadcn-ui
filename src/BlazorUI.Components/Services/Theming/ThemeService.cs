@@ -1,6 +1,6 @@
 using Microsoft.JSInterop;
 
-namespace BlazorUI.Demo.Services;
+namespace BlazorUI.Components.Services.Theming;
 
 /// <summary>
 /// Base color options for the theme system.
@@ -226,7 +226,11 @@ public class ThemeService
         try
         {
             var baseColorClass = $"base-{baseColor.ToString().ToLowerInvariant()}";
-            var primaryColorClass = $"primary-{primaryColor.ToString().ToLowerInvariant()}";
+            
+            // Only apply primary color class if not Default
+            var primaryColorClass = primaryColor == PrimaryColor.Default 
+                ? "" 
+                : $"primary-{primaryColor.ToString().ToLowerInvariant()}";
 
             // Use named JavaScript function instead of eval for CSP compatibility
             await _jsRuntime.InvokeVoidAsync("theme.apply", new
