@@ -7,10 +7,29 @@ namespace BlazorUI.Components.Services.Theming;
 /// </summary>
 public enum BaseColor
 {
+    /// <summary>
+    /// Zinc color scheme - cool gray with blue undertones.
+    /// </summary>
     Zinc,
+
+    /// <summary>
+    /// Slate color scheme - blue-gray with subtle blue tones.
+    /// </summary>
     Slate,
+
+    /// <summary>
+    /// Gray color scheme - neutral gray without color bias.
+    /// </summary>
     Gray,
+
+    /// <summary>
+    /// Neutral color scheme - true neutral gray.
+    /// </summary>
     Neutral,
+
+    /// <summary>
+    /// Stone color scheme - warm gray with brown undertones.
+    /// </summary>
     Stone
 }
 
@@ -19,23 +38,94 @@ public enum BaseColor
 /// </summary>
 public enum PrimaryColor
 {
+    /// <summary>
+    /// Default theme color - uses the base color.
+    /// </summary>
     Default,
+
+    /// <summary>
+    /// Red primary color.
+    /// </summary>
     Red,
+
+    /// <summary>
+    /// Rose primary color - pink-red.
+    /// </summary>
     Rose,
+
+    /// <summary>
+    /// Orange primary color.
+    /// </summary>
     Orange,
+
+    /// <summary>
+    /// Amber primary color - golden orange.
+    /// </summary>
     Amber,
+
+    /// <summary>
+    /// Yellow primary color.
+    /// </summary>
     Yellow,
+
+    /// <summary>
+    /// Lime primary color - yellow-green.
+    /// </summary>
     Lime,
+
+    /// <summary>
+    /// Green primary color.
+    /// </summary>
     Green,
+
+    /// <summary>
+    /// Emerald primary color - blue-green.
+    /// </summary>
     Emerald,
+
+    /// <summary>
+    /// Teal primary color - cyan-green.
+    /// </summary>
     Teal,
+
+    /// <summary>
+    /// Cyan primary color - blue-green.
+    /// </summary>
     Cyan,
+
+    /// <summary>
+    /// Sky primary color - light blue.
+    /// </summary>
     Sky,
+
+    /// <summary>
+    /// Blue primary color.
+    /// </summary>
     Blue,
+
+    /// <summary>
+    /// Indigo primary color - deep blue.
+    /// </summary>
     Indigo,
+
+    /// <summary>
+    /// Violet primary color - blue-purple.
+    /// </summary>
     Violet,
+
+    /// <summary>
+    /// Purple primary color.
+    /// </summary>
     Purple,
+
+    /// <summary>
+    /// Fuchsia primary color - bright purple-pink.
+    /// </summary>
     Fuchsia,
+
+    /// <summary>
+    /// Pink primary color.
+    /// </summary>
     Pink
 }
 
@@ -71,6 +161,10 @@ public class ThemeService
     /// </summary>
     public PrimaryColor CurrentPrimaryColor => _primaryColor;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ThemeService"/> class.
+    /// </summary>
+    /// <param name="jsRuntime">The JavaScript runtime for interop operations.</param>
     public ThemeService(IJSRuntime jsRuntime)
     {
         _jsRuntime = jsRuntime;
