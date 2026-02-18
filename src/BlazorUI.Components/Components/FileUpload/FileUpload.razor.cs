@@ -40,26 +40,89 @@ namespace BlazorUI.Components.FileUpload;
 /// </example>
 public partial class FileUpload : ComponentBase, IAsyncDisposable
 {
+    /// <summary>
+    /// Tracks the ID of the first invalid input to ensure only one tooltip is shown.
+    /// </summary>
     private static string? _firstInvalidInputId = null;
     
-    // Constants for preview and progress simulation
+    /// <summary>
+    /// Maximum file size in bytes for generating previews (500KB).
+    /// </summary>
     private const long MaxPreviewSize = 512000; // 500KB
+    
+    /// <summary>
+    /// Progress increment percentage for simulated upload progress.
+    /// </summary>
     private const int ProgressIncrement = 10;
+    
+    /// <summary>
+    /// Delay in milliseconds between progress updates.
+    /// </summary>
     private const int ProgressDelayMs = 50;
     
+    /// <summary>
+    /// JavaScript module reference for drag-drop functionality.
+    /// </summary>
     private IJSObjectReference? _module;
+    
+    /// <summary>
+    /// JavaScript module reference for validation display.
+    /// </summary>
     private IJSObjectReference? _validationModule;
+    
+    /// <summary>
+    /// Tracks the previous EditContext to manage event subscriptions.
+    /// </summary>
     private EditContext? _previousEditContext;
+    
+    /// <summary>
+    /// Field identifier for validation in EditContext.
+    /// </summary>
     private FieldIdentifier _fieldIdentifier;
+    
+    /// <summary>
+    /// Reference to the drop zone element.
+    /// </summary>
     private ElementReference _dropZoneRef;
+    
+    /// <summary>
+    /// Reference to the underlying InputFile component.
+    /// </summary>
     private InputFile? _inputFileRef;
+    
+    /// <summary>
+    /// Indicates whether a file is currently being dragged over the drop zone.
+    /// </summary>
     private bool _isDragging = false;
+    
+    /// <summary>
+    /// Stores client-side validation errors (file size, type, count).
+    /// </summary>
     private string? _validationError;
+    
+    /// <summary>
+    /// Stores the current validation error message from EditContext.
+    /// </summary>
     private string? _currentErrorMessage;
+    
+    /// <summary>
+    /// Tracks whether the validation tooltip has been shown to avoid duplicates.
+    /// </summary>
     private bool _hasShownTooltip = false;
+    
+    /// <summary>
+    /// Tracks simulated upload progress for each file by index.
+    /// </summary>
     private Dictionary<int, int> _uploadProgress = new();
+    
+    /// <summary>
+    /// Caches Base64 preview URLs for image files.
+    /// </summary>
     private Dictionary<IBrowserFile, string> _previewUrls = new();
 
+    /// <summary>
+    /// Gets or sets the JavaScript runtime for interop operations.
+    /// </summary>
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
@@ -192,8 +255,14 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Gets the CSS classes for the wrapper element.
+    /// </summary>
     private string WrapperClass => ClassNames.cn("w-full", Class);
 
+    /// <summary>
+    /// Gets the CSS classes for the drop zone based on drag state and disabled status.
+    /// </summary>
     private string DropZoneCssClass => ClassNames.cn(
         "relative rounded-lg border-2 border-dashed transition-colors",
         _isDragging
@@ -202,21 +271,33 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         Disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
     );
 
+    /// <summary>
+    /// Gets the CSS classes for the label element.
+    /// </summary>
     private string LabelCssClass => ClassNames.cn(
         "block cursor-pointer",
         Disabled ? "cursor-not-allowed" : ""
     );
 
+    /// <summary>
+    /// Gets the CSS classes for individual file items in the list.
+    /// </summary>
     private string FileCssClass => ClassNames.cn(
         "flex items-center gap-3 p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors"
     );
 
+    /// <summary>
+    /// Initializes the component with default values.
+    /// </summary>
     protected override void OnInitialized()
     {
         Files ??= new List<IBrowserFile>();
         Id ??= $"file-upload-{Guid.NewGuid():N}";
     }
 
+    /// <summary>
+    /// Updates the field identifier and validation subscriptions when parameters change.
+    /// </summary>
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -234,6 +315,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Imports JavaScript modules and initializes validation display after rendering.
+    /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -261,6 +345,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Handles file selection from the input or drop zone.
+    /// </summary>
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
         if (Disabled) return;
@@ -291,6 +378,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         await GeneratePreviews();
     }
 
+    /// <summary>
+    /// Handles the drop event when files are dropped on the zone.
+    /// </summary>
     private async Task HandleDrop(DragEventArgs e)
     {
         if (Disabled) return;
@@ -299,12 +389,18 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Handles the drag over event to allow dropping.
+    /// </summary>
     private void HandleDragOver(DragEventArgs e)
     {
         if (Disabled) return;
         // Prevent default to allow drop
     }
 
+    /// <summary>
+    /// Handles the drag enter event to show visual feedback.
+    /// </summary>
     private void HandleDragEnter(DragEventArgs e)
     {
         if (Disabled) return;
@@ -313,6 +409,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Handles the drag leave event to remove visual feedback.
+    /// </summary>
     private void HandleDragLeave(DragEventArgs e)
     {
         if (Disabled) return;
@@ -321,6 +420,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Removes a file from the upload list.
+    /// </summary>
     private async Task RemoveFile(int index)
     {
         if (Disabled || Files == null || index < 0 || index >= Files.Count)
@@ -348,6 +450,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         await NotifyFilesChanged();
     }
 
+    /// <summary>
+    /// Validates files against size, type, and count constraints.
+    /// </summary>
     private async Task<bool> ValidateFiles(List<IBrowserFile> filesToValidate)
     {
         // Validate file count
@@ -389,6 +494,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         return true;
     }
 
+    /// <summary>
+    /// Checks if a file's type matches the accepted types list.
+    /// </summary>
     private bool IsFileTypeAccepted(IBrowserFile file, List<string> acceptedTypes)
     {
         foreach (var type in acceptedTypes)
@@ -416,6 +524,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         return false;
     }
 
+    /// <summary>
+    /// Simulates upload progress animation for visual feedback.
+    /// </summary>
     private async Task SimulateUploadProgress()
     {
         if (!ShowProgress || Files == null) return;
@@ -441,6 +552,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Generates Base64 preview URLs for image files.
+    /// </summary>
     private async Task GeneratePreviews()
     {
         if (!ShowPreview || Files == null) return;
@@ -466,16 +580,25 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Determines if a file is an image based on its content type.
+    /// </summary>
     private bool IsImageFile(IBrowserFile file)
     {
         return file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <summary>
+    /// Gets the preview URL for a file from the cache.
+    /// </summary>
     private string GetPreviewUrl(IBrowserFile file)
     {
         return _previewUrls.TryGetValue(file, out var url) ? url : string.Empty;
     }
 
+    /// <summary>
+    /// Determines the icon type to display for non-image files.
+    /// </summary>
     private string GetFileIconType(IBrowserFile file)
     {
         var contentType = file.ContentType.ToLowerInvariant();
@@ -493,6 +616,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         return "default";
     }
 
+    /// <summary>
+    /// Formats a file size in bytes to a human-readable string (B, KB, MB, GB, TB).
+    /// </summary>
     private string FormatFileSize(long bytes)
     {
         string[] sizes = { "B", "KB", "MB", "GB", "TB" };
@@ -508,6 +634,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         return $"{len:0.##} {sizes[order]}";
     }
 
+    /// <summary>
+    /// Notifies parent components and validation context of file list changes.
+    /// </summary>
     private async Task NotifyFilesChanged()
     {
         if (FilesChanged.HasDelegate)
@@ -523,6 +652,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Handles validation state changes from the EditContext.
+    /// </summary>
     private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
     {
         _firstInvalidInputId = null;
@@ -535,6 +667,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         });
     }
 
+    /// <summary>
+    /// Updates the validation error display via JavaScript interop.
+    /// </summary>
     private async Task UpdateValidationDisplayAsync()
     {
         if (EditContext == null || _validationModule == null || string.IsNullOrEmpty(Id))
@@ -581,6 +716,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Detaches the validation state changed event listener from the previous EditContext.
+    /// </summary>
     private void DetachValidationStateChangedListener()
     {
         if (_previousEditContext != null)
@@ -589,6 +727,9 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Disposes JavaScript resources and unsubscribes from validation events.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
         DetachValidationStateChangedListener();

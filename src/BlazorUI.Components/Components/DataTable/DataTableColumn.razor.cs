@@ -147,6 +147,9 @@ public partial class DataTableColumn<TData, TValue> : ComponentBase where TData 
     /// </summary>
     internal string EffectiveId => Id ?? Header.ToLowerInvariant().Replace(" ", "-");
 
+    /// <summary>
+    /// Initializes the data table column and registers it with the parent table.
+    /// </summary>
     protected override void OnInitialized()
     {
         if (ParentTable == null)

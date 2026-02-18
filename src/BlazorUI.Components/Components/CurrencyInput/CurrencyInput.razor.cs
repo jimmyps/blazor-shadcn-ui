@@ -48,18 +48,54 @@ namespace BlazorUI.Components.CurrencyInput;
 /// </example>
 public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
 {
-    // Cache for currency definitions to avoid repeated lookups
+    /// <summary>
+    /// Cached currency definition to avoid repeated lookups.
+    /// </summary>
     private CurrencyDefinition? _cachedCurrency;
+    
+    /// <summary>
+    /// Cached currency code for cache invalidation.
+    /// </summary>
     private string? _cachedCurrencyCode;
     
+    /// <summary>
+    /// JavaScript module reference for input event handling.
+    /// </summary>
     private IJSObjectReference? _inputModule;
+    
+    /// <summary>
+    /// .NET object reference for JavaScript callbacks.
+    /// </summary>
     private DotNetObjectReference<CurrencyInput<TValue>>? _dotNetRef;
+    
+    /// <summary>
+    /// Indicates whether JavaScript interop has been initialized.
+    /// </summary>
     private bool _jsInitialized = false;
+    
+    /// <summary>
+    /// Validation behavior handler for EditContext integration.
+    /// </summary>
     private InputValidationBehavior? _validationBehavior;
+    
+    /// <summary>
+    /// Auto-generated ID when Id parameter is not provided.
+    /// </summary>
     private string? _generatedId;
+    
+    /// <summary>
+    /// Raw unformatted value shown during editing/focus.
+    /// </summary>
     private string? _editingValue;
+    
+    /// <summary>
+    /// Indicates whether the input currently has focus.
+    /// </summary>
     private bool _isFocused;
 
+    /// <summary>
+    /// Gets or sets the JavaScript runtime for interop operations.
+    /// </summary>
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
@@ -401,7 +437,7 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     private string? EffectiveName => Name ?? Id;
 
     /// <summary>
-    /// Gets the currency definition for the current currency code.
+    /// Gets the currency definition for the current currency code with caching.
     /// </summary>
     private CurrencyDefinition CurrencyDefinition
     {
@@ -420,7 +456,7 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Gets the culture info to use for formatting.
+    /// Gets the culture info for number formatting, falling back through Culture parameter, currency default, and current culture.
     /// </summary>
     private CultureInfo GetCultureInfo()
     {
@@ -450,7 +486,7 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Gets the current value as a formatted string for display.
+    /// Gets the current value as a formatted currency string or raw editing value when focused.
     /// </summary>
     private string? CurrentValueAsString
     {
@@ -525,7 +561,7 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Handles the focus event.
+    /// Handles the focus event and switches to raw unformatted value display.
     /// </summary>
     private void HandleFocus()
     {
@@ -552,7 +588,7 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Handles the blur event.
+    /// Handles the blur event and restores formatted currency display.
     /// </summary>
     private void HandleBlur()
     {
@@ -648,6 +684,9 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
         return default;
     }
 
+    /// <summary>
+    /// Initializes the validation behavior if ShowValidationError is enabled.
+    /// </summary>
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -664,6 +703,9 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Updates validation subscriptions when parameters change.
+    /// </summary>
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -681,6 +723,9 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Handles validation state changes from the EditContext.
+    /// </summary>
     private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
     {
         if (_validationBehavior == null) return;
@@ -695,6 +740,9 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
         });
     }
 
+    /// <summary>
+    /// Imports JavaScript modules and initializes input event handling after rendering.
+    /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -739,6 +787,9 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Disposes JavaScript resources and unsubscribes from validation events.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
         try

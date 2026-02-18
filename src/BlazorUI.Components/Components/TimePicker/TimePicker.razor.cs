@@ -11,15 +11,50 @@ namespace BlazorUI.Components.TimePicker;
 /// </summary>
 public partial class TimePickerBase : ComponentBase
 {
+    /// <summary>
+    /// Indicates whether the time picker popover is currently open.
+    /// </summary>
     protected bool _isOpen;
+    
+    /// <summary>
+    /// The hour in 12-hour format (1-12).
+    /// </summary>
     protected int _hour12 = 12;
+    
+    /// <summary>
+    /// The hour in 24-hour format (0-23).
+    /// </summary>
     protected int _hour24 = 0;
+    
+    /// <summary>
+    /// The selected minute (0-59).
+    /// </summary>
     protected int _minute = 0;
+    
+    /// <summary>
+    /// The selected second (0-59).
+    /// </summary>
     protected int _second = 0;
+    
+    /// <summary>
+    /// Indicates whether the time is in PM (true) or AM (false) for 12-hour format.
+    /// </summary>
     protected bool _isPM = false;
+    
+    /// <summary>
+    /// The previous EditContext used to detect context changes.
+    /// </summary>
     protected EditContext? _previousEditContext;
+    
+    /// <summary>
+    /// The field identifier for validation integration with EditContext.
+    /// </summary>
     protected FieldIdentifier _fieldIdentifier;
 
+    /// <summary>
+    /// Gets or sets the cascading EditContext for form validation integration.
+    /// Cascaded from an ancestor EditForm component.
+    /// </summary>
     [CascadingParameter]
     protected EditContext? EditContext { get; set; }
 
@@ -120,6 +155,10 @@ public partial class TimePickerBase : ComponentBase
     [Parameter]
     public string Placeholder { get; set; } = "Pick a time";
 
+    /// <summary>
+    /// Lifecycle method called when component parameters are set.
+    /// Synchronizes internal state with the SelectedTime parameter and sets up validation.
+    /// </summary>
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -173,6 +212,10 @@ public partial class TimePickerBase : ComponentBase
         }
     }
 
+    /// <summary>
+    /// Applies the currently selected time values, validates against min/max constraints,
+    /// closes the popover, and notifies of the time change.
+    /// </summary>
     protected async Task ApplyTime()
     {
         int hour;
@@ -209,16 +252,30 @@ public partial class TimePickerBase : ComponentBase
         }
     }
 
+    /// <summary>
+    /// Handles changes to the AM/PM period selector from a change event.
+    /// </summary>
+    /// <param name="e">The change event arguments containing the selected period.</param>
     protected void OnPeriodChanged(ChangeEventArgs e)
     {
         _isPM = e.Value?.ToString() == "PM";
     }
 
+    /// <summary>
+    /// Handles changes to the AM/PM period selector from a select component.
+    /// </summary>
+    /// <param name="value">The selected period value ("AM" or "PM").</param>
     protected void OnPeriodChangedFromSelect(string? value)
     {
         _isPM = value == "PM";
     }
 
+    /// <summary>
+    /// Gets the formatted display text for the trigger button.
+    /// Returns the placeholder if no time is selected, otherwise formats the time
+    /// according to the 12/24-hour format and ShowSeconds settings.
+    /// </summary>
+    /// <returns>The formatted time string or placeholder text.</returns>
     protected string GetDisplayText()
     {
         if (!SelectedTime.HasValue)
@@ -241,6 +298,11 @@ public partial class TimePickerBase : ComponentBase
             : $"{time.Hour:D2}:{time.Minute:D2}";
     }
 
+    /// <summary>
+    /// Gets the CSS class names for the trigger button.
+    /// Includes base styling, disabled state, placeholder styling, and custom classes.
+    /// </summary>
+    /// <returns>The combined CSS class string.</returns>
     protected string GetButtonClass()
     {
         var classes = new List<string> 
@@ -262,6 +324,11 @@ public partial class TimePickerBase : ComponentBase
         return ClassNames.cn(classes.ToArray());
     }
 
+    /// <summary>
+    /// Gets the HTML attributes for the trigger button.
+    /// Includes disabled state, id, name, and aria-label attributes.
+    /// </summary>
+    /// <returns>A dictionary of HTML attributes.</returns>
     protected Dictionary<string, object> GetTriggerAttributes()
     {
         var attrs = new Dictionary<string, object>();
@@ -286,6 +353,10 @@ public partial class TimePickerBase : ComponentBase
         return attrs;
     }
 
+    /// <summary>
+    /// Gets the CSS class names for the popover content container.
+    /// </summary>
+    /// <returns>The CSS class string for the popover content.</returns>
     protected string GetPopoverContentClass()
     {
         return "w-auto p-4";

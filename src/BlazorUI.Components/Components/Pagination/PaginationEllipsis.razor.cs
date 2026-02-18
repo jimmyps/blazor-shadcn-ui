@@ -8,6 +8,9 @@ namespace BlazorUI.Components.Pagination;
 /// </summary>
 public partial class PaginationEllipsis : ComponentBase
 {
+    /// <summary>
+    /// Gets or sets additional CSS classes to apply to the pagination ellipsis.
+    /// </summary>
     [Parameter]
     public string? Class { get; set; }
 

@@ -52,12 +52,34 @@ namespace BlazorUI.Components.Input;
 /// </example>
 public partial class Input : ComponentBase, IAsyncDisposable
 {
+    /// <summary>
+    /// JavaScript module for input event handling and validation.
+    /// </summary>
     private IJSObjectReference? _inputModule;
+    
+    /// <summary>
+    /// DotNet object reference for JavaScript callbacks.
+    /// </summary>
     private DotNetObjectReference<Input>? _dotNetRef;
+    
+    /// <summary>
+    /// Tracks whether JavaScript module has been initialized.
+    /// </summary>
     private bool _jsInitialized = false;
+    
+    /// <summary>
+    /// Auto-generated ID when user doesn't provide one.
+    /// </summary>
     private string? _generatedId;
+    
+    /// <summary>
+    /// Validation behavior handler for EditContext integration.
+    /// </summary>
     private InputValidationBehavior? _validationBehavior;
 
+    /// <summary>
+    /// JavaScript runtime for invoking JavaScript functions.
+    /// </summary>
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
@@ -434,7 +456,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Gets the HTML input type attribute value.
+    /// Gets the HTML input type attribute value based on the Type parameter.
     /// </summary>
     private string HtmlType => Type switch
     {
@@ -459,6 +481,9 @@ public partial class Input : ComponentBase, IAsyncDisposable
     private bool? EffectiveAriaInvalid => 
         _validationBehavior?.EffectiveAriaInvalid ?? AriaInvalid;
 
+    /// <summary>
+    /// Initializes the component and sets up validation behavior if enabled.
+    /// </summary>
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -475,6 +500,9 @@ public partial class Input : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Updates validation behavior when parameters change and subscribes to EditContext events.
+    /// </summary>
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -492,6 +520,9 @@ public partial class Input : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Handles EditContext validation state changes and updates the component display.
+    /// </summary>
     private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
     {
         if (_validationBehavior == null) return;
@@ -506,6 +537,10 @@ public partial class Input : ComponentBase, IAsyncDisposable
         });
     }
 
+    /// <summary>
+    /// Initializes JavaScript module and validation after the component first renders.
+    /// Sets up input event handling based on UpdateOn mode and debounce settings.
+    /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -572,6 +607,9 @@ public partial class Input : ComponentBase, IAsyncDisposable
         // CRITICAL: Don't call StateHasChanged() here to avoid re-render during typing!
     }
 
+    /// <summary>
+    /// Disposes JavaScript module, event handlers, and object references.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
         try

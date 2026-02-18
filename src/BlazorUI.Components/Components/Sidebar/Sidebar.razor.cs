@@ -5,11 +5,20 @@ using System;
 
 namespace BlazorUI.Components.Sidebar;
 
+/// <summary>
+/// Represents the main sidebar navigation component with responsive behavior and state management.
+/// </summary>
 public partial class Sidebar : ComponentBase, IDisposable
 {
+    /// <summary>
+    /// Gets the cascaded sidebar context from the parent SidebarProvider.
+    /// </summary>
     [CascadingParameter]
     private SidebarContext? Context { get; set; }
 
+    /// <summary>
+    /// Gets or sets the navigation manager for routing operations.
+    /// </summary>
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
 
@@ -51,6 +60,9 @@ public partial class Sidebar : ComponentBase, IDisposable
 
     private bool _isNavigationListenerActive = false;
 
+    /// <summary>
+    /// Gets or sets whether the sidebar is open on mobile devices.
+    /// </summary>
     private bool MobileOpen
     {
         get => Context?.OpenMobile ?? false;
@@ -63,6 +75,9 @@ public partial class Sidebar : ComponentBase, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the sheet side based on sidebar configuration.
+    /// </summary>
     private SheetSide GetSheetSide()
     {
         return Context?.Side == SidebarSide.Right
@@ -70,6 +85,9 @@ public partial class Sidebar : ComponentBase, IDisposable
             : SheetSide.Left;
     }
 
+    /// <summary>
+    /// Gets the CSS classes for desktop sidebar rendering.
+    /// </summary>
     private string GetDesktopClasses()
     {
         var baseClasses = "group peer hidden md:flex flex-col text-sidebar-foreground shrink-0";
@@ -123,6 +141,9 @@ public partial class Sidebar : ComponentBase, IDisposable
         );
     }
 
+    /// <summary>
+    /// Gets the CSS classes for mobile sidebar rendering.
+    /// </summary>
     private string GetMobileClasses()
     {
         return Utilities.ClassNames.cn(
@@ -132,6 +153,9 @@ public partial class Sidebar : ComponentBase, IDisposable
         );
     }
 
+    /// <summary>
+    /// Gets the data-state attribute value based on sidebar state.
+    /// </summary>
     private string GetDataState()
     {
         if (Context == null) return "collapsed";
@@ -142,6 +166,7 @@ public partial class Sidebar : ComponentBase, IDisposable
         return Collapsible ? "collapsed" : "closed";
     }
 
+    /// <inheritdoc/>
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -171,6 +196,9 @@ public partial class Sidebar : ComponentBase, IDisposable
         }
     }
 
+    /// <summary>
+    /// Sets up or tears down the navigation listener based on AutoDetectActive setting.
+    /// </summary>
     private void SetupNavigationListener()
     {
         if (AutoDetectActive && !_isNavigationListenerActive)
@@ -195,11 +223,17 @@ public partial class Sidebar : ComponentBase, IDisposable
         }
     }
 
+    /// <summary>
+    /// Handles navigation location changes to update current path for active state detection.
+    /// </summary>
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         UpdateCurrentPath();
     }
 
+    /// <summary>
+    /// Updates the current path in the context for active state detection.
+    /// </summary>
     private void UpdateCurrentPath()
     {
         if (Context == null) return;
@@ -208,12 +242,16 @@ public partial class Sidebar : ComponentBase, IDisposable
         Context.SetCurrentPath(uri.AbsolutePath);
     }
 
+    /// <summary>
+    /// Handles context state changes and triggers re-rendering.
+    /// </summary>
     private void OnContextStateChanged(object? sender, EventArgs e)
     {
         // Force re-render when sidebar state changes
         StateHasChanged();
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         if (_subscribedContext != null)

@@ -12,6 +12,10 @@ public class ChartThemeService : IAsyncDisposable
     private IJSObjectReference? _moduleRef;
     private bool _disposed;
     
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChartThemeService"/> class.
+    /// </summary>
+    /// <param name="jsRuntime">The JavaScript runtime for interop calls.</param>
     public ChartThemeService(IJSRuntime jsRuntime)
     {
         _jsRuntime = jsRuntime;
@@ -20,6 +24,7 @@ public class ChartThemeService : IAsyncDisposable
     /// <summary>
     /// Registers a chart renderer with the theme service.
     /// </summary>
+    /// <param name="renderer">The chart renderer to register.</param>
     public void RegisterRenderer(IChartRenderer renderer)
     {
         if (!_renderers.Contains(renderer))
@@ -31,6 +36,7 @@ public class ChartThemeService : IAsyncDisposable
     /// <summary>
     /// Unregisters a chart renderer from the theme service.
     /// </summary>
+    /// <param name="renderer">The chart renderer to unregister.</param>
     public void UnregisterRenderer(IChartRenderer renderer)
     {
         _renderers.Remove(renderer);
@@ -81,6 +87,7 @@ public class ChartThemeService : IAsyncDisposable
     /// <summary>
     /// Gets the current theme colors from CSS variables.
     /// </summary>
+    /// <returns>An array of color strings for chart data series.</returns>
     private async Task<string[]> GetThemeColorsAsync()
     {
         if (_moduleRef == null)
@@ -117,6 +124,9 @@ public class ChartThemeService : IAsyncDisposable
         }
     }
     
+    /// <summary>
+    /// Ensures the JavaScript module is loaded for theme operations.
+    /// </summary>
     private async Task EnsureModuleLoadedAsync()
     {
         if (_moduleRef == null && !_disposed)
@@ -135,6 +145,9 @@ public class ChartThemeService : IAsyncDisposable
         }
     }
     
+    /// <summary>
+    /// Disposes the service and releases JavaScript module resources.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
         if (_disposed) return;

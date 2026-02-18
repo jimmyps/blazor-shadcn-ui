@@ -282,6 +282,9 @@ public partial class GridThemeParameters : ComponentBase
 
     #endregion
 
+    /// <summary>
+    /// Initializes the grid theme parameters and registers with the parent grid.
+    /// </summary>
     protected override void OnInitialized()
     {
         // Validate that this component is inside a Grid component

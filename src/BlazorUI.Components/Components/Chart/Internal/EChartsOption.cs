@@ -9,6 +9,9 @@ namespace BlazorUI.Components.Chart.Internal;
 /// </summary>
 public sealed class EChartsOption
 {
+    /// <summary>
+    /// Grid component configuration for positioning chart elements in the cartesian coordinate system.
+    /// </summary>
     [JsonPropertyName("grid")]
     public EChartsGrid? Grid { get; set; }
 
@@ -24,12 +27,21 @@ public sealed class EChartsOption
     [JsonPropertyName("yAxis")]
     public EChartsAxis? YAxis { get; set; }
 
+    /// <summary>
+    /// Legend component configuration for displaying series names and toggling series visibility.
+    /// </summary>
     [JsonPropertyName("legend")]
     public EChartsLegend? Legend { get; set; }
 
+    /// <summary>
+    /// Tooltip component configuration for displaying data information on hover.
+    /// </summary>
     [JsonPropertyName("tooltip")]
     public EChartsTooltip? Tooltip { get; set; }
 
+    /// <summary>
+    /// Radar coordinate system configuration for radar charts.
+    /// </summary>
     [JsonPropertyName("radar")]
     public EChartsRadar? Radar { get; set; }
 
@@ -51,6 +63,9 @@ public sealed class EChartsOption
     [JsonPropertyName("radiusAxis")]
     public EChartsAxis? RadiusAxis { get; set; }
 
+    /// <summary>
+    /// Series list containing one or more data series configurations.
+    /// </summary>
     [JsonPropertyName("series")]
     public List<EChartsSeries>? Series { get; set; }
 
@@ -90,10 +105,16 @@ public sealed class EChartsOption
     [JsonPropertyName("animationEasingUpdate")]
     public string? AnimationEasingUpdate { get; set; }
 
+    /// <summary>
+    /// Extension data for additional properties not explicitly defined.
+    /// </summary>
     [JsonExtensionData]
     public Dictionary<string, JsonElement>? ExtensionData { get; set; }
 }
 
+/// <summary>
+/// Grid component for positioning chart elements in the cartesian coordinate system.
+/// </summary>
 public sealed class EChartsGrid
 {
     /// <summary>
@@ -102,19 +123,34 @@ public sealed class EChartsGrid
     [JsonPropertyName("top")]
     public int? Top { get; set; }
 
+    /// <summary>
+    /// Distance between grid component and the right side of the container.
+    /// </summary>
     [JsonPropertyName("right")]
     public int? Right { get; set; }
 
+    /// <summary>
+    /// Distance between grid component and the bottom side of the container.
+    /// </summary>
     [JsonPropertyName("bottom")]
     public int? Bottom { get; set; }
 
+    /// <summary>
+    /// Distance between grid component and the left side of the container.
+    /// </summary>
     [JsonPropertyName("left")]
     public int? Left { get; set; }
 
+    /// <summary>
+    /// Whether to contain axis labels inside the grid. Useful to prevent labels from being cut off.
+    /// </summary>
     [JsonPropertyName("containLabel")]
     public bool? ContainLabel { get; set; }
 }
 
+/// <summary>
+/// Axis component configuration for cartesian, polar, radar coordinate systems.
+/// </summary>
 public sealed class EChartsAxis
 {
     /// <summary>
@@ -187,42 +223,81 @@ public sealed class EChartsAxis
     [JsonPropertyName("splitNumber")]
     public int? SplitNumber { get; set; }
 
+    /// <summary>
+    /// Axis line configuration.
+    /// </summary>
     [JsonPropertyName("axisLine")]
     public EChartsAxisLine? AxisLine { get; set; }
 
+    /// <summary>
+    /// Axis tick configuration.
+    /// </summary>
     [JsonPropertyName("axisTick")]
     public EChartsAxisTick? AxisTick { get; set; }
 
+    /// <summary>
+    /// Axis label configuration.
+    /// </summary>
     [JsonPropertyName("axisLabel")]
     public EChartsAxisLabel? AxisLabel { get; set; }
 
+    /// <summary>
+    /// Split line configuration for grid lines.
+    /// </summary>
     [JsonPropertyName("splitLine")]
     public EChartsSplitLine? SplitLine { get; set; }
 }
 
+/// <summary>
+/// Axis line configuration.
+/// </summary>
 public sealed class EChartsAxisLine
 {
+    /// <summary>
+    /// Whether to show the axis line.
+    /// </summary>
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
 
+    /// <summary>
+    /// Line style configuration for the axis line.
+    /// </summary>
     [JsonPropertyName("lineStyle")]
     public EChartsLineStyle? LineStyle { get; set; }
 }
 
+/// <summary>
+/// Axis tick mark configuration.
+/// </summary>
 public sealed class EChartsAxisTick
 {
+    /// <summary>
+    /// Whether to show axis tick marks.
+    /// </summary>
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
 
+    /// <summary>
+    /// Line style configuration for tick marks.
+    /// </summary>
     [JsonPropertyName("lineStyle")]
     public EChartsLineStyle? LineStyle { get; set; }
 }
 
+/// <summary>
+/// Axis label configuration for text labels on axes.
+/// </summary>
 public sealed class EChartsAxisLabel
 {
+    /// <summary>
+    /// Whether to show axis labels.
+    /// </summary>
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
 
+    /// <summary>
+    /// Text color for axis labels.
+    /// </summary>
     [JsonPropertyName("color")]
     public string? Color { get; set; }
 
@@ -236,60 +311,117 @@ public sealed class EChartsAxisLabel
     [JsonPropertyName("formatter")]
     public string? Formatter { get; set; }
 
+    /// <summary>
+    /// Rotation angle for axis labels in degrees.
+    /// </summary>
     [JsonPropertyName("rotate")]
     public int? Rotate { get; set; }
 
+    /// <summary>
+    /// Interval for displaying axis labels (e.g., 0 = all labels, 1 = every other label).
+    /// </summary>
     [JsonPropertyName("interval")]
     public int? Interval { get; set; }
 
+    /// <summary>
+    /// Whether to display labels inside the chart area.
+    /// </summary>
     [JsonPropertyName("inside")]
     public bool? Inside { get; set; }
 
+    /// <summary>
+    /// Margin between labels and axis line in pixels.
+    /// </summary>
     [JsonPropertyName("margin")]
     public int? Margin { get; set; }
 
+    /// <summary>
+    /// Whether to hide overlapping labels automatically.
+    /// </summary>
     [JsonPropertyName("hideOverlap")]
     public bool? HideOverlap { get; set; }
 
+    /// <summary>
+    /// Font size for axis labels in pixels.
+    /// </summary>
     [JsonPropertyName("fontSize")]
     public int? FontSize { get; set; }
 
+    /// <summary>
+    /// Font family for axis labels.
+    /// </summary>
     [JsonPropertyName("fontFamily")]
     public string? FontFamily { get; set; }
 
+    /// <summary>
+    /// Font weight for axis labels (e.g., "normal", "bold", "bolder", "lighter").
+    /// </summary>
     [JsonPropertyName("fontWeight")]
     public string? FontWeight { get; set; }
 
+    /// <summary>
+    /// Line height for axis labels in pixels.
+    /// </summary>
     [JsonPropertyName("lineHeight")]
     public int? LineHeight { get; set; }
 
+    /// <summary>
+    /// Horizontal alignment for axis labels (e.g., "left", "center", "right").
+    /// </summary>
     [JsonPropertyName("align")]
     public string? Align { get; set; }
 
+    /// <summary>
+    /// Vertical alignment for axis labels (e.g., "top", "middle", "bottom").
+    /// </summary>
     [JsonPropertyName("verticalAlign")]
     public string? VerticalAlign { get; set; }
 
+    /// <summary>
+    /// How to handle text overflow (e.g., "truncate", "break", "breakAll").
+    /// </summary>
     [JsonPropertyName("overflow")]
     public string? Overflow { get; set; }
 
+    /// <summary>
+    /// Maximum width for axis labels in pixels.
+    /// </summary>
     [JsonPropertyName("width")]
     public int? Width { get; set; }
 
+    /// <summary>
+    /// Ellipsis string to use when text is truncated.
+    /// </summary>
     [JsonPropertyName("ellipsis")]
     public string? Ellipsis { get; set; }
 }
 
+/// <summary>
+/// Split line configuration for grid lines on axes.
+/// </summary>
 public sealed class EChartsSplitLine
 {
+    /// <summary>
+    /// Whether to show split lines.
+    /// </summary>
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
 
+    /// <summary>
+    /// Line style configuration for split lines.
+    /// </summary>
     [JsonPropertyName("lineStyle")]
     public EChartsLineStyle? LineStyle { get; set; }
 }
 
+/// <summary>
+/// Line style configuration for various line elements.
+/// </summary>
 public sealed class EChartsLineStyle
 {
+    /// <summary>
+    /// Line width in pixels.
+    /// </summary>
     [JsonPropertyName("width")]
     public int? Width { get; set; }
 
@@ -312,6 +444,9 @@ public sealed class EChartsLineStyle
     public double? Opacity { get; set; }
 }
 
+/// <summary>
+/// Series configuration for different chart types (line, bar, pie, scatter, radar).
+/// </summary>
 public sealed class EChartsSeries
 {
     /// <summary>
@@ -320,6 +455,9 @@ public sealed class EChartsSeries
     [JsonPropertyName("type")]
     public string? Type { get; set; }
 
+    /// <summary>
+    /// Series name displayed in legend.
+    /// </summary>
     [JsonPropertyName("name")]
     public string? Name { get; set; }
 
@@ -335,12 +473,21 @@ public sealed class EChartsSeries
     [JsonPropertyName("data")]
     public object? Data { get; set; }
 
+    /// <summary>
+    /// Item style configuration for data points, bars, or pie slices.
+    /// </summary>
     [JsonPropertyName("itemStyle")]
     public EChartsItemStyle? ItemStyle { get; set; }
 
+    /// <summary>
+    /// Line style configuration for line series.
+    /// </summary>
     [JsonPropertyName("lineStyle")]
     public EChartsLineStyle? LineStyle { get; set; }
 
+    /// <summary>
+    /// Area style configuration for area charts.
+    /// </summary>
     [JsonPropertyName("areaStyle")]
     public EChartsAreaStyle? AreaStyle { get; set; }
 
@@ -537,12 +684,21 @@ public sealed class EChartsSeries
     [JsonPropertyName("backgroundStyle")]
     public EChartsBackgroundStyle? BackgroundStyle { get; set; }
 
+    /// <summary>
+    /// Extension data for additional properties not explicitly defined.
+    /// </summary>
     [JsonExtensionData]
     public Dictionary<string, JsonElement>? ExtensionData { get; set; }
 }
 
+/// <summary>
+/// Emphasis (hover) state configuration for series items.
+/// </summary>
 public sealed class EChartsEmphasis
 {
+    /// <summary>
+    /// Whether to disable emphasis (hover) effect.
+    /// </summary>
     [JsonPropertyName("disabled")]
     public bool? Disabled { get; set; }
 
@@ -577,6 +733,9 @@ public sealed class EChartsEmphasis
     public EChartsItemStyle? ItemStyle { get; set; }
 }
 
+/// <summary>
+/// Item style configuration for data points, bars, or pie slices.
+/// </summary>
 public sealed class EChartsItemStyle
 {
     /// <summary>
@@ -610,8 +769,14 @@ public sealed class EChartsItemStyle
     public int? BorderWidth { get; set; }
 }
 
+/// <summary>
+/// Area style configuration for area charts.
+/// </summary>
 public sealed class EChartsAreaStyle
 {
+    /// <summary>
+    /// Opacity (0.0 to 1.0).
+    /// </summary>
     [JsonPropertyName("opacity")]
     public double? Opacity { get; set; }
 
@@ -622,8 +787,14 @@ public sealed class EChartsAreaStyle
     public object? Color { get; set; }
 }
 
+/// <summary>
+/// Label configuration for data points in series.
+/// </summary>
 public sealed class EChartsLabel
 {
+    /// <summary>
+    /// Whether to show labels.
+    /// </summary>
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
 
@@ -639,24 +810,45 @@ public sealed class EChartsLabel
     [JsonPropertyName("formatter")]
     public string? Formatter { get; set; }
 
+    /// <summary>
+    /// Text color for labels.
+    /// </summary>
     [JsonPropertyName("color")]
     public string? Color { get; set; }
 
+    /// <summary>
+    /// Font size for labels in pixels.
+    /// </summary>
     [JsonPropertyName("fontSize")]
     public double? FontSize { get; set; }
 
+    /// <summary>
+    /// Offset distance for labels.
+    /// </summary>
     [JsonPropertyName("offset")]
     public double? Offset { get; set; }
 }
 
+/// <summary>
+/// Label line configuration for pie chart labels.
+/// </summary>
 public sealed class EChartsLabelLine
 {
+    /// <summary>
+    /// Whether to show label lines.
+    /// </summary>
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
 
+    /// <summary>
+    /// Length of the first segment of the label line.
+    /// </summary>
     [JsonPropertyName("length")]
     public double? Length { get; set; }
 
+    /// <summary>
+    /// Length of the second segment of the label line.
+    /// </summary>
     [JsonPropertyName("length2")]
     public double? Length2 { get; set; }
 
@@ -669,8 +861,14 @@ public sealed class EChartsLabelLine
     public object? Smooth { get; set; }
 }
 
+/// <summary>
+/// Tooltip configuration for displaying data information on hover.
+/// </summary>
 public sealed class EChartsTooltip
 {
+    /// <summary>
+    /// Whether to show the tooltip.
+    /// </summary>
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
 
@@ -680,6 +878,9 @@ public sealed class EChartsTooltip
     [JsonPropertyName("trigger")]
     public string? Trigger { get; set; }
 
+    /// <summary>
+    /// Axis pointer configuration for tooltip.
+    /// </summary>
     [JsonPropertyName("axisPointer")]
     public EChartsAxisPointer? AxisPointer { get; set; }
 
@@ -718,6 +919,9 @@ public sealed class EChartsTooltip
     public EChartsTextStyle? TextStyle { get; set; }
 }
 
+/// <summary>
+/// Text style configuration for various text elements.
+/// </summary>
 public sealed class EChartsTextStyle
 {
     /// <summary>
@@ -745,6 +949,9 @@ public sealed class EChartsTextStyle
     public string? FontFamily { get; set; }
 }
 
+/// <summary>
+/// Axis pointer configuration for tooltip and axis interaction.
+/// </summary>
 public sealed class EChartsAxisPointer
 {
     /// <summary>
@@ -754,8 +961,14 @@ public sealed class EChartsAxisPointer
     public string? Type { get; set; }
 }
 
+/// <summary>
+/// Legend component configuration for displaying series names and toggling series visibility.
+/// </summary>
 public sealed class EChartsLegend
 {
+    /// <summary>
+    /// Whether to show the legend.
+    /// </summary>
     [JsonPropertyName("show")]
     public bool? Show { get; set; }
 
@@ -779,6 +992,9 @@ public sealed class EChartsLegend
     [JsonPropertyName("top")]
     public string? Top { get; set; }
 
+    /// <summary>
+    /// Icon shape for legend items (e.g., "circle", "rect", "roundRect", "triangle", "diamond").
+    /// </summary>
     [JsonPropertyName("icon")]
     public string? Icon { get; set; }
     
@@ -789,6 +1005,9 @@ public sealed class EChartsLegend
     public EChartsTextStyle? TextStyle { get; set; }
 }
 
+/// <summary>
+/// Radar coordinate system configuration for radar charts.
+/// </summary>
 public sealed class EChartsRadar
 {
     /// <summary>
@@ -815,6 +1034,9 @@ public sealed class EChartsRadar
     [JsonPropertyName("center")]
     public string[]? Center { get; set; }
     
+    /// <summary>
+    /// Radar indicator configuration (axes) for each dimension.
+    /// </summary>
     [JsonPropertyName("indicator")]
     public List<EChartsRadarIndicator>? Indicator { get; set; }
     
@@ -837,8 +1059,14 @@ public sealed class EChartsRadar
     public EChartsSplitLine? SplitLine { get; set; }
 }
 
+/// <summary>
+/// Radar indicator configuration for a single axis dimension in radar charts.
+/// </summary>
 public sealed class EChartsRadarIndicator
 {
+    /// <summary>
+    /// Name of the radar indicator.
+    /// </summary>
     [JsonPropertyName("name")]
     public string? Name { get; set; }
     
@@ -848,6 +1076,9 @@ public sealed class EChartsRadarIndicator
     [JsonPropertyName("min")]
     public double? Min { get; set; }
 
+    /// <summary>
+    /// Maximum value for this indicator.
+    /// </summary>
     [JsonPropertyName("max")]
     public double? Max { get; set; }
 }
@@ -889,27 +1120,51 @@ public sealed class EChartsRadarAxisName
     public string? FontFamily { get; set; }
 }
 
+/// <summary>
+/// Linear gradient configuration for colors.
+/// </summary>
 public sealed class EChartsLinearGradient
 {
+    /// <summary>
+    /// Gradient type (always "linear" for linear gradients).
+    /// </summary>
     [JsonPropertyName("type")]
     public string Type { get; set; } = "linear";
 
+    /// <summary>
+    /// Starting x coordinate (0.0 to 1.0).
+    /// </summary>
     [JsonPropertyName("x")]
     public double X { get; set; }
 
+    /// <summary>
+    /// Starting y coordinate (0.0 to 1.0).
+    /// </summary>
     [JsonPropertyName("y")]
     public double Y { get; set; }
 
+    /// <summary>
+    /// Ending x coordinate (0.0 to 1.0).
+    /// </summary>
     [JsonPropertyName("x2")]
     public double X2 { get; set; }
 
+    /// <summary>
+    /// Ending y coordinate (0.0 to 1.0).
+    /// </summary>
     [JsonPropertyName("y2")]
     public double Y2 { get; set; }
 
+    /// <summary>
+    /// Color stops defining the gradient colors and their positions.
+    /// </summary>
     [JsonPropertyName("colorStops")]
     public List<EChartsColorStop> ColorStops { get; set; } = new();
 }
 
+/// <summary>
+/// Color stop configuration for gradients.
+/// </summary>
 public sealed class EChartsColorStop
 {
     /// <summary>
@@ -919,7 +1174,7 @@ public sealed class EChartsColorStop
     public double Offset { get; set; }
 
     /// <summary>
-    /// Gets or sets the color value associated with the object.
+    /// Color value at this stop.
     /// </summary>
     [JsonPropertyName("color")]
     public string Color { get; set; } = "";

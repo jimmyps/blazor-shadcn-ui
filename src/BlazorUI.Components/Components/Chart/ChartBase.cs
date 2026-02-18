@@ -11,6 +11,9 @@ namespace BlazorUI.Components.Chart;
 /// <typeparam name="TData">The type of data items in the chart.</typeparam>
 public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
 {
+    /// <summary>
+    /// Gets or sets the injected JavaScript runtime for interop.
+    /// </summary>
     [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
     
     /// <summary>
@@ -85,21 +88,59 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     [Parameter]
     public AnimationEasing AnimationEasingUpdate { get; set; } = AnimationEasing.CubicInOut;
     
+    /// <summary>
+    /// Reference to the canvas element for chart rendering.
+    /// </summary>
     protected ElementReference _canvasRef;
+    
+    /// <summary>
+    /// The chart renderer instance for JavaScript interop.
+    /// </summary>
     protected IChartRenderer? _renderer;
+    
+    /// <summary>
+    /// The unique identifier for this chart instance.
+    /// </summary>
     protected string? _chartId;
+    
+    /// <summary>
+    /// Indicates whether the chart has been initialized.
+    /// </summary>
     protected bool _isInitialized;
     
-    // Collected primitives (overridden by explicit child components)
+    /// <summary>
+    /// Collected grid primitive component.
+    /// </summary>
     protected Grid? _grid;
+    
+    /// <summary>
+    /// Collected X-axis primitive component.
+    /// </summary>
     protected XAxis? _xAxis;
+    
+    /// <summary>
+    /// Collected Y-axis primitive component.
+    /// </summary>
     protected YAxis? _yAxis;
+    
+    /// <summary>
+    /// Collected tooltip primitive component.
+    /// </summary>
     protected Tooltip? _tooltip;
+    
+    /// <summary>
+    /// Collected legend primitive component.
+    /// </summary>
     protected Legend? _legend;
     
-    // Collected series
+    /// <summary>
+    /// List of collected series components.
+    /// </summary>
     protected List<object> _series = new();
     
+    /// <summary>
+    /// Called after the component has rendered.
+    /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && Data != null && Data.Any())
@@ -108,6 +149,9 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
         }
     }
     
+    /// <summary>
+    /// Called when parameters are set or changed.
+    /// </summary>
     protected override async Task OnParametersSetAsync()
     {
         if (_isInitialized && Data != null)
@@ -706,6 +750,9 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
         };
     }
     
+    /// <summary>
+    /// Disposes of the chart resources asynchronously.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
         if (_renderer != null && !string.IsNullOrEmpty(_chartId))

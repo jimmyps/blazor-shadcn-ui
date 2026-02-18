@@ -26,6 +26,10 @@ public class CollapsibleStateService : IAsyncDisposable
     
     private IJSObjectReference? _collapsibleModule;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CollapsibleStateService"/> class.
+    /// </summary>
+    /// <param name="jsRuntime">The JavaScript runtime for interop operations.</param>
     public CollapsibleStateService(IJSRuntime jsRuntime)
     {
         _jsRuntime = jsRuntime;
@@ -34,6 +38,7 @@ public class CollapsibleStateService : IAsyncDisposable
     /// <summary>
     /// Ensures the JavaScript module is loaded.
     /// </summary>
+    /// <returns>The loaded JavaScript module reference.</returns>
     private async Task<IJSObjectReference> EnsureModuleAsync()
     {
         if (_collapsibleModule == null)

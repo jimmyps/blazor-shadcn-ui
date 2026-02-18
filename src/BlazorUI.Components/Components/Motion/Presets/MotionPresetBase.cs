@@ -7,6 +7,9 @@ namespace BlazorUI.Components.Motion;
 /// </summary>
 public abstract class MotionPresetBase : ComponentBase, IMotionPreset
 {
+    /// <summary>
+    /// Gets or sets the parent Motion component.
+    /// </summary>
     [CascadingParameter]
     protected Motion? ParentMotion { get; set; }
 
@@ -25,6 +28,9 @@ public abstract class MotionPresetBase : ComponentBase, IMotionPreset
     [Parameter]
     public double[]? CustomEasing { get; set; }
 
+    /// <summary>
+    /// Initializes the motion preset and registers it with the parent Motion component.
+    /// </summary>
     protected override void OnInitialized()
     {
         // Register this preset with the parent Motion component
@@ -47,6 +53,8 @@ public abstract class MotionPresetBase : ComponentBase, IMotionPreset
     /// Helper method to get the effective easing value.
     /// Uses the parameter if set, otherwise returns the default.
     /// </summary>
+    /// <param name="defaultEasing">The default easing to use if none is specified.</param>
+    /// <returns>The effective easing value.</returns>
     protected MotionEasing GetEffectiveEasing(MotionEasing defaultEasing)
     {
         return Easing ?? defaultEasing;
@@ -56,6 +64,8 @@ public abstract class MotionPresetBase : ComponentBase, IMotionPreset
     /// Helper method to apply easing to motion options.
     /// Automatically maps easing enum values to cubic-bezier curves.
     /// </summary>
+    /// <param name="options">The motion options to apply easing to.</param>
+    /// <param name="defaultEasing">The default easing to use if none is specified.</param>
     protected void ApplyEasing(MotionOptions options, MotionEasing defaultEasing)
     {
         var effectiveEasing = GetEffectiveEasing(defaultEasing);

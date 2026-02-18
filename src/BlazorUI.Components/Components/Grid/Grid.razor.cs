@@ -12,35 +12,121 @@ namespace BlazorUI.Components.Grid;
 /// pagination, virtualization, and state persistence.
 /// </summary>
 /// <typeparam name="TItem">The type of items in the grid.</typeparam>
+/// <remarks>
+/// The Grid component provides a flexible, high-performance data grid with support for:
+/// - Client-side and server-side data loading
+/// - Sorting, filtering, and pagination
+/// - Row selection (single/multiple)
+/// - Column pinning and resizing
+/// - State persistence and restoration
+/// - Observable collections with automatic updates
+/// - Custom cell templates and actions
+/// </remarks>
 public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
 {
+    /// <summary>
+    /// Reference to the grid container element.
+    /// </summary>
     private ElementReference _gridContainer;
+    
+    /// <summary>
+    /// Grid configuration definition passed to the renderer.
+    /// </summary>
     private GridDefinition<TItem> _gridDefinition = new();
+    
+    /// <summary>
+    /// List of registered column definitions.
+    /// </summary>
     private List<GridColumn<TItem>> _columns = new();
+    
+    /// <summary>
+    /// Grid renderer implementation (e.g., AG Grid).
+    /// </summary>
     private IGridRenderer<TItem>? _gridRenderer;
+    
+    /// <summary>
+    /// Indicates whether the grid has been initialized.
+    /// </summary>
     private bool _initialized = false;
+    
+    /// <summary>
+    /// Indicates whether columns have been registered.
+    /// </summary>
     private bool _columnsRegistered = false;
+    
+    /// <summary>
+    /// Indicates whether actions have been auto-registered.
+    /// </summary>
     private bool _actionsRegistered = false;
+    
+    /// <summary>
+    /// Custom theme parameters provided by GridThemeParameters component.
+    /// </summary>
     private GridThemeParameters? _themeParameters;
+    
+    /// <summary>
+    /// Tracks previously selected items to detect selection changes.
+    /// </summary>
     private IReadOnlyCollection<TItem> _previousSelectedItems = Array.Empty<TItem>();
+    
+    /// <summary>
+    /// Flag indicating selection update originated from the grid.
+    /// </summary>
     private bool _isUpdatingSelectionFromGrid = false;
     
-    // Theme tracking for runtime updates
+    /// <summary>
+    /// Previously applied theme for change detection.
+    /// </summary>
     private GridTheme _previousTheme;
+    
+    /// <summary>
+    /// Previously applied density for change detection.
+    /// </summary>
     private GridDensity _previousDensity;
+    
+    /// <summary>
+    /// Previously applied visual style for change detection.
+    /// </summary>
     private GridStyle _previousVisualStyle;
     
-    // State tracking for mutation detection
+    /// <summary>
+    /// Hash of previous state for mutation detection.
+    /// </summary>
     private int _previousStateHash;
     
-    // Observable Collection support
+    /// <summary>
+    /// Current items collection reference for change detection.
+    /// </summary>
     private IEnumerable<TItem> _currentItems = Array.Empty<TItem>();
+    
+    /// <summary>
+    /// Subscription to collection change notifications.
+    /// </summary>
     private IDisposable? _collectionSubscription;
+    
+    /// <summary>
+    /// Queue of pending collection change events for batching.
+    /// </summary>
     private readonly List<NotifyCollectionChangedEventArgs> _pendingChanges = new();
+    
+    /// <summary>
+    /// Cancellation token for batch processing.
+    /// </summary>
     private CancellationTokenSource? _batchCts;
+    
+    /// <summary>
+    /// Hash of previous items count for non-observable collections.
+    /// </summary>
     private int _previousItemsHash = 0;
-    private Dictionary<object, TItem>? _previousItemsById; // Track items by ID for delta detection
+    
+    /// <summary>
+    /// Dictionary tracking items by ID for delta detection.
+    /// </summary>
+    private Dictionary<object, TItem>? _previousItemsById;
 
+    /// <summary>
+    /// Gets or sets the service provider for dependency injection.
+    /// </summary>
     [Inject]
     private IServiceProvider ServiceProvider { get; set; } = default!;
 
@@ -232,11 +318,17 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     [Parameter]
     public EventCallback<IReadOnlyCollection<TItem>> SelectedItemsChanged { get; set; }
 
+    /// <summary>
+    /// Gets the computed CSS classes for the grid container.
+    /// </summary>
     private string ContainerCssClass => ClassNames.cn(
         "grid-container w-full h-full",
         Class
     );
 
+    /// <summary>
+    /// Gets the CSS classes for the grid content area.
+    /// </summary>
     private string GetGridCssClass()
     {
         // Combine AG Grid theme with our custom style modifiers
@@ -245,6 +337,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         );
     }
 
+    /// <summary>
+    /// Initializes the component and resolves the grid renderer.
+    /// </summary>
     protected override void OnInitialized()
     {
         // Validate PageSize
@@ -257,6 +352,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         _gridRenderer = ServiceProvider.GetRequiredService<IGridRenderer<TItem>>();
     }
 
+    /// <summary>
+    /// Detects parameter changes and updates the grid accordingly.
+    /// </summary>
     protected override async Task OnParametersSetAsync()
     {
         if (!_initialized || _gridRenderer == null)
@@ -383,6 +481,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Handles rendering lifecycle, allowing columns to register before initializing the grid.
+    /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -437,11 +538,17 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Registers a column with the grid (called by GridColumn components).
+    /// </summary>
     internal void RegisterColumn(GridColumn<TItem> column)
     {
         _columns.Add(column);
     }
 
+    /// <summary>
+    /// Registers custom theme parameters (called by GridThemeParameters component).
+    /// </summary>
     internal void RegisterThemeParameters(GridThemeParameters parameters)
     {
         _themeParameters = parameters;
@@ -522,6 +629,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the default theme parameters for a specific AG Grid theme.
+    /// </summary>
     private Dictionary<string, object> GetThemeDefaults(GridTheme theme)
     {
         if (theme == GridTheme.Shadcn)
@@ -546,6 +656,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         return new Dictionary<string, object>();
     }
 
+    /// <summary>
+    /// Gets the spacing and sizing parameters for a density preset.
+    /// </summary>
     private Dictionary<string, object> GetDensityPreset(GridDensity density)
     {
         return density switch
@@ -580,6 +693,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         };
     }
 
+    /// <summary>
+    /// Gets the visual style parameters for a style preset.
+    /// </summary>
     private Dictionary<string, object> GetVisualStylePreset(GridStyle style)
     {
         return style switch
@@ -605,6 +721,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         };
     }
 
+    /// <summary>
+    /// Merges theme parameters with precedence: ThemeDefaults &lt; Density &lt; VisualStyle &lt; GridThemeParameters.
+    /// </summary>
     private Dictionary<string, object> GetMergedThemeParams()
     {
         // Merge theme parameters with precedence: ThemeDefaults < Density < VisualStyle < GridThemeParameters
@@ -634,6 +753,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         return themeParams;
     }
 
+    /// <summary>
+    /// Builds the grid definition from columns and parameters.
+    /// </summary>
     private void BuildGridDefinition()
     {
         _gridDefinition.Columns = _columns.Select(c => c.ToDefinition()).ToList();
@@ -755,6 +877,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         return resolvedItems;
     }
 
+    /// <summary>
+    /// Initializes the grid renderer with the grid definition and data.
+    /// </summary>
     private async Task InitializeGridAsync()
     {
         if (_gridRenderer != null)
@@ -786,6 +911,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         }
     }
     
+    /// <summary>
+    /// Subscribes to collection change notifications for observable collections.
+    /// </summary>
     private void SubscribeToCollection()
     {
         if (_currentItems is INotifyCollectionChanged observable)
@@ -801,6 +929,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Unsubscribes from collection change notifications.
+    /// </summary>
     private void UnsubscribeFromCollection()
     {
         _collectionSubscription?.Dispose();
@@ -818,6 +949,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         _pendingChanges.Clear();
     }
 
+    /// <summary>
+    /// Handles collection change events and batches them for efficient processing.
+    /// </summary>
     private void HandleCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         // Synchronous collection of changes - no await here!
@@ -879,6 +1013,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         });
     }
 
+    /// <summary>
+    /// Applies batched collection changes as a single transaction.
+    /// </summary>
     private async Task ApplyBatchedChangesAsync()
     {
         var changes = _pendingChanges.ToList();
@@ -975,6 +1112,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Applies a transaction with adds, removes, and updates to the grid.
+    /// </summary>
     private async Task ApplyTransactionAsync(
         List<TItem> adds,
         List<TItem> removes,
@@ -1242,6 +1382,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         return hash.ToHashCode();
     }
 
+    /// <summary>
+    /// Disposes grid resources and unsubscribes from collections.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
         UnsubscribeFromCollection();
@@ -1259,6 +1402,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         }
     }
     
+    /// <summary>
+    /// Gets the inline styles for the grid container element.
+    /// </summary>
     private string GetGridContainerStyle()
     {
         // Build inline styles for the grid container
@@ -1285,6 +1431,9 @@ internal sealed class CollectionChangedSubscription : IDisposable
     private readonly INotifyCollectionChanged _observable;
     private readonly NotifyCollectionChangedEventHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CollectionChangedSubscription"/> class.
+    /// </summary>
     public CollectionChangedSubscription(
         INotifyCollectionChanged observable,
         NotifyCollectionChangedEventHandler handler)
@@ -1293,6 +1442,9 @@ internal sealed class CollectionChangedSubscription : IDisposable
         _handler = handler;
     }
 
+    /// <summary>
+    /// Unsubscribes from collection change events.
+    /// </summary>
     public void Dispose()
     {
         _observable.CollectionChanged -= _handler;

@@ -49,13 +49,39 @@ namespace BlazorUI.Components.NumericInput;
 /// </example>
 public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
 {
+    /// <summary>
+    /// JavaScript module for input event handling and value updates.
+    /// </summary>
     private IJSObjectReference? _inputModule;
+    
+    /// <summary>
+    /// Validation behavior handler for EditContext integration.
+    /// </summary>
     private InputValidationBehavior? _validationBehavior;
+    
+    /// <summary>
+    /// JavaScript module for managing cursor position during value updates.
+    /// </summary>
     private IJSObjectReference? _cursorModule;
+    
+    /// <summary>
+    /// DotNet object reference for JavaScript callbacks.
+    /// </summary>
     private DotNetObjectReference<NumericInput<TValue>>? _dotNetRef;
+    
+    /// <summary>
+    /// Tracks whether JavaScript modules have been initialized.
+    /// </summary>
     private bool _jsInitialized = false;
+    
+    /// <summary>
+    /// Auto-generated ID when user doesn't provide one.
+    /// </summary>
     private string? _generatedId;
 
+    /// <summary>
+    /// JavaScript runtime for invoking JavaScript functions.
+    /// </summary>
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
@@ -600,6 +626,9 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
         return default;
     }
 
+    /// <summary>
+    /// Initializes the component and sets up validation behavior if enabled.
+    /// </summary>
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -616,6 +645,9 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Updates validation behavior when parameters change and subscribes to EditContext events.
+    /// </summary>
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -633,6 +665,9 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Handles EditContext validation state changes and updates the component display.
+    /// </summary>
     private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
     {
         if (_validationBehavior == null) return;
@@ -647,6 +682,10 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
         });
     }
 
+    /// <summary>
+    /// Initializes JavaScript modules and validation after the component first renders.
+    /// Sets up input event handling, MaxLength enforcement, and min/max clamping.
+    /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -708,6 +747,9 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Disposes JavaScript modules, event handlers, and object references.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
         try

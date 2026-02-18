@@ -17,11 +17,21 @@ public class EChartsRenderer : IChartRenderer
         DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
     };
     
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EChartsRenderer"/> class.
+    /// </summary>
+    /// <param name="jsRuntime">The JavaScript runtime for interop calls.</param>
     public EChartsRenderer(IJSRuntime jsRuntime)
     {
         _jsRuntime = jsRuntime;
     }
     
+    /// <summary>
+    /// Initializes an ECharts chart instance with the specified configuration.
+    /// </summary>
+    /// <param name="element">The HTML element reference to render the chart.</param>
+    /// <param name="config">The chart configuration.</param>
+    /// <returns>A unique identifier for the created chart instance.</returns>
     public async Task<string> InitializeAsync(ElementReference element, ChartConfig config)
     {
         Console.WriteLine("[EChartsRenderer] InitializeAsync called");
@@ -41,6 +51,11 @@ public class EChartsRenderer : IChartRenderer
         return chartId;
     }
     
+    /// <summary>
+    /// Updates the data of an existing chart without recreating it.
+    /// </summary>
+    /// <param name="chartId">The unique identifier of the chart to update.</param>
+    /// <param name="data">The new data to display in the chart.</param>
     public async Task UpdateDataAsync(string chartId, object data)
     {
         if (_jsModule != null)
@@ -53,6 +68,11 @@ public class EChartsRenderer : IChartRenderer
         }
     }
     
+    /// <summary>
+    /// Updates the configuration options of an existing chart.
+    /// </summary>
+    /// <param name="chartId">The unique identifier of the chart to update.</param>
+    /// <param name="options">The new options to apply to the chart.</param>
     public async Task UpdateOptionsAsync(string chartId, object options)
     {
         Console.WriteLine($"[EChartsRenderer] UpdateOptionsAsync called for chart: {chartId}");
@@ -74,6 +94,11 @@ public class EChartsRenderer : IChartRenderer
         }
     }
     
+    /// <summary>
+    /// Applies theme colors and styles to an existing chart.
+    /// </summary>
+    /// <param name="chartId">The unique identifier of the chart to theme.</param>
+    /// <param name="theme">The theme configuration to apply.</param>
     public async Task ApplyThemeAsync(string chartId, ChartTheme theme)
     {
         if (_jsModule != null)
@@ -83,6 +108,12 @@ public class EChartsRenderer : IChartRenderer
         }
     }
     
+    /// <summary>
+    /// Exports the chart as a base64-encoded image.
+    /// </summary>
+    /// <param name="chartId">The unique identifier of the chart to export.</param>
+    /// <param name="format">The image format (PNG or SVG).</param>
+    /// <returns>A base64-encoded image string.</returns>
     public async Task<string> ExportAsImageAsync(string chartId, ImageFormat format)
     {
         if (_jsModule != null)
@@ -94,6 +125,11 @@ public class EChartsRenderer : IChartRenderer
         return string.Empty;
     }
     
+    /// <summary>
+    /// Maps BlazorUI theme configuration to ECharts theme format.
+    /// </summary>
+    /// <param name="theme">The BlazorUI theme to convert.</param>
+    /// <returns>An ECharts-compatible theme object.</returns>
     private object MapToEChartsTheme(ChartTheme theme)
     {
         // Map BlazorUI theme to ECharts theme JSON format
@@ -127,6 +163,10 @@ public class EChartsRenderer : IChartRenderer
         };
     }
     
+    /// <summary>
+    /// Destroys a chart instance and releases its resources.
+    /// </summary>
+    /// <param name="chartId">The unique identifier of the chart to destroy.</param>
     public async Task DestroyAsync(string chartId)
     {
         if (_jsModule != null)
@@ -135,6 +175,9 @@ public class EChartsRenderer : IChartRenderer
         }
     }
     
+    /// <summary>
+    /// Disposes the renderer and releases JavaScript module resources.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
         if (_jsModule != null)

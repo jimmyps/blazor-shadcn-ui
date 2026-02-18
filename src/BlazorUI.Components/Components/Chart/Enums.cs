@@ -146,6 +146,9 @@ public enum LegendVerticalAlign
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum LegendIcon
 {
+    /// <summary>
+    /// Default icon type.
+    /// </summary>
     Default,
 
     /// <summary>
@@ -303,7 +306,7 @@ public enum LabelPosition
 }
 
 /// <summary>
-/// Interpolation type for line and area series.
+/// Curve interpolation type for line and area series.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum InterpolationType
