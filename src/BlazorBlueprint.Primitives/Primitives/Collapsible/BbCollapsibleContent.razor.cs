@@ -16,10 +16,10 @@ namespace BlazorBlueprint.Primitives.Collapsible;
 /// content conditionally based on the Open state.
 /// </para>
 /// <para>
-/// Accessibility features (WCAG 2.1 AA):
+/// Included accessibility features:
 /// <list type="bullet">
-/// <item>Semantic region role for screen readers</item>
-/// <item>aria-hidden attribute for proper screen reader behavior</item>
+/// <item>Semantic region role</item>
+/// <item>aria-hidden attribute for content visibility</item>
 /// <item>Conditional rendering via display: none</item>
 /// <item>data-state attribute for CSS styling hooks</item>
 /// </list>

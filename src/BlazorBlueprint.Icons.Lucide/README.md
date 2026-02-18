@@ -6,7 +6,7 @@ A comprehensive Lucide icon library for Blazor applications, providing 1,600+ be
 
 - **1,640+ Icons**: Complete Lucide icon set
 - **React-Style API**: Familiar component-based API for React developers
-- **Fully Accessible**: ARIA-compliant with customizable labels
+- **Includes ARIA Attributes**: Customizable aria-label and aria-hidden support
 - **Tree-Shakeable**: Blazor assembly trimming removes unused icons at publish time
 - **Type-Safe**: Full XML documentation and IntelliSense support
 - **Themeable**: Icons inherit color from parent by default, supports CSS variables

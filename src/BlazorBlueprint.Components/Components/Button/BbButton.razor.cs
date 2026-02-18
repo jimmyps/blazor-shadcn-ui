@@ -9,17 +9,17 @@ namespace BlazorBlueprint.Components;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The Button component provides a customizable, accessible button that supports
-/// multiple visual variants, sizes, and states. It follows WCAG 2.1 AA standards
-/// for accessibility and integrates with Blazor's event system.
+/// The Button component provides a customizable button that supports
+/// multiple visual variants, sizes, and states. It includes ARIA attributes
+/// and keyboard support, and integrates with Blazor's event system.
 /// </para>
 /// <para>
 /// Features:
 /// - 6 visual variants (Default, Destructive, Outline, Secondary, Ghost, Link)
 /// - 4 size options (Small, Default, Large, Icon)
 /// - Disabled state support
-/// - Full keyboard navigation (Tab, Enter, Space)
-/// - ARIA attributes for screen readers
+/// - Keyboard support (Tab, Enter, Space)
+/// - Includes ARIA attributes
 /// - RTL (Right-to-Left) support
 /// - Dark mode compatible via CSS variables
 /// </para>

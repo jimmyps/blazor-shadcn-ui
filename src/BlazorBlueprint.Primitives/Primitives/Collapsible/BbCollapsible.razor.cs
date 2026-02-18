@@ -27,12 +27,12 @@ namespace BlazorBlueprint.Primitives.Collapsible;
 /// </list>
 /// </para>
 /// <para>
-/// Accessibility features (WCAG 2.1 AA):
+/// Included accessibility features:
 /// <list type="bullet">
-/// <item>Proper ARIA attributes (aria-expanded, aria-controls)</item>
-/// <item>Keyboard navigation (Space, Enter)</item>
+/// <item>ARIA attributes (aria-expanded, aria-controls)</item>
+/// <item>Keyboard support (Space, Enter)</item>
 /// <item>Focus management</item>
-/// <item>Screen reader support</item>
+/// <item>Semantic HTML structure</item>
 /// </list>
 /// </para>
 /// </remarks>

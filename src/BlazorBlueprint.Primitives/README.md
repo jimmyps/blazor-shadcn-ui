@@ -1,15 +1,15 @@
 # BlazorBlueprint.Primitives
 
-Headless, unstyled Blazor primitive components with full accessibility support. Build your own component library using these composable primitives.
+Headless, unstyled Blazor primitive components with ARIA attributes and keyboard support. Build your own component library using these composable primitives.
 
 ## Features
 
 - **Headless & Unstyled**: Complete control over styling — primitives provide behavior, accessibility, and state management without imposing any visual design
-- **Accessibility First**: Built-in ARIA attributes, keyboard navigation, and screen reader support following WCAG 2.1 AA standards
+- **Built with Accessibility in Mind**: Includes ARIA attributes and keyboard interaction support
 - **Composition-Based**: Flexible component composition patterns for building complex UIs
 - **Type-Safe**: Full C# type safety with IntelliSense support
 - **State Management**: Built-in controlled and uncontrolled state patterns
-- **Keyboard Navigation**: Full keyboard support for all interactive components
+- **Keyboard Support**: Keyboard interaction support for interactive components
 - **Two-Layer Portal Architecture**: Category-scoped portals (Container and Overlay) for efficient rendering
 - **.NET 8**: Built for the latest .NET platform
 

@@ -97,8 +97,8 @@ public partial class BbButtonGroup : ComponentBase
     /// Gets or sets the ARIA label for the button group.
     /// </summary>
     /// <remarks>
-    /// Provides an accessible name for the group when role="group" is used.
-    /// Important for screen reader users to understand the group's purpose.
+    /// Provides a name for the group when role="group" is used.
+    /// Helps assistive technologies convey the group's purpose.
     /// Recommended for button groups that perform a specific function (e.g., "Text formatting", "Email actions").
     /// </remarks>
     [Parameter]

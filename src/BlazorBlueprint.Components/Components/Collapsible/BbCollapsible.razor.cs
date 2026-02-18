@@ -8,7 +8,7 @@ namespace BlazorBlueprint.Components;
 /// <remarks>
 /// <para>
 /// The Collapsible component is a styled wrapper around Collapsible that follows the shadcn/ui
-/// design system and implements an accessible disclosure pattern (WCAG 2.1 APG). It applies default
+/// design system and implements a disclosure pattern with ARIA attributes. It applies default
 /// shadcn styling while maintaining all the behavior and accessibility of the primitive.
 /// </para>
 /// <para>

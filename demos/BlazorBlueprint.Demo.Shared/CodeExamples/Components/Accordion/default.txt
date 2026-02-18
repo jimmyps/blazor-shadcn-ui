@@ -1,8 +1,8 @@
 <BbAccordion Type="AccordionType.Single" Collapsible="true" Class="w-full">
     <BbAccordionItem Value="item-1">
-        <BbAccordionTrigger>Is it accessible?</BbAccordionTrigger>
+        <BbAccordionTrigger>Is it customizable?</BbAccordionTrigger>
         <BbAccordionContent>
-            Yes. It adheres to the WAI-ARIA design pattern.
+            Yes. It includes ARIA attributes and keyboard support.
         </BbAccordionContent>
     </BbAccordionItem>
     <BbAccordionItem Value="item-2">

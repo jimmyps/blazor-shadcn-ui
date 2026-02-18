@@ -14,10 +14,10 @@ namespace BlazorBlueprint.Components;
 /// This component must be used as a child of a <see cref="BbCollapsible"/> component.
 /// </para>
 /// <para>
-/// Accessibility features:
+/// Included accessibility features:
 /// <list type="bullet">
-/// <item>Semantic region role for screen readers</item>
-/// <item>aria-hidden attribute for proper screen reader behavior</item>
+/// <item>Semantic region role</item>
+/// <item>aria-hidden attribute for content visibility</item>
 /// <item>Conditional rendering (not just hidden with CSS)</item>
 /// <item>Smooth animations via CSS transitions (when styled)</item>
 /// </list>

@@ -17,12 +17,12 @@ namespace BlazorBlueprint.Primitives.RadioGroup;
 /// It receives the radio group context via Blazor's CascadingParameter.
 /// </para>
 /// <para>
-/// Accessibility features (WCAG 2.1 AA):
+/// Included accessibility features:
 /// <list type="bullet">
 /// <item>Semantic button element with radio role</item>
 /// <item>aria-checked attribute reflects selected state</item>
 /// <item>aria-disabled attribute for disabled state</item>
-/// <item>aria-label for screen reader context</item>
+/// <item>aria-label for assistive technology context</item>
 /// <item>Keyboard support (Space/Enter to select)</item>
 /// <item>Proper tabindex for roving tab index pattern</item>
 /// <item>data-state attribute for CSS styling hooks</item>

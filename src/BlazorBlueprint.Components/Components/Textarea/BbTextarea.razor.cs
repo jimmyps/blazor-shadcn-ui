@@ -10,9 +10,9 @@ namespace BlazorBlueprint.Components;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The Textarea component provides a customizable, accessible multi-line text input that
-/// supports various states and features. It follows WCAG 2.1 AA standards
-/// for accessibility and integrates with Blazor's data binding system.
+/// The Textarea component provides a customizable multi-line text input that
+/// supports various states and features. It includes ARIA attributes
+/// and integrates with Blazor's data binding system.
 /// </para>
 /// <para>
 /// Features:
@@ -23,7 +23,7 @@ namespace BlazorBlueprint.Components;
 /// - Smooth color and shadow transitions for state changes
 /// - Disabled and required states
 /// - Placeholder text support
-/// - Full ARIA attribute support
+/// - Includes ARIA attributes
 /// - RTL (Right-to-Left) support
 /// - Dark mode compatible via CSS variables
 /// - JavaScript-first event handling for optimal performance in Blazor Server/Auto
@@ -162,7 +162,7 @@ public partial class BbTextarea : ComponentBase
     /// </summary>
     /// <remarks>
     /// References the id of an element containing help text or error messages.
-    /// Improves screen reader experience by associating descriptive text.
+    /// Associates descriptive text with the textarea via aria-describedby.
     /// </remarks>
     [Parameter]
     public string? AriaDescribedBy { get; set; }

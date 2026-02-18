@@ -10,8 +10,8 @@
     <PackageId>BlazorBlueprint.Primitives</PackageId>
     <RootNamespace>BlazorBlueprint.Primitives</RootNamespace>
     <AssemblyName>BlazorBlueprint.Primitives</AssemblyName>
-    <Description>Headless, unstyled Blazor primitive components with full accessibility support. Build your own component library using these composable primitives.</Description>
-    <PackageTags>blazor;primitives;headless;ui;components;accessibility;radix;unstyled;wcag</PackageTags>
+    <Description>Headless, unstyled Blazor primitive components with ARIA attributes and keyboard support. Build your own component library using these composable primitives.</Description>
+    <PackageTags>blazor;primitives;headless;ui;components;accessibility;radix;unstyled;aria</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <!-- <PackageIcon>icon.png</PackageIcon> -->
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>

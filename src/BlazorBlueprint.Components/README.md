@@ -10,7 +10,7 @@ Pre-styled Blazor components with shadcn/ui design. Beautiful defaults with zero
 - **Dark Mode**: Built-in dark mode support using CSS variables
 - **shadcn/ui Theme Compatible**: Use any theme from shadcn/ui or tweakcn.com
 - **Fully Customizable**: Override styles with custom CSS or Tailwind classes
-- **Accessible**: Built on BlazorBlueprint.Primitives with WCAG 2.1 AA compliance
+- **Built with Accessibility in Mind**: Includes ARIA attributes and keyboard support via BlazorBlueprint.Primitives
 - **Composable**: Flexible component composition patterns
 - **Type-Safe**: Full C# type safety with IntelliSense support
 - **.NET 8**: Built for the latest .NET platform
@@ -460,7 +460,7 @@ BlazorBlueprint.Components follows the shadcn/ui philosophy with zero-configurat
 2. **shadcn/ui Compatible**: Uses the same design tokens and CSS variables
 3. **Built on Primitives**: All behavior comes from BlazorBlueprint.Primitives
 4. **Theme Tokens**: Fully themeable using CSS variables
-5. **Accessible by Default**: WCAG 2.1 AA compliance built-in
+5. **Built with Accessibility in Mind**: Includes ARIA attributes and keyboard support
 6. **Customizable**: Override with custom CSS or add Tailwind if needed
 
 ## When to Use

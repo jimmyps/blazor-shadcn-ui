@@ -4,7 +4,7 @@
 [![NuGet](https://img.shields.io/nuget/v/BlazorBlueprint.Components)](https://www.nuget.org/packages/BlazorBlueprint.Components)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue)](LICENSE)
 
-Beautiful, accessible UI components for Blazor. Inspired by [shadcn/ui](https://ui.shadcn.com/).
+Beautiful UI components for Blazor, built with accessibility in mind. Inspired by [shadcn/ui](https://ui.shadcn.com/).
 
 <p align="center">
   <a href="https://blazorblueprintui.com">
@@ -42,7 +42,7 @@ Blazor developers lack a modern, design-system-first UI library equivalent to wh
 
 - **Zero Configuration** — Pre-built CSS included. No Tailwind setup, no Node.js, no build tools required.
 - **Full shadcn/ui Theme Compatibility** — Use themes from [shadcn/ui](https://ui.shadcn.com/themes) or [tweakcn](https://tweakcn.com) directly.
-- **Accessibility First** — WCAG 2.1 AA compliant with keyboard navigation and screen reader support.
+- **Built with Accessibility in Mind** — Includes ARIA attributes, keyboard support, and semantic HTML structure.
 - **Dark Mode Built-in** — Light and dark themes with CSS variables, ready out of the box.
 - **Two-Layer Architecture** — Use pre-styled components for speed, or headless primitives for full control.
 
@@ -146,21 +146,21 @@ Blazor Blueprint includes **80 styled components** organized into the following 
 | **Button** | Multiple variants (default, destructive, outline, secondary, ghost, link) with loading state and icon support |
 | **Button Group** | Visually group related buttons with connected styling |
 | **Calendar** | Interactive calendar with date constraints and range selection |
-| **Checkbox** | Accessible checkbox with indeterminate state |
+| **Checkbox** | Checkbox with indeterminate state and ARIA attributes |
 | **Checkbox Group** | Group of checkboxes with select-all support |
 | **Color Picker** | Color selection with swatches and custom input |
 | **Combobox** | Searchable autocomplete dropdown |
 | **Currency Input** | Currency-formatted numeric input with locale support |
 | **Date Picker** | Date picker with popover calendar and formatting options |
 | **Date Range Picker** | Dual-calendar range selection |
-| **Field** | Combines label, control, description, and error for accessible forms |
+| **Field** | Combines label, control, description, and error for structured forms |
 | **File Upload** | Drag-and-drop file upload with preview |
 | **Form Field** | Pre-configured field wrappers (Input, Checkbox, Switch, RadioGroup, Select, Combobox, MultiSelect) with built-in label, description, and validation |
 | **Input** | Text input with multiple types and validation |
 | **Input Field** | Typed input with automatic conversion, formatting, and validation for 15+ types |
 | **Input Group** | Enhanced inputs with icons, buttons, and addons |
 | **Input OTP** | One-time password input with individual digit fields |
-| **Label** | Accessible form labels |
+| **Label** | Form labels with control association |
 | **Masked Input** | Input with format masks (phone, SSN, etc.) |
 | **MultiSelect** | Searchable multi-selection with tags and checkboxes |
 | **Native Select** | Browser-native select with consistent styling |
@@ -240,7 +240,7 @@ Blazor Blueprint includes **80 styled components** organized into the following 
 
 ## Primitives
 
-Blazor Blueprint's **15 headless primitives** provide behavior, accessibility, and keyboard navigation without any styling. They handle all the complex interaction logic — focus trapping, ARIA attributes, keyboard shortcuts, portal rendering — while giving you complete control over appearance.
+Blazor Blueprint's **15 headless primitives** provide behavior, ARIA attributes, and keyboard support without any styling. They handle all the complex interaction logic — focus trapping, ARIA attributes, keyboard shortcuts, portal rendering — while giving you complete control over appearance.
 
 Use primitives when you need full design freedom or are building a custom design system.
 
@@ -252,7 +252,7 @@ Use primitives when you need full design freedom or are building a custom design
 | **Dialog** | Focus trapping, escape to close, scroll locking, portal rendering |
 | **Dropdown Menu** | Open/close, keyboard navigation, click-outside dismissal |
 | **Hover Card** | Hover intent, delay timing, portal positioning |
-| **Label** | Accessible label-control association |
+| **Label** | Label-control association |
 | **Popover** | Floating positioning, portal rendering, click-outside |
 | **Radio Group** | Single selection, arrow key navigation, ARIA roles |
 | **Select** | Dropdown behavior, typeahead, keyboard navigation |
@@ -328,12 +328,12 @@ Blazor Blueprint uses a **two-layer architecture** inspired by [Radix UI](https:
 ```
 BlazorBlueprint.Components     ← Pre-styled, ready to use
     ↓ builds on
-BlazorBlueprint.Primitives     ← Headless, fully accessible
+BlazorBlueprint.Primitives     ← Headless, includes ARIA attributes and keyboard support
 ```
 
 **Components** ship pre-built CSS matching the shadcn/ui design system. No Tailwind setup required — just reference the stylesheet and optionally provide theme variables.
 
-**Primitives** are completely unstyled. They handle accessibility (ARIA, focus management, keyboard navigation) and complex interaction patterns, giving you full control over appearance.
+**Primitives** are completely unstyled. They include ARIA attributes, focus management, and keyboard support for complex interaction patterns, giving you full control over appearance.
 
 ### Services
 

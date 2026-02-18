@@ -6,7 +6,7 @@ namespace BlazorBlueprint.Components;
 /// <remarks>
 /// Button variants follow the shadcn/ui design system and use CSS custom properties
 /// for theming. Each variant applies different background, text, and hover styles
-/// while maintaining accessibility standards (WCAG 2.1 AA).
+/// while including ARIA attributes for accessibility.
 /// </remarks>
 public enum ButtonVariant
 {

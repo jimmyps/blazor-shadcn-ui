@@ -18,7 +18,7 @@ namespace BlazorBlueprint.Primitives.Collapsible;
 /// It will automatically receive the collapsible state via Blazor's CascadingParameter.
 /// </para>
 /// <para>
-/// Accessibility features (WCAG 2.1 AA):
+/// Included accessibility features:
 /// <list type="bullet">
 /// <item>Semantic button element with proper role</item>
 /// <item>aria-expanded attribute reflects current state</item>
@@ -113,7 +113,7 @@ public partial class BbCollapsibleTrigger : ComponentBase
     /// <param name="args">The keyboard event arguments.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
     /// <remarks>
-    /// Implements WCAG 2.1 keyboard accessibility by responding to Space and Enter keys.
+    /// Responds to Space and Enter keys for keyboard interaction.
     /// </remarks>
     private async Task HandleKeyDown(KeyboardEventArgs args)
     {

@@ -10,9 +10,9 @@ namespace BlazorBlueprint.Components;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The Input component provides a customizable, accessible form input that supports
-/// multiple input types and states. It follows WCAG 2.1 AA standards
-/// for accessibility and integrates with Blazor's data binding system.
+/// The Input component provides a customizable form input that supports
+/// multiple input types and states. It includes ARIA attributes
+/// and integrates with Blazor's data binding system.
 /// </para>
 /// <para>
 /// Features:
@@ -23,7 +23,7 @@ namespace BlazorBlueprint.Components;
 /// - Disabled and required states
 /// - Placeholder text support
 /// - Two-way data binding with Value/ValueChanged
-/// - Full ARIA attribute support
+/// - Includes ARIA attributes
 /// - RTL (Right-to-Left) support
 /// - Dark mode compatible via CSS variables
 /// - JavaScript-first event handling for optimal performance in Blazor Server/Auto
@@ -153,7 +153,7 @@ public partial class BbInput : ComponentBase
     /// </summary>
     /// <remarks>
     /// References the id of an element containing help text or error messages.
-    /// Improves screen reader experience by associating descriptive text.
+    /// Associates descriptive text with the input via aria-describedby.
     /// </remarks>
     [Parameter]
     public string? AriaDescribedBy { get; set; }

@@ -18,12 +18,12 @@ namespace BlazorBlueprint.Primitives.RadioGroup;
 /// via Blazor's CascadingValue mechanism.
 /// </para>
 /// <para>
-/// Accessibility features (WCAG 2.1 AA):
+/// Included accessibility features:
 /// <list type="bullet">
 /// <item>Semantic radiogroup role</item>
 /// <item>Arrow key navigation (Up/Down, Left/Right)</item>
 /// <item>aria-disabled attribute for disabled state</item>
-/// <item>aria-label for screen reader context</item>
+/// <item>aria-label for assistive technology context</item>
 /// <item>Automatic focus management during navigation</item>
 /// </list>
 /// </para>
@@ -143,7 +143,7 @@ public partial class BbRadioGroup<TValue> : ComponentBase
     /// </summary>
     /// <param name="args">The keyboard event arguments.</param>
     /// <remarks>
-    /// Implements WCAG 2.1 keyboard accessibility:
+    /// Keyboard interaction support:
     /// - Arrow Down/Right: Navigate to next radio item
     /// - Arrow Up/Left: Navigate to previous radio item
     /// - Automatically selects the navigated item and focuses it

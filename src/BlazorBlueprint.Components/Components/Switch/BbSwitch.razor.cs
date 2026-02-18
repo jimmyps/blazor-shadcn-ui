@@ -31,9 +31,9 @@ public enum SwitchSize
 /// </summary>
 /// <remarks>
 /// <para>
-/// The Switch component provides a customizable, accessible toggle control that supports
-/// two-way data binding, form validation, and disabled states. It follows WCAG 2.1 AA
-/// standards for accessibility and integrates with Blazor's event and form systems.
+/// The Switch component provides a customizable toggle control that supports
+/// two-way data binding, form validation, and disabled states. It includes ARIA attributes
+/// and keyboard support, and integrates with Blazor's event and form systems.
 /// </para>
 /// <para>
 /// Features:
@@ -41,8 +41,8 @@ public enum SwitchSize
 /// - Form validation integration (EditContext)
 /// - Multiple size variants (Small, Medium, Large)
 /// - Disabled state support
-/// - Full keyboard navigation (Space/Enter to toggle)
-/// - ARIA attributes for screen readers
+/// - Keyboard support (Space/Enter to toggle)
+/// - Includes ARIA attributes
 /// - Dark mode compatible via CSS variables
 /// </para>
 /// </remarks>

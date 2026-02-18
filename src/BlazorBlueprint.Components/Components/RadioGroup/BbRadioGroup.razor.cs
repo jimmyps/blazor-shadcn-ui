@@ -11,9 +11,9 @@ namespace BlazorBlueprint.Components;
 /// <typeparam name="TValue">The type of the value associated with radio group items.</typeparam>
 /// <remarks>
 /// <para>
-/// The RadioGroup component provides an accessible container for radio buttons following
+/// The RadioGroup component provides a container for radio buttons following
 /// the shadcn/ui design system. It supports two-way data binding, form validation, and
-/// full keyboard navigation.
+/// keyboard interaction support.
 /// </para>
 /// <para>
 /// Features:
@@ -21,8 +21,8 @@ namespace BlazorBlueprint.Components;
 /// - Two-way binding support with @bind-Value
 /// - Form validation integration (EditContext)
 /// - Disabled state support
-/// - Full keyboard navigation (Arrow keys, Space/Enter)
-/// - ARIA attributes for screen readers
+/// - Keyboard support (Arrow keys, Space/Enter)
+/// - Includes ARIA attributes
 /// - Dark mode compatible via CSS variables
 /// </para>
 /// </remarks>

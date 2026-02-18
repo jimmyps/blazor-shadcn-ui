@@ -7,7 +7,7 @@
         <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">Accordion Primitive</h1>
             <p class="text-xl text-muted-foreground">
-                Headless, unstyled accordion primitive with full keyboard navigation and accessibility support.
+                Headless, unstyled accordion primitive with keyboard support and ARIA attributes.
             </p>
         </div>
     </div>
@@ -25,10 +25,10 @@
                 <BlazorBlueprint.Primitives.Accordion.BbAccordion DefaultValue="@(new HashSet<string> { "item-1" })" class="border rounded">
                     <BlazorBlueprint.Primitives.Accordion.BbAccordionItem Value="item-1" class="border-b last:border-0">
                         <BlazorBlueprint.Primitives.Accordion.BbAccordionTrigger class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
-                            Is it accessible?
+                            Is it customizable?
                         </BlazorBlueprint.Primitives.Accordion.BbAccordionTrigger>
                         <BlazorBlueprint.Primitives.Accordion.BbAccordionContent class="p-4 pt-0">
-                            Yes. It adheres to the WAI-ARIA design pattern with full keyboard navigation support.
+                            Yes. It includes ARIA attributes and keyboard support.
                         </BlazorBlueprint.Primitives.Accordion.BbAccordionContent>
                     </BlazorBlueprint.Primitives.Accordion.BbAccordionItem>
 

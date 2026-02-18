@@ -106,10 +106,9 @@ BlazorBlueprint/
 - Use null-safety throughout
 
 ### Accessibility
-- All components must be WCAG 2.1 AA compliant
-- Implement proper ARIA attributes
-- Support keyboard navigation
-- Test with screen readers
+- All components should include appropriate ARIA attributes
+- Implement keyboard interaction support
+- Use semantic HTML structure
 
 ## Testing
 

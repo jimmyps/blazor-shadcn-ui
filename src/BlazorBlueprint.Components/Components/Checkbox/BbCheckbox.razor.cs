@@ -9,9 +9,9 @@ namespace BlazorBlueprint.Components;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The Checkbox component provides a customizable, accessible checkbox that supports
+/// The Checkbox component provides a customizable checkbox that supports
 /// two-way data binding, form validation, disabled states, and indeterminate state.
-/// It follows WCAG 2.1 AA standards for accessibility and integrates with Blazor's form system.
+/// It includes ARIA attributes and keyboard support, and integrates with Blazor's form system.
 /// </para>
 /// <para>
 /// Features:
@@ -19,8 +19,8 @@ namespace BlazorBlueprint.Components;
 /// - Indeterminate state support (for "select all" scenarios)
 /// - Form validation integration (EditContext)
 /// - Disabled state support
-/// - Full keyboard navigation (Space to toggle)
-/// - ARIA attributes for screen readers
+/// - Keyboard support (Space to toggle)
+/// - Includes ARIA attributes
 /// - Dark mode compatible via CSS variables
 /// </para>
 /// </remarks>

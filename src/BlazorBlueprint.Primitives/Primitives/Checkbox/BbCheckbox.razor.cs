@@ -21,7 +21,7 @@ namespace BlazorBlueprint.Primitives.Checkbox;
 /// </list>
 /// </para>
 /// <para>
-/// Accessibility features (WCAG 2.1 AA):
+/// Included accessibility features:
 /// <list type="bullet">
 /// <item>Semantic button element with checkbox role</item>
 /// <item>aria-checked attribute (true/false/mixed for indeterminate)</item>
