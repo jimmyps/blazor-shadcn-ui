@@ -1,8 +1,9 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Http;
-using BlazorUI.Components.Services.Grid;
 using BlazorUI.Components.Services;
+using BlazorUI.Components.Services.Grid;
 using BlazorUI.Components.Services.Theming;
+using BlazorUI.Components.Toast;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BlazorUI.Components.Extensions;
 
@@ -35,9 +36,9 @@ public static class ServiceCollectionExtensions
         
         // Register ThemeService for theme management
         services.AddScoped<ThemeService>();
-        
-        // Note: IHttpContextAccessor should be registered by the consuming application if SSR cookie 
-        // reading is needed. Most Blazor apps that use AddRazorComponents() will have this registered automatically.
+
+        // Register ToastService
+        services.AddSingleton<IToastService, ToastService>();
 
         return services;
     }

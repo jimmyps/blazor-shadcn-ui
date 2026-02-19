@@ -11,9 +11,9 @@
 @* Spotlight Command Palette - Global search and command interface *@
 <Dialog @bind-Open="_isOpen">
     <DialogContent 
-        ShowClose="false" UseCustomAnimations="true"
-        Class="max-w-lg border-border/40 p-0 rounded-2xl shadow-xl gap-0 overflow-hidden top-[20vh] duration-500 translate-y-0 dialog-panel dialog-animated"
-        OverlayClass="!bg-background/70 backdrop-blur backdrop-saturate-150 dialog-overlay dialog-animated">
+        ShowClose="true" UseCustomAnimations="true"
+        Class="!inset-0 !w-screen !h-screen !max-w-none !translate-x-0 !translate-y-0 sm:!inset-auto sm:!w-full sm:!h-auto sm:!max-w-lg sm:!left-[50%] sm:!translate-x-[-50%] sm:!top-[20vh] sm:!translate-y-0 border-border/40 p-0 !rounded-none sm:!rounded-2xl shadow-xl gap-0 overflow-hidden duration-500 dialog-panel dialog-animated"
+        OverlayClass="bg-background/70 backdrop-blur backdrop-saturate-150 dialog-overlay dialog-animated">
         
         <HeightAnimation Config="@_heightAnimationConfig" Enabled="@_isOpen">
             <BlazorUI.Components.Command.Command OnValueChange="@HandleSelect">
@@ -21,7 +21,7 @@
                     Placeholder="Type a command or search..." SearchInterval="300" AutoFocus="true"
                     Class="border-0 border-b border-border/40 rounded-none focus-visible:ring-0" />
                 
-                <CommandList Class="max-h-[350px] scrollbar-thin">
+                <CommandList Class="max-h-[calc(100vh-4rem)] md:max-h-[350px] scrollbar-thin">
                     <CommandEmpty>
                         <div class="flex flex-col items-center gap-2 py-6 text-muted-foreground">
                             <LucideIcon Name="search-x" Size="32" />
