@@ -10,6 +10,8 @@
                                                    Align="@Align"
                                                    Offset="@Offset"
                                                    MatchTriggerWidth="@MatchTriggerWidth"
+                                                   Strategy="@Strategy.ToValue()"
+                                                   ZIndex="@ZIndex"
                                                    OnEscapeKeyDown="@OnEscapeKeyDown"
                                                    OnClickOutside="@OnClickOutside"
                                                    OnContentReady="@OnContentReady"
@@ -40,6 +42,21 @@
     [Parameter]
     public bool MatchTriggerWidth { get; set; } = false;
 
+    /// <summary>
+    /// Positioning strategy: "absolute" or "fixed".
+    /// Use "fixed" when popover needs to escape stacking contexts (e.g., in sidebars).
+    /// Default is "absolute".
+    /// </summary>
+    [Parameter]
+    public PositioningStrategy Strategy { get; set; } = PositioningStrategy.Absolute;
+
+    /// <summary>
+    /// Z-index for the popover content.
+    /// Default is 60 (PopoverContent level).
+    /// </summary>
+    [Parameter]
+    public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;
+
     [Parameter]
     public EventCallback<KeyboardEventArgs> OnEscapeKeyDown { get; set; }
 
@@ -63,5 +80,5 @@
     // Otherwise use default w-72 for standard popover width
     private string WidthClass => MatchTriggerWidth ? "w-full" : "w-72";
 
-    private string CssClass => $"z-{ZIndexLevels.PopoverContent} {WidthClass} rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 {Class}".Trim();
+    private string CssClass => $"z-{ZIndex} {WidthClass} rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 {Class}".Trim();
 }

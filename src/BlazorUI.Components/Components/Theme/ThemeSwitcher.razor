@@ -26,7 +26,10 @@
                 <p>@_currentBaseColor / @_currentPrimaryColor</p>
             </TooltipContent>
         </Tooltip>
-    <PopoverContent Class="w-80" Align="PopoverAlign.End">
+    <PopoverContent Class="w-80" 
+                    Align="PopoverAlign.End" 
+                    Strategy="@Strategy"
+                    ZIndex="@ZIndex">
         <div class="space-y-4">
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
@@ -70,6 +73,20 @@
 </TooltipProvider>
 
 @code {
+    /// <summary>
+    /// Positioning strategy for the popover.
+    /// Default is Fixed to escape stacking contexts.
+    /// </summary>
+    [Parameter]
+    public PositioningStrategy Strategy { get; set; } = PositioningStrategy.Fixed;
+
+    /// <summary>
+    /// Z-index for the popover content.
+    /// Default is 60 (PopoverContent level).
+    /// </summary>
+    [Parameter]
+    public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;
+
     private BaseColor _currentBaseColor;
     private PrimaryColor _currentPrimaryColor;
 
