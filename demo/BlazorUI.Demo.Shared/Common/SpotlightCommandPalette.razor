@@ -50,30 +50,30 @@
                     
                     <CommandSeparator />
 
-                    <CommandVirtualizedGroup TItem="ComponentItem"
+                    <CommandVirtualizedGroup TItem="ComponentRegistryEntry"
                             Heading="Components"
-                            Items="Components"
-                            ItemValue="@(item => item.Value)"
-                            ItemSearchText="@(item => item.Name)"
+                            Items="@ComponentRegistry.Components"
+                            ItemValue="@(item => item.Route)"
+                            ItemSearchText="@(item => item.Title)"
                             MaxDisplayCount="0">
                         <ItemTemplate Context="item">
                             <LucideIcon Name="@item.Icon" Size="16" Class="mr-2 text-primary" />
-                            @item.Name
+                            @item.Title
                             <span class="ml-auto text-xs text-muted-foreground">Styled</span>
                         </ItemTemplate>
                     </CommandVirtualizedGroup>
                     
                     <CommandSeparator />
 
-                    <CommandVirtualizedGroup TItem="ComponentItem"
+                    <CommandVirtualizedGroup TItem="ComponentRegistryEntry"
                             Heading="Primitives"
-                            Items="Primitives"
-                            ItemValue="@(item => item.Value)"
-                            ItemSearchText="@(item => item.Name)"
+                            Items="@ComponentRegistry.Primitives"
+                            ItemValue="@(item => item.Route)"
+                            ItemSearchText="@(item => item.Title)"
                             MaxDisplayCount="0">
                         <ItemTemplate Context="item">
                             <LucideIcon Name="@item.Icon" Size="16" Class="mr-2 text-muted-foreground" />
-                            @item.Name
+                            @item.Title
                             <span class="ml-auto text-xs text-muted-foreground">Headless</span>
                         </ItemTemplate>
                     </CommandVirtualizedGroup>
@@ -182,106 +182,6 @@
         return string.Join(" ", iconName.Split('-').Select(word =>
             char.ToUpper(word[0]) + word.Substring(1)));
     }
-    
-    // Component data structure
-    private record ComponentItem(string Name, string Value, string Icon);
-    
-    // List of all components
-    private readonly List<ComponentItem> Components = new()
-    {
-        new("Accordion", "components/accordion", "chevrons-down-up"),
-        new("Alert", "components/alert", "circle-alert"),
-        new("Alert Dialog", "components/alert-dialog", "triangle-alert"),
-        new("Aspect Ratio", "components/aspectratio", "square"),
-        new("Avatar", "components/avatar", "user"),
-        new("Badge", "components/badge", "award"),
-        new("Breadcrumb", "components/breadcrumb", "chevron-right"),
-        new("Button", "components/button", "pointer"),
-        new("Button Group", "components/button-group", "boxes"),
-        new("Calendar", "components/calendar", "calendar"),
-        new("Card", "components/card", "credit-card"),
-        new("Carousel", "components/carousel", "images"),
-        new("Chart", "components/chart", "area-chart"),
-        new("Checkbox", "components/checkbox", "square-check"),
-        new("Collapsible", "components/collapsible", "circle-chevron-down"),
-        new("Color Picker", "components/color-picker", "palette"),
-        new("Combobox", "components/combobox", "square-chevron-down"),
-        new("Command", "components/command", "terminal"),
-        new("Context Menu", "components/context-menu", "menu"),
-        new("Currency Input", "components/currency-input", "dollar-sign"),
-        new("Data Table", "components/datatable", "table"),
-        new("Date Picker", "components/date-picker", "calendar-days"),
-        new("Date Range Picker", "components/date-range-picker", "calendar-range"),
-        new("Dialog", "components/dialog", "square"),
-        new("Dialog Service", "components/dialog-service", "square-check-big"),
-        new("Drawer", "components/drawer", "panel-bottom"),
-        new("Dropdown Menu", "components/dropdown-menu", "panel-top-open"),
-        new("Empty", "components/empty", "inbox"),
-        new("Field", "components/field", "text"),
-        new("File Upload", "components/fileupload", "upload"),
-        new("Grid", "components/grid", "table-2"),
-        new("Hover Card", "components/hover-card", "square-mouse-pointer"),
-        new("Input", "components/input", "type"),
-        new("Input Group", "components/input-group", "blocks"),
-        new("Input OTP", "components/input-otp", "shield-check"),
-        new("Item", "components/item", "circle"),
-        new("Kbd", "components/kbd", "keyboard"),
-        new("Label", "components/label", "tag"),
-        new("Link Button", "components/button#linkbutton", "link"),
-        new("Markdown Editor", "components/markdown-editor", "file-text"),
-        new("Masked Input", "components/masked-input", "hash"),
-        new("Menubar", "components/menubar", "square-menu"),
-        new("Motion", "components/motion", "zap"),
-        new("Multi Select", "components/multi-select", "list-checks"),
-        new("Native Select", "components/native-select", "chevrons-up-down"),
-        new("Numeric Input", "components/numeric-input", "hash"),
-        new("Navigation Menu", "components/navigation-menu", "compass"),
-        new("Pagination", "components/pagination", "chevrons-left-right"),
-        new("Popover", "components/popover", "message-square"),
-        new("Progress", "components/progress", "loader"),
-        new("Radio Group", "components/radio-group", "circle-dot"),
-        new("Range Slider", "components/range-slider", "sliders-horizontal"),
-        new("Rating", "components/rating", "star"),
-        new("Resizable", "components/resizable", "panel-left"),
-        new("Rich Text Editor", "components/rich-text-editor", "type"),
-        new("Scroll Area", "components/scroll-area", "scroll-text"),
-        new("Select", "components/select", "list"),
-        new("Separator", "components/separator", "minus"),
-        new("Sheet", "components/sheet", "panel-right"),
-        new("Sidebar", "components/sidebar", "panel-left"),
-        new("Skeleton", "components/skeleton", "box"),
-        new("Slider", "components/slider", "sliders-horizontal"),
-        new("Spinner", "components/spinner", "loader-circle"),
-        new("Switch", "components/switch", "toggle-left"),
-        new("Tabs", "components/tabs", "folder"),
-        new("Textarea", "components/textarea", "text-cursor-input"),
-        new("Time Picker", "components/time-picker", "clock"),
-        new("Toast", "components/toast", "bell"),
-        new("Toggle", "components/toggle", "toggle-right"),
-        new("Toggle Group", "components/toggle-group", "boxes"),
-        new("Tooltip", "components/tooltip", "message-circle"),
-        new("Typography", "components/typography", "heading"),
-    };
-    
-    // List of all primitives
-    private readonly List<ComponentItem> Primitives = new()
-    {
-        new("Accordion", "primitives/accordion", "chevrons-down-up"),
-        new("Checkbox", "primitives/checkbox", "square-check"),
-        new("Collapsible", "primitives/collapsible", "chevron-down"),
-        new("Dialog", "primitives/dialog", "square"),
-        new("Dropdown Menu", "primitives/dropdown-menu", "chevron-down"),
-        new("Hover Card", "primitives/hover-card", "square-mouse-pointer"),
-        new("Label", "primitives/label", "tag"),
-        new("Popover", "primitives/popover", "message-square"),
-        new("Radio Group", "primitives/radio-group", "circle-dot"),
-        new("Select", "primitives/select", "list"),
-        new("Sheet", "primitives/sheet", "panel-right"),
-        new("Switch", "primitives/switch", "toggle-left"),
-        new("Table", "primitives/table", "table"),
-        new("Tabs", "primitives/tabs", "folder"),
-        new("Tooltip", "primitives/tooltip", "message-circle"),
-    };
 
     private static readonly string[] AllLucideIcons = LucideIconData.GetAvailableIcons().OrderBy(x => x).ToArray();
     private static readonly string[] AllHeroIcons = HeroIconData.GetAvailableIcons(HeroIconVariant.Outline).OrderBy(x => x).ToArray();

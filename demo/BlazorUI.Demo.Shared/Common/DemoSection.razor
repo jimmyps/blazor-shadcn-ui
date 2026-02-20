@@ -1,0 +1,30 @@
+@* DemoSection — a consistently-spaced section with an optional heading and description. *@
+
+<div class="space-y-4">
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">@Title</h2>
+            @if (!string.IsNullOrEmpty(Description))
+            {
+                <p class="text-sm text-muted-foreground">@((MarkupString)Description)</p>
+            }
+        </div>
+    }
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>Section heading text.</summary>
+    [Parameter] public string? Title { get; set; }
+
+    /// <summary>
+    /// Brief description rendered below the heading.
+    /// Supports inline HTML (e.g. &lt;code&gt; snippets).
+    /// <strong>Only pass developer-authored, trusted strings — never user-provided content.</strong>
+    /// </summary>
+    [Parameter] public string? Description { get; set; }
+
+    /// <summary>Section body content.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
