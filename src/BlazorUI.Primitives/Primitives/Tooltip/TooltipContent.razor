@@ -17,8 +17,9 @@
                     Side="@EffectiveSide"
                     Align="@EffectiveAlign"
                     Offset="@Offset"
-                    Strategy="absolute"
-                    ZIndex="50"
+                    ForceMount="false"
+                    Strategy="PositioningStrategy.Absolute"
+                    ZIndex="ZIndexLevels.TooltipContent"
                     OnReady="@HandleFloatingReady">
         @RenderTooltipContent()
     </FloatingPortal>

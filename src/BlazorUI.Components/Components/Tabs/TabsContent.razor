@@ -1,4 +1,5 @@
 @namespace BlazorUI.Components.Tabs
+@using BlazorUI.Components.Utilities
 @using BlazorUI.Primitives.Tabs
 
 @*
@@ -38,6 +39,7 @@
     [Parameter]
     public string? Class { get; set; }
 
-    private string CssClass =>
-        $"mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 {Class}".Trim();
+    private string CssClass => ClassNames.cn(
+        "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        Class);
 }

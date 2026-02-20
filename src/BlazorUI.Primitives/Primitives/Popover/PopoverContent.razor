@@ -10,21 +10,18 @@
     Maintains Popover-specific behavior: click-outside, escape key, ARIA attributes.
 *@
 
-@if (Context.IsOpen && Context.State.TriggerElement.HasValue)
-{
-    <FloatingPortal IsOpen="true"
-                    AnchorElement="@Context.State.TriggerElement"
-                    PortalId="@_portalId"
-                    Side="@Side"
-                    Align="@Align"
-                    Offset="@Offset"
-                    MatchAnchorWidth="@MatchTriggerWidth"
-                    Strategy="@Strategy"
-                    ZIndex="@ZIndex"
-                    OnReady="@HandleFloatingReady">
-        @RenderPopoverContent()
-    </FloatingPortal>
-}
+<FloatingPortal IsOpen="@Context.IsOpen"
+                AnchorElement="@Context.State.TriggerElement"
+                PortalId="@_portalId"
+                Side="@Side"
+                Align="@Align"
+                Offset="@Offset"
+                MatchAnchorWidth="@MatchTriggerWidth"
+                Strategy="@Strategy"
+                ZIndex="@ZIndex"
+                OnReady="@HandleFloatingReady">
+    @RenderPopoverContent()
+</FloatingPortal>
 
 @code {
     [CascadingParameter]
@@ -85,12 +82,12 @@
     public bool MatchTriggerWidth { get; set; } = false;
 
     /// <summary>
-    /// CSS positioning strategy: "absolute" or "fixed".
-    /// Use "fixed" for dropdowns that need to escape stacking contexts.
-    /// Default is "absolute".
+    /// CSS positioning strategy.
+    /// Use <see cref="PositioningStrategy.Fixed"/> for popovers that need to escape stacking contexts.
+    /// Default is <see cref="PositioningStrategy.Absolute"/>.
     /// </summary>
     [Parameter]
-    public string Strategy { get; set; } = "absolute";
+    public PositioningStrategy Strategy { get; set; } = PositioningStrategy.Absolute;
 
     /// <summary>
     /// CSS z-index value for the popover content.
@@ -146,7 +143,7 @@
              tabindex="-1"
              @onkeydown="HandleKeyDown"
              @attributes="AdditionalAttributes"
-             data-state="open">
+             data-state="@(Context.IsOpen ? "open" : "closed")">
             @ChildContent
         </div>
     };

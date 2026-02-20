@@ -186,7 +186,7 @@ export async function computePosition(reference, floating, options = {}) {
         // Handle vertical overflow
         if (exceedsBottom || exceedsTop) {
           const maxHeight = viewportHeight - (viewportPadding * 2);
-          if (floatingHeight > maxHeight) {
+          if (floatingHeight > maxHeight + 2) {
             // Content is larger than viewport - signal need for scrollbar
             data.needsVerticalScroll = true;
             data.maxHeight = maxHeight;
@@ -208,7 +208,7 @@ export async function computePosition(reference, floating, options = {}) {
         // Handle horizontal overflow
         if (exceedsRight || exceedsLeft) {
           const maxWidth = viewportWidth - (viewportPadding * 2);
-          if (floatingWidth > maxWidth) {
+          if (floatingWidth > maxWidth + 2) {
             // Content is wider than viewport - signal need for scrollbar
             data.needsHorizontalScroll = true;
             data.maxWidth = maxWidth;

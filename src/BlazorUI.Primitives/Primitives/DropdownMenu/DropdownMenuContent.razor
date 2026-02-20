@@ -10,21 +10,18 @@
     Maintains DropdownMenu-specific behavior: click-outside, keyboard navigation, focus management.
 *@
 
-@if (Context.IsOpen && Context.State.TriggerElement.HasValue)
-{
-    <FloatingPortal IsOpen="true"
-                    AnchorElement="@Context.State.TriggerElement"
-                    PortalId="@_portalId"
-                    Side="@Side"
-                    Align="@Align"
-                    Offset="@Offset"
-                    MatchAnchorWidth="@MatchTriggerWidth"
-                    Strategy="@Strategy.ToValue()"
-                    ZIndex="@ZIndex"
-                    OnReady="@HandleFloatingReady">
-        @RenderDropdownContent()
-    </FloatingPortal>
-}
+<FloatingPortal IsOpen="@Context.IsOpen"
+                AnchorElement="@Context.State.TriggerElement"
+                PortalId="@_portalId"
+                Side="@Side"
+                Align="@Align"
+                Offset="@Offset"
+                MatchAnchorWidth="@MatchTriggerWidth"
+                Strategy="@Strategy"
+                ZIndex="@ZIndex"
+                OnReady="@HandleFloatingReady">
+    @RenderDropdownContent()
+</FloatingPortal>
 
 @code {
     [CascadingParameter]

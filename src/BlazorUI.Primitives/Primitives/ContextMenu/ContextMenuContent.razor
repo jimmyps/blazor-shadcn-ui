@@ -9,27 +9,27 @@
     Uses FloatingPortal with X/Y coordinates for positioning at mouse location.
 *@
 
+@* Overlay is conditionally rendered; FloatingPortal is always mounted (ForceMount). *@
 @if (Context.IsOpen)
 {
-    @* Overlay rendered separately, outside the FloatingPortal *@
     <div class="@OverlayClass"
          style="@GetOverlayStyle()"
          @oncontextmenu="HandleOverlayClose"
          @oncontextmenu:preventDefault="true"
          data-state="open">
     </div>
-
-    <FloatingPortal IsOpen="true"
-                    X="@Context.X"
-                    Y="@Context.Y"
-                    PortalId="@_portalId"
-                    Offset="@ViewportPadding"
-                    Strategy="fixed"
-                    ZIndex="@ZIndex"
-                    OnReady="@HandleFloatingReady">
-        @RenderContextMenuContent()
-    </FloatingPortal>
 }
+
+<FloatingPortal IsOpen="@Context.IsOpen"
+                X="@Context.X"
+                Y="@Context.Y"
+                PortalId="@_portalId"
+                Offset="@ViewportPadding"
+                Strategy="PositioningStrategy.Fixed"
+                ZIndex="@ZIndex"
+                OnReady="@HandleFloatingReady">
+    @RenderContextMenuContent()
+</FloatingPortal>
 
 @code {
 [CascadingParameter]

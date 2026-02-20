@@ -12,22 +12,19 @@
     Maintains Select-specific behavior: keyboard navigation, item focus, ARIA attributes.
 *@
 
-@if (_context?.IsOpen == true || ForceMount)
-{
-    <FloatingPortal IsOpen="@(_context?.IsOpen == true)"
-                    ForceMount="@ForceMount"
-                    AnchorElement="@_context.State.TriggerElement"
-                    PortalId="@_portalId"
-                    Side="@Side"
-                    Align="@Align"
-                    Offset="@Offset"
-                    MatchAnchorWidth="@MatchTriggerWidth"
-                    Strategy="fixed"
-                    ZIndex="9999"
-                    OnReady="@HandleFloatingReady">
-        @RenderSelectListbox()
-    </FloatingPortal>
-}
+<FloatingPortal IsOpen="@(_context?.IsOpen == true)"
+                AnchorElement="@_context?.State.TriggerElement"
+                PortalId="@_portalId"
+                Side="@Side"
+                Align="@Align"
+                Offset="@Offset"
+                ForceMount="@ForceMount"
+                MatchAnchorWidth="@MatchTriggerWidth"
+                Strategy="PositioningStrategy.Fixed"
+                ZIndex="9999"
+                OnReady="@HandleFloatingReady">
+    @RenderSelectListbox()
+</FloatingPortal>
 
 @code {
     [CascadingParameter]
