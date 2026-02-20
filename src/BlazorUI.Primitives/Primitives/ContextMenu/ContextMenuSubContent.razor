@@ -8,18 +8,22 @@
     Uses FloatingPortal for positioning infrastructure.
 *@
 
-<FloatingPortal IsOpen="@SubContext.IsOpen"
-                AnchorElement="@SubContext.TriggerElement"
-                PortalId="@_portalId"
-                ParentPortalId="@GetParentPortalId()"
-                Side="PopoverSide.Right"
-                Align="PopoverAlign.Start"
-                Offset="@Offset"
-                Strategy="PositioningStrategy.Fixed"
-                ZIndex="@ZIndex"
-                OnReady="@HandleFloatingReady">
-    @RenderSubMenuContent()
-</FloatingPortal>
+@if (SubContext.IsOpen)
+{
+    <FloatingPortal IsOpen="@SubContext.IsOpen"
+                    AnchorElement="@SubContext.TriggerElement"
+                    PortalId="@_portalId"
+                    ParentPortalId="@GetParentPortalId()"
+                    ForceMount="false"
+                    Side="PopoverSide.Right"
+                    Align="PopoverAlign.Start"
+                    Offset="@Offset"
+                    Strategy="PositioningStrategy.Fixed"
+                    ZIndex="@ZIndex"
+                    OnReady="@HandleFloatingReady">
+        @RenderSubMenuContent()
+    </FloatingPortal>
+}
 
 @code {
     [CascadingParameter]
