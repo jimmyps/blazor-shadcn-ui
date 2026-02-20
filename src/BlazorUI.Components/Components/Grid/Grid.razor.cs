@@ -2,6 +2,7 @@ using BlazorUI.Components.Services.Grid;
 using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 using System.Reflection;
 using System.Collections.Specialized;
 
@@ -233,10 +234,19 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public RenderFragment? Columns { get; set; }
 
     /// <summary>
-    /// Gets or sets the template to display while the grid is loading.
+    /// Gets or sets the template to display while the grid is loading data.
+    /// This is shown when IsLoading is true (e.g., during data fetch operations).
     /// </summary>
     [Parameter]
     public RenderFragment? LoadingTemplate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the template to display while the grid is initializing.
+    /// This is shown during first-time setup (downloading scripts, building grid options).
+    /// If not provided, a default "Initializing grid..." message is displayed.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? InitializingTemplate { get; set; }
 
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the grid container.
@@ -305,6 +315,13 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     /// </summary>
     [Parameter]
     public EventCallback<IReadOnlyCollection<TItem>> OnSelectionChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the grid is ready (initialized and rendered).
+    /// This is called after grid initialization completes, useful for performing actions that depend on the grid being fully loaded.
+    /// </summary>
+    [Parameter]
+    public Action? OnGridReady { get; set; }
 
     /// <summary>
     /// Gets or sets the selected items in the grid.
@@ -493,7 +510,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             if (!_columnsRegistered)
             {
                 _columnsRegistered = true;
-                StateHasChanged();
+                StateHasChanged(); // This is needed to render the second time after columns register
                 return;
             }
         }
@@ -528,7 +545,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             try
             {
                 await InitializeGridAsync();
-                _initialized = true;
+                // Do NOT call StateHasChanged() here - let JavaScript control loader hiding via OnGridReadyInternal
             }
             catch (Exception ex)
             {
@@ -1420,6 +1437,21 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         styles.Add($"width: {width}");
 
         return string.Join("; ", styles);
+    }
+    
+    /// <summary>
+    /// Internal JSInvokable method called when grid initialization is complete.
+    /// Updates internal state and triggers a re-render to hide the initializing template.
+    /// </summary>
+    [JSInvokable]
+    public void OnGridReadyInternal()
+    {
+        // Update internal state and trigger re-render to hide initializing template
+        _initialized = true;
+        StateHasChanged();
+        
+        // Invoke user-facing callback if needed
+        OnGridReady?.Invoke();
     }
 }
 

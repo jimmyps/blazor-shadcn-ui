@@ -8,11 +8,21 @@ namespace BlazorUI.Primitives.Table;
 public class SelectionState<TData> where TData : class
 {
     private readonly HashSet<TData> selectedItems = new();
+    private IReadOnlyCollection<TData>? _cachedSelectedItems;
 
     /// <summary>
     /// Gets the collection of selected items.
+    /// Returns a read-only copy to prevent external modification of internal state.
     /// </summary>
-    public IReadOnlyCollection<TData> SelectedItems => selectedItems;
+    public IReadOnlyCollection<TData> SelectedItems
+    {
+        get
+        {
+            // Lazy-initialize and cache the read-only collection
+            _cachedSelectedItems ??= selectedItems.ToList().AsReadOnly();
+            return _cachedSelectedItems;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the selection mode.
@@ -61,6 +71,7 @@ public class SelectionState<TData> where TData : class
             selectedItems.Clear();
 
         selectedItems.Add(item);
+        InvalidateCache();
     }
 
     /// <summary>
@@ -74,6 +85,7 @@ public class SelectionState<TData> where TData : class
             throw new ArgumentNullException(nameof(item));
 
         selectedItems.Remove(item);
+        InvalidateCache();
     }
 
     /// <summary>
@@ -108,6 +120,8 @@ public class SelectionState<TData> where TData : class
             if (item != null)
                 selectedItems.Add(item);
         }
+        
+        InvalidateCache();
     }
 
     /// <summary>
@@ -118,6 +132,8 @@ public class SelectionState<TData> where TData : class
     {
         foreach (var item in items)
             selectedItems.Remove(item);
+            
+        InvalidateCache();
     }
 
     /// <summary>
@@ -126,6 +142,7 @@ public class SelectionState<TData> where TData : class
     public void Clear()
     {
         selectedItems.Clear();
+        InvalidateCache();
     }
 
     /// <summary>
@@ -170,5 +187,14 @@ public class SelectionState<TData> where TData : class
             SelectAll(items);
         else
             DeselectAll(items);
+    }
+    
+    /// <summary>
+    /// Invalidates the cached SelectedItems collection.
+    /// Called whenever the internal selectedItems HashSet is modified.
+    /// </summary>
+    private void InvalidateCache()
+    {
+        _cachedSelectedItems = null;
     }
 }
