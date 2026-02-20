@@ -147,13 +147,31 @@ public class PositioningService : IPositioningService, IAsyncDisposable
         };
     }
 
-    /// <summary>
-    /// Shows a floating element with proper visibility and animation support.
-    /// </summary>
-    public async Task ShowFloatingAsync(ElementReference floating)
+    /// <inheritdoc />
+    public async Task ShowFloatingAsync(ElementReference floating, ElementReference? reference = null, PositioningOptions? options = null)
     {
         var module = await GetModuleAsync();
-        await module.InvokeVoidAsync("showFloating", floating);
+
+        if (reference.HasValue && options != null)
+        {
+            // Pass anchor and options to JS for full setup (dispose old + compute + autoUpdate + show)
+            var jsOptions = new
+            {
+                placement = options.Placement,
+                offset = options.Offset,
+                flip = options.Flip,
+                shift = options.Shift,
+                padding = options.Padding,
+                strategy = options.Strategy,
+                matchReferenceWidth = options.MatchReferenceWidth
+            };
+            await module.InvokeVoidAsync("showFloating", floating, reference.Value, jsOptions);
+        }
+        else
+        {
+            // Simple show without repositioning
+            await module.InvokeVoidAsync("showFloating", floating);
+        }
     }
 
     /// <summary>

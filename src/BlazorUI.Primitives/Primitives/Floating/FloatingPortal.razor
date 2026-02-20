@@ -292,8 +292,19 @@
                 }
                 else
                 {
+                    // Construct placement string from Side and Align
+                    var options = new PositioningOptions
+                    {
+                        Placement = Align == PopoverAlign.Center ? Side.ToValue() : $"{Side.ToValue()}-{Align.ToValue()}",
+                        Offset = Offset,
+                        MatchReferenceWidth = MatchAnchorWidth,
+                        Strategy = Strategy,
+                        Flip = true,  // Enable flip to opposite side when not enough space
+                        Shift = true  // Enable shift to keep in viewport
+                    };
+
                     // Already positioned, just show
-                    await PositioningService.ShowFloatingAsync(_portalContentRef);
+                    await PositioningService.ShowFloatingAsync(_portalContentRef, AnchorElement.HasValue ? AnchorElement.Value : null, options);
                     
                     // CRITICAL: Trigger OnReady for focus management and keyboard nav
                     if (OnReady.HasDelegate)
@@ -306,6 +317,13 @@
             {
                 // Hide using dedicated visibility function (ForceMount keeps it mounted)
                 await PositioningService.HideFloatingAsync(_portalContentRef);
+
+                // Dispose auto update as it'll be re-setup by JS automatically in next Show
+                if (_positioningCleanup != null)
+                {
+                    await _positioningCleanup.DisposeAsync();
+                    _positioningCleanup = null;
+                }
             }
         }
         catch (Exception ex)

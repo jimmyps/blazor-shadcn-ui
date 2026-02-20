@@ -58,10 +58,13 @@ public interface IPositioningService
 
     /// <summary>
     /// Shows a floating element with proper visibility and animation support.
+    /// Always recomputes position and recreates AutoUpdate if anchor is provided (matches upstream lifecycle).
     /// Used with ForceMount to make hidden elements visible.
     /// </summary>
     /// <param name="floating">The floating element to show.</param>
-    Task ShowFloatingAsync(ElementReference floating);
+    /// <param name="reference">The anchor/reference element (optional, for repositioning).</param>
+    /// <param name="options">Positioning options (optional, for repositioning).</param>
+    Task ShowFloatingAsync(ElementReference floating, ElementReference? reference = null, PositioningOptions? options = null);
 
     /// <summary>
     /// Hides a floating element while keeping it in the DOM.
