@@ -558,13 +558,9 @@
             // 3. Layout interference (pointer-events: none prevents interaction)
             return $"position: fixed; z-index: {ZIndex}; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
         }
-        else if (!ForceMount)
-        {
-            // This prevents the content from "closing" when parent components re-render
-            return $"position: {Strategy.ToValue()}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px;";
-        }
 
-        return string.Empty;
+        // This prevents the content from "closing" when parent components re-render
+        return $"position: {Strategy.ToValue()}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px;";
     }
 
     private string GetMergedStyle()
