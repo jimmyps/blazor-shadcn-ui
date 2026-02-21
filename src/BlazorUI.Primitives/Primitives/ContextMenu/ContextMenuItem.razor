@@ -1,5 +1,4 @@
 @namespace BlazorUI.Primitives.ContextMenu
-@inject IJSRuntime JSRuntime
 @implements IContextMenuItem
 @implements IDisposable
 
@@ -8,7 +7,6 @@
      role="menuitem"
      tabindex="-1"
      @onclick="HandleClick"
-     @onkeydown="HandleKeyDown"
      @onmouseenter="HandleMouseEnter"
      @attributes="AdditionalAttributes"
      aria-disabled="@Disabled.ToString().ToLowerInvariant()"
@@ -30,8 +28,6 @@
     private ContextMenuSubContent? SubContentContext { get; set; }
 
     private ElementReference _itemRef;
-    private IJSObjectReference? _keyboardNavModule;
-    private bool _keyboardNavModuleLoaded = false;
 
     /// <summary>
     /// The child content to render within the item.
@@ -92,14 +88,6 @@
         Context.Close();
     }
 
-    private async Task HandleKeyDown(KeyboardEventArgs args)
-    {
-        if (args.Key == "Enter" || args.Key == " ")
-        {
-            await HandleClick();
-        }
-    }
-
     private async void HandleMouseEnter(MouseEventArgs args)
     {
         // Track if there was an active submenu that we're closing
@@ -139,56 +127,13 @@
 
     public async Task FocusAsync()
     {
-        await FocusElementAsync(_itemRef, "context menu item");
-    }
-
-    /// <summary>
-    /// Focuses an element using JavaScript with fallback to C# focus.
-    /// Lazy-loads the keyboard-nav module on first use.
-    /// </summary>
-    private async Task<bool> FocusElementAsync(ElementReference element, string elementName = "element")
-    {
-        // Lazy-load keyboard nav module on first focus attempt
-        if (!_keyboardNavModuleLoaded)
-        {
-            try
-            {
-                _keyboardNavModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/keyboard-nav.js");
-                _keyboardNavModuleLoaded = true;
-            }
-            catch
-            {
-                // Module load failed, will use C# fallback
-            }
-        }
-
-        // Try JavaScript focus first
-        if (_keyboardNavModule != null)
-        {
-            try
-            {
-                var focused = await _keyboardNavModule.InvokeAsync<bool>("focusElement", element);
-                if (focused)
-                {
-                    return true;
-                }
-            }
-            catch
-            {
-                // JS focus failed, will try C# fallback
-            }
-        }
-
-        // Fallback to C# focus
         try
         {
-            await element.FocusAsync();
-            return true;
+            await _itemRef.FocusAsync();
         }
         catch
         {
-            return false;
+            // Ignore focus errors (element might not be mounted yet)
         }
     }
 
@@ -201,17 +146,6 @@
         else
         {
             ContentContainer?.UnregisterItem(this);
-        }
-
-        // Cleanup keyboard nav module
-        if (_keyboardNavModule != null)
-        {
-            try
-            {
-                _keyboardNavModule.DisposeAsync();
-            }
-            catch { }
-            _keyboardNavModule = null;
         }
     }
 }

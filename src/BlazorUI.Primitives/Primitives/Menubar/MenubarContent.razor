@@ -22,7 +22,6 @@
                      id="@MenuContext.ContentId"
                      role="menu"
                      tabindex="-1"
-                     @onkeydown="HandleKeyDown"
                      @attributes="AdditionalAttributes"
                      data-state="open"
                      aria-labelledby="@MenuContext.TriggerId">
@@ -105,13 +104,11 @@
     private ElementReference _contentRef;
     private IJSObjectReference? _clickOutsideModule;
     private IJSObjectReference? _clickOutsideCleanup;
-    private IJSObjectReference? _keyboardNavModule;
-    private IJSObjectReference? _keyboardNavCleanup;
+    private IJSObjectReference? _menuKeyboardModule;
     private DotNetObjectReference<MenubarContent>? _dotNetRef;
 
     // Track menu items for keyboard navigation
     private readonly List<IMenubarItem> _menuItems = new();
-    private int _focusedItemIndex = -1;
 
     protected override void OnInitialized()
     {
@@ -140,18 +137,8 @@
             await SetupClickOutsideAsync();
         }
 
-        // Set up keyboard navigation (prevents scroll on arrow keys)
+        // Set up keyboard navigation with menubar mode
         await SetupKeyboardNavAsync();
-
-        // Focus the content container for keyboard navigation
-        try
-        {
-            await _contentRef.FocusAsync();
-        }
-        catch
-        {
-            // Focus may fail in some scenarios, continue anyway
-        }
     }
 
     private async Task SetupClickOutsideAsync()
@@ -167,9 +154,13 @@
             _clickOutsideCleanup = await _clickOutsideModule.InvokeAsync<IJSObjectReference>(
                 "onClickOutside", _contentRef, _dotNetRef, "HandleClickOutside", MenuContext.TriggerElement);
         }
-        catch (Exception ex)
+        catch (JSDisconnectedException)
         {
-            Console.WriteLine($"Failed to set up click-outside: {ex.Message}");
+            // Expected during circuit disconnect in Blazor Server
+        }
+        catch (InvalidOperationException)
+        {
+            // JS interop not available during prerendering
         }
     }
 
@@ -177,17 +168,21 @@
     {
         try
         {
-            _keyboardNavModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/keyboard-nav.js");
+            _menuKeyboardModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/menu-keyboard.js");
 
             _dotNetRef ??= DotNetObjectReference.Create(this);
 
-            _keyboardNavCleanup = await _keyboardNavModule.InvokeAsync<IJSObjectReference>(
-                "setupKeyboardNav", _contentRef, _dotNetRef);
+            await _menuKeyboardModule.InvokeVoidAsync("initialize", _contentRef, _dotNetRef, MenuContext.ContentId,
+                new { mode = "menubar", loop = Loop, initialFocus = "first" });
         }
-        catch (Exception ex)
+        catch (JSDisconnectedException)
         {
-            Console.WriteLine($"Failed to set up keyboard navigation: {ex.Message}");
+            // Expected during circuit disconnect in Blazor Server
+        }
+        catch (InvalidOperationException)
+        {
+            // JS interop not available during prerendering
         }
     }
 
@@ -209,121 +204,28 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task HandleKeyDown(KeyboardEventArgs args)
+    [JSInvokable]
+    public Task JsOnEscapeKey()
     {
-        if (args.Key == "Escape")
+        if (CloseOnEscape)
         {
-            if (CloseOnEscape)
-            {
-                Context.CloseMenu();
-            }
-            return;
+            Context.CloseMenu();
         }
-
-        // Handle navigation keys only if we have items
-        if (_menuItems.Count == 0) return;
-
-        switch (args.Key)
-        {
-            case "ArrowDown":
-                await NavigateNext();
-                break;
-
-            case "ArrowUp":
-                await NavigatePrevious();
-                break;
-
-            case "Home":
-                await FocusFirstEnabled();
-                break;
-
-            case "End":
-                await FocusLastEnabled();
-                break;
-
-            // Note: ArrowRight/ArrowLeft are handled by MenubarRoot
-            // to avoid double-handling due to event bubbling
-        }
+        return Task.CompletedTask;
     }
 
-    private async Task NavigateNext()
+    [JSInvokable]
+    public Task JsOnNextMenu()
     {
-        var startIndex = _focusedItemIndex == -1 ? 0 : _focusedItemIndex + 1;
-        
-        // Search forward for next enabled item
-        for (int i = 0; i < _menuItems.Count; i++)
-        {
-            var index = (startIndex + i) % _menuItems.Count;
-            if (!_menuItems[index].Disabled)
-            {
-                _focusedItemIndex = index;
-                await _menuItems[index].FocusAsync();
-                return;
-            }
-            
-            // Wrap-around detection: if loop is disabled and we've moved past our start point
-            // (meaning we've searched all items after startIndex and wrapped to beginning),
-            // stop to prevent infinite looping
-            if (!Loop && i > 0 && index <= startIndex) break;
-        }
+        Context.FocusNextTrigger();
+        return Task.CompletedTask;
     }
 
-    private async Task NavigatePrevious()
+    [JSInvokable]
+    public Task JsOnPreviousMenu()
     {
-        var startIndex = _focusedItemIndex == -1 ? _menuItems.Count - 1 : _focusedItemIndex - 1;
-        if (startIndex < 0) startIndex = _menuItems.Count - 1;
-        
-        // Search backward for previous enabled item
-        for (int i = 0; i < _menuItems.Count; i++)
-        {
-            var index = startIndex - i;
-            if (index < 0) index = _menuItems.Count + index;
-            
-            if (!_menuItems[index].Disabled)
-            {
-                _focusedItemIndex = index;
-                await _menuItems[index].FocusAsync();
-                return;
-            }
-            
-            // Wrap-around detection: if loop is disabled and we've moved past our start point
-            // (meaning we've searched all items before startIndex and wrapped to end),
-            // stop to prevent infinite looping
-            if (!Loop && index > startIndex) break;
-        }
-        
-        // Fallback: if no enabled item was found in the search direction,
-        // keep focus on current item if it's valid and enabled
-        if (_focusedItemIndex >= 0 && _focusedItemIndex < _menuItems.Count && !_menuItems[_focusedItemIndex].Disabled)
-        {
-            await _menuItems[_focusedItemIndex].FocusAsync();
-        }
-    }
-
-    private async Task FocusFirstEnabled()
-    {
-        for (int i = 0; i < _menuItems.Count; i++)
-        {
-            if (!_menuItems[i].Disabled)
-            {
-                _focusedItemIndex = i;
-                await _menuItems[i].FocusAsync();
-                return;
-            }
-        }
-    }
-
-    private async Task FocusLastEnabled()
-    {
-        for (int i = _menuItems.Count - 1; i >= 0; i--)
-        {
-            if (!_menuItems[i].Disabled)
-            {
-                _focusedItemIndex = i;
-                await _menuItems[i].FocusAsync();
-                return;
-            }
-        }
+        Context.FocusPreviousTrigger();
+        return Task.CompletedTask;
     }
 
     private async Task CleanupAsync()
@@ -342,21 +244,24 @@
             _clickOutsideCleanup = null;
         }
 
-        if (_keyboardNavCleanup != null)
+        if (_menuKeyboardModule != null)
         {
             try
             {
-                await _keyboardNavCleanup.InvokeVoidAsync("dispose");
-                await _keyboardNavCleanup.DisposeAsync();
+                await _menuKeyboardModule.InvokeVoidAsync("dispose", MenuContext.ContentId);
             }
             catch
             {
                 // Cleanup may already be disposed
             }
-            _keyboardNavCleanup = null;
         }
 
-        _focusedItemIndex = -1;
+        // Dispose DotNetObjectReference to prevent stale callbacks
+        if (_dotNetRef != null)
+        {
+            _dotNetRef.Dispose();
+            _dotNetRef = null;
+        }
     }
 
     public async ValueTask DisposeAsync()
@@ -368,9 +273,9 @@
             await _clickOutsideModule.DisposeAsync();
         }
 
-        if (_keyboardNavModule != null)
+        if (_menuKeyboardModule != null)
         {
-            await _keyboardNavModule.DisposeAsync();
+            await _menuKeyboardModule.DisposeAsync();
         }
 
         _dotNetRef?.Dispose();
@@ -405,44 +310,13 @@
     /// </summary>
     internal async Task FocusContainerAsync()
     {
-        if (_keyboardNavModule != null)
+        try
         {
-            try
-            {
-                var focused = await _keyboardNavModule.InvokeAsync<bool>("focusElement", _contentRef);
-                if (!focused)
-                {
-                    // Fallback to C# focus
-                    await _contentRef.FocusAsync();
-                }
-                _focusedItemIndex = -1;
-            }
-            catch
-            {
-                // Fallback to C# focus
-                try
-                {
-                    await _contentRef.FocusAsync();
-                    _focusedItemIndex = -1;
-                }
-                catch
-                {
-                    // Focus failed
-                }
-            }
+            await _contentRef.FocusAsync();
         }
-        else
+        catch
         {
-            // JS module not loaded, use C# focus
-            try
-            {
-                await _contentRef.FocusAsync();
-                _focusedItemIndex = -1;
-            }
-            catch
-            {
-                // Focus failed
-            }
+            // Focus failed
         }
     }
 }

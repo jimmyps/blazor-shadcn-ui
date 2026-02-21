@@ -10,7 +10,6 @@
      aria-expanded="@SubContext.IsOpen.ToString().ToLowerInvariant()"
      aria-disabled="@Disabled.ToString().ToLowerInvariant()"
      @onclick="HandleClick"
-     @onkeydown="HandleKeyDown"
      @onmouseenter="HandleMouseEnter"
      @onmouseleave="HandleMouseLeave"
      data-state="@(SubContext.IsOpen ? "open" : "closed")"
@@ -100,17 +99,17 @@
         }
         else
         {
-            SubContext.Open(_triggerRef);
-        }
-    }
+            // Register as active submenu on parent so the close chain works
+            // (HandleMouseEnter does this for hover, but click/keyboard needs it too)
+            if (ParentSubContext != null)
+            {
+                ParentSubContext.ActiveSubMenu = SubContext;
+            }
+            else if (MenuContext != null)
+            {
+                MenuContext.ActiveSubMenu = SubContext;
+            }
 
-    private void HandleKeyDown(KeyboardEventArgs args)
-    {
-        if (Disabled) return;
-
-        // Arrow Right or Enter opens submenu
-        if (args.Key == "ArrowRight" || args.Key == "Enter")
-        {
             SubContext.Open(_triggerRef);
         }
     }

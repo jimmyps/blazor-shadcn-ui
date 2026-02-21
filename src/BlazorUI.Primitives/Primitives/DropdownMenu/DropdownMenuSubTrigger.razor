@@ -1,5 +1,4 @@
 @namespace BlazorUI.Primitives.DropdownMenu
-@inject IJSRuntime JSRuntime
 @implements IDropdownMenuItem
 @implements IDisposable
 
@@ -11,7 +10,6 @@
      aria-expanded="@SubContext.IsOpen.ToString().ToLower()"
      aria-disabled="@Disabled.ToString().ToLower()"
      @onclick="HandleClick"
-     @onkeydown="HandleKeyDown"
      @onmouseenter="HandleMouseEnter"
      @onmouseleave="HandleMouseLeave"
      data-state="@(SubContext.IsOpen ? "open" : "closed")"
@@ -37,8 +35,6 @@
     private DropdownMenuSubContent? SubContentContext { get; set; }
 
     private ElementReference _triggerRef;
-    private IJSObjectReference? _keyboardNavModule;
-    private bool _keyboardNavModuleLoaded = false;
 
     /// <summary>
     /// The content to display inside the trigger.
@@ -103,17 +99,17 @@
         }
         else
         {
-            SubContext.Open(_triggerRef);
-        }
-    }
+            // Register as active submenu on parent so the close chain works
+            // (HandleMouseEnter does this for hover, but click/keyboard needs it too)
+            if (ParentSubContext != null)
+            {
+                ParentSubContext.ActiveSubMenu = SubContext;
+            }
+            else if (MenuContext != null)
+            {
+                MenuContext.ActiveSubMenu = SubContext;
+            }
 
-    private void HandleKeyDown(KeyboardEventArgs args)
-    {
-        if (Disabled) return;
-
-        // Arrow Right or Enter opens submenu
-        if (args.Key == "ArrowRight" || args.Key == "Enter")
-        {
             SubContext.Open(_triggerRef);
         }
     }
@@ -165,7 +161,14 @@
     // IDropdownMenuItem implementation
     public async Task FocusAsync()
     {
-        await FocusElementAsync(_triggerRef, "submenu trigger");
+        try
+        {
+            await _triggerRef.FocusAsync();
+        }
+        catch
+        {
+            // Ignore focus errors (element might not be mounted yet)
+        }
     }
 
     public async Task ClickAsync()
@@ -173,56 +176,6 @@
         if (Disabled) return;
         HandleClick(new MouseEventArgs());
         await Task.CompletedTask;
-    }
-
-    /// <summary>
-    /// Focuses an element using JavaScript with fallback to C# focus.
-    /// Lazy-loads the keyboard-nav module on first use.
-    /// </summary>
-    private async Task<bool> FocusElementAsync(ElementReference element, string elementName = "element")
-    {
-        // Lazy-load keyboard nav module on first focus attempt
-        if (!_keyboardNavModuleLoaded)
-        {
-            try
-            {
-                _keyboardNavModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/keyboard-nav.js");
-                _keyboardNavModuleLoaded = true;
-            }
-            catch
-            {
-                // Module load failed, will use C# fallback
-            }
-        }
-
-        // Try JavaScript focus first
-        if (_keyboardNavModule != null)
-        {
-            try
-            {
-                var focused = await _keyboardNavModule.InvokeAsync<bool>("focusElement", element);
-                if (focused)
-                {
-                    return true;
-                }
-            }
-            catch
-            {
-                // JS focus failed, will try C# fallback
-            }
-        }
-
-        // Fallback to C# focus
-        try
-        {
-            await element.FocusAsync();
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     public void Dispose()
@@ -237,16 +190,5 @@
             ContentContext?.UnregisterMenuItem(this);
         }
         SubContext.OnStateChanged -= HandleStateChanged;
-
-        // Cleanup keyboard nav module
-        if (_keyboardNavModule != null)
-        {
-            try
-            {
-                _keyboardNavModule.DisposeAsync();
-            }
-            catch { }
-            _keyboardNavModule = null;
-        }
     }
 }

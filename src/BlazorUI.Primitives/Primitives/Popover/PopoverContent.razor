@@ -117,6 +117,7 @@
 
     private IJSObjectReference? _clickOutsideModule;
     private IJSObjectReference? _clickOutsideCleanup;
+    private IJSObjectReference? _dialogModule;
     private DotNetObjectReference<PopoverContent>? _dotNetRef;
     private bool _disposed = false;
     private string _portalId = "";
@@ -141,7 +142,7 @@
         <div id="@Context.ContentId"
              role="group"
              tabindex="-1"
-             @onkeydown="HandleKeyDown"
+             data-autofocus
              @attributes="AdditionalAttributes"
              data-state="@(Context.IsOpen ? "open" : "closed")">
             @ChildContent
@@ -154,6 +155,12 @@
         if (CloseOnClickOutside)
         {
             await SetupClickOutsideAsync();
+        }
+
+        // Set up JS-based Escape key handling (avoids C# roundtrip for every keydown)
+        if (CloseOnEscape || OnEscapeKeyDown.HasDelegate)
+        {
+            await SetupEscapeKeyAsync();
         }
 
         // Notify subscribers that content is ready (for focus management, etc.)
@@ -227,21 +234,43 @@
         }
     }
 
-    private async Task HandleKeyDown(KeyboardEventArgs args)
+    private async Task SetupEscapeKeyAsync()
     {
-        if (args.Key == "Escape")
+        try
         {
-            // Invoke custom handler if provided
-            if (OnEscapeKeyDown.HasDelegate)
-            {
-                await OnEscapeKeyDown.InvokeAsync(args);
-            }
+            _dialogModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/dialog.js");
 
-            // Close popover if configured
-            if (CloseOnEscape)
-            {
-                Context.Close();
-            }
+            _dotNetRef ??= DotNetObjectReference.Create(this);
+
+            await _dialogModule.InvokeVoidAsync("initializeKeyboardHandler",
+                Context.ContentId, CloseOnEscape, _dotNetRef);
+        }
+        catch (JSDisconnectedException)
+        {
+            // Expected during circuit disconnect in Blazor Server
+        }
+        catch (InvalidOperationException)
+        {
+            // JS interop not available during prerendering
+        }
+    }
+
+    [JSInvokable]
+    public async Task HandleEscapeKey()
+    {
+        if (_disposed) return;
+
+        // Invoke custom handler if provided
+        if (OnEscapeKeyDown.HasDelegate)
+        {
+            await OnEscapeKeyDown.InvokeAsync(new KeyboardEventArgs { Key = "Escape" });
+        }
+
+        // Close popover if configured
+        if (CloseOnEscape)
+        {
+            Context.Close();
         }
     }
 
@@ -262,6 +291,19 @@
             _clickOutsideCleanup = null;
         }
 
+        // Remove Escape key handler
+        if (_dialogModule != null)
+        {
+            try
+            {
+                await _dialogModule.InvokeVoidAsync("disposeKeyboardHandler", Context.ContentId);
+            }
+            catch
+            {
+                // Cleanup may already be disposed
+            }
+        }
+
         // Dispose DotNetObjectReference to prevent stale callbacks
         if (_dotNetRef != null)
         {
@@ -280,6 +322,11 @@
         if (_clickOutsideModule != null)
         {
             await _clickOutsideModule.DisposeAsync();
+        }
+
+        if (_dialogModule != null)
+        {
+            await _dialogModule.DisposeAsync();
         }
 
         _dotNetRef?.Dispose();

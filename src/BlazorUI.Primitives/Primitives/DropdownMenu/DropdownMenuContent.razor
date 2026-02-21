@@ -119,8 +119,7 @@
     private ElementReference _contentRef;
     private IJSObjectReference? _clickOutsideModule;
     private IJSObjectReference? _clickOutsideCleanup;
-    private IJSObjectReference? _keyboardNavModule;
-    private IJSObjectReference? _keyboardNavCleanup;
+    private IJSObjectReference? _menuKeyboardModule;
     private IJSObjectReference? _matchWidthModule;
     private IJSObjectReference? _matchWidthCleanup;
     private DotNetObjectReference<DropdownMenuContent>? _dotNetRef;
@@ -152,10 +151,8 @@
              role="menu"
              tabindex="-1"
              data-autofocus
-             @onkeydown="HandleKeyDown"
-             @onkeydown:preventDefault="true"
              @attributes="GetAttributesWithoutStyle()"
-             data-state="closed">
+             data-state="open">
             <CascadingValue Value="Context" IsFixed="false">
                 <CascadingValue Value="this" Name="DropdownMenuContentContext" IsFixed="false">
                     @ChildContent
@@ -195,9 +192,13 @@
             _clickOutsideCleanup = await _clickOutsideModule.InvokeAsync<IJSObjectReference>(
                 "onClickOutside", _contentRef, _dotNetRef, "HandleClickOutside", Context.State.TriggerElement);
         }
-        catch (Exception ex)
+        catch (JSDisconnectedException)
         {
-            Console.WriteLine($"Failed to set up click-outside: {ex.Message}");
+            // Expected during circuit disconnect in Blazor Server
+        }
+        catch (InvalidOperationException)
+        {
+            // JS interop not available during prerendering
         }
     }
 
@@ -205,17 +206,21 @@
     {
         try
         {
-            _keyboardNavModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/keyboard-nav.js");
+            _menuKeyboardModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/menu-keyboard.js");
 
             _dotNetRef ??= DotNetObjectReference.Create(this);
 
-            _keyboardNavCleanup = await _keyboardNavModule.InvokeAsync<IJSObjectReference>(
-                "setupKeyboardNav", _contentRef, _dotNetRef);
+            await _menuKeyboardModule.InvokeVoidAsync("initialize", _contentRef, _dotNetRef, Context.ContentId,
+                new { mode = "vertical", loop = Loop });
         }
-        catch (Exception ex)
+        catch (JSDisconnectedException)
         {
-            Console.WriteLine($"Failed to set up keyboard navigation: {ex.Message}");
+            // Expected during circuit disconnect in Blazor Server
+        }
+        catch (InvalidOperationException)
+        {
+            // JS interop not available during prerendering
         }
     }
 
@@ -267,64 +272,40 @@
 
     private async void HandleContextStateChanged()
     {
-        if (!Context.IsOpen)
+        try
         {
-            await InvokeAsync(async () =>
+            if (!Context.IsOpen)
             {
-                await CleanupAsync();
-                StateHasChanged();
-            });
+                await InvokeAsync(async () =>
+                {
+                    await CleanupAsync();
+                    StateHasChanged();
+                });
+            }
+            else
+            {
+                await InvokeAsync(StateHasChanged);
+            }
         }
-        else
+        catch (ObjectDisposedException)
         {
-            await InvokeAsync(StateHasChanged);
+            // Component may be disposed during async operation
         }
     }
 
-    private async Task HandleKeyDown(KeyboardEventArgs args)
+    [JSInvokable]
+    public async Task JsOnEscapeKey()
     {
-        // Escape key
-        if (args.Key == "Escape")
-        {
-            if (OnEscapeKeyDown.HasDelegate)
-            {
-                await OnEscapeKeyDown.InvokeAsync(args);
-            }
+        if (_disposed) return;
 
-            if (CloseOnEscape)
-            {
-                Context.Close();
-            }
-            return;
+        if (OnEscapeKeyDown.HasDelegate)
+        {
+            await OnEscapeKeyDown.InvokeAsync(new KeyboardEventArgs { Key = "Escape" });
         }
 
-        // Arrow navigation - use JS to navigate in DOM order
-        if (_keyboardNavModule == null) return;
-
-        try
+        if (CloseOnEscape)
         {
-            switch (args.Key)
-            {
-                case "ArrowDown":
-                    await _keyboardNavModule.InvokeVoidAsync("navigateNext", _contentRef, Loop);
-                    break;
-
-                case "ArrowUp":
-                    await _keyboardNavModule.InvokeVoidAsync("navigatePrevious", _contentRef, Loop);
-                    break;
-
-                case "Home":
-                    await _keyboardNavModule.InvokeVoidAsync("navigateFirst", _contentRef);
-                    break;
-
-                case "End":
-                    await _keyboardNavModule.InvokeVoidAsync("navigateLast", _contentRef);
-                    break;
-            }
-        }
-        catch
-        {
-            // Ignore navigation errors
+            Context.Close();
         }
     }
 
@@ -344,18 +325,16 @@
             _clickOutsideCleanup = null;
         }
 
-        if (_keyboardNavCleanup != null)
+        if (_menuKeyboardModule != null)
         {
             try
             {
-                await _keyboardNavCleanup.InvokeVoidAsync("dispose");
-                await _keyboardNavCleanup.DisposeAsync();
+                await _menuKeyboardModule.InvokeVoidAsync("dispose", Context.ContentId);
             }
             catch
             {
                 // Cleanup may already be disposed
             }
-            _keyboardNavCleanup = null;
         }
 
         if (_matchWidthCleanup != null)
@@ -392,9 +371,9 @@
             await _clickOutsideModule.DisposeAsync();
         }
 
-        if (_keyboardNavModule != null)
+        if (_menuKeyboardModule != null)
         {
-            await _keyboardNavModule.DisposeAsync();
+            await _menuKeyboardModule.DisposeAsync();
         }
 
         if (_matchWidthModule != null)
@@ -432,36 +411,13 @@
     /// </summary>
     internal async Task FocusContainerAsync()
     {
-        if (_keyboardNavModule != null)
+        try
         {
-            try
-            {
-                await _keyboardNavModule.InvokeAsync<bool>("focusElement", _contentRef);
-            }
-            catch
-            {
-                // Fallback to C# focus
-                try
-                {
-                    await _contentRef.FocusAsync();
-                }
-                catch
-                {
-                    // Focus failed
-                }
-            }
+            await _contentRef.FocusAsync();
         }
-        else
+        catch
         {
-            // JS module not loaded, use C# focus
-            try
-            {
-                await _contentRef.FocusAsync();
-            }
-            catch
-            {
-                // Focus failed
-            }
+            // Focus failed
         }
     }
 }

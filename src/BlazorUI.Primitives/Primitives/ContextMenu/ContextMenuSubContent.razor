@@ -37,10 +37,12 @@
 
     private ElementReference _contentRef;
     private string _portalId = "";
+    private string _instanceId = "";
+    private IJSObjectReference? _menuKeyboardModule;
+    private DotNetObjectReference<ContextMenuSubContent>? _dotNetRef;
 
     // Track menu items for keyboard navigation
     private readonly List<IContextMenuItem> _menuItems = new();
-    private int _focusedIndex = -1;
 
     /// <summary>
     /// The content to render inside the submenu.
@@ -84,6 +86,7 @@
         }
 
         _portalId = $"contextmenu-submenu-{SubContext.GetHashCode()}";
+        _instanceId = $"contextmenu-sub-{SubContext.GetHashCode()}";
         SubContext.OnStateChanged += HandleContextStateChanged;
     }
 
@@ -105,8 +108,6 @@
         <div @ref="_contentRef"
              role="menu"
              tabindex="-1"
-             @onkeydown="HandleKeyDown"
-             @onkeydown:stopPropagation="true"
              @onmouseleave="HandleMouseLeave"
              @attributes="AdditionalAttributes"
              data-state="open">
@@ -123,14 +124,29 @@
 
     private async Task HandleFloatingReady()
     {
-        // Focus the submenu content
+        // Set up JavaScript keyboard navigation with submenu mode
+        await SetupKeyboardNavAsync();
+    }
+
+    private async Task SetupKeyboardNavAsync()
+    {
         try
         {
-            await _contentRef.FocusAsync();
+            _menuKeyboardModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/menu-keyboard.js");
+
+            _dotNetRef ??= DotNetObjectReference.Create(this);
+
+            await _menuKeyboardModule.InvokeVoidAsync("initialize", _contentRef, _dotNetRef, _instanceId,
+                new { mode = "submenu", loop = true, initialFocus = "first" });
         }
-        catch
+        catch (JSDisconnectedException)
         {
-            // Focus may fail
+            // Expected during circuit disconnect in Blazor Server
+        }
+        catch (InvalidOperationException)
+        {
+            // JS interop not available during prerendering
         }
     }
 
@@ -139,122 +155,35 @@
         InvokeAsync(StateHasChanged);
     }
 
-    private async void HandleKeyDown(KeyboardEventArgs args)
+    [JSInvokable]
+    public Task JsOnEscapeKey()
     {
-        switch (args.Key)
+        if (CloseOnEscape)
         {
-            case "Escape":
-                if (CloseOnEscape)
-                {
-                    // Close ALL menus including root when Escape is pressed
-                    MenuContext?.Close();
-                }
-                break;
-
-            case "ArrowLeft":
-                // Close submenu and return focus to trigger
-                SubContext.Close();
-                // Restore focus to the trigger element
-                if (SubContext.TriggerElement.HasValue)
-                {
-                    try
-                    {
-                        await SubContext.TriggerElement.Value.FocusAsync();
-                    }
-                    catch
-                    {
-                        // Focus may fail
-                    }
-                }
-                break;
-
-            case "ArrowDown":
-                await FocusNextItem();
-                break;
-
-            case "ArrowUp":
-                await FocusPreviousItem();
-                break;
+            // Close ALL menus including root when Escape is pressed
+            MenuContext?.Close();
         }
+        return Task.CompletedTask;
     }
 
-    private async Task FocusNextItem()
+    [JSInvokable]
+    public async Task JsOnCloseSubMenu()
     {
-        if (_menuItems.Count == 0) return;
+        // Close this submenu and return focus to trigger
+        SubContext.Close();
 
-        var enabledItems = _menuItems.Where(item => !item.Disabled).ToList();
-        if (enabledItems.Count == 0) return;
-
-        int nextIndex;
-        if (_focusedIndex == -1)
+        // Restore focus to the trigger element
+        if (SubContext.TriggerElement.HasValue)
         {
-            nextIndex = 0;
-        }
-        else
-        {
-            var currentEnabledIndex = GetEnabledItemIndex(enabledItems, _focusedIndex);
-            if (currentEnabledIndex == -1)
+            try
             {
-                nextIndex = 0;
+                await SubContext.TriggerElement.Value.FocusAsync();
             }
-            else if (currentEnabledIndex >= enabledItems.Count - 1)
+            catch
             {
-                nextIndex = 0; // Wrap to first
-            }
-            else
-            {
-                nextIndex = currentEnabledIndex + 1;
+                // Focus failed
             }
         }
-
-        await FocusItem(enabledItems, nextIndex);
-    }
-
-    private async Task FocusPreviousItem()
-    {
-        if (_menuItems.Count == 0) return;
-
-        var enabledItems = _menuItems.Where(item => !item.Disabled).ToList();
-        if (enabledItems.Count == 0) return;
-
-        int prevIndex;
-        if (_focusedIndex == -1)
-        {
-            prevIndex = enabledItems.Count - 1;
-        }
-        else
-        {
-            var currentEnabledIndex = GetEnabledItemIndex(enabledItems, _focusedIndex);
-            if (currentEnabledIndex == -1)
-            {
-                prevIndex = enabledItems.Count - 1;
-            }
-            else if (currentEnabledIndex <= 0)
-            {
-                prevIndex = enabledItems.Count - 1; // Wrap to last
-            }
-            else
-            {
-                prevIndex = currentEnabledIndex - 1;
-            }
-        }
-
-        await FocusItem(enabledItems, prevIndex);
-    }
-
-    private int GetEnabledItemIndex(List<IContextMenuItem> enabledItems, int absoluteIndex)
-    {
-        if (absoluteIndex < 0 || absoluteIndex >= _menuItems.Count) return -1;
-        var currentItem = _menuItems[absoluteIndex];
-        return enabledItems.IndexOf(currentItem);
-    }
-
-    private async Task FocusItem(List<IContextMenuItem> enabledItems, int enabledIndex)
-    {
-        if (enabledIndex < 0 || enabledIndex >= enabledItems.Count) return;
-        var item = enabledItems[enabledIndex];
-        _focusedIndex = _menuItems.IndexOf(item);
-        await item.FocusAsync();
     }
 
     private void HandleMouseLeave(MouseEventArgs args)
@@ -268,6 +197,25 @@
     public async ValueTask DisposeAsync()
     {
         SubContext.OnStateChanged -= HandleContextStateChanged;
+
+        if (_menuKeyboardModule != null)
+        {
+            try
+            {
+                await _menuKeyboardModule.InvokeVoidAsync("dispose", _instanceId);
+            }
+            catch { }
+
+            try
+            {
+                await _menuKeyboardModule.DisposeAsync();
+            }
+            catch { }
+            _menuKeyboardModule = null;
+        }
+
+        _dotNetRef?.Dispose();
+        _dotNetRef = null;
     }
 
     /// <summary>
@@ -297,11 +245,10 @@
         try
         {
             await _contentRef.FocusAsync();
-            _focusedIndex = -1;
         }
         catch
         {
-            // Focus may fail
+            // Focus failed
         }
     }
 }

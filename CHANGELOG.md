@@ -2,6 +2,169 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-2-21 - JS-Delegated Keyboard Navigation for All Menu Overlays
+
+### ⚡ Performance: Replaced C# `@onkeydown` Handlers with `menu-keyboard.js` in All Menu Content Containers
+
+**Motivation:** Every `DropdownMenu`, `Menubar`, and `ContextMenu` content container handled
+keyboard navigation (ArrowDown/Up, Home/End, Enter/Space, Escape, ArrowLeft/Right) via
+Blazor `@onkeydown` — a full C# SignalR round-trip per keystroke. Each individual item
+(`MenuItem`, `CheckboxItem`, `RadioItem`, `SubTrigger`) also duplicated Enter/Space handlers.
+This caused:
+- One Blazor round-trip per keydown event even for simple focus movement
+- Navigation `await` latency visible at ≥ 100 ms on Interactive Server
+- Duplicated keydown logic scattered across 15+ components
+- `FocusElementAsync` JS interop helper duplicated in every item component
+
+**What Changed:**
+
+A new `menu-keyboard.js` ES module centralises all menu keyboard behaviour in JavaScript.
+C# is called back only for **state-changing events** (Escape closes, ArrowLeft closes submenu,
+ArrowRight/Left switches Menubar menus). Item focus movement and Enter/Space activation never
+leave the browser.
+
+---
+
+### 🆕 New JS Module: `menu-keyboard.js`
+
+`src/BlazorUI.Primitives/wwwroot/js/primitives/menu-keyboard.js`
+
+Supports three modes attached to a `role="menu"` container:
+
+| Mode | Used by | Extra keys |
+|---|---|---|
+| `vertical` | `DropdownMenuContent`, `ContextMenuContent` | — |
+| `menubar` | `MenubarContent` | ArrowRight/Left → `JsOnNextMenu` / `JsOnPreviousMenu` |
+| `submenu` | `*SubContent` (all three families) | ArrowLeft → `JsOnCloseSubMenu` |
+
+Options: `loop` (wrap navigation), `initialFocus` (`"first"` focuses first enabled item on open).
+
+JS calls back to C# only via:
+- `JsOnEscapeKey()` — close the menu/root
+- `JsOnCloseSubMenu()` — close submenu + restore focus to trigger
+- `JsOnNextMenu()` / `JsOnPreviousMenu()` — switch Menubar menu (menubar mode only)
+
+---
+
+### 🔧 Components Changed
+
+#### DropdownMenu
+
+| Component | Change |
+|---|---|
+| `DropdownMenuContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` with `menu-keyboard.js` "vertical" mode; added `[JSInvokable] JsOnEscapeKey` |
+| `DropdownMenuSubContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` with `menu-keyboard.js` "submenu" mode; added `JsOnEscapeKey`, `JsOnCloseSubMenu` |
+| `DropdownMenuItem` | Removed `@onkeydown`, `@inject IJSRuntime`, `FocusElementAsync` helper; added `Href`/`Target` params (renders `<a>` when set) and `MergedAttributes` (merges `Context.ItemClass`) |
+| `DropdownMenuCheckboxItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `DropdownMenuRadioItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `DropdownMenuSubTrigger` | Removed `@onkeydown` / `HandleKeyDown`; removed `@inject IJSRuntime` / `FocusElementAsync` |
+| `DropdownMenuContext.cs` | Added `ItemClass` property (cascaded from `DropdownMenu.ItemClass`) |
+| `DropdownMenu.razor` | Added `ItemClass` parameter; synced to context in `OnParametersSet` |
+
+#### Menubar
+
+| Component | Change |
+|---|---|
+| `MenubarContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` / navigation methods with `menu-keyboard.js` "menubar" mode; added `JsOnEscapeKey`, `JsOnNextMenu`, `JsOnPreviousMenu`; simplified `FocusContainerAsync` |
+| `MenubarSubContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` with `menu-keyboard.js` "submenu" mode; added `JsOnEscapeKey`, `JsOnCloseSubMenu` |
+| `MenubarItem` | Removed `@onkeydown`, `@inject IJSRuntime`, `FocusElementAsync` helper |
+| `MenubarCheckboxItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `MenubarRadioItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `MenubarSubTrigger` | Removed `@onkeydown` / `HandleKeyDown` |
+
+#### ContextMenu
+
+| Component | Change |
+|---|---|
+| `ContextMenuContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` + inline navigation methods with `menu-keyboard.js` "vertical" mode; added `JsOnEscapeKey` |
+| `ContextMenuSubContent` | Replaced C# `HandleKeyDown` + `FocusNextItem`/`FocusPreviousItem` helpers with `menu-keyboard.js` "submenu" mode; added `JsOnEscapeKey`, `JsOnCloseSubMenu` |
+| `ContextMenuItem` | Removed `@onkeydown`, `@inject IJSRuntime`, `FocusElementAsync` helper |
+| `ContextMenuCheckboxItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `ContextMenuRadioItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `ContextMenuSubTrigger` | Removed `@onkeydown` / `HandleKeyDown` |
+
+---
+
+### 🐛 Bug Fix: Submenu Close Chain Broken for Keyboard-Opened Submenus
+
+**Affected:** `DropdownMenuSubTrigger`, `MenubarSubTrigger`, `ContextMenuSubTrigger`
+
+`HandleMouseEnter` registered `SubContext` as `ActiveSubMenu` on the parent context, but
+`HandleClick` (called by both mouse click and keyboard Enter/Space/ArrowRight via JS `click()`)
+did not. This meant that when a submenu was opened via keyboard, `Context.Close()` /
+`MenuContext.CloseMenu()` could not recurse into the submenu — only the root menu closed while
+the submenu panel remained visible.
+
+**Fix:** `HandleClick` now registers `SubContext` as `ActiveSubMenu` on the parent context
+(matching what `HandleMouseEnter` already did) before calling `SubContext.Open()`.
+
+---
+
+### ⚡ Performance: `PopoverContent` Escape Key Migrated to `dialog.js`
+
+`PopoverContent` previously handled Escape via `@onkeydown` (one Blazor round-trip per keydown
+inside the popover). It now reuses `dialog.js` (`initializeKeyboardHandler` /
+`disposeKeyboardHandler`) — the same module `DialogContent` uses — which attaches a single
+capture-phase JS listener and calls back to C# only when Escape is actually pressed.
+
+Added `[JSInvokable] HandleEscapeKey()` matching the Dialog pattern. The `@onkeydown` binding
+and C# `HandleKeyDown` method have been removed.
+
+### 🐛 Bug Fix: `PopoverContent` Container Not Auto-Focused on Open
+
+`PopoverContent` was missing the `data-autofocus` attribute on its content `<div>`. As a result:
+- `portal.js`'s `blazorui:visible` auto-focus listener never moved focus into the popover
+- The new `dialog.js` Escape handler (capture-phase, requires focus inside the element) therefore
+  never fired when Escape was pressed
+
+**Fix:** Added `data-autofocus` to the content div, consistent with `DropdownMenuContent`.
+
+---
+
+### ⌨️ Feature: DataTable Keyboard Navigation for Row Selection and Column Sorting
+
+Keyboard navigation is now fully functional in the `Table` primitive for both row selection and
+header-triggered sorting.
+
+#### `TableRow` — Row selection keyboard nav
+
+| Key | Behaviour |
+|---|---|
+| `ArrowDown` | Move focus to the next selectable row |
+| `ArrowUp` | Move focus to the previous selectable row |
+| `Enter` / `Space` | Toggle selection of the focused row |
+
+- Rows receive `tabindex="0"` only when `EnableKeyboardNavigation` is true on the `TableContext`
+- A visible focus ring (`focus:ring-2 focus:ring-ring focus:ring-inset`) is automatically added
+  to keyboard-navigable rows via `ComputedClass`
+- Focus movement is handled by a new `table-row-nav.js` JS module (`moveFocusToNextRow` /
+  `moveFocusToPreviousRow`) using DOM sibling traversal — no C# round-trip required per move
+- A capture-phase JS listener (`preventSpaceKeyScroll`) prevents Space and Arrow keys from
+  scrolling the page while a row is focused; attached once on first render via `OnAfterRenderAsync`
+
+#### `TableHeaderCell` — Sortable header keyboard nav
+
+| Key | Behaviour |
+|---|---|
+| `Enter` / `Space` | Toggle sort direction for the column |
+
+- Sortable header cells (those with a `ColumnId`) receive `tabindex="0"`; non-sortable cells
+  remain at `tabindex="-1"` and are skipped in tab order
+- `aria-sort` attribute reflects the current sort direction (`ascending`, `descending`, `none`)
+  for correct screen-reader announcement
+
+#### New JS module: `table-row-nav.js`
+
+`src/BlazorUI.Primitives/wwwroot/js/primitives/table-row-nav.js`
+
+| Export | Purpose |
+|---|---|
+| `preventSpaceKeyScroll(element)` | Capture-phase handler; prevents Space / ArrowUp / ArrowDown scroll; returns `{ dispose }` cleanup |
+| `moveFocusToNextRow(element)` | Advances focus to the next sibling row with `tabindex`, manages `tabindex` roving |
+| `moveFocusToPreviousRow(element)` | Same as above, backwards |
+
+---
+
 ## 2026-02-20 - Force-Mount Overlay Architecture for All FloatingPortal Consumers
 
 ### 🏗️ Major Refactoring and Improvements to FloatingPortal
@@ -94,9 +257,6 @@ open/close state is communicated via `IsOpen`, and `ForceMount` handles visibili
 |---|---|
 | `DropdownMenuContent` | `Primitives/DropdownMenu/DropdownMenuContent.razor` |
 | `DropdownMenuSubContent` | `Primitives/DropdownMenu/DropdownMenuSubContent.razor` |
-| `ContextMenuContent` | `Primitives/ContextMenu/ContextMenuContent.razor` |
-| `ContextMenuSubContent` | `Primitives/ContextMenu/ContextMenuSubContent.razor` |
-| `MenubarSubContent` | `Primitives/Menubar/MenubarSubContent.razor` |
 | `PopoverContent` | `Primitives/Popover/PopoverContent.razor` |
 | `SelectContent` | `Primitives/Select/SelectContent.razor` |
 
@@ -106,6 +266,9 @@ open/close state is communicated via `IsOpen`, and `ForceMount` handles visibili
 |---|---|---|
 | `TooltipContent` | `Primitives/Tooltip/TooltipContent.razor` | Can have 30–100+ instances per page; hover delay absorbs mount cost |
 | `HoverCardContent` | `Primitives/HoverCard/HoverCardContent.razor` | Same multiplicity concern; richer content makes N hidden portals expensive |
+| `ContextMenuContent` | `Primitives/ContextMenu/ContextMenuContent.razor` | Not fit by design |
+| `ContextMenuSubContent` | `Primitives/ContextMenu/ContextMenuSubContent.razor` | Not fit by design |
+| `MenubarSubContent` | `Primitives/Menubar/MenubarSubContent.razor` | Not fit by design |
 
 #### Already correct (no change needed)
 

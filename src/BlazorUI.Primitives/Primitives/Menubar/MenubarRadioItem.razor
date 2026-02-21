@@ -10,7 +10,6 @@
      aria-checked="@IsSelected.ToString().ToLower()"
      aria-disabled="@Disabled.ToString().ToLower()"
      @onclick="HandleClick"
-     @onkeydown="HandleKeyDown"
      data-state="@(IsSelected ? "checked" : "unchecked")"
      data-disabled="@(Disabled ? "true" : null)"
      @attributes="AdditionalAttributes">
@@ -95,17 +94,6 @@
         if (CloseOnSelect && MenuContext != null)
         {
             MenuContext.CloseMenu();
-        }
-    }
-
-    private async Task HandleKeyDown(KeyboardEventArgs args)
-    {
-        if (Disabled) return;
-
-        // Enter or Space to select
-        if (args.Key == "Enter" || args.Key == " ")
-        {
-            await HandleClick(new MouseEventArgs());
         }
     }
 

@@ -1,21 +1,38 @@
 @namespace BlazorUI.Primitives.DropdownMenu
-@inject IJSRuntime JSRuntime
 @implements IDropdownMenuItem
 @implements IDisposable
 
 @* Dropdown menu item - represents an individual menu action *@
-<div @ref="_itemRef"
-     role="menuitem"
-     tabindex="@(Disabled ? -1 : -1)"
-     aria-disabled="@Disabled.ToString().ToLowerInvariant()"
-     data-disabled="@(Disabled ? "true" : null)"
-     @onclick="HandleClick"
-     @onkeydown="HandleKeyDown"
-     @onkeydown:preventDefault="true"
-     @onmouseenter="HandleMouseEnter"
-     @attributes="AdditionalAttributes">
-    @ChildContent
-</div>
+@if (HasHref)
+{
+    <a @ref="_itemRef"
+       href="@(Disabled ? null : Href)"
+       target="@Target"
+       rel="@Rel"
+       role="menuitem"
+       tabindex="-1"
+       aria-disabled="@Disabled.ToString().ToLower()"
+       data-disabled="@(Disabled ? "true" : null)"
+       @onclick="HandleClick"
+       @onclick:preventDefault="@(Disabled)"
+       @onmouseenter="HandleMouseEnter"
+       @attributes="MergedAttributes">
+        @ChildContent
+    </a>
+}
+else
+{
+    <div @ref="_itemRef"
+         role="menuitem"
+         tabindex="-1"
+         aria-disabled="@Disabled.ToString().ToLower()"
+         data-disabled="@(Disabled ? "true" : null)"
+         @onclick="HandleClick"
+         @onmouseenter="HandleMouseEnter"
+         @attributes="MergedAttributes">
+        @ChildContent
+    </div>
+}
 
 @code {
     [CascadingParameter]
@@ -31,8 +48,6 @@
     private DropdownMenuSubContent? SubContentContext { get; set; }
 
     private ElementReference _itemRef;
-    private IJSObjectReference? _keyboardNavModule;
-    private bool _keyboardNavModuleLoaded = false;
 
     /// <summary>
     /// The content to display inside the menu item.
@@ -45,6 +60,49 @@
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// URL to navigate to. When set, the item renders as an anchor element instead of a div.
+    /// </summary>
+    [Parameter]
+    public string? Href { get; set; }
+
+    /// <summary>
+    /// The anchor target attribute (e.g., "_blank"). Only applies when Href is set.
+    /// </summary>
+    [Parameter]
+    public string? Target { get; set; }
+
+    private bool HasHref => !string.IsNullOrEmpty(Href);
+
+    private string? Rel => Target == "_blank" ? "noopener noreferrer" : null;
+
+    private Dictionary<string, object>? MergedAttributes
+    {
+        get
+        {
+            var itemClass = Context?.ItemClass;
+            if (string.IsNullOrEmpty(itemClass))
+            {
+                return AdditionalAttributes;
+            }
+
+            var merged = AdditionalAttributes != null
+                ? new Dictionary<string, object>(AdditionalAttributes)
+                : new Dictionary<string, object>();
+
+            if (merged.TryGetValue("class", out var existing))
+            {
+                merged["class"] = $"{itemClass} {existing}";
+            }
+            else
+            {
+                merged["class"] = itemClass;
+            }
+
+            return merged;
+        }
+    }
 
     /// <summary>
     /// Whether the menu item is disabled.
@@ -105,17 +163,6 @@
         }
     }
 
-    private void HandleKeyDown(KeyboardEventArgs args)
-    {
-        if (Disabled) return;
-
-        // Enter or Space to activate
-        if (args.Key == "Enter" || args.Key == " ")
-        {
-            _ = ClickAsync();
-        }
-    }
-
     private async void HandleMouseEnter(MouseEventArgs args)
     {
         // Track if there was an active submenu that we're closing
@@ -156,63 +203,20 @@
     // IDropdownMenuItem implementation
     public async Task FocusAsync()
     {
-        await FocusElementAsync(_itemRef, "menu item");
+        try
+        {
+            await _itemRef.FocusAsync();
+        }
+        catch
+        {
+            // Ignore focus errors (element might not be mounted yet)
+        }
     }
 
     public async Task ClickAsync()
     {
         if (Disabled) return;
         await HandleClick(new MouseEventArgs());
-    }
-
-    /// <summary>
-    /// Focuses an element using JavaScript with fallback to C# focus.
-    /// Lazy-loads the keyboard-nav module on first use.
-    /// </summary>
-    private async Task<bool> FocusElementAsync(ElementReference element, string elementName = "element")
-    {
-        // Lazy-load keyboard nav module on first focus attempt
-        if (!_keyboardNavModuleLoaded)
-        {
-            try
-            {
-                _keyboardNavModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/keyboard-nav.js");
-                _keyboardNavModuleLoaded = true;
-            }
-            catch
-            {
-                // Module load failed, will use C# fallback
-            }
-        }
-
-        // Try JavaScript focus first
-        if (_keyboardNavModule != null)
-        {
-            try
-            {
-                var focused = await _keyboardNavModule.InvokeAsync<bool>("focusElement", element);
-                if (focused)
-                {
-                    return true;
-                }
-            }
-            catch
-            {
-                // JS focus failed, will try C# fallback
-            }
-        }
-
-        // Fallback to C# focus
-        try
-        {
-            await element.FocusAsync();
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     public void Dispose()
@@ -225,17 +229,6 @@
         else
         {
             ContentContext?.UnregisterMenuItem(this);
-        }
-
-        // Cleanup keyboard nav module
-        if (_keyboardNavModule != null)
-        {
-            try
-            {
-                _keyboardNavModule.DisposeAsync();
-            }
-            catch { }
-            _keyboardNavModule = null;
         }
     }
 }

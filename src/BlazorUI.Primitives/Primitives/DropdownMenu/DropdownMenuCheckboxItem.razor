@@ -4,13 +4,12 @@
 
 <div @ref="_itemRef"
      role="menuitemcheckbox"
+     tabindex="-1"
      aria-checked="@Checked.ToString().ToLower()"
      aria-disabled="@Disabled.ToString().ToLower()"
      data-disabled="@(Disabled ? "true" : null)"
      data-state="@(Checked ? "checked" : "unchecked")"
      @onclick="HandleClick"
-     @onkeydown="HandleKeyDown"
-     @onkeydown:preventDefault="true"
      @attributes="AdditionalAttributes">
     @ChildContent
 </div>
@@ -99,17 +98,6 @@
         if (CloseOnSelect && Context != null)
         {
             Context.Close();
-        }
-    }
-
-    private async Task HandleKeyDown(KeyboardEventArgs args)
-    {
-        if (Disabled) return;
-
-        // Enter or Space to toggle
-        if (args.Key == "Enter" || args.Key == " ")
-        {
-            await HandleClick(new MouseEventArgs());
         }
     }
 
