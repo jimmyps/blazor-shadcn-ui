@@ -35,6 +35,7 @@
     private MenubarSubContent? SubContentContext { get; set; }
 
     private ElementReference _triggerRef;
+    private CancellationTokenSource? _hoverCts;
 
     /// <summary>
     /// The content to display inside the trigger.
@@ -118,10 +119,31 @@
     {
         if (Disabled) return;
 
-        // Track if there was an active submenu that we're closing
+        // If this submenu is already open and registered as active, there is nothing to do.
+        // Avoid the close-then-reopen flicker that would occur if we fell through to the
+        // CloseActiveSubMenu + Task.Delay(300) + Open path.
+        bool isAlreadyActive = ParentSubContext != null
+            ? ParentSubContext.ActiveSubMenu == SubContext
+            : MenuContext?.ActiveSubMenu == SubContext;
+
+        if (isAlreadyActive && SubContext.IsOpen)
+        {
+            _hoverCts?.Cancel();
+            return;
+        }
+
+        // Cancel any in-flight hover operation from a previous rapid mouse-enter
+        _hoverCts?.Cancel();
+        _hoverCts?.Dispose();
+        _hoverCts = new CancellationTokenSource();
+        var token = _hoverCts.Token;
+
+        // Close any sibling submenu immediately and register ours as the active one.
+        // This must happen before the delay: keeping a sibling's panel open during the
+        // wait can cause it to overlap this trigger, firing a spurious mouseleave that
+        // cancels the pending open. It also avoids showing two "selected" triggers at once.
         bool hadActiveSubmenu = false;
 
-        // Close any other active submenu first (either from root menu or parent submenu)
         if (ParentSubContext != null)
         {
             hadActiveSubmenu = ParentSubContext.ActiveSubMenu != null && ParentSubContext.ActiveSubMenu != SubContext;
@@ -138,15 +160,21 @@
             }
         }
 
-        // Small delay to allow close state to propagate through Blazor's render pipeline
-        // before opening the new submenu. Without this, the fast portal rendering can cause
-        // the close to execute after the open, making the submenu appear closed.
-        await Task.Delay(30);
+        // Delay before opening: prevents the submenu from flashing open when the cursor
+        // merely passes through this trigger. HandleMouseLeave cancels the token so a
+        // quick pass-through is a no-op.
+        try
+        {
+            await Task.Delay(300, token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
 
-        // Open submenu on hover
         SubContext.Open(_triggerRef);
-        
-        // Focus this trigger only if we closed another submenu (for keyboard navigation to work)
+
+        // Focus this trigger only if we replaced another submenu (for keyboard navigation to work)
         if (hadActiveSubmenu)
         {
             await FocusAsync();
@@ -155,7 +183,8 @@
 
     private void HandleMouseLeave(MouseEventArgs args)
     {
-        // Don't close on mouse leave - let the content handle that
+        // Cancel any pending hover-open so a quick mouse-pass-through doesn't open the submenu
+        _hoverCts?.Cancel();
     }
 
     // IMenubarItem implementation
@@ -180,6 +209,8 @@
 
     public void Dispose()
     {
+        _hoverCts?.Cancel();
+        _hoverCts?.Dispose();
         // Unregister this item when disposed
         if (SubContentContext != null)
         {

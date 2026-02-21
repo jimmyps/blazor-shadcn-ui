@@ -138,7 +138,7 @@
             _dotNetRef ??= DotNetObjectReference.Create(this);
 
             await _menuKeyboardModule.InvokeVoidAsync("initialize", _contentRef, _dotNetRef, _instanceId,
-                new { mode = "submenu", loop = true, initialFocus = "first" });
+                new { mode = "submenu", loop = true, initialFocus = "container" });
         }
         catch (JSDisconnectedException)
         {

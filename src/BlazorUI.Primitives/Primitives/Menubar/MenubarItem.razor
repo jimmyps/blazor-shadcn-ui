@@ -9,6 +9,7 @@
      aria-disabled="@Disabled.ToString().ToLower()"
      @onclick="HandleClick"
      @onmouseenter="HandleMouseEnter"
+     @onmouseleave="HandleMouseLeave"
      data-disabled="@Disabled.ToString().ToLower()"
      @attributes="AdditionalAttributes">
     @ChildContent
@@ -28,6 +29,7 @@
     private MenubarSubContent? SubContentContext { get; set; }
 
     private ElementReference _itemRef;
+    private CancellationTokenSource? _hoverCts;
 
     /// <summary>
     /// The content to display inside the menu item.
@@ -102,9 +104,28 @@
 
     private async void HandleMouseEnter(MouseEventArgs args)
     {
+        // Cancel any in-flight hover operation from a previous rapid mouse-enter
+        _hoverCts?.Cancel();
+        _hoverCts?.Dispose();
+        _hoverCts = new CancellationTokenSource();
+        var token = _hoverCts.Token;
+
+        // Grace period before closing any open submenu - matches the ~250ms delay used by
+        // Windows/macOS menus so that briefly passing over this item while navigating
+        // toward the submenu content doesn't immediately dismiss it.
+        // If the mouse leaves (HandleMouseLeave cancels the CTS) the close never fires.
+        try
+        {
+            await Task.Delay(250, token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
         // Track if there was an active submenu that we're closing
         bool hadActiveSubmenu = false;
-        
+
         // Close any active submenu when hovering over this item
         // If we're inside a submenu (ParentSubContext exists), close nested submenus of that parent
         // If we're at root level, close any active submenu from the root context
@@ -120,7 +141,9 @@
             hadActiveSubmenu = Context?.ActiveSubMenu != null;
             Context?.CloseActiveSubMenu();
         }
-        
+
+        if (token.IsCancellationRequested) return;
+
         // Restore focus to the menu container (not the item) when we closed a submenu
         // This enables keyboard navigation without showing focus ring on a specific item
         if (hadActiveSubmenu)
@@ -135,6 +158,12 @@
                 await ContentContext.FocusContainerAsync();
             }
         }
+    }
+
+    private void HandleMouseLeave(MouseEventArgs args)
+    {
+        // Cancel the pending close so a quick pass-through never dismisses the submenu
+        _hoverCts?.Cancel();
     }
 
     // IMenubarItem implementation
@@ -158,6 +187,8 @@
 
     public void Dispose()
     {
+        _hoverCts?.Cancel();
+        _hoverCts?.Dispose();
         // Unregister this item when disposed
         if (SubContentContext != null)
         {

@@ -200,7 +200,7 @@ private readonly List<IContextMenuItem> _menuItems = new();
             _dotNetRef ??= DotNetObjectReference.Create(this);
 
             await _menuKeyboardModule.InvokeVoidAsync("initialize", _contentRef, _dotNetRef, Context.ContentId,
-                new { mode = "vertical", loop = Loop, initialFocus = "first" });
+                new { mode = "vertical", loop = Loop, initialFocus = "container" });
         }
         catch (JSDisconnectedException)
         {

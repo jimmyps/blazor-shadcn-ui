@@ -16,6 +16,7 @@
        @onclick="HandleClick"
        @onclick:preventDefault="@(Disabled)"
        @onmouseenter="HandleMouseEnter"
+       @onmouseleave="HandleMouseLeave"
        @attributes="MergedAttributes">
         @ChildContent
     </a>
@@ -29,6 +30,7 @@ else
          data-disabled="@(Disabled ? "true" : null)"
          @onclick="HandleClick"
          @onmouseenter="HandleMouseEnter"
+         @onmouseleave="HandleMouseLeave"
          @attributes="MergedAttributes">
         @ChildContent
     </div>
@@ -48,6 +50,7 @@ else
     private DropdownMenuSubContent? SubContentContext { get; set; }
 
     private ElementReference _itemRef;
+    private CancellationTokenSource? _hoverCts;
 
     /// <summary>
     /// The content to display inside the menu item.
@@ -165,30 +168,41 @@ else
 
     private async void HandleMouseEnter(MouseEventArgs args)
     {
+        // Cancel any in-flight hover operation from a previous rapid mouse-enter
+        _hoverCts?.Cancel();
+        _hoverCts?.Dispose();
+        _hoverCts = new CancellationTokenSource();
+        var token = _hoverCts.Token;
+
+        // Grace period before closing any open submenu.
+        // HandleMouseLeave cancels the token so a quick pass-through never dismisses it.
+        try
+        {
+            await Task.Delay(250, token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
         // Track if there was an active submenu that we're closing
         bool hadActiveSubmenu = false;
-        
-        // Close any active submenu when hovering over this item
-        // If we're inside a submenu (ParentSubContext exists), close nested submenus of that parent
-        // If we're at root level, close any active submenu from the root context
+
         if (ParentSubContext != null)
         {
-            // We're inside a submenu - close any nested submenus
             hadActiveSubmenu = ParentSubContext.ActiveSubMenu != null;
             ParentSubContext.CloseActiveSubMenu();
         }
         else
         {
-            // We're at root level - close active submenu from root context
             hadActiveSubmenu = Context?.ActiveSubMenu != null;
             Context?.CloseActiveSubMenu();
         }
-        
-        // Restore focus to the menu container when we closed a submenu
-        // This enables keyboard navigation to continue working
+
+        if (token.IsCancellationRequested) return;
+
         if (hadActiveSubmenu)
         {
-            // Focus the parent menu container (SubContent or root Content)
             if (SubContentContext != null)
             {
                 await SubContentContext.FocusContainerAsync();
@@ -198,6 +212,12 @@ else
                 await ContentContext.FocusContainerAsync();
             }
         }
+    }
+
+    private void HandleMouseLeave(MouseEventArgs args)
+    {
+        // Cancel the pending close so a quick pass-through never dismisses the submenu
+        _hoverCts?.Cancel();
     }
 
     // IDropdownMenuItem implementation
@@ -221,6 +241,8 @@ else
 
     public void Dispose()
     {
+        _hoverCts?.Cancel();
+        _hoverCts?.Dispose();
         // Unregister this item when disposed
         if (SubContentContext != null)
         {
