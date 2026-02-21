@@ -1,0 +1,129 @@
+@namespace BlazorUI.Components.Filter
+@typeparam TData
+@using BlazorUI.Components.Popover
+@using BlazorUI.Components.Button
+@using BlazorUI.Components.Separator
+@using BlazorUI.Components.Badge
+@using BlazorUI.Icons.Lucide.Components
+@using BlazorUI.Primitives.Services
+
+<div class="@WrapperCssClass">
+    @* Active Filter Chips *@
+    @if (ShowChips && GetActiveConditions().Any())
+    {
+        <div class="flex flex-wrap gap-2 mb-2">
+            @foreach (var condition in GetActiveConditions())
+            {
+                var fieldDef = _fields.FirstOrDefault(f => f.Field == condition.Field);
+                <FilterChip Condition="@condition"
+                            FieldDefinition="@fieldDef"
+                            OnRemove="@(() => RemoveCondition(condition))" />
+            }
+        </div>
+    }
+    
+    <Popover @bind-Open="@_isOpen">
+        <PopoverTrigger AsChild="false">
+            <Button Variant="@ButtonVariant" 
+                    Size="@ButtonSize" 
+                    Class="@ButtonCssClass">
+                <LucideIcon Name="filter" Class="h-4 w-4" />
+                <span>@ButtonText</span>
+                @if (GetActiveConditions().Any())
+                {
+                    <Badge Variant="BadgeVariant.Secondary" Class="ml-2 h-5 px-1.5 text-xs">
+                        @GetActiveConditions().Count
+                    </Badge>
+                }
+            </Button>
+        </PopoverTrigger>
+        <PopoverContent Align="PopoverAlign.Start" Class="w-[500px] p-4">
+            <div class="space-y-4">
+                @* Header *@
+                <div class="flex items-center justify-between">
+                    <h4 class="text-sm font-semibold">Filters</h4>
+                    @if (GetActiveConditions().Any())
+                    {
+                        <Button Variant="ButtonVariant.Ghost" 
+                                Size="ButtonSize.Small" 
+                                OnClick="@ClearAll">
+                            Clear All
+                        </Button>
+                    }
+                </div>
+                
+                <Separator />
+                
+                @* Presets *@
+                @if (_presets.Any())
+                {
+                    <div class="space-y-2">
+                        <div class="text-xs font-medium text-muted-foreground">PRESETS</div>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach (var preset in _presets)
+                            {
+                                <Button Variant="ButtonVariant.Outline" 
+                                        Size="ButtonSize.Small" 
+                                        OnClick="@(() => ApplyPreset(preset))">
+                                    @if (!string.IsNullOrEmpty(preset.Icon))
+                                    {
+                                        <LucideIcon Name="@preset.Icon" Class="h-3 w-3" />
+                                    }
+                                    <span>@preset.Name</span>
+                                </Button>
+                            }
+                        </div>
+                    </div>
+                    <Separator />
+                }
+                
+                @* Conditions *@
+                <div class="space-y-3">
+                    @foreach (var condition in _workingFilters.Conditions)
+                    {
+                        <FilterConditionRow Condition="@condition"
+                                           AvailableFields="@_fields"
+                                           ConditionChanged="@HandleConditionChanged"
+                                           OnRemove="@(() => RemoveCondition(condition))" />
+                    }
+                </div>
+                
+                @* Add Condition Button *@
+                @if (_fields.Any())
+                {
+                    <Button Variant="ButtonVariant.Outline" 
+                            Size="ButtonSize.Small" 
+                            OnClick="@AddCondition"
+                            Class="w-full">
+                        <LucideIcon Name="plus" Class="h-4 w-4" />
+                        <span>Add Filter</span>
+                    </Button>
+                }
+                
+                @* Actions *@
+                <div class="flex items-center justify-between pt-2 border-t">
+                    <div class="text-xs text-muted-foreground">
+                        @GetActiveConditions().Count filter(s) active
+                    </div>
+                    <div class="flex gap-2">
+                        <Button Variant="ButtonVariant.Outline" 
+                                Size="ButtonSize.Small" 
+                                OnClick="@Cancel">
+                            Cancel
+                        </Button>
+                        <Button Size="ButtonSize.Small" 
+                                OnClick="@Apply">
+                            Apply Filters
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </PopoverContent>
+    </Popover>
+    
+    @* Child content for field and preset definitions *@
+    <CascadingValue Value="@this" IsFixed="true">
+        @FilterFields
+        @FilterPresets
+    </CascadingValue>
+</div>

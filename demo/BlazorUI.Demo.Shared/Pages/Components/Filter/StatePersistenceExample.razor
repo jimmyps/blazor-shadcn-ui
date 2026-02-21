@@ -1,0 +1,47 @@
+@page "/components/filter/persistence"
+@using BlazorUI.Components.Filter
+
+<PageTitle>Filter Builder - State Persistence - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-7xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">State Persistence Example</h1>
+            <p class="text-xl text-muted-foreground">
+                Save and restore filter state using localStorage or other persistence mechanisms.
+            </p>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <h2 class="text-2xl font-semibold">Coming Soon</h2>
+        <p class="text-muted-foreground">
+            This example will demonstrate how to persist filter state across page reloads using localStorage.
+        </p>
+        <div class="bg-muted p-6 rounded-lg">
+            <pre class="text-sm overflow-x-auto"><code>@@inject IJSRuntime JS
+
+@@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Load from localStorage
+            var json = await JS.InvokeAsync&lt;string&gt;("localStorage.getItem", "filters");
+            if (!string.IsNullOrEmpty(json))
+            {
+                activeFilters = JsonSerializer.Deserialize&lt;FilterGroup&gt;(json);
+            }
+        }
+    }
+    
+    private async Task HandleFilterChange(FilterGroup filters)
+    {
+        // Save to localStorage
+        var json = JsonSerializer.Serialize(filters);
+        await JS.InvokeVoidAsync("localStorage.setItem", "filters", json);
+    }
+}</code></pre>
+        </div>
+    </div>
+</div>

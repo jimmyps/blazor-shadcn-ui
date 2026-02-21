@@ -1,0 +1,180 @@
+@page "/components/filter/basic"
+@using BlazorUI.Components.Filter
+@using BlazorUI.Components.Button
+@using BlazorUI.Components.Card
+@using BlazorUI.Components.Badge
+
+<PageTitle>Filter Builder - Basic Example - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-7xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">Basic Example</h1>
+            <p class="text-xl text-muted-foreground">
+                Simple product filtering with Name, Category, and Price fields.
+            </p>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-semibold">Product Catalog</h2>
+            <FilterBuilder TData="Product" 
+                           @bind-Filters="activeFilters"
+                           OnFilterChange="HandleFilterChange">
+                <FilterFields>
+                    <FilterField Field="Name" 
+                                 Label="Product Name" 
+                                 Type="FilterFieldType.Text" 
+                                 Placeholder="Search by name..." />
+                    
+                    <FilterField Field="Category" 
+                                 Label="Category" 
+                                 Type="FilterFieldType.Select"
+                                 Options="@categoryOptions" />
+                    
+                    <FilterField Field="Price" 
+                                 Label="Price" 
+                                 Type="FilterFieldType.Number"
+                                 Min="0"
+                                 Step="0.01" />
+                    
+                    <FilterField Field="InStock" 
+                                 Label="In Stock" 
+                                 Type="FilterFieldType.Boolean" />
+                </FilterFields>
+            </FilterBuilder>
+        </div>
+
+        <!-- Results -->
+        <div class="text-sm text-muted-foreground">
+            Showing @filteredProducts.Count of @allProducts.Count products
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @foreach (var product in filteredProducts)
+            {
+                <Card>
+                    <CardHeader>
+                        <CardTitle>@product.Name</CardTitle>
+                        <CardDescription>@product.Category</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-2xl font-bold">$@product.Price.ToString("F2")</span>
+                                @if (product.InStock)
+                                {
+                                    <Badge Variant="BadgeVariant.Default">In Stock</Badge>
+                                }
+                                else
+                                {
+                                    <Badge Variant="BadgeVariant.Outline">Out of Stock</Badge>
+                                }
+                            </div>
+                            <p class="text-sm text-muted-foreground">@product.Description</p>
+                        </div>
+                    </CardContent>
+                </Card>
+            }
+        </div>
+
+        @if (!filteredProducts.Any())
+        {
+            <div class="text-center py-12">
+                <p class="text-muted-foreground">No products match your filters.</p>
+            </div>
+        }
+    </div>
+
+    <!-- Code Example -->
+    <div class="space-y-4">
+        <h2 class="text-2xl font-semibold">Code Example</h2>
+        <div class="bg-muted p-6 rounded-lg">
+            <pre class="text-sm overflow-x-auto"><code>&lt;FilterBuilder TData="Product" 
+               @@bind-Filters="activeFilters"
+               OnFilterChange="HandleFilterChange"&gt;
+    &lt;FilterFields&gt;
+        &lt;FilterField Field="Name" 
+                     Label="Product Name" 
+                     Type="FilterFieldType.Text" 
+                     Placeholder="Search by name..." /&gt;
+        
+        &lt;FilterField Field="Category" 
+                     Label="Category" 
+                     Type="FilterFieldType.Select"
+                     Options="@@categoryOptions" /&gt;
+        
+        &lt;FilterField Field="Price" 
+                     Label="Price" 
+                     Type="FilterFieldType.Number"
+                     Min="0"
+                     Step="0.01" /&gt;
+        
+        &lt;FilterField Field="InStock" 
+                     Label="In Stock" 
+                     Type="FilterFieldType.Boolean" /&gt;
+    &lt;/FilterFields&gt;
+&lt;/FilterBuilder&gt;
+
+@@code {
+    private FilterGroup activeFilters = new();
+    private List&lt;Product&gt; filteredProducts = new();
+    
+    private void HandleFilterChange(FilterGroup filters)
+    {
+        filteredProducts = allProducts.ApplyFilters(filters).ToList();
+    }
+}</code></pre>
+        </div>
+    </div>
+</div>
+
+@code {
+    private FilterGroup activeFilters = new();
+    private List<Product> allProducts = new();
+    private List<Product> filteredProducts = new();
+    
+    private List<SelectOption> categoryOptions = new()
+    {
+        new SelectOption("Electronics", "Electronics"),
+        new SelectOption("Clothing", "Clothing"),
+        new SelectOption("Books", "Books"),
+        new SelectOption("Home", "Home & Garden"),
+        new SelectOption("Sports", "Sports & Outdoors")
+    };
+    
+    protected override void OnInitialized()
+    {
+        allProducts = new List<Product>
+        {
+            new Product { Id = 1, Name = "Laptop", Category = "Electronics", Price = 999.99m, InStock = true, Description = "High-performance laptop" },
+            new Product { Id = 2, Name = "T-Shirt", Category = "Clothing", Price = 19.99m, InStock = true, Description = "Cotton t-shirt" },
+            new Product { Id = 3, Name = "C# Programming Book", Category = "Books", Price = 45.00m, InStock = false, Description = "Learn C# programming" },
+            new Product { Id = 4, Name = "Wireless Mouse", Category = "Electronics", Price = 29.99m, InStock = true, Description = "Ergonomic wireless mouse" },
+            new Product { Id = 5, Name = "Running Shoes", Category = "Sports", Price = 89.99m, InStock = true, Description = "Lightweight running shoes" },
+            new Product { Id = 6, Name = "Plant Pot", Category = "Home", Price = 15.99m, InStock = false, Description = "Ceramic plant pot" },
+            new Product { Id = 7, Name = "Keyboard", Category = "Electronics", Price = 79.99m, InStock = true, Description = "Mechanical keyboard" },
+            new Product { Id = 8, Name = "Jeans", Category = "Clothing", Price = 59.99m, InStock = true, Description = "Classic blue jeans" },
+            new Product { Id = 9, Name = "Blazor Book", Category = "Books", Price = 39.99m, InStock = true, Description = "Web development with Blazor" },
+            new Product { Id = 10, Name = "Yoga Mat", Category = "Sports", Price = 24.99m, InStock = false, Description = "Non-slip yoga mat" },
+        };
+        
+        filteredProducts = allProducts.ToList();
+    }
+    
+    private void HandleFilterChange(FilterGroup filters)
+    {
+        filteredProducts = allProducts.ApplyFilters(filters).ToList();
+    }
+    
+    public class Product
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+        public bool InStock { get; set; }
+        public string Description { get; set; } = string.Empty;
+    }
+}

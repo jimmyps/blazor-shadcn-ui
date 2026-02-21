@@ -1,0 +1,215 @@
+@page "/components/filter/all-types"
+@using BlazorUI.Components.Filter
+@using BlazorUI.Components.DataTable
+@using BlazorUI.Components.Badge
+
+<PageTitle>Filter Builder - All Field Types - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-7xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">All Field Types Example</h1>
+            <p class="text-xl text-muted-foreground">
+                Showcase of all 8 supported field types: Text, Number, Date, DateRange, Boolean, Select, MultiSelect, and Custom.
+            </p>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-semibold">Employee Directory</h2>
+            <FilterBuilder TData="Employee" 
+                           @bind-Filters="activeFilters"
+                           OnFilterChange="HandleFilterChange">
+                <FilterFields>
+                    <FilterField Field="Name" 
+                                 Label="Name" 
+                                 Type="FilterFieldType.Text" />
+                    
+                    <FilterField Field="Salary" 
+                                 Label="Salary" 
+                                 Type="FilterFieldType.Number"
+                                 Min="0" />
+                    
+                    <FilterField Field="HireDate" 
+                                 Label="Hire Date" 
+                                 Type="FilterFieldType.Date" />
+                    
+                    <FilterField Field="Department" 
+                                 Label="Department" 
+                                 Type="FilterFieldType.Select"
+                                 Options="@departmentOptions" />
+                    
+                    <FilterField Field="Skills" 
+                                 Label="Skills" 
+                                 Type="FilterFieldType.MultiSelect"
+                                 Options="@skillOptions" />
+                    
+                    <FilterField Field="IsActive" 
+                                 Label="Active Employee" 
+                                 Type="FilterFieldType.Boolean" />
+                    
+                    <FilterField Field="Email" 
+                                 Label="Email" 
+                                 Type="FilterFieldType.Text"
+                                 Placeholder="Search email..." />
+                </FilterFields>
+            </FilterBuilder>
+        </div>
+
+        <!-- Results Count -->
+        <div class="text-sm text-muted-foreground">
+            Showing @filteredEmployees.Count of @allEmployees.Count employees
+        </div>
+
+        <!-- Data Table -->
+        <DataTable TData="Employee" Data="@filteredEmployees" InitialPageSize="10">
+            <Columns>
+                <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Name)" Header="Name" Sortable />
+                <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Department)" Header="Department" Sortable>
+                    <CellTemplate Context="employee">
+                        <Badge Variant="BadgeVariant.Secondary">@employee.Department</Badge>
+                    </CellTemplate>
+                </DataTableColumn>
+                <DataTableColumn TData="Employee" TValue="decimal" Property="@(e => e.Salary)" Header="Salary" Sortable Alignment="ColumnAlignment.Right">
+                    <CellTemplate Context="employee">
+                        <span>$@employee.Salary.ToString("N0")</span>
+                    </CellTemplate>
+                </DataTableColumn>
+                <DataTableColumn TData="Employee" TValue="DateOnly" Property="@(e => e.HireDate)" Header="Hire Date" Sortable>
+                    <CellTemplate Context="employee">
+                        <span>@employee.HireDate.ToString("MMM dd, yyyy")</span>
+                    </CellTemplate>
+                </DataTableColumn>
+                <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Email)" Header="Email" />
+                <DataTableColumn TData="Employee" TValue="bool" Property="@(e => e.IsActive)" Header="Status" Sortable>
+                    <CellTemplate Context="employee">
+                        @if (employee.IsActive)
+                        {
+                            <Badge Variant="BadgeVariant.Default">Active</Badge>
+                        }
+                        else
+                        {
+                            <Badge Variant="BadgeVariant.Outline">Inactive</Badge>
+                        }
+                    </CellTemplate>
+                </DataTableColumn>
+            </Columns>
+        </DataTable>
+    </div>
+
+    <!-- Field Types Reference -->
+    <div class="space-y-4">
+        <h2 class="text-2xl font-semibold">Field Types Reference</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="border rounded-lg p-4 space-y-2">
+                <h3 class="font-semibold">Text</h3>
+                <p class="text-sm text-muted-foreground">
+                    Operators: Contains, Equals, Starts With, Ends With, Is Empty, Is Not Empty
+                </p>
+            </div>
+            <div class="border rounded-lg p-4 space-y-2">
+                <h3 class="font-semibold">Number</h3>
+                <p class="text-sm text-muted-foreground">
+                    Operators: Equals, Greater Than, Less Than, Between
+                </p>
+            </div>
+            <div class="border rounded-lg p-4 space-y-2">
+                <h3 class="font-semibold">Date</h3>
+                <p class="text-sm text-muted-foreground">
+                    Operators: Equals, Between, Greater Than, Less Than
+                </p>
+            </div>
+            <div class="border rounded-lg p-4 space-y-2">
+                <h3 class="font-semibold">DateRange</h3>
+                <p class="text-sm text-muted-foreground">
+                    Operators: Between (with two date pickers)
+                </p>
+            </div>
+            <div class="border rounded-lg p-4 space-y-2">
+                <h3 class="font-semibold">Select</h3>
+                <p class="text-sm text-muted-foreground">
+                    Operators: Is Any Of, Is None Of (single selection)
+                </p>
+            </div>
+            <div class="border rounded-lg p-4 space-y-2">
+                <h3 class="font-semibold">MultiSelect</h3>
+                <p class="text-sm text-muted-foreground">
+                    Operators: Is Any Of, Is None Of (multiple selection)
+                </p>
+            </div>
+            <div class="border rounded-lg p-4 space-y-2">
+                <h3 class="font-semibold">Boolean</h3>
+                <p class="text-sm text-muted-foreground">
+                    Operators: Is True, Is False
+                </p>
+            </div>
+            <div class="border rounded-lg p-4 space-y-2">
+                <h3 class="font-semibold">Custom</h3>
+                <p class="text-sm text-muted-foreground">
+                    Custom RenderFragment for specialized controls
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private FilterGroup activeFilters = new();
+    private List<Employee> allEmployees = new();
+    private List<Employee> filteredEmployees = new();
+    
+    private List<SelectOption> departmentOptions = new()
+    {
+        new SelectOption("Engineering", "Engineering"),
+        new SelectOption("Sales", "Sales"),
+        new SelectOption("Marketing", "Marketing"),
+        new SelectOption("HR", "Human Resources"),
+        new SelectOption("Finance", "Finance")
+    };
+    
+    private List<SelectOption> skillOptions = new()
+    {
+        new SelectOption("CSharp", "C#"),
+        new SelectOption("Blazor", "Blazor"),
+        new SelectOption("JavaScript", "JavaScript"),
+        new SelectOption("SQL", "SQL"),
+        new SelectOption("Azure", "Azure")
+    };
+    
+    protected override void OnInitialized()
+    {
+        allEmployees = new List<Employee>
+        {
+            new Employee { Id = 1, Name = "Alice Johnson", Department = "Engineering", Salary = 95000, HireDate = new DateOnly(2020, 3, 15), Email = "alice@company.com", IsActive = true, Skills = "C#" },
+            new Employee { Id = 2, Name = "Bob Smith", Department = "Sales", Salary = 75000, HireDate = new DateOnly(2021, 7, 22), Email = "bob@company.com", IsActive = true, Skills = "Blazor" },
+            new Employee { Id = 3, Name = "Carol White", Department = "Marketing", Salary = 68000, HireDate = new DateOnly(2019, 1, 10), Email = "carol@company.com", IsActive = false, Skills = "JavaScript" },
+            new Employee { Id = 4, Name = "David Brown", Department = "Engineering", Salary = 105000, HireDate = new DateOnly(2018, 5, 3), Email = "david@company.com", IsActive = true, Skills = "SQL" },
+            new Employee { Id = 5, Name = "Eve Davis", Department = "HR", Salary = 62000, HireDate = new DateOnly(2022, 9, 18), Email = "eve@company.com", IsActive = true, Skills = "Azure" },
+            new Employee { Id = 6, Name = "Frank Miller", Department = "Finance", Salary = 88000, HireDate = new DateOnly(2020, 11, 5), Email = "frank@company.com", IsActive = true, Skills = "C#" },
+            new Employee { Id = 7, Name = "Grace Lee", Department = "Engineering", Salary = 92000, HireDate = new DateOnly(2021, 2, 14), Email = "grace@company.com", IsActive = true, Skills = "Blazor" },
+            new Employee { Id = 8, Name = "Henry Wilson", Department = "Sales", Salary = 71000, HireDate = new DateOnly(2019, 6, 30), Email = "henry@company.com", IsActive = false, Skills = "JavaScript" },
+            new Employee { Id = 9, Name = "Iris Martinez", Department = "Marketing", Salary = 70000, HireDate = new DateOnly(2022, 4, 12), Email = "iris@company.com", IsActive = true, Skills = "SQL" },
+            new Employee { Id = 10, Name = "Jack Anderson", Department = "Engineering", Salary = 110000, HireDate = new DateOnly(2017, 8, 25), Email = "jack@company.com", IsActive = true, Skills = "Azure" },
+        };
+        
+        filteredEmployees = allEmployees.ToList();
+    }
+    
+    private void HandleFilterChange(FilterGroup filters)
+    {
+        filteredEmployees = allEmployees.ApplyFilters(filters).ToList();
+    }
+    
+    public class Employee
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
+        public decimal Salary { get; set; }
+        public DateOnly HireDate { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
+        public string Skills { get; set; } = string.Empty;
+    }
+}
