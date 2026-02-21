@@ -1,4 +1,5 @@
 @namespace BlazorUI.Components.Menubar
+@using BlazorUI.Components.Utilities
 @using BlazorUI.Primitives.Services
 
 @* Styled MenubarSubContent - wrapper with shadcn Tailwind classes *@
@@ -43,17 +44,10 @@
     [Parameter]
     public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;
 
-    private string CssClass
-    {
-        get
-        {
-            var baseClasses = $"z-{ZIndex} min-w-[8rem] no-focus-ring overflow-hidden rounded-md border bg-popover " +
-                            "text-popover-foreground shadow-lg " +
-                            "data-[state=open]:animate-in data-[state=closed]:animate-out " +
-                            "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 " +
-                            "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95";
-
-            return string.IsNullOrWhiteSpace(Class) ? baseClasses : $"{baseClasses} {Class}";
-        }
-    }
+    private string CssClass => ClassNames.cn(
+        $"z-{ZIndex} min-w-[8rem] no-focus-ring overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-lg",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out",
+        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+        Class);
 }

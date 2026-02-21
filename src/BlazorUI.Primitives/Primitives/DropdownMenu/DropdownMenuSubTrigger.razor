@@ -1,5 +1,4 @@
 @namespace BlazorUI.Primitives.DropdownMenu
-@inject IJSRuntime JSRuntime
 @implements IDropdownMenuItem
 @implements IDisposable
 
@@ -11,7 +10,6 @@
      aria-expanded="@SubContext.IsOpen.ToString().ToLower()"
      aria-disabled="@Disabled.ToString().ToLower()"
      @onclick="HandleClick"
-     @onkeydown="HandleKeyDown"
      @onmouseenter="HandleMouseEnter"
      @onmouseleave="HandleMouseLeave"
      data-state="@(SubContext.IsOpen ? "open" : "closed")"
@@ -37,8 +35,7 @@
     private DropdownMenuSubContent? SubContentContext { get; set; }
 
     private ElementReference _triggerRef;
-    private IJSObjectReference? _keyboardNavModule;
-    private bool _keyboardNavModuleLoaded = false;
+    private CancellationTokenSource? _hoverCts;
 
     /// <summary>
     /// The content to display inside the trigger.
@@ -103,17 +100,17 @@
         }
         else
         {
-            SubContext.Open(_triggerRef);
-        }
-    }
+            // Register as active submenu on parent so the close chain works
+            // (HandleMouseEnter does this for hover, but click/keyboard needs it too)
+            if (ParentSubContext != null)
+            {
+                ParentSubContext.ActiveSubMenu = SubContext;
+            }
+            else if (MenuContext != null)
+            {
+                MenuContext.ActiveSubMenu = SubContext;
+            }
 
-    private void HandleKeyDown(KeyboardEventArgs args)
-    {
-        if (Disabled) return;
-
-        // Arrow Right or Enter opens submenu
-        if (args.Key == "ArrowRight" || args.Key == "Enter")
-        {
             SubContext.Open(_triggerRef);
         }
     }
@@ -122,10 +119,26 @@
     {
         if (Disabled) return;
 
-        // Track if there was an active submenu that we're closing
+        // If this submenu is already open and active, nothing to do.
+        bool isAlreadyActive = ParentSubContext != null
+            ? ParentSubContext.ActiveSubMenu == SubContext
+            : MenuContext?.ActiveSubMenu == SubContext;
+
+        if (isAlreadyActive && SubContext.IsOpen)
+        {
+            _hoverCts?.Cancel();
+            return;
+        }
+
+        // Cancel any in-flight hover operation from a previous rapid mouse-enter
+        _hoverCts?.Cancel();
+        _hoverCts?.Dispose();
+        _hoverCts = new CancellationTokenSource();
+        var token = _hoverCts.Token;
+
+        // Close any sibling submenu immediately and register ours as the active one.
         bool hadActiveSubmenu = false;
-        
-        // Close any other active submenu first (either from root menu or parent submenu)
+
         if (ParentSubContext != null)
         {
             hadActiveSubmenu = ParentSubContext.ActiveSubMenu != null && ParentSubContext.ActiveSubMenu != SubContext;
@@ -142,15 +155,19 @@
             }
         }
 
-        // Small delay to allow close state to propagate through Blazor's render pipeline
-        // before opening the new submenu. Without this, the fast portal rendering can cause
-        // the close to execute after the open, making the submenu appear closed.
-        await Task.Delay(30);
+        // Delay before opening: prevents flash-open on quick pass-through.
+        // HandleMouseLeave cancels the token so a pass-through is a no-op.
+        try
+        {
+            await Task.Delay(300, token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
 
-        // Open submenu on hover
         SubContext.Open(_triggerRef);
-        
-        // Focus this trigger only if we closed another submenu (for keyboard navigation to work)
+
         if (hadActiveSubmenu)
         {
             await FocusAsync();
@@ -159,13 +176,21 @@
 
     private void HandleMouseLeave(MouseEventArgs args)
     {
-        // Don't close on mouse leave - let the content handle that
+        // Cancel any pending hover-open so a quick pass-through doesn't open the submenu
+        _hoverCts?.Cancel();
     }
 
     // IDropdownMenuItem implementation
     public async Task FocusAsync()
     {
-        await FocusElementAsync(_triggerRef, "submenu trigger");
+        try
+        {
+            await _triggerRef.FocusAsync();
+        }
+        catch
+        {
+            // Ignore focus errors (element might not be mounted yet)
+        }
     }
 
     public async Task ClickAsync()
@@ -175,58 +200,10 @@
         await Task.CompletedTask;
     }
 
-    /// <summary>
-    /// Focuses an element using JavaScript with fallback to C# focus.
-    /// Lazy-loads the keyboard-nav module on first use.
-    /// </summary>
-    private async Task<bool> FocusElementAsync(ElementReference element, string elementName = "element")
-    {
-        // Lazy-load keyboard nav module on first focus attempt
-        if (!_keyboardNavModuleLoaded)
-        {
-            try
-            {
-                _keyboardNavModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/keyboard-nav.js");
-                _keyboardNavModuleLoaded = true;
-            }
-            catch
-            {
-                // Module load failed, will use C# fallback
-            }
-        }
-
-        // Try JavaScript focus first
-        if (_keyboardNavModule != null)
-        {
-            try
-            {
-                var focused = await _keyboardNavModule.InvokeAsync<bool>("focusElement", element);
-                if (focused)
-                {
-                    return true;
-                }
-            }
-            catch
-            {
-                // JS focus failed, will try C# fallback
-            }
-        }
-
-        // Fallback to C# focus
-        try
-        {
-            await element.FocusAsync();
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
     public void Dispose()
     {
+        _hoverCts?.Cancel();
+        _hoverCts?.Dispose();
         // Unregister this item when disposed
         if (SubContentContext != null)
         {
@@ -237,16 +214,5 @@
             ContentContext?.UnregisterMenuItem(this);
         }
         SubContext.OnStateChanged -= HandleStateChanged;
-
-        // Cleanup keyboard nav module
-        if (_keyboardNavModule != null)
-        {
-            try
-            {
-                _keyboardNavModule.DisposeAsync();
-            }
-            catch { }
-            _keyboardNavModule = null;
-        }
     }
 }

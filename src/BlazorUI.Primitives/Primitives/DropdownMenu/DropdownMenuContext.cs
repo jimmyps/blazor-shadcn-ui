@@ -60,6 +60,12 @@ public class DropdownMenuContext : PrimitiveContextWithEvents<DropdownMenuState>
     public int FocusedIndex => State.FocusedIndex;
 
     /// <summary>
+    /// Gets or sets default CSS classes to apply to all items in the menu.
+    /// Cascaded from the parent DropdownMenu's ItemClass parameter.
+    /// </summary>
+    public string? ItemClass { get; set; }
+
+    /// <summary>
     /// Gets or sets the currently active submenu context.
     /// Used to close submenus when hovering over other items.
     /// </summary>

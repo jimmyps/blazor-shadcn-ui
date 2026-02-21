@@ -39,10 +39,12 @@ export function moveFocusToPreviousRow(element) {
     if (!element) return;
 
     let prevRow = element.previousElementSibling;
-    while (prevRow && prevRow.getAttribute('tabindex') === '-1') {
+    while (prevRow && !prevRow.hasAttribute('tabindex')) {
         prevRow = prevRow.previousElementSibling;
     }
-    if (prevRow && prevRow.getAttribute('tabindex') === '0') {
+    if (prevRow) {
+        element.setAttribute('tabindex', '-1');
+        prevRow.setAttribute('tabindex', '0');
         prevRow.focus();
     }
 }
@@ -56,10 +58,12 @@ export function moveFocusToNextRow(element) {
     if (!element) return;
 
     let nextRow = element.nextElementSibling;
-    while (nextRow && nextRow.getAttribute('tabindex') === '-1') {
+    while (nextRow && !nextRow.hasAttribute('tabindex')) {
         nextRow = nextRow.nextElementSibling;
     }
-    if (nextRow && nextRow.getAttribute('tabindex') === '0') {
+    if (nextRow) {
+        element.setAttribute('tabindex', '-1');
+        nextRow.setAttribute('tabindex', '0');
         nextRow.focus();
     }
 }

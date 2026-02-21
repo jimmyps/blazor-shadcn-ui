@@ -1,14 +1,24 @@
 @namespace BlazorUI.Primitives.Floating
 @using BlazorUI.Primitives.Services
+@using Microsoft.Extensions.Logging
 @inject IPositioningService PositioningService
 @inject IPortalService PortalService
 @inject IJSRuntime JSRuntime
+@inject ILogger<FloatingPortal> Logger
 @implements IAsyncDisposable
 
 @*
     FloatingPortal - Unified infrastructure for floating content.
     Handles ONLY: portal registration, positioning, and lifecycle management.
     Does NOT handle: click-outside, keyboard navigation, or any behavior.
+
+    When ForceMount is true (default), portal content stays registered in the DOM
+    when closed — hidden via JS instead of unmounted. This eliminates re-mount
+    overhead and enables CSS exit animations via the data-state attribute.
+
+    The new improvement introduced ShowFloatingAsync and HideAsync which are designated
+    for smooth animation in ForceMount case when transitioning open/close state by delegating the works
+    to JS with RFA, particularly when running in WebAssembly mode.
 
     Use this as the base layer for Select, Popover, DropdownMenu, Tooltip, etc.
 *@
@@ -94,12 +104,12 @@
     public bool MatchAnchorWidth { get; set; } = false;
 
     /// <summary>
-    /// CSS positioning strategy: "absolute" or "fixed".
-    /// Use "fixed" for dropdowns that need to escape stacking contexts.
-    /// Default is "absolute".
+    /// CSS positioning strategy.
+    /// Use <see cref="PositioningStrategy.Fixed"/> for dropdowns that need to escape stacking contexts.
+    /// Default is <see cref="PositioningStrategy.Absolute"/>.
     /// </summary>
     [Parameter]
-    public string Strategy { get; set; } = "absolute";
+    public PositioningStrategy Strategy { get; set; } = PositioningStrategy.Absolute;
 
     /// <summary>
     /// CSS z-index value for the floating content.
@@ -115,16 +125,19 @@
 
     /// <summary>
     /// Whether to keep the portal mounted when closed.
-    /// When true, portal stays registered and content stays in DOM (but hidden).
-    /// Useful for maintaining state or avoiding re-registration overhead.
-    /// Default is false.
+    /// When true (default), portal stays registered and content stays in DOM (but hidden via JS).
+    /// This eliminates re-mount overhead on each open/close cycle and enables CSS exit animations
+    /// via the data-state attribute. Visibility is toggled via JS for instant show/hide without
+    /// SignalR round-trips (critical for Interactive Server).
+    /// Default is true.
     /// </summary>
     [Parameter]
-    public bool ForceMount { get; set; } = false;
+    public bool ForceMount { get; set; } = true;
 
     /// <summary>
     /// Event callback invoked when the floating content is positioned and visible.
     /// Use this to set up keyboard navigation, focus management, etc.
+    /// Fires on every open, including re-opens when ForceMount is true.
     /// </summary>
     [Parameter]
     public EventCallback OnReady { get; set; }
@@ -135,11 +148,28 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    private static readonly Action<ILogger, string, Exception?> LogPortalRenderTimeout =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1, "PortalRenderTimeout"),
+            "Portal '{PortalId}' timed out waiting for PortalHost to render. " +
+            "Ensure <CategoryPortalHost /> is in your layout.");
+
+    private static readonly Action<ILogger, string, string, Exception?> LogSetupFailed =
+        LoggerMessage.Define<string, string>(LogLevel.Warning, new EventId(2, "FloatingPortalSetupFailed"),
+            "FloatingPortal '{PortalId}' setup failed: {ErrorMessage}");
+
+    private static readonly Action<ILogger, string, string, Exception?> LogPositioningFailed =
+        LoggerMessage.Define<string, string>(LogLevel.Warning, new EventId(3, "PositioningFailed"),
+            "Failed to set up {PositioningMode} positioning for portal '{PortalId}'.");
+
+    private static readonly Action<ILogger, string, Exception?> LogMissingPositioningParameters =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(4, "MissingPositioningParameters"),
+            "FloatingPortal '{PortalId}' - Neither AnchorElement nor X/Y coordinates provided.");
+
     private IAsyncDisposable? _positioningCleanup;
-    private bool _isInitialized = false;
+    private bool _isMounted = false;
     private bool _isPositioned = false;
     private bool _previousIsOpen = false;
-    private bool _isUpdatingVisibility = false; // Guard against re-entrant async calls during ForceMount visibility updates
+    private bool _isUpdatingVisibility = false;
     private ElementReference _portalContentRef;
     private TaskCompletionSource<bool>? _portalReadyTcs;
 
@@ -172,8 +202,14 @@
     {
         base.OnParametersSet();
 
-        // Refresh portal content when parameters change and portal is open
-        if (_isInitialized && IsOpen && !string.IsNullOrEmpty(PortalId))
+        // When the portal is mounted, notify PortalHost to re-render so that content
+        // updates (e.g., data-state changes, child content updates) are reflected.
+        // Uses RefreshPortal (not RegisterPortal) to avoid replacing the RenderFragment
+        // delegate, which would break ElementReference stability. The existing delegate
+        // captures 'this', so PortalHost reads current ChildContent automatically.
+        // Note: PortalHost ignores refresh calls during its own render cycle, preventing
+        // infinite loops when FloatingPortal is nested inside another portal.
+        if (_isMounted && !string.IsNullOrEmpty(PortalId))
         {
             PortalService.RefreshPortal(PortalId);
         }
@@ -181,73 +217,136 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Setup when opening OR when ForceMount is enabled and not yet initialized
-        if ((IsOpen || ForceMount) && !_isInitialized)
+        if (ForceMount)
         {
-            _isInitialized = true;
-            _isPositioned = false;
-            
-            // Initialize tracking IMMEDIATELY to prevent loop in visibility update path
-            _previousIsOpen = IsOpen;
+            await HandleForceMountLifecycleAsync();
+        }
+        else
+        {
+            await HandleStandardLifecycleAsync();
+        }
+    }
 
-            // Register content through portal - this triggers PortalHost to re-render
-            if (!string.IsNullOrEmpty(ParentPortalId))
-            {
-                // Child: Append to parent's portal scope
-                PortalService.AppendToPortal(ParentPortalId, PortalId, RenderPortalContent());
-                
-                // Children don't need to wait for notification - they're part of parent's render cycle
-                // Just yield to ensure the composite render completes
-                await Task.Yield();
-            }
-            else
-            {
-                // Root: Create new independent portal and wait for PortalHost notification
-                _portalReadyTcs = new TaskCompletionSource<bool>();
-                
-                PortalService.RegisterPortal(PortalId, PortalCategory.Overlay, RenderPortalContent());
+    /// <summary>
+    /// ForceMount lifecycle: portal stays registered across open/close.
+    /// Content is hidden via JS when closed, positioned when open.
+    /// Uses edge detection to prevent infinite loops during async visibility transitions.
+    /// </summary>
+    private async Task HandleForceMountLifecycleAsync()
+    {
+        if (!_isMounted)
+        {
+            // First mount: register portal immediately (regardless of IsOpen)
+            _previousIsOpen = IsOpen;  // Initialize edge tracking BEFORE any async operations
+            await MountPortalAsync();
 
-                // Wait for PortalHost to signal it's done rendering our portal
-                // Use timeout to prevent hanging if something goes wrong
-                var timeoutTask = Task.Delay(500);
-                var completedTask = await Task.WhenAny(_portalReadyTcs.Task, timeoutTask);
-
-                if (completedTask == timeoutTask)
-                {
-                    Console.WriteLine($"Warning: Portal {PortalId} render timeout");
-                }
-
-                // Yield to ensure any pending re-renders complete and _portalContentRef is up-to-date
-                await Task.Yield();
-            }
-
-            // Check if still open OR ForceMount (user might have closed during wait)
-            if (!IsOpen && !ForceMount)
-                return;
-
-            // NOW _portalContentRef is guaranteed to be valid!
-            // Only position if actually opening (not just ForceMount closed)
+            // If already open on mount, set up positioning
             if (IsOpen)
             {
                 await SetupAsync();
             }
         }
-        // Only cleanup if not ForceMount and closed
-        else if (!IsOpen && _isInitialized && !ForceMount)
+        else if (IsOpen != _previousIsOpen && !_isUpdatingVisibility)
+        {
+            // Visibility transition detected: guard against re-entry during async operations
+            _isUpdatingVisibility = true;
+            var wasOpen = _previousIsOpen;
+            _previousIsOpen = IsOpen;  // Update BEFORE async call to block re-entrant calls from auto re-renders
+
+            try
+            {
+                if (IsOpen && !wasOpen)
+                {
+                    // If first open with ForceMount, run full setup
+                    if (!_isPositioned)
+                    {
+                        await SetupAsync();
+                    }
+                    else
+                    {
+                        // Re-open: Use JS-managed setup (dispose old AutoUpdate → compute → setup new AutoUpdate → show)
+                        // No Task.Yield() here — portal is already mounted, _portalContentRef is valid,
+                        // and yielding would trigger a Blazor re-render that synchronously makes the element
+                        // visible (via GetInitialStyle), bypassing the JS requestAnimationFrame frame gap
+                        // needed for smooth CSS animations in WASM.
+                        await UpdateVisibilityForReopenAsync();
+                    }
+                }
+                else if (!IsOpen && wasOpen)
+                {
+                    // Close transition: hide content but keep portal registered
+                    await HideAsync();
+                }
+            }
+            finally
+            {
+                _isUpdatingVisibility = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Standard lifecycle (ForceMount=false): mount on open, unmount on close.
+    /// This is the original behavior for backwards compatibility.
+    /// </summary>
+    private async Task HandleStandardLifecycleAsync()
+    {
+        if (IsOpen && !_isMounted)
+        {
+            await MountPortalAsync();
+
+            // Check if still open (user might have closed during wait)
+            if (!IsOpen)
+            {
+                return;
+            }
+
+            await SetupAsync();
+        }
+        else if (!IsOpen && _isMounted)
         {
             await CleanupAsync();
         }
-        // Update visibility ONLY when IsOpen actually changes (ForceMount)
-        // Use guard to prevent re-entrant calls during async operations
-        else if (_isInitialized && ForceMount && IsOpen != _previousIsOpen && !_isUpdatingVisibility)
+    }
+
+    /// <summary>
+    /// Registers the portal with PortalService and waits for PortalHost to render it.
+    /// </summary>
+    private async Task MountPortalAsync()
+    {
+        _isMounted = true;
+        _isPositioned = false;
+
+        // Register content through portal - this triggers PortalHost to re-render
+        if (!string.IsNullOrEmpty(ParentPortalId))
         {
-            // Update tracking BEFORE async call to prevent re-entrant loops during await
-            _isUpdatingVisibility = true;
-            _previousIsOpen = IsOpen;
-            
-            await UpdateVisibilityAsync();
-            
-            _isUpdatingVisibility = false;
+            // Child: Append to parent's portal scope
+            PortalService.AppendToPortal(ParentPortalId, PortalId, RenderPortalContent());
+
+            // Children don't need to wait for notification - they're part of parent's render cycle
+            // Just yield to ensure the composite render completes
+            await Task.Yield();
+        }
+        else
+        {
+            // Root: Create new independent portal and wait for PortalHost notification
+            _portalReadyTcs = new TaskCompletionSource<bool>();
+
+            PortalService.RegisterPortal(PortalId, PortalCategory.Overlay, RenderPortalContent());
+
+            // Wait for PortalHost to signal it's done rendering our portal
+            // Use timeout to prevent hanging if something goes wrong
+            var timeoutTask = Task.Delay(500);
+            var completedTask = await Task.WhenAny(_portalReadyTcs.Task, timeoutTask);
+
+            if (completedTask == timeoutTask)
+            {
+                LogPortalRenderTimeout(Logger, PortalId, null);
+            }
+
+            // Yield to ensure any pending re-renders complete and _portalContentRef is up-to-date
+            // This is critical when multiple portals are opening/closing simultaneously
+            await Task.Yield();
         }
     }
 
@@ -264,7 +363,8 @@
             // Mark as positioned for any future Blazor re-renders
             _isPositioned = true;
 
-            // Notify consumers that content is ready (for focus management, keyboard handlers, etc.)
+            // Notify consumers that content is ready and in open state (for focus management, keyboard handlers, etc.)
+            // Check for IsOpen in case it was already closed during async operations
             if (OnReady.HasDelegate && IsOpen)
             {
                 await OnReady.InvokeAsync();
@@ -272,46 +372,68 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"FloatingPortal setup failed: {ex.Message}");
+            LogSetupFailed(Logger, PortalId, ex.Message, ex);
+
+            // Fallback: mark as positioned and try to show element via JS even if positioning fails
+            // This prevents invisible stuck portals in production
+            _isPositioned = true;
+            try
+            {
+                await PositioningService.ShowFloatingAsync(_portalContentRef);
+            }
+            catch
+            {
+                // Silent fail on fallback - already logged the root cause
+            }
         }
     }
 
     /// <summary>
-    /// Updates visibility when ForceMount is enabled and IsOpen changes.
+    /// Updates visibility for re-open (ForceMount scenario where portal is already positioned).
+    /// JS handles dispose old AutoUpdate → compute position → setup new AutoUpdate → show via RFA.
     /// </summary>
-    private async Task UpdateVisibilityAsync()
+    private async Task UpdateVisibilityForReopenAsync()
     {
         try
         {
-            if (IsOpen)
+            await SetupAnchorPositioningAsync(AnchorElement.Value);
+
+            // Trigger OnReady for focus management and keyboard navigation setup
+            if (OnReady.HasDelegate && IsOpen)
             {
-                // If opening for first time with ForceMount, run full setup
-                if (!_isPositioned)
-                {
-                    await SetupAsync();
-                }
-                else
-                {
-                    // Already positioned, just show
-                    await PositioningService.ShowFloatingAsync(_portalContentRef);
-                    
-                    // CRITICAL: Trigger OnReady for focus management and keyboard nav
-                    if (OnReady.HasDelegate)
-                    {
-                        await OnReady.InvokeAsync();
-                    }
-                }
-            }
-            else
-            {
-                // Hide using dedicated visibility function (ForceMount keeps it mounted)
-                await PositioningService.HideFloatingAsync(_portalContentRef);
+                await OnReady.InvokeAsync();
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"FloatingPortal visibility update failed: {ex.Message}");
+            LogSetupFailed(Logger, PortalId, ex.Message, ex);
         }
+    }
+
+    /// <summary>
+    /// Hides the floating content without unregistering the portal.
+    /// Used by ForceMount on close — content stays in DOM but hidden via JS.
+    /// Keeps _isPositioned=true to prevent Blazor re-render from overwriting JS visibility control.
+    /// </summary>
+    private async Task HideAsync()
+    {
+        // JS handles AutoUpdate disposal + data-state update via requestAnimationFrame
+        // This ensures smooth exit animations in both WASM and Interactive Server
+        await PositioningService.HideFloatingAsync(_portalContentRef);
+
+        // Dispose C# AutoUpdate handle so it's not re-used on next open
+        // JS will recreate AutoUpdate on next ShowFloatingAsync call
+        if (_positioningCleanup != null)
+        {
+            await _positioningCleanup.DisposeAsync();
+            _positioningCleanup = null;
+        }
+
+        // CRITICAL: Don't change _isPositioned here! Keeping it stable prevents Blazor from
+        // re-rendering with new style string, which would overwrite JS's !important styles
+        // and break WASM animations (no frame gap for CSS transitions).
+        // _isPositioned stays TRUE throughout ForceMount visibility cycles.
+        // Only reset to false on full unmount (MountPortalAsync or CleanupAsync).
     }
 
     private RenderFragment RenderPortalContent() => __builder =>
@@ -329,7 +451,7 @@
         // Support two positioning modes:
         // 1. Anchor-based: Position relative to an element (dropdowns, popovers, tooltips)
         // 2. Coordinate-based: Position at specific X/Y coordinates (context menus)
-        
+
         if (X.HasValue && Y.HasValue)
         {
             // Coordinate-based positioning for context menus
@@ -342,7 +464,7 @@
         }
         else
         {
-            Console.WriteLine("Warning: FloatingPortal - Neither AnchorElement nor X/Y coordinates provided");
+            LogMissingPositioningParameters(Logger, PortalId, null);
         }
     }
 
@@ -364,7 +486,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to set up coordinate positioning: {ex.Message}");
+            LogPositioningFailed(Logger, "coordinate", PortalId, ex);
         }
     }
 
@@ -380,38 +502,53 @@
                 Placement = placement,
                 Offset = Offset,
                 MatchReferenceWidth = MatchAnchorWidth,
-                Strategy = Strategy,
+                Strategy = Strategy.ToValue(),
                 Flip = true,  // Enable flip to opposite side when not enough space
                 Shift = true  // Enable shift to keep in viewport
             };
 
-            // Compute position using the portal content ref
-            var position = await PositioningService.ComputePositionAsync(
-                anchor,
-                _portalContentRef,
-                options);
+            // For ForceMount re-opens, use JS-managed setup for animation compatibility
+            if (ForceMount && _isPositioned)
+            {
+                // JS handles: dispose old AutoUpdate → compute position → setup new AutoUpdate → show via RFA
+                // Single call matches upstream's dispose-on-hide + recreate-on-show lifecycle
+                await PositioningService.ShowFloatingAsync(_portalContentRef, anchor, options);
 
-            // Store position in Blazor state so it survives re-renders
-            _positionLeft = position.X;
-            _positionTop = position.Y;
+                // Note: Don't track _positioningCleanup — JS owns AutoUpdate via element._autoUpdateCleanupId
+            }
+            else
+            {
+                // First open or ForceMount=false: Use traditional C#-managed setup.
+                // Must compute and store position so GetInitialStyle() produces correct coordinates
+                // on any subsequent Blazor re-render (otherwise falls back to left:0;top:0).
+                var position = await PositioningService.ComputePositionAsync(
+                    anchor,
+                    _portalContentRef,
+                    options);
 
-            // Apply position via JS for initial display
-            await PositioningService.ApplyPositionAsync(_portalContentRef, position, makeVisible: true);
+                // Store position in Blazor state so it survives re-renders
+                _positionLeft = position.X;
+                _positionTop = position.Y;
 
-            // Set up auto-update for dynamic positioning (scroll, resize)
-            _positioningCleanup = await PositioningService.AutoUpdateAsync(
-                anchor,
-                _portalContentRef,
-                options);
+                // Apply position via JS for initial display
+                await PositioningService.ApplyPositionAsync(_portalContentRef, position, makeVisible: true);
+
+                // Set up auto-update for dynamic positioning (scroll, resize)
+                _positioningCleanup = await PositioningService.AutoUpdateAsync(
+                    anchor,
+                    _portalContentRef,
+                    options);
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to set up anchor positioning: {ex.Message}");
+            LogPositioningFailed(Logger, "anchor", PortalId, ex);
         }
     }
 
     /// <summary>
     /// Gets the initial inline style for the portal content.
+    /// Keeps style stable after positioning to prevent Blazor re-renders from overwriting JS visibility control.
     /// </summary>
     private string GetInitialStyle()
     {
@@ -424,9 +561,8 @@
             return $"position: fixed; z-index: {ZIndex}; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
         }
 
-        // After positioning, include stored position so it survives Blazor re-renders
         // This prevents the content from "closing" when parent components re-render
-        return $"position: {Strategy}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px; opacity: 1; visibility: visible;";
+        return $"position: {Strategy.ToValue()}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px;";
     }
 
     private string GetMergedStyle()
@@ -451,16 +587,27 @@
         return attributes.Count > 0 ? attributes : null;
     }
 
+    /// <summary>
+    /// Fully cleans up: hides content AND unregisters the portal from PortalService.
+    /// Used by standard lifecycle (ForceMount=false) and on component disposal.
+    /// </summary>
     private async Task CleanupAsync()
     {
-        // Dispose positioning auto-update
+        // Dispose JS-managed AutoUpdate before the portal element is removed from the DOM.
+        // showFloating stores the cleanup on the element; hideFloating disposes it synchronously.
+        if (_isPositioned)
+        {
+            try { await PositioningService.HideFloatingAsync(_portalContentRef); } catch { }
+        }
+
+        // Dispose C# AutoUpdate handle if present (legacy path, normally null now)
         if (_positioningCleanup != null)
         {
             await _positioningCleanup.DisposeAsync();
             _positioningCleanup = null;
         }
 
-        // Unregister portal when content closes
+        // Unregister portal when content closes or component disposes
         if (!string.IsNullOrEmpty(PortalId))
         {
             if (!string.IsNullOrEmpty(ParentPortalId))
@@ -475,9 +622,8 @@
             }
         }
 
-        _isInitialized = false;
+        _isMounted = false;
         _isPositioned = false;
-        _isUpdatingVisibility = false;
     }
 
     public async ValueTask DisposeAsync()

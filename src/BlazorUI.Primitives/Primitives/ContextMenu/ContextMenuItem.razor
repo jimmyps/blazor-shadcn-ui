@@ -1,5 +1,4 @@
 @namespace BlazorUI.Primitives.ContextMenu
-@inject IJSRuntime JSRuntime
 @implements IContextMenuItem
 @implements IDisposable
 
@@ -8,8 +7,8 @@
      role="menuitem"
      tabindex="-1"
      @onclick="HandleClick"
-     @onkeydown="HandleKeyDown"
      @onmouseenter="HandleMouseEnter"
+     @onmouseleave="HandleMouseLeave"
      @attributes="AdditionalAttributes"
      aria-disabled="@Disabled.ToString().ToLowerInvariant()"
      data-disabled="@(Disabled ? "true" : null)">
@@ -30,8 +29,7 @@
     private ContextMenuSubContent? SubContentContext { get; set; }
 
     private ElementReference _itemRef;
-    private IJSObjectReference? _keyboardNavModule;
-    private bool _keyboardNavModuleLoaded = false;
+    private CancellationTokenSource? _hoverCts;
 
     /// <summary>
     /// The child content to render within the item.
@@ -92,40 +90,43 @@
         Context.Close();
     }
 
-    private async Task HandleKeyDown(KeyboardEventArgs args)
-    {
-        if (args.Key == "Enter" || args.Key == " ")
-        {
-            await HandleClick();
-        }
-    }
-
     private async void HandleMouseEnter(MouseEventArgs args)
     {
+        // Cancel any in-flight hover operation from a previous rapid mouse-enter
+        _hoverCts?.Cancel();
+        _hoverCts?.Dispose();
+        _hoverCts = new CancellationTokenSource();
+        var token = _hoverCts.Token;
+
+        // Grace period before closing any open submenu.
+        // HandleMouseLeave cancels the token so a quick pass-through never dismisses it.
+        try
+        {
+            await Task.Delay(250, token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
         // Track if there was an active submenu that we're closing
         bool hadActiveSubmenu = false;
-        
-        // Close any active submenu when hovering over this item
-        // If we're inside a submenu (ParentSubContext exists), close nested submenus of that parent
-        // If we're at root level, close any active submenu from the root context
+
         if (ParentSubContext != null)
         {
-            // We're inside a submenu - close any nested submenus
             hadActiveSubmenu = ParentSubContext.ActiveSubMenu != null;
             ParentSubContext.CloseActiveSubMenu();
         }
         else
         {
-            // We're at root level - close active submenu from root context
             hadActiveSubmenu = Context?.ActiveSubMenu != null;
             Context?.CloseActiveSubMenu();
         }
-        
-        // Restore focus to the menu container (not the item) when we closed a submenu
-        // This enables keyboard navigation without showing focus ring on a specific item
+
+        if (token.IsCancellationRequested) return;
+
         if (hadActiveSubmenu)
         {
-            // Focus the content container - if in submenu, focus SubContentContext, else ContentContainer
             if (SubContentContext != null)
             {
                 await SubContentContext.FocusContainerAsync();
@@ -137,63 +138,28 @@
         }
     }
 
-    public async Task FocusAsync()
+    private void HandleMouseLeave(MouseEventArgs args)
     {
-        await FocusElementAsync(_itemRef, "context menu item");
+        // Cancel the pending close so a quick pass-through never dismisses the submenu
+        _hoverCts?.Cancel();
     }
 
-    /// <summary>
-    /// Focuses an element using JavaScript with fallback to C# focus.
-    /// Lazy-loads the keyboard-nav module on first use.
-    /// </summary>
-    private async Task<bool> FocusElementAsync(ElementReference element, string elementName = "element")
+    public async Task FocusAsync()
     {
-        // Lazy-load keyboard nav module on first focus attempt
-        if (!_keyboardNavModuleLoaded)
-        {
-            try
-            {
-                _keyboardNavModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/keyboard-nav.js");
-                _keyboardNavModuleLoaded = true;
-            }
-            catch
-            {
-                // Module load failed, will use C# fallback
-            }
-        }
-
-        // Try JavaScript focus first
-        if (_keyboardNavModule != null)
-        {
-            try
-            {
-                var focused = await _keyboardNavModule.InvokeAsync<bool>("focusElement", element);
-                if (focused)
-                {
-                    return true;
-                }
-            }
-            catch
-            {
-                // JS focus failed, will try C# fallback
-            }
-        }
-
-        // Fallback to C# focus
         try
         {
-            await element.FocusAsync();
-            return true;
+            await _itemRef.FocusAsync();
         }
         catch
         {
-            return false;
+            // Ignore focus errors (element might not be mounted yet)
         }
     }
 
     public void Dispose()
     {
+        _hoverCts?.Cancel();
+        _hoverCts?.Dispose();
         if (SubContentContext != null)
         {
             SubContentContext.UnregisterItem(this);
@@ -201,17 +167,6 @@
         else
         {
             ContentContainer?.UnregisterItem(this);
-        }
-
-        // Cleanup keyboard nav module
-        if (_keyboardNavModule != null)
-        {
-            try
-            {
-                _keyboardNavModule.DisposeAsync();
-            }
-            catch { }
-            _keyboardNavModule = null;
         }
     }
 }

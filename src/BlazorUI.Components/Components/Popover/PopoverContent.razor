@@ -1,16 +1,18 @@
 @using BlazorUI.Primitives.Services
 @namespace BlazorUI.Components.Popover
+@using BlazorUI.Components.Utilities
 @using BlazorUI.Primitives.Popover
 
 @* Styled PopoverContent with shadcn/ui classes *@
 
 <BlazorUI.Primitives.Popover.PopoverContent CloseOnEscape="@CloseOnEscape"
                                                    CloseOnClickOutside="@CloseOnClickOutside"
+                                                   ForceMount="@ForceMount"
                                                    Side="@Side"
                                                    Align="@Align"
                                                    Offset="@Offset"
                                                    MatchTriggerWidth="@MatchTriggerWidth"
-                                                   Strategy="@Strategy.ToValue()"
+                                                   Strategy="@Strategy"
                                                    ZIndex="@ZIndex"
                                                    OnEscapeKeyDown="@OnEscapeKeyDown"
                                                    OnClickOutside="@OnClickOutside"
@@ -23,6 +25,14 @@
 @code {
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Whether to keep the portal mounted when the popover is closed.
+    /// Default is <c>true</c> — JS toggles visibility, preserving JS handlers and enabling CSS exit animations.
+    /// Set to <c>false</c> to fully unmount the portal on close (lower DOM footprint).
+    /// </summary>
+    [Parameter]
+    public bool ForceMount { get; set; } = true;
 
     [Parameter]
     public bool CloseOnEscape { get; set; } = true;
@@ -76,9 +86,14 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    // Use w-full when MatchTriggerWidth is true so content respects the FloatingPortal wrapper's width
-    // Otherwise use default w-72 for standard popover width
-    private string WidthClass => MatchTriggerWidth ? "w-full" : "w-72";
-
-    private string CssClass => $"z-{ZIndex} {WidthClass} rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 {Class}".Trim();
+    private string CssClass => ClassNames.cn(
+        $"z-{ZIndex}",
+        MatchTriggerWidth ? "w-full" : "w-72",
+        "rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out",
+        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+        "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
+        "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        Class);
 }

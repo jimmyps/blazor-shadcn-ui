@@ -1,21 +1,40 @@
 @namespace BlazorUI.Primitives.DropdownMenu
-@inject IJSRuntime JSRuntime
 @implements IDropdownMenuItem
 @implements IDisposable
 
 @* Dropdown menu item - represents an individual menu action *@
-<div @ref="_itemRef"
-     role="menuitem"
-     tabindex="@(Disabled ? -1 : -1)"
-     aria-disabled="@Disabled.ToString().ToLowerInvariant()"
-     data-disabled="@(Disabled ? "true" : null)"
-     @onclick="HandleClick"
-     @onkeydown="HandleKeyDown"
-     @onkeydown:preventDefault="true"
-     @onmouseenter="HandleMouseEnter"
-     @attributes="AdditionalAttributes">
-    @ChildContent
-</div>
+@if (HasHref)
+{
+    <a @ref="_itemRef"
+       href="@(Disabled ? null : Href)"
+       target="@Target"
+       rel="@Rel"
+       role="menuitem"
+       tabindex="-1"
+       aria-disabled="@Disabled.ToString().ToLower()"
+       data-disabled="@(Disabled ? "true" : null)"
+       @onclick="HandleClick"
+       @onclick:preventDefault="@(Disabled)"
+       @onmouseenter="HandleMouseEnter"
+       @onmouseleave="HandleMouseLeave"
+       @attributes="MergedAttributes">
+        @ChildContent
+    </a>
+}
+else
+{
+    <div @ref="_itemRef"
+         role="menuitem"
+         tabindex="-1"
+         aria-disabled="@Disabled.ToString().ToLower()"
+         data-disabled="@(Disabled ? "true" : null)"
+         @onclick="HandleClick"
+         @onmouseenter="HandleMouseEnter"
+         @onmouseleave="HandleMouseLeave"
+         @attributes="MergedAttributes">
+        @ChildContent
+    </div>
+}
 
 @code {
     [CascadingParameter]
@@ -31,8 +50,7 @@
     private DropdownMenuSubContent? SubContentContext { get; set; }
 
     private ElementReference _itemRef;
-    private IJSObjectReference? _keyboardNavModule;
-    private bool _keyboardNavModuleLoaded = false;
+    private CancellationTokenSource? _hoverCts;
 
     /// <summary>
     /// The content to display inside the menu item.
@@ -45,6 +63,49 @@
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// URL to navigate to. When set, the item renders as an anchor element instead of a div.
+    /// </summary>
+    [Parameter]
+    public string? Href { get; set; }
+
+    /// <summary>
+    /// The anchor target attribute (e.g., "_blank"). Only applies when Href is set.
+    /// </summary>
+    [Parameter]
+    public string? Target { get; set; }
+
+    private bool HasHref => !string.IsNullOrEmpty(Href);
+
+    private string? Rel => Target == "_blank" ? "noopener noreferrer" : null;
+
+    private Dictionary<string, object>? MergedAttributes
+    {
+        get
+        {
+            var itemClass = Context?.ItemClass;
+            if (string.IsNullOrEmpty(itemClass))
+            {
+                return AdditionalAttributes;
+            }
+
+            var merged = AdditionalAttributes != null
+                ? new Dictionary<string, object>(AdditionalAttributes)
+                : new Dictionary<string, object>();
+
+            if (merged.TryGetValue("class", out var existing))
+            {
+                merged["class"] = $"{itemClass} {existing}";
+            }
+            else
+            {
+                merged["class"] = itemClass;
+            }
+
+            return merged;
+        }
+    }
 
     /// <summary>
     /// Whether the menu item is disabled.
@@ -105,43 +166,43 @@
         }
     }
 
-    private void HandleKeyDown(KeyboardEventArgs args)
-    {
-        if (Disabled) return;
-
-        // Enter or Space to activate
-        if (args.Key == "Enter" || args.Key == " ")
-        {
-            _ = ClickAsync();
-        }
-    }
-
     private async void HandleMouseEnter(MouseEventArgs args)
     {
+        // Cancel any in-flight hover operation from a previous rapid mouse-enter
+        _hoverCts?.Cancel();
+        _hoverCts?.Dispose();
+        _hoverCts = new CancellationTokenSource();
+        var token = _hoverCts.Token;
+
+        // Grace period before closing any open submenu.
+        // HandleMouseLeave cancels the token so a quick pass-through never dismisses it.
+        try
+        {
+            await Task.Delay(250, token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
         // Track if there was an active submenu that we're closing
         bool hadActiveSubmenu = false;
-        
-        // Close any active submenu when hovering over this item
-        // If we're inside a submenu (ParentSubContext exists), close nested submenus of that parent
-        // If we're at root level, close any active submenu from the root context
+
         if (ParentSubContext != null)
         {
-            // We're inside a submenu - close any nested submenus
             hadActiveSubmenu = ParentSubContext.ActiveSubMenu != null;
             ParentSubContext.CloseActiveSubMenu();
         }
         else
         {
-            // We're at root level - close active submenu from root context
             hadActiveSubmenu = Context?.ActiveSubMenu != null;
             Context?.CloseActiveSubMenu();
         }
-        
-        // Restore focus to the menu container when we closed a submenu
-        // This enables keyboard navigation to continue working
+
+        if (token.IsCancellationRequested) return;
+
         if (hadActiveSubmenu)
         {
-            // Focus the parent menu container (SubContent or root Content)
             if (SubContentContext != null)
             {
                 await SubContentContext.FocusContainerAsync();
@@ -153,10 +214,23 @@
         }
     }
 
+    private void HandleMouseLeave(MouseEventArgs args)
+    {
+        // Cancel the pending close so a quick pass-through never dismisses the submenu
+        _hoverCts?.Cancel();
+    }
+
     // IDropdownMenuItem implementation
     public async Task FocusAsync()
     {
-        await FocusElementAsync(_itemRef, "menu item");
+        try
+        {
+            await _itemRef.FocusAsync();
+        }
+        catch
+        {
+            // Ignore focus errors (element might not be mounted yet)
+        }
     }
 
     public async Task ClickAsync()
@@ -165,58 +239,10 @@
         await HandleClick(new MouseEventArgs());
     }
 
-    /// <summary>
-    /// Focuses an element using JavaScript with fallback to C# focus.
-    /// Lazy-loads the keyboard-nav module on first use.
-    /// </summary>
-    private async Task<bool> FocusElementAsync(ElementReference element, string elementName = "element")
-    {
-        // Lazy-load keyboard nav module on first focus attempt
-        if (!_keyboardNavModuleLoaded)
-        {
-            try
-            {
-                _keyboardNavModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/keyboard-nav.js");
-                _keyboardNavModuleLoaded = true;
-            }
-            catch
-            {
-                // Module load failed, will use C# fallback
-            }
-        }
-
-        // Try JavaScript focus first
-        if (_keyboardNavModule != null)
-        {
-            try
-            {
-                var focused = await _keyboardNavModule.InvokeAsync<bool>("focusElement", element);
-                if (focused)
-                {
-                    return true;
-                }
-            }
-            catch
-            {
-                // JS focus failed, will try C# fallback
-            }
-        }
-
-        // Fallback to C# focus
-        try
-        {
-            await element.FocusAsync();
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
     public void Dispose()
     {
+        _hoverCts?.Cancel();
+        _hoverCts?.Dispose();
         // Unregister this item when disposed
         if (SubContentContext != null)
         {
@@ -225,17 +251,6 @@
         else
         {
             ContentContext?.UnregisterMenuItem(this);
-        }
-
-        // Cleanup keyboard nav module
-        if (_keyboardNavModule != null)
-        {
-            try
-            {
-                _keyboardNavModule.DisposeAsync();
-            }
-            catch { }
-            _keyboardNavModule = null;
         }
     }
 }

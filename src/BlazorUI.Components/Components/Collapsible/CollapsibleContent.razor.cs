@@ -58,6 +58,14 @@ namespace BlazorUI.Components.Collapsible;
 public partial class CollapsibleContent : ComponentBase
 {
     /// <summary>
+    /// Whether to keep the content mounted in the DOM when the collapsible is closed.
+    /// Default is <c>true</c> — content stays mounted so CSS grid height transitions animate correctly.
+    /// Set to <c>false</c> to fully unmount content on close.
+    /// </summary>
+    [Parameter]
+    public bool ForceMount { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets additional CSS classes to apply to the content container element.
     /// </summary>
     /// <value>

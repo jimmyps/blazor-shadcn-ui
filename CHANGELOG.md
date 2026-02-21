@@ -2,6 +2,299 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-2-21 - JS-Delegated Keyboard Navigation for All Menu Overlays
+
+### ⚡ Performance: Replaced C# `@onkeydown` Handlers with `menu-keyboard.js` in All Menu Content Containers
+
+**Motivation:** Every `DropdownMenu`, `Menubar`, and `ContextMenu` content container handled
+keyboard navigation (ArrowDown/Up, Home/End, Enter/Space, Escape, ArrowLeft/Right) via
+Blazor `@onkeydown` — a full C# SignalR round-trip per keystroke. Each individual item
+(`MenuItem`, `CheckboxItem`, `RadioItem`, `SubTrigger`) also duplicated Enter/Space handlers.
+This caused:
+- One Blazor round-trip per keydown event even for simple focus movement
+- Navigation `await` latency visible at ≥ 100 ms on Interactive Server
+- Duplicated keydown logic scattered across 15+ components
+- `FocusElementAsync` JS interop helper duplicated in every item component
+
+**What Changed:**
+
+A new `menu-keyboard.js` ES module centralises all menu keyboard behaviour in JavaScript.
+C# is called back only for **state-changing events** (Escape closes, ArrowLeft closes submenu,
+ArrowRight/Left switches Menubar menus). Item focus movement and Enter/Space activation never
+leave the browser.
+
+---
+
+### 🆕 New JS Module: `menu-keyboard.js`
+
+`src/BlazorUI.Primitives/wwwroot/js/primitives/menu-keyboard.js`
+
+Supports three modes attached to a `role="menu"` container:
+
+| Mode | Used by | Extra keys |
+|---|---|---|
+| `vertical` | `DropdownMenuContent`, `ContextMenuContent` | — |
+| `menubar` | `MenubarContent` | ArrowRight/Left → `JsOnNextMenu` / `JsOnPreviousMenu` |
+| `submenu` | `*SubContent` (all three families) | ArrowLeft → `JsOnCloseSubMenu` |
+
+Options: `loop` (wrap navigation), `initialFocus` (`"first"` focuses first enabled item on open).
+
+JS calls back to C# only via:
+- `JsOnEscapeKey()` — close the menu/root
+- `JsOnCloseSubMenu()` — close submenu + restore focus to trigger
+- `JsOnNextMenu()` / `JsOnPreviousMenu()` — switch Menubar menu (menubar mode only)
+
+---
+
+### 🔧 Components Changed
+
+#### DropdownMenu
+
+| Component | Change |
+|---|---|
+| `DropdownMenuContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` with `menu-keyboard.js` "vertical" mode; added `[JSInvokable] JsOnEscapeKey` |
+| `DropdownMenuSubContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` with `menu-keyboard.js` "submenu" mode; added `JsOnEscapeKey`, `JsOnCloseSubMenu` |
+| `DropdownMenuItem` | Removed `@onkeydown`, `@inject IJSRuntime`, `FocusElementAsync` helper; added `Href`/`Target` params (renders `<a>` when set) and `MergedAttributes` (merges `Context.ItemClass`) |
+| `DropdownMenuCheckboxItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `DropdownMenuRadioItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `DropdownMenuSubTrigger` | Removed `@onkeydown` / `HandleKeyDown`; removed `@inject IJSRuntime` / `FocusElementAsync` |
+| `DropdownMenuContext.cs` | Added `ItemClass` property (cascaded from `DropdownMenu.ItemClass`) |
+| `DropdownMenu.razor` | Added `ItemClass` parameter; synced to context in `OnParametersSet` |
+
+#### Menubar
+
+| Component | Change |
+|---|---|
+| `MenubarContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` / navigation methods with `menu-keyboard.js` "menubar" mode; added `JsOnEscapeKey`, `JsOnNextMenu`, `JsOnPreviousMenu`; simplified `FocusContainerAsync` |
+| `MenubarSubContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` with `menu-keyboard.js` "submenu" mode; added `JsOnEscapeKey`, `JsOnCloseSubMenu` |
+| `MenubarItem` | Removed `@onkeydown`, `@inject IJSRuntime`, `FocusElementAsync` helper |
+| `MenubarCheckboxItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `MenubarRadioItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `MenubarSubTrigger` | Removed `@onkeydown` / `HandleKeyDown` |
+
+#### ContextMenu
+
+| Component | Change |
+|---|---|
+| `ContextMenuContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` + inline navigation methods with `menu-keyboard.js` "vertical" mode; added `JsOnEscapeKey` |
+| `ContextMenuSubContent` | Replaced C# `HandleKeyDown` + `FocusNextItem`/`FocusPreviousItem` helpers with `menu-keyboard.js` "submenu" mode; added `JsOnEscapeKey`, `JsOnCloseSubMenu` |
+| `ContextMenuItem` | Removed `@onkeydown`, `@inject IJSRuntime`, `FocusElementAsync` helper |
+| `ContextMenuCheckboxItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `ContextMenuRadioItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `ContextMenuSubTrigger` | Removed `@onkeydown` / `HandleKeyDown` |
+
+---
+
+### 🐛 Bug Fix: Submenu Close Chain Broken for Keyboard-Opened Submenus
+
+**Affected:** `DropdownMenuSubTrigger`, `MenubarSubTrigger`, `ContextMenuSubTrigger`
+
+`HandleMouseEnter` registered `SubContext` as `ActiveSubMenu` on the parent context, but
+`HandleClick` (called by both mouse click and keyboard Enter/Space/ArrowRight via JS `click()`)
+did not. This meant that when a submenu was opened via keyboard, `Context.Close()` /
+`MenuContext.CloseMenu()` could not recurse into the submenu — only the root menu closed while
+the submenu panel remained visible.
+
+**Fix:** `HandleClick` now registers `SubContext` as `ActiveSubMenu` on the parent context
+(matching what `HandleMouseEnter` already did) before calling `SubContext.Open()`.
+
+---
+
+### ⚡ Performance: `PopoverContent` Escape Key Migrated to `dialog.js`
+
+`PopoverContent` previously handled Escape via `@onkeydown` (one Blazor round-trip per keydown
+inside the popover). It now reuses `dialog.js` (`initializeKeyboardHandler` /
+`disposeKeyboardHandler`) — the same module `DialogContent` uses — which attaches a single
+capture-phase JS listener and calls back to C# only when Escape is actually pressed.
+
+Added `[JSInvokable] HandleEscapeKey()` matching the Dialog pattern. The `@onkeydown` binding
+and C# `HandleKeyDown` method have been removed.
+
+### 🐛 Bug Fix: `PopoverContent` Container Not Auto-Focused on Open
+
+`PopoverContent` was missing the `data-autofocus` attribute on its content `<div>`. As a result:
+- `portal.js`'s `blazorui:visible` auto-focus listener never moved focus into the popover
+- The new `dialog.js` Escape handler (capture-phase, requires focus inside the element) therefore
+  never fired when Escape was pressed
+
+**Fix:** Added `data-autofocus` to the content div, consistent with `DropdownMenuContent`.
+
+---
+
+### ⌨️ Feature: DataTable Keyboard Navigation for Row Selection and Column Sorting
+
+Keyboard navigation is now fully functional in the `Table` primitive for both row selection and
+header-triggered sorting.
+
+#### `TableRow` — Row selection keyboard nav
+
+| Key | Behaviour |
+|---|---|
+| `ArrowDown` | Move focus to the next selectable row |
+| `ArrowUp` | Move focus to the previous selectable row |
+| `Enter` / `Space` | Toggle selection of the focused row |
+
+- Rows receive `tabindex="0"` only when `EnableKeyboardNavigation` is true on the `TableContext`
+- A visible focus ring (`focus:ring-2 focus:ring-ring focus:ring-inset`) is automatically added
+  to keyboard-navigable rows via `ComputedClass`
+- Focus movement is handled by a new `table-row-nav.js` JS module (`moveFocusToNextRow` /
+  `moveFocusToPreviousRow`) using DOM sibling traversal — no C# round-trip required per move
+- A capture-phase JS listener (`preventSpaceKeyScroll`) prevents Space and Arrow keys from
+  scrolling the page while a row is focused; attached once on first render via `OnAfterRenderAsync`
+
+#### `TableHeaderCell` — Sortable header keyboard nav
+
+| Key | Behaviour |
+|---|---|
+| `Enter` / `Space` | Toggle sort direction for the column |
+
+- Sortable header cells (those with a `ColumnId`) receive `tabindex="0"`; non-sortable cells
+  remain at `tabindex="-1"` and are skipped in tab order
+- `aria-sort` attribute reflects the current sort direction (`ascending`, `descending`, `none`)
+  for correct screen-reader announcement
+
+#### New JS module: `table-row-nav.js`
+
+`src/BlazorUI.Primitives/wwwroot/js/primitives/table-row-nav.js`
+
+| Export | Purpose |
+|---|---|
+| `preventSpaceKeyScroll(element)` | Capture-phase handler; prevents Space / ArrowUp / ArrowDown scroll; returns `{ dispose }` cleanup |
+| `moveFocusToNextRow(element)` | Advances focus to the next sibling row with `tabindex`, manages `tabindex` roving |
+| `moveFocusToPreviousRow(element)` | Same as above, backwards |
+
+---
+
+## 2026-02-20 - Force-Mount Overlay Architecture for All FloatingPortal Consumers
+
+### 🏗️ Major Refactoring and Improvements to FloatingPortal
+
+Several improvements were applied to `FloatingPortal.razor` alongside the force-mount work. These harden the lifecycle and eliminate
+a class of WASM-specific rendering artefacts.
+
+#### 1. JS-Delegated AutoUpdate Lifecycle
+
+`showFloating` and `hideFloating` in `positioning.js` now own the full AutoUpdate lifecycle:
+
+- **On hide (`hideFloating`):** AutoUpdate is disposed *synchronously before* the `requestAnimationFrame`
+  callback. This stops wasted position computations while the portal is invisible and matches the
+  upstream dispose-on-hide intent.
+- **On show (`showFloating`):** AutoUpdate is re-created *after* recomputing the current position.
+  JS handles the full sequence: dispose old → `computePosition` → set up new `autoUpdate` → show via
+  `requestAnimationFrame`. A single C# `await ShowFloatingAsync(...)` call drives this entire chain.
+
+The C# side no longer holds an `_positioningCleanup` handle in the ForceMount re-open path —
+JS owns AutoUpdate exclusively via `element._autoUpdateCleanupId` stored on the DOM element itself.
+
+```
+Before (ForceMount re-open):   C# disposes old handle → JS computes → JS recreates AutoUpdate
+After  (ForceMount re-open):   Single ShowFloatingAsync → JS owns full lifecycle internally
+```
+
+#### 2. `ForceMount` Lifecycle Guard: `_isUpdatingVisibility` + `_previousIsOpen` Edge Detection
+
+Two flags cooperate to prevent re-entrant visibility updates during async transitions (critical
+in WASM where `await` yields to the browser event loop):
+
+- **`_previousIsOpen`** — set to the new value *before* the first `await`, so any re-render
+  triggered by the async operation sees a stable snapshot and does not re-enter the branch.
+- **`_isUpdatingVisibility`** — set to `true` for the duration of the async update; a concurrent
+  `OnAfterRenderAsync` call that arrives while a transition is in-flight skips silently.
+
+This eliminates the flicker/duplication class of bugs that occurred in Interactive Server when
+Blazor's re-render cycle raced with the JS `requestAnimationFrame` callback.
+
+#### 3. Separated ForceMount and Standard Lifecycle Paths
+
+`OnAfterRenderAsync` is now split into two dedicated methods with a single dispatch:
+
+- **`HandleForceMountLifecycleAsync()`** — portal registers once on first mount and stays
+  registered indefinitely. Open/close transitions call `ShowFloatingAsync` / `HideAsync`
+  without touching portal registration. The `_isPositioned` flag persists across visibility
+  cycles so Blazor's virtual DOM diff never rewrites the `style` attribute after JS has taken
+  ownership of position and visibility.
+
+- **`HandleStandardLifecycleAsync()`** — portal mounts on open and fully unregisters on close
+  via `CleanupAsync`. The original, backward-compatible path preserved for `ForceMount=false`
+  consumers (e.g. `TooltipContent`, `HoverCardContent`) where DOM economy outweighs remount cost.
+
+Each path is independently readable with no conditional branches bleeding across the two modes.
+Adding behaviour to one lifecycle cannot accidentally affect the other.
+
+---
+
+### ⚡ Performance: `FloatingPortal.ForceMount` Now Defaults to `true`
+
+`ForceMount` was previously opt-in (`false` by default, first introduced 2026-02-11). It is now
+`true` by default across the entire library. Every floating portal stays registered in the DOM and
+is hidden/shown exclusively via JS — eliminating remount overhead and enabling CSS exit animations
+by default for all consumers without any parameter changes.
+
+**Migration:** No action required. If a specific consumer should still unmount on close (e.g. to
+keep the DOM lean when many instances coexist), pass `ForceMount="false"` explicitly. Both
+`TooltipContent` and `HoverCardContent` already do this.
+
+---
+
+### ⚡ Performance: Eliminated Outer `@if` Gates on All Floating Overlays
+
+**Motivation:** Every `FloatingPortal` consumer had an outer `@if (Context.IsOpen)` guard that destroyed
+and recreated the entire component subtree on each open/close cycle — directly defeating `ForceMount`,
+which was already the default on `FloatingPortal`. This caused:
+- Full portal unmount/remount, losing all cached JS handles and DOM state
+- Re-execution of `MountPortalAsync`, JS module imports, and `SetupAsync` on every open
+- Visible re-mount latency, especially under Interactive Server (SignalR round-trips)
+
+**What Changed:**
+
+The outer `@if` gate was removed from **9 components**. `FloatingPortal` is now always rendered;
+open/close state is communicated via `IsOpen`, and `ForceMount` handles visibility via JS
+(`requestAnimationFrame` + `data-state` transitions) without any Blazor re-mount overhead.
+
+#### Components changed to always-mounted (`ForceMount=true`, default)
+
+| Component | File |
+|---|---|
+| `DropdownMenuContent` | `Primitives/DropdownMenu/DropdownMenuContent.razor` |
+| `DropdownMenuSubContent` | `Primitives/DropdownMenu/DropdownMenuSubContent.razor` |
+| `PopoverContent` | `Primitives/Popover/PopoverContent.razor` |
+| `SelectContent` | `Primitives/Select/SelectContent.razor` |
+
+#### Components changed to standard lifecycle (`ForceMount=false`, explicit)
+
+| Component | File | Reason |
+|---|---|---|
+| `TooltipContent` | `Primitives/Tooltip/TooltipContent.razor` | Can have 30–100+ instances per page; hover delay absorbs mount cost |
+| `HoverCardContent` | `Primitives/HoverCard/HoverCardContent.razor` | Same multiplicity concern; richer content makes N hidden portals expensive |
+| `ContextMenuContent` | `Primitives/ContextMenu/ContextMenuContent.razor` | Not fit by design |
+| `ContextMenuSubContent` | `Primitives/ContextMenu/ContextMenuSubContent.razor` | Not fit by design |
+| `MenubarSubContent` | `Primitives/Menubar/MenubarSubContent.razor` | Not fit by design |
+
+#### Already correct (no change needed)
+
+- `MenubarContent` — was already unconditionally rendered
+
+**Specific changes per component:**
+
+- **All 9 components:** `IsOpen="true"` → `IsOpen="@Context.IsOpen"` (or equivalent context property)
+- **`ContextMenuContent`:** Overlay `<div>` kept in its own narrow `@if (Context.IsOpen)` — it is a
+  full-screen fixed hit-test layer and should not persist in the DOM when the menu is closed
+- **`SelectContent`:** Removed redundant `ForceMount="@ForceMount"` pass-through (FloatingPortal
+  already defaults to `true`); fixed `AnchorElement` to null-safe `_context?.State.TriggerElement`
+  since the outer gate previously guaranteed `_context` was non-null
+- **`TooltipContent` / `HoverCardContent`:** Added explicit `ForceMount="false"` — component instance
+  stays alive (preserving `_portalId` and event subscriptions) but the portal DOM node is
+  created/destroyed per open cycle, keeping the DOM lean when many instances coexist
+
+**Benefits:**
+- ✅ **Zero re-mount overhead** on reopen for force-mounted components — JS toggles visibility directly
+- ✅ **JS handles stay warm** — `_keyboardNavCleanup`, `_clickOutsideCleanup`, etc. survive close/reopen cycles
+- ✅ **CSS exit animations** — `data-state` transitions work correctly because the DOM node is never destroyed mid-animation
+- ✅ **WASM-friendly** — single `ShowFloatingAsync` call replaces full portal setup on reopen
+- ✅ **Lean DOM** for hover-triggered components — Tooltip and HoverCard nodes only exist when open
+
+---
+
 ## 2026-02-18 - Theme System Migration & Complete XML Documentation
 
 ### 🎨 Theme System Migration to Component Library

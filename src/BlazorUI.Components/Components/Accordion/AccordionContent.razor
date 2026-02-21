@@ -1,4 +1,5 @@
 @namespace BlazorUI.Components.Accordion
+@using BlazorUI.Components.Utilities
 @using BlazorUI.Primitives.Accordion
 
 @*
@@ -36,6 +37,7 @@
     [Parameter]
     public string? Class { get; set; }
 
-    private string CssClass =>
-        $"grid grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out data-[state=open]:grid-rows-[1fr] {Class}".Trim();
+    private string CssClass => ClassNames.cn(
+        "grid grid-rows-[0fr] transition-[grid-template-rows] duration-200 ease-out data-[state=open]:grid-rows-[1fr]",
+        Class);
 }

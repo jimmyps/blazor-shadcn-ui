@@ -1,4 +1,5 @@
 @namespace BlazorUI.Components.Tooltip
+@using BlazorUI.Components.Utilities
 @using BlazorUI.Primitives.Tooltip
 
 @* Styled TooltipTrigger - thin wrapper with contents class for layout *@
@@ -70,5 +71,5 @@ else
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private string WrapperClass => string.IsNullOrWhiteSpace(Class) ? "contents" : $"contents {Class}";
+    private string WrapperClass => ClassNames.cn("contents", Class);
 }

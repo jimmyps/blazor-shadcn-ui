@@ -186,7 +186,7 @@ export async function computePosition(reference, floating, options = {}) {
         // Handle vertical overflow
         if (exceedsBottom || exceedsTop) {
           const maxHeight = viewportHeight - (viewportPadding * 2);
-          if (floatingHeight > maxHeight) {
+          if (floatingHeight > maxHeight + 2) {
             // Content is larger than viewport - signal need for scrollbar
             data.needsVerticalScroll = true;
             data.maxHeight = maxHeight;
@@ -208,7 +208,7 @@ export async function computePosition(reference, floating, options = {}) {
         // Handle horizontal overflow
         if (exceedsRight || exceedsLeft) {
           const maxWidth = viewportWidth - (viewportPadding * 2);
-          if (floatingWidth > maxWidth) {
+          if (floatingWidth > maxWidth + 2) {
             // Content is wider than viewport - signal need for scrollbar
             data.needsHorizontalScroll = true;
             data.maxWidth = maxWidth;
@@ -301,6 +301,13 @@ export function applyPosition(floating, position, makeVisible = false) {
   if (makeVisible) {
     // Use requestAnimationFrame to ensure position is applied before visibility
     requestAnimationFrame(() => {
+
+      // Find element with data-state attribute (generic for all floating portals)
+      const contentElement = floating.querySelector('[data-state]') || floating;
+      if (contentElement.hasAttribute('data-state')) {
+        contentElement.setAttribute('data-state', 'open');
+      }
+
       // Use setProperty with 'important' to override any CSS animations/transitions
       floating.style.setProperty('visibility', 'visible', 'important');
       floating.style.setProperty('opacity', '1', 'important');
@@ -361,11 +368,52 @@ export async function autoUpdate(reference, floating, options = {}) {
 /**
  * Shows a floating element with proper visibility and animation support.
  * Uses requestAnimationFrame to ensure smooth transitions.
+ * Always recomputes position and recreates AutoUpdate if anchor is provided (matches upstream lifecycle).
  * @param {HTMLElement} floating - The floating element to show
+ * @param {HTMLElement} reference - The anchor/reference element (optional, for repositioning)
+ * @param {Object} options - Positioning options (optional, for repositioning)
+ * @returns {Promise<void>}
  */
-export function showFloating(floating) {
+export async function showFloating(floating, reference = null, options = null) {
   if (!floating) return;
 
+  // Always dispose existing AutoUpdate first (if any)
+  const existingCleanupId = floating._autoUpdateCleanupId;
+  if (existingCleanupId) {
+    const cleanup = cleanupRegistry.get(existingCleanupId);
+    if (cleanup) {
+      cleanup();
+      cleanupRegistry.delete(existingCleanupId);
+    }
+    delete floating._autoUpdateCleanupId;
+  }
+
+  // If anchor provided, recompute position and setup AutoUpdate
+  if (reference && options) {
+    try {
+      const lib = await loadFloatingUI();
+
+      // Recompute position (upstream does this on every show)
+      const position = await computePosition(reference, floating, options);
+      applyPosition(floating, position, false);  // Don't makeVisible yet, RFA handles it
+
+      // Setup AutoUpdate and store cleanup ID on element
+      const update = async () => {
+        const pos = await computePosition(reference, floating, options);
+        applyPosition(floating, pos, false);
+      };
+
+      const cleanupFunc = lib.autoUpdate(reference, floating, update);
+      const cleanupId = cleanupIdCounter++;
+      cleanupRegistry.set(cleanupId, cleanupFunc);
+      floating._autoUpdateCleanupId = cleanupId;
+    } catch (error) {
+      console.error('Failed to setup positioning in showFloating:', error);
+      // Continue to show even if setup fails
+    }
+  }
+
+  // Show with requestAnimationFrame for smooth animations (WASM compatibility)
   requestAnimationFrame(() => {
     // Find element with data-state attribute (generic for all floating portals)
     const contentElement = floating.querySelector('[data-state]') || floating;
@@ -387,11 +435,25 @@ export function showFloating(floating) {
 /**
  * Hides a floating element while keeping it in the DOM (for ForceMount).
  * Uses requestAnimationFrame to ensure smooth transitions.
+ * Always disposes AutoUpdate to stop wasted computations while hidden (matches upstream lifecycle).
  * @param {HTMLElement} floating - The floating element to hide
  */
 export function hideFloating(floating) {
   if (!floating) return;
 
+  // Always dispose AutoUpdate immediately (before requestAnimationFrame)
+  // This matches upstream's lifecycle: dispose on hide, recreate on show
+  const existingCleanupId = floating._autoUpdateCleanupId;
+  if (existingCleanupId) {
+    const cleanup = cleanupRegistry.get(existingCleanupId);
+    if (cleanup) {
+      cleanup();
+      cleanupRegistry.delete(existingCleanupId);
+    }
+    delete floating._autoUpdateCleanupId;
+  }
+
+  // Hide with requestAnimationFrame for smooth exit animations (WASM compatibility)
   requestAnimationFrame(() => {
     // Find element with data-state attribute (generic for all floating portals)
     const contentElement = floating.querySelector('[data-state]') || floating;

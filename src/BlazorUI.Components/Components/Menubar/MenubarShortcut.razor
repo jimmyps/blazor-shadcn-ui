@@ -1,4 +1,5 @@
-﻿@namespace BlazorUI.Components.Menubar
+@namespace BlazorUI.Components.Menubar
+@using BlazorUI.Components.Utilities
 
 @* Styled MenubarShortcut - displays keyboard shortcut hint *@
 <span class="@CssClass">
@@ -18,12 +19,7 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    private string CssClass
-    {
-        get
-        {
-            var baseClasses = "ml-auto text-xs tracking-widest text-muted-foreground";
-            return string.IsNullOrWhiteSpace(Class) ? baseClasses : $"{baseClasses} {Class}";
-        }
-    }
+    private string CssClass => ClassNames.cn(
+        "ml-auto text-xs tracking-widest text-muted-foreground",
+        Class);
 }
