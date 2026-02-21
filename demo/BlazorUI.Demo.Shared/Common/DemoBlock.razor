@@ -1,0 +1,39 @@
+@* DemoBlock — a bordered panel with Preview / Code tabs for a single demo example. *@
+@using BlazorUI.Components.Tabs
+
+<div class="rounded-lg border overflow-hidden">
+    <Tabs DefaultValue="preview">
+        <TabsList Class="w-full rounded-none border-b bg-muted/50 h-10 px-2 justify-start">
+            <TabsTrigger Value="preview" Class="text-xs h-8">Preview</TabsTrigger>
+            @if (!string.IsNullOrWhiteSpace(Code))
+            {
+                <TabsTrigger Value="code" Class="text-xs h-8">Code</TabsTrigger>
+            }
+        </TabsList>
+
+        <TabsContent Value="preview" Class="p-6 m-0">
+            @ChildContent
+        </TabsContent>
+
+        @if (!string.IsNullOrWhiteSpace(Code))
+        {
+            <TabsContent Value="code" Class="p-0 m-0">
+                <div class="relative">
+                    <pre class="p-4 overflow-x-auto text-sm bg-muted/30 font-mono max-h-96 overflow-y-auto leading-relaxed"><code>@Code</code></pre>
+                    <DemoCopyButton Text="@Code" Class="absolute top-2 right-2" />
+                </div>
+            </TabsContent>
+        }
+    </Tabs>
+</div>
+
+@code {
+    /// <summary>The live preview rendered inside the Preview tab.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Optional source code string displayed in the Code tab.
+    /// When omitted the Code tab is hidden.
+    /// </summary>
+    [Parameter] public string? Code { get; set; }
+}

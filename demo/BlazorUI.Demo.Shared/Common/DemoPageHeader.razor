@@ -1,0 +1,24 @@
+@* DemoPageHeader — renders the title/description banner at the top of a demo page. *@
+
+<div class="space-y-3 mb-8">
+    <h1 class="text-4xl font-bold tracking-tight">@Title</h1>
+    @if (!string.IsNullOrEmpty(Description))
+    {
+        <p class="text-xl text-muted-foreground">@Description</p>
+    }
+    @if (ChildContent is not null)
+    {
+        <div>@ChildContent</div>
+    }
+</div>
+
+@code {
+    /// <summary>Page / component title.</summary>
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+
+    /// <summary>Short description shown below the title.</summary>
+    [Parameter] public string? Description { get; set; }
+
+    /// <summary>Optional extra content rendered below the description (badges, links, etc.).</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

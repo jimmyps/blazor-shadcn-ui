@@ -1,0 +1,62 @@
+@* DemoPageNav — zero-config prev/next navigation derived from the component registry.
+   Place at the bottom of any demo page; it reads the current URL automatically. *@
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+@if (_prev is not null || _next is not null)
+{
+    <div class="flex items-start justify-between mt-10 pt-6 border-t gap-4">
+        @if (_prev is not null)
+        {
+            <a href="/@_prev.Route"
+               class="group flex flex-col items-start gap-1 p-3 rounded-lg border hover:border-primary hover:bg-accent transition-colors no-underline min-w-0 flex-1 max-w-[calc(50%-0.5rem)]">
+                <span class="flex items-center gap-1 text-xs text-muted-foreground">
+                    <LucideIcon Name="arrow-left" Size="12" />
+                    Previous
+                </span>
+                <span class="font-medium text-sm group-hover:text-primary truncate w-full">@_prev.Title</span>
+            </a>
+        }
+        else
+        {
+            <span class="flex-1" />
+        }
+
+        @if (_next is not null)
+        {
+            <a href="/@_next.Route"
+               class="group flex flex-col items-end gap-1 p-3 rounded-lg border hover:border-primary hover:bg-accent transition-colors no-underline min-w-0 flex-1 max-w-[calc(50%-0.5rem)] ml-auto">
+                <span class="flex items-center gap-1 text-xs text-muted-foreground">
+                    Next
+                    <LucideIcon Name="arrow-right" Size="12" />
+                </span>
+                <span class="font-medium text-sm group-hover:text-primary truncate w-full text-right">@_next.Title</span>
+            </a>
+        }
+    </div>
+}
+
+@code {
+    private ComponentRegistryEntry? _prev;
+    private ComponentRegistryEntry? _next;
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+        Refresh();
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        Refresh();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void Refresh()
+    {
+        var relative = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        (_prev, _next) = ComponentRegistry.GetNeighbors(relative);
+    }
+
+    public void Dispose() => NavigationManager.LocationChanged -= OnLocationChanged;
+}
