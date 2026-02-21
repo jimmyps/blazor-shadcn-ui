@@ -110,7 +110,7 @@
                                 </SidebarMenuButton>
                                 <CollapsibleContent>
                                     <SidebarMenuSub>
-                                        @foreach (var entry in ComponentRegistry.Components)
+                                        @foreach (var entry in ComponentRegistry.Components.Where(e => !e.IsSubPage))
                                         {
                                             <SidebarMenuSubItem>
                                                 <SidebarMenuSubButton Href="@entry.Route" Match="@(entry.ExactNavMatch ? NavLinkMatch.All : NavLinkMatch.Prefix)">
@@ -125,7 +125,7 @@
                     </SidebarMenu>
                 </SidebarGroup>
 
-                <!-- Chart Section with Collapsible Submenu -->
+                <!-- Chart Section with Collapsible Submenu (registry-driven) -->
                 <SidebarGroup>
                     <SidebarMenu>
                         <SidebarMenuItem>
@@ -139,41 +139,14 @@
                                 </SidebarMenuButton>
                                 <CollapsibleContent>
                                     <SidebarMenuSub>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/chart/area">
-                                                <span>Area Chart</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/chart/bar">
-                                                <span>Bar Chart</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/chart/line">
-                                                <span>Line Chart</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/chart/pie">
-                                                <span>Pie Chart</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/chart/scatter">
-                                                <span>Scatter Chart</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/chart/radar">
-                                                <span>Radar Chart</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/chart/composed">
-                                                <span>Composed Chart</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
+                                        @foreach (var entry in ComponentRegistry.Components.Where(e => e.Category == ComponentCategories.Charts && e.IsSubPage))
+                                        {
+                                            <SidebarMenuSubItem>
+                                                <SidebarMenuSubButton Href="@entry.Route">
+                                                    <span>@entry.Title</span>
+                                                </SidebarMenuSubButton>
+                                            </SidebarMenuSubItem>
+                                        }
                                     </SidebarMenuSub>
                                 </CollapsibleContent>
                             </SidebarCollapsibleGroup>

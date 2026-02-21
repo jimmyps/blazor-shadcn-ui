@@ -66,13 +66,21 @@
                 </p>
             </div>
 
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                @foreach (var entry in ComponentRegistry.Components)
+            <div class="space-y-10">
+                @foreach (var group in ComponentRegistry.GetGroupedComponents())
                 {
-                    <a href="/@entry.Route" class="group p-5 border rounded-lg hover:border-primary hover:bg-accent transition-colors no-underline">
-                        <h3 class="font-semibold text-lg mb-2 group-hover:text-primary">@entry.Title</h3>
-                        <p class="text-sm text-muted-foreground">@entry.Description</p>
-                    </a>
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold text-foreground/80 border-b pb-2">@group.Category.DisplayName</h3>
+                        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            @foreach (var entry in group.Entries)
+                            {
+                                <a href="/@entry.Route" class="group p-5 border rounded-lg hover:border-primary hover:bg-accent transition-colors no-underline">
+                                    <h4 class="font-semibold text-base mb-1.5 group-hover:text-primary">@entry.Title</h4>
+                                    <p class="text-sm text-muted-foreground">@entry.Description</p>
+                                </a>
+                            }
+                        </div>
+                    </div>
                 }
             </div>
         </section>
