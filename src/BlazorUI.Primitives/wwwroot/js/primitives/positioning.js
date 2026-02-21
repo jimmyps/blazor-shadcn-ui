@@ -301,6 +301,13 @@ export function applyPosition(floating, position, makeVisible = false) {
   if (makeVisible) {
     // Use requestAnimationFrame to ensure position is applied before visibility
     requestAnimationFrame(() => {
+
+      // Find element with data-state attribute (generic for all floating portals)
+      const contentElement = floating.querySelector('[data-state]') || floating;
+      if (contentElement.hasAttribute('data-state')) {
+        contentElement.setAttribute('data-state', 'open');
+      }
+
       // Use setProperty with 'important' to override any CSS animations/transitions
       floating.style.setProperty('visibility', 'visible', 'important');
       floating.style.setProperty('opacity', '1', 'important');
