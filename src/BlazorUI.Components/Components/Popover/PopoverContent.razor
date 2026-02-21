@@ -12,6 +12,8 @@
                                                    Align="@Align"
                                                    Offset="@Offset"
                                                    MatchTriggerWidth="@MatchTriggerWidth"
+                                                   Strategy="@Strategy.ToValue()"
+                                                   ZIndex="@ZIndex"
                                                    OnEscapeKeyDown="@OnEscapeKeyDown"
                                                    OnClickOutside="@OnClickOutside"
                                                    OnContentReady="@OnContentReady"
@@ -50,6 +52,21 @@
     [Parameter]
     public bool MatchTriggerWidth { get; set; } = false;
 
+    /// <summary>
+    /// Positioning strategy: "absolute" or "fixed".
+    /// Use "fixed" when popover needs to escape stacking contexts (e.g., in sidebars).
+    /// Default is "absolute".
+    /// </summary>
+    [Parameter]
+    public PositioningStrategy Strategy { get; set; } = PositioningStrategy.Absolute;
+
+    /// <summary>
+    /// Z-index for the popover content.
+    /// Default is 60 (PopoverContent level).
+    /// </summary>
+    [Parameter]
+    public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;
+
     [Parameter]
     public EventCallback<KeyboardEventArgs> OnEscapeKeyDown { get; set; }
 
@@ -70,7 +87,7 @@
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     private string CssClass => ClassNames.cn(
-        $"z-{ZIndexLevels.PopoverContent}",
+        $"z-{ZIndex}",
         MatchTriggerWidth ? "w-full" : "w-72",
         "rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
