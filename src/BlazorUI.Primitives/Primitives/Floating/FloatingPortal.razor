@@ -508,7 +508,7 @@
             };
 
             // For ForceMount re-opens, use JS-managed setup for animation compatibility
-            if (ForceMount && _isMounted)
+            if (ForceMount && _isPositioned)
             {
                 // JS handles: dispose old AutoUpdate → compute position → setup new AutoUpdate → show via RFA
                 // Single call matches upstream's dispose-on-hide + recreate-on-show lifecycle
@@ -518,7 +518,9 @@
             }
             else
             {
-                // First open or ForceMount=false: Use traditional C#-managed setup
+                // First open or ForceMount=false: Use traditional C#-managed setup.
+                // Must compute and store position so GetInitialStyle() produces correct coordinates
+                // on any subsequent Blazor re-render (otherwise falls back to left:0;top:0).
                 var position = await PositioningService.ComputePositionAsync(
                     anchor,
                     _portalContentRef,
