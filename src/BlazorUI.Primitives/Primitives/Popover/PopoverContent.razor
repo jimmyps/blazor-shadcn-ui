@@ -13,6 +13,7 @@
 <FloatingPortal IsOpen="@Context.IsOpen"
                 AnchorElement="@Context.State.TriggerElement"
                 PortalId="@_portalId"
+                ForceMount="@ForceMount"
                 Side="@Side"
                 Align="@Align"
                 Offset="@Offset"
@@ -80,6 +81,15 @@
     /// </summary>
     [Parameter]
     public bool MatchTriggerWidth { get; set; } = false;
+
+    /// <summary>
+    /// Whether to keep the portal mounted in the DOM when the popover is closed.
+    /// When <c>true</c>, JS toggles visibility instead of unmounting — JS handlers stay warm
+    /// across open/close cycles and CSS exit animations work correctly.
+    /// Default is <c>false</c>; the Components-layer <see cref="PopoverContent"/> sets this to <c>true</c>.
+    /// </summary>
+    [Parameter]
+    public bool ForceMount { get; set; } = false;
 
     /// <summary>
     /// CSS positioning strategy.
@@ -221,10 +231,14 @@
     {
         if (!Context.IsOpen)
         {
-            // Popover closed, clean up
             await InvokeAsync(async () =>
             {
-                await CleanupAsync();
+                // With ForceMount the portal stays alive; handlers survive close/reopen.
+                // Only clean up when the portal actually unmounts (ForceMount=false).
+                if (!ForceMount)
+                {
+                    await CleanupAsync();
+                }
                 StateHasChanged();
             });
         }

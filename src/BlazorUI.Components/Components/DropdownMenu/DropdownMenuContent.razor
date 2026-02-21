@@ -7,6 +7,7 @@
                                                             style="@Style"
                                                             CloseOnEscape="@CloseOnEscape"
                                                             CloseOnClickOutside="@CloseOnClickOutside"
+                                                            ForceMount="@ForceMount"
                                                             Side="@Side"
                                                             Align="@Align"
                                                             Offset="@Offset"
@@ -27,6 +28,14 @@
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Whether to keep the portal mounted when the dropdown is closed.
+    /// Default is <c>true</c> — JS toggles visibility, preserving JS handlers and enabling CSS exit animations.
+    /// Set to <c>false</c> to fully unmount the portal on close (lower DOM footprint).
+    /// </summary>
+    [Parameter]
+    public bool ForceMount { get; set; } = true;
 
     /// <summary>
     /// Additional CSS classes to apply to the content container.

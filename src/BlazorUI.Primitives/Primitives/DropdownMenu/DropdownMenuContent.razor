@@ -13,6 +13,7 @@
 <FloatingPortal IsOpen="@Context.IsOpen"
                 AnchorElement="@Context.State.TriggerElement"
                 PortalId="@_portalId"
+                ForceMount="@ForceMount"
                 Side="@Side"
                 Align="@Align"
                 Offset="@Offset"
@@ -86,6 +87,15 @@
     /// </summary>
     [Parameter]
     public EventCallback OnClickOutside { get; set; }
+
+    /// <summary>
+    /// Whether to keep the portal mounted in the DOM when the dropdown is closed.
+    /// When <c>true</c>, JS toggles visibility instead of unmounting — JS handlers stay warm
+    /// across open/close cycles and CSS exit animations work correctly.
+    /// Default is <c>false</c>; the Components-layer <see cref="DropdownMenuContent"/> sets this to <c>true</c>.
+    /// </summary>
+    [Parameter]
+    public bool ForceMount { get; set; } = false;
 
     /// <summary>
     /// Whether to enable keyboard loop navigation (wrapping from last to first item).
@@ -278,7 +288,12 @@
             {
                 await InvokeAsync(async () =>
                 {
-                    await CleanupAsync();
+                    // With ForceMount the portal stays alive; handlers survive close/reopen.
+                    // Only clean up when the portal actually unmounts (ForceMount=false).
+                    if (!ForceMount)
+                    {
+                        await CleanupAsync();
+                    }
                     StateHasChanged();
                 });
             }
