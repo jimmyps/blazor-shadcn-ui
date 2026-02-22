@@ -22,11 +22,12 @@
                     </Button>
                 </PopoverTrigger>
             </TooltipTrigger>
-            <TooltipContent>
+            <TooltipContent Strategy="@Strategy">
                 <p>@_currentBaseColor / @_currentPrimaryColor</p>
             </TooltipContent>
         </Tooltip>
-    <PopoverContent Class="w-80 shadow-lg" Align="PopoverAlign.End" Strategy="@Strategy" ZIndex="@ZIndex">
+    <PopoverContent Class="@($"w-80 shadow-lg{(string.IsNullOrEmpty(PopoverContentClass) ? "" : $" {PopoverContentClass}")}")"
+                    Align="PopoverAlign.End" Strategy="@Strategy" ZIndex="@ZIndex">
         <div class="space-y-4">
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
@@ -84,6 +85,18 @@
     [Parameter]
     public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;
 
+    /// <summary>
+    /// Additional CSS classes to apply to the trigger button.
+    /// </summary>
+    [Parameter]
+    public string? TriggerClass { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes to apply to the popover content panel.
+    /// </summary>
+    [Parameter]
+    public string? PopoverContentClass { get; set; }
+
     private BaseColor _currentBaseColor;
     private PrimaryColor _currentPrimaryColor;
 
@@ -117,7 +130,8 @@
 
     private string GetTriggerButtonClass()
     {
-        return "relative overflow-hidden h-9 w-9";
+        var baseClass = "relative overflow-hidden h-9 w-9";
+        return string.IsNullOrEmpty(TriggerClass) ? baseClass : $"{baseClass} {TriggerClass}";
     }
 
     private string GetTriggerFillStyle()
