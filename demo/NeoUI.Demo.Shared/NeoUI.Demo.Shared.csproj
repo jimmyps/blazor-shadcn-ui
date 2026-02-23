@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="....srcNeoUI.BlazorNeoUI.Blazor.csproj" />
-    <ProjectReference Include="....srcNeoUI.Blazor.PrimitivesNeoUI.Blazor.Primitives.csproj" />
+    <ProjectReference Include="..\..\src\NeoUI.Blazor\NeoUI.Blazor.csproj" />
+    <ProjectReference Include="..\..\src\NeoUI.Blazor.Primitives\NeoUI.Blazor.Primitives.csproj" />
     <ProjectReference Include="..\..\src\NeoUI.Icons.Lucide\NeoUI.Icons.Lucide.csproj" />
     <ProjectReference Include="..\..\src\NeoUI.Icons.Heroicons\NeoUI.Icons.Heroicons.csproj" />
     <ProjectReference Include="..\..\src\NeoUI.Icons.Feather\NeoUI.Icons.Feather.csproj" />

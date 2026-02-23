@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..NeoUI.Demo.SharedNeoUI.Demo.Shared.csproj" />
+    <ProjectReference Include="..\NeoUI.Demo.Shared\NeoUI.Demo.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

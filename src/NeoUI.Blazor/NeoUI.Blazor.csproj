@@ -44,7 +44,7 @@
   <!-- Use ProjectReference for local development, PackageReference for packing -->
   <ItemGroup Condition="'$(UsePackageReferences)' != 'true'">
     <ProjectReference Include="..\NeoUI.Icons.Lucide\NeoUI.Icons.Lucide.csproj" />
-    <ProjectReference Include="..NeoUI.Blazor.PrimitivesNeoUI.Blazor.Primitives.csproj" />
+    <ProjectReference Include="..\NeoUI.Blazor.Primitives\NeoUI.Blazor.Primitives.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(UsePackageReferences)' == 'true'">
