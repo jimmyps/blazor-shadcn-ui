@@ -79,11 +79,11 @@ jobs:
           # Determine project path and display name
           case $PACKAGE in
             primitives)
-              echo "project_path=src/BlazorUI.Primitives/NeoUI.Blazor.Primitives.csproj" >> $GITHUB_OUTPUT
+              echo "project_path=src/NeoUI.Blazor.Primitives/NeoUI.Blazor.Primitives.csproj" >> $GITHUB_OUTPUT
               echo "display_name=NeoUI.Blazor.Primitives" >> $GITHUB_OUTPUT
               ;;
             components)
-              echo "project_path=src/BlazorUI.Components/NeoUI.Blazor.csproj" >> $GITHUB_OUTPUT
+              echo "project_path=src/NeoUI.Blazor/NeoUI.Blazor.csproj" >> $GITHUB_OUTPUT
               echo "display_name=NeoUI.Blazor" >> $GITHUB_OUTPUT
               ;;
             icons-lucide)
