@@ -1,0 +1,18 @@
+@namespace NeoUI.Blazor.Drawer
+
+<div class="@CssClass">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string CssClass => NeoUI.Blazor.Utilities.ClassNames.cn(
+        "mt-auto flex flex-col gap-2 p-4",
+        Class
+    );
+}

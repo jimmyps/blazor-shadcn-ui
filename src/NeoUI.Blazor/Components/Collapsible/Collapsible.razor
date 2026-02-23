@@ -1,0 +1,9 @@
+@namespace NeoUI.Blazor.Collapsible
+@using NeoUI.Blazor.Primitives.Collapsible
+
+<NeoUI.Blazor.Primitives.Collapsible.Collapsible Open="@_isOpen"
+                      OpenChanged="@HandleOpenChanged"
+                      Disabled="@Disabled"
+                      class="@Class">
+    @ChildContent
+</NeoUI.Blazor.Primitives.Collapsible.Collapsible>

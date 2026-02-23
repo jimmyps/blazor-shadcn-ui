@@ -2,7 +2,7 @@
 
 ## Overview
 
-The NeoBlazorUI portal system uses a **two-layer architecture** to optimize rendering performance and prevent infinite loops:
+The NeoUI portal system uses a **two-layer architecture** to optimize rendering performance and prevent infinite loops:
 
 1. **Layer 1: Categorized Portal Hosts** - Horizontal isolation by portal type
 2. **Layer 2: Hierarchical Portal Scopes** - Vertical optimization for parent-child relationships

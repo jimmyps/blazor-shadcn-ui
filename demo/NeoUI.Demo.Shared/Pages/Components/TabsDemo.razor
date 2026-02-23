@@ -1,0 +1,209 @@
+@page "/components/tabs"
+@using NeoUI.Blazor.Tabs
+@using NeoUI.Blazor.Input
+@using NeoUI.Blazor.Label
+@using NeoUI.Blazor.Field
+@using NeoUI.Blazor.Button
+
+<PageTitle>Tabs Component - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+        <h1 class="text-4xl font-bold tracking-tight">Tabs Component</h1>
+        <p class="text-xl text-muted-foreground">
+            A set of layered sections of content—known as tab panels—that are displayed one at a time.
+        </p>
+        </div>
+    </div>
+
+    <div class="space-y-6">
+    </div>
+
+    <div class="space-y-4">
+        <h2 class="text-2xl font-semibold">Default</h2>
+        <p class="text-sm text-muted-foreground">
+            Basic tabs with shadcn styling.
+        </p>
+
+        <div class="w-[400px]">
+            <Tabs DefaultValue="account">
+                <TabsList Class="grid w-full grid-cols-2">
+                    <TabsTrigger Value="account">Account</TabsTrigger>
+                    <TabsTrigger Value="password">Password</TabsTrigger>
+                </TabsList>
+
+            <TabsContent Value="account">
+                <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                    <div class="space-y-2">
+                        <h3 class="text-2xl font-semibold leading-none tracking-tight">Account</h3>
+                        <p class="text-sm text-muted-foreground">
+                            Make changes to your account here. Click save when you're done.
+                        </p>
+                    </div>
+                    <div class="space-y-4 pt-4">
+                        <FieldGroup Orientation="FieldGroupOrientation.Vertical">
+                            <Field>
+                                <FieldLabel For="name">Name</FieldLabel>
+                                <FieldContent>
+                                    <Input Id="name" Placeholder="Pedro Duarte" />
+                                </FieldContent>
+                            </Field>
+                            <Field>
+                                <FieldLabel For="username">Username</FieldLabel>
+                                <FieldContent>
+                                    <Input Id="username" Placeholder="@usernamePlaceholder" />
+                                </FieldContent>
+                            </Field>
+                        </FieldGroup>
+                        <Button>Save changes</Button>
+                    </div>
+                </div>
+            </TabsContent>
+
+            <TabsContent Value="password">
+                <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                    <div class="space-y-2">
+                        <h3 class="text-2xl font-semibold leading-none tracking-tight">Password</h3>
+                        <p class="text-sm text-muted-foreground">
+                            Change your password here. After saving, you'll be logged out.
+                        </p>
+                    </div>
+                    <div class="space-y-4 pt-4">
+                        <FieldGroup Orientation="FieldGroupOrientation.Vertical">
+                            <Field>
+                                <FieldLabel For="current-password">Current password</FieldLabel>
+                                <FieldContent>
+                                    <Input Id="current-password" Type="InputType.Password" />
+                                </FieldContent>
+                            </Field>
+                            <Field>
+                                <FieldLabel For="new-password">New password</FieldLabel>
+                                <FieldContent>
+                                    <Input Id="new-password" Type="InputType.Password" />
+                                </FieldContent>
+                            </Field>
+                        </FieldGroup>
+                        <Button>Save password</Button>
+                    </div>
+                </div>
+            </TabsContent>
+            </Tabs>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <h2 class="text-2xl font-semibold">With Multiple Tabs</h2>
+        <p class="text-sm text-muted-foreground">
+            Tabs can have more than two options.
+        </p>
+
+        <Tabs DefaultValue="overview">
+            <TabsList>
+                <TabsTrigger Value="overview">Overview</TabsTrigger>
+                <TabsTrigger Value="analytics">Analytics</TabsTrigger>
+                <TabsTrigger Value="reports">Reports</TabsTrigger>
+                <TabsTrigger Value="notifications">Notifications</TabsTrigger>
+            </TabsList>
+
+            <TabsContent Value="overview">
+                <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                    <h3 class="text-lg font-semibold mb-2">Overview</h3>
+                    <p class="text-sm text-muted-foreground">
+                        View a summary of your account activity and statistics.
+                    </p>
+                </div>
+            </TabsContent>
+
+            <TabsContent Value="analytics">
+                <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                    <h3 class="text-lg font-semibold mb-2">Analytics</h3>
+                    <p class="text-sm text-muted-foreground">
+                        Detailed analytics and metrics about your usage.
+                    </p>
+                </div>
+            </TabsContent>
+
+            <TabsContent Value="reports">
+                <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                    <h3 class="text-lg font-semibold mb-2">Reports</h3>
+                    <p class="text-sm text-muted-foreground">
+                        Generate and download detailed reports.
+                    </p>
+                </div>
+            </TabsContent>
+
+            <TabsContent Value="notifications">
+                <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                    <h3 class="text-lg font-semibold mb-2">Notifications</h3>
+                    <p class="text-sm text-muted-foreground">
+                        Manage your notification preferences.
+                    </p>
+                </div>
+            </TabsContent>
+        </Tabs>
+    </div>
+
+    <div class="space-y-4">
+        <h2 class="text-2xl font-semibold">Controlled</h2>
+        <p class="text-sm text-muted-foreground">
+            Control which tab is active programmatically.
+        </p>
+
+        <div class="flex gap-2 mb-4">
+            <Button @onclick='() => activeTab = "morning"' Variant="ButtonVariant.Outline">
+                Show Morning
+            </Button>
+            <Button @onclick='() => activeTab = "afternoon"' Variant="ButtonVariant.Outline">
+                Show Afternoon
+            </Button>
+            <Button @onclick='() => activeTab = "evening"' Variant="ButtonVariant.Outline">
+                Show Evening
+            </Button>
+        </div>
+
+        <p class="text-xs text-muted-foreground mb-2">Current: <strong>@activeTab</strong></p>
+
+        <div class="w-[400px]">
+            <Tabs @bind-Value="activeTab">
+                <TabsList Class="grid w-full grid-cols-3">
+                    <TabsTrigger Value="morning">Morning</TabsTrigger>
+                    <TabsTrigger Value="afternoon">Afternoon</TabsTrigger>
+                    <TabsTrigger Value="evening">Evening</TabsTrigger>
+                </TabsList>
+
+            <TabsContent Value="morning">
+                <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                    <h3 class="text-lg font-semibold mb-2">🌅 Morning</h3>
+                    <p class="text-sm text-muted-foreground">
+                        Good morning! Start your day with a fresh perspective.
+                    </p>
+                </div>
+            </TabsContent>
+
+            <TabsContent Value="afternoon">
+                <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                    <h3 class="text-lg font-semibold mb-2">☀️ Afternoon</h3>
+                    <p class="text-sm text-muted-foreground">
+                        Afternoon productivity at its peak!
+                    </p>
+                </div>
+            </TabsContent>
+
+            <TabsContent Value="evening">
+                <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                    <h3 class="text-lg font-semibold mb-2">🌙 Evening</h3>
+                    <p class="text-sm text-muted-foreground">
+                        Wind down and reflect on your day.
+                    </p>
+                </div>
+            </TabsContent>
+            </Tabs>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? activeTab = "morning";
+    private string usernamePlaceholder = "@peduarte";
+}

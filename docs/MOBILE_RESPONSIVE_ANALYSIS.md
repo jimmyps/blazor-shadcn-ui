@@ -48,7 +48,7 @@ The Blazor Shadcn UI library demonstrates **solid mobile responsiveness** with w
 
 ### 1.2 Viewport Configuration
 
-**File:** `/demo/BlazorUI.Demo.Client/wwwroot/index.html`
+**File:** `/demo/NeoUI.Demo.Client/wwwroot/index.html`
 
 ```html
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -58,7 +58,7 @@ The Blazor Shadcn UI library demonstrates **solid mobile responsiveness** with w
 
 ### 1.3 Mobile Detection System
 
-**File:** `/src/BlazorUI.Components/wwwroot/js/responsive-nav.js`
+**File:** `/src/NeoUI.Blazor/wwwroot/js/responsive-nav.js`
 
 - **Technology:** ResizeObserver API (better performance than resize events)
 - **Breakpoint:** 768px (`MOBILE_BREAKPOINT`)
@@ -469,7 +469,7 @@ button, a {
 ### 5.2 CSS Delivery
 
 **Pre-built CSS:**
-- Single `blazorui.css` file (included in NuGet)
+- Single `components.css` file (included in NuGet)
 - No runtime CSS generation
 - Optimized for production
 
@@ -654,7 +654,7 @@ pa11y --viewport '{"width":375,"height":667}' https://demo-site-url
 
 ### 10.1 Feature Parity ✅
 
-**BlazorUI achieves excellent parity with shadcn/ui:**
+**NeoUI achieves excellent parity with shadcn/ui:**
 - ✅ Same design tokens (CSS variables)
 - ✅ Same component variants
 - ✅ Same responsive breakpoints

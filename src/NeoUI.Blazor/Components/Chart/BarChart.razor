@@ -1,0 +1,248 @@
+@namespace NeoUI.Blazor.Chart
+@using NeoUI.Blazor.Chart.Internal
+@typeparam TData
+@inherits ChartBase<TData>
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-bar-container" style="width: 100%; height: 100%; position: relative;">
+        <div @ref="_canvasRef" style="width: 100%; height: 100%;"></div>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private List<Bar> _bars = new();
+    
+    /// <summary>
+    /// Gets or sets the bar chart layout (vertical or horizontal).
+    /// </summary>
+    [Parameter]
+    public BarLayout Layout { get; set; } = BarLayout.Vertical;
+    
+    /// <summary>
+    /// Gets or sets the stack offset mode for percentage stacking.
+    /// </summary>
+    [Parameter]
+    public StackOffset StackOffset { get; set; } = StackOffset.None;
+    
+    protected override EChartsOption BuildEChartsOption()
+    {
+        var option = new EChartsOption
+        {
+            Grid = BuildGrid(),
+            Legend = BuildLegend(),
+            Tooltip = BuildTooltip(),
+            XAxis = BuildXAxis(),
+            YAxis = BuildYAxis(),
+            Series = BuildSeries(),
+            Animation = EnableAnimation,
+            AnimationDuration = EnableAnimation ? AnimationDuration : 0,
+            AnimationEasing = MapAnimationEasing(AnimationEasing),
+            AnimationDelay = AnimationDelay,
+            AnimationDurationUpdate = AnimationDurationUpdate,
+            AnimationEasingUpdate = MapAnimationEasing(AnimationEasingUpdate)
+        };
+        
+        return option;
+    }
+    
+    private EChartsAxis BuildXAxis()
+    {
+        var xAxis = _xAxis ?? new XAxis();
+        var axis = BuildAxis(xAxis, null, true);
+        
+        // For vertical bars, X is category; for horizontal, X is value
+        if (Layout == BarLayout.Vertical)
+        {
+            if (!string.IsNullOrEmpty(xAxis.DataKey))
+            {
+                axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
+            }
+        }
+        else
+        {
+            axis.Type = "value";
+        }
+        
+        return axis;
+    }
+    
+    private EChartsAxis BuildYAxis()
+    {
+        var yAxis = _yAxis ?? new YAxis();
+        var axis = BuildAxis(null, yAxis, false);
+        
+        // For horizontal bars, Y is category
+        if (Layout == BarLayout.Horizontal)
+        {
+            axis.Type = "category";
+            if (_xAxis != null && !string.IsNullOrEmpty(_xAxis.DataKey))
+            {
+                axis.Data = DataExtractor.GetStringValues(Data, _xAxis.DataKey);
+            }
+        }
+        
+        return axis;
+    }
+    
+    private List<EChartsSeries> BuildSeries()
+    {
+        var seriesList = new List<EChartsSeries>();
+        
+        if (_bars.Any())
+        {
+            for (int i = 0; i < _bars.Count; i++)
+            {
+                var bar = _bars[i];
+                var data = DataExtractor.GetNumericValues(Data, bar.DataKey);
+                
+                var series = new EChartsSeries
+                {
+                    Type = "bar",
+                    Name = bar.Name ?? bar.DataKey,
+                    Data = data.Cast<object>().ToList(),
+                    Stack = bar.StackId,
+                    ItemStyle = new EChartsItemStyle
+                    {
+                        Color = GetSeriesColor(i, bar.Color),
+                        BorderRadius = bar.Radius.HasValue ? bar.Radius.Value : null,
+                        Opacity = bar.Opacity
+                    },
+                    Emphasis = new EChartsEmphasis
+                    {
+                        Disabled = !bar.Emphasis,
+                        Focus = bar.Focus == Focus.Self ? "self" : null
+                    }
+                };
+                
+                // Map label parameters to ECharts series.label
+                if (bar.ShowLabel || bar.LabelList != null)
+                {
+                    var labelList = bar.LabelList;
+                    series.Label = new EChartsLabel
+                    {
+                        Show = labelList?.Show ?? bar.ShowLabel,
+                        Position = MapLabelPosition(labelList?.Position ?? bar.LabelPosition ?? LabelPosition.Top),
+                        Formatter = labelList?.Formatter ?? bar.LabelFormatter,
+                        Color = labelList?.Color,
+                        FontSize = labelList?.FontSize,
+                        Offset = labelList?.Offset
+                    };
+                }
+                
+                // Map animation properties (series-level overrides chart-level defaults)
+                series.Animation = bar.EnableAnimation ?? EnableAnimation;
+                series.AnimationDuration = bar.AnimationDuration ?? AnimationDuration;
+                series.AnimationEasing = MapAnimationEasing(bar.AnimationEasing ?? AnimationEasing);
+                series.AnimationDelay = bar.AnimationDelay ?? AnimationDelay;
+                series.AnimationDurationUpdate = bar.AnimationDurationUpdate ?? AnimationDurationUpdate;
+                series.AnimationEasingUpdate = MapAnimationEasing(bar.AnimationEasingUpdate ?? AnimationEasingUpdate);
+                
+                seriesList.Add(series);
+            }
+            
+            // Apply percentage stacking transform if StackOffset.Expand
+            if (StackOffset == StackOffset.Expand && seriesList.Any())
+            {
+                ApplyPercentageStackingTransform(seriesList);
+            }
+        }
+        
+        return seriesList;
+    }
+    
+    private void ApplyPercentageStackingTransform(List<EChartsSeries> seriesList)
+    {
+        // Group series by stack ID
+        var stackGroups = seriesList
+            .Where(s => !string.IsNullOrEmpty(s.Stack))
+            .GroupBy(s => s.Stack)
+            .ToList();
+        
+        if (!stackGroups.Any()) return;
+        
+        // For each stack group, normalize values to percentages
+        foreach (var group in stackGroups)
+        {
+            var series = group.ToList();
+            if (!series.Any()) continue;
+            
+            // Get the maximum data length
+            int dataLength = series.Max(s => (s.Data as List<object>)?.Count ?? 0);
+            
+            // Calculate totals for each data point
+            var totals = new double[dataLength];
+            for (int i = 0; i < dataLength; i++)
+            {
+                double total = 0;
+                foreach (var s in series)
+                {
+                    var dataList = s.Data as List<object>;
+                    if (dataList != null && i < dataList.Count)
+                    {
+                        var value = Convert.ToDouble(dataList[i]);
+                        total += value;
+                    }
+                }
+                totals[i] = total > 0 ? total : 1; // Avoid division by zero
+            }
+            
+            // Convert each value to percentage
+            foreach (var s in series)
+            {
+                var dataList = s.Data as List<object>;
+                if (dataList == null) continue;
+                
+                var normalizedData = new List<object>();
+                for (int i = 0; i < dataList.Count; i++)
+                {
+                    var value = Convert.ToDouble(dataList[i]);
+                    var percentage = totals[i] > 0 ? (value / totals[i]) * 100 : 0;
+                    normalizedData.Add(percentage);
+                }
+                s.Data = normalizedData;
+            }
+        }
+    }
+    
+    private string MapLabelPosition(LabelPosition position)
+    {
+        return position switch
+        {
+            LabelPosition.Top => "top",
+            LabelPosition.Bottom => "bottom",
+            LabelPosition.Left => "left",
+            LabelPosition.Right => "right",
+            LabelPosition.Inside => "inside",
+            LabelPosition.InsideTop => "insideTop",
+            LabelPosition.InsideBottom => "insideBottom",
+            LabelPosition.InsideLeft => "insideLeft",
+            LabelPosition.InsideRight => "insideRight",
+            LabelPosition.Center => "center",
+            LabelPosition.Outside => "outside",
+            _ => "top"
+        };
+    }
+    
+    protected override ChartType GetChartType()
+    {
+        return ChartType.Bar;
+    }
+    
+    protected override TooltipMode GetDefaultTooltipMode()
+    {
+        return TooltipMode.Axis;
+    }
+    
+    internal void RegisterBar(Bar bar)
+    {
+        _bars.Add(bar);
+        StateHasChanged();
+    }
+    
+    internal void RegisterGrid(Grid grid) { _grid = grid; StateHasChanged(); }
+    internal void RegisterXAxis(XAxis xAxis) { _xAxis = xAxis; StateHasChanged(); }
+    internal void RegisterYAxis(YAxis yAxis) { _yAxis = yAxis; StateHasChanged(); }
+    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+}

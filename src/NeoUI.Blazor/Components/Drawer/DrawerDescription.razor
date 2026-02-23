@@ -1,0 +1,18 @@
+@namespace NeoUI.Blazor.Drawer
+
+<p class="@CssClass">
+    @ChildContent
+</p>
+
+@code {
+    [Parameter]
+    public string? Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string CssClass => NeoUI.Blazor.Utilities.ClassNames.cn(
+        "text-sm text-muted-foreground",
+        Class
+    );
+}

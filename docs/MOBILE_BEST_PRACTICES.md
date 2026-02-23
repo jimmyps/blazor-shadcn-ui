@@ -1,6 +1,6 @@
-# Mobile Development Best Practices for BlazorUI
+# Mobile Development Best Practices for NeoUI
 
-This guide provides best practices and patterns for building mobile-responsive applications with BlazorUI components.
+This guide provides best practices and patterns for building mobile-responsive applications with NeoUI components.
 
 ## Table of Contents
 
@@ -25,7 +25,7 @@ Always include the viewport meta tag in your `App.razor` or `index.html`:
 
 ### Mobile Breakpoints
 
-BlazorUI uses Tailwind's mobile-first breakpoints:
+NeoUI uses Tailwind's mobile-first breakpoints:
 
 ```
 - Mobile:    0px - 767px    (default, no prefix)
@@ -681,7 +681,7 @@ For each page/component:
 - [Google Mobile-Friendly Test](https://search.google.com/test/mobile-friendly)
 - [Lighthouse Mobile Audit](https://developers.google.com/web/tools/lighthouse)
 
-### BlazorUI Specific
+### NeoUI Specific
 - [Component Documentation](/docs)
 - [Mobile Analysis Report](/docs/MOBILE_RESPONSIVE_ANALYSIS.md)
 - [Example Implementations](/demo)

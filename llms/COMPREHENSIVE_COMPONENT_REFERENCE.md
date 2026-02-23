@@ -1,6 +1,6 @@
 # Comprehensive Component Reference
 
-**NeoBlazorUI** - A comprehensive UI component library for Blazor inspired by shadcn/ui
+**NeoUI** - A comprehensive UI component library for Blazor inspired by shadcn/ui
 
 Version: 1.0.15  
 Target Framework: .NET 8.0+  
@@ -83,17 +83,17 @@ Pre-styled components with shadcn/ui design, built on top of primitives.
 
 ### Accordion
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Accordion`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Accordion`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Accordion
+@using NeoUI.Blazor.Accordion
 ```
 
 **Description:**
@@ -160,17 +160,17 @@ Vertically stacked collapsible content sections with smooth animations. Supports
 
 ### Alert
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Alert`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Alert`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Alert
+@using NeoUI.Blazor.Alert
 ```
 
 **Description:**
@@ -226,17 +226,17 @@ Status messages and callouts with multiple variants (default, destructive). Used
 
 ### AlertDialog
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.AlertDialog`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.AlertDialog`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.AlertDialog
+@using NeoUI.Blazor.AlertDialog
 ```
 
 **Description:**
@@ -337,17 +337,17 @@ Modal dialog for critical confirmations requiring user action. Prevents accident
 
 ### AspectRatio
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.AspectRatio`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.AspectRatio`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.AspectRatio
+@using NeoUI.Blazor.AspectRatio
 ```
 
 **Description:**
@@ -385,17 +385,17 @@ Display content within a desired width/height ratio. Maintains consistent propor
 
 ### Avatar
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Avatar`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Avatar`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Avatar
+@using NeoUI.Blazor.Avatar
 ```
 
 **Description:**
@@ -456,17 +456,17 @@ User avatars with image fallback support. Displays user profile pictures with au
 
 ### Badge
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Badge`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Badge`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Badge
+@using NeoUI.Blazor.Badge
 ```
 
 **Description:**
@@ -503,17 +503,17 @@ Status badges and labels with multiple variants. Used to highlight status, categ
 
 ### Breadcrumb
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Breadcrumb`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Breadcrumb`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Breadcrumb
+@using NeoUI.Blazor.Breadcrumb
 ```
 
 **Description:**
@@ -594,17 +594,17 @@ Hierarchical navigation with customizable separators. Shows current location wit
 
 ### Button
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Button`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Button`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Button
+@using NeoUI.Blazor.Button
 ```
 
 **Description:**
@@ -653,17 +653,17 @@ Interactive button component with multiple variants (default, destructive, outli
 
 ### ButtonGroup
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.ButtonGroup`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.ButtonGroup`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.ButtonGroup
+@using NeoUI.Blazor.ButtonGroup
 ```
 
 **Description:**
@@ -715,17 +715,17 @@ Visually grouped related buttons with connected styling. Groups multiple buttons
 
 ### Calendar
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Calendar`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Calendar`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Calendar
+@using NeoUI.Blazor.Calendar
 ```
 
 **Description:**
@@ -775,17 +775,17 @@ Date selection grid with month navigation. Interactive calendar for selecting si
 
 ### Card
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Card`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Card`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Card
+@using NeoUI.Blazor.Card
 ```
 
 **Description:**
@@ -863,17 +863,17 @@ Container for grouped content with header, body, and footer sections. Flexible c
 
 ### Carousel
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Carousel`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Carousel`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Carousel
+@using NeoUI.Blazor.Carousel
 ```
 
 **Description:**
@@ -934,17 +934,17 @@ Slideshow component with touch gestures and animations. Displays content in a ro
 
 ### Chart
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Chart`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Chart`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Chart
+@using NeoUI.Blazor.Chart
 ```
 
 **Description:**
@@ -1370,17 +1370,17 @@ Beautiful data visualizations with multiple chart types including Area, Bar, Com
 
 ### Checkbox
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Checkbox`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Checkbox`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Checkbox
+@using NeoUI.Blazor.Checkbox
 ```
 
 **Description:**
@@ -1428,17 +1428,17 @@ Accessible checkbox with indeterminate state support. Binary selection control w
 
 ### Collapsible
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Collapsible`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Collapsible`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Collapsible
+@using NeoUI.Blazor.Collapsible
 ```
 
 **Description:**
@@ -1504,17 +1504,17 @@ Expandable/collapsible content panels. Shows or hides content with smooth animat
 
 ### Combobox
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Combobox`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Combobox`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Combobox
+@using NeoUI.Blazor.Combobox
 ```
 
 **Description:**
@@ -1553,17 +1553,17 @@ Searchable autocomplete dropdown with keyboard navigation. Combines text input w
 
 ### Command
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Command`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Command`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Command
+@using NeoUI.Blazor.Command
 ```
 
 **Description:**
@@ -1659,17 +1659,17 @@ Command palette with keyboard navigation and search. Quick access to actions and
 
 ### ContextMenu
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.ContextMenu`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.ContextMenu`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.ContextMenu
+@using NeoUI.Blazor.ContextMenu
 ```
 
 **Description:**
@@ -1824,17 +1824,17 @@ Right-click context menus with actions and keyboard shortcuts. Displays contextu
 
 ### DataTable
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.DataTable`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.DataTable`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.DataTable
+@using NeoUI.Blazor.DataTable
 ```
 
 **Description:**
@@ -1932,17 +1932,17 @@ Powerful tables with sorting, filtering, pagination, and row selection. Enterpri
 
 ### DatePicker
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.DatePicker`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.DatePicker`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.DatePicker
+@using NeoUI.Blazor.DatePicker
 ```
 
 **Description:**
@@ -2019,17 +2019,17 @@ Date selection with calendar in popover. Includes support for single dates and d
 
 ### Dialog
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Dialog`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Dialog`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Dialog
+@using NeoUI.Blazor.Dialog
 ```
 
 **Description:**
@@ -2140,17 +2140,17 @@ Modal dialogs for focused interactions. Displays content in an overlay that requ
 
 ### DropdownMenu
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.DropdownMenu`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.DropdownMenu`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.DropdownMenu
+@using NeoUI.Blazor.DropdownMenu
 ```
 
 **Description:**
@@ -2321,17 +2321,17 @@ Context menus with nested submenus and keyboard navigation. Displays a menu of a
 
 ### Empty
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Empty`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Empty`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Empty
+@using NeoUI.Blazor.Empty
 ```
 
 **Description:**
@@ -2396,17 +2396,17 @@ Empty state displays with customizable icons and messages. Shows when there's no
 
 ### Field
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Field`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Field`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Field
+@using NeoUI.Blazor.Field
 ```
 
 **Description:**
@@ -2531,17 +2531,17 @@ Combine labels, controls, help text, and validation messages for accessible form
 
 ### Grid
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Grid`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Grid`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Grid
+@using NeoUI.Blazor.Grid
 ```
 
 **Description:**
@@ -2669,17 +2669,17 @@ Responsive grid layout system with customizable columns and gaps. CSS Grid-based
 
 ### HeightAnimation
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.HeightAnimation`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.HeightAnimation`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.HeightAnimation
+@using NeoUI.Blazor.HeightAnimation
 ```
 
 **Description:**
@@ -2722,17 +2722,17 @@ Smooth height transition animation component. Animates content height changes fo
 
 ### HoverCard
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.HoverCard`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.HoverCard`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.HoverCard
+@using NeoUI.Blazor.HoverCard
 ```
 
 **Description:**
@@ -2792,17 +2792,17 @@ Rich hover previews with delay support. Displays detailed information on hover w
 
 ### Input
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Input`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Input`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Input
+@using NeoUI.Blazor.Input
 ```
 
 **Description:**
@@ -2863,17 +2863,17 @@ Text input with multiple types (text, email, password, number, etc.) and validat
 
 ### InputGroup
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.InputGroup`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.InputGroup`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.InputGroup
+@using NeoUI.Blazor.InputGroup
 ```
 
 **Description:**
@@ -2978,17 +2978,17 @@ Enhanced inputs with icons, buttons, and addons. Combines input with prefix/suff
 
 ### InputOtp
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.InputOtp`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.InputOtp`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.InputOtp
+@using NeoUI.Blazor.InputOtp
 ```
 
 **Description:**
@@ -3052,17 +3052,17 @@ One-time password input with individual character slots. Specialized input for O
 
 ### Item
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Item`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Item`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Item
+@using NeoUI.Blazor.Item
 ```
 
 **Description:**
@@ -3175,17 +3175,17 @@ Flexible list items with media, content, and action slots. Reusable component fo
 
 ### Kbd
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Kbd`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Kbd`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Kbd
+@using NeoUI.Blazor.Kbd
 ```
 
 **Description:**
@@ -3220,17 +3220,17 @@ Keyboard shortcut badges for displaying key combinations. Shows keyboard shortcu
 
 ### Label
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Label`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Label`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Label
+@using NeoUI.Blazor.Label
 ```
 
 **Description:**
@@ -3260,17 +3260,17 @@ Accessible form labels with proper for/id association. Connects labels to form c
 
 ### MarkdownEditor
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.MarkdownEditor`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.MarkdownEditor`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.MarkdownEditor
+@using NeoUI.Blazor.MarkdownEditor
 ```
 
 **Description:**
@@ -3310,17 +3310,17 @@ Rich text editor with toolbar formatting and live preview. Full-featured markdow
 
 ### Menubar
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Menubar`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Menubar`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Menubar
+@using NeoUI.Blazor.Menubar
 ```
 
 **Description:**
@@ -3495,17 +3495,17 @@ Desktop application-style horizontal menu bar with dropdown menus. Top-level nav
 
 ### Motion
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Motion`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Motion`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Motion
+@using NeoUI.Blazor.Motion
 ```
 
 **Description:**
@@ -3699,17 +3699,17 @@ Declarative animation system powered by Motion.dev with 20+ presets including fa
 
 ### MultiSelect
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.MultiSelect`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.MultiSelect`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.MultiSelect
+@using NeoUI.Blazor.MultiSelect
 ```
 
 **Description:**
@@ -3754,17 +3754,17 @@ Searchable multi-selection with tags and checkboxes. Select multiple options fro
 
 ### NativeSelect
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.NativeSelect`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.NativeSelect`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.NativeSelect
+@using NeoUI.Blazor.NativeSelect
 ```
 
 **Description:**
@@ -3812,17 +3812,17 @@ Styled native HTML select dropdown. Enhanced styling for standard select element
 
 ### NavigationMenu
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.NavigationMenu`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.NavigationMenu`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.NavigationMenu
+@using NeoUI.Blazor.NavigationMenu
 ```
 
 **Description:**
@@ -3918,17 +3918,17 @@ Horizontal navigation with dropdown panels. Main site navigation with mega menu 
 
 ### Pagination
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Pagination`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Pagination`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Pagination
+@using NeoUI.Blazor.Pagination
 ```
 
 **Description:**
@@ -4017,17 +4017,17 @@ Page navigation with Previous/Next/Ellipsis support. Navigate through paginated 
 
 ### Popover
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Popover`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Popover`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Popover
+@using NeoUI.Blazor.Popover
 ```
 
 **Description:**
@@ -4088,17 +4088,17 @@ Floating content containers triggered by user interaction. Displays rich content
 
 ### Progress
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Progress`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Progress`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Progress
+@using NeoUI.Blazor.Progress
 ```
 
 **Description:**
@@ -4134,17 +4134,17 @@ Progress bars with animations and indeterminate state. Visual indicator for task
 
 ### RadioGroup
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.RadioGroup`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.RadioGroup`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.RadioGroup
+@using NeoUI.Blazor.RadioGroup
 ```
 
 **Description:**
@@ -4201,17 +4201,17 @@ Radio button groups with keyboard navigation. Mutually exclusive selection from 
 
 ### Resizable
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Resizable`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Resizable`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Resizable
+@using NeoUI.Blazor.Resizable
 ```
 
 **Description:**
@@ -4265,17 +4265,17 @@ Split layouts with draggable handles. Create resizable split panes.
 
 ### RichTextEditor
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.RichTextEditor`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.RichTextEditor`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.RichTextEditor
+@using NeoUI.Blazor.RichTextEditor
 ```
 
 **Description:**
@@ -4322,17 +4322,17 @@ WYSIWYG editor with formatting toolbar and HTML output. Full-featured rich text 
 
 ### ScrollArea
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.ScrollArea`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.ScrollArea`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.ScrollArea
+@using NeoUI.Blazor.ScrollArea
 ```
 
 **Description:**
@@ -4389,17 +4389,17 @@ Custom scrollbars for styled scroll regions. Enhanced scrolling with custom styl
 
 ### Select
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Select`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Select`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Select
+@using NeoUI.Blazor.Select
 ```
 
 **Description:**
@@ -4484,17 +4484,17 @@ Dropdown select with search and keyboard navigation. Enhanced select component w
 
 ### Separator
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Separator`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Separator`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Separator
+@using NeoUI.Blazor.Separator
 ```
 
 **Description:**
@@ -4529,17 +4529,17 @@ Visual dividers for separating content. Horizontal or vertical line separator.
 
 ### Sheet
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Sheet`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Sheet`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Sheet
+@using NeoUI.Blazor.Sheet
 ```
 
 **Description:**
@@ -4645,17 +4645,17 @@ Slide-out panels from any edge (top, right, bottom, left). Drawer component for 
 
 ### Sidebar
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Sidebar`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Sidebar`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Sidebar
+@using NeoUI.Blazor.Sidebar
 ```
 
 **Description:**
@@ -4902,17 +4902,17 @@ Responsive sidebar with collapsible icon mode, multiple variants (default, float
 
 ### Skeleton
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Skeleton`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Skeleton`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Skeleton
+@using NeoUI.Blazor.Skeleton
 ```
 
 **Description:**
@@ -4948,17 +4948,17 @@ Loading placeholders with shimmer animation. Shows content structure while loadi
 
 ### Slider
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Slider`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Slider`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Slider
+@using NeoUI.Blazor.Slider
 ```
 
 **Description:**
@@ -4997,17 +4997,17 @@ Range input for numeric value selection with single or multiple handles. Interac
 
 ### Spinner
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Spinner`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Spinner`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Spinner
+@using NeoUI.Blazor.Spinner
 ```
 
 **Description:**
@@ -5042,17 +5042,17 @@ Loading indicators with multiple sizes. Animated spinner for loading states.
 
 ### Switch
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Switch`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Switch`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Switch
+@using NeoUI.Blazor.Switch
 ```
 
 **Description:**
@@ -5099,17 +5099,17 @@ Toggle switch component for boolean settings. Alternative to checkbox with toggl
 
 ### Tabs
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Tabs`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Tabs`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Tabs
+@using NeoUI.Blazor.Tabs
 ```
 
 **Description:**
@@ -5182,17 +5182,17 @@ Tabbed interfaces with controlled/uncontrolled modes. Organize content into swit
 
 ### Textarea
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Textarea`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Textarea`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Textarea
+@using NeoUI.Blazor.Textarea
 ```
 
 **Description:**
@@ -5250,17 +5250,17 @@ Multi-line text input with automatic content sizing. Resizable textarea for long
 
 ### TimePicker
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.TimePicker`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.TimePicker`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.TimePicker
+@using NeoUI.Blazor.TimePicker
 ```
 
 **Description:**
@@ -5304,17 +5304,17 @@ Time selection with 12/24-hour format support. Interactive time input with dropd
 
 ### Toast
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Toast`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Toast`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Toast
+@using NeoUI.Blazor.Toast
 ```
 
 **Description:**
@@ -5407,17 +5407,17 @@ Temporary notifications with variants and actions. Shows brief messages and aler
 
 ### Toggle
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Toggle`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Toggle`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Toggle
+@using NeoUI.Blazor.Toggle
 ```
 
 **Description:**
@@ -5465,17 +5465,17 @@ Pressable toggle buttons for boolean states. Button that toggles between pressed
 
 ### ToggleGroup
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.ToggleGroup`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.ToggleGroup`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.ToggleGroup
+@using NeoUI.Blazor.ToggleGroup
 ```
 
 **Description:**
@@ -5537,17 +5537,17 @@ Single or multiple selection toggle groups. Group of toggle buttons with exclusi
 
 ### Tooltip
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Tooltip`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Tooltip`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Tooltip
+@using NeoUI.Blazor.Tooltip
 ```
 
 **Description:**
@@ -5622,17 +5622,17 @@ Contextual hover tooltips with delay and positioning. Shows helpful text on hove
 
 ### Typography
 
-**Package:** `NeoBlazorUI.Components`  
-**Namespace:** `BlazorUI.Components.Typography`
+**Package:** `NeoUI.Blazor`  
+**Namespace:** `NeoUI.Blazor.Typography`
 
 **Installation:**
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 **Import:**
 ```razor
-@using BlazorUI.Components.Typography
+@using NeoUI.Blazor.Typography
 ```
 
 **Description:**

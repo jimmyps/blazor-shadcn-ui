@@ -1,0 +1,248 @@
+@namespace NeoUI.Blazor.Chart
+@using NeoUI.Blazor.Chart.Internal
+@typeparam TData
+@inherits ChartBase<TData>
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-area-container" style="width: 100%; height: 100%; position: relative;">
+        <div @ref="_canvasRef" style="width: 100%; height: 100%;"></div>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private List<Area> _areas = new();
+    
+    /// <summary>
+    /// Gets or sets the stack offset mode for percentage stacking.
+    /// </summary>
+    [Parameter]
+    public StackOffset StackOffset { get; set; } = StackOffset.None;
+    
+    protected override EChartsOption BuildEChartsOption()
+    {
+        var option = new EChartsOption
+        {
+            Grid = BuildGrid(),
+            Legend = BuildLegend(),
+            Tooltip = BuildTooltip(),
+            XAxis = BuildXAxis(),
+            YAxis = BuildYAxis(),
+            Series = BuildSeries(),
+            Animation = EnableAnimation,
+            AnimationDuration = EnableAnimation ? AnimationDuration : 0,
+            AnimationEasing = MapAnimationEasing(AnimationEasing),
+            AnimationDelay = AnimationDelay,
+            AnimationDurationUpdate = AnimationDurationUpdate,
+            AnimationEasingUpdate = MapAnimationEasing(AnimationEasingUpdate)
+        };
+        
+        return option;
+    }
+    
+    private EChartsAxis BuildXAxis()
+    {
+        var xAxis = _xAxis ?? new XAxis();
+        var axis = BuildAxis(xAxis, null, true);
+        
+        if (!string.IsNullOrEmpty(xAxis.DataKey))
+        {
+            axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
+        }
+        
+        return axis;
+    }
+    
+    private EChartsAxis BuildYAxis()
+    {
+        var yAxis = _yAxis ?? new YAxis();
+        return BuildAxis(null, yAxis, false);
+    }
+    
+    private List<EChartsSeries> BuildSeries()
+    {
+        var seriesList = new List<EChartsSeries>();
+        
+        if (_areas.Any())
+        {
+            for (int i = 0; i < _areas.Count; i++)
+            {
+                var area = _areas[i];
+                var data = DataExtractor.GetNumericValues(Data, area.DataKey);
+                
+                var series = new EChartsSeries
+                {
+                    Type = "line",
+                    Name = area.Name ?? area.DataKey,
+                    Data = data.Cast<object>().ToList(),
+                    Smooth = area.Interpolation == InterpolationType.Natural || area.Interpolation == InterpolationType.Monotone,
+                    ShowSymbol = area.ShowDots,
+                    LineStyle = new EChartsLineStyle
+                    {
+                        Width = area.LineWidth,
+                        Color = GetSeriesColor(i, area.Color)
+                    },
+                    AreaStyle = new EChartsAreaStyle
+                    {
+                        // Use gradient if Fill component is present, otherwise use series color
+                        Color = BuildGradient(area.Fill) ?? GetSeriesColor(i, area.Color),
+                        // Priority: Fill.Opacity > Area.Opacity > default (0.3)
+                        Opacity = area.Fill?.Opacity ?? area.Opacity ?? 0.3
+                    },
+                    ItemStyle = new EChartsItemStyle
+                    {
+                        Color = GetSeriesColor(i, area.Color)
+                    },
+                    Stack = area.StackId,
+                    Emphasis = new EChartsEmphasis
+                    {
+                        Disabled = !area.Emphasis,
+                        Focus = area.Focus == Focus.Self ? "self" : null
+                    }
+                };
+                
+                // Map interpolation type to ECharts step property
+                if (area.Interpolation == InterpolationType.Step)
+                {
+                    series.Step = "middle";
+                }
+                else if (area.Interpolation == InterpolationType.StepBefore)
+                {
+                    series.Step = "start";
+                }
+                else if (area.Interpolation == InterpolationType.StepAfter)
+                {
+                    series.Step = "end";
+                }
+                
+                // Map label parameters to ECharts series.label
+                if (area.ShowLabel || area.LabelList != null)
+                {
+                    var labelList = area.LabelList;
+                    series.Label = new EChartsLabel
+                    {
+                        Show = labelList?.Show ?? area.ShowLabel,
+                        Position = MapLabelPosition(labelList?.Position ?? area.LabelPosition ?? Chart.LabelPosition.Top),
+                        Formatter = labelList?.Formatter ?? area.LabelFormatter,
+                        Color = labelList?.Color,
+                        FontSize = labelList?.FontSize,
+                        Offset = labelList?.Offset
+                    };
+                }
+                
+                // Map animation properties (series-level overrides chart-level defaults)
+                series.Animation = area.EnableAnimation ?? EnableAnimation;
+                series.AnimationDuration = area.AnimationDuration ?? AnimationDuration;
+                series.AnimationEasing = MapAnimationEasing(area.AnimationEasing ?? AnimationEasing);
+                series.AnimationDelay = area.AnimationDelay ?? AnimationDelay;
+                series.AnimationDurationUpdate = area.AnimationDurationUpdate ?? AnimationDurationUpdate;
+                series.AnimationEasingUpdate = MapAnimationEasing(area.AnimationEasingUpdate ?? AnimationEasingUpdate);
+                
+                seriesList.Add(series);
+            }
+            
+            // Apply percentage stacking transform if StackOffset.Expand
+            if (StackOffset == StackOffset.Expand && seriesList.Any())
+            {
+                ApplyPercentageStackingTransform(seriesList);
+            }
+        }
+        
+        return seriesList;
+    }
+    
+    private void ApplyPercentageStackingTransform(List<EChartsSeries> seriesList)
+    {
+        // Group series by stack ID
+        var stackGroups = seriesList
+            .Where(s => !string.IsNullOrEmpty(s.Stack))
+            .GroupBy(s => s.Stack)
+            .ToList();
+        
+        if (!stackGroups.Any()) return;
+        
+        // For each stack group, normalize values to percentages
+        foreach (var group in stackGroups)
+        {
+            var series = group.ToList();
+            if (!series.Any()) continue;
+            
+            // Get the maximum data length
+            int dataLength = series.Max(s => (s.Data as List<object>)?.Count ?? 0);
+            
+            // Calculate totals for each data point
+            var totals = new double[dataLength];
+            for (int i = 0; i < dataLength; i++)
+            {
+                double total = 0;
+                foreach (var s in series)
+                {
+                    var dataList = s.Data as List<object>;
+                    if (dataList != null && i < dataList.Count)
+                    {
+                        var value = Convert.ToDouble(dataList[i]);
+                        total += value;
+                    }
+                }
+                totals[i] = total > 0 ? total : 1; // Avoid division by zero
+            }
+            
+            // Convert each value to percentage
+            foreach (var s in series)
+            {
+                var dataList = s.Data as List<object>;
+                if (dataList == null) continue;
+                
+                var normalizedData = new List<object>();
+                for (int i = 0; i < dataList.Count; i++)
+                {
+                    var value = Convert.ToDouble(dataList[i]);
+                    var percentage = totals[i] > 0 ? (value / totals[i]) * 100 : 0;
+                    normalizedData.Add(percentage);
+                }
+                s.Data = normalizedData;
+            }
+        }
+    }
+    
+    private string MapLabelPosition(LabelPosition position)
+    {
+        return position switch
+        {
+            LabelPosition.Top => "top",
+            LabelPosition.Bottom => "bottom",
+            LabelPosition.Left => "left",
+            LabelPosition.Right => "right",
+            LabelPosition.Inside => "inside",
+            LabelPosition.InsideTop => "insideTop",
+            LabelPosition.InsideBottom => "insideBottom",
+            LabelPosition.InsideLeft => "insideLeft",
+            LabelPosition.InsideRight => "insideRight",
+            LabelPosition.Center => "center",
+            LabelPosition.Outside => "outside",
+            _ => "top"
+        };
+    }
+    
+    protected override ChartType GetChartType()
+    {
+        return ChartType.Line; // Area is rendered as line with areaStyle
+    }
+    
+    protected override TooltipMode GetDefaultTooltipMode()
+    {
+        return TooltipMode.Axis;
+    }
+    
+    internal void RegisterArea(Area area)
+    {
+        _areas.Add(area);
+        StateHasChanged();
+    }
+    
+    internal void RegisterGrid(Grid grid) { _grid = grid; StateHasChanged(); }
+    internal void RegisterXAxis(XAxis xAxis) { _xAxis = xAxis; StateHasChanged(); }
+    internal void RegisterYAxis(YAxis yAxis) { _yAxis = yAxis; StateHasChanged(); }
+    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+}

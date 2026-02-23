@@ -32,7 +32,7 @@ Implemented a **layered z-index hierarchy** using centralized constants and remo
 
 ### Implementation
 
-1. **Created `ZIndexLevels` Constants** (`src/BlazorUI.Primitives/Constants/ZIndexLevels.cs`)
+1. **Created `ZIndexLevels` Constants** (`src/NeoUI.Blazor.Primitives/Constants/ZIndexLevels.cs`)
    ```csharp
    public static class ZIndexLevels
    {
@@ -43,7 +43,7 @@ Implemented a **layered z-index hierarchy** using centralized constants and remo
    }
    ```
 
-2. **Fixed JavaScript Portal Container** (`src/BlazorUI.Primitives/wwwroot/js/primitives/portal.js`)
+2. **Fixed JavaScript Portal Container** (`src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/portal.js`)
    - **Removed:** Hardcoded `z-index: 9999` from portal container
    - **Why:** The portal container should NOT have a z-index - it's just a positioning wrapper
    - **Result:** Individual portal contents now control their own z-index via CSS classes
@@ -146,23 +146,23 @@ The Select dropdown now correctly appears above the dialog content and overlay.
 ## Files Modified
 
 **New Files:**
-- `src/BlazorUI.Primitives/Constants/ZIndexLevels.cs`
+- `src/NeoUI.Blazor.Primitives/Constants/ZIndexLevels.cs`
 
 **Updated Components (14 files):**
-- `src/BlazorUI.Components/Components/Dialog/DialogContent.razor`
-- `src/BlazorUI.Components/Components/Popover/PopoverContent.razor`
-- `src/BlazorUI.Components/Components/Select/SelectContent.razor`
-- `src/BlazorUI.Components/Components/Tooltip/TooltipContent.razor`
-- `src/BlazorUI.Components/Components/DropdownMenu/DropdownMenuContent.razor`
-- `src/BlazorUI.Components/Components/DropdownMenu/DropdownMenuSubContent.razor`
-- `src/BlazorUI.Components/Components/ContextMenu/ContextMenuContent.razor`
-- `src/BlazorUI.Components/Components/ContextMenu/ContextMenuSubContent.razor`
-- `src/BlazorUI.Components/Components/Menubar/MenubarContent.razor`
-- `src/BlazorUI.Components/Components/Menubar/MenubarSubContent.razor`
-- `src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor`
+- `src/NeoUI.Blazor/Components/Dialog/DialogContent.razor`
+- `src/NeoUI.Blazor/Components/Popover/PopoverContent.razor`
+- `src/NeoUI.Blazor/Components/Select/SelectContent.razor`
+- `src/NeoUI.Blazor/Components/Tooltip/TooltipContent.razor`
+- `src/NeoUI.Blazor/Components/DropdownMenu/DropdownMenuContent.razor`
+- `src/NeoUI.Blazor/Components/DropdownMenu/DropdownMenuSubContent.razor`
+- `src/NeoUI.Blazor/Components/ContextMenu/ContextMenuContent.razor`
+- `src/NeoUI.Blazor/Components/ContextMenu/ContextMenuSubContent.razor`
+- `src/NeoUI.Blazor/Components/Menubar/MenubarContent.razor`
+- `src/NeoUI.Blazor/Components/Menubar/MenubarSubContent.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/Floating/FloatingPortal.razor`
 
 **Updated JavaScript (1 file):**
-- `src/BlazorUI.Primitives/wwwroot/js/primitives/portal.js` - Removed hardcoded `z-index: 9999` from portal container
+- `src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/portal.js` - Removed hardcoded `z-index: 9999` from portal container
 
 ## Custom Z-Index Override
 

@@ -28,27 +28,27 @@ See [PORTAL_ARCHITECTURE.md](./PORTAL_ARCHITECTURE.md) for complete architecture
 ### 1. DropdownMenuSubContent ✅
 - **Before:** Separate portal per submenu
 - **After:** Appends to parent portal scope
-- **Location:** `src/BlazorUI.Primitives/Primitives/DropdownMenu/DropdownMenuSubContent.razor`
+- **Location:** `src/NeoUI.Blazor.Primitives/Primitives/DropdownMenu/DropdownMenuSubContent.razor`
 - **Portal ID Pattern:** `dropdown-submenu-{hash}` → appends to `dropdown-portal-{contentId}`
 
 ### 2. MenubarSubContent ✅
 - **Before:** Separate portal per submenu
 - **After:** Appends to parent portal scope
-- **Location:** `src/BlazorUI.Primitives/Primitives/Menubar/MenubarSubContent.razor`
+- **Location:** `src/NeoUI.Blazor.Primitives/Primitives/Menubar/MenubarSubContent.razor`
 - **Portal ID Pattern:** `menubar-submenu-{hash}` → appends to `menubar-menu-{triggerId}`
 
 ### 3. ContextMenuSubContent ✅ (Just Completed!)
 - **Before:** Legacy positioning with manual PositioningService calls
 - **After:** FloatingPortal + hierarchical portal system
-- **Location:** `src/BlazorUI.Primitives/Primitives/ContextMenu/ContextMenuSubContent.razor`
+- **Location:** `src/NeoUI.Blazor.Primitives/Primitives/ContextMenu/ContextMenuSubContent.razor`
 - **Portal ID Pattern:** `contextmenu-submenu-{hash}` → appends to `contextmenu-portal-{contentId}`
 
 **Key Changes:**
 ```diff
-- @using BlazorUI.Primitives.Services
+- @using NeoUI.Blazor.Primitives.Services
 - @inject IPositioningService PositioningService
-+ @using BlazorUI.Primitives.Constants
-+ @using BlazorUI.Primitives.Floating
++ @using NeoUI.Blazor.Primitives.Constants
++ @using NeoUI.Blazor.Primitives.Floating
 
 - Manual positioning setup in OnAfterRenderAsync
 - GetMergedStyle(), GetAttributesWithoutStyle() helpers

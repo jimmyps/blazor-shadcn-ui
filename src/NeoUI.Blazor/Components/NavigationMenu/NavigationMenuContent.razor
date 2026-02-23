@@ -1,0 +1,69 @@
+@namespace NeoUI.Blazor.NavigationMenu
+@using NeoUI.Blazor.Primitives.Services
+
+@* NavigationMenuContent - styled content panel *@
+<NeoUI.Blazor.Primitives.NavigationMenu.NavigationMenuContent 
+    ForceMount="@ForceMount"
+    class="@GetClass()" 
+    @attributes="AdditionalAttributes">
+    @ChildContent
+</NeoUI.Blazor.Primitives.NavigationMenu.NavigationMenuContent>
+
+@code {
+    /// <summary>
+    /// The child content to render within the content panel.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// When true, the content is always mounted in the DOM (for animations).
+    /// Default is true for proper animation support.
+    /// </summary>
+    [Parameter]
+    public bool ForceMount { get; set; } = true;
+
+    /// <summary>
+    /// Z-index for the navigation menu content.
+    /// Default is 60 (PopoverContent level).
+    /// </summary>
+    [Parameter]
+    public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;
+
+    /// <summary>
+    /// Additional CSS classes to apply.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional attributes to apply.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string GetClass()
+    {
+        var baseClass = $"absolute left-0 top-full w-auto z-{ZIndex} bg-popover rounded-md border shadow-md " +
+                       "data-[activated=false]:invisible data-[activated=true]:visible " + // Start with hidden
+                       "data-[activated=true]:data-[state=closed]:opacity-0 data-[state=open]:opacity-100 " + // Full opacity when open
+
+                       // State-based animations (open/close)
+                       "data-[motion='']:data-[state=open]:animate-in " +
+                       "data-[motion='']:data-[state=closed]:animate-out " +
+                       "data-[motion='']:data-[state=closed]:fade-out-0 " +
+                       "data-[motion='']:data-[state=open]:fade-in-0 " +
+                       "data-[motion='']:data-[state=closed]:zoom-out-95 " +
+                       "data-[motion='']:data-[state=open]:zoom-in-95 " +
+
+                       // Motion-based animations (directional slides when moving between items)
+                       "data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out " +
+                       "data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out " +
+                       "data-[motion=from-end]:slide-in-from-right-52 " +
+                       "data-[motion=from-start]:slide-in-from-left-52 " +
+                       "data-[motion=to-end]:slide-out-to-right-52 " +
+                       "data-[motion=to-start]:slide-out-to-left-52 " +
+                       "md:w-auto";
+        return string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
+    }
+}

@@ -1,18 +1,18 @@
-# BlazorUI Documentation
+# NeoUI Documentation
 
-This directory contains technical documentation, architectural decisions, implementation guides, and best practices for the BlazorUI component library.
+This directory contains technical documentation, architectural decisions, implementation guides, and best practices for the NeoUI component library.
 
 ## 📱 Mobile Responsiveness
 
 **NEW:** Comprehensive mobile support documentation
 
 - **[Mobile Responsive Analysis](MOBILE_RESPONSIVE_ANALYSIS.md)** - Complete analysis of mobile support across all 95+ components, including findings, recommendations, and testing results
-- **[Mobile Best Practices](MOBILE_BEST_PRACTICES.md)** - Practical guide for building mobile-responsive applications with BlazorUI components, with code examples and patterns
+- **[Mobile Best Practices](MOBILE_BEST_PRACTICES.md)** - Practical guide for building mobile-responsive applications with NeoUI components, with code examples and patterns
 - **[Mobile Checklist](MOBILE_CHECKLIST.md)** - Development and testing checklist for ensuring mobile responsiveness
 
 ### Mobile Support Summary
 
-The BlazorUI library provides **production-ready mobile responsiveness** (80/100 rating) with:
+The NeoUI library provides **production-ready mobile responsiveness** (80/100 rating) with:
 
 ✅ **Strengths:**
 - Smart Sidebar ↔ Sheet navigation at 768px breakpoint
@@ -69,7 +69,7 @@ docs/
 
 1. Start with [Mobile Best Practices](MOBILE_BEST_PRACTICES.md) for mobile-responsive layouts
 2. Review [Mobile Checklist](MOBILE_CHECKLIST.md) during development
-3. Check component-specific documentation in `/demo/BlazorUI.Demo.Shared/Pages/Components`
+3. Check component-specific documentation in `/demo/NeoUI.Demo.Shared/Pages/Components`
 
 ### For Contributors
 
@@ -239,4 +239,4 @@ When contributing documentation:
 ---
 
 **Last Updated:** February 16, 2026  
-**Maintained By:** BlazorUI Contributors
+**Maintained By:** NeoUI Contributors

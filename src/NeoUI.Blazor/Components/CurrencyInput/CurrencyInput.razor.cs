@@ -1,0 +1,824 @@
+using NeoUI.Blazor.Common;
+using NeoUI.Blazor.Utilities;
+using NeoUI.Blazor.Validation;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
+using System.Globalization;
+using System.Linq.Expressions;
+
+namespace NeoUI.Blazor.CurrencyInput;
+
+/// <summary>
+/// A currency input component that follows the shadcn/ui design system.
+/// </summary>
+/// <typeparam name="TValue">The type of numeric value (decimal or double).</typeparam>
+/// <remarks>
+/// <para>
+/// The CurrencyInput component provides a customizable, accessible currency input that supports
+/// locale-aware formatting. It follows WCAG 2.1 AA standards for accessibility and integrates 
+/// with Blazor's data binding system.
+/// </para>
+/// <para>
+/// Features:
+/// - Generic type support for decimal and double
+/// - Currency symbol formatting based on culture
+/// - Culture-aware decimal separator handling
+/// - Form submission support via name attribute
+/// - Input validation (required, min, max)
+/// - Auto-focus capability
+/// - Error state visualization via aria-invalid attribute
+/// - Smooth color transitions for state changes
+/// - Disabled and required states
+/// - Placeholder text support
+/// - Two-way data binding with Value/ValueChanged
+/// - Full ARIA attribute support
+/// - RTL (Right-to-Left) support
+/// - Dark mode compatible via CSS variables
+/// </para>
+/// </remarks>
+/// <example>
+/// <code>
+/// &lt;CurrencyInput TValue="decimal" @bind-Value="price" Currency="USD" /&gt;
+///
+/// &lt;CurrencyInput TValue="decimal" @bind-Value="amount" Currency="EUR" Culture="de-DE" /&gt;
+///
+/// &lt;CurrencyInput TValue="double" @bind-Value="cost" Currency="GBP" ShowCurrencySymbol="false" /&gt;
+/// </code>
+/// </example>
+public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
+{
+    /// <summary>
+    /// Cached currency definition to avoid repeated lookups.
+    /// </summary>
+    private CurrencyDefinition? _cachedCurrency;
+    
+    /// <summary>
+    /// Cached currency code for cache invalidation.
+    /// </summary>
+    private string? _cachedCurrencyCode;
+    
+    /// <summary>
+    /// JavaScript module reference for input event handling.
+    /// </summary>
+    private IJSObjectReference? _inputModule;
+    
+    /// <summary>
+    /// .NET object reference for JavaScript callbacks.
+    /// </summary>
+    private DotNetObjectReference<CurrencyInput<TValue>>? _dotNetRef;
+    
+    /// <summary>
+    /// Indicates whether JavaScript interop has been initialized.
+    /// </summary>
+    private bool _jsInitialized = false;
+    
+    /// <summary>
+    /// Validation behavior handler for EditContext integration.
+    /// </summary>
+    private InputValidationBehavior? _validationBehavior;
+    
+    /// <summary>
+    /// Auto-generated ID when Id parameter is not provided.
+    /// </summary>
+    private string? _generatedId;
+    
+    /// <summary>
+    /// Raw unformatted value shown during editing/focus.
+    /// </summary>
+    private string? _editingValue;
+    
+    /// <summary>
+    /// Indicates whether the input currently has focus.
+    /// </summary>
+    private bool _isFocused;
+
+    /// <summary>
+    /// Gets or sets the JavaScript runtime for interop operations.
+    /// </summary>
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = default!;
+
+    /// <summary>
+    /// Gets the cascaded EditContext from an EditForm.
+    /// </summary>
+    [CascadingParameter]
+    private EditContext? EditContext { get; set; }
+
+    /// <summary>
+    /// Gets or sets when the input should update its bound value.
+    /// </summary>
+    /// <remarks>
+    /// - Input: Updates value immediately on every keystroke (default)
+    /// - Change: Updates value only when input loses focus
+    /// </remarks>
+    [Parameter]
+    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Change;
+
+    /// <summary>
+    /// Gets or sets the debounce delay in milliseconds for Input mode.
+    /// Only applies when UpdateOn=Input. Set to 0 for immediate updates.
+    /// Default: 0 (no debounce)
+    /// </summary>
+    [Parameter]
+    public int DebounceDelay { get; set; } = 0;
+
+    /// <summary>
+    /// Gets or sets the current value of the input.
+    /// </summary>
+    /// <remarks>
+    /// Supports two-way binding via @bind-Value syntax.
+    /// </remarks>
+    [Parameter]
+    public TValue? Value { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the input value changes.
+    /// </summary>
+    /// <remarks>
+    /// This event is fired on every keystroke (oninput event).
+    /// Use with Value parameter for two-way binding.
+    /// </remarks>
+    [Parameter]
+    public EventCallback<TValue?> ValueChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the currency code (e.g., USD, EUR, GBP, JPY).
+    /// </summary>
+    /// <remarks>
+    /// Defaults to "USD". Used to determine the currency symbol and formatting.
+    /// </remarks>
+    [Parameter]
+    public string Currency { get; set; } = "USD";
+
+    /// <summary>
+    /// Gets or sets the culture code for formatting (e.g., en-US, de-DE, fr-FR).
+    /// </summary>
+    /// <remarks>
+    /// When null, uses the current culture. Determines decimal separators and number formatting.
+    /// </remarks>
+    [Parameter]
+    public string? Culture { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether to show the currency symbol.
+    /// </summary>
+    /// <remarks>
+    /// When true, displays the currency symbol (e.g., $, €, £) in the formatted value.
+    /// Defaults to true.
+    /// </remarks>
+    [Parameter]
+    public bool ShowCurrencySymbol { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the placeholder text displayed when the input is empty.
+    /// </summary>
+    /// <remarks>
+    /// Provides a hint to the user about what to enter.
+    /// Should not be used as a replacement for a label.
+    /// </remarks>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the input is disabled.
+    /// </summary>
+    /// <remarks>
+    /// When disabled:
+    /// - Input cannot be focused or edited
+    /// - Cursor is set to not-allowed
+    /// - Opacity is reduced for visual feedback
+    /// </remarks>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the input is required.
+    /// </summary>
+    /// <remarks>
+    /// When true, the HTML5 required attribute is set.
+    /// Works with form validation and :invalid CSS pseudo-class.
+    /// </remarks>
+    [Parameter]
+    public bool Required { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the input for form submission.
+    /// </summary>
+    /// <remarks>
+    /// This is critical for form submission. The name/value pair is submitted to the server.
+    /// Should be unique within the form.
+    /// </remarks>
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the input is read-only.
+    /// </summary>
+    /// <remarks>
+    /// When true, the user cannot modify the value, but it's still focusable and submitted with forms.
+    /// Different from Disabled - readonly inputs are still submitted with forms.
+    /// </remarks>
+    [Parameter]
+    public bool Readonly { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum number of characters allowed.
+    /// </summary>
+    /// <remarks>
+    /// When set, the browser will prevent users from entering more characters.
+    /// Useful for limiting very large currency amounts or budget constraints.
+    /// </remarks>
+    [Parameter]
+    public int? MaxLength { get; set; }
+
+    /// <summary>
+    /// Gets or sets the minimum value for validation.
+    /// </summary>
+    /// <remarks>
+    /// When set, values less than this minimum will be clamped to this value.
+    /// Can be specified as a string (e.g., "10", "0.01").
+    /// </remarks>
+    [Parameter]
+    public string? Min { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum value for validation.
+    /// </summary>
+    /// <remarks>
+    /// When set, values greater than this maximum will be clamped to this value.
+    /// Can be specified as a string (e.g., "1000", "999.99").
+    /// </remarks>
+    [Parameter]
+    public string? Max { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the input should be auto-focused when the page loads.
+    /// </summary>
+    /// <remarks>
+    /// Only one element per page should have autofocus.
+    /// Improves accessibility when used appropriately.
+    /// </remarks>
+    [Parameter]
+    public bool Autofocus { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional CSS classes to apply to the input.
+    /// </summary>
+    /// <remarks>
+    /// Custom classes are appended after the component's base classes,
+    /// allowing for style overrides and extensions.
+    /// </remarks>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Gets or sets the HTML id attribute for the input element.
+    /// </summary>
+    /// <remarks>
+    /// Used to associate the input with a label element via the label's 'for' attribute.
+    /// This is essential for accessibility and allows clicking the label to focus the input.
+    /// </remarks>
+    [Parameter]
+    public string? Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ARIA label for the input.
+    /// </summary>
+    /// <remarks>
+    /// Provides an accessible name for screen readers.
+    /// Use when there is no visible label element.
+    /// </remarks>
+    [Parameter]
+    public string? AriaLabel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ID of the element that describes the input.
+    /// </summary>
+    /// <remarks>
+    /// References the id of an element containing help text or error messages.
+    /// Improves screen reader experience by associating descriptive text.
+    /// </remarks>
+    [Parameter]
+    public string? AriaDescribedBy { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the input value is invalid.
+    /// </summary>
+    /// <remarks>
+    /// When true, aria-invalid="true" is set.
+    /// Should be set based on validation state.
+    /// </remarks>
+    [Parameter]
+    public bool? AriaInvalid { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether to automatically show validation errors from EditContext.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When true and used within an EditForm, automatically:
+    /// - Displays validation errors in a native browser tooltip
+    /// - Focuses the first invalid input
+    /// - Sets AriaInvalid to true for error styling (red border/ring)
+    /// </para>
+    /// <para>
+    /// Only the FIRST invalid input will show the tooltip and receive focus.
+    /// All invalid inputs will get the destructive border/ring styling via aria-invalid.
+    /// </para>
+    /// <para>
+    /// Requires ValueExpression to be set (automatically set when using @bind-Value).
+    /// Best used together with ValidationMessage for persistent error display.
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// &lt;CurrencyInput TValue="decimal" Id="price"
+    ///        @bind-Value="model.Price"
+    ///        ShowValidationError="true" /&gt;
+    /// &lt;ValidationMessage For="@(() => model.Price)" /&gt;
+    /// </code>
+    /// </example>
+    [Parameter]
+    public bool ShowValidationError { get; set; }
+
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    /// <remarks>
+    /// This is automatically set when using @bind-Value syntax.
+    /// Required for ShowValidationError to work with EditContext validation.
+    /// </remarks>
+    [Parameter]
+    public Expression<Func<TValue?>>? ValueExpression { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional attributes to be applied to the input element.
+    /// </summary>
+    /// <remarks>
+    /// Captures any HTML attributes not explicitly defined as parameters.
+    /// This allows for maximum flexibility while maintaining type safety for common attributes.
+    /// Examples: data-* attributes, form, list, size, title, tabindex, etc.
+    /// </remarks>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Gets whether the input is in an invalid state (for validation).
+    /// </summary>
+    /// <remarks>
+    /// When ShowValidationError is true, this is automatically set based on validation state.
+    /// Otherwise, uses the manually set AriaInvalid parameter.
+    /// </remarks>
+    private bool? EffectiveAriaInvalid => 
+        _validationBehavior?.EffectiveAriaInvalid ?? AriaInvalid;
+
+    /// <summary>
+    /// Gets the effective ID, generating a unique ID if none is provided.
+    /// </summary>
+    /// <remarks>
+    /// This ensures JavaScript can always reference the element, even when Id is not explicitly set.
+    /// The generated ID follows the pattern: currency-input-{6-character-guid}.
+    /// </remarks>
+    private string EffectiveId
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Id))
+                return Id;
+
+            if (_generatedId == null)
+            {
+                // Generate a unique 6-character ID using GUID
+                _generatedId = "currency-input-" + Guid.NewGuid().ToString("N")[..6];
+            }
+
+            return _generatedId;
+        }
+    }
+
+    /// <summary>
+    /// Gets the computed CSS classes for the input element.
+    /// </summary>
+    /// <remarks>
+    /// Combines:
+    /// - Base input styles (flex, rounded, border, transitions, focus states)
+    /// - aria-invalid pseudo-selector for error state styling with destructive colors
+    /// - Smooth color transitions for state changes
+    /// - Disabled and required state styles
+    /// - Placeholder text styles
+    /// - RTL and dark mode adjustments
+    /// - Custom classes from the Class parameter
+    /// Uses the cn() utility for intelligent class merging and Tailwind conflict resolution.
+    /// </remarks>
+    private string CssClass => ClassNames.cn(
+        // Base input styles (from shadcn/ui)
+        "flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-base shadow-xs",
+        "placeholder:text-muted-foreground",
+        "outline-none focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        // aria-invalid state styling (destructive error colors)
+        "aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive",
+        "aria-[invalid=true]:focus-visible:ring-destructive/30",
+        // Smooth transitions for state changes
+        "transition-[color,box-shadow]",
+        // Medium screens and up: smaller text
+        "md:text-sm",
+        // Custom classes (if provided)
+        Class
+    );
+
+    /// <summary>
+    /// Gets the effective name attribute, falling back to Id if Name is not specified.
+    /// </summary>
+    /// <remarks>
+    /// This ensures form submission works even when Name is not explicitly set.
+    /// </remarks>
+    private string? EffectiveName => Name ?? Id;
+
+    /// <summary>
+    /// Gets the currency definition for the current currency code with caching.
+    /// </summary>
+    private CurrencyDefinition CurrencyDefinition
+    {
+        get
+        {
+            // Use cached value if currency code hasn't changed
+            if (_cachedCurrency != null && _cachedCurrencyCode == Currency)
+            {
+                return _cachedCurrency;
+            }
+
+            _cachedCurrency = CurrencyCatalog.GetCurrency(Currency);
+            _cachedCurrencyCode = Currency;
+            return _cachedCurrency;
+        }
+    }
+
+    /// <summary>
+    /// Gets the culture info for number formatting, falling back through Culture parameter, currency default, and current culture.
+    /// </summary>
+    private CultureInfo GetCultureInfo()
+    {
+        // If Culture parameter is explicitly set, use it
+        if (!string.IsNullOrEmpty(Culture))
+        {
+            try
+            {
+                return CultureInfo.GetCultureInfo(Culture);
+            }
+            catch (CultureNotFoundException)
+            {
+                // Fall back to currency's default culture if specified culture is invalid
+            }
+        }
+        
+        // Use the currency's default culture
+        try
+        {
+            return CultureInfo.GetCultureInfo(CurrencyDefinition.CultureName);
+        }
+        catch (CultureNotFoundException)
+        {
+            // Final fallback to current culture
+            return CultureInfo.CurrentCulture;
+        }
+    }
+
+    /// <summary>
+    /// Gets the current value as a formatted currency string or raw editing value when focused.
+    /// </summary>
+    private string? CurrentValueAsString
+    {
+        get
+        {
+            // When focused, show the raw editing value
+            if (_isFocused && _editingValue != null)
+                return _editingValue;
+
+            if (Value == null)
+                return null;
+
+            try
+            {
+                var numericValue = Convert.ToDecimal(Value);
+                var currencyDef = CurrencyDefinition;
+                
+                if (ShowCurrencySymbol)
+                {
+                    // Format with currency symbol and correct decimal places
+                    var cultureInfo = GetCultureInfo();
+                    var numberFormat = (NumberFormatInfo)cultureInfo.NumberFormat.Clone();
+                    
+                    // Override with our currency definition values
+                    numberFormat.CurrencySymbol = currencyDef.Symbol;
+                    numberFormat.CurrencyDecimalDigits = currencyDef.DecimalPlaces;
+                    
+                    // Handle symbol positioning (for currencies like VND that have symbol after)
+                    if (!currencyDef.SymbolBefore)
+                    {
+                        numberFormat.CurrencyPositivePattern = 1; // n $
+                        numberFormat.CurrencyNegativePattern = 1; // -n $
+                    }
+                    
+                    return numericValue.ToString("C", numberFormat);
+                }
+                else
+                {
+                    // Format without symbol, using currency's decimal places
+                    var formatString = $"F{currencyDef.DecimalPlaces}";
+                    return numericValue.ToString(formatString, GetCultureInfo());
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Called from JavaScript when input value changes.
+    /// This is invoked based on UpdateOn mode and debounce settings.
+    /// </summary>
+    [JSInvokable]
+    public async Task OnInputChanged(string? value)
+    {
+        // Parse the value
+        var parsedValue = TryParseValue(value);
+        
+        // Update local state
+        Value = parsedValue;
+
+        // Notify parent component
+        await ValueChanged.InvokeAsync(parsedValue);
+
+        // Trigger EditContext validation if applicable
+        if (_validationBehavior != null)
+        {
+            await _validationBehavior.NotifyFieldChangedAsync();
+        }
+    }
+
+    /// <summary>
+    /// Handles the focus event and switches to raw unformatted value display.
+    /// </summary>
+    private void HandleFocus()
+    {
+        _isFocused = true;
+        
+        // Initialize editing value with current unformatted value (full precision)
+        if (Value != null)
+        {
+            try
+            {
+                var numericValue = Convert.ToDecimal(Value);
+                // Use "G" format to preserve all significant digits (e.g., 100.2378 stays as 100.2378)
+                _editingValue = numericValue.ToString("G", CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                _editingValue = null;
+            }
+        }
+        else
+        {
+            _editingValue = null;
+        }
+    }
+
+    /// <summary>
+    /// Handles the blur event and restores formatted currency display.
+    /// </summary>
+    private void HandleBlur()
+    {
+        // Clear editing state to restore formatted display
+        // This is critical because @onchange doesn't fire if the value didn't change,
+        // but we still need to restore the formatted value on blur
+        _isFocused = false;
+        _editingValue = null;
+        
+        // Force re-render to show formatted value
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Tries to parse the string value to the target numeric type, removing currency symbols and formatting.
+    /// </summary>
+    private TValue? TryParseValue(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return default;
+
+        var cultureInfo = GetCultureInfo();
+        var currencyDef = CurrencyDefinition;
+        var targetType = typeof(TValue);
+        var underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+        // Remove currency symbols and group separators
+        var cleanValue = value;
+        
+        // Remove the currency symbol
+        cleanValue = cleanValue.Replace(currencyDef.Symbol, "");
+        
+        // Remove culture-specific currency symbol (fallback)
+        cleanValue = cleanValue.Replace(cultureInfo.NumberFormat.CurrencySymbol, "");
+        
+        // Remove group separators (thousands separators)
+        cleanValue = cleanValue.Replace(cultureInfo.NumberFormat.CurrencyGroupSeparator, "")
+            .Replace(cultureInfo.NumberFormat.NumberGroupSeparator, "")
+            .Trim();
+
+        try
+        {
+            if (underlyingType == typeof(decimal))
+            {
+                if (decimal.TryParse(cleanValue, NumberStyles.Number, cultureInfo, out var result))
+                {
+                    // Apply min/max validation - parse from string
+                    if (!string.IsNullOrEmpty(Min) && decimal.TryParse(Min, NumberStyles.Number, CultureInfo.InvariantCulture, out var minValue))
+                    {
+                        if (result < minValue)
+                            result = minValue;
+                    }
+                    
+                    if (!string.IsNullOrEmpty(Max) && decimal.TryParse(Max, NumberStyles.Number, CultureInfo.InvariantCulture, out var maxValue))
+                    {
+                        if (result > maxValue)
+                            result = maxValue;
+                    }
+                    
+                    return (TValue)(object)result;
+                }
+            }
+            else if (underlyingType == typeof(double))
+            {
+                if (double.TryParse(cleanValue, NumberStyles.Number, cultureInfo, out var result))
+                {
+                    // Apply min/max validation - parse from string
+                    if (!string.IsNullOrEmpty(Min) && double.TryParse(Min, NumberStyles.Number, CultureInfo.InvariantCulture, out var minValue))
+                    {
+                        if (result < minValue)
+                            result = minValue;
+                    }
+                    
+                    if (!string.IsNullOrEmpty(Max) && double.TryParse(Max, NumberStyles.Number, CultureInfo.InvariantCulture, out var maxValue))
+                    {
+                        if (result > maxValue)
+                            result = maxValue;
+                    }
+                    
+                    return (TValue)(object)result;
+                }
+            }
+        }
+        catch (OverflowException)
+        {
+            // Value is too large or too small for the target type
+        }
+        catch (FormatException)
+        {
+            // Value is not in a valid format
+        }
+
+        return default;
+    }
+
+    /// <summary>
+    /// Initializes the validation behavior if ShowValidationError is enabled.
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        
+        if (ShowValidationError)
+        {
+            _validationBehavior = new InputValidationBehavior(
+                owner: this,
+                getEffectiveId: () => EffectiveId,
+                getEditContext: () => EditContext,
+                shouldShowValidation: () => ShowValidationError,
+                getJsModule: () => _inputModule
+            );
+        }
+    }
+
+    /// <summary>
+    /// Updates validation subscriptions when parameters change.
+    /// </summary>
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (_validationBehavior != null)
+        {
+            _validationBehavior.OnParametersSet(ValueExpression);
+            
+            // Subscribe to EditContext validation state changes
+            if (EditContext != null)
+            {
+                EditContext.OnValidationStateChanged -= OnValidationStateChanged;
+                EditContext.OnValidationStateChanged += OnValidationStateChanged;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Handles validation state changes from the EditContext.
+    /// </summary>
+    private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e)
+    {
+        if (_validationBehavior == null) return;
+        
+        InvokeAsync(async () =>
+        {
+            var shouldRender = await _validationBehavior.HandleValidationStateChangedAsync();
+            if (shouldRender)
+            {
+                StateHasChanged();
+            }
+        });
+    }
+
+    /// <summary>
+    /// Imports JavaScript modules and initializes input event handling after rendering.
+    /// </summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // Import the input module for event handling
+                _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoUI.Blazor/js/input.js");
+
+                // Create DotNetObjectReference for callbacks
+                _dotNetRef = DotNetObjectReference.Create(this);
+
+                // Initialize input event handling with UpdateOn mode and debounce
+                // Use EffectiveId which always has a value (user-provided or generated)
+                await _inputModule.InvokeVoidAsync(
+                    "initializeInput",
+                    EffectiveId,
+                    UpdateOn.ToString().ToLower(),
+                    DebounceDelay,
+                    _dotNetRef
+                );
+
+                _jsInitialized = true;
+
+                // Initialize validation if ShowValidationError is enabled
+                if (ShowValidationError && EditContext != null && ValueExpression != null)
+                {
+                    await _inputModule.InvokeVoidAsync("initializeValidation", EffectiveId, UpdateOn.ToString().ToLower());
+                }
+
+                // Apply initial validation state after first render
+                if (ShowValidationError && _validationBehavior != null)
+                {
+                    await _validationBehavior.UpdateValidationDisplayAsync();
+                }
+            }
+            catch (JSException)
+            {
+                // JS module not available, validation will still work via HTML5
+            }
+        }
+    }
+
+    /// <summary>
+    /// Disposes JavaScript resources and unsubscribes from validation events.
+    /// </summary>
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            // Unsubscribe from EditContext event
+            if (EditContext != null)
+            {
+                EditContext.OnValidationStateChanged -= OnValidationStateChanged;
+            }
+            
+            if (_validationBehavior != null)
+            {
+                await _validationBehavior.DisposeAsync();
+            }
+
+            if (_jsInitialized && _inputModule != null)
+            {
+                // Dispose input event handling and validation tracking
+                await _inputModule.InvokeVoidAsync("disposeInput", EffectiveId);
+                await _inputModule.InvokeVoidAsync("disposeValidation", EffectiveId);
+                
+                await _inputModule.DisposeAsync();
+            }
+
+            _dotNetRef?.Dispose();
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore - this happens during hot reload or when navigating away
+        }
+    }
+}

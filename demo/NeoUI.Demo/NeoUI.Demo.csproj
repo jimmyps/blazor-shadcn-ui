@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..NeoUI.Demo.SharedNeoUI.Demo.Shared.csproj" />
+    <ProjectReference Include="..NeoUI.Demo.ClientNeoUI.Demo.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>NeoUI.Demo</RootNamespace>
+    <AssemblyName>NeoUI.Demo</AssemblyName>
+    <NoWarn>CS1591</NoWarn>
+  </PropertyGroup>
+
+</Project>

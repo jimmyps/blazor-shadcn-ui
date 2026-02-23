@@ -1,0 +1,254 @@
+@namespace NeoUI.Blazor.Primitives.ContextMenu
+@using NeoUI.Blazor.Primitives.Floating
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+@*
+    ContextMenuSubContent - the content panel for a submenu
+    Uses FloatingPortal for positioning infrastructure.
+*@
+
+@if (SubContext.IsOpen)
+{
+    <FloatingPortal IsOpen="@SubContext.IsOpen"
+                    AnchorElement="@SubContext.TriggerElement"
+                    PortalId="@_portalId"
+                    ParentPortalId="@GetParentPortalId()"
+                    ForceMount="false"
+                    Side="PopoverSide.Right"
+                    Align="PopoverAlign.Start"
+                    Offset="@Offset"
+                    Strategy="PositioningStrategy.Fixed"
+                    ZIndex="@ZIndex"
+                    OnReady="@HandleFloatingReady">
+        @RenderSubMenuContent()
+    </FloatingPortal>
+}
+
+@code {
+    [CascadingParameter]
+    private ContextMenuContext? MenuContext { get; set; }
+
+    [CascadingParameter]
+    private ContextMenuSubContext SubContext { get; set; } = null!;
+
+    [CascadingParameter(Name = "ParentSubContext")]
+    private ContextMenuSubContext? ParentSubContext { get; set; }
+
+    private ElementReference _contentRef;
+    private string _portalId = "";
+    private string _instanceId = "";
+    private IJSObjectReference? _menuKeyboardModule;
+    private DotNetObjectReference<ContextMenuSubContent>? _dotNetRef;
+
+    // Track menu items for keyboard navigation
+    private readonly List<IContextMenuItem> _menuItems = new();
+
+    /// <summary>
+    /// The content to render inside the submenu.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional attributes to apply to the content container.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Whether pressing Escape should close the submenu.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool CloseOnEscape { get; set; } = true;
+
+    /// <summary>
+    /// Offset distance from the trigger element in pixels.
+    /// Default is -4 (slight overlap with parent).
+    /// </summary>
+    [Parameter]
+    public int Offset { get; set; } = -4;
+
+    /// <summary>
+    /// Z-index value for the submenu content.
+    /// Default is 50.
+    /// </summary>
+    [Parameter]
+    public int ZIndex { get; set; } = 50;
+
+    protected override void OnInitialized()
+    {
+        if (SubContext == null)
+        {
+            throw new InvalidOperationException(
+                "ContextMenuSubContent must be used within a ContextMenuSub component.");
+        }
+
+        _portalId = $"contextmenu-submenu-{SubContext.GetHashCode()}";
+        _instanceId = $"contextmenu-sub-{SubContext.GetHashCode()}";
+        SubContext.OnStateChanged += HandleContextStateChanged;
+    }
+
+    /// <summary>
+    /// Gets the parent portal ID for hierarchical portal nesting.
+    /// ALL children append to the root portal, regardless of nesting depth.
+    /// This ensures only one portal exists for the entire menu hierarchy.
+    /// </summary>
+    private string? GetParentPortalId()
+    {
+        // Always append to root portal, even if this is a nested submenu
+        // The parent-child UI relationship is maintained through composite rendering,
+        // but all children are siblings in the portal scope
+        return MenuContext != null ? $"contextmenu-portal-{MenuContext.ContentId}" : null;
+    }
+
+    private RenderFragment RenderSubMenuContent() => __builder =>
+    {
+        <div @ref="_contentRef"
+             role="menu"
+             tabindex="-1"
+             @onmouseleave="HandleMouseLeave"
+             @attributes="AdditionalAttributes"
+             data-state="open">
+            @* Re-cascade MenuContext since FloatingPortal breaks cascading chain *@
+            <CascadingValue Value="MenuContext" IsFixed="false">
+                <CascadingValue Value="@this" IsFixed="false">
+                    <CascadingValue Value="@SubContext" Name="ParentSubContext" IsFixed="false">
+                        @ChildContent
+                    </CascadingValue>
+                </CascadingValue>
+            </CascadingValue>
+        </div>
+    };
+
+    private async Task HandleFloatingReady()
+    {
+        // Set up JavaScript keyboard navigation with submenu mode
+        await SetupKeyboardNavAsync();
+    }
+
+    private async Task SetupKeyboardNavAsync()
+    {
+        try
+        {
+            _menuKeyboardModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/menu-keyboard.js");
+
+            _dotNetRef ??= DotNetObjectReference.Create(this);
+
+            await _menuKeyboardModule.InvokeVoidAsync("initialize", _contentRef, _dotNetRef, _instanceId,
+                new { mode = "submenu", loop = true, initialFocus = "container" });
+        }
+        catch (JSDisconnectedException)
+        {
+            // Expected during circuit disconnect in Blazor Server
+        }
+        catch (InvalidOperationException)
+        {
+            // JS interop not available during prerendering
+        }
+    }
+
+    private void HandleContextStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    [JSInvokable]
+    public Task JsOnEscapeKey()
+    {
+        if (CloseOnEscape)
+        {
+            // Close ALL menus including root when Escape is pressed
+            MenuContext?.Close();
+        }
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public async Task JsOnCloseSubMenu()
+    {
+        // Close this submenu and return focus to trigger
+        SubContext.Close();
+
+        // Restore focus to the trigger element
+        if (SubContext.TriggerElement.HasValue)
+        {
+            try
+            {
+                await SubContext.TriggerElement.Value.FocusAsync();
+            }
+            catch
+            {
+                // Focus failed
+            }
+        }
+    }
+
+    private void HandleMouseLeave(MouseEventArgs args)
+    {
+        // Don't close on mouse leave - closing is handled by:
+        // 1. Hovering sibling menu items (which call CloseActiveSubMenu)
+        // 2. Keyboard navigation (ArrowLeft, Escape)
+        // This prevents the submenu from closing when moving mouse to its own items
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        SubContext.OnStateChanged -= HandleContextStateChanged;
+
+        if (_menuKeyboardModule != null)
+        {
+            try
+            {
+                await _menuKeyboardModule.InvokeVoidAsync("dispose", _instanceId);
+            }
+            catch { }
+
+            try
+            {
+                await _menuKeyboardModule.DisposeAsync();
+            }
+            catch { }
+            _menuKeyboardModule = null;
+        }
+
+        _dotNetRef?.Dispose();
+        _dotNetRef = null;
+    }
+
+    /// <summary>
+    /// Registers a menu item for keyboard navigation.
+    /// </summary>
+    internal void RegisterItem(IContextMenuItem item)
+    {
+        if (!_menuItems.Contains(item))
+        {
+            _menuItems.Add(item);
+        }
+    }
+
+    /// <summary>
+    /// Unregisters a menu item.
+    /// </summary>
+    internal void UnregisterItem(IContextMenuItem item)
+    {
+        _menuItems.Remove(item);
+    }
+
+    /// <summary>
+    /// Focuses the content container for keyboard navigation.
+    /// </summary>
+    internal async Task FocusContainerAsync()
+    {
+        try
+        {
+            await _contentRef.FocusAsync();
+        }
+        catch
+        {
+            // Focus failed
+        }
+    }
+}

@@ -2,7 +2,7 @@
 
 ## Overview
 
-BlazorUI Grid supports **rich templating with interactive Blazor components** through a unique hybrid rendering approach. Components are rendered to static HTML for performance, then enhanced with **automatic JavaScript event binding** for interactivity.
+NeoUI Grid supports **rich templating with interactive Blazor components** through a unique hybrid rendering approach. Components are rendered to static HTML for performance, then enhanced with **automatic JavaScript event binding** for interactivity.
 
 ---
 
@@ -402,7 +402,7 @@ private async Task HandleOrderDeletion(Order order) { }
 ### Template Not Rendering?
 
 **Check:**
-1. ✅ `ITemplateRenderer` registered in DI: `services.AddBlazorUIComponents()`
+1. ✅ `ITemplateRenderer` registered in DI: `services.AddNeoUIComponents()`
 2. ✅ Grid renderer is **Transient**: `services.AddTransient(typeof(IGridRenderer<>), ...)`
 3. ✅ Template has `Context` parameter: `<CellTemplate Context="item">`
 4. ✅ Console for `[AgGridRenderer] Template rendered successfully` log

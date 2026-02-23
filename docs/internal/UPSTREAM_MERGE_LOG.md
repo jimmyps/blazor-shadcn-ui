@@ -33,7 +33,7 @@ Took incoming enhancements while preserving our Default variant styling and addi
 - Add incoming's `Success`, `Info`, `Warning`, `Danger` variants (custom extensions)
 
 **Changed Files:**
-- `src/BlazorUI.Components/Components/Alert/AlertVariant.cs`
+- `src/NeoUI.Blazor/Components/Alert/AlertVariant.cs`
 
 #### ✅ Alert Component Features
 **Decision:** Take all incoming enhancements
@@ -48,8 +48,8 @@ Took incoming enhancements while preserving our Default variant styling and addi
 - Maintains backward compatibility (all parameters optional)
 
 **Changed Files:**
-- `src/BlazorUI.Components/Components/Alert/Alert.razor.cs`
-- `src/BlazorUI.Components/Components/Alert/Alert.razor`
+- `src/NeoUI.Blazor/Components/Alert/Alert.razor.cs`
+- `src/NeoUI.Blazor/Components/Alert/Alert.razor`
 
 #### ✅ Alert Styling
 **Decision:** Keep our Default, add Muted, combine incoming variants
@@ -76,16 +76,16 @@ Took incoming enhancements while preserving our Default variant styling and addi
 - API reference
 
 **Changed Files:**
-- `demo/BlazorUI.Demo.Shared/Pages/Components/AlertDemo.razor`
+- `demo/NeoUI.Demo.Shared/Pages/Components/AlertDemo.razor`
 
 ### Files Modified
 ```
-M  src/BlazorUI.Components/Components/Alert/Alert.razor
-M  src/BlazorUI.Components/Components/Alert/Alert.razor.cs
-M  src/BlazorUI.Components/Components/Alert/AlertVariant.cs
-M  src/BlazorUI.Components/Components/Alert/AlertTitle.razor
-M  src/BlazorUI.Components/Components/Alert/AlertDescription.razor
-M  demo/BlazorUI.Demo.Shared/Pages/Components/AlertDemo.razor
+M  src/NeoUI.Blazor/Components/Alert/Alert.razor
+M  src/NeoUI.Blazor/Components/Alert/Alert.razor.cs
+M  src/NeoUI.Blazor/Components/Alert/AlertVariant.cs
+M  src/NeoUI.Blazor/Components/Alert/AlertTitle.razor
+M  src/NeoUI.Blazor/Components/Alert/AlertDescription.razor
+M  demo/NeoUI.Demo.Shared/Pages/Components/AlertDemo.razor
 ```
 
 ### Breaking Changes
@@ -127,7 +127,7 @@ public bool CloseOnClickOutside { get; set; } = false;  // NEW - standard behavi
 - Kept our overlay styles: `bg-black/50` with 200ms animation (vs incoming's `bg-black/80`)
 
 **Changed Files:**
-- `src/BlazorUI.Components/Components/AlertDialog/AlertDialogContent.razor`
+- `src/NeoUI.Blazor/Components/AlertDialog/AlertDialogContent.razor`
 
 #### ✅ AsChild Composition Pattern
 **Decision:** Take incoming `AsChild` parameter for Trigger, Action, and Cancel
@@ -144,9 +144,9 @@ public bool CloseOnClickOutside { get; set; } = false;  // NEW - standard behavi
 - Better aligns with primitives architecture
 
 **Changed Files:**
-- `src/BlazorUI.Components/Components/AlertDialog/AlertDialogTrigger.razor`
-- `src/BlazorUI.Components/Components/AlertDialog/AlertDialogAction.razor`
-- `src/BlazorUI.Components/Components/AlertDialog/AlertDialogCancel.razor`
+- `src/NeoUI.Blazor/Components/AlertDialog/AlertDialogTrigger.razor`
+- `src/NeoUI.Blazor/Components/AlertDialog/AlertDialogAction.razor`
+- `src/NeoUI.Blazor/Components/AlertDialog/AlertDialogCancel.razor`
 
 #### ✅ Dialog Primitive Wrappers
 **Decision:** Take incoming Dialog primitive wrappers for Title and Description
@@ -162,8 +162,8 @@ public bool CloseOnClickOutside { get; set; } = false;  // NEW - standard behavi
 - One additional level of nesting is acceptable for accessibility gain
 
 **Changed Files:**
-- `src/BlazorUI.Components/Components/AlertDialog/AlertDialogTitle.razor`
-- `src/BlazorUI.Components/Components/AlertDialog/AlertDialogDescription.razor`
+- `src/NeoUI.Blazor/Components/AlertDialog/AlertDialogTitle.razor`
+- `src/NeoUI.Blazor/Components/AlertDialog/AlertDialogDescription.razor`
 
 #### ✅ Documentation Updates
 **Decision:** Take incoming better documentation, update to reflect our customizable behavior
@@ -174,9 +174,9 @@ public bool CloseOnClickOutside { get; set; } = false;  // NEW - standard behavi
 - All component files - added XML doc comments
 
 **Changed Files:**
-- `src/BlazorUI.Components/Components/AlertDialog/AlertDialog.razor`
-- `src/BlazorUI.Components/Components/AlertDialog/AlertDialogHeader.razor`
-- `src/BlazorUI.Components/Components/AlertDialog/AlertDialogFooter.razor`
+- `src/NeoUI.Blazor/Components/AlertDialog/AlertDialog.razor`
+- `src/NeoUI.Blazor/Components/AlertDialog/AlertDialogHeader.razor`
+- `src/NeoUI.Blazor/Components/AlertDialog/AlertDialogFooter.razor`
 
 #### ✅ AlertDialogDemo Page
 **Decision:** Keep our examples, add controlled state example from incoming
@@ -198,20 +198,20 @@ public bool CloseOnClickOutside { get; set; } = false;  // NEW - standard behavi
 - Better documentation of actual behavior
 
 **Changed Files:**
-- `demo/BlazorUI.Demo.Shared/Pages/Components/AlertDialogDemo.razor`
+- `demo/NeoUI.Demo.Shared/Pages/Components/AlertDialogDemo.razor`
 
 ### Files Modified
 ```
-M  src/BlazorUI.Components/Components/AlertDialog/AlertDialog.razor
-M  src/BlazorUI.Components/Components/AlertDialog/AlertDialogAction.razor
-M  src/BlazorUI.Components/Components/AlertDialog/AlertDialogCancel.razor
-M  src/BlazorUI.Components/Components/AlertDialog/AlertDialogContent.razor
-M  src/BlazorUI.Components/Components/AlertDialog/AlertDialogDescription.razor
-M  src/BlazorUI.Components/Components/AlertDialog/AlertDialogFooter.razor
-M  src/BlazorUI.Components/Components/AlertDialog/AlertDialogHeader.razor
-M  src/BlazorUI.Components/Components/AlertDialog/AlertDialogTitle.razor
-M  src/BlazorUI.Components/Components/AlertDialog/AlertDialogTrigger.razor
-M  demo/BlazorUI.Demo.Shared/Pages/Components/AlertDialogDemo.razor
+M  src/NeoUI.Blazor/Components/AlertDialog/AlertDialog.razor
+M  src/NeoUI.Blazor/Components/AlertDialog/AlertDialogAction.razor
+M  src/NeoUI.Blazor/Components/AlertDialog/AlertDialogCancel.razor
+M  src/NeoUI.Blazor/Components/AlertDialog/AlertDialogContent.razor
+M  src/NeoUI.Blazor/Components/AlertDialog/AlertDialogDescription.razor
+M  src/NeoUI.Blazor/Components/AlertDialog/AlertDialogFooter.razor
+M  src/NeoUI.Blazor/Components/AlertDialog/AlertDialogHeader.razor
+M  src/NeoUI.Blazor/Components/AlertDialog/AlertDialogTitle.razor
+M  src/NeoUI.Blazor/Components/AlertDialog/AlertDialogTrigger.razor
+M  demo/NeoUI.Demo.Shared/Pages/Components/AlertDialogDemo.razor
 ```
 
 ### Breaking Changes
@@ -229,7 +229,7 @@ M  demo/BlazorUI.Demo.Shared/Pages/Components/AlertDialogDemo.razor
 ### Button ✅
 
 **Changed Files:**
-- `src/BlazorUI.Components/Components/Button/Button.razor.cs`
+- `src/NeoUI.Blazor/Components/Button/Button.razor.cs`
 
 **Changes:**
 - Added missing `<remarks>` documentation for `AdditionalAttributes` parameter
@@ -241,12 +241,12 @@ M  demo/BlazorUI.Demo.Shared/Pages/Components/AlertDialogDemo.razor
 ### RichTextEditor ✅
 
 **Changed Files:**
-- `src/BlazorUI.Components/Components/RichTextEditor/RichTextEditor.razor.cs`
-- `src/BlazorUI.Components/Components/RichTextEditor/RichTextEditor.razor`
-- `src/BlazorUI.Components/Components/RichTextEditor/EditorRange.cs` (NEW)
-- `src/BlazorUI.Components/Components/RichTextEditor/SelectionChangeEventArgs.cs` (NEW)
-- `src/BlazorUI.Components/Components/RichTextEditor/TextChangeEventArgs.cs` (NEW)
-- `src/BlazorUI.Components/Components/RichTextEditor/ToolbarPreset.cs` (NEW)
+- `src/NeoUI.Blazor/Components/RichTextEditor/RichTextEditor.razor.cs`
+- `src/NeoUI.Blazor/Components/RichTextEditor/RichTextEditor.razor`
+- `src/NeoUI.Blazor/Components/RichTextEditor/EditorRange.cs` (NEW)
+- `src/NeoUI.Blazor/Components/RichTextEditor/SelectionChangeEventArgs.cs` (NEW)
+- `src/NeoUI.Blazor/Components/RichTextEditor/TextChangeEventArgs.cs` (NEW)
+- `src/NeoUI.Blazor/Components/RichTextEditor/ToolbarPreset.cs` (NEW)
 
 **Changes:**
 - Refactored JS initialization into separate `InitializeJsAsync()` method
@@ -264,7 +264,7 @@ M  demo/BlazorUI.Demo.Shared/Pages/Components/AlertDialogDemo.razor
 ### Sidebar ✅
 
 **Changed Files:**
-- `src/BlazorUI.Components/Components/Sidebar/Sidebar.razor.cs`
+- `src/NeoUI.Blazor/Components/Sidebar/Sidebar.razor.cs`
 
 **Changes:**
 - Added `_subscribedContext` field for tracking context subscription
@@ -300,9 +300,9 @@ _subscribedContext = Context;
 ### Select (Component & Primitives) ✅
 
 **Changed Files:**
-- `src/BlazorUI.Components/Components/Select/SelectContent.razor`
-- `src/BlazorUI.Primitives/Primitives/Select/Select.razor`
-- `src/BlazorUI.Primitives/Primitives/Select/SelectContent.razor`
+- `src/NeoUI.Blazor/Components/Select/SelectContent.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/Select/Select.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/Select/SelectContent.razor`
 
 **Changes:**
 
@@ -330,9 +330,9 @@ _subscribedContext = Context;
 ### NativeSelect (NEW) ✅
 
 **Changed Files:**
-- `src/BlazorUI.Components/Components/NativeSelect/NativeSelect.razor` (NEW)
-- `src/BlazorUI.Components/Components/NativeSelect/NativeSelectSize.cs` (NEW)
-- `demo/BlazorUI.Demo.Shared/Pages/Components/NativeSelectDemo.razor` (NEW)
+- `src/NeoUI.Blazor/Components/NativeSelect/NativeSelect.razor` (NEW)
+- `src/NeoUI.Blazor/Components/NativeSelect/NativeSelectSize.cs` (NEW)
+- `demo/NeoUI.Demo.Shared/Pages/Components/NativeSelectDemo.razor` (NEW)
 
 **Changes:**
 - New component wrapping native HTML `<select>` element
@@ -512,22 +512,22 @@ public void Dispose()
 
 **Components:**
 ```
-M  src/BlazorUI.Components/Components/Command/Command.razor
-M  src/BlazorUI.Components/Components/Command/CommandInput.razor
-A  src/BlazorUI.Components/Components/Command/CommandContext.cs
-A  src/BlazorUI.Components/Components/Command/CommandVirtualizedGroup.razor
-M  src/BlazorUI.Components/Components/Command/CommandEmpty.razor
-M  src/BlazorUI.Components/Components/Command/CommandGroup.razor
-M  src/BlazorUI.Components/Components/Command/CommandItem.razor
-M  src/BlazorUI.Components/Components/Command/CommandList.razor
-M  src/BlazorUI.Components/Components/Command/CommandSeparator.razor
+M  src/NeoUI.Blazor/Components/Command/Command.razor
+M  src/NeoUI.Blazor/Components/Command/CommandInput.razor
+A  src/NeoUI.Blazor/Components/Command/CommandContext.cs
+A  src/NeoUI.Blazor/Components/Command/CommandVirtualizedGroup.razor
+M  src/NeoUI.Blazor/Components/Command/CommandEmpty.razor
+M  src/NeoUI.Blazor/Components/Command/CommandGroup.razor
+M  src/NeoUI.Blazor/Components/Command/CommandItem.razor
+M  src/NeoUI.Blazor/Components/Command/CommandList.razor
+M  src/NeoUI.Blazor/Components/Command/CommandSeparator.razor
 ```
 
 **Demos:**
 ```
-M  demo/BlazorUI.Demo.Shared/Pages/Components/CommandDemo.razor
-A  demo/BlazorUI.Demo.Shared/Common/CommandSearch.razor
-A  demo/BlazorUI.Demo.Shared/Pages/Components/CommandLibraryDemo.razor
+M  demo/NeoUI.Demo.Shared/Pages/Components/CommandDemo.razor
+A  demo/NeoUI.Demo.Shared/Common/CommandSearch.razor
+A  demo/NeoUI.Demo.Shared/Pages/Components/CommandLibraryDemo.razor
 ```
 
 ---
@@ -820,7 +820,7 @@ After merging upstream Select changes, performed comprehensive refactor and fixe
 **New:** SelectContent uses FloatingPortal directly
 
 **Changed Files:**
-- `src/BlazorUI.Primitives/Primitives/Select/SelectContent.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/Select/SelectContent.razor`
 
 **Benefits:**
 - Better separation of concerns (Select is independent of Combobox)
@@ -858,7 +858,7 @@ After merging upstream Select changes, performed comprehensive refactor and fixe
 **Solution:** Updated `applyPosition` in `positioning.js` to set `transformOrigin` on first child
 
 **Changed Files:**
-- `src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js`
+- `src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/positioning.js`
 
 ```javascript
 // Set transform-origin on the first child if it exists (for proper animations)
@@ -882,7 +882,7 @@ if (position.transformOrigin) {
 **Solution:** Added `OnAfterRender` to sync display text from registered items after they render
 
 **Changed Files:**
-- `src/BlazorUI.Primitives/Primitives/Select/Select.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/Select/Select.razor`
 
 **Implementation:**
 ```csharp
@@ -921,9 +921,9 @@ protected override void OnAfterRender(bool firstRender)
 **Solution:** Added `data-state="open"` and `data-side` to SelectContent's inner div
 
 **Changed Files:**
-- `src/BlazorUI.Primitives/Primitives/Select/SelectContent.razor`
-- `src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor`
-- `src/BlazorUI.Components/Components/Select/SelectContent.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/Select/SelectContent.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/Floating/FloatingPortal.razor`
+- `src/NeoUI.Blazor/Components/Select/SelectContent.razor`
 
 **SelectContent Primitive:**
 ```csharp
@@ -980,9 +980,9 @@ private string CssClass => ClassNames.cn(
 **Solution:** Dictionary-based pattern with `DisplayTextSelector`
 
 **Changed Files:**
-- `demo/BlazorUI.Demo.Shared/Pages/Components/Charts/AreaChartExamples.razor`
-- `demo/BlazorUI.Demo.Shared/Pages/Components/Charts/BarChartExamples.razor`
-- `demo/BlazorUI.Demo.Shared/Pages/Components/Charts/LineChartExamples.razor`
+- `demo/NeoUI.Demo.Shared/Pages/Components/Charts/AreaChartExamples.razor`
+- `demo/NeoUI.Demo.Shared/Pages/Components/Charts/BarChartExamples.razor`
+- `demo/NeoUI.Demo.Shared/Pages/Components/Charts/LineChartExamples.razor`
 
 **Before (Repetitive):**
 ```razor
@@ -1052,7 +1052,7 @@ private string CssClass => ClassNames.cn(
 **Solution:** Changed to `role="group"` for semantic correctness
 
 **Changed Files:**
-- `src/BlazorUI.Components/Components/Command/Command.razor`
+- `src/NeoUI.Blazor/Components/Command/Command.razor`
 
 ```razor
 <!-- Before -->
@@ -1080,7 +1080,7 @@ Command (role="group")
 **Solution:** Updated to check both regular items AND virtualized groups
 
 **Changed Files:**
-- `src/BlazorUI.Components/Components/Command/CommandContext.cs`
+- `src/NeoUI.Blazor/Components/Command/CommandContext.cs`
 
 ```csharp
 public bool HasVisibleItems()
@@ -1136,24 +1136,24 @@ public bool HasVisibleItems()
 
 **Primitives:**
 ```
-M  src/BlazorUI.Primitives/Primitives/Select/Select.razor
-M  src/BlazorUI.Primitives/Primitives/Select/SelectContent.razor
-M  src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor
-M  src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js
+M  src/NeoUI.Blazor.Primitives/Primitives/Select/Select.razor
+M  src/NeoUI.Blazor.Primitives/Primitives/Select/SelectContent.razor
+M  src/NeoUI.Blazor.Primitives/Primitives/Floating/FloatingPortal.razor
+M  src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/positioning.js
 ```
 
 **Components:**
 ```
-M  src/BlazorUI.Components/Components/Select/SelectContent.razor
-M  src/BlazorUI.Components/Components/Command/Command.razor
-M  src/BlazorUI.Components/Components/Command/CommandContext.cs
+M  src/NeoUI.Blazor/Components/Select/SelectContent.razor
+M  src/NeoUI.Blazor/Components/Command/Command.razor
+M  src/NeoUI.Blazor/Components/Command/CommandContext.cs
 ```
 
 **Demos:**
 ```
-M  demo/BlazorUI.Demo.Shared/Pages/Components/Charts/AreaChartExamples.razor
-M  demo/BlazorUI.Demo.Shared/Pages/Components/Charts/BarChartExamples.razor
-M  demo/BlazorUI.Demo.Shared/Pages/Components/Charts/LineChartExamples.razor
+M  demo/NeoUI.Demo.Shared/Pages/Components/Charts/AreaChartExamples.razor
+M  demo/NeoUI.Demo.Shared/Pages/Components/Charts/BarChartExamples.razor
+M  demo/NeoUI.Demo.Shared/Pages/Components/Charts/LineChartExamples.razor
 ```
 
 ---
@@ -1184,21 +1184,21 @@ M  demo/BlazorUI.Demo.Shared/Pages/Components/Charts/LineChartExamples.razor
 
 **Components:**
 ```
-A  src/BlazorUI.Components/Components/Pagination/ (21 files)
-A  src/BlazorUI.Components/Components/Toast/ (13 files)
-A  src/BlazorUI.Components/Components/Toggle/ (7 files)
-A  src/BlazorUI.Components/Components/Menubar/ (18 files)
-A  src/BlazorUI.Components/Components/Slider/ (3 files)
-A  src/BlazorUI.Components/Components/TimePicker/ (2 files)
-A  src/BlazorUI.Components/Components/ScrollArea/ (5 files)
-A  src/BlazorUI.Components/Components/Resizable/ (6 files)
-A  src/BlazorUI.Components/Components/NavigationMenu/ (9 files)
-A  src/BlazorUI.Components/Components/Progress/ (2 files)
-A  src/BlazorUI.Components/Components/Kbd/ (2 files)
-A  src/BlazorUI.Components/Components/Empty/ (2 files)
-A  src/BlazorUI.Components/Components/Spinner/ (3 files)
-A  src/BlazorUI.Components/Components/DropdownMenu/ (multiple files)
-A  src/BlazorUI.Components/wwwroot/js/resizable.js
+A  src/NeoUI.Blazor/Components/Pagination/ (21 files)
+A  src/NeoUI.Blazor/Components/Toast/ (13 files)
+A  src/NeoUI.Blazor/Components/Toggle/ (7 files)
+A  src/NeoUI.Blazor/Components/Menubar/ (18 files)
+A  src/NeoUI.Blazor/Components/Slider/ (3 files)
+A  src/NeoUI.Blazor/Components/TimePicker/ (2 files)
+A  src/NeoUI.Blazor/Components/ScrollArea/ (5 files)
+A  src/NeoUI.Blazor/Components/Resizable/ (6 files)
+A  src/NeoUI.Blazor/Components/NavigationMenu/ (9 files)
+A  src/NeoUI.Blazor/Components/Progress/ (2 files)
+A  src/NeoUI.Blazor/Components/Kbd/ (2 files)
+A  src/NeoUI.Blazor/Components/Empty/ (2 files)
+A  src/NeoUI.Blazor/Components/Spinner/ (3 files)
+A  src/NeoUI.Blazor/Components/DropdownMenu/ (multiple files)
+A  src/NeoUI.Blazor/wwwroot/js/resizable.js
 ```
 
 **Total:** ~95+ files across 14 components
@@ -1418,18 +1418,18 @@ function injectRequiredStyles()
 
 **Primitives:**
 ```
-M  src/BlazorUI.Primitives/Primitives/DropdownMenu/DropdownMenuContent.razor
-M  src/BlazorUI.Primitives/Primitives/DropdownMenu/DropdownMenuContext.cs
-M  src/BlazorUI.Primitives/Primitives/DropdownMenu/DropdownMenuItem.razor
-M  src/BlazorUI.Primitives/Primitives/DropdownMenu/DropdownMenuCheckboxItem.razor
-M  src/BlazorUI.Primitives/Primitives/HoverCard/HoverCardContent.razor
-M  src/BlazorUI.Primitives/Primitives/Popover/PopoverContent.razor
-M  src/BlazorUI.Primitives/Primitives/Tooltip/TooltipContent.razor
-D  src/BlazorUI.Primitives/Primitives/Combobox/ComboboxContent.razor
-D  src/BlazorUI.Primitives/Primitives/Combobox/ComboboxInput.razor
-D  src/BlazorUI.Primitives/Primitives/MultiSelect/MultiSelectContent.razor
-D  src/BlazorUI.Primitives/Primitives/MultiSelect/MultiSelectInput.razor
-M  src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js
+M  src/NeoUI.Blazor.Primitives/Primitives/DropdownMenu/DropdownMenuContent.razor
+M  src/NeoUI.Blazor.Primitives/Primitives/DropdownMenu/DropdownMenuContext.cs
+M  src/NeoUI.Blazor.Primitives/Primitives/DropdownMenu/DropdownMenuItem.razor
+M  src/NeoUI.Blazor.Primitives/Primitives/DropdownMenu/DropdownMenuCheckboxItem.razor
+M  src/NeoUI.Blazor.Primitives/Primitives/HoverCard/HoverCardContent.razor
+M  src/NeoUI.Blazor.Primitives/Primitives/Popover/PopoverContent.razor
+M  src/NeoUI.Blazor.Primitives/Primitives/Tooltip/TooltipContent.razor
+D  src/NeoUI.Blazor.Primitives/Primitives/Combobox/ComboboxContent.razor
+D  src/NeoUI.Blazor.Primitives/Primitives/Combobox/ComboboxInput.razor
+D  src/NeoUI.Blazor.Primitives/Primitives/MultiSelect/MultiSelectContent.razor
+D  src/NeoUI.Blazor.Primitives/Primitives/MultiSelect/MultiSelectInput.razor
+M  src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/positioning.js
 ```
 
 **Total:** 7 modified, 4 deleted, 1 JavaScript updated
@@ -1620,7 +1620,7 @@ M  src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js
 
 - **Upstream Repository**: https://github.com/blazorui-net/BlazorUI
 - **Merge Commit**: `8835bfed9859e4bf8349954ac05f732fe9ffddcf`
-- **Tailwind Config**: `src/BlazorUI.Components/tailwind.config.js` (alert color tokens defined)
+- **Tailwind Config**: `src/NeoUI.Blazor/tailwind.config.js` (alert color tokens defined)
 - **shadcn/ui Alert**: https://ui.shadcn.com/docs/components/alert
 - **shadcn/ui Alert Dialog**: https://ui.shadcn.com/docs/components/alert-dialog
 
@@ -1740,7 +1740,7 @@ Implemented proper z-index hierarchy to fix nested portal rendering issues and i
 **Decision:** Create centralized constants for all z-index values
 
 **Created:**
-- `src/BlazorUI.Primitives/Constants/ZIndexLevels.cs`
+- `src/NeoUI.Blazor.Primitives/Constants/ZIndexLevels.cs`
 
 **Values:**
 ```csharp
@@ -1760,7 +1760,7 @@ public static class ZIndexLevels
 - Easy to maintain and update
 
 **Changed Files:**
-- `src/BlazorUI.Primitives/Constants/ZIndexLevels.cs` (NEW)
+- `src/NeoUI.Blazor.Primitives/Constants/ZIndexLevels.cs` (NEW)
 
 #### ✅ Component Z-Index Defaults
 **Decision:** Update all components to use `ZIndexLevels` constants
@@ -1773,7 +1773,7 @@ public static class ZIndexLevels
 
 **Added Using Directive:**
 ```razor
-@using BlazorUI.Primitives.Constants
+@using NeoUI.Blazor.Primitives.Constants
 ```
 
 **Updated Components (already had ZIndex parameter, now use property):**
@@ -1810,16 +1810,16 @@ private string CssClass => $"z-{ZIndex} ..."; // ✅ Respects custom overrides
 - Allow flexibility when needed (e.g., nested menus at z-70)
 
 **Changed Files:**
-- `src/BlazorUI.Primitives/Primitives/Popover/PopoverContent.razor`
-- `src/BlazorUI.Primitives/Primitives/DropdownMenu/DropdownMenuContent.razor`
-- `src/BlazorUI.Primitives/Primitives/Menubar/MenubarContent.razor`
-- `src/BlazorUI.Primitives/Primitives/ContextMenu/ContextMenuContent.razor`
-- `src/BlazorUI.Components/Components/DropdownMenu/DropdownMenuContent.razor`
-- `src/BlazorUI.Components/Components/DropdownMenu/DropdownMenuSubContent.razor`
-- `src/BlazorUI.Components/Components/ContextMenu/ContextMenuContent.razor`
-- `src/BlazorUI.Components/Components/ContextMenu/ContextMenuSubContent.razor`
-- `src/BlazorUI.Components/Components/Menubar/MenubarContent.razor`
-- `src/BlazorUI.Components/Components/Menubar/MenubarSubContent.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/Popover/PopoverContent.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/DropdownMenu/DropdownMenuContent.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/Menubar/MenubarContent.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/ContextMenu/ContextMenuContent.razor`
+- `src/NeoUI.Blazor/Components/DropdownMenu/DropdownMenuContent.razor`
+- `src/NeoUI.Blazor/Components/DropdownMenu/DropdownMenuSubContent.razor`
+- `src/NeoUI.Blazor/Components/ContextMenu/ContextMenuContent.razor`
+- `src/NeoUI.Blazor/Components/ContextMenu/ContextMenuSubContent.razor`
+- `src/NeoUI.Blazor/Components/Menubar/MenubarContent.razor`
+- `src/NeoUI.Blazor/Components/Menubar/MenubarSubContent.razor`
 
 #### ✅ JavaScript Z-Index Fixes
 **Decision:** Remove hardcoded z-index values and use consistent variable
@@ -1862,8 +1862,8 @@ const zIndex = floatingZIndex;  // ✅ Consistent
 - Portal container doesn't interfere with layering
 
 **Changed Files:**
-- `src/BlazorUI.Primitives/wwwroot/js/primitives/portal.js`
-- `src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js`
+- `src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/portal.js`
+- `src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/positioning.js`
 
 #### ✅ TailwindMerge Regex Fix
 **Decision:** Support Tailwind arbitrary values with commas and spaces
@@ -1889,24 +1889,24 @@ const zIndex = floatingZIndex;  // ✅ Consistent
 - ✅ `shadow-[0_4px_6px_rgba(0, 0, 0, 0.1)]`
 
 **Changed Files:**
-- `src/BlazorUI.Components/Utilities/TailwindMerge.cs`
+- `src/NeoUI.Blazor/Utilities/TailwindMerge.cs`
 
 ### Files Modified
 ```
-A  src/BlazorUI.Primitives/Constants/ZIndexLevels.cs
-M  src/BlazorUI.Primitives/Primitives/Popover/PopoverContent.razor
-M  src/BlazorUI.Primitives/Primitives/DropdownMenu/DropdownMenuContent.razor
-M  src/BlazorUI.Primitives/Primitives/Menubar/MenubarContent.razor
-M  src/BlazorUI.Primitives/Primitives/ContextMenu/ContextMenuContent.razor
-M  src/BlazorUI.Components/Components/DropdownMenu/DropdownMenuContent.razor
-M  src/BlazorUI.Components/Components/DropdownMenu/DropdownMenuSubContent.razor
-M  src/BlazorUI.Components/Components/ContextMenu/ContextMenuContent.razor
-M  src/BlazorUI.Components/Components/ContextMenu/ContextMenuSubContent.razor
-M  src/BlazorUI.Components/Components/Menubar/MenubarContent.razor
-M  src/BlazorUI.Components/Components/Menubar/MenubarSubContent.razor
-M  src/BlazorUI.Primitives/wwwroot/js/primitives/portal.js
-M  src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js
-M  src/BlazorUI.Components/Utilities/TailwindMerge.cs
+A  src/NeoUI.Blazor.Primitives/Constants/ZIndexLevels.cs
+M  src/NeoUI.Blazor.Primitives/Primitives/Popover/PopoverContent.razor
+M  src/NeoUI.Blazor.Primitives/Primitives/DropdownMenu/DropdownMenuContent.razor
+M  src/NeoUI.Blazor.Primitives/Primitives/Menubar/MenubarContent.razor
+M  src/NeoUI.Blazor.Primitives/Primitives/ContextMenu/ContextMenuContent.razor
+M  src/NeoUI.Blazor/Components/DropdownMenu/DropdownMenuContent.razor
+M  src/NeoUI.Blazor/Components/DropdownMenu/DropdownMenuSubContent.razor
+M  src/NeoUI.Blazor/Components/ContextMenu/ContextMenuContent.razor
+M  src/NeoUI.Blazor/Components/ContextMenu/ContextMenuSubContent.razor
+M  src/NeoUI.Blazor/Components/Menubar/MenubarContent.razor
+M  src/NeoUI.Blazor/Components/Menubar/MenubarSubContent.razor
+M  src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/portal.js
+M  src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/positioning.js
+M  src/NeoUI.Blazor/Utilities/TailwindMerge.cs
 ```
 
 ### Breaking Changes
@@ -2036,11 +2036,11 @@ protected override void OnParametersSet()
 - `Count` - thread-safe count
 
 **Changed Files:**
-- `src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/Floating/FloatingPortal.razor`
 
 ### Files Modified
 ```
-M  src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor
+M  src/NeoUI.Blazor.Primitives/Primitives/Floating/FloatingPortal.razor
 A  docs/internal/FLOATING_PORTAL_GUARD_FIX.md
 ```
 
@@ -2098,7 +2098,7 @@ A  docs/internal/FLOATING_PORTAL_GUARD_FIX.md
 ```
 
 **Changed Files:**
-- `demo/BlazorUI.Demo.Shared/Pages/Components/DropdownMenuDemo.razor`
+- `demo/NeoUI.Demo.Shared/Pages/Components/DropdownMenuDemo.razor`
 
 ### JavaScript Positioning Comments
 **Added:** Updated comments in `positioning.js` explaining offset vs padding parameters
@@ -2108,7 +2108,7 @@ A  docs/internal/FLOATING_PORTAL_GUARD_FIX.md
 - `padding`: Safety buffer from viewport edges (default: 8px) - used by `flip()` and `shift()`
 
 **Changed Files:**
-- `src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js`
+- `src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/positioning.js`
 
 ---
 

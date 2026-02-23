@@ -1,0 +1,25 @@
+@namespace NeoUI.Blazor.Menubar
+@using NeoUI.Blazor.Utilities
+
+@* Styled MenubarShortcut - displays keyboard shortcut hint *@
+<span class="@CssClass">
+    @ChildContent
+</span>
+
+@code {
+    /// <summary>
+    /// Additional CSS classes to apply to the shortcut.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// The content to be rendered inside the shortcut (e.g., "ΓîÿK", "Ctrl+S").
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string CssClass => ClassNames.cn(
+        "ml-auto text-xs tracking-widest text-muted-foreground",
+        Class);
+}
