@@ -2,6 +2,7 @@
 @using BlazorUI.Components.Chart.Internal
 @typeparam TData
 @inherits ChartBase<TData>
+@implements IRadialBarChartParent
 
 <CascadingValue Value="this" IsFixed="true">
     <div class="chart-radialbar-container" style="width: 100%; height: 100%; position: relative;">
@@ -230,25 +231,25 @@
         return TooltipMode.Item;
     }
     
-    internal void RegisterRadialBar(RadialBar radialBar)
+    public void RegisterRadialBar(RadialBar radialBar)
     {
         _radialBars.Add(radialBar);
         StateHasChanged();
     }
     
-    internal void RegisterPolarGrid(PolarGrid polarGrid)
+    public void RegisterPolarGrid(PolarGrid polarGrid)
     {
         _polarGrid = polarGrid;
         StateHasChanged();
     }
     
-    internal void RegisterCenterLabel(CenterLabel centerLabel)
+    public void RegisterCenterLabel(CenterLabel centerLabel)
     {
         _centerLabel = centerLabel;
         StateHasChanged();
     }
     
-    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
-    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
-    internal void RegisterXAxis(XAxis xAxis) { _xAxis = xAxis; StateHasChanged(); }
+    public void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    public void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+    public void RegisterXAxis(XAxis xAxis) { _xAxis = xAxis; StateHasChanged(); }
 }

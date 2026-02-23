@@ -1,7 +1,7 @@
 @namespace BlazorUI.Components.Chart
 
 @code {
-    [CascadingParameter] private dynamic? Parent { get; set; }
+    [CascadingParameter] private IRadialBarChartParent? Parent { get; set; }
     
     /// <summary>
     /// Gets or sets the text to display in the center.

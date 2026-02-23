@@ -117,7 +117,68 @@ Added "What's New" callout card to the home page.
 
 ---
 
-## 2026-2-21 - JS-Delegated Keyboard Navigation for All Menu Overlays
+### 🐛 Bug Fix: Chart Series Always 0 in Layout-Embedded Charts
+
+**Affected:** All chart series and primitives — `Pie`, `Bar`, `Line`, `Area`, `Scatter`, `Radar`,
+`RadialBar`, `Tooltip`, `Legend`, `Grid`, `XAxis`, `YAxis`, `PolarGrid`, `RadarGrid`,
+`CenterLabel`, `AxisLabel`, `LabelList`, `LabelLine`, `Fill`
+
+Charts in complex scenarios (e.g. `ChartTile`) always rendered with zero series while the
+same chart on a standalone page worked correctly.
+
+#### Root Cause
+
+All series and chart primitives used `[CascadingParameter] private dynamic? Parent` to receive
+their parent chart. Without a type or name constraint, Blazor matched the parameter to the
+**nearest** ancestor `CascadingValue` — which in the layout context was `SidebarContext` from
+`SidebarProvider`, not the chart root. Dynamic dispatch then called `RegisterPie` (etc.) on the
+wrong type, threw a `RuntimeBinderException`, and the original empty `catch { }` silently
+discarded it. `_pies` was never populated → Series count = 0.
+
+On standalone pages there were no competing cascading values above the chart, so the correct
+parent was matched by accident.
+
+A secondary cause was that all chart-level `Register*` methods were `internal`. The C# DLR
+`RuntimeBinder` does not resolve `internal` members through `dynamic` dispatch even within the
+same assembly, compounding the failure.
+
+#### Fix — Interface-Based Cascading (no more `dynamic`)
+
+Introduced `ChartInterfaces.cs` with a typed interface hierarchy:
+
+```
+IChartParent              ← Tooltip, Legend
+  IXAxisParent            ← XAxis; also RadarChart, RadialBarChart
+    ICartesianChartParent ← Grid, YAxis
+      IBarSeriesParent    ← Bar  (BarChart + ComposedChart)
+      ILineSeriesParent   ← Line (LineChart + ComposedChart)
+      IAreaSeriesParent   ← Area (AreaChart + ComposedChart)
+      IScatterSeriesParent← Scatter (ScatterChart + ComposedChart)
+  IPieChartParent         ← Pie
+  IRadarChartParent       ← Radar, RadarGrid
+  IRadialBarChartParent   ← RadialBar, PolarGrid, CenterLabel
+
+IAxisParent               ← AxisLabel  (XAxis, YAxis implement this)
+IFillParent               ← Fill       (Line, Area implement this)
+SeriesBase (type)         ← LabelList  (all series inherit this)
+Pie (type)                ← LabelLine  (Pie-specific)
+```
+
+- All 8 chart root components declare `@implements I*Parent` and use an unnamed
+  `CascadingValue Value="this" IsFixed="true"`. Blazor's type-based `IsAssignableFrom` matching
+  now discriminates chart parents precisely — `SidebarContext` and any other unrelated cascading
+  value can never satisfy these interfaces.
+- `ComposedChart` naturally implements all four `I*SeriesParent` interfaces, preserving full
+  composed-chart support without dual cascading parameters or any other workaround.
+- All `dynamic?` cascading parameters replaced with the appropriate interface or concrete type.
+  All `try { } catch { }` blocks removed — misuse is now a compile-time error rather than a
+  silent runtime no-op.
+- All chart `Register*` methods changed from `internal` to `public` (required for interface
+  implementation and correct as component registration protocol).
+
+---
+
+## 2026-2-21
 
 ### ⚡ Performance: Replaced C# `@onkeydown` Handlers with `menu-keyboard.js` in All Menu Content Containers
 
