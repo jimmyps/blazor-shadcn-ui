@@ -2,6 +2,121 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-2-23 - UI/X Improvements on All Menu Components and New ThemeSwitcher demo page
+
+### 🐛 Menu Hover Sensitivity — Grace Period & Debounce
+
+**Affected:** `MenubarItem`, `MenubarSubTrigger`, `DropdownMenuItem`, `DropdownMenuSubTrigger`, `ContextMenuItem`, `ContextMenuSubTrigger`
+
+Hovering quickly over menu items or briefly leaving a sub-trigger while navigating toward its open
+submenu panel caused the submenu to close immediately — matching no platform UX convention
+(Windows and macOS both use a ~200–300 ms grace period before closing).
+
+#### Changes
+
+**Regular items** (`MenubarItem`, `DropdownMenuItem`, `ContextMenuItem`)
+
+- Added `CancellationTokenSource _hoverCts` per item.
+- `HandleMouseEnter` now waits **250 ms** before calling `CloseActiveSubMenu()`. If the mouse
+  leaves the item within that window, `HandleMouseLeave` cancels the token and the close is
+  abandoned — the open submenu keeps showing.
+- Added `@onmouseleave` / `HandleMouseLeave` (was missing entirely on `DropdownMenuItem` and
+  `ContextMenuItem`).
+- `_hoverCts` is disposed in `Dispose()`.
+
+**Sub-triggers** (`MenubarSubTrigger`, `DropdownMenuSubTrigger`, `ContextMenuSubTrigger`)
+
+- Added `CancellationTokenSource _hoverCts` per component.
+- Added `isAlreadyActive` guard at the top of `HandleMouseEnter`: if this submenu is already open
+  and registered as the active submenu, the handler returns immediately — prevents the
+  close-then-300 ms-reopen flicker that occurred when the mouse briefly left and re-entered the
+  same trigger.
+- Sibling submenu is now **closed immediately** (before the delay) when a new sub-trigger is
+  entered, eliminating the visual conflict where two triggers appeared selected simultaneously and
+  preventing the open sibling's panel from overlapping the new trigger and firing spurious
+  `mouseleave` events.
+- The **300 ms open delay** is preserved to prevent flash-opens on quick pass-through. If
+  `HandleMouseLeave` fires before the delay, the token is cancelled and neither the close nor the
+  open occurs — the original submenu remains visible.
+- `_hoverCts` cancelled and disposed in `Dispose()`.
+
+---
+
+### 🐛 Bug Fix: Menu Open Auto-Focus — Container vs. First Item
+
+**Affected:** `MenubarContent`, `MenubarSubContent`, `ContextMenuContent`, `ContextMenuSubContent`, `DropdownMenuSubContent`, `menu-keyboard.js`
+
+All menu content containers passed `initialFocus: "first"` to `menu-keyboard.js`, which caused the
+first enabled item to receive focus the moment the menu opened. This is non-standard for menus
+(Windows/macOS highlight nothing until the user presses a key or moves the mouse).
+
+#### Changes
+
+- **`menu-keyboard.js`** — added new `initialFocus = "container"` branch: calls
+  `focusWithDoubleRaf(container)` to focus the `[tabindex="-1"]` container div (enabling keyboard
+  event reception) without moving focus to any item. The existing `"first"` / `"last"` paths are
+  untouched so `DropdownMenuContent` behaviour is unchanged.
+- `MenubarContent` — changed `initialFocus` from `"first"` to `"container"`.
+- `MenubarSubContent` — changed `initialFocus` from `"first"` to `"container"`.
+- `ContextMenuContent` — changed `initialFocus` from `"first"` to `"container"`.
+- `ContextMenuSubContent` — changed `initialFocus` from `"first"` to `"container"`.
+- `DropdownMenuSubContent` — changed `initialFocus` from `"first"` to `"container"`.
+
+`ArrowDown` with nothing focused still navigates to the first item (`currentIndex === -1 → 0`),
+preserving full keyboard accessibility.
+
+---
+
+### ✨ Feature: `TooltipContent` — `Strategy` Parameter
+
+**Affected:** `BlazorUI.Primitives.Tooltip.TooltipContent`, `BlazorUI.Components.Tooltip.TooltipContent`
+
+The `FloatingPortal` inside `TooltipContent` previously had `Strategy` hardcoded to
+`PositioningStrategy.Absolute`. Tooltips inside transformed or `overflow: hidden` containers
+(e.g. sidebars) were clipped or mis-positioned.
+
+- Added `[Parameter] PositioningStrategy Strategy` (default `Absolute`) to the **primitive**
+  `TooltipContent` and wired it to `FloatingPortal`.
+- Added the same parameter to the **component** `TooltipContent` wrapper, passed through to the
+  primitive.
+
+---
+
+### ✨ Feature: `ThemeSwitcher` — New Parameters
+
+**Affected:** `ThemeSwitcher`
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `TriggerClass` | `string?` | — | Extra CSS classes merged onto the trigger `Button` |
+| `PopoverContentClass` | `string?` | — | Extra CSS classes merged onto the `PopoverContent` panel |
+| `Align` | `PopoverAlign` | `End` | Alignment of the popover panel relative to the trigger |
+
+- `Strategy` is now also forwarded to `TooltipContent` so the tooltip escapes stacking contexts
+  when `Strategy = Fixed`.
+
+---
+
+### 📖 Demo: ThemeSwitcher Page
+
+New demo page at `/components/theme-switcher` covering:
+
+- Live `ThemeSwitcher` demo with reactive current-theme readout (base color + primary color)
+- Standalone `DarkModeToggle` demo
+- Usage snippets (minimal, layout placement)
+- Customisation examples (`TriggerClass`, `PopoverContentClass`)
+- `Strategy` / fixed-positioning guidance
+- `ThemeSwitcher` parameter API table
+- `ThemeService` member reference table with injectable usage example
+- **App.razor Setup** section (core stylesheet, base color CSS, primary color CSS, theme JS +
+  `initialize()`, `Program.cs` service registration)
+- `Alert Variant="Warning"` production tip to trim unused theme CSS files
+
+Added to sidebar navigation, component index grid, and Spotlight search palette.
+Added "What's New" callout card to the home page.
+
+---
+
 ## 2026-2-21 - JS-Delegated Keyboard Navigation for All Menu Overlays
 
 ### ⚡ Performance: Replaced C# `@onkeydown` Handlers with `menu-keyboard.js` in All Menu Content Containers
