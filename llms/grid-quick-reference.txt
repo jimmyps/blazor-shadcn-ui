@@ -1,9 +1,9 @@
-# BlazorUI Grid - Developer Quick Reference
+# NeoUI Grid - Developer Quick Reference
 
 ## Installation
 
 ```bash
-dotnet add package BlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 ## Service Registration
@@ -11,13 +11,13 @@ dotnet add package BlazorUI.Components
 ### Basic (Field-Based Rendering Only)
 ```csharp
 // Program.cs
-builder.Services.AddBlazorUIComponents();
+builder.Services.AddNeoUIComponents();
 ```
 
 ### Full Features (With Template Rendering)
 ```csharp
 // Program.cs
-builder.Services.AddBlazorUIComponents();
+builder.Services.AddNeoUIComponents();
 builder.Services.AddScoped<ITemplateRenderer, TemplateRenderer>();
 ```
 
@@ -294,7 +294,7 @@ public class GridDataResponse<TItem>
 
 ### Styling issues?
 **Check:**
-1. ✅ `blazorui.css` loaded in App.razor
+1. ✅ `components.css` loaded in App.razor
 2. ✅ AG Grid theme CSS loaded from CDN
 3. ✅ Custom CSS classes applied correctly
 

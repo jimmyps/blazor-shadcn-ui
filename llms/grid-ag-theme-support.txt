@@ -65,7 +65,7 @@ The Grid component supports all **AG Grid built-in themes** through the `Theme` 
 
 ## Theme Integration
 
-All AG Grid themes automatically use **BlazorUI color tokens**:
+All AG Grid themes automatically use **NeoUI color tokens**:
 
 - `--background` → Grid background
 - `--foreground` → Text color
@@ -77,7 +77,7 @@ All AG Grid themes automatically use **BlazorUI color tokens**:
 
 This means:
 - ✅ **Dark mode works automatically** (colors adapt when `.dark` class is applied)
-- ✅ **Custom themes are supported** (change BlazorUI colors, grid updates automatically)
+- ✅ **Custom themes are supported** (change NeoUI colors, grid updates automatically)
 - ✅ **Consistent look** across all AG Grid themes
 
 ## CSS Setup
@@ -93,8 +93,8 @@ Include the AG Grid theme CSS in your `App.razor` or `index.html`:
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31/styles/ag-theme-material.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@31/styles/ag-theme-quartz.css" />
 
-<!-- BlazorUI Grid customizations (REQUIRED) -->
-<link rel="stylesheet" href="_content/BlazorUI.Components/css/grid-theme.css" />
+<!-- NeoUI Grid customizations (REQUIRED) -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/grid-theme.css" />
 ```
 
 **Tip**: Include **all theme CSS files** if you want users to be able to switch themes dynamically.
@@ -221,7 +221,7 @@ See AG Grid's documentation for all available CSS variables:
 1. **Choose one base theme** (`Theme`) for consistency across your app
 2. **Use Style modifiers** (`Striped`, `Bordered`, `Minimal`) for variation
 3. **Use Density** to match your data density needs
-4. **Let BlazorUI colors handle theming** - AG Grid themes automatically adapt to your color scheme
+4. **Let NeoUI colors handle theming** - AG Grid themes automatically adapt to your color scheme
 5. **Test in dark mode** to ensure all themes look good
 
 ## Naming Clarification

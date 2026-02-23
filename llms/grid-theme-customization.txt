@@ -2,7 +2,7 @@
 
 ## Overview
 
-The BlazorUI Grid component provides a powerful three-level theme customization system built on AG Grid's theming capabilities. This system allows you to customize your grid's appearance from high-level presets down to individual CSS variables.
+The NeoUI Grid component provides a powerful three-level theme customization system built on AG Grid's theming capabilities. This system allows you to customize your grid's appearance from high-level presets down to individual CSS variables.
 
 ## Three-Level Architecture
 
@@ -213,7 +213,7 @@ If you were previously customizing grids with manual CSS variables, migrate to t
 
 ```razor
 @page "/orders"
-@using BlazorUI.Components.Grid
+@using NeoUI.Blazor.Grid
 
 <Grid TItem="Order" 
       Items="@orders"

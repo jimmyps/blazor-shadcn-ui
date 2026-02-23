@@ -296,25 +296,25 @@ Primitives are completely **headless** - they provide behavior and accessibility
 
 **Option 1: Tailwind CSS** (requires your own Tailwind setup)
 ```razor
-<NeoNeoUI.Blazor.Primitives.Accordion.Accordion class="space-y-4">
-    <NeoNeoUI.Blazor.Primitives.Accordion.AccordionItem class="border rounded-lg">
+<NeoUI.Blazor.Primitives.Accordion.Accordion class="space-y-4">
+    <NeoUI.Blazor.Primitives.Accordion.AccordionItem class="border rounded-lg">
         <!-- Your custom Tailwind classes -->
-    </NeoNeoUI.Blazor.Primitives.Accordion.AccordionItem>
-</NeoNeoUI.Blazor.Primitives.Accordion.Accordion>
+    </NeoUI.Blazor.Primitives.Accordion.AccordionItem>
+</NeoUI.Blazor.Primitives.Accordion.Accordion>
 ```
 
 **Option 2: CSS Modules / Vanilla CSS**
 ```razor
-<NeoNeoUI.Blazor.Primitives.Accordion.Accordion class="my-accordion">
+<NeoUI.Blazor.Primitives.Accordion.Accordion class="my-accordion">
     <!-- Style with your own CSS -->
-</NeoNeoUI.Blazor.Primitives.Accordion.Accordion>
+</NeoUI.Blazor.Primitives.Accordion.Accordion>
 ```
 
 **Option 3: Inline Styles**
 ```razor
-<NeoNeoUI.Blazor.Primitives.Accordion.Accordion style="margin: 1rem;">
+<NeoUI.Blazor.Primitives.Accordion.Accordion style="margin: 1rem;">
     <!-- Direct inline styling -->
-</NeoNeoUI.Blazor.Primitives.Accordion.Accordion>
+</NeoUI.Blazor.Primitives.Accordion.Accordion>
 ```
 
 Primitives give you complete control over styling while handling all the complex behavior, accessibility, and keyboard navigation for you. Unlike `NeoUI.Blazor`, primitives don't include any CSS - you bring your own styling approach.
