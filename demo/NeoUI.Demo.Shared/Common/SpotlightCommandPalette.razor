@@ -10,7 +10,7 @@
         OverlayClass="bg-background/70 backdrop-blur backdrop-saturate-150 dialog-overlay dialog-animated">
         
         <HeightAnimation Config="@_heightAnimationConfig" Enabled="@_isOpen">
-            <NeoUI.Blazor.Command OnValueChange="@HandleSelect">
+            <CommandContent OnValueChange="@HandleSelect">
                 <CommandInput 
                     Placeholder="Type a command or search..." SearchInterval="300" AutoFocus="true"
                     Class="border-0 border-b border-border/40 rounded-none focus-visible:ring-0" />
@@ -119,7 +119,7 @@
                     </CommandVirtualizedGroup>
 
                 </CommandList>
-            </NeoUI.Blazor.Command>
+            </CommandContent>
         </HeightAnimation>
     </DialogContent>
 </Dialog>
