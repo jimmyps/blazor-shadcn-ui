@@ -1,11 +1,12 @@
 @namespace BlazorUI.Components.Chart
+@implements IAxisParent
 
 <CascadingValue Value="this">
     @ChildContent
 </CascadingValue>
 
 @code {
-    [CascadingParameter] private dynamic? Parent { get; set; }
+    [CascadingParameter] private IXAxisParent? Parent { get; set; }
     
     /// <summary>
     /// Gets or sets whether to show the X axis.

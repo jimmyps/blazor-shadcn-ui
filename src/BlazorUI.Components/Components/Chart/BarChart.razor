@@ -2,6 +2,7 @@
 @using BlazorUI.Components.Chart.Internal
 @typeparam TData
 @inherits ChartBase<TData>
+@implements IBarSeriesParent
 
 <CascadingValue Value="this" IsFixed="true">
     <div class="chart-bar-container" style="width: 100%; height: 100%; position: relative;">
@@ -234,15 +235,15 @@
         return TooltipMode.Axis;
     }
     
-    internal void RegisterBar(Bar bar)
+    public void RegisterBar(Bar bar)
     {
         _bars.Add(bar);
         StateHasChanged();
     }
     
-    internal void RegisterGrid(Grid grid) { _grid = grid; StateHasChanged(); }
-    internal void RegisterXAxis(XAxis xAxis) { _xAxis = xAxis; StateHasChanged(); }
-    internal void RegisterYAxis(YAxis yAxis) { _yAxis = yAxis; StateHasChanged(); }
-    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
-    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+    public void RegisterGrid(Grid grid) { _grid = grid; StateHasChanged(); }
+    public void RegisterXAxis(XAxis xAxis) { _xAxis = xAxis; StateHasChanged(); }
+    public void RegisterYAxis(YAxis yAxis) { _yAxis = yAxis; StateHasChanged(); }
+    public void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    public void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
 }

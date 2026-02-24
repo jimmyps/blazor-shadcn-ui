@@ -2,6 +2,7 @@
 @using BlazorUI.Components.Chart.Internal
 @typeparam TData
 @inherits ChartBase<TData>
+@implements IPieChartParent
 
 <CascadingValue Value="this" IsFixed="true">
     <div class="chart-pie-container" style="width: 100%; height: 100%; position: relative;">
@@ -163,12 +164,12 @@
         };
     }
     
-    internal void RegisterPie(Pie pie)
+    public void RegisterPie(Pie pie)
     {
         _pies.Add(pie);
         StateHasChanged();
     }
     
-    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
-    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+    public void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    public void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
 }

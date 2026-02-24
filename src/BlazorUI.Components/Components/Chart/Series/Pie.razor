@@ -7,7 +7,7 @@
 </CascadingValue>
 
 @code {
-    [CascadingParameter] private dynamic? Parent { get; set; }
+    [CascadingParameter] private IPieChartParent? Parent { get; set; }
 
     /// <summary>
     /// Gets or sets the key for slice names.
@@ -143,9 +143,6 @@
     
     protected override void OnInitialized()
     {
-        if (Parent != null)
-        {
-            try { Parent.RegisterPie(this); } catch { }
-        }
+        Parent?.RegisterPie(this);
     }
 }

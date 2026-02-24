@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 
 <PageTitle>BlazorUI - Home</PageTitle>
 
@@ -84,6 +84,31 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="space-y-4">
+        <h2 class="text-2xl font-semibold">What's New</h2>
+        <a href="/components/theme-switcher" class="flex items-start gap-4 p-5 border rounded-lg hover:border-primary hover:bg-accent transition-colors no-underline group">
+            <div class="mt-0.5 flex-shrink-0 size-9 rounded-full bg-primary/10 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
+                    <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
+                    <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
+                    <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>
+                    <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
+                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>
+                </svg>
+            </div>
+            <div class="space-y-1 min-w-0">
+                <div class="flex items-center gap-2">
+                    <h3 class="font-semibold group-hover:text-primary">Theme Switcher</h3>
+                    <span class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">New</span>
+                </div>
+                <p class="text-sm text-muted-foreground">
+                    Runtime base color and accent picker — lets users choose from 5 base color schemes and 18 primary accents,
+                    persisted automatically via <code class="bg-muted px-1 rounded">localStorage</code>.
+                </p>
+            </div>
+        </a>
     </div>
 
     <div class="space-y-4">
