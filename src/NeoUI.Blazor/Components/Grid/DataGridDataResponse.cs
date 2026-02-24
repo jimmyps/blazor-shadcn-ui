@@ -6,7 +6,7 @@ namespace NeoUI.Blazor;
 /// Represents a response from a server-side data source containing the requested data and metadata.
 /// </summary>
 /// <typeparam name="TItem">The type of items in the grid.</typeparam>
-public class GridDataResponse<TItem>
+public class DataGridDataResponse<TItem>
 {
     /// <summary>
     /// Gets or sets the collection of items for the current page or request.

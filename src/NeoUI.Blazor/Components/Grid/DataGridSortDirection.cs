@@ -6,7 +6,7 @@ namespace NeoUI.Blazor;
 /// Specifies the sort direction for a grid column.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum GridSortDirection
+public enum DataGridSortDirection
 {
     /// <summary>No sorting applied.</summary>
     None,

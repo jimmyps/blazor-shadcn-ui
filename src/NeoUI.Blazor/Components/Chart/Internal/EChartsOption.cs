@@ -10,7 +10,7 @@ namespace NeoUI.Blazor.Chart.Internal;
 public sealed class EChartsOption
 {
     /// <summary>
-    /// Grid component configuration for positioning chart elements in the cartesian coordinate system.
+    /// DataGrid component configuration for positioning chart elements in the cartesian coordinate system.
     /// </summary>
     [JsonPropertyName("grid")]
     public EChartsGrid? Grid { get; set; }
@@ -113,7 +113,7 @@ public sealed class EChartsOption
 }
 
 /// <summary>
-/// Grid component for positioning chart elements in the cartesian coordinate system.
+/// DataGrid component for positioning chart elements in the cartesian coordinate system.
 /// </summary>
 public sealed class EChartsGrid
 {

@@ -6,7 +6,7 @@ namespace NeoUI.Blazor.Services.Grid;
 /// Service for rendering RenderFragment templates to HTML strings.
 /// Used by grid renderers to convert Blazor templates into HTML for JavaScript grid libraries.
 /// </summary>
-public interface ITemplateRenderer
+public interface IDataGridDataGridTemplateRenderer
 {
     /// <summary>
     /// Renders a RenderFragment to an HTML string.

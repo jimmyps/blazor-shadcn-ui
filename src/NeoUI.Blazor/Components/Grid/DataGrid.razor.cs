@@ -12,7 +12,7 @@ namespace NeoUI.Blazor;
 /// </summary>
 /// <typeparam name="TItem">The type of items in the grid.</typeparam>
 /// <remarks>
-/// The Grid component provides a flexible, high-performance data grid with support for:
+/// The DataGrid component provides a flexible, high-performance data grid with support for:
 /// - Client-side and server-side data loading
 /// - Sorting, filtering, and pagination
 /// - Row selection (single/multiple)
@@ -21,7 +21,7 @@ namespace NeoUI.Blazor;
 /// - Observable collections with automatic updates
 /// - Custom cell templates and actions
 /// </remarks>
-public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
+public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
 {
     /// <summary>
     /// Reference to the grid container element.
@@ -29,19 +29,19 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     private ElementReference _gridContainer;
     
     /// <summary>
-    /// Grid configuration definition passed to the renderer.
+    /// DataGrid configuration definition passed to the renderer.
     /// </summary>
-    private GridDefinition<TItem> _gridDefinition = new();
+    private DataGridDefinition<TItem> _gridDefinition = new();
     
     /// <summary>
     /// List of registered column definitions.
     /// </summary>
-    private List<GridColumn<TItem>> _columns = new();
+    private List<DataGridColumn<TItem>> _columns = new();
     
     /// <summary>
-    /// Grid renderer implementation (e.g., AG Grid).
+    /// DataGrid renderer implementation (e.g., AG Grid).
     /// </summary>
-    private IGridRenderer<TItem>? _gridRenderer;
+    private IDataGridRenderer<TItem>? _gridRenderer;
     
     /// <summary>
     /// Indicates whether the grid has been initialized.
@@ -59,9 +59,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     private bool _actionsRegistered = false;
     
     /// <summary>
-    /// Custom theme parameters provided by GridThemeParameters component.
+    /// Custom theme parameters provided by DataDataGridThemeParameters component.
     /// </summary>
-    private GridThemeParameters? _themeParameters;
+    private DataDataGridThemeParameters? _themeParameters;
     
     /// <summary>
     /// Tracks previously selected items to detect selection changes.
@@ -76,17 +76,17 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Previously applied theme for change detection.
     /// </summary>
-    private GridTheme _previousTheme;
+    private DataGridTheme _previousTheme;
     
     /// <summary>
     /// Previously applied density for change detection.
     /// </summary>
-    private GridDensity _previousDensity;
+    private DataGridDensity _previousDensity;
     
     /// <summary>
     /// Previously applied visual style for change detection.
     /// </summary>
-    private GridStyle _previousVisualStyle;
+    private DataGridStyle _previousVisualStyle;
     
     /// <summary>
     /// Hash of previous state for mutation detection.
@@ -131,7 +131,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
 
     /// <summary>
     /// Gets or sets the host component that contains grid action methods.
-    /// Set this to 'this' to enable auto-discovery of methods marked with [GridAction].
+    /// Set this to 'this' to enable auto-discovery of methods marked with [DataGridAction].
     /// </summary>
     [Parameter]
     public object? ActionHost { get; set; }
@@ -146,13 +146,13 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     /// Gets or sets the selection mode for the grid.
     /// </summary>
     [Parameter]
-    public GridSelectionMode SelectionMode { get; set; } = GridSelectionMode.None;
+    public DataGridSelectionMode SelectionMode { get; set; } = DataGridSelectionMode.None;
 
     /// <summary>
     /// Gets or sets the paging mode for the grid.
     /// </summary>
     [Parameter]
-    public GridPagingMode PagingMode { get; set; } = GridPagingMode.None;
+    public DataGridPagingMode PagingMode { get; set; } = DataGridPagingMode.None;
 
     /// <summary>
     /// Gets or sets the number of items per page.
@@ -174,27 +174,27 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     /// Gets or sets the virtualization mode for the grid.
     /// </summary>
     [Parameter]
-    public GridVirtualizationMode VirtualizationMode { get; set; } = GridVirtualizationMode.Auto;
+    public DataGridVirtualizationMode VirtualizationMode { get; set; } = DataGridVirtualizationMode.Auto;
 
     /// <summary>
-    /// Gets or sets the AG Grid theme to use (Shadcn, Alpine, Balham, Material, Quartz).
+    /// Gets or sets the AG DataGrid theme to use (Shadcn, Alpine, Balham, Material, Quartz).
     /// Default is Shadcn.
     /// </summary>
     [Parameter]
-    public GridTheme Theme { get; set; } = GridTheme.Shadcn;
+    public DataGridTheme Theme { get; set; } = DataGridTheme.Shadcn;
 
     /// <summary>
     /// Gets or sets the visual style modifiers for the grid (Default, Striped, Bordered, Minimal).
-    /// These modifiers work with any AG Grid theme.
+    /// These modifiers work with any AG DataGrid theme.
     /// </summary>
     [Parameter]
-    public GridStyle VisualStyle { get; set; } = GridStyle.Default;
+    public DataGridStyle VisualStyle { get; set; } = DataGridStyle.Default;
 
     /// <summary>
     /// Gets or sets the spacing density for the grid.
     /// </summary>
     [Parameter]
-    public GridDensity Density { get; set; } = GridDensity.Comfortable;
+    public DataGridDensity Density { get; set; } = DataGridDensity.Comfortable;
 
     /// <summary>
     /// Gets or sets whether to suppress the header menus (filter/column menu).
@@ -210,14 +210,14 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     /// Supports two-way binding via @bind-State for automatic state synchronization.
     /// </summary>
     [Parameter]
-    public GridState? State { get; set; }
+    public DataGridState? State { get; set; }
     
     /// <summary>
     /// Gets or sets the callback invoked when the grid state changes.
     /// Used for two-way binding support (@bind-State).
     /// </summary>
     [Parameter]
-    public EventCallback<GridState> StateChanged { get; set; }
+    public EventCallback<DataGridState> StateChanged { get; set; }
 
     /// <summary>
     /// Gets or sets whether the grid is in a loading state.
@@ -226,7 +226,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public bool IsLoading { get; set; }
 
     /// <summary>
-    /// Gets or sets the child content containing GridColumn definitions.
+    /// Gets or sets the child content containing DataGridColumn definitions.
     /// </summary>
     [Parameter]
     public RenderFragment? Columns { get; set; }
@@ -275,29 +275,29 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     /// Gets or sets the callback invoked when the grid state changes.
     /// </summary>
     [Parameter]
-    public EventCallback<GridState> OnStateChanged { get; set; }
+    public EventCallback<DataGridState> OnStateChanged { get; set; }
 
     /// <summary>
     /// Gets or sets the row model type for the grid.
     /// Default is ClientSide. Use ServerSide for server-side data fetching with sorting/filtering/pagination.
     /// </summary>
     [Parameter]
-    public GridRowModelType RowModelType { get; set; } = GridRowModelType.ClientSide;
+    public DataGridRowModelType RowModelType { get; set; } = DataGridRowModelType.ClientSide;
 
     /// <summary>
     /// Gets or sets the callback invoked when server-side data is requested.
     /// Required when RowModelType is ServerSide or Infinite.
-    /// This callback receives a GridDataRequest and should return a GridDataResponse.
+    /// This callback receives a DataGridDataRequest and should return a DataGridDataResponse.
     /// </summary>
     [Parameter]
-    public Func<GridDataRequest<TItem>, Task<GridDataResponse<TItem>>>? OnServerDataRequest { get; set; }
+    public Func<DataGridDataRequest<TItem>, Task<DataGridDataResponse<TItem>>>? OnServerDataRequest { get; set; }
     
     /// <summary>
     /// Gets or sets the callback invoked when server-side data is requested (legacy EventCallback version).
     /// For new code, use OnServerDataRequest (Func) instead.
     /// </summary>
     [Parameter]
-    public EventCallback<GridDataRequest<TItem>> OnDataRequest { get; set; }
+    public EventCallback<DataGridDataRequest<TItem>> OnDataRequest { get; set; }
 
     /// <summary>
     /// Gets or sets the callback invoked when the selection changes.
@@ -330,7 +330,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     /// </summary>
     private string GetGridCssClass()
     {
-        // Combine AG Grid theme with our custom style modifiers
+        // Combine AG DataGrid theme with our custom style modifiers
         return ClassNames.cn(
             "grid-content"
         );
@@ -348,7 +348,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         }
         
         // Resolve generic grid renderer
-        _gridRenderer = ServiceProvider.GetRequiredService<IGridRenderer<TItem>>();
+        _gridRenderer = ServiceProvider.GetRequiredService<IDataGridRenderer<TItem>>();
     }
 
     /// <summary>
@@ -419,7 +419,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         
         // Sync selection state from parent to grid when SelectedItems changes
         // This is a UI STATE change, NOT a data change - no UpdateDataAsync needed!
-        if (SelectionMode != GridSelectionMode.None && 
+        if (SelectionMode != DataGridSelectionMode.None && 
             SelectedItems != null && 
             !SelectedItems.SequenceEqual(_previousSelectedItems) &&
             !_isUpdatingSelectionFromGrid)
@@ -445,8 +445,8 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             
         try
         {
-            // Build a GridState with the current selection
-            var state = new GridState
+            // Build a DataGridState with the current selection
+            var state = new DataGridState
             {
                 SelectedRowIds = SelectedItems
                     .Select(item =>
@@ -488,7 +488,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         if (firstRender)
         {
             // First render: columns haven't registered yet
-            // Force a second render to allow child GridColumn components to register
+            // Force a second render to allow child DataGridColumn components to register
             if (!_columnsRegistered)
             {
                 _columnsRegistered = true;
@@ -511,9 +511,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
                 return;
             }
             
-            BuildGridDefinition();
+            BuildDataGridDefinition();
             
-            // Auto-discover and register grid actions AFTER BuildGridDefinition
+            // Auto-discover and register grid actions AFTER BuildDataGridDefinition
             // This ensures _gridDefinition.Metadata is initialized
             if (!_actionsRegistered && ActionHost != null)
             {
@@ -538,17 +538,17 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Registers a column with the grid (called by GridColumn components).
+    /// Registers a column with the grid (called by DataGridColumn components).
     /// </summary>
-    internal void RegisterColumn(GridColumn<TItem> column)
+    internal void RegisterColumn(DataGridColumn<TItem> column)
     {
         _columns.Add(column);
     }
 
     /// <summary>
-    /// Registers custom theme parameters (called by GridThemeParameters component).
+    /// Registers custom theme parameters (called by DataDataGridThemeParameters component).
     /// </summary>
-    internal void RegisterThemeParameters(GridThemeParameters parameters)
+    internal void RegisterThemeParameters(DataDataGridThemeParameters parameters)
     {
         _themeParameters = parameters;
     }
@@ -578,7 +578,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     }
     
     /// <summary>
-    /// Auto-discovers and registers methods marked with [GridAction] attribute from the ActionHost.
+    /// Auto-discovers and registers methods marked with [DataGridAction] attribute from the ActionHost.
     /// </summary>
     private void AutoRegisterActions()
     {
@@ -589,15 +589,15 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         
         var hostType = ActionHost.GetType();
         
-        // Find all methods with [GridAction] attribute
+        // Find all methods with [DataGridAction] attribute
         var methods = hostType.GetMethods(BindingFlags.Instance | 
                                          BindingFlags.Public | 
                                          BindingFlags.NonPublic)
-            .Where(m => m.GetCustomAttribute<Attributes.GridActionAttribute>() != null);
+            .Where(m => m.GetCustomAttribute<Attributes.DataGridActionAttribute>() != null);
         
         foreach (var method in methods)
         {
-            var attr = method.GetCustomAttribute<Attributes.GridActionAttribute>()!;
+            var attr = method.GetCustomAttribute<Attributes.DataGridActionAttribute>()!;
             var actionName = attr.Name ?? method.Name;
             
             // Validate method signature
@@ -629,11 +629,11 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Gets the default theme parameters for a specific AG Grid theme.
+    /// Gets the default theme parameters for a specific AG DataGrid theme.
     /// </summary>
-    private Dictionary<string, object> GetThemeDefaults(GridTheme theme)
+    private Dictionary<string, object> GetThemeDefaults(DataGridTheme theme)
     {
-        if (theme == GridTheme.Shadcn)
+        if (theme == DataGridTheme.Shadcn)
         {
             return new Dictionary<string, object>
             {
@@ -658,11 +658,11 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Gets the spacing and sizing parameters for a density preset.
     /// </summary>
-    private Dictionary<string, object> GetDensityPreset(GridDensity density)
+    private Dictionary<string, object> GetDensityPreset(DataGridDensity density)
     {
         return density switch
         {
-            GridDensity.Compact => new Dictionary<string, object>
+            DataGridDensity.Compact => new Dictionary<string, object>
             {
                 { "spacing", 4 },
                 { "rowHeight", 28 },
@@ -671,7 +671,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
                 { "iconSize", 14 },
                 { "inputHeight", 28 },
             },
-            GridDensity.Spacious => new Dictionary<string, object>
+            DataGridDensity.Spacious => new Dictionary<string, object>
             {
                 { "spacing", 12 },
                 { "rowHeight", 56 },
@@ -680,7 +680,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
                 { "iconSize", 20 },
                 { "inputHeight", 40 },
             },
-            GridDensity.Comfortable or _ => new Dictionary<string, object>
+            DataGridDensity.Comfortable or _ => new Dictionary<string, object>
             {
                 { "spacing", 8 },
                 { "rowHeight", 42 },
@@ -695,25 +695,25 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Gets the visual style parameters for a style preset.
     /// </summary>
-    private Dictionary<string, object> GetVisualStylePreset(GridStyle style)
+    private Dictionary<string, object> GetVisualStylePreset(DataGridStyle style)
     {
         return style switch
         {
-            GridStyle.Striped => new Dictionary<string, object>
+            DataGridStyle.Striped => new Dictionary<string, object>
             {
                 { "wrapperBorder", true },
                 { "oddRowBackgroundColor", "color-mix(in srgb, var(--muted) 30%, transparent)" },
             },
-            GridStyle.Bordered => new Dictionary<string, object>
+            DataGridStyle.Bordered => new Dictionary<string, object>
             {
                 { "wrapperBorder", true },
             },
-            GridStyle.Minimal => new Dictionary<string, object>
+            DataGridStyle.Minimal => new Dictionary<string, object>
             {
                 { "wrapperBorder", false },
                 { "borderWidth", 0 },
             },
-            GridStyle.Default or _ => new Dictionary<string, object>
+            DataGridStyle.Default or _ => new Dictionary<string, object>
             {
                 { "wrapperBorder", true },
             },
@@ -721,11 +721,11 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Merges theme parameters with precedence: ThemeDefaults &lt; Density &lt; VisualStyle &lt; GridThemeParameters.
+    /// Merges theme parameters with precedence: ThemeDefaults &lt; Density &lt; VisualStyle &lt; DataDataGridThemeParameters.
     /// </summary>
     private Dictionary<string, object> GetMergedThemeParams()
     {
-        // Merge theme parameters with precedence: ThemeDefaults < Density < VisualStyle < GridThemeParameters
+        // Merge theme parameters with precedence: ThemeDefaults < Density < VisualStyle < DataDataGridThemeParameters
         var themeParams = GetThemeDefaults(Theme);
         
         // Apply density preset
@@ -740,7 +740,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
             themeParams[kvp.Key] = kvp.Value;
         }
         
-        // Apply user's GridThemeParameters (highest priority)
+        // Apply user's DataDataGridThemeParameters (highest priority)
         if (_themeParameters != null)
         {
             foreach (var kvp in _themeParameters.ToDictionary())
@@ -755,13 +755,13 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Builds the grid definition from columns and parameters.
     /// </summary>
-    private void BuildGridDefinition()
+    private void BuildDataGridDefinition()
     {
         _gridDefinition.Columns = _columns.Select(c => c.ToDefinition()).ToList();
         _gridDefinition.SelectionMode = SelectionMode;
         _gridDefinition.PagingMode = PagingMode;
         _gridDefinition.VirtualizationMode = VirtualizationMode;
-        _gridDefinition.Theme = Theme;                      // AG Grid theme (Alpine, Balham, etc.)
+        _gridDefinition.Theme = Theme;                      // AG DataGrid theme (Alpine, Balham, etc.)
         _gridDefinition.VisualStyle = VisualStyle;          // Visual modifiers (Striped, Bordered, etc.)
         _gridDefinition.Density = Density;
         _gridDefinition.PageSize = PageSize;
@@ -803,12 +803,12 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         _gridDefinition.ThemeParams = GetMergedThemeParams();
         
         // ✅ Server-side row model configuration
-        if (RowModelType == GridRowModelType.ServerSide)
+        if (RowModelType == DataGridRowModelType.ServerSide)
         {
             _gridDefinition.RowModelType = "serverSide";
             _gridDefinition.ServerDataRequestHandler = OnServerDataRequest;
         }
-        else if (RowModelType == GridRowModelType.Infinite)
+        else if (RowModelType == DataGridRowModelType.Infinite)
         {
             _gridDefinition.RowModelType = "infinite";
             _gridDefinition.ServerDataRequestHandler = OnServerDataRequest;
@@ -991,7 +991,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     
     /// <summary>
     /// Handles ItemsChanged events from TrackedObservableCollection.
-    /// Applies update transactions to AG Grid for modified items.
+    /// Applies update transactions to AG DataGrid for modified items.
     /// </summary>
     private async void HandleItemsChanged(object? sender, ItemsChangedEventArgs<TItem> e)
     {
@@ -1001,10 +1001,10 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         if (e.ChangedItems == null || e.ChangedItems.Count == 0)
             return;
         
-        // Apply update transaction to AG Grid
+        // Apply update transaction to AG DataGrid
         await InvokeAsync(async () =>
         {
-            await _gridRenderer.ApplyTransactionAsync(new GridTransaction<TItem>
+            await _gridRenderer.ApplyTransactionAsync(new DataGridTransaction<TItem>
             {
                 Update = e.ChangedItems.ToList()
             });
@@ -1045,7 +1045,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
                     break;
                     
                 case NotifyCollectionChangedAction.Move:
-                    // Move is just a visual reorder - AG Grid handles this automatically
+                    // Move is just a visual reorder - AG DataGrid handles this automatically
                     break;
             }
         }
@@ -1122,7 +1122,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
         if (_gridRenderer == null)
             return;
         
-        var transaction = new GridTransaction<TItem>
+        var transaction = new DataGridTransaction<TItem>
         {
             Add = adds.Any() ? adds : null,
             Remove = removes.Any() ? removes : null,
@@ -1139,9 +1139,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public async Task AddRowsAsync(params TItem[] rows)
     {
         if (_gridRenderer == null || !_initialized)
-            throw new InvalidOperationException("Grid not initialized");
+            throw new InvalidOperationException("DataGrid not initialized");
         
-        await _gridRenderer.ApplyTransactionAsync(new GridTransaction<TItem>
+        await _gridRenderer.ApplyTransactionAsync(new DataGridTransaction<TItem>
         {
             Add = rows.ToList()
         });
@@ -1157,9 +1157,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public async Task UpdateRowsAsync(params TItem[] rows)
     {
         if (_gridRenderer == null || !_initialized)
-            throw new InvalidOperationException("Grid not initialized");
+            throw new InvalidOperationException("DataGrid not initialized");
         
-        await _gridRenderer.ApplyTransactionAsync(new GridTransaction<TItem>
+        await _gridRenderer.ApplyTransactionAsync(new DataGridTransaction<TItem>
         {
             Update = rows.ToList()
         });
@@ -1172,9 +1172,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public async Task RemoveRowsAsync(params TItem[] rows)
     {
         if (_gridRenderer == null || !_initialized)
-            throw new InvalidOperationException("Grid not initialized");
+            throw new InvalidOperationException("DataGrid not initialized");
         
-        await _gridRenderer.ApplyTransactionAsync(new GridTransaction<TItem>
+        await _gridRenderer.ApplyTransactionAsync(new DataGridTransaction<TItem>
         {
             Remove = rows.ToList()
         });
@@ -1208,10 +1208,10 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public async Task RefreshAsync()
     {
         if (_gridRenderer == null || !_initialized)
-            throw new InvalidOperationException("Grid not initialized");
+            throw new InvalidOperationException("DataGrid not initialized");
         
         // For server-side grids, refresh the cache to re-fetch data
-        if (RowModelType == GridRowModelType.ServerSide)
+        if (RowModelType == DataGridRowModelType.ServerSide)
         {
             await _gridRenderer.RefreshServerSideCacheAsync();
         }
@@ -1230,9 +1230,9 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     public async Task RefreshServerSideCacheAsync()
     {
         if (_gridRenderer == null || !_initialized)
-            throw new InvalidOperationException("Grid not initialized");
+            throw new InvalidOperationException("DataGrid not initialized");
             
-        if (RowModelType != GridRowModelType.ServerSide)
+        if (RowModelType != DataGridRowModelType.ServerSide)
             throw new InvalidOperationException("RefreshServerSideCacheAsync only works with Server-Side Row Model");
     
         await _gridRenderer.RefreshServerSideCacheAsync();
@@ -1245,21 +1245,21 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     /// </summary>
     /// <returns>The current grid state including sort, filter, column configuration, and selection.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the grid is not initialized.</exception>
-    public async Task<GridState> GetStateAsync()
+    public async Task<DataGridState> GetStateAsync()
     {
         if (_gridRenderer == null || !_initialized)
         {
-            throw new InvalidOperationException("Grid not initialized. Ensure the grid has been rendered before calling GetStateAsync.");
+            throw new InvalidOperationException("DataGrid not initialized. Ensure the grid has been rendered before calling GetStateAsync.");
         }
         
         return await _gridRenderer.GetStateAsync();
     }
     
     /// <summary>
-    /// Computes a hash code for the given GridState to detect mutations.
+    /// Computes a hash code for the given DataGridState to detect mutations.
     /// Uses HashCode struct for efficient, deterministic hashing of state properties.
     /// </summary>
-    private static int ComputeStateHash(GridState state)
+    private static int ComputeStateHash(DataGridState state)
     {
         var hash = new HashCode();
         
@@ -1407,7 +1407,7 @@ public partial class Grid<TItem> : ComponentBase, IAsyncDisposable
     private string GetGridContainerStyle()
     {
         // Build inline styles for the grid container
-        // AG Grid requires explicit height to render properly
+        // AG DataGrid requires explicit height to render properly
         var styles = new List<string>();
 
         // Add height - default to 300px if not specified

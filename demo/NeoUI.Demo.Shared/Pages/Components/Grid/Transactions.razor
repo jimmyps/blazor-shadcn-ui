@@ -50,16 +50,16 @@
             </Button>
         </div>
 
-        <Grid @ref="addGrid" 
+        <DataGrid @ref="addGrid" 
               Items="@addOrders" 
-              SelectionMode="GridSelectionMode.Multiple">
+              SelectionMode="DataGridSelectionMode.Multiple">
             <Columns>
-                <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                <GridColumn Field="Customer" Header="Customer" />
-                <GridColumn Field="Status" Header="Status" Width="130px" />
-                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+                <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                <DataGridColumn Field="Customer" Header="Customer" />
+                <DataGridColumn Field="Status" Header="Status" Width="130px" />
+                <DataGridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
             </Columns>
-        </Grid>
+        </DataGrid>
 
         <div class="mt-4 text-sm text-muted-foreground">
             Total: @addOrders.Count rows (Added via transaction API - no full refresh)
@@ -136,16 +136,16 @@
             </Button>
         </div>
 
-        <Grid @ref="updateGrid" 
+        <DataGrid @ref="updateGrid" 
               Items="@updateOrders" 
-              SelectionMode="GridSelectionMode.None">
+              SelectionMode="DataGridSelectionMode.None">
             <Columns>
-                <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                <GridColumn Field="Customer" Header="Customer" />
-                <GridColumn Field="Status" Header="Status" Width="130px" />
-                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+                <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                <DataGridColumn Field="Customer" Header="Customer" />
+                <DataGridColumn Field="Status" Header="Status" Width="130px" />
+                <DataGridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
             </Columns>
-        </Grid>
+        </DataGrid>
 
         <div class="mt-4 text-sm text-muted-foreground">
             @updateOrders.Count(o => o.Status == OrderStatus.Pending) pending orders
@@ -238,17 +238,17 @@
             </Button>
         </div>
 
-        <Grid @ref="removeGrid" 
+        <DataGrid @ref="removeGrid" 
               Items="@removeOrders" 
-              SelectionMode="GridSelectionMode.Multiple"
+              SelectionMode="DataGridSelectionMode.Multiple"
               @bind-SelectedItems="@selectedRemoveOrders">
             <Columns>
-                <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                <GridColumn Field="Customer" Header="Customer" />
-                <GridColumn Field="Status" Header="Status" Width="130px" />
-                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+                <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                <DataGridColumn Field="Customer" Header="Customer" />
+                <DataGridColumn Field="Status" Header="Status" Width="130px" />
+                <DataGridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
             </Columns>
-        </Grid>
+        </DataGrid>
 
         <div class="mt-4 text-sm text-muted-foreground">
             @removeOrders.Count rows remaining
@@ -325,16 +325,16 @@
             </Button>
         </div>
 
-        <Grid @ref="combinedGrid" 
+        <DataGrid @ref="combinedGrid" 
               Items="@combinedOrders" 
-              SelectionMode="GridSelectionMode.None">
+              SelectionMode="DataGridSelectionMode.None">
             <Columns>
-                <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                <GridColumn Field="Customer" Header="Customer" />
-                <GridColumn Field="Status" Header="Status" Width="130px" />
-                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+                <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                <DataGridColumn Field="Customer" Header="Customer" />
+                <DataGridColumn Field="Status" Header="Status" Width="130px" />
+                <DataGridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
             </Columns>
-        </Grid>
+        </DataGrid>
 
         <div class="mt-4 space-y-1 text-sm text-muted-foreground">
             <p>Total: @combinedOrders.Count orders</p>
@@ -366,7 +366,7 @@
         orders.AddRange(newOrders);
 
         // Execute all operations in optimal sequence
-        // Grid batches them into a single efficient transaction!
+        // DataGrid batches them into a single efficient transaction!
         await combinedGrid.UpdateRowsAsync(toShip);
         await combinedGrid.RemoveRowsAsync(toArchive);
         await combinedGrid.AddRowsAsync(newOrders.ToArray());
@@ -424,20 +424,20 @@ await grid.RemoveRowsAsync(order);
 
 @code {
     // Add demo
-    private Grid<Order> addGrid = null!;
+    private DataGrid<Order> addGrid = null!;
     private List<Order> addOrders = new();
 
     // Update demo
-    private Grid<Order> updateGrid = null!;
+    private DataGrid<Order> updateGrid = null!;
     private List<Order> updateOrders = new();
 
     // Remove demo
-    private Grid<Order> removeGrid = null!;
+    private DataGrid<Order> removeGrid = null!;
     private List<Order> removeOrders = new();
     private IReadOnlyCollection<Order> selectedRemoveOrders = Array.Empty<Order>();
 
     // Combined demo
-    private Grid<Order> combinedGrid = null!;
+    private DataGrid<Order> combinedGrid = null!;
     private List<Order> combinedOrders = new();
 
     private int nextId = 1000;

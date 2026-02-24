@@ -68,8 +68,8 @@ We will **not** use a `.v2` namespace. The new API becomes canonical.
 - ECharts `grid` controls plot area margins plus label containment.
 - We expose this as `Padding` on cartesian/composed roots.
 
-### 2.5 Gridlines are controlled by `<Grid />`
-- `<Grid />` is for gridlines only (not plot padding).
+### 2.5 Gridlines are controlled by `<DataGrid />`
+- `<DataGrid />` is for gridlines only (not plot padding).
 
 ### 2.6 Legend API
 - Keep Recharts-style trio: `Layout`, `Align`, `VerticalAlign`
@@ -159,7 +159,7 @@ Applies to:
 - `VerticalAlign = Top`
 - `MarginTop = 4`
 
-### 4.3 Grid defaults
+### 4.3 DataGrid defaults
 - `Show = true`
 - `Horizontal = true`
 - `Vertical = true`
@@ -498,7 +498,7 @@ series.emphasis = {
 
 1. **Implicit primitives**: Grid/XAxis/YAxis/Tooltip/Legend always exist internally with defaults; markup overrides them.
 2. **Single axes only**: exactly one X and one Y in MVP; secondary axes deferred.
-3. **Padding vs Grid**: Root `Padding` maps to ECharts `grid` margins; `<Grid />` controls gridlines only.
+3. **Padding vs Grid**: Root `Padding` maps to ECharts `grid` margins; `<DataGrid />` controls gridlines only.
 4. **Scatter keys**: X/Y keys come from axes; `Scatter` has no `DataKey` in MVP.
 5. **CSS var resolution**: must be JS-side and applies to any string containing `var(`.
 6. **RefreshAsync**: forces a full option rebuild+emit and re-resolves CSS vars.

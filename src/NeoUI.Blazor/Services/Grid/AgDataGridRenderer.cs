@@ -5,41 +5,41 @@ using System.Text.Json;
 namespace NeoUI.Blazor.Services.Grid;
 
 /// <summary>
-/// AG Grid renderer implementation.
+/// AG DataGrid renderer implementation.
 /// Wraps AG Grid Community Edition with Blazor interop.
-/// AG Grid is automatically loaded from CDN when first used.
+/// AG DataGrid is automatically loaded from CDN when first used.
 /// </summary>
 /// <typeparam name="TItem">The type of items in the grid.</typeparam>
-public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabilities
+public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRendererCapabilities
 {
     private readonly IJSRuntime _jsRuntime;
-    private readonly ITemplateRenderer? _templateRenderer;
+    private readonly IDataGridDataGridTemplateRenderer? _templateRenderer;
     private IJSObjectReference? _jsModule;
     private IJSObjectReference? _gridInstance;
-    private DotNetObjectReference<AgGridRenderer<TItem>>? _dotNetRef;
-    private GridDefinition<TItem>? _currentDefinition;
+    private DotNetObjectReference<AgDataGridRenderer<TItem>>? _dotNetRef;
+    private DataGridDefinition<TItem>? _currentDefinition;
     private readonly Dictionary<string, RenderFragment<TItem>> _templates = new();
     private readonly Dictionary<string, RenderFragment> _headerTemplates = new();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AgGridRenderer{TItem}"/> class.
+    /// Initializes a new instance of the <see cref="AgDataGridRenderer{TItem}"/> class.
     /// </summary>
     /// <param name="jsRuntime">The JavaScript runtime for interop.</param>
     /// <param name="templateRenderer">Optional template renderer for cell templates.</param>
-    public AgGridRenderer(IJSRuntime jsRuntime, ITemplateRenderer? templateRenderer = null)
+    public AgDataGridRenderer(IJSRuntime jsRuntime, IDataGridDataGridTemplateRenderer? templateRenderer = null)
     {
         _jsRuntime = jsRuntime;
         _templateRenderer = templateRenderer;
     }
 
     /// <inheritdoc/>
-    public async Task InitializeAsync(ElementReference element, GridDefinition<TItem> definition)
+    public async Task InitializeAsync(ElementReference element, DataGridDefinition<TItem> definition)
     {
-        Console.WriteLine("[AgGridRenderer] InitializeAsync called");
+        Console.WriteLine("[AgDataGridRenderer] InitializeAsync called");
         
         _jsModule = await _jsRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/NeoUI.Blazor/js/grid/aggrid-renderer.js");
-        Console.WriteLine("[AgGridRenderer] JS module imported");
+        Console.WriteLine("[AgDataGridRenderer] JS module imported");
 
         _dotNetRef = DotNetObjectReference.Create(this);
         _currentDefinition = definition;
@@ -47,45 +47,45 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         // Store cell templates for later rendering
         _templates.Clear();
         _headerTemplates.Clear();
-        Console.WriteLine($"[AgGridRenderer] Storing templates for {definition.Columns.Count} columns:");
+        Console.WriteLine($"[AgDataGridRenderer] Storing templates for {definition.Columns.Count} columns:");
         foreach (var column in definition.Columns)
         {
             if (column.CellTemplate != null)
             {
                 _templates[column.Id] = column.CellTemplate;
-                Console.WriteLine($"[AgGridRenderer]   - Stored CELL template for column ID: '{column.Id}'");
+                Console.WriteLine($"[AgDataGridRenderer]   - Stored CELL template for column ID: '{column.Id}'");
             }
             if (column.HeaderTemplate != null)
             {
                 _headerTemplates[column.Id] = column.HeaderTemplate;
-                Console.WriteLine($"[AgGridRenderer]   - Stored HEADER template for column ID: '{column.Id}'");
+                Console.WriteLine($"[AgDataGridRenderer]   - Stored HEADER template for column ID: '{column.Id}'");
             }
         }
-        Console.WriteLine($"[AgGridRenderer] Total templates stored: {_templates.Count} cell, {_headerTemplates.Count} header");
+        Console.WriteLine($"[AgDataGridRenderer] Total templates stored: {_templates.Count} cell, {_headerTemplates.Count} header");
 
         var config = BuildAgGridConfig(definition);
-        Console.WriteLine($"[AgGridRenderer] Config built with {definition.Columns.Count} columns");
+        Console.WriteLine($"[AgDataGridRenderer] Config built with {definition.Columns.Count} columns");
         
         // Verify element is valid before passing to JS
         // The ElementReference should be serialized properly by Blazor's JS interop
         try
         {
-            // AG Grid will be auto-loaded from CDN by the JavaScript module
+            // AG DataGrid will be auto-loaded from CDN by the JavaScript module
             _gridInstance = await _jsModule.InvokeAsync<IJSObjectReference>(
                 "createGrid", element, config, _dotNetRef);
-            Console.WriteLine("[AgGridRenderer] Grid instance created successfully");
+            Console.WriteLine("[AgDataGridRenderer] DataGrid instance created successfully");
             
             // ✅ Apply initial state if provided
             if (definition.State != null)
             {
-                Console.WriteLine("[AgGridRenderer] Applying initial state");
+                Console.WriteLine("[AgDataGridRenderer] Applying initial state");
                 await UpdateStateAsync(definition.State);
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AgGridRenderer] Failed to create grid: {ex.Message}");
-            Console.WriteLine($"[AgGridRenderer] Stack trace: {ex.StackTrace}");
+            Console.WriteLine($"[AgDataGridRenderer] Failed to create grid: {ex.Message}");
+            Console.WriteLine($"[AgDataGridRenderer] Stack trace: {ex.StackTrace}");
             throw;
         }
     }
@@ -93,13 +93,13 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
     /// <inheritdoc/>
     public async Task UpdateDataAsync(IEnumerable<TItem> data)
     {
-        Console.WriteLine($"[AgGridRenderer] UpdateDataAsync called with {data?.Count() ?? 0} items");
+        Console.WriteLine($"[AgDataGridRenderer] UpdateDataAsync called with {data?.Count() ?? 0} items");
         
         if (_gridInstance != null)
         {
             // Convert to list and enhance with formatted values
             var dataList = data?.ToList() ?? new List<TItem>();
-            Console.WriteLine($"[AgGridRenderer] Setting row data: {dataList.Count} rows");
+            Console.WriteLine($"[AgDataGridRenderer] Setting row data: {dataList.Count} rows");
             
             // Enhance data with formatted properties based on column definitions
             var enhancedData = EnhanceDataWithFormatting(dataList);
@@ -108,36 +108,36 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             {
                 // Log first item to verify data structure
                 var firstItem = enhancedData.First();
-                // Console.WriteLine($"[AgGridRenderer] First item keys: {string.Join(", ", ((IDictionary<string, object?>)firstItem).Keys)}");
+                // Console.WriteLine($"[AgDataGridRenderer] First item keys: {string.Join(", ", ((IDictionary<string, object?>)firstItem).Keys)}");
             }
             
             await _gridInstance.InvokeVoidAsync("setRowData", enhancedData);
-            Console.WriteLine("[AgGridRenderer] Row data set successfully");
+            Console.WriteLine("[AgDataGridRenderer] Row data set successfully");
         }
         else
         {
-            Console.WriteLine("[AgGridRenderer] Grid instance is null, cannot set data");
+            Console.WriteLine("[AgDataGridRenderer] DataGrid instance is null, cannot set data");
         }
     }
     
     /// <inheritdoc/>
-    public async Task ApplyTransactionAsync(GridTransaction<TItem> transaction)
+    public async Task ApplyTransactionAsync(DataGridTransaction<TItem> transaction)
     {
         if (_gridInstance == null)
         {
-            Console.WriteLine("[AgGridRenderer] Grid instance is null, cannot apply transaction");
+            Console.WriteLine("[AgDataGridRenderer] DataGrid instance is null, cannot apply transaction");
             return;
         }
         
         if (!transaction.HasChanges)
         {
-            Console.WriteLine("[AgGridRenderer] Transaction has no changes, skipping");
+            Console.WriteLine("[AgDataGridRenderer] Transaction has no changes, skipping");
             return;
         }
         
-        Console.WriteLine($"[AgGridRenderer] Applying transaction: +{transaction.Add?.Count ?? 0} -{transaction.Remove?.Count ?? 0} ~{transaction.Update?.Count ?? 0}");
+        Console.WriteLine($"[AgDataGridRenderer] Applying transaction: +{transaction.Add?.Count ?? 0} -{transaction.Remove?.Count ?? 0} ~{transaction.Update?.Count ?? 0}");
         
-        // Enhance data with formatting before sending to AG Grid
+        // Enhance data with formatting before sending to AG DataGrid
         var transactionData = new
         {
             add = transaction.Add != null ? EnhanceDataWithFormatting(transaction.Add) : null,
@@ -146,7 +146,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         };
         
         await _gridInstance.InvokeVoidAsync("applyTransaction", transactionData);
-        Console.WriteLine("[AgGridRenderer] Transaction applied successfully");
+        Console.WriteLine("[AgDataGridRenderer] Transaction applied successfully");
     }
 
     /// <summary>
@@ -205,7 +205,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[AgGridRenderer] Failed to format field '{column.Field}' with format '{column.DataFormatString}': {ex.Message}");
+                        Console.WriteLine($"[AgDataGridRenderer] Failed to format field '{column.Field}' with format '{column.DataFormatString}': {ex.Message}");
                     }
                 }
             }
@@ -241,7 +241,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
     }
 
     /// <inheritdoc/>
-    public async Task UpdateStateAsync(GridState state)
+    public async Task UpdateStateAsync(DataGridState state)
     {
         if (_gridInstance != null)
         {
@@ -250,25 +250,25 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
     }
 
     /// <inheritdoc/>
-    public async Task<GridState> GetStateAsync()
+    public async Task<DataGridState> GetStateAsync()
     {
         if (_gridInstance != null)
         {
-            return await _gridInstance.InvokeAsync<GridState>("getState");
+            return await _gridInstance.InvokeAsync<DataGridState>("getState");
         }
-        return new GridState();
+        return new DataGridState();
     }
 
     /// <inheritdoc/>
-    public async Task UpdateThemeAsync(GridTheme theme, Dictionary<string, object>? themeParams)
+    public async Task UpdateThemeAsync(DataGridTheme theme, Dictionary<string, object>? themeParams)
     {
         if (_gridInstance == null)
         {
-            Console.WriteLine("[AgGridRenderer] Cannot update theme - grid instance is null");
+            Console.WriteLine("[AgDataGridRenderer] Cannot update theme - grid instance is null");
             return;
         }
         
-        Console.WriteLine($"[AgGridRenderer] Updating theme to {theme}");
+        Console.WriteLine($"[AgDataGridRenderer] Updating theme to {theme}");
         
         var themeUpdate = new
         {
@@ -277,24 +277,24 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         };
         
         await _gridInstance.InvokeVoidAsync("setGridOptions", themeUpdate);
-        Console.WriteLine("[AgGridRenderer] Theme update completed");
+        Console.WriteLine("[AgDataGridRenderer] Theme update completed");
     }
 
     /// <summary>
-    /// Refreshes the server-side cache, causing AG Grid to re-fetch data with current filters/sorts.
+    /// Refreshes the server-side cache, causing AG DataGrid to re-fetch data with current filters/sorts.
     /// Only applicable for server-side row models.
     /// </summary>
     public async Task RefreshServerSideCacheAsync()
     {
         if (_gridInstance == null)
         {
-            Console.WriteLine("[AgGridRenderer] Cannot refresh server-side cache - grid instance is null");
+            Console.WriteLine("[AgDataGridRenderer] Cannot refresh server-side cache - grid instance is null");
             return;
         }
         
-        Console.WriteLine("[AgGridRenderer] Refreshing server-side cache");
+        Console.WriteLine("[AgDataGridRenderer] Refreshing server-side cache");
         await _gridInstance.InvokeVoidAsync("refreshServerSideStore");
-        Console.WriteLine("[AgGridRenderer] Server-side cache refresh completed");
+        Console.WriteLine("[AgDataGridRenderer] Server-side cache refresh completed");
     }
 
     /// <summary>
@@ -302,7 +302,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
     /// </summary>
     /// <param name="state">The new grid state.</param>
     [JSInvokable]
-    public async Task OnGridStateChanged(GridState state)
+    public async Task OnDataGridStateChanged(DataGridState state)
     {
         if (_currentDefinition?.OnStateChanged.HasDelegate == true)
         {
@@ -321,7 +321,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
     {
         if (_currentDefinition?.ServerDataRequestHandler == null)
         {
-            Console.WriteLine("[AgGridRenderer] No ServerDataRequestHandler configured for server-side row model");
+            Console.WriteLine("[AgDataGridRenderer] No ServerDataRequestHandler configured for server-side row model");
             // Return empty response
             return new
             {
@@ -332,28 +332,28 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         
         try
         {
-            // Deserialize JS request to GridDataRequest
-            var request = JsonSerializer.Deserialize<GridDataRequest<TItem>>(
+            // Deserialize JS request to DataGridDataRequest
+            var request = JsonSerializer.Deserialize<DataGridDataRequest<TItem>>(
                 requestJson.GetRawText(),
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             );
             
             if (request == null)
             {
-                throw new InvalidOperationException("Failed to deserialize GridDataRequest");
+                throw new InvalidOperationException("Failed to deserialize DataGridDataRequest");
             }
             
-            Console.WriteLine($"[AgGridRenderer] Server data request: StartIndex={request.StartIndex}, Count={request.Count}");
+            Console.WriteLine($"[AgDataGridRenderer] Server data request: StartIndex={request.StartIndex}, Count={request.Count}");
             
             // Call the developer's callback
             var response = await _currentDefinition.ServerDataRequestHandler(request);
             
-            // Response should be GridDataResponse<TItem>
+            // Response should be DataGridDataResponse<TItem>
             return response;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AgGridRenderer] Server data request failed: {ex.Message}");
+            Console.WriteLine($"[AgDataGridRenderer] Server data request failed: {ex.Message}");
             throw;
         }
     }
@@ -361,7 +361,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
     /// <summary>
     /// Called by JavaScript when selection changes.
     /// ✅ CRITICAL: Resolves deserialized items back to original instances from Items collection.
-    /// AG Grid sends JSON-deserialized objects (new instances), but we need to return the ORIGINAL
+    /// AG DataGrid sends JSON-deserialized objects (new instances), but we need to return the ORIGINAL
     /// instances from the data source so that developer code like `collection.Remove(item)` works.
     /// </summary>
     /// <param name="selectedItems">The selected items as JSON elements (deserialized - NEW instances).</param>
@@ -416,10 +416,10 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             return new List<TItem>();
         }
         
-        // Check if the Grid provided a callback to resolve items by IDs
+        // Check if the DataGrid provided a callback to resolve items by IDs
         if (_currentDefinition?.ResolveItemsByIds == null)
         {
-            Console.WriteLine("[AgGridRenderer] WARNING: ResolveItemsByIds callback not provided. " +
+            Console.WriteLine("[AgDataGridRenderer] WARNING: ResolveItemsByIds callback not provided. " +
                             "Returning deserialized items (this may break .Remove() operations).");
             return deserializedItems;
         }
@@ -431,7 +431,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         
         if (idProperty == null)
         {
-            Console.WriteLine($"[AgGridRenderer] WARNING: IdField '{idField}' not found on type '{itemType.Name}'. " +
+            Console.WriteLine($"[AgDataGridRenderer] WARNING: IdField '{idField}' not found on type '{itemType.Name}'. " +
                             "Returning deserialized items (this may break .Remove() operations).");
             return deserializedItems;
         }
@@ -446,20 +446,20 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             
             if (ids.Count == 0)
             {
-                Console.WriteLine("[AgGridRenderer] WARNING: No valid IDs found in deserialized items");
+                Console.WriteLine("[AgDataGridRenderer] WARNING: No valid IDs found in deserialized items");
                 return deserializedItems;
             }
             
             // ✅ Use the callback to resolve IDs back to original instances
             var originalItems = _currentDefinition.ResolveItemsByIds(ids!).ToList();
             
-            Console.WriteLine($"[AgGridRenderer] Resolved {originalItems.Count}/{deserializedItems.Count} items to original instances");
+            Console.WriteLine($"[AgDataGridRenderer] Resolved {originalItems.Count}/{deserializedItems.Count} items to original instances");
             return originalItems;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AgGridRenderer] ERROR resolving items to original instances: {ex.Message}");
-            Console.WriteLine($"[AgGridRenderer] Stack trace: {ex.StackTrace}");
+            Console.WriteLine($"[AgDataGridRenderer] ERROR resolving items to original instances: {ex.Message}");
+            Console.WriteLine($"[AgDataGridRenderer] Stack trace: {ex.StackTrace}");
             return deserializedItems;  // Fallback
         }
     }
@@ -477,15 +477,15 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         // Check if template renderer is available
         if (_templateRenderer == null)
         {
-            Console.WriteLine($"[AgGridRenderer] Template renderer is null for column '{templateId}'");
+            Console.WriteLine($"[AgDataGridRenderer] Template renderer is null for column '{templateId}'");
             return null; // Fall back to field-based rendering
         }
 
         // Check if template exists for this column
         if (!_templates.TryGetValue(templateId, out var template))
         {
-            Console.WriteLine($"[AgGridRenderer] No template found for column '{templateId}'");
-            Console.WriteLine($"[AgGridRenderer] Available template IDs: {string.Join(", ", _templates.Keys.Select(k => $"'{k}'"))}");
+            Console.WriteLine($"[AgDataGridRenderer] No template found for column '{templateId}'");
+            Console.WriteLine($"[AgDataGridRenderer] Available template IDs: {string.Join(", ", _templates.Keys.Select(k => $"'{k}'"))}");
             return null; // Fall back to field-based rendering
         }
 
@@ -499,27 +499,27 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             };
             
             var rawJson = data.GetRawText();
-            Console.WriteLine($"[AgGridRenderer] Deserializing data for template '{templateId}': {rawJson}");
+            Console.WriteLine($"[AgDataGridRenderer] Deserializing data for template '{templateId}': {rawJson}");
             
             // Deserialize JSON to typed item
             var item = JsonSerializer.Deserialize<TItem>(rawJson, jsonOptions);
             if (item == null)
             {
-                Console.WriteLine($"[AgGridRenderer] Deserialization returned null for column '{templateId}'");
+                Console.WriteLine($"[AgDataGridRenderer] Deserialization returned null for column '{templateId}'");
                 return null;
             }
             
-            Console.WriteLine($"[AgGridRenderer] Successfully deserialized item of type {item.GetType().Name}");
+            Console.WriteLine($"[AgDataGridRenderer] Successfully deserialized item of type {item.GetType().Name}");
             
             // Render template to HTML string
             var html = await _templateRenderer.RenderToStringAsync(template, item);
-            Console.WriteLine($"[AgGridRenderer] Template rendered successfully for column '{templateId}', HTML length: {html?.Length ?? 0}");
+            Console.WriteLine($"[AgDataGridRenderer] Template rendered successfully for column '{templateId}', HTML length: {html?.Length ?? 0}");
             return html;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AgGridRenderer] Template rendering failed for column '{templateId}': {ex.Message}");
-            Console.WriteLine($"[AgGridRenderer] Stack trace: {ex.StackTrace}");
+            Console.WriteLine($"[AgDataGridRenderer] Template rendering failed for column '{templateId}': {ex.Message}");
+            Console.WriteLine($"[AgDataGridRenderer] Stack trace: {ex.StackTrace}");
             return null; // Fall back to field-based rendering
         }
     }
@@ -553,7 +553,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AgGridRenderer] Header template rendering failed for column '{templateId}': {ex.Message}");
+            Console.WriteLine($"[AgDataGridRenderer] Header template rendering failed for column '{templateId}': {ex.Message}");
             return null; // Fall back to headerName
         }
     }
@@ -566,11 +566,11 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
     [JSInvokable]
     public async Task HandleCellAction(string action, JsonElement data)
     {
-        Console.WriteLine($"[AgGridRenderer] HandleCellAction called: action='{action}'");
+        Console.WriteLine($"[AgDataGridRenderer] HandleCellAction called: action='{action}'");
         
         if (_currentDefinition?.Metadata == null)
         {
-            Console.WriteLine("[AgGridRenderer] No metadata available for action handling");
+            Console.WriteLine("[AgDataGridRenderer] No metadata available for action handling");
             return;
         }
 
@@ -578,7 +578,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         var actionKey = $"CellAction_{action}";
         if (!_currentDefinition.Metadata.TryGetValue(actionKey, out var handler))
         {
-            Console.WriteLine($"[AgGridRenderer] No handler registered for action '{action}'");
+            Console.WriteLine($"[AgDataGridRenderer] No handler registered for action '{action}'");
             return;
         }
 
@@ -594,11 +594,11 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             var item = JsonSerializer.Deserialize<TItem>(data.GetRawText(), jsonOptions);
             if (item == null)
             {
-                Console.WriteLine($"[AgGridRenderer] Failed to deserialize data for action '{action}'");
+                Console.WriteLine($"[AgDataGridRenderer] Failed to deserialize data for action '{action}'");
                 return;
             }
 
-            Console.WriteLine($"[AgGridRenderer] Invoking action handler for '{action}'");
+            Console.WriteLine($"[AgDataGridRenderer] Invoking action handler for '{action}'");
             
             // Invoke the action handler
             if (handler is Func<TItem, Task> asyncFunc)
@@ -611,23 +611,23 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             }
             else
             {
-                Console.WriteLine($"[AgGridRenderer] Handler for '{action}' is not a valid type");
+                Console.WriteLine($"[AgDataGridRenderer] Handler for '{action}' is not a valid type");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AgGridRenderer] Action handler failed for '{action}': {ex.Message}");
-            Console.WriteLine($"[AgGridRenderer] Stack trace: {ex.StackTrace}");
+            Console.WriteLine($"[AgDataGridRenderer] Action handler failed for '{action}': {ex.Message}");
+            Console.WriteLine($"[AgDataGridRenderer] Stack trace: {ex.StackTrace}");
         }
     }
 
-    private object BuildAgGridConfig(GridDefinition<TItem> definition)
+    private object BuildAgGridConfig(DataGridDefinition<TItem> definition)
     {
-        // Convert GridDefinition to AG Grid column defs and options
+        // Convert DataGridDefinition to AG DataGrid column defs and options
         var columnDefs = definition.Columns.Select(col => new
         {
             // For template-only columns (no Field), use colId instead of field
-            // This allows AG Grid to render the column without binding to data
+            // This allows AG DataGrid to render the column without binding to data
             colId = col.Id,
             // Only set field if it exists - template-only columns don't need a field
             field = !string.IsNullOrEmpty(col.Field) ? ToCamelCase(col.Field) : (string?)null,
@@ -637,15 +637,15 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             width = ParseWidth(col.Width),
             minWidth = ParseWidth(col.MinWidth),
             maxWidth = ParseWidth(col.MaxWidth),
-            pinned = col.Pinned == GridColumnPinPosition.Left ? "left" :
-                     col.Pinned == GridColumnPinPosition.Right ? "right" : null,
+            pinned = col.Pinned == DataDataGridColumnPinPosition.Left ? "left" :
+                     col.Pinned == DataDataGridColumnPinPosition.Right ? "right" : null,
             resizable = col.AllowResize,
             editable = col.CellEditTemplate != null,
             // Template handling - will use HtmlRenderer when available
             cellRenderer = col.CellTemplate != null && _templateRenderer != null ? "templateRenderer" : null,
             cellRendererParams = col.CellTemplate != null && _templateRenderer != null ? new { templateId = col.Id } : null,
             // Header template handling
-            headerComponent = col.HeaderTemplate != null && _templateRenderer != null ? "headerTemplateRenderer" : null,
+            headerComponent = col.HeaderTemplate != null && _templateRenderer != null ? "headerDataGridTemplateRenderer" : null,
             headerComponentParams = col.HeaderTemplate != null && _templateRenderer != null ? new { templateId = col.Id } : null,
             // Value formatting - use simple formatter that reads {field}_formatted property
             valueFormatter = !string.IsNullOrEmpty(col.DataFormatString) && col.CellTemplate == null ? "formattedValueFormatter" : null,
@@ -660,7 +660,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             __fieldType = col.FieldType?.Name
         }).ToArray();
 
-        Console.WriteLine($"[AgGridRenderer] Column defs built:");
+        Console.WriteLine($"[AgDataGridRenderer] Column defs built:");
         foreach (var col in columnDefs)
         {
             Console.WriteLine($"  - colId: '{col.colId}', field: '{col.field ?? "(none)"}', headerName: '{col.headerName}', filter: '{col.filter ?? "(none)"}', fieldType: '{col.__fieldType ?? "(none)"}'");
@@ -669,17 +669,17 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
         return new
         {
             columnDefs,
-            rowSelection = definition.SelectionMode == GridSelectionMode.Multiple ? "multiple" :
-                          definition.SelectionMode == GridSelectionMode.Single ? "single" : null,
-            pagination = definition.PagingMode != GridPagingMode.None,
+            rowSelection = definition.SelectionMode == DataGridSelectionMode.Multiple ? "multiple" :
+                          definition.SelectionMode == DataGridSelectionMode.Single ? "single" : null,
+            pagination = definition.PagingMode != DataGridPagingMode.None,
             paginationPageSize = definition.PageSize,
             // ✅ FIX: Use RowModelType property instead of PagingMode
-            // RowModelType is explicitly set by Grid component for server-side data scenarios
+            // RowModelType is explicitly set by DataGrid component for server-side data scenarios
             rowModelType = definition.RowModelType ?? "clientSide",
             // Enable row selection checkbox for multiple selection
-            rowMultiSelectWithClick = definition.SelectionMode == GridSelectionMode.Multiple,
-            suppressRowClickSelection = definition.SelectionMode == GridSelectionMode.Multiple,
-            // ✅ AG Grid v32.2+: ID field for stable row identification
+            rowMultiSelectWithClick = definition.SelectionMode == DataGridSelectionMode.Multiple,
+            suppressRowClickSelection = definition.SelectionMode == DataGridSelectionMode.Multiple,
+            // ✅ AG DataGrid v32.2+: ID field for stable row identification
             // Used by getRowId function in JavaScript for selection persistence
             idField = ToCamelCase(definition.IdField),
             // Theme and theme parameters
@@ -689,7 +689,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
     }
 
     /// <summary>
-    /// Gets AG Grid filter parameters for better UX based on filter type.
+    /// Gets AG DataGrid filter parameters for better UX based on filter type.
     /// </summary>
     private object? GetFilterParams(string? filterType)
     {
@@ -758,10 +758,10 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
             return numericWidth;
         }
         
-        return null; // Let AG Grid handle percentages and other units via CSS
+        return null; // Let AG DataGrid handle percentages and other units via CSS
     }
 
-    // IGridRendererCapabilities implementation
+    // IDataGridRendererCapabilities implementation
     
     /// <inheritdoc/>
     public bool SupportsVirtualization => true;
@@ -786,7 +786,7 @@ public class AgGridRenderer<TItem> : IGridRenderer<TItem>, IGridRendererCapabili
     
     /// <inheritdoc/>
     public string[] UnsupportedFeatures => _templateRenderer == null 
-        ? new[] { "Cell templates (ITemplateRenderer not registered)" }
+        ? new[] { "Cell templates (IDataGridDataGridTemplateRenderer not registered)" }
         : Array.Empty<string>();
 
     /// <inheritdoc/>

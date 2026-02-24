@@ -3,7 +3,7 @@ namespace NeoUI.Blazor;
 /// <summary>
 /// Specifies the row model type for the grid.
 /// </summary>
-public enum GridRowModelType
+public enum DataGridRowModelType
 {
     /// <summary>
     /// Client-side row model. All data is loaded into the grid at once.

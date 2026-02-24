@@ -2,7 +2,7 @@
 
 ## Overview
 
-NeoUI Grid supports **rich templating with interactive Blazor components** through a unique hybrid rendering approach. Components are rendered to static HTML for performance, then enhanced with **automatic JavaScript event binding** for interactivity.
+NeoUI DataGrid supports **rich templating with interactive Blazor components** through a unique hybrid rendering approach. Components are rendered to static HTML for performance, then enhanced with **automatic JavaScript event binding** for interactivity.
 
 ---
 
@@ -10,16 +10,16 @@ NeoUI Grid supports **rich templating with interactive Blazor components** throu
 
 ### 1. **Static HTML Rendering**
 
-Grid cell templates use `HtmlRenderer` to convert Blazor components to static HTML strings:
+DataGrid cell templates use `HtmlRenderer` to convert Blazor components to static HTML strings:
 
 ```razor
-<GridColumn Id="status" Header="Status">
+<DataGridColumn Id="status" Header="Status">
     <CellTemplate Context="order">
         <Badge Variant="@GetStatusVariant(order.Status)">
             @order.Status
         </Badge>
     </CellTemplate>
-</GridColumn>
+</DataGridColumn>
 ```
 
 **Renders to:**
@@ -34,13 +34,13 @@ Grid cell templates use `HtmlRenderer` to convert Blazor components to static HT
 For interactive components (buttons, links), use `data-action` attributes to trigger C# methods:
 
 ```razor
-<GridColumn Id="actions" Header="Actions">
+<DataGridColumn Id="actions" Header="Actions">
     <CellTemplate Context="order">
         <Button data-action="Edit">
             <LucideIcon Name="pencil" />
         </Button>
     </CellTemplate>
-</GridColumn>
+</DataGridColumn>
 ```
 
 **Renders to:**
@@ -52,10 +52,10 @@ For interactive components (buttons, links), use `data-action` attributes to tri
 
 ### 3. **Automatic Action Discovery**
 
-Methods marked with `[GridAction]` are automatically registered:
+Methods marked with `[DataGridAction]` are automatically registered:
 
 ```csharp
-[GridAction]
+[DataGridAction]
 private void Edit(Order order)
 {
     // This method is automatically invoked when data-action="Edit" is clicked
@@ -81,7 +81,7 @@ private void Edit(Order order)
 └─────────────────────────────────────────────────────┘
                          ▼
 ┌─────────────────────────────────────────────────────┐
-│  3. AG Grid displays HTML in cells                 │
+│  3. AG DataGrid displays HTML in cells                 │
 │     (Fast virtualization, no Blazor overhead)      │
 └─────────────────────────────────────────────────────┘
                          ▼
@@ -96,7 +96,7 @@ private void Edit(Order order)
 └─────────────────────────────────────────────────────┘
                          ▼
 ┌─────────────────────────────────────────────────────┐
-│  6. Action registry invokes [GridAction] method    │
+│  6. Action registry invokes [DataGridAction] method    │
 │     Edit(order) is called with typed item          │
 └─────────────────────────────────────────────────────┘
 ```
@@ -121,7 +121,7 @@ private void Edit(Order order)
 
 3. **Developer Experience**
    - ✅ Natural Blazor syntax
-   - ✅ Auto-discovery with `[GridAction]` attribute
+   - ✅ Auto-discovery with `[DataGridAction]` attribute
    - ✅ IntelliSense and compile-time checking
    - ✅ No JavaScript required
 
@@ -136,7 +136,7 @@ private void Edit(Order order)
 2. **Why?**
    - Templates are rendered **once** to static HTML
    - Blazor event handlers require component instances
-   - Grid cells are managed by AG Grid, not Blazor renderer
+   - DataGrid cells are managed by AG Grid, not Blazor renderer
 
 ---
 
@@ -145,29 +145,29 @@ private void Edit(Order order)
 ### Basic Template
 
 ```razor
-<Grid Items="@products" ActionHost="this">
+<DataGrid Items="@products" ActionHost="this">
     <Columns>
         <!-- Display column with custom formatting -->
-        <GridColumn Field="Name" Header="Product">
+        <DataGridColumn Field="Name" Header="Product">
             <CellTemplate Context="product">
                 <div class="flex items-center gap-2">
                     <LucideIcon Name="package" Size="16" />
                     <span class="font-medium">@product.Name</span>
                 </div>
             </CellTemplate>
-        </GridColumn>
+        </DataGridColumn>
         
         <!-- Status badge -->
-        <GridColumn Id="status" Header="Status">
+        <DataGridColumn Id="status" Header="Status">
             <CellTemplate Context="product">
                 <Badge Variant="@(product.InStock ? BadgeVariant.Default : BadgeVariant.Destructive)">
                     @(product.InStock ? "In Stock" : "Out of Stock")
                 </Badge>
             </CellTemplate>
-        </GridColumn>
+        </DataGridColumn>
         
         <!-- Interactive actions -->
-        <GridColumn Id="actions" Header="Actions">
+        <DataGridColumn Id="actions" Header="Actions">
             <CellTemplate Context="product">
                 <div class="flex gap-1">
                     <Button Variant="ButtonVariant.Ghost" 
@@ -183,20 +183,20 @@ private void Edit(Order order)
                     </Button>
                 </div>
             </CellTemplate>
-        </GridColumn>
+        </DataGridColumn>
     </Columns>
-</Grid>
+</DataGrid>
 
 @code {
     private List<Product> products = new();
     
-    [GridAction]
+    [DataGridAction]
     private void Edit(Product product)
     {
         NavigationManager.NavigateTo($"/products/{product.Id}/edit");
     }
     
-    [GridAction]
+    [DataGridAction]
     private async Task Delete(Product product)
     {
         var confirmed = await DialogService.ConfirmAsync($"Delete {product.Name}?");
@@ -214,16 +214,16 @@ private void Edit(Order order)
 #### **Option 1: Auto-Discovery (Recommended)**
 
 ```csharp
-<Grid Items="@orders" ActionHost="this">
+<DataGrid Items="@orders" ActionHost="this">
     <!-- columns -->
-</Grid>
+</DataGrid>
 
 @code {
     // Method name matches data-action value
-    [GridAction]
+    [DataGridAction]
     private void Edit(Order order) { }
     
-    [GridAction]
+    [DataGridAction]
     private void Delete(Order order) { }
 }
 ```
@@ -232,22 +232,22 @@ private void Edit(Order order)
 
 ```csharp
 // Use different method name than data-action
-[GridAction(Name = "Edit")]
+[DataGridAction(Name = "Edit")]
 private void HandleOrderEdit(Order order) { }
 
-[GridAction(Name = "Delete")]
+[DataGridAction(Name = "Delete")]
 private async Task HandleOrderDeletion(Order order) { }
 ```
 
 #### **Option 3: Manual Registration**
 
 ```csharp
-<Grid @ref="grid" Items="@orders">
+<DataGrid @ref="grid" Items="@orders">
     <!-- columns -->
-</Grid>
+</DataGrid>
 
 @code {
-    private Grid<Order> grid = default!;
+    private DataGrid<Order> grid = default!;
     
     protected override void OnAfterRender(bool firstRender)
     {
@@ -268,7 +268,7 @@ private async Task HandleOrderDeletion(Order order) { }
 ### Conditional Actions
 
 ```razor
-<GridColumn Id="actions">
+<DataGridColumn Id="actions">
     <CellTemplate Context="order">
         @if (order.Status == OrderStatus.Pending)
         {
@@ -284,16 +284,16 @@ private async Task HandleOrderDeletion(Order order) { }
             <span class="text-muted-foreground">No actions</span>
         }
     </CellTemplate>
-</GridColumn>
+</DataGridColumn>
 
 @code {
-    [GridAction]
+    [DataGridAction]
     private void Approve(Order order) { /* ... */ }
     
-    [GridAction]
+    [DataGridAction]
     private void Reject(Order order) { /* ... */ }
     
-    [GridAction]
+    [DataGridAction]
     private void Ship(Order order) { /* ... */ }
 }
 ```
@@ -308,7 +308,7 @@ private async Task HandleOrderDeletion(Order order) { }
 </Button>
 
 @code {
-    [GridAction]
+    [DataGridAction]
     private void UpdateStatus(Order order)
     {
         // Access additional data from JavaScript:
@@ -334,15 +334,15 @@ private async Task HandleOrderDeletion(Order order) { }
    <Button data-action="Edit">Edit</Button>
    ```
 
-3. **Mark methods with [GridAction]**
+3. **Mark methods with [DataGridAction]**
    ```csharp
-   [GridAction]
+   [DataGridAction]
    private void Edit(Order order) { }
    ```
 
 4. **Set ActionHost parameter**
    ```razor
-   <Grid Items="@orders" ActionHost="this">
+   <DataGrid Items="@orders" ActionHost="this">
    ```
 
 ### ❌ **Don't**
@@ -371,7 +371,7 @@ private async Task HandleOrderDeletion(Order order) { }
 
 ### Why Static HTML?
 
-1. **Virtualization** - AG Grid can render 1000s of rows efficiently
+1. **Virtualization** - AG DataGrid can render 1000s of rows efficiently
 2. **Memory** - No Blazor component instances per cell
 3. **Rendering** - Single HTML string per cell vs component tree
 4. **Scrolling** - Smooth virtualization without Blazor overhead
@@ -394,18 +394,18 @@ private async Task HandleOrderDeletion(Order order) { }
 
 **Check:**
 1. ✅ `ActionHost="this"` on Grid
-2. ✅ Method has `[GridAction]` attribute
+2. ✅ Method has `[DataGridAction]` attribute
 3. ✅ Method signature: `void MethodName(TItem item)` or `Task MethodName(TItem item)`
-4. ✅ `data-action` value matches method name (or `[GridAction(Name = "...")]`)
+4. ✅ `data-action` value matches method name (or `[DataGridAction(Name = "...")]`)
 5. ✅ Console for `[Grid] Auto-registered N actions` log
 
 ### Template Not Rendering?
 
 **Check:**
-1. ✅ `ITemplateRenderer` registered in DI: `services.AddNeoUIComponents()`
-2. ✅ Grid renderer is **Transient**: `services.AddTransient(typeof(IGridRenderer<>), ...)`
+1. ✅ `IDataGridDataGridTemplateRenderer` registered in DI: `services.AddNeoUIComponents()`
+2. ✅ DataGrid renderer is **Transient**: `services.AddTransient(typeof(IDataGridRenderer<>), ...)`
 3. ✅ Template has `Context` parameter: `<CellTemplate Context="item">`
-4. ✅ Console for `[AgGridRenderer] Template rendered successfully` log
+4. ✅ Console for `[AgDataGridRenderer] Template rendered successfully` log
 
 ---
 
@@ -415,7 +415,7 @@ private async Task HandleOrderDeletion(Order order) { }
 |----------|------|------|
 | **Hybrid (Current)** | ✅ Blazor syntax<br>✅ Performance<br>✅ Auto event binding | ⚠️ Limited events |
 | **Pure Blazor (QuickGrid)** | ✅ Full interactivity<br>✅ Two-way binding | ❌ Poor virtualization<br>❌ Memory intensive |
-| **Pure JS (AG Grid)** | ✅ Maximum performance<br>✅ Full AG Grid features | ❌ No Blazor components<br>❌ Manual JS |
+| **Pure JS (AG Grid)** | ✅ Maximum performance<br>✅ Full AG DataGrid features | ❌ No Blazor components<br>❌ Manual JS |
 
 ---
 

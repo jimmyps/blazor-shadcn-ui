@@ -5,7 +5,7 @@ namespace NeoUI.Blazor;
 /// <summary>
 /// Describes a sort operation applied to a grid column.
 /// </summary>
-public class GridSortDescriptor
+public class DataGridSortDescriptor
 {
     /// <summary>
     /// Gets or sets the field name to sort by.
@@ -17,7 +17,7 @@ public class GridSortDescriptor
     /// Gets or sets the sort direction.
     /// </summary>
     [JsonPropertyName("direction")]
-    public GridSortDirection Direction { get; set; } = GridSortDirection.None;
+    public DataGridSortDirection Direction { get; set; } = DataGridSortDirection.None;
 
     /// <summary>
     /// Gets or sets the order of this sort descriptor when multiple sorts are applied.

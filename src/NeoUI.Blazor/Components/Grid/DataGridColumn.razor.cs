@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Components;
 namespace NeoUI.Blazor;
 
 /// <summary>
-/// Defines a column in a Grid component.
+/// Defines a column in a DataGrid component.
 /// </summary>
 /// <typeparam name="TItem">The type of items in the grid.</typeparam>
-public partial class GridColumn<TItem> : ComponentBase
+public partial class DataGridColumn<TItem> : ComponentBase
 {
     /// <summary>
     /// Gets or sets the unique identifier for this column.
@@ -62,7 +62,7 @@ public partial class GridColumn<TItem> : ComponentBase
     /// Gets or sets the column pinning position.
     /// </summary>
     [Parameter]
-    public GridColumnPinPosition Pinned { get; set; } = GridColumnPinPosition.None;
+    public DataDataGridColumnPinPosition Pinned { get; set; } = DataDataGridColumnPinPosition.None;
 
     /// <summary>
     /// Gets or sets whether the column can be resized.
@@ -132,17 +132,17 @@ public partial class GridColumn<TItem> : ComponentBase
     /// </summary>
     /// <example>
     /// <code>
-    /// &lt;GridColumn Field="Price" Header="Price" DataFormatString="C" /&gt;  // $1,234.56
-    /// &lt;GridColumn Field="Quantity" Header="Quantity" DataFormatString="N0" /&gt;  // 1,234
-    /// &lt;GridColumn Field="Date" Header="Date" DataFormatString="d" /&gt;  // 12/31/2024
-    /// &lt;GridColumn Field="Percentage" Header="%" DataFormatString="P2" /&gt;  // 45.67%
+    /// &lt;DataGridColumn Field="Price" Header="Price" DataFormatString="C" /&gt;  // $1,234.56
+    /// &lt;DataGridColumn Field="Quantity" Header="Quantity" DataFormatString="N0" /&gt;  // 1,234
+    /// &lt;DataGridColumn Field="Date" Header="Date" DataFormatString="d" /&gt;  // 12/31/2024
+    /// &lt;DataGridColumn Field="Percentage" Header="%" DataFormatString="P2" /&gt;  // 45.67%
     /// </code>
     /// </example>
     [Parameter]
     public string? DataFormatString { get; set; }
 
     [CascadingParameter]
-    internal Grid<TItem>? ParentGrid { get; set; }
+    internal DataGrid<TItem>? ParentGrid { get; set; }
 
     /// <summary>
     /// Initializes the grid column and registers it with the parent grid.
@@ -152,13 +152,13 @@ public partial class GridColumn<TItem> : ComponentBase
         if (ParentGrid == null)
         {
             throw new InvalidOperationException(
-                $"{nameof(GridColumn<TItem>)} must be placed inside a {nameof(Grid<TItem>)} component.");
+                $"{nameof(DataGridColumn<TItem>)} must be placed inside a {nameof(DataGrid<TItem>)} component.");
         }
 
         ParentGrid.RegisterColumn(this);
     }
 
-    internal GridColumnDefinition<TItem> ToDefinition()
+    internal DataDataGridColumnDefinition<TItem> ToDefinition()
     {
         // Generate ID from Field first, then Header as fallback
         // Use Guid suffix to ensure uniqueness if neither Field nor Header are suitable
@@ -183,12 +183,12 @@ public partial class GridColumn<TItem> : ComponentBase
             {
                 fieldType = propertyInfo.PropertyType;
 
-                // Auto-detect AG Grid filter type from .NET type
+                // Auto-detect AG DataGrid filter type from .NET type
                 agGridFilterType = DetectAgGridFilterType(fieldType);
             }
         }
 
-        return new GridColumnDefinition<TItem>
+        return new DataDataGridColumnDefinition<TItem>
         {
             Id = Id ?? generatedId,
             Field = Field,
@@ -216,7 +216,7 @@ public partial class GridColumn<TItem> : ComponentBase
     }
 
     /// <summary>
-    /// Detects the appropriate AG Grid filter type from a .NET property type.
+    /// Detects the appropriate AG DataGrid filter type from a .NET property type.
     /// </summary>
     private static string DetectAgGridFilterType(Type type)
     {

@@ -1,12 +1,12 @@
 # Grid Component
 
-A powerful, enterprise-grade data grid component powered by AG Grid with full Blazor integration, template support, and shadcn/ui theming.
+A powerful, enterprise-grade data grid component powered by AG DataGrid with full Blazor integration, template support, and shadcn/ui theming.
 
 ## Features
 
 - ✅ **Powered by AG Grid Community** - Industry-leading grid library with excellent performance
 - ✅ **Blazor Template Support** - Use Blazor `RenderFragment` for cells and headers
-- ✅ **Cell Actions** - Auto-discovery of grid actions via `[GridAction]` attribute
+- ✅ **Cell Actions** - Auto-discovery of grid actions via `[DataGridAction]` attribute
 - ✅ **Full Theme Integration** - Seamless shadcn/ui theme integration with CSS variables
 - ✅ **Sorting & Filtering** - Built-in sorting and filtering capabilities
 - ✅ **Pagination** - Client-side and server-side pagination support
@@ -17,19 +17,19 @@ A powerful, enterprise-grade data grid component powered by AG Grid with full Bl
 
 ## Installation
 
-The Grid component is included in the `NeoUI.Blazor` package and uses AG Grid Community Edition (loaded automatically from CDN).
+The DataGrid component is included in the `NeoUI.Blazor` package and uses AG Grid Community Edition (loaded automatically from CDN).
 
 ## Basic Usage
 
 ```razor
-<Grid Items="@orders" ActionHost="this">
+<DataGrid Items="@orders" ActionHost="this">
     <Columns>
-        <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
-        <GridColumn Field="CustomerName" Header="Customer" Sortable="true" />
-        <GridColumn Field="OrderDate" Header="Date" Sortable="true" />
-        <GridColumn Field="Total" Header="Total" Sortable="true" />
+        <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+        <DataGridColumn Field="CustomerName" Header="Customer" Sortable="true" />
+        <DataGridColumn Field="OrderDate" Header="Date" Sortable="true" />
+        <DataGridColumn Field="Total" Header="Total" Sortable="true" />
     </Columns>
-</Grid>
+</DataGrid>
 
 @code {
     private List<Order> orders = new();
@@ -41,7 +41,7 @@ The Grid component is included in the `NeoUI.Blazor` package and uses AG Grid Co
 ### Basic Column Properties
 
 ```razor
-<GridColumn 
+<DataGridColumn 
     Id="custom-id"                    // Unique column identifier
     Field="PropertyName"              // Property to bind to
     Header="Display Name"             // Column header text
@@ -50,7 +50,7 @@ The Grid component is included in the `NeoUI.Blazor` package and uses AG Grid Co
     Width="150px"                     // Fixed width
     MinWidth="100px"                  // Minimum width
     MaxWidth="300px"                  // Maximum width
-    Pinned="GridColumnPinPosition.Left"  // Pin column
+    Pinned="DataDataGridColumnPinPosition.Left"  // Pin column
     AllowResize="true"                // Allow column resizing
     AllowReorder="true"               // Allow column reordering
     IsVisible="true"                  // Column visibility
@@ -64,42 +64,42 @@ Use `DataFormatString` for simple formatting without templates:
 
 ```razor
 <!-- Currency formatting -->
-<GridColumn Field="Price" Header="Price" DataFormatString="C" />
+<DataGridColumn Field="Price" Header="Price" DataFormatString="C" />
 <!-- Output: $1,234.56 -->
 
 <!-- Number with 2 decimals -->
-<GridColumn Field="Quantity" Header="Qty" DataFormatString="N2" />
+<DataGridColumn Field="Quantity" Header="Qty" DataFormatString="N2" />
 <!-- Output: 1,234.56 -->
 
 <!-- Number with no decimals (integer) -->
-<GridColumn Field="Count" Header="Count" DataFormatString="N0" />
+<DataGridColumn Field="Count" Header="Count" DataFormatString="N0" />
 <!-- Output: 1,234 -->
 
 <!-- Percentage with 2 decimals -->
-<GridColumn Field="Rate" Header="Rate" DataFormatString="P2" />
+<DataGridColumn Field="Rate" Header="Rate" DataFormatString="P2" />
 <!-- Output: 45.67% -->
 
 <!-- Short date -->
-<GridColumn Field="OrderDate" Header="Date" DataFormatString="d" />
+<DataGridColumn Field="OrderDate" Header="Date" DataFormatString="d" />
 <!-- Output: 12/31/2024 -->
 
 <!-- Long date -->
-<GridColumn Field="OrderDate" Header="Date" DataFormatString="D" />
+<DataGridColumn Field="OrderDate" Header="Date" DataFormatString="D" />
 <!-- Output: Tuesday, December 31, 2024 -->
 
 <!-- Short time -->
-<GridColumn Field="CreatedAt" Header="Time" DataFormatString="t" />
+<DataGridColumn Field="CreatedAt" Header="Time" DataFormatString="t" />
 <!-- Output: 3:45 PM -->
 
 <!-- Composite format strings also supported -->
-<GridColumn Field="Price" Header="Price" DataFormatString="{0:C}" />
-<GridColumn Field="Discount" Header="Discount" DataFormatString="{0:P1}" />
+<DataGridColumn Field="Price" Header="Price" DataFormatString="{0:C}" />
+<DataGridColumn Field="Discount" Header="Discount" DataFormatString="{0:P1}" />
 ```
 
 **How It Works:**
 - Formatting happens in C# using .NET's `IFormattable.ToString(format, culture)`
 - Formatted values are added as `{field}_formatted` properties to the data
-- AG Grid displays the formatted value while preserving the original for sorting/filtering
+- AG DataGrid displays the formatted value while preserving the original for sorting/filtering
 - Supports **ALL** .NET format strings (standard and custom)
 - Respects current culture settings
 
@@ -116,9 +116,9 @@ Use `DataFormatString` for simple formatting without templates:
 ### Column Pinning
 
 ```razor
-<GridColumn Field="Id" Header="ID" Pinned="GridColumnPinPosition.Left" />
-<GridColumn Field="Name" Header="Name" />
-<GridColumn Field="Actions" Header="Actions" Pinned="GridColumnPinPosition.Right" />
+<DataGridColumn Field="Id" Header="ID" Pinned="DataDataGridColumnPinPosition.Left" />
+<DataGridColumn Field="Name" Header="Name" />
+<DataGridColumn Field="Actions" Header="Actions" Pinned="DataDataGridColumnPinPosition.Right" />
 ```
 
 ## Cell Templates
@@ -126,15 +126,15 @@ Use `DataFormatString` for simple formatting without templates:
 Use Blazor `RenderFragment` to create custom cell content:
 
 ```razor
-<GridColumn Field="Status" Header="Status">
+<DataGridColumn Field="Status" Header="Status">
     <CellTemplate Context="order">
         <Badge Variant="@(order.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Secondary)">
             @order.Status
         </Badge>
     </CellTemplate>
-</GridColumn>
+</DataGridColumn>
 
-<GridColumn Field="Actions" Header="Actions">
+<DataGridColumn Field="Actions" Header="Actions">
     <CellTemplate Context="order">
         <div class="flex gap-2">
             <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" 
@@ -147,7 +147,7 @@ Use Blazor `RenderFragment` to create custom cell content:
             </Button>
         </div>
     </CellTemplate>
-</GridColumn>
+</DataGridColumn>
 ```
 
 ## Header Templates
@@ -155,43 +155,43 @@ Use Blazor `RenderFragment` to create custom cell content:
 Customize column headers with Blazor templates:
 
 ```razor
-<GridColumn Field="Name" Header="Customer Name">
+<DataGridColumn Field="Name" Header="Customer Name">
     <HeaderTemplate>
         <div class="flex items-center gap-2">
             <LucideIcon Name="user" Size="16" />
             <span>Customer</span>
         </div>
     </HeaderTemplate>
-</GridColumn>
+</DataGridColumn>
 ```
 
 ## Cell Actions
 
-Use the `[GridAction]` attribute to automatically wire up actions from your component:
+Use the `[DataGridAction]` attribute to automatically wire up actions from your component:
 
 ```razor
-<Grid Items="@orders" ActionHost="this">
+<DataGrid Items="@orders" ActionHost="this">
     <Columns>
-        <GridColumn Field="Actions" Header="Actions">
+        <DataGridColumn Field="Actions" Header="Actions">
             <CellTemplate Context="order">
                 <Button data-action="Edit">Edit</Button>
                 <Button data-action="Delete">Delete</Button>
             </CellTemplate>
-        </GridColumn>
+        </DataGridColumn>
     </Columns>
-</Grid>
+</DataGrid>
 
 @code {
     private List<Order> orders = new();
 
-    [GridAction]
+    [DataGridAction]
     private async Task Edit(Order order)
     {
         // Handle edit action
         await ShowEditDialog(order);
     }
 
-    [GridAction(Name = "Delete")]
+    [DataGridAction(Name = "Delete")]
     private async Task HandleDelete(Order order)
     {
         // Handle delete action
@@ -203,8 +203,8 @@ Use the `[GridAction]` attribute to automatically wire up actions from your comp
 ### How Cell Actions Work
 
 1. Add `data-action="ActionName"` to any element in your cell template
-2. Mark a method in your component with `[GridAction]`
-3. Set `ActionHost="this"` on the Grid component
+2. Mark a method in your component with `[DataGridAction]`
+3. Set `ActionHost="this"` on the DataGrid component
 4. Actions are auto-discovered and wired up automatically
 
 The method signature must be:
@@ -216,21 +216,21 @@ The method signature must be:
 ### Single Selection
 
 ```razor
-<Grid Items="@orders" SelectionMode="GridSelectionMode.Single">
+<DataGrid Items="@orders" SelectionMode="DataGridSelectionMode.Single">
     <Columns>
         <!-- columns -->
     </Columns>
-</Grid>
+</DataGrid>
 ```
 
 ### Multiple Selection
 
 ```razor
-<Grid Items="@orders" SelectionMode="GridSelectionMode.Multiple">
+<DataGrid Items="@orders" SelectionMode="DataGridSelectionMode.Multiple">
     <Columns>
         <!-- columns -->
     </Columns>
-</Grid>
+</DataGrid>
 ```
 
 ## Pagination
@@ -238,13 +238,13 @@ The method signature must be:
 ### Client-Side Pagination
 
 ```razor
-<Grid Items="@orders" 
-      PagingMode="GridPagingMode.Client" 
+<DataGrid Items="@orders" 
+      PagingMode="DataGridPagingMode.Client" 
       PageSize="25">
     <Columns>
         <!-- columns -->
     </Columns>
-</Grid>
+</DataGrid>
 ```
 
 ### Page Size Options
@@ -253,35 +253,35 @@ The grid automatically provides page size options: 10, 25, 50, 100.
 
 ## Theming
 
-The Grid component integrates with shadcn/ui themes using CSS variables.
+The DataGrid component integrates with shadcn/ui themes using CSS variables.
 
 ### Available Themes
 
 ```razor
 <!-- Shadcn (default) - Custom theme based on Quartz with shadcn colors -->
-<Grid Theme="GridTheme.Shadcn" Items="@orders">
+<DataGrid Theme="DataGridTheme.Shadcn" Items="@orders">
     <Columns><!-- columns --></Columns>
-</Grid>
+</DataGrid>
 
 <!-- Alpine - Clean, modern theme -->
-<Grid Theme="GridTheme.Alpine" Items="@orders">
+<DataGrid Theme="DataGridTheme.Alpine" Items="@orders">
     <Columns><!-- columns --></Columns>
-</Grid>
+</DataGrid>
 
 <!-- Balham - Professional business theme -->
-<Grid Theme="GridTheme.Balham" Items="@orders">
+<DataGrid Theme="DataGridTheme.Balham" Items="@orders">
     <Columns><!-- columns --></Columns>
-</Grid>
+</DataGrid>
 
 <!-- Quartz - Modern, minimal theme -->
-<Grid Theme="GridTheme.Quartz" Items="@orders">
+<DataGrid Theme="DataGridTheme.Quartz" Items="@orders">
     <Columns><!-- columns --></Columns>
-</Grid>
+</DataGrid>
 
 <!-- Material - Google Material Design theme -->
-<Grid Theme="GridTheme.Material" Items="@orders">
+<DataGrid Theme="DataGridTheme.Material" Items="@orders">
     <Columns><!-- columns --></Columns>
-</Grid>
+</DataGrid>
 ```
 
 ### Visual Styles
@@ -290,24 +290,24 @@ Apply visual style modifiers to any theme:
 
 ```razor
 <!-- Default style -->
-<Grid VisualStyle="GridStyle.Default" Items="@orders">
+<DataGrid VisualStyle="DataGridStyle.Default" Items="@orders">
     <Columns><!-- columns --></Columns>
-</Grid>
+</DataGrid>
 
 <!-- Striped rows (zebra striping) -->
-<Grid VisualStyle="GridStyle.Striped" Items="@orders">
+<DataGrid VisualStyle="DataGridStyle.Striped" Items="@orders">
     <Columns><!-- columns --></Columns>
-</Grid>
+</DataGrid>
 
 <!-- Bordered cells -->
-<Grid VisualStyle="GridStyle.Bordered" Items="@orders">
+<DataGrid VisualStyle="DataGridStyle.Bordered" Items="@orders">
     <Columns><!-- columns --></Columns>
-</Grid>
+</DataGrid>
 
 <!-- Minimal (no borders) -->
-<Grid VisualStyle="GridStyle.Minimal" Items="@orders">
+<DataGrid VisualStyle="DataGridStyle.Minimal" Items="@orders">
     <Columns><!-- columns --></Columns>
-</Grid>
+</DataGrid>
 ```
 
 ### Density Options
@@ -316,19 +316,19 @@ Control spacing and row height:
 
 ```razor
 <!-- Compact (28px rows) -->
-<Grid Density="GridDensity.Compact" Items="@orders">
+<DataGrid Density="DataGridDensity.Compact" Items="@orders">
     <Columns><!-- columns --></Columns>
-</Grid>
+</DataGrid>
 
 <!-- Comfortable (42px rows, default) -->
-<Grid Density="GridDensity.Comfortable" Items="@orders">
+<DataGrid Density="DataGridDensity.Comfortable" Items="@orders">
     <Columns><!-- columns --></Columns>
-</Grid>
+</DataGrid>
 
 <!-- Spacious (56px rows) -->
-<Grid Density="GridDensity.Spacious" Items="@orders">
+<DataGrid Density="DataGridDensity.Spacious" Items="@orders">
     <Columns><!-- columns --></Columns>
-</Grid>
+</DataGrid>
 ```
 
 ### Custom Theme Parameters
@@ -336,8 +336,8 @@ Control spacing and row height:
 Fine-tune the theme with custom parameters:
 
 ```razor
-<Grid Items="@orders">
-    <GridThemeParameters 
+<DataGrid Items="@orders">
+    <DataDataGridThemeParameters 
         AccentColor="var(--primary)"
         BackgroundColor="var(--background)"
         ForegroundColor="var(--foreground)"
@@ -349,7 +349,7 @@ Fine-tune the theme with custom parameters:
     <Columns>
         <!-- columns -->
     </Columns>
-</Grid>
+</DataGrid>
 ```
 
 ## Sizing
@@ -357,17 +357,17 @@ Fine-tune the theme with custom parameters:
 ### Fixed Height
 
 ```razor
-<Grid Items="@orders" Height="500px">
+<DataGrid Items="@orders" Height="500px">
     <Columns><!-- columns --></Columns>
-</Grid>
+</DataGrid>
 ```
 
 ### Responsive Height
 
 ```razor
-<Grid Items="@orders" Height="100%" Width="100%">
+<DataGrid Items="@orders" Height="100%" Width="100%">
     <Columns><!-- columns --></Columns>
-</Grid>
+</DataGrid>
 ```
 
 ## Loading State
@@ -375,7 +375,7 @@ Fine-tune the theme with custom parameters:
 Show a loading indicator while data is being fetched:
 
 ```razor
-<Grid Items="@orders" IsLoading="@isLoading">
+<DataGrid Items="@orders" IsLoading="@isLoading">
     <LoadingTemplate>
         <div class="flex items-center justify-center h-64">
             <Spinner Size="SpinnerSize.Large" />
@@ -385,7 +385,7 @@ Show a loading indicator while data is being fetched:
     <Columns>
         <!-- columns -->
     </Columns>
-</Grid>
+</DataGrid>
 ```
 
 ## Empty State
@@ -393,12 +393,12 @@ Show a loading indicator while data is being fetched:
 Customize the message when there's no data:
 
 ```razor
-<Grid Items="@orders">
+<DataGrid Items="@orders">
     <Columns>
         <!-- columns -->
     </Columns>
     <!-- Empty state is shown automatically when Items is empty -->
-</Grid>
+</DataGrid>
 ```
 
 ## Advanced Features
@@ -408,11 +408,11 @@ Customize the message when there's no data:
 Use a custom function to extract cell values:
 
 ```razor
-<GridColumn Header="Full Name">
+<DataGridColumn Header="Full Name">
     <CellTemplate Context="customer">
         @customer.FirstName @customer.LastName
     </CellTemplate>
-</GridColumn>
+</DataGridColumn>
 ```
 
 ### CSS Classes
@@ -420,7 +420,7 @@ Use a custom function to extract cell values:
 Apply custom CSS classes to cells and headers:
 
 ```razor
-<GridColumn Field="Status" 
+<DataGridColumn Field="Status" 
             Header="Status"
             CellClass="font-semibold"
             HeaderClass="bg-muted">
@@ -429,7 +429,7 @@ Apply custom CSS classes to cells and headers:
             @order.Status
         </span>
     </CellTemplate>
-</GridColumn>
+</DataGridColumn>
 ```
 
 ## Complete Example
@@ -441,43 +441,43 @@ Apply custom CSS classes to cells and headers:
 <div class="container py-6">
     <h1 class="text-3xl font-bold mb-6">Orders</h1>
 
-    <Grid Items="@orders" 
+    <DataGrid Items="@orders" 
           ActionHost="this"
-          SelectionMode="GridSelectionMode.Multiple"
-          Theme="GridTheme.Shadcn"
-          VisualStyle="GridStyle.Striped"
-          Density="GridDensity.Comfortable"
-          PagingMode="GridPagingMode.Client"
+          SelectionMode="DataGridSelectionMode.Multiple"
+          Theme="DataGridTheme.Shadcn"
+          VisualStyle="DataGridStyle.Striped"
+          Density="DataGridDensity.Comfortable"
+          PagingMode="DataGridPagingMode.Client"
           PageSize="25"
           Height="600px"
           IsLoading="@isLoading">
         
-        <GridThemeParameters 
+        <DataDataGridThemeParameters 
             RowHeight="48"
             BorderRadius="6"
         />
 
         <Columns>
-            <GridColumn Field="Id" 
+            <DataGridColumn Field="Id" 
                        Header="Order #" 
                        Width="100px" 
-                       Pinned="GridColumnPinPosition.Left"
+                       Pinned="DataDataGridColumnPinPosition.Left"
                        Sortable="true" />
 
-            <GridColumn Field="CustomerName" 
+            <DataGridColumn Field="CustomerName" 
                        Header="Customer" 
                        Sortable="true"
                        Filterable="true" />
 
-            <GridColumn Field="OrderDate" 
+            <DataGridColumn Field="OrderDate" 
                        Header="Date" 
                        Sortable="true">
                 <CellTemplate Context="order">
                     @order.OrderDate.ToString("MMM dd, yyyy")
                 </CellTemplate>
-            </GridColumn>
+            </DataGridColumn>
 
-            <GridColumn Field="Status" 
+            <DataGridColumn Field="Status" 
                        Header="Status" 
                        Sortable="true">
                 <CellTemplate Context="order">
@@ -485,19 +485,19 @@ Apply custom CSS classes to cells and headers:
                         @order.Status
                     </Badge>
                 </CellTemplate>
-            </GridColumn>
+            </DataGridColumn>
 
-            <GridColumn Field="Total" 
+            <DataGridColumn Field="Total" 
                        Header="Total" 
                        Sortable="true">
                 <CellTemplate Context="order">
                     @order.Total.ToString("C")
                 </CellTemplate>
-            </GridColumn>
+            </DataGridColumn>
 
-            <GridColumn Header="Actions" 
+            <DataGridColumn Header="Actions" 
                        Width="120px" 
-                       Pinned="GridColumnPinPosition.Right">
+                       Pinned="DataDataGridColumnPinPosition.Right">
                 <CellTemplate Context="order">
                     <div class="flex gap-2">
                         <Button Variant="ButtonVariant.Ghost" 
@@ -512,7 +512,7 @@ Apply custom CSS classes to cells and headers:
                         </Button>
                     </div>
                 </CellTemplate>
-            </GridColumn>
+            </DataGridColumn>
         </Columns>
 
         <LoadingTemplate>
@@ -520,7 +520,7 @@ Apply custom CSS classes to cells and headers:
                 <Spinner Size="SpinnerSize.Large" />
             </div>
         </LoadingTemplate>
-    </Grid>
+    </DataGrid>
 </div>
 
 @code {
@@ -539,13 +539,13 @@ Apply custom CSS classes to cells and headers:
         isLoading = false;
     }
 
-    [GridAction]
+    [DataGridAction]
     private async Task Edit(Order order)
     {
         NavigationManager.NavigateTo($"/orders/{order.Id}/edit");
     }
 
-    [GridAction]
+    [DataGridAction]
     private async Task Delete(Order order)
     {
         var confirmed = await DialogService.ConfirmAsync(
@@ -579,20 +579,20 @@ Apply custom CSS classes to cells and headers:
 |-----------|------|---------|-------------|
 | `Items` | `IEnumerable<TItem>` | Required | The data items to display |
 | `ActionHost` | `object?` | `null` | Host component for auto-discovering grid actions |
-| `SelectionMode` | `GridSelectionMode` | `None` | Row selection mode (None, Single, Multiple) |
-| `PagingMode` | `GridPagingMode` | `None` | Pagination mode (None, Client, Server, InfiniteScroll) |
+| `SelectionMode` | `DataGridSelectionMode` | `None` | Row selection mode (None, Single, Multiple) |
+| `PagingMode` | `DataGridPagingMode` | `None` | Pagination mode (None, Client, Server, InfiniteScroll) |
 | `PageSize` | `int` | `25` | Number of items per page |
-| `Theme` | `GridTheme` | `Shadcn` | AG Grid theme (Shadcn, Alpine, Balham, Material, Quartz) |
-| `VisualStyle` | `GridStyle` | `Default` | Visual style modifier (Default, Striped, Bordered, Minimal) |
-| `Density` | `GridDensity` | `Comfortable` | Spacing density (Compact, Comfortable, Spacious) |
-| `Height` | `string?` | `"300px"` | Grid height (e.g., "500px", "100%") |
-| `Width` | `string?` | `"100%"` | Grid width (e.g., "800px", "100%") |
+| `Theme` | `DataGridTheme` | `Shadcn` | AG DataGrid theme (Shadcn, Alpine, Balham, Material, Quartz) |
+| `VisualStyle` | `DataGridStyle` | `Default` | Visual style modifier (Default, Striped, Bordered, Minimal) |
+| `Density` | `DataGridDensity` | `Comfortable` | Spacing density (Compact, Comfortable, Spacious) |
+| `Height` | `string?` | `"300px"` | DataGrid height (e.g., "500px", "100%") |
+| `Width` | `string?` | `"100%"` | DataGrid width (e.g., "800px", "100%") |
 | `IsLoading` | `bool` | `false` | Show loading state |
 | `Class` | `string?` | `null` | Additional CSS classes |
 | `Columns` | `RenderFragment` | Required | Column definitions |
 | `LoadingTemplate` | `RenderFragment?` | `null` | Custom loading template |
 
-### GridColumn Component
+### DataGridColumn Component
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -604,7 +604,7 @@ Apply custom CSS classes to cells and headers:
 | `Width` | `string?` | `null` | Column width (e.g., "150px") |
 | `MinWidth` | `string?` | `null` | Minimum width |
 | `MaxWidth` | `string?` | `null` | Maximum width |
-| `Pinned` | `GridColumnPinPosition` | `None` | Pin column (None, Left, Right) |
+| `Pinned` | `DataDataGridColumnPinPosition` | `None` | Pin column (None, Left, Right) |
 | `AllowResize` | `bool` | `true` | Allow column resizing |
 | `AllowReorder` | `bool` | `true` | Allow column reordering |
 | `IsVisible` | `bool` | `true` | Column visibility |
@@ -614,11 +614,11 @@ Apply custom CSS classes to cells and headers:
 | `CellClass` | `string?` | `null` | CSS class for cells |
 | `HeaderClass` | `string?` | `null` | CSS class for header |
 
-### GridActionAttribute
+### DataGridActionAttribute
 
 ```csharp
 [AttributeUsage(AttributeTargets.Method)]
-public class GridActionAttribute : Attribute
+public class DataGridActionAttribute : Attribute
 {
     public string? Name { get; set; }
 }
@@ -627,7 +627,7 @@ public class GridActionAttribute : Attribute
 ## Dependencies
 
 - **AG Grid Community** (v32.3.3) - Loaded automatically from CDN
-- **ITemplateRenderer** - Required for cell and header templates (auto-registered)
+- **IDataGridDataGridTemplateRenderer** - Required for cell and header templates (auto-registered)
 
 ## Browser Support
 
@@ -661,7 +661,7 @@ public class GridActionAttribute : Attribute
 See the demo application for more examples:
 - Basic grid with sorting and filtering
 - Cell templates with badges and icons
-- Grid actions with auto-discovery
+- DataGrid actions with auto-discovery
 - Custom themes and styling
 - Loading and empty states
 

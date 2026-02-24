@@ -17,15 +17,15 @@
             </p>
         </div>
 
-        <Grid Items="@orders.Take(15).ToList()">
+        <DataGrid Items="@orders.Take(15).ToList()">
             <Columns>
-                <GridColumn Field="Id" Header="Order ID" Width="100px" DataFormatString="N0" />
-                <GridColumn Field="Customer" Header="Customer" />
-                <GridColumn Field="Amount" Header="Amount" Width="140px" DataFormatString="C" />
-                <GridColumn Field="OrderDate" Header="Order Date" Width="140px" DataFormatString="d" />
-                <GridColumn Field="Status" Header="Status" Width="130px" />
+                <DataGridColumn Field="Id" Header="Order ID" Width="100px" DataFormatString="N0" />
+                <DataGridColumn Field="Customer" Header="Customer" />
+                <DataGridColumn Field="Amount" Header="Amount" Width="140px" DataFormatString="C" />
+                <DataGridColumn Field="OrderDate" Header="Order Date" Width="140px" DataFormatString="d" />
+                <DataGridColumn Field="Status" Header="Status" Width="130px" />
             </Columns>
-        </Grid>
+        </DataGrid>
 
         <div class="rounded-lg border bg-muted/20 p-4">
             <p class="text-sm font-medium mb-2">Format Examples:</p>
@@ -44,9 +44,9 @@
                 View Code
             </summary>
             <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;GridColumn Field="Amount" Header="Amount" DataFormatString="C" /&gt;
-&lt;GridColumn Field="OrderDate" Header="Order Date" DataFormatString="d" /&gt;
-&lt;GridColumn Field="Id" Header="Order ID" DataFormatString="N0" /&gt;</code></pre>
+                <pre class="overflow-x-auto text-sm"><code>&lt;DataGridColumn Field="Amount" Header="Amount" DataFormatString="C" /&gt;
+&lt;DataGridColumn Field="OrderDate" Header="Order Date" DataFormatString="d" /&gt;
+&lt;DataGridColumn Field="Id" Header="Order ID" DataFormatString="N0" /&gt;</code></pre>
             </div>
         </details>
     </section>
@@ -61,40 +61,40 @@
             </p>
         </div>
 
-        <Grid Items="@orders">
+        <DataGrid Items="@orders">
             <Columns>
-                <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                <GridColumn Field="Customer" Header="Customer" />
-                <GridColumn Field="Status" Header="Status" Width="130px">
+                <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                <DataGridColumn Field="Customer" Header="Customer" />
+                <DataGridColumn Field="Status" Header="Status" Width="130px">
                     <CellTemplate Context="order">
                         <Badge Variant="@GetStatusVariant(order.Status)">
                             @order.Status
                         </Badge>
                     </CellTemplate>
-                </GridColumn>
-                <GridColumn Field="Amount" Header="Amount" Width="140px">
+                </DataGridColumn>
+                <DataGridColumn Field="Amount" Header="Amount" Width="140px">
                     <CellTemplate Context="order">
                         <span class="font-mono font-medium">@order.Amount.ToString("C")</span>
                     </CellTemplate>
-                </GridColumn>
-                <GridColumn Field="OrderDate" Header="Order Date" Width="140px">
+                </DataGridColumn>
+                <DataGridColumn Field="OrderDate" Header="Order Date" Width="140px">
                     <CellTemplate Context="order">
                         <span class="text-sm text-muted-foreground">@order.OrderDate.ToString("MMM dd, yyyy")</span>
                     </CellTemplate>
-                </GridColumn>
+                </DataGridColumn>
             </Columns>
-        </Grid>
+        </DataGrid>
 
         <details class="rounded-lg border">
             <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
                 View Code
             </summary>
             <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;GridColumn Field="Status" Header="Status"&gt;
+                <pre class="overflow-x-auto text-sm"><code>&lt;DataGridColumn Field="Status" Header="Status"&gt;
     &lt;CellTemplate Context="order"&gt;
         &lt;Badge Variant="@@GetStatusVariant(order.Status)"&gt;@@order.Status&lt;/Badge&gt;
     &lt;/CellTemplate&gt;
-&lt;/GridColumn&gt;</code></pre>
+&lt;/DataGridColumn&gt;</code></pre>
             </div>
         </details>
     </section>
@@ -108,49 +108,49 @@
             </p>
         </div>
 
-        <Grid Items="@orders.Take(10).ToList()">
+        <DataGrid Items="@orders.Take(10).ToList()">
             <Columns>
-                <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                <GridColumn Field="Customer" Header="Customer">
+                <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                <DataGridColumn Field="Customer" Header="Customer">
                     <HeaderTemplate>
                         <div class="flex items-center gap-2">
                             <LucideIcon Name="user" Size="16" />
                             <span>Customer</span>
                         </div>
                     </HeaderTemplate>
-                </GridColumn>
-                <GridColumn Field="Amount" Header="Amount" Width="140px">
+                </DataGridColumn>
+                <DataGridColumn Field="Amount" Header="Amount" Width="140px">
                     <HeaderTemplate>
                         <div class="flex items-center gap-2">
                             <LucideIcon Name="dollar-sign" Size="16" />
                             <span>Amount</span>
                         </div>
                     </HeaderTemplate>
-                </GridColumn>
-                <GridColumn Field="Status" Header="Status" Width="130px">
+                </DataGridColumn>
+                <DataGridColumn Field="Status" Header="Status" Width="130px">
                     <HeaderTemplate>
                         <div class="flex items-center gap-2">
                             <LucideIcon Name="package" Size="16" />
                             <span>Status</span>
                         </div>
                     </HeaderTemplate>
-                </GridColumn>
+                </DataGridColumn>
             </Columns>
-        </Grid>
+        </DataGrid>
 
         <details class="rounded-lg border">
             <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
                 View Code
             </summary>
             <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;GridColumn Field="Customer"&gt;
+                <pre class="overflow-x-auto text-sm"><code>&lt;DataGridColumn Field="Customer"&gt;
     &lt;HeaderTemplate&gt;
         &lt;div class="flex items-center gap-2"&gt;
             &lt;LucideIcon Name="user" Size="16" /&gt;
             &lt;span&gt;Customer&lt;/span&gt;
         &lt;/div&gt;
     &lt;/HeaderTemplate&gt;
-&lt;/GridColumn&gt;</code></pre>
+&lt;/DataGridColumn&gt;</code></pre>
             </div>
         </details>
     </section>
@@ -164,23 +164,23 @@
             </p>
         </div>
 
-        <Grid Items="@orders.Take(10).ToList()" ActionHost="this">
+        <DataGrid Items="@orders.Take(10).ToList()" ActionHost="this">
             <Columns>
-                <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                <GridColumn Field="Customer" Header="Customer" />
-                <GridColumn Field="Status" Header="Status" Width="120px">
+                <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                <DataGridColumn Field="Customer" Header="Customer" />
+                <DataGridColumn Field="Status" Header="Status" Width="120px">
                     <CellTemplate Context="order">
                         <Badge Variant="@GetStatusVariant(order.Status)">
                             @order.Status
                         </Badge>
                     </CellTemplate>
-                </GridColumn>
-                <GridColumn Field="Amount" Header="Amount" Width="120px">
+                </DataGridColumn>
+                <DataGridColumn Field="Amount" Header="Amount" Width="120px">
                     <CellTemplate Context="order">
                         <span class="font-mono">@order.Amount.ToString("C")</span>
                     </CellTemplate>
-                </GridColumn>
-                <GridColumn Id="actions" Header="Actions" Width="140px">
+                </DataGridColumn>
+                <DataGridColumn Id="actions" Header="Actions" Width="140px">
                     <CellTemplate Context="order">
                         <div class="flex items-center gap-1">
                             <Button Variant="ButtonVariant.Ghost" 
@@ -198,9 +198,9 @@
                             </Button>
                         </div>
                     </CellTemplate>
-                </GridColumn>
+                </DataGridColumn>
             </Columns>
-        </Grid>
+        </DataGrid>
 
         <details class="rounded-lg border">
             <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
@@ -209,7 +209,7 @@
             <div class="border-t bg-muted/20 p-4">
                 <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" ActionHost="this"&gt;
     &lt;Columns&gt;
-        &lt;GridColumn Id="actions" Header="Actions"&gt;
+        &lt;DataGridColumn Id="actions" Header="Actions"&gt;
             &lt;CellTemplate Context="order"&gt;
                 &lt;!-- ✅ Use Blazor components with data-action attributes --&gt;
                 &lt;Button data-action="Edit"&gt;
@@ -219,20 +219,20 @@
                     &lt;LucideIcon Name="trash-2" /&gt;
                 &lt;/Button&gt;
             &lt;/CellTemplate&gt;
-        &lt;/GridColumn&gt;
+        &lt;/DataGridColumn&gt;
     &lt;/Columns&gt;
 &lt;/Grid&gt;
 
 @@code {
-    // ✅ Auto-discovery: Just add [GridAction] attribute!
+    // ✅ Auto-discovery: Just add [DataGridAction] attribute!
     // Method names match data-action values
-    [GridAction]
+    [DataGridAction]
     private void Edit(Order order)
     {
         Toasts.Show($"Editing order #{order.Id}");
     }
     
-    [GridAction]
+    [DataGridAction]
     private void Delete(Order order)
     {
         Toasts.Error($"Deleting order #{order.Id}");
@@ -251,26 +251,26 @@
             </p>
         </div>
 
-        <Grid Items="@orders.Take(15).ToList()">
+        <DataGrid Items="@orders.Take(15).ToList()">
             <Columns>
-                <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                <GridColumn Field="Customer" Header="Customer" />
-                <GridColumn Field="Amount" Header="Amount" Width="140px">
+                <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                <DataGridColumn Field="Customer" Header="Customer" />
+                <DataGridColumn Field="Amount" Header="Amount" Width="140px">
                     <CellTemplate Context="order">
                         <span class="@GetAmountClass(order.Amount)">
                             @order.Amount.ToString("C")
                         </span>
                     </CellTemplate>
-                </GridColumn>
-                <GridColumn Field="Status" Header="Status" Width="130px">
+                </DataGridColumn>
+                <DataGridColumn Field="Status" Header="Status" Width="130px">
                     <CellTemplate Context="order">
                         <span class="@GetStatusClass(order.Status)">
                             @order.Status
                         </span>
                     </CellTemplate>
-                </GridColumn>
+                </DataGridColumn>
             </Columns>
-        </Grid>
+        </DataGrid>
 
         <details class="rounded-lg border">
             <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
@@ -318,14 +318,14 @@
                 : "";
     }
 
-    // ✅ Auto-discovered actions - just add [GridAction]!
-    [GridAction]
+    // ✅ Auto-discovered actions - just add [DataGridAction]!
+    [DataGridAction]
     private void Edit(Order order)
     {
         Toasts.Show($"Editing order #{order.Id}", $"Customer: {order.Customer}");
     }
 
-    [GridAction]
+    [DataGridAction]
     private void Delete(Order order)
     {
         Toasts.Error("Delete Order", $"Order #{order.Id} from {order.Customer} would be deleted.");

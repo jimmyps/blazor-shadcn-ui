@@ -29,17 +29,17 @@
                     <CardDescription>Dense layout with alternating rows</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Grid TItem="Product" 
+                    <DataGrid TItem="Product" 
                           Items="@products" 
-                          Density="GridDensity.Compact" 
-                          VisualStyle="GridStyle.Striped"
+                          Density="DataGridDensity.Compact" 
+                          VisualStyle="DataGridStyle.Striped"
                           Height="250px">
                         <Columns>
-                            <GridColumn TItem="Product" Field="Name" Header="Product" />
-                            <GridColumn TItem="Product" Field="Category" Header="Category" />
-                            <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
+                            <DataGridColumn TItem="Product" Field="Name" Header="Product" />
+                            <DataGridColumn TItem="Product" Field="Category" Header="Category" />
+                            <DataGridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
                         </Columns>
-                    </Grid>
+                    </DataGrid>
                 </CardContent>
             </Card>
 
@@ -50,17 +50,17 @@
                     <CardDescription>Relaxed layout with cell borders</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Grid TItem="Product" 
+                    <DataGrid TItem="Product" 
                           Items="@products" 
-                          Density="GridDensity.Spacious" 
-                          VisualStyle="GridStyle.Bordered"
+                          Density="DataGridDensity.Spacious" 
+                          VisualStyle="DataGridStyle.Bordered"
                           Height="250px">
                         <Columns>
-                            <GridColumn TItem="Product" Field="Name" Header="Product" />
-                            <GridColumn TItem="Product" Field="Category" Header="Category" />
-                            <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
+                            <DataGridColumn TItem="Product" Field="Name" Header="Product" />
+                            <DataGridColumn TItem="Product" Field="Category" Header="Category" />
+                            <DataGridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
                         </Columns>
-                    </Grid>
+                    </DataGrid>
                 </CardContent>
             </Card>
         </div>
@@ -71,7 +71,7 @@
         <div>
             <h3 class="text-2xl font-semibold mb-2">Level 2: Fine-Grained Parameters</h3>
             <p class="text-muted-foreground mb-4">
-                Override specific theme settings with GridThemeParameters component.
+                Override specific theme settings with DataDataGridThemeParameters component.
             </p>
         </div>
 
@@ -83,20 +83,20 @@
                     <CardDescription>Red accent with custom row height</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Grid TItem="Product" 
+                    <DataGrid TItem="Product" 
                           Items="@products" 
-                          Density="GridDensity.Comfortable"
+                          Density="DataGridDensity.Comfortable"
                           Height="250px">
                         <Columns>
-                            <GridThemeParameters
+                            <DataDataGridThemeParameters
                                 AccentColor="#dc2626"
                                 RowHeight="36"
                                 RowHoverColor="#dc262633" />
-                            <GridColumn TItem="Product" Field="Name" Header="Product" />
-                            <GridColumn TItem="Product" Field="Category" Header="Category" />
-                            <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
+                            <DataGridColumn TItem="Product" Field="Name" Header="Product" />
+                            <DataGridColumn TItem="Product" Field="Category" Header="Category" />
+                            <DataGridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
                         </Columns>
-                    </Grid>
+                    </DataGrid>
                 </CardContent>
             </Card>
 
@@ -107,21 +107,21 @@
                     <CardDescription>Larger font with custom border radius</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Grid TItem="Product" 
+                    <DataGrid TItem="Product" 
                           Items="@products" 
-                          Density="GridDensity.Comfortable"
+                          Density="DataGridDensity.Comfortable"
                           Height="250px">
                         <Columns>
-                            <GridThemeParameters
+                            <DataDataGridThemeParameters
                                 FontSize="16"
                                 BorderRadius="8"
                                 HeaderFontWeight="700"
                             />
-                            <GridColumn TItem="Product" Field="Name" Header="Product" />
-                            <GridColumn TItem="Product" Field="Category" Header="Category" />
-                            <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
+                            <DataGridColumn TItem="Product" Field="Name" Header="Product" />
+                            <DataGridColumn TItem="Product" Field="Category" Header="Category" />
+                            <DataGridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
                         </Columns>
-                    </Grid>
+                    </DataGrid>
                 </CardContent>
             </Card>
         </div>
@@ -140,27 +140,27 @@
             <Label>Select Theme:</Label>
             <div class="flex gap-2 flex-wrap">
                 <Button 
-                    Variant="@(selectedTheme == GridTheme.Shadcn ? ButtonVariant.Default : ButtonVariant.Outline)"
+                    Variant="@(selectedTheme == DataGridTheme.Shadcn ? ButtonVariant.Default : ButtonVariant.Outline)"
                     Size="ButtonSize.Small"
-                    OnClick="@(() => selectedTheme = GridTheme.Shadcn)">
+                    OnClick="@(() => selectedTheme = DataGridTheme.Shadcn)">
                     Shadcn
                 </Button>
                 <Button 
-                    Variant="@(selectedTheme == GridTheme.Alpine ? ButtonVariant.Default : ButtonVariant.Outline)"
+                    Variant="@(selectedTheme == DataGridTheme.Alpine ? ButtonVariant.Default : ButtonVariant.Outline)"
                     Size="ButtonSize.Small"
-                    OnClick="@(() => selectedTheme = GridTheme.Alpine)">
+                    OnClick="@(() => selectedTheme = DataGridTheme.Alpine)">
                     Alpine
                 </Button>
                 <Button 
-                    Variant="@(selectedTheme == GridTheme.Balham ? ButtonVariant.Default : ButtonVariant.Outline)"
+                    Variant="@(selectedTheme == DataGridTheme.Balham ? ButtonVariant.Default : ButtonVariant.Outline)"
                     Size="ButtonSize.Small"
-                    OnClick="@(() => selectedTheme = GridTheme.Balham)">
+                    OnClick="@(() => selectedTheme = DataGridTheme.Balham)">
                     Balham
                 </Button>
                 <Button 
-                    Variant="@(selectedTheme == GridTheme.Quartz ? ButtonVariant.Default : ButtonVariant.Outline)"
+                    Variant="@(selectedTheme == DataGridTheme.Quartz ? ButtonVariant.Default : ButtonVariant.Outline)"
                     Size="ButtonSize.Small"
-                    OnClick="@(() => selectedTheme = GridTheme.Quartz)">
+                    OnClick="@(() => selectedTheme = DataGridTheme.Quartz)">
                     Quartz
                 </Button>
             </div>
@@ -172,18 +172,18 @@
                 <CardDescription>View how the grid looks with the @selectedTheme theme</CardDescription>
             </CardHeader>
             <CardContent>
-                <Grid TItem="Product" 
+                <DataGrid TItem="Product" 
                       Items="@products" 
                       Theme="@selectedTheme"
-                      Density="GridDensity.Comfortable"
+                      Density="DataGridDensity.Comfortable"
                       Height="300px">
                     <Columns>
-                        <GridColumn TItem="Product" Field="Name" Header="Product" />
-                        <GridColumn TItem="Product" Field="Category" Header="Category" />
-                        <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
-                        <GridColumn TItem="Product" Field="@nameof(Product.Stock)" Header="Stock" />
+                        <DataGridColumn TItem="Product" Field="Name" Header="Product" />
+                        <DataGridColumn TItem="Product" Field="Category" Header="Category" />
+                        <DataGridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
+                        <DataGridColumn TItem="Product" Field="@nameof(Product.Stock)" Header="Stock" />
                     </Columns>
-                </Grid>
+                </DataGrid>
             </CardContent>
         </Card>
     </section>
@@ -193,7 +193,7 @@
         <div>
             <h3 class="text-2xl font-semibold mb-2">Precedence Demonstration</h3>
             <p class="text-muted-foreground mb-4">
-                GridThemeParameters overrides Density presets. Compact sets rowHeight=28, but we override it to 50.
+                DataDataGridThemeParameters overrides Density presets. Compact sets rowHeight=28, but we override it to 50.
             </p>
         </div>
 
@@ -205,16 +205,16 @@
                     <CardDescription>Default compact density</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Grid TItem="Product" 
+                    <DataGrid TItem="Product" 
                           Items="@products" 
-                          Density="GridDensity.Compact"
+                          Density="DataGridDensity.Compact"
                           Height="250px">
                         <Columns>
-                            <GridColumn TItem="Product" Field="Name" Header="Product" />
-                            <GridColumn TItem="Product" Field="Category" Header="Category" />
-                            <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
+                            <DataGridColumn TItem="Product" Field="Name" Header="Product" />
+                            <DataGridColumn TItem="Product" Field="Category" Header="Category" />
+                            <DataGridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
                         </Columns>
-                    </Grid>
+                    </DataGrid>
                 </CardContent>
             </Card>
 
@@ -225,19 +225,19 @@
                     <CardDescription>Compact density but custom row height</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Grid TItem="Product" 
+                    <DataGrid TItem="Product" 
                           Items="@products" 
-                          Density="GridDensity.Compact"
+                          Density="DataGridDensity.Compact"
                           Height="250px">
                         <Columns>
-                            <GridThemeParameters
+                            <DataDataGridThemeParameters
                                 RowHeight="50"
                             />
-                            <GridColumn TItem="Product" Field="Name" Header="Product" />
-                            <GridColumn TItem="Product" Field="Category" Header="Category" />
-                            <GridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
+                            <DataGridColumn TItem="Product" Field="Name" Header="Product" />
+                            <DataGridColumn TItem="Product" Field="Category" Header="Category" />
+                            <DataGridColumn TItem="Product" Field="@nameof(Product.Price)" Header="Price" />
                         </Columns>
-                    </Grid>
+                    </DataGrid>
                 </CardContent>
             </Card>
         </div>
@@ -252,14 +252,14 @@
         <CardContent>
             <pre class="bg-muted p-4 rounded-md overflow-x-auto text-sm"><code>@@* Level 1: High-Level Presets *@@
 &lt;Grid TItem="Order" Items="@@orders" 
-      Density="GridDensity.Compact" 
-      VisualStyle="GridStyle.Striped"&gt;
+      Density="DataGridDensity.Compact" 
+      VisualStyle="DataGridStyle.Striped"&gt;
     &lt;Columns&gt;...&lt;/Columns&gt;
 &lt;/Grid&gt;
 
 @@* Level 2: Fine-Grained Parameters *@@
 &lt;Grid TItem="Order" Items="@@orders"&gt;
-    &lt;GridThemeParameters
+    &lt;DataDataGridThemeParameters
         AccentColor="#ff6b6b"
         BorderRadius="8"
         RowHeight="48"
@@ -282,7 +282,7 @@
 </div>
 
 @code {
-    private GridTheme selectedTheme = GridTheme.Shadcn;
+    private DataGridTheme selectedTheme = DataGridTheme.Shadcn;
     private List<Order> orders = new();
 
     protected override void OnInitialized()

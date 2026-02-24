@@ -4,7 +4,7 @@ namespace NeoUI.Blazor.Attributes;
 
 /// <summary>
 /// Marks a method as a grid cell action handler.
-/// The method will be automatically discovered and registered when used within a Grid component.
+/// The method will be automatically discovered and registered when used within a DataGrid component.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -20,23 +20,23 @@ namespace NeoUI.Blazor.Attributes;
 /// <code>
 /// &lt;Grid Items="@orders" ActionHost="this"&gt;
 ///     &lt;Columns&gt;
-///         &lt;GridColumn Id="actions"&gt;
+///         &lt;DataGridColumn Id="actions"&gt;
 ///             &lt;CellTemplate Context="order"&gt;
 ///                 &lt;button data-action="Edit"&gt;Edit&lt;/button&gt;
 ///                 &lt;button data-action="Delete"&gt;Delete&lt;/button&gt;
 ///             &lt;/CellTemplate&gt;
-///         &lt;/GridColumn&gt;
+///         &lt;/DataGridColumn&gt;
 ///     &lt;/Columns&gt;
 /// &lt;/Grid&gt;
 /// 
 /// @code {
-///     [GridAction] // Matches data-action="Edit"
+///     [DataGridAction] // Matches data-action="Edit"
 ///     private void Edit(Order order)
 ///     {
 ///         // Handle edit
 ///     }
 ///     
-///     [GridAction(Name = "Delete")] // Explicit name
+///     [DataGridAction(Name = "Delete")] // Explicit name
 ///     private void HandleDelete(Order order)
 ///     {
 ///         // Handle delete
@@ -45,7 +45,7 @@ namespace NeoUI.Blazor.Attributes;
 /// </code>
 /// </example>
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-public class GridActionAttribute : Attribute
+public class DataGridActionAttribute : Attribute
 {
     /// <summary>
     /// Gets or sets the action name that will be matched against data-action attributes.

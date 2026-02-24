@@ -5,7 +5,7 @@ namespace NeoUI.Blazor;
 /// This enables efficient delta updates instead of full data refreshes.
 /// </summary>
 /// <typeparam name="TItem">The type of items in the grid.</typeparam>
-public class GridTransaction<TItem>
+public class DataGridTransaction<TItem>
 {
     /// <summary>
     /// Gets or sets the items to add to the grid.

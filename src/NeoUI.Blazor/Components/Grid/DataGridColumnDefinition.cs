@@ -7,7 +7,7 @@ namespace NeoUI.Blazor;
 /// Used by renderers to configure grid columns.
 /// </summary>
 /// <typeparam name="TItem">The type of items in the grid.</typeparam>
-public class GridColumnDefinition<TItem>
+public class DataDataGridColumnDefinition<TItem>
 {
     /// <summary>
     /// Gets or sets the unique identifier for this column.
@@ -53,7 +53,7 @@ public class GridColumnDefinition<TItem>
     /// <summary>
     /// Gets or sets the column pinning position.
     /// </summary>
-    public GridColumnPinPosition Pinned { get; set; } = GridColumnPinPosition.None;
+    public DataDataGridColumnPinPosition Pinned { get; set; } = DataDataGridColumnPinPosition.None;
 
     /// <summary>
     /// Gets or sets whether the column can be resized.
@@ -118,7 +118,7 @@ public class GridColumnDefinition<TItem>
     public Type? FieldType { get; set; }
 
     /// <summary>
-    /// Gets or sets the AG Grid filter type to use for this column.
+    /// Gets or sets the AG DataGrid filter type to use for this column.
     /// Auto-detected from FieldType if not explicitly set.
     /// Possible values: agTextColumnFilter, agNumberColumnFilter, agDateColumnFilter, agSetColumnFilter.
     /// </summary>

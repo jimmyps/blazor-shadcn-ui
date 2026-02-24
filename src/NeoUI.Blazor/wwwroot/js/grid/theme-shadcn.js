@@ -1,9 +1,9 @@
 /**
  * Creates the Shadcn theme configuration for AG Grid
- * Maps shadcn/ui design tokens to AG Grid theme parameters.
+ * Maps shadcn/ui design tokens to AG DataGrid theme parameters.
  * 
  * Note: This returns theme parameters that will be applied as CSS variables,
- * not an AG Grid theme object (since we're using the CDN version).
+ * not an AG DataGrid theme object (since we're using the CDN version).
  * 
  * @param {Object} customParams - Custom parameters to override defaults
  * @returns {Object} Theme parameters with shadcn token integration

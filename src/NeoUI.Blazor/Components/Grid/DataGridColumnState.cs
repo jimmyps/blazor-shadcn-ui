@@ -5,7 +5,7 @@ namespace NeoUI.Blazor;
 /// <summary>
 /// Represents the state of a single grid column.
 /// </summary>
-public class GridColumnState
+public class DataDataGridColumnState
 {
     /// <summary>
     /// Gets or sets the field name of the column.
@@ -29,7 +29,7 @@ public class GridColumnState
     /// Gets or sets the column pinning position.
     /// </summary>
     [JsonPropertyName("pinned")]
-    public GridColumnPinPosition Pinned { get; set; } = GridColumnPinPosition.None;
+    public DataDataGridColumnPinPosition Pinned { get; set; } = DataDataGridColumnPinPosition.None;
 
     /// <summary>
     /// Gets or sets the column display order.

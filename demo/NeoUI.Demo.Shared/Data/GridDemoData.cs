@@ -1,7 +1,7 @@
 namespace NeoUI.Demo.Shared.Data;
 
 /// <summary>
-/// Order model for Grid component demos.
+/// Order model for DataGrid component demos.
 /// </summary>
 public class Order
 {
@@ -26,7 +26,7 @@ public enum OrderStatus
 }
 
 /// <summary>
-/// Demo data generator for Grid component examples.
+/// Demo data generator for DataGrid component examples.
 /// </summary>
 public static class GridDemoData
 {

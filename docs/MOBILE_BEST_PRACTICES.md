@@ -53,7 +53,7 @@ NeoUI uses Tailwind's mobile-first breakpoints:
 </div>
 ```
 
-### 2. Stack on Mobile, Grid on Desktop
+### 2. Stack on Mobile, DataGrid on Desktop
 
 ```razor
 <!-- Single column on mobile, 3 columns on desktop -->

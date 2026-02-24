@@ -4,10 +4,10 @@ namespace NeoUI.Blazor;
 
 /// <summary>
 /// Specifies the visual style modifiers for a grid.
-/// These styles work with any AG Grid theme (Alpine, Balham, Material, Quartz).
+/// These styles work with any AG DataGrid theme (Alpine, Balham, Material, Quartz).
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum GridStyle
+public enum DataGridStyle
 {
     /// <summary>Standard appearance with default borders and hover states.</summary>
     Default,

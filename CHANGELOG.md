@@ -586,7 +586,7 @@ open/close state is communicated via `IsOpen`, and `ForceMount` handles visibili
 **ThemeSwitcher (demo\BlazorUI.Demo.Shared\Common\ThemeSwitcher.razor):**
 - Popover-based theme configuration panel
 - Visual color pickers with preview swatches
-- Grid layout for base colors (5 options) and primary colors (17 options)
+- DataGrid layout for base colors (5 options) and primary colors (17 options)
 - Selected state indicators with ring highlights
 - Integrated DarkModeToggle
 - Tooltip showing current theme selection (e.g., "Zinc / Blue")
@@ -1325,7 +1325,7 @@ ClassNames.cn(
 ### 🎨 UI/UX Enhancements & Demo Improvements
 
 **Status:** ✅ Complete, Production Ready  
-**Impact:** Enhanced navigation structure, improved component styling consistency, and standardized demo documentation across Grid examples.
+**Impact:** Enhanced navigation structure, improved component styling consistency, and standardized demo documentation across DataGrid examples.
 
 ---
 
@@ -1333,18 +1333,18 @@ ClassNames.cn(
 
 #### **Chart and Grid Root-Level Navigation**
 
-**Added dedicated navigation sections for Chart and Grid components:**
+**Added dedicated navigation sections for Chart and DataGrid components:**
 
 **Changes:**
 - Added Chart section with collapsible submenu in MainLayout
   - Area Chart, Bar Chart, Line Chart, Pie Chart, Scatter Chart, Radar Chart, Composed Chart
-- Added Grid section with collapsible submenu in MainLayout
+- Added DataGrid section with collapsible submenu in MainLayout
   - Basic, Templating, Selection, Transactions, Sorting & Filtering, State, Server-Side, Advanced, Theming
 - Replaced all custom SVG icons with LucideIcon components for consistency
-- Fixed Chart and Grid routing - updated hrefs from hash fragments to proper routes
+- Fixed Chart and DataGrid routing - updated hrefs from hash fragments to proper routes
 
 **Benefits:**
-- ✅ Chart and Grid components get extra visibility with dedicated navigation
+- ✅ Chart and DataGrid components get extra visibility with dedicated navigation
 - ✅ Direct access to specific chart types and grid features
 - ✅ Consistent icon system throughout navigation
 - ✅ Proper Blazor routing with bookmarkable URLs
@@ -1428,7 +1428,7 @@ demo/BlazorUI.Demo.Shared/Pages/Components/Charts/PieChartExamples.razor
 
 #### **Standardized Information Boxes with Alert Component**
 
-**Replaced all custom info boxes with standardized Alert components across Grid demos:**
+**Replaced all custom info boxes with standardized Alert components across DataGrid demos:**
 
 **Alert Variants Used:**
 - `Info` - Instructional/informational content (default for most boxes)
@@ -1440,15 +1440,15 @@ demo/BlazorUI.Demo.Shared/Pages/Components/Charts/PieChartExamples.razor
 ### 📊 Summary
 
 **Components Enhanced:** 4 (SelectTrigger, MultiSelect, CommandInput, PieChartExamples)  
-**Navigation Improvements:** Chart and Grid root-level sections with 16 new navigation links  
-**Demo Pages Standardized:** 3 Grid demo pages with 11 Alert components  
+**Navigation Improvements:** Chart and DataGrid root-level sections with 16 new navigation links  
+**Demo Pages Standardized:** 3 DataGrid demo pages with 11 Alert components  
 **Icons Standardized:** All navigation icons now use LucideIcon  
 **Routing Fixed:** 13 chart/grid pages with proper @page directives  
 
 **Impact:**
 - Enhanced user experience with smoother transitions and better visual feedback
 - Improved navigation structure for easier component discovery
-- Consistent, professional documentation across Grid examples
+- Consistent, professional documentation across DataGrid examples
 - Better accessibility and maintainability
 
 ---
@@ -3474,21 +3474,21 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 - SSRM demo showcasing server-side sorting, filtering, and paging
 
 ### Changed
-- GridImportMap refactored to simplify developer experience in App.razor
+- DataGridImportMap refactored to simplify developer experience in App.razor
 - Selection sample updated to use new TrackableObservableCollection
 
 ## 2026-01-14
 
 ### Added
 - Comprehensive movie database demo with TMDb API integration
-- Server-side row model with GridRowModelType and demo pages
+- Server-side row model with DataGridRowModelType and demo pages
 - NotifyItemsChanged pattern with TrackableObservableCollection
 - Grid Component Milestones 1-4 with complete demo pages
-- Complete AG Grid state management with @bind-State and hash-based mutation detection
+- Complete AG DataGrid state management with @bind-State and hash-based mutation detection
 
 ### Changed
-- Grid added to indexes for production ready
-- All Grid demos finalized with working functions
+- DataGrid added to indexes for production ready
+- All DataGrid demos finalized with working functions
 
 ### Fixed
 - Code review fixes for hash properties, firstRender check, and unused filterable property
@@ -3499,12 +3499,12 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 ### Added
 - @bind-State with hash-based mutation detection for natural state management
 - InitialState application and programmatic state updates for controlled sort/filter demos
-- GetStateAsync to Grid component
-- Three-level AG Grid theme customization with Shadcn integration
+- GetStateAsync to DataGrid component
+- Three-level AG DataGrid theme customization with Shadcn integration
 
 ### Changed
-- GridState and GridColumnState expanded with complete AG Grid properties
-- All Grid demos finalized (minus sorting and states)
+- DataGridState and DataDataGridColumnState expanded with complete AG DataGrid properties
+- All DataGrid demos finalized (minus sorting and states)
 - Proper marshalling between JS and C# for row selections
 - Comprehensive Transactions and Refresh API for granular controls
 
@@ -3539,7 +3539,7 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 ### Added
 - Template rendering framework supporting cell templates and header templates
 - GridAction for easy JS interop from Blazor components inside templates
-- DataFormatString in GridColumn for easy data formatting
+- DataFormatString in DataGridColumn for easy data formatting
 
 ### Changed
 - Templating demo finalized with DataFormatString implementation
@@ -3555,7 +3555,7 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 - Theme application using native withParams API
 
 ### Fixed
-- AG Grid theming regression
+- AG DataGrid theming regression
 - Theme parameter handling
 
 ### Removed
@@ -3585,8 +3585,8 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 ## 2025-12-24
 
 ### Added
-- Grid component with 20 comprehensive demo examples
-- Grid demo tabs following charting pattern
+- DataGrid component with 20 comprehensive demo examples
+- DataGrid demo tabs following charting pattern
 - SearchInterval in CommandInput for faster query performance
 
 ### Changed
@@ -3603,7 +3603,7 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 
 ### Added
 - Grid Component Milestones 1-4 (Core Object Model, Components, Renderer Abstraction, AG Grid Renderer)
-- Grid architecture documentation (GRID_DEMOS_V1.md, GRID_VS_DATATABLE.md)
+- DataGrid architecture documentation (GRID_DEMOS_V1.md, GRID_VS_DATATABLE.md)
 - CI/CD setup for GitHub and Azure App Service
 
 ### Changed
@@ -3612,8 +3612,8 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 - All components list added to sidebar, index, and spotlight search
 
 ### Fixed
-- Missing using directives in Grid component
-- BuildGridDefinition timing issues
+- Missing using directives in DataGrid component
+- BuildDataGridDefinition timing issues
 - Page number calculation in Grid
 - CSV formula injection mitigation added
 
@@ -3682,7 +3682,7 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 ### Added
 - Animation system for declarative chart API
 - Fill/LinearGradient/Stop with complete ECharts gradient mapping
-- 6 production-ready features: YAxis position, Grid styling, Axis min/max, Tooltip styling, Symbol customization, Series opacity
+- 6 production-ready features: YAxis position, DataGrid styling, Axis min/max, Tooltip styling, Symbol customization, Series opacity
 
 ### Fixed
 - ECharts renderer: v6 download, improved color detection, single-flight loading

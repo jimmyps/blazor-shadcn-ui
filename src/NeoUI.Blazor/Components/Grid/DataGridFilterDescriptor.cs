@@ -5,7 +5,7 @@ namespace NeoUI.Blazor;
 /// <summary>
 /// Describes a filter operation applied to a grid column.
 /// </summary>
-public class GridFilterDescriptor
+public class DataGridFilterDescriptor
 {
     /// <summary>
     /// Gets or sets the field name to filter.
@@ -17,7 +17,7 @@ public class GridFilterDescriptor
     /// Gets or sets the filter operator.
     /// </summary>
     [JsonPropertyName("operator")]
-    public GridFilterOperator Operator { get; set; } = GridFilterOperator.Contains;
+    public DataGridFilterOperator Operator { get; set; } = DataGridFilterOperator.Contains;
 
     /// <summary>
     /// Gets or sets the filter value to compare against.

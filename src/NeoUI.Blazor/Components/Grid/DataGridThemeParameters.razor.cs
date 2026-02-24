@@ -3,25 +3,25 @@ using Microsoft.AspNetCore.Components;
 namespace NeoUI.Blazor;
 
 /// <summary>
-/// Provides fine-grained control over AG Grid theme parameters.
-/// This component must be used as a child of a Grid component and allows you to override
+/// Provides fine-grained control over AG DataGrid theme parameters.
+/// This component must be used as a child of a DataGrid component and allows you to override
 /// specific theme settings using AG Grid's withParams API.
 /// </summary>
 /// <example>
 /// <code>
 /// &lt;Grid TItem="Order" Items="@orders"&gt;
-///     &lt;GridThemeParameters
+///     &lt;DataDataGridThemeParameters
 ///         AccentColor="#ff6b6b"
 ///         BorderRadius="8"
 ///         RowHeight="48"
 ///     /&gt;
 ///     &lt;Columns&gt;
-///         &lt;GridColumn Field="OrderId" Header="Order ID" /&gt;
+///         &lt;DataGridColumn Field="OrderId" Header="Order ID" /&gt;
 ///     &lt;/Columns&gt;
 /// &lt;/Grid&gt;
 /// </code>
 /// </example>
-public partial class GridThemeParameters : ComponentBase
+public partial class DataDataGridThemeParameters : ComponentBase
 {
     [CascadingParameter]
     private object? Parent { get; set; }
@@ -287,11 +287,11 @@ public partial class GridThemeParameters : ComponentBase
     /// </summary>
     protected override void OnInitialized()
     {
-        // Validate that this component is inside a Grid component
+        // Validate that this component is inside a DataGrid component
         if (Parent == null || !IsGridComponent(Parent))
         {
             throw new InvalidOperationException(
-                "GridThemeParameters must be used as a child component of a Grid component.");
+                "DataDataGridThemeParameters must be used as a child component of a DataGrid component.");
         }
 
         // Register with parent grid
@@ -302,8 +302,8 @@ public partial class GridThemeParameters : ComponentBase
     {
         var parentType = parent.GetType();
         
-        // Check if the parent type is exactly Grid<TItem> (closed generic type)
-        // or if it inherits from a Grid<TItem> base class
+        // Check if the parent type is exactly DataGrid<TItem> (closed generic type)
+        // or if it inherits from a DataGrid<TItem> base class
         while (parentType != null)
         {
             if (parentType.IsGenericType)
@@ -324,7 +324,7 @@ public partial class GridThemeParameters : ComponentBase
 
     private void RegisterWithParent()
     {
-        // Use reflection to call RegisterThemeParameters on the parent Grid
+        // Use reflection to call RegisterThemeParameters on the parent DataGrid
         var parentType = Parent!.GetType();
         var method = parentType.GetMethod("RegisterThemeParameters", 
             System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);

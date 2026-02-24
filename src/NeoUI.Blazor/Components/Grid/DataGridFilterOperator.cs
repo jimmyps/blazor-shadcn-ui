@@ -6,7 +6,7 @@ namespace NeoUI.Blazor;
 /// Specifies the filter operator for grid column filtering.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum GridFilterOperator
+public enum DataGridFilterOperator
 {
     /// <summary>Equals comparison.</summary>
     Equals,

@@ -7,42 +7,42 @@ namespace NeoUI.Blazor;
 /// Used by renderers to configure the grid.
 /// </summary>
 /// <typeparam name="TItem">The type of items in the grid.</typeparam>
-public class GridDefinition<TItem>
+public class DataGridDefinition<TItem>
 {
     /// <summary>
     /// Gets or sets the list of column definitions.
     /// </summary>
-    public List<GridColumnDefinition<TItem>> Columns { get; set; } = new();
+    public List<DataDataGridColumnDefinition<TItem>> Columns { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the selection mode for the grid.
     /// </summary>
-    public GridSelectionMode SelectionMode { get; set; } = GridSelectionMode.None;
+    public DataGridSelectionMode SelectionMode { get; set; } = DataGridSelectionMode.None;
 
     /// <summary>
     /// Gets or sets the paging mode for the grid.
     /// </summary>
-    public GridPagingMode PagingMode { get; set; } = GridPagingMode.Client;
+    public DataGridPagingMode PagingMode { get; set; } = DataGridPagingMode.Client;
 
     /// <summary>
     /// Gets or sets the virtualization mode for the grid.
     /// </summary>
-    public GridVirtualizationMode VirtualizationMode { get; set; } = GridVirtualizationMode.Auto;
+    public DataGridVirtualizationMode VirtualizationMode { get; set; } = DataGridVirtualizationMode.Auto;
 
     /// <summary>
-    /// Gets or sets the AG Grid theme to use (Alpine, Balham, Material, Quartz).
+    /// Gets or sets the AG DataGrid theme to use (Alpine, Balham, Material, Quartz).
     /// </summary>
-    public GridTheme Theme { get; set; } = GridTheme.Alpine;
+    public DataGridTheme Theme { get; set; } = DataGridTheme.Alpine;
 
     /// <summary>
     /// Gets or sets the visual style modifiers for the grid (Default, Striped, Bordered, Minimal).
     /// </summary>
-    public GridStyle VisualStyle { get; set; } = GridStyle.Default;
+    public DataGridStyle VisualStyle { get; set; } = DataGridStyle.Default;
 
     /// <summary>
     /// Gets or sets the spacing density for the grid.
     /// </summary>
-    public GridDensity Density { get; set; } = GridDensity.Comfortable;
+    public DataGridDensity Density { get; set; } = DataGridDensity.Comfortable;
 
     /// <summary>
     /// Gets or sets whether to suppress the header menus (filter/column menu).
@@ -68,17 +68,17 @@ public class GridDefinition<TItem>
     /// <summary>
     /// Gets or sets the current state of the grid.
     /// </summary>
-    public GridState? State { get; set; }
+    public DataGridState? State { get; set; }
 
     /// <summary>
     /// Gets or sets the callback invoked when the grid state changes.
     /// </summary>
-    public EventCallback<GridState> OnStateChanged { get; set; }
+    public EventCallback<DataGridState> OnStateChanged { get; set; }
 
     /// <summary>
     /// Gets or sets the callback invoked when server-side data is requested.
     /// </summary>
-    public EventCallback<GridDataRequest<TItem>> OnDataRequest { get; set; }
+    public EventCallback<DataGridDataRequest<TItem>> OnDataRequest { get; set; }
     
     /// <summary>
     /// Gets or sets the row model type for the grid (ClientSide, ServerSide, Infinite).
@@ -90,7 +90,7 @@ public class GridDefinition<TItem>
     /// This is a Func that returns data based on the request parameters.
     /// Used for ServerSide and Infinite row models.
     /// </summary>
-    public Func<GridDataRequest<TItem>, Task<GridDataResponse<TItem>>>? ServerDataRequestHandler { get; set; }
+    public Func<DataGridDataRequest<TItem>, Task<DataGridDataResponse<TItem>>>? ServerDataRequestHandler { get; set; }
 
     /// <summary>
     /// Gets or sets the callback invoked when the selection changes.

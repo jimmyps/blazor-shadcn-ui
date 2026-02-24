@@ -6,7 +6,7 @@ namespace NeoUI.Blazor;
 /// Specifies the base theme for the grid.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum GridTheme
+public enum DataGridTheme
 {
     /// <summary>
     /// Shadcn theme integrated with shadcn/ui design tokens (default).

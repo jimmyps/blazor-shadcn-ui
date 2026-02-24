@@ -18,7 +18,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 // Add NeoUI.Blazor.Primitives services
 builder.Services.AddNeoUIPrimitives();
 
-// Add NeoUI.Blazor components services (includes Grid renderer and CollapsibleStateService)
+// Add NeoUI.Blazor components services (includes DataGrid renderer and CollapsibleStateService)
 builder.Services.AddNeoUIComponents();
 
 // Add mock data service for generating demo data

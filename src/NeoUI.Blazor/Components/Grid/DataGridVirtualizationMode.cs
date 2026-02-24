@@ -6,7 +6,7 @@ namespace NeoUI.Blazor;
 /// Specifies the virtualization mode for rendering large datasets efficiently.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum GridVirtualizationMode
+public enum DataGridVirtualizationMode
 {
     /// <summary>Renderer decides based on data size.</summary>
     Auto,

@@ -46,19 +46,19 @@
             </Button>
         </div>
 
-        <Grid @ref="_gridRef"
+        <DataGrid @ref="_gridRef"
               Items="@products" 
-              SelectionMode="GridSelectionMode.Multiple"
+              SelectionMode="DataGridSelectionMode.Multiple"
               IdField="ProductId"
               Height="400px">
             <Columns>
-                <GridColumn Field="ProductId" Header="Product ID" Width="120px" />
-                <GridColumn Field="Name" Header="Product Name" />
-                <GridColumn Field="Category" Header="Category" Width="150px" />
-                <GridColumn Field="Price" Header="Price" Width="120px" DataFormatString="{0:C}" />
-                <GridColumn Field="Stock" Header="Stock" Width="100px" />
+                <DataGridColumn Field="ProductId" Header="Product ID" Width="120px" />
+                <DataGridColumn Field="Name" Header="Product Name" />
+                <DataGridColumn Field="Category" Header="Category" Width="150px" />
+                <DataGridColumn Field="Price" Header="Price" Width="120px" DataFormatString="{0:C}" />
+                <DataGridColumn Field="Stock" Header="Stock" Width="100px" />
             </Columns>
-        </Grid>
+        </DataGrid>
 
         <div class="mt-4 text-sm text-muted-foreground">
             <p>
@@ -78,9 +78,9 @@
 
 &lt;Grid @@ref="_gridRef" Items="@@products" IdField="ProductId"&gt;
     &lt;Columns&gt;
-        &lt;GridColumn Field="Name" Header="Product" /&gt;
-        &lt;GridColumn Field="Price" Header="Price" DataFormatString="{0:C}" /&gt;
-        &lt;GridColumn Field="Stock" Header="Stock" /&gt;
+        &lt;DataGridColumn Field="Name" Header="Product" /&gt;
+        &lt;DataGridColumn Field="Price" Header="Price" DataFormatString="{0:C}" /&gt;
+        &lt;DataGridColumn Field="Stock" Header="Stock" /&gt;
     &lt;/Columns&gt;
 &lt;/Grid&gt;
 
@@ -119,7 +119,7 @@
 </div>
 
 @code {
-    private Grid<Product> _gridRef = default!;
+    private DataGrid<Product> _gridRef = default!;
     private List<Product> products = new();
     private Random _random = new Random();
 

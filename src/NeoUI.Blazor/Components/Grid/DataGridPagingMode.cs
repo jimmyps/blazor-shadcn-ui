@@ -6,7 +6,7 @@ namespace NeoUI.Blazor;
 /// Specifies how pagination is handled in a grid.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum GridPagingMode
+public enum DataGridPagingMode
 {
     /// <summary>All data displayed, no pagination.</summary>
     None,

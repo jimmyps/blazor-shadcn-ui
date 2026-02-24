@@ -314,7 +314,7 @@ const observer = new ResizeObserver(entries => {
 - Built-in responsive features (AG-Grid's own system)
 
 **Recommendations:**
-1. Document AG-Grid mobile configurations
+1. Document AG-DataGrid mobile configurations
 2. Test row grouping on mobile
 3. Verify touch interactions (sorting, filtering, selection)
 4. Consider mobile-optimized grid themes

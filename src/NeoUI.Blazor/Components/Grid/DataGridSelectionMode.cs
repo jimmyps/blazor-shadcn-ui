@@ -6,7 +6,7 @@ namespace NeoUI.Blazor;
 /// Specifies the row selection behavior for a grid.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum GridSelectionMode
+public enum DataGridSelectionMode
 {
     /// <summary>No row selection allowed.</summary>
     None,

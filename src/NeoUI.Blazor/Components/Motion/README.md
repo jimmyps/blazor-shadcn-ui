@@ -197,7 +197,7 @@ All entry presets support custom easing via `Easing` parameter!
 ### List & Grid Animations
 
 - `<ListItemEnter />` - Polished list item entry
-- `<GridItemEnter />` - Grid item entry with scale
+- `<GridItemEnter />` - DataGrid item entry with scale
 
 ### Scroll-Based Animations
 
@@ -340,7 +340,7 @@ To force animations even with reduced motion preference:
 }
 ```
 
-### Staggered Grid with Different Easings
+### Staggered DataGrid with Different Easings
 
 ```razor
 <Motion Trigger="@MotionTrigger.OnAppear" StaggerChildren="0.1">

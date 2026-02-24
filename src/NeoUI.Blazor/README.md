@@ -204,7 +204,7 @@ Create beautiful, responsive charts with a declarative Recharts-inspired API:
 <LineChart Data="@salesData">
     <XAxis DataKey="Month" />
     <YAxis />
-    <Grid />
+    <DataGrid />
     <Tooltip />
     <Legend />
     <Line DataKey="Revenue" Fill="var(--chart-1)" />
@@ -242,37 +242,37 @@ Powerful data tables with built-in sorting, filtering, pagination, and selection
 ```
 
 ### Grid Component
-Enterprise-grade data grid powered by AG Grid with Blazor template support and auto-discovery actions, designed with shadcn theme with real-time light/dark theme switching support:
+Enterprise-grade data grid powered by AG DataGrid with Blazor template support and auto-discovery actions, designed with shadcn theme with real-time light/dark theme switching support:
 
 ```razor
-<Grid Items="@orders" ActionHost="this">
+<DataGrid Items="@orders" ActionHost="this">
     <Columns>
-        <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
-        <GridColumn Field="CustomerName" Header="Customer" Sortable="true" />
-        <GridColumn Field="OrderDate" Header="Date" DataFormatString="d" />
-        <GridColumn Field="Total" Header="Total" DataFormatString="C" />
-        <GridColumn Field="Status" Header="Status">
+        <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+        <DataGridColumn Field="CustomerName" Header="Customer" Sortable="true" />
+        <DataGridColumn Field="OrderDate" Header="Date" DataFormatString="d" />
+        <DataGridColumn Field="Total" Header="Total" DataFormatString="C" />
+        <DataGridColumn Field="Status" Header="Status">
             <CellTemplate Context="order">
                 <Badge Variant="@GetStatusVariant(order.Status)">
                     @order.Status
                 </Badge>
             </CellTemplate>
-        </GridColumn>
-        <GridColumn Field="Actions" Header="">
+        </DataGridColumn>
+        <DataGridColumn Field="Actions" Header="">
             <CellTemplate Context="order">
                 <Button data-action="Edit" Variant="ButtonVariant.Ghost">
                     Edit
                 </Button>
             </CellTemplate>
-        </GridColumn>
+        </DataGridColumn>
     </Columns>
-</Grid>
+</DataGrid>
 
 @code {
-    [GridAction]
+    [DataGridAction]
     private async Task Edit(Order order)
     {
-        // Action auto-wired via [GridAction] attribute
+        // Action auto-wired via [DataGridAction] attribute
         await ShowEditDialog(order);
     }
 }

@@ -280,7 +280,7 @@
     outline: none !important;
   }
 
-  /* Grid animation utilities for Accordion/Collapsible */
+  /* DataGrid animation utilities for Accordion/Collapsible */
   .grid-rows-\[0fr\] {
     grid-template-rows: 0fr;
   }

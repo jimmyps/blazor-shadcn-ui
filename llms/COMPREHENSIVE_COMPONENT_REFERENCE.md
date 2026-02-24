@@ -2553,36 +2553,36 @@ Responsive grid layout system with customizable columns and gaps. CSS Grid-based
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `ActionHost` | `object?` |  | Gets or sets the host component that contains grid action methods. Set this to 'this' to enable auto-discovery of methods marked with [GridAction]. |
+| `ActionHost` | `object?` |  | Gets or sets the host component that contains grid action methods. Set this to 'this' to enable auto-discovery of methods marked with [DataGridAction]. |
 | `Items` | `IEnumerable<TItem>` | `Array.Empty<TItem>()` | Gets or sets the collection of items to display in the grid. |
-| `SelectionMode` | `GridSelectionMode` | `GridSelectionMode.None` | Gets or sets the selection mode for the grid. |
-| `PagingMode` | `GridPagingMode` | `GridPagingMode.None` | Gets or sets the paging mode for the grid. |
+| `SelectionMode` | `DataGridSelectionMode` | `DataGridSelectionMode.None` | Gets or sets the selection mode for the grid. |
+| `PagingMode` | `DataGridPagingMode` | `DataGridPagingMode.None` | Gets or sets the paging mode for the grid. |
 | `PageSize` | `int` | `25` | Gets or sets the number of items per page. Must be greater than 0. Default is 25. |
 | `IdField` | `string` | `"Id"` | Gets or sets the property name to use as the unique row identifier. This is critical for row selection persistence across data updates and pagination. Examples: "Id" (C# convention), "ProductId", "OrderId", "id" (JavaScript convention), "_id" (MongoDB). Default is "Id". |
-| `VirtualizationMode` | `GridVirtualizationMode` | `GridVirtualizationMode.Auto` | Gets or sets the virtualization mode for the grid. |
-| `Theme` | `GridTheme` | `GridTheme.Shadcn` | Gets or sets the AG Grid theme to use (Shadcn, Alpine, Balham, Material, Quartz). Default is Shadcn. |
-| `VisualStyle` | `GridStyle` | `GridStyle.Default` | Gets or sets the visual style modifiers for the grid (Default, Striped, Bordered, Minimal). These modifiers work with any AG Grid theme. |
-| `Density` | `GridDensity` | `GridDensity.Comfortable` | Gets or sets the spacing density for the grid. |
+| `VirtualizationMode` | `DataGridVirtualizationMode` | `DataGridVirtualizationMode.Auto` | Gets or sets the virtualization mode for the grid. |
+| `Theme` | `DataGridTheme` | `DataGridTheme.Shadcn` | Gets or sets the AG DataGrid theme to use (Shadcn, Alpine, Balham, Material, Quartz). Default is Shadcn. |
+| `VisualStyle` | `DataGridStyle` | `DataGridStyle.Default` | Gets or sets the visual style modifiers for the grid (Default, Striped, Bordered, Minimal). These modifiers work with any AG DataGrid theme. |
+| `Density` | `DataGridDensity` | `DataGridDensity.Comfortable` | Gets or sets the spacing density for the grid. |
 | `SuppressHeaderMenus` | `bool` | `false` | Gets or sets whether to suppress the header menus (filter/column menu). When true, columns will not show the menu icon even if filterable/sortable. This is useful for controlled filtering scenarios where you provide external filter UI. Default is false. |
-| `State` | `GridState?` |  | Gets or sets the current state of the grid. Supports two-way binding via @bind-State for automatic state synchronization. |
-| `StateChanged` | `EventCallback<GridState>` |  | Gets or sets the callback invoked when the grid state changes. Used for two-way binding support (@bind-State). |
+| `State` | `DataGridState?` |  | Gets or sets the current state of the grid. Supports two-way binding via @bind-State for automatic state synchronization. |
+| `StateChanged` | `EventCallback<DataGridState>` |  | Gets or sets the callback invoked when the grid state changes. Used for two-way binding support (@bind-State). |
 | `IsLoading` | `bool` |  | Gets or sets whether the grid is in a loading state. |
-| `Columns` | `RenderFragment?` |  | Gets or sets the child content containing GridColumn definitions. |
+| `Columns` | `RenderFragment?` |  | Gets or sets the child content containing DataGridColumn definitions. |
 | `LoadingTemplate` | `RenderFragment?` |  | Gets or sets the template to display while the grid is loading. |
 | `Class` | `string?` |  | Gets or sets additional CSS classes to apply to the grid container. |
 | `Height` | `string?` |  | Gets or sets the height of the grid. Can be a fixed value (e.g., "500px") or a percentage (e.g., "100%"). If not specified, defaults to "300px". |
 | `Width` | `string?` |  | Gets or sets the width of the grid. Can be a fixed value (e.g., "800px") or a percentage (e.g., "100%"). Defaults to "100%". |
 | `InlineStyle` | `string?` |  | Gets or sets inline styles to apply to the grid container. |
 | `LocalizationKeyPrefix` | `string?` |  | Gets or sets the localization key prefix for grid text resources. |
-| `OnStateChanged` | `EventCallback<GridState>` |  | Gets or sets the callback invoked when the grid state changes. |
-| `RowModelType` | `GridRowModelType` | `GridRowModelType.ClientSide` | Gets or sets the row model type for the grid. Default is ClientSide. Use ServerSide for server-side data fetching with sorting/filtering/pagination. |
-| `OnServerDataRequest` | `Func<GridDataRequest<TItem>, Task<GridDataResponse<TItem>>>?` |  | Gets or sets the callback invoked when server-side data is requested. Required when RowModelType is ServerSide or Infinite. This callback receives a GridDataRequest and should return a GridDataResponse. |
-| `OnDataRequest` | `EventCallback<GridDataRequest<TItem>>` |  | Gets or sets the callback invoked when server-side data is requested (legacy EventCallback version). For new code, use OnServerDataRequest (Func) instead. |
+| `OnStateChanged` | `EventCallback<DataGridState>` |  | Gets or sets the callback invoked when the grid state changes. |
+| `RowModelType` | `DataGridRowModelType` | `DataGridRowModelType.ClientSide` | Gets or sets the row model type for the grid. Default is ClientSide. Use ServerSide for server-side data fetching with sorting/filtering/pagination. |
+| `OnServerDataRequest` | `Func<DataGridDataRequest<TItem>, Task<DataGridDataResponse<TItem>>>?` |  | Gets or sets the callback invoked when server-side data is requested. Required when RowModelType is ServerSide or Infinite. This callback receives a DataGridDataRequest and should return a DataGridDataResponse. |
+| `OnDataRequest` | `EventCallback<DataGridDataRequest<TItem>>` |  | Gets or sets the callback invoked when server-side data is requested (legacy EventCallback version). For new code, use OnServerDataRequest (Func) instead. |
 | `OnSelectionChanged` | `EventCallback<IReadOnlyCollection<TItem>>` |  | Gets or sets the callback invoked when the selection changes. |
 | `SelectedItems` | `IReadOnlyCollection<TItem>` | `Array.Empty<TItem>()` | Gets or sets the selected items in the grid. |
 | `SelectedItemsChanged` | `EventCallback<IReadOnlyCollection<TItem>>` |  | Gets or sets the callback invoked when the selected items change (for two-way binding). |
 
-#### `GridColumn`
+#### `DataGridColumn`
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -2593,7 +2593,7 @@ Responsive grid layout system with customizable columns and gaps. CSS Grid-based
 | `Width` | `string?` |  | Gets or sets the column width (e.g., "100px", "20%"). |
 | `MinWidth` | `string?` |  | Gets or sets the minimum column width. |
 | `MaxWidth` | `string?` |  | Gets or sets the maximum column width. |
-| `Pinned` | `GridColumnPinPosition` | `GridColumnPinPosition.None` | Gets or sets the column pinning position. |
+| `Pinned` | `DataDataGridColumnPinPosition` | `DataDataGridColumnPinPosition.None` | Gets or sets the column pinning position. |
 | `AllowResize` | `bool` | `true` | Gets or sets whether the column can be resized. |
 | `AllowReorder` | `bool` | `true` | Gets or sets whether the column can be reordered. |
 | `IsVisible` | `bool` | `true` | Gets or sets whether the column is visible. |
@@ -2604,15 +2604,15 @@ Responsive grid layout system with customizable columns and gaps. CSS Grid-based
 | `ValueSelector` | `Func<TItem, object?>?` |  | Gets or sets the value selector function for extracting cell values. |
 | `CellClass` | `string?` |  | Gets or sets the CSS class to apply to cells in this column. |
 | `HeaderClass` | `string?` |  | Gets or sets the CSS class to apply to the column header. |
-| `DataFormatString` | `string?` |  | Gets or sets the format string for displaying cell values. Supports standard .NET format strings (e.g., "C" for currency, "N2" for numbers with 2 decimals, "d" for dates). Can also use composite format strings (e.g., "{0:C}", "{0:N2}"). This is a simpler alternative to CellTemplate for basic formatting scenarios. &lt;GridColumn Field="Price" Header="Price" DataFormatString="C" /&gt;  // $1,234.56 &lt;GridColumn Field="Quantity" Header="Quantity" DataFormatString="N0" /&gt;  // 1,234 &lt;GridColumn Field="Date" Header="Date" DataFormatString="d" /&gt;  // 12/31/2024 &lt;GridColumn Field="Percentage" Header="%" DataFormatString="P2" /&gt;  // 45.67% |
+| `DataFormatString` | `string?` |  | Gets or sets the format string for displaying cell values. Supports standard .NET format strings (e.g., "C" for currency, "N2" for numbers with 2 decimals, "d" for dates). Can also use composite format strings (e.g., "{0:C}", "{0:N2}"). This is a simpler alternative to CellTemplate for basic formatting scenarios. &lt;DataGridColumn Field="Price" Header="Price" DataFormatString="C" /&gt;  // $1,234.56 &lt;DataGridColumn Field="Quantity" Header="Quantity" DataFormatString="N0" /&gt;  // 1,234 &lt;DataGridColumn Field="Date" Header="Date" DataFormatString="d" /&gt;  // 12/31/2024 &lt;DataGridColumn Field="Percentage" Header="%" DataFormatString="P2" /&gt;  // 45.67% |
 
-#### `GridImportMap`
+#### `DataGridImportMap`
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | *(No parameters)* | | | |
 
-#### `GridThemeParameters`
+#### `DataDataGridThemeParameters`
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -2651,18 +2651,18 @@ Responsive grid layout system with customizable columns and gaps. CSS Grid-based
 **Basic Usage:**
 ```razor
 @* 2-column grid *@
-<Grid Columns="2" Gap="4">
+<DataGrid Columns="2" Gap="4">
     <div>Column 1</div>
     <div>Column 2</div>
-</Grid>
+</DataGrid>
 
 @* Responsive grid *@
-<Grid Columns="1" Sm="2" Md="3" Lg="4" Gap="4">
+<DataGrid Columns="1" Sm="2" Md="3" Lg="4" Gap="4">
     <Card>Item 1</Card>
     <Card>Item 2</Card>
     <Card>Item 3</Card>
     <Card>Item 4</Card>
-</Grid>
+</DataGrid>
 ```
 
 ---

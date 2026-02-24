@@ -5,18 +5,18 @@ using System.Text.Encodings.Web;
 namespace NeoUI.Blazor.Services.Grid;
 
 /// <summary>
-/// Default implementation of ITemplateRenderer using Blazor's HtmlRenderer.
+/// Default implementation of IDataGridDataGridTemplateRenderer using Blazor's HtmlRenderer.
 /// Renders RenderFragment templates to HTML strings for use in JavaScript grid libraries.
 /// </summary>
-public class TemplateRenderer : ITemplateRenderer
+public class DataGridTemplateRenderer : IDataGridDataGridTemplateRenderer
 {
     private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TemplateRenderer"/> class.
+    /// Initializes a new instance of the <see cref="DataGridTemplateRenderer"/> class.
     /// </summary>
     /// <param name="serviceProvider">Service provider for resolving dependencies.</param>
-    public TemplateRenderer(IServiceProvider serviceProvider)
+    public DataGridTemplateRenderer(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
     }
@@ -26,17 +26,17 @@ public class TemplateRenderer : ITemplateRenderer
     {
         if (template == null)
         {
-            Console.WriteLine("[TemplateRenderer] Template is null");
+            Console.WriteLine("[DataGridTemplateRenderer] Template is null");
             return string.Empty;
         }
 
         if (context == null)
         {
-            Console.WriteLine("[TemplateRenderer] Context is null");
+            Console.WriteLine("[DataGridTemplateRenderer] Context is null");
             return string.Empty;
         }
 
-        Console.WriteLine($"[TemplateRenderer] Rendering template for context type: {context.GetType().Name}");
+        Console.WriteLine($"[DataGridTemplateRenderer] Rendering template for context type: {context.GetType().Name}");
 
         await using var htmlRenderer = new HtmlRenderer(_serviceProvider, NullLoggerFactory.Instance);
 
@@ -53,26 +53,26 @@ public class TemplateRenderer : ITemplateRenderer
                     }));
 
                 var htmlString = output.ToHtmlString();
-                Console.WriteLine($"[TemplateRenderer] Rendered HTML length: {htmlString.Length}");
+                Console.WriteLine($"[DataGridTemplateRenderer] Rendered HTML length: {htmlString.Length}");
                 if (htmlString.Length > 0 && htmlString.Length < 500)
                 {
-                    Console.WriteLine($"[TemplateRenderer] Rendered HTML: {htmlString}");
+                    Console.WriteLine($"[DataGridTemplateRenderer] Rendered HTML: {htmlString}");
                 }
                 else if (htmlString.Length >= 500)
                 {
-                    Console.WriteLine($"[TemplateRenderer] Rendered HTML (truncated): {htmlString.Substring(0, 500)}...");
+                    Console.WriteLine($"[DataGridTemplateRenderer] Rendered HTML (truncated): {htmlString.Substring(0, 500)}...");
                 }
                 else
                 {
-                    Console.WriteLine("[TemplateRenderer] WARNING: Rendered HTML is empty!");
+                    Console.WriteLine("[DataGridTemplateRenderer] WARNING: Rendered HTML is empty!");
                 }
                 
                 return htmlString;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[TemplateRenderer] Error during rendering: {ex.Message}");
-                Console.WriteLine($"[TemplateRenderer] Stack trace: {ex.StackTrace}");
+                Console.WriteLine($"[DataGridTemplateRenderer] Error during rendering: {ex.Message}");
+                Console.WriteLine($"[DataGridTemplateRenderer] Stack trace: {ex.StackTrace}");
                 throw;
             }
         });

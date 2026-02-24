@@ -7,7 +7,7 @@ namespace NeoUI.Blazor;
 /// Used for server-side paging, sorting, and filtering.
 /// </summary>
 /// <typeparam name="TItem">The type of items in the grid.</typeparam>
-public class GridDataRequest<TItem>
+public class DataGridDataRequest<TItem>
 {
     /// <summary>
     /// Gets or sets the starting index of the data to retrieve (0-based).
@@ -25,13 +25,13 @@ public class GridDataRequest<TItem>
     /// Gets or sets the list of sort descriptors to apply.
     /// </summary>
     [JsonPropertyName("sortDescriptors")]
-    public List<GridSortDescriptor> SortDescriptors { get; set; } = new();
+    public List<DataGridSortDescriptor> SortDescriptors { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the list of filter descriptors to apply.
     /// </summary>
     [JsonPropertyName("filterDescriptors")]
-    public List<GridFilterDescriptor> FilterDescriptors { get; set; } = new();
+    public List<DataGridFilterDescriptor> FilterDescriptors { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the current page number (1-based).

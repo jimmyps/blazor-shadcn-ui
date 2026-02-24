@@ -6,7 +6,7 @@ namespace NeoUI.Blazor;
 /// Specifies the spacing density for grid rows and cells.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum GridDensity
+public enum DataGridDensity
 {
     /// <summary>Standard padding (default).</summary>
     Comfortable,

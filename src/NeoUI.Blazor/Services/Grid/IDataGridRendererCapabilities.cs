@@ -4,7 +4,7 @@ namespace NeoUI.Blazor.Services.Grid;
 /// Describes the capabilities of a grid renderer.
 /// Used for diagnostics and feature detection.
 /// </summary>
-public interface IGridRendererCapabilities
+public interface IDataGridRendererCapabilities
 {
     /// <summary>
     /// Gets a value indicating whether the renderer supports virtualization for large datasets.

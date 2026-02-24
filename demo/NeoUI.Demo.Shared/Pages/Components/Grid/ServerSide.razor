@@ -49,7 +49,7 @@
                                 <ul class="list-disc list-inside space-y-1 ml-2 text-sm">
                                     <li><strong>For Development/Testing:</strong> The Enterprise module works without a license but displays a watermark. This is acceptable for evaluation and development purposes.</li>
                                     <li><strong>For Production:</strong> You must purchase an <a href="https://www.ag-grid.com/javascript-data-grid/licensing/" target="_blank" class="underline font-semibold">AG Grid Enterprise license</a> to remove the watermark and use the Server-Side Row Model module in production.</li>
-                                    <li><strong>Alternative:</strong> The Grid component also supports <strong>Client-Side Row Model</strong> (included in AG Grid Community - free), which works great for datasets up to 10,000 rows. See the <a href="/components/grid/basic" class="underline font-semibold">Client-Side Grid examples</a>.</li>
+                                    <li><strong>Alternative:</strong> The DataGrid component also supports <strong>Client-Side Row Model</strong> (included in AG Grid Community - free), which works great for datasets up to 10,000 rows. See the <a href="/components/grid/basic" class="underline font-semibold">Client-Side DataGrid examples</a>.</li>
                                 </ul>
                             </div>
                             <div class="pt-3 border-t text-xs">
@@ -83,10 +83,10 @@
                 <AlertTitle>How It Works</AlertTitle>
                 <AlertDescription>
                     <ul class="list-disc list-inside space-y-1">
-                        <li>Grid sends sort/filter parameters/requested rows to your callback</li>
+                        <li>DataGrid sends sort/filter parameters/requested rows to your callback</li>
                         <li>Your callback applies sorting/filtering on server or database</li>
                         <li>Return results with total count</li>
-                        <li>Grid displays results and update the status</li>
+                        <li>DataGrid displays results and update the status</li>
                     </ul>
                 </AlertDescription>
             </ChildContent>
@@ -105,22 +105,22 @@
             }
         </div>
 
-        <Grid TItem="Product"
+        <DataGrid TItem="Product"
               @ref="simulatedGrid" 
-              RowModelType="GridRowModelType.ServerSide"
+              RowModelType="DataGridRowModelType.ServerSide"
               OnServerDataRequest="@HandleSimulatedServerDataRequest"
               IdField="ProductId"
               Height="300px"
               PageSize="10">
             <Columns>
-                <GridColumn Field="ProductId" Header="Product ID" Width="120px" Sortable="true" />
-                <GridColumn Field="ProductName" Header="Product Name" Sortable="true" />
-                <GridColumn Field="Category" Header="Category" Width="150px" Sortable="true" Filterable="true" />
-                <GridColumn Field="Price" Header="Price" Width="120px" DataFormatString="{0:C}" Sortable="true" />
-                <GridColumn Field="Stock" Header="Stock" Width="100px" Sortable="true" />
-                <GridColumn Field="Supplier" Header="Supplier" Sortable="true" />
+                <DataGridColumn Field="ProductId" Header="Product ID" Width="120px" Sortable="true" />
+                <DataGridColumn Field="ProductName" Header="Product Name" Sortable="true" />
+                <DataGridColumn Field="Category" Header="Category" Width="150px" Sortable="true" Filterable="true" />
+                <DataGridColumn Field="Price" Header="Price" Width="120px" DataFormatString="{0:C}" Sortable="true" />
+                <DataGridColumn Field="Stock" Header="Stock" Width="100px" Sortable="true" />
+                <DataGridColumn Field="Supplier" Header="Supplier" Sortable="true" />
             </Columns>
-        </Grid>
+        </DataGrid>
 
         <div class="mt-4 space-y-2">
             <div class="text-sm text-muted-foreground">
@@ -139,8 +139,8 @@
                 View Implementation Code
             </summary>
             <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>private async Task&lt;GridDataResponse&lt;Product&gt;&gt; HandleSimulatedServerDataRequest(
-    GridDataRequest&lt;Product&gt; request)
+                <pre class="overflow-x-auto text-sm"><code>private async Task&lt;DataGridDataResponse&lt;Product&gt;&gt; HandleSimulatedServerDataRequest(
+    DataGridDataRequest&lt;Product&gt; request)
 {
     // Simulate network delay
     await Task.Delay(300);
@@ -170,7 +170,7 @@
         .Take(request.Count)
         .ToList();
     
-    return new GridDataResponse&lt;Product&gt;
+    return new DataGridDataResponse&lt;Product&gt;
     {
         Items = pagedData,
         TotalCount = totalCount
@@ -185,7 +185,7 @@
         <div class="space-y-2">
             <h2 class="text-2xl font-semibold">🎬 Movie Database (TMDb API)</h2>
             <p class="text-muted-foreground">
-                Full-featured server-side Grid with sorting, filtering, and pagination using The Movie Database API.
+                Full-featured server-side DataGrid with sorting, filtering, and pagination using The Movie Database API.
             </p>
         </div>
 
@@ -310,37 +310,37 @@
         </div>
 
         @* Grid Component *@
-        <Grid TItem="Movie"
+        <DataGrid TItem="Movie"
               @ref="movieGrid" 
-              RowModelType="GridRowModelType.ServerSide"
+              RowModelType="DataGridRowModelType.ServerSide"
               OnServerDataRequest="@HandleMovieDataRequest"
-              @bind-State="@movieGridState"
+              @bind-State="@movieDataGridState"
               IdField="Id"
               Height="400px"
-              PagingMode="GridPagingMode.Server"
+              PagingMode="DataGridPagingMode.Server"
               PageSize="100">
             <Columns>
-                <GridColumn Field="Title" Header="Title" Width="300px" Sortable="true" />
-                <GridColumn Field="ReleaseDate" Header="Release Date" Width="130px" Sortable="true" DataFormatString="{0:yyyy-MM-dd}" />
-                <GridColumn Field="VoteAverage" Header="Rating" Width="100px" Sortable="true" DataFormatString="{0:F1}">
+                <DataGridColumn Field="Title" Header="Title" Width="300px" Sortable="true" />
+                <DataGridColumn Field="ReleaseDate" Header="Release Date" Width="130px" Sortable="true" DataFormatString="{0:yyyy-MM-dd}" />
+                <DataGridColumn Field="VoteAverage" Header="Rating" Width="100px" Sortable="true" DataFormatString="{0:F1}">
                     <CellTemplate Context="movie">
                         <div class="flex items-center gap-1">
                             <span class="text-yellow-500">⭐</span>
                             <span>@movie.VoteAverage.ToString("F1")</span>
                         </div>
                     </CellTemplate>
-                </GridColumn>
-                <GridColumn Field="Popularity" Header="Popularity" Width="120px" Sortable="true" DataFormatString="{0:F1}" />
-                <GridColumn Field="VoteCount" Header="Votes" Width="100px" Sortable="true" />
-                <GridColumn Field="Overview" Header="Overview" MinWidth="400px">
+                </DataGridColumn>
+                <DataGridColumn Field="Popularity" Header="Popularity" Width="120px" Sortable="true" DataFormatString="{0:F1}" />
+                <DataGridColumn Field="VoteCount" Header="Votes" Width="100px" Sortable="true" />
+                <DataGridColumn Field="Overview" Header="Overview" MinWidth="400px">
                     <CellTemplate Context="movie">
                         <div class="text-xs line-clamp-2" title="@movie.Overview">
                             @movie.Overview
                         </div>
                     </CellTemplate>
-                </GridColumn>
+                </DataGridColumn>
             </Columns>
-        </Grid>
+        </DataGrid>
 
         @* Stats *@
         <div class="mt-4 space-y-2">
@@ -360,8 +360,8 @@
                 View Implementation Code
             </summary>
             <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>private async Task&lt;GridDataResponse&lt;Movie&gt;&gt; HandleMovieDataRequest(
-    GridDataRequest&lt;Movie&gt; request)
+                <pre class="overflow-x-auto text-sm"><code>private async Task&lt;DataGridDataResponse&lt;Movie&gt;&gt; HandleMovieDataRequest(
+    DataGridDataRequest&lt;Movie&gt; request)
 {
     isMovieLoading = true;
     StateHasChanged();
@@ -381,8 +381,8 @@
         // Call TMDb API
         var response = await CallTmdbApiAsync&lt;TmdbDiscoverResponse&gt;(url);
         
-        // Map to Grid response
-        return new GridDataResponse&lt;Movie&gt;
+        // Map to DataGrid response
+        return new DataGridDataResponse&lt;Movie&gt;
         {
             Items = response.Results.Select(MapToMovie),
             TotalCount = response.TotalResults
@@ -450,8 +450,8 @@
 </div>
 
 @code {
-    private Grid<Product> simulatedGrid = null!;
-    private Grid<Movie> movieGrid = null!;
+    private DataGrid<Product> simulatedGrid = null!;
+    private DataGrid<Movie> movieGrid = null!;
 
     // Simulated server-side demo state
     private bool isSimulatedLoading = false;
@@ -478,8 +478,8 @@
     private int movieRequestCount = 0;
     private string lastMovieQueryParams = "No requests yet";
     
-    // Grid state for movie demo (for filter control)
-    private GridState? movieGridState = new GridState();
+    // DataGrid state for movie demo (for filter control)
+    private DataGridState? movieDataGridState = new DataGridState();
 
     private HttpClient? _httpClient;
     
@@ -503,7 +503,7 @@
 
     // ==================== SIMULATED SERVER-SIDE DEMO ====================
 
-    private async Task<GridDataResponse<Product>> HandleSimulatedServerDataRequest(GridDataRequest<Product> request)
+    private async Task<DataGridDataResponse<Product>> HandleSimulatedServerDataRequest(DataGridDataRequest<Product> request)
     {
         isSimulatedLoading = true;
         simulatedRequestCount++;
@@ -545,7 +545,7 @@
                 .Take(request.Count)
                 .ToList();
             
-            return new GridDataResponse<Product>
+            return new DataGridDataResponse<Product>
             {
                 Items = pagedData,
                 TotalCount = totalCount
@@ -558,7 +558,7 @@
         }
     }
 
-    private IQueryable<Product> ApplyFilter(IQueryable<Product> query, GridFilterDescriptor filter)
+    private IQueryable<Product> ApplyFilter(IQueryable<Product> query, DataGridFilterDescriptor filter)
     {
         if (string.IsNullOrEmpty(filter.Field) || filter.Value == null)
             return query;
@@ -574,9 +574,9 @@
         };
     }
 
-    private IQueryable<Product> ApplySorting(IQueryable<Product> query, GridSortDescriptor sort)
+    private IQueryable<Product> ApplySorting(IQueryable<Product> query, DataGridSortDescriptor sort)
     {
-        var isDescending = sort.Direction == GridSortDirection.Descending;
+        var isDescending = sort.Direction == DataGridSortDirection.Descending;
         
         return sort.Field.ToLower() switch
         {
@@ -665,7 +665,7 @@
         }
     }
 
-    private async Task<GridDataResponse<Movie>> HandleMovieDataRequest(GridDataRequest<Movie> request)
+    private async Task<DataGridDataResponse<Movie>> HandleMovieDataRequest(DataGridDataRequest<Movie> request)
     {
         isMovieLoading = true;
         movieRequestCount++;
@@ -697,8 +697,8 @@
         }
     }
 
-    private async Task<GridDataResponse<Movie>> FetchFromTmdbApi(
-        GridDataRequest<Movie> request, 
+    private async Task<DataGridDataResponse<Movie>> FetchFromTmdbApi(
+        DataGridDataRequest<Movie> request, 
         int? year, 
         decimal? rating, 
         string genre)
@@ -711,7 +711,7 @@
         var page = (request.StartIndex / request.Count) + 1;
         currentPage = page;
         
-        // Map AG Grid sort to TMDb sort_by parameter
+        // Map AG DataGrid sort to TMDb sort_by parameter
         var sortBy = "popularity.desc"; // Default
         if (request.SortDescriptors.Any())
         {
@@ -766,16 +766,16 @@
             Popularity = r.Popularity
         }).ToList();
         
-        return new GridDataResponse<Movie>
+        return new DataGridDataResponse<Movie>
         {
             Items = movies,
             TotalCount = tmdbResponse.TotalResults
         };
     }
 
-    private string MapSortField(string field, GridSortDirection direction)
+    private string MapSortField(string field, DataGridSortDirection direction)
     {
-        var dir = direction == GridSortDirection.Descending ? "desc" : "asc";
+        var dir = direction == DataGridSortDirection.Descending ? "desc" : "asc";
         
         return field?.ToLower() switch
         {
@@ -787,8 +787,8 @@
         };
     }
 
-    private async Task<GridDataResponse<Movie>> FetchDemoData(
-        GridDataRequest<Movie> request,
+    private async Task<DataGridDataResponse<Movie>> FetchDemoData(
+        DataGridDataRequest<Movie> request,
         int? year,
         decimal? rating,
         string genre)
@@ -834,16 +834,16 @@
         currentPageItems = pagedMovies.Count;
         lastMovieQueryParams = $"Page: {page}\nSort: {request.SortDescriptors.FirstOrDefault()?.Field ?? "Popularity"}\nFilters: Year>={year}, Rating>={rating}, Genre={genre ?? "All"}";
         
-        return new GridDataResponse<Movie>
+        return new DataGridDataResponse<Movie>
         {
             Items = pagedMovies,
             TotalCount = totalMovies
         };
     }
 
-    private IQueryable<Movie> ApplyDemoSorting(IQueryable<Movie> query, GridSortDescriptor sort)
+    private IQueryable<Movie> ApplyDemoSorting(IQueryable<Movie> query, DataGridSortDescriptor sort)
     {
-        var isDesc = sort.Direction == GridSortDirection.Descending;
+        var isDesc = sort.Direction == DataGridSortDirection.Descending;
         
         return sort.Field?.ToLower() switch
         {
