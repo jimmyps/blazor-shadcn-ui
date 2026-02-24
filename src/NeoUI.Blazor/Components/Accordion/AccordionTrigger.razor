@@ -4,7 +4,7 @@
     Wraps the AccordionTrigger primitive with shadcn/ui styling.
 *@
 
-<NeoUI.Blazor.Primitives.AccordionTrigger Class="@CssClass">
+<AccordionTriggerPrimitive Class="@CssClass">
     <div class="flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline">
         @ChildContent
         <svg class="h-4 w-4 shrink-0 transition-transform duration-200 data-[state=open]:rotate-180"
@@ -21,14 +21,14 @@
             <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
     </div>
-</NeoUI.Blazor.Primitives.AccordionTrigger>
+</AccordionTriggerPrimitive>
 
 @code {
     /// <summary>
     /// Cascading parameter to receive the parent accordion item for state access.
     /// </summary>
     [CascadingParameter]
-    public NeoUI.Blazor.Primitives.AccordionItem? Item { get; set; }
+    public AccordionItemPrimitive? Item { get; set; }
 
     /// <summary>
     /// The child content to render within the trigger.

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// State for the HoverCard primitive context.
+/// State for the HoverCardPrimitive primitive context.
 /// </summary>
 public class HoverCardState
 {
@@ -29,7 +29,7 @@ public class HoverCardState
 }
 
 /// <summary>
-/// Context for HoverCard primitive component and its children.
+/// Context for HoverCardPrimitive primitive component and its children.
 /// Manages hover card state and provides IDs for ARIA attributes.
 /// </summary>
 public class HoverCardContext : PrimitiveContextWithEvents<HoverCardState>
@@ -103,7 +103,7 @@ public class HoverCardContext : PrimitiveContextWithEvents<HoverCardState>
 
     /// <summary>
     /// Sets the trigger element reference for positioning.
-    /// This is called by HoverCardTrigger to ensure the element is available
+    /// This is called by HoverCardTriggerPrimitive to ensure the element is available
     /// even when the hover card is opened programmatically.
     /// </summary>
     /// <param name="triggerElement">The trigger element reference.</param>

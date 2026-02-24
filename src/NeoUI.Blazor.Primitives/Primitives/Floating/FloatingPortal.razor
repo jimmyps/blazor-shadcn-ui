@@ -7,7 +7,7 @@
 @implements IAsyncDisposable
 
 @*
-    FloatingPortal - Unified infrastructure for floating content.
+    FloatingPortalPrimitive - Unified infrastructure for floating content.
     Handles ONLY: portal registration, positioning, and lifecycle management.
     Does NOT handle: click-outside, keyboard navigation, or any behavior.
 
@@ -19,7 +19,7 @@
     for smooth animation in ForceMount case when transitioning open/close state by delegating the works
     to JS with RFA, particularly when running in WebAssembly mode.
 
-    Use this as the base layer for Select, Popover, DropdownMenu, Tooltip, etc.
+    Use this as the base layer for SelectPrimitive, PopoverPrimitive, DropdownMenuPrimitive, TooltipPrimitive, etc.
 *@
 
 @code {
@@ -112,12 +112,12 @@
 
     /// <summary>
     /// CSS z-index value for the floating content.
-    /// Default is 60 (PopoverContent level).
+    /// Default is 60 (PopoverContentPrimitive level).
     /// Use ZIndexLevels constants for proper layering:
-    /// - DialogOverlay: 40
-    /// - DialogContent: 50
-    /// - PopoverContent: 60 (default for dropdowns/menus/selects)
-    /// - TooltipContent: 70
+    /// - DialogOverlayPrimitive: 40
+    /// - DialogContentPrimitive: 50
+    /// - PopoverContentPrimitive: 60 (default for dropdowns/menus/selects)
+    /// - TooltipContentPrimitive: 70
     /// </summary>
     [Parameter]
     public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;
@@ -154,7 +154,7 @@
 
     private static readonly Action<ILogger, string, string, Exception?> LogSetupFailed =
         LoggerMessage.Define<string, string>(LogLevel.Warning, new EventId(2, "FloatingPortalSetupFailed"),
-            "FloatingPortal '{PortalId}' setup failed: {ErrorMessage}");
+            "FloatingPortalPrimitive '{PortalId}' setup failed: {ErrorMessage}");
 
     private static readonly Action<ILogger, string, string, Exception?> LogPositioningFailed =
         LoggerMessage.Define<string, string>(LogLevel.Warning, new EventId(3, "PositioningFailed"),
@@ -162,7 +162,7 @@
 
     private static readonly Action<ILogger, string, Exception?> LogMissingPositioningParameters =
         LoggerMessage.Define<string>(LogLevel.Warning, new EventId(4, "MissingPositioningParameters"),
-            "FloatingPortal '{PortalId}' - Neither AnchorElement nor X/Y coordinates provided.");
+            "FloatingPortalPrimitive '{PortalId}' - Neither AnchorElement nor X/Y coordinates provided.");
 
     private IAsyncDisposable? _positioningCleanup;
     private bool _isMounted = false;
@@ -181,7 +181,7 @@
         if (string.IsNullOrEmpty(PortalId))
         {
             throw new InvalidOperationException(
-                "FloatingPortal requires a PortalId to be specified. " +
+                "FloatingPortalPrimitive requires a PortalId to be specified. " +
                 "Each floating element must have a unique identifier.");
         }
 
@@ -207,7 +207,7 @@
         // delegate, which would break ElementReference stability. The existing delegate
         // captures 'this', so PortalHost reads current ChildContent automatically.
         // Note: PortalHost ignores refresh calls during its own render cycle, preventing
-        // infinite loops when FloatingPortal is nested inside another portal.
+        // infinite loops when FloatingPortalPrimitive is nested inside another portal.
         if (_isMounted && !string.IsNullOrEmpty(PortalId))
         {
             PortalService.RefreshPortal(PortalId);

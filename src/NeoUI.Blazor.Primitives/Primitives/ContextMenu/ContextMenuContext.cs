@@ -23,7 +23,7 @@ public class ContextMenuState
 
 /// <summary>
 /// Context for ContextMenu primitive component and its children.
-/// Manages open state and position. Navigation is handled by ContextMenuContent.
+/// Manages open state and position. Navigation is handled by ContextMenuContentPrimitive.
 /// </summary>
 public class ContextMenuContext : PrimitiveContextWithEvents<ContextMenuState>
 {

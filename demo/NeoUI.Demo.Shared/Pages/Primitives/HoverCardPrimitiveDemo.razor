@@ -22,16 +22,16 @@
                 <div class="space-y-3 p-4 border rounded-lg">
                     <h3 class="text-lg font-medium">Without AsChild</h3>
                     <p class="text-sm text-muted-foreground">
-                        HoverCardTrigger renders its own div element.
+                        HoverCardTriggerPrimitive renders its own div element.
                     </p>
-                    <NeoUI.Blazor.Primitives.HoverCard>
-                        <NeoUI.Blazor.Primitives.HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+                    <HoverCardPrimitive>
+                        <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
                             Hover me
-                        </NeoUI.Blazor.Primitives.HoverCardTrigger>
-                        <NeoUI.Blazor.Primitives.HoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+                        </HoverCardTriggerPrimitive>
+                        <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
                             <p class="text-sm">Without AsChild hover card</p>
-                        </NeoUI.Blazor.Primitives.HoverCardContent>
-                    </NeoUI.Blazor.Primitives.HoverCard>
+                        </HoverCardContentPrimitive>
+                    </HoverCardPrimitive>
                 </div>
 
                 <!-- With AsChild -->
@@ -40,11 +40,11 @@
                     <p class="text-sm text-muted-foreground">
                         Button receives hover/focus behavior via TriggerContext.
                     </p>
-                    <NeoUI.Blazor.Primitives.HoverCard>
-                        <NeoUI.Blazor.Primitives.HoverCardTrigger AsChild>
+                    <HoverCardPrimitive>
+                        <HoverCardTriggerPrimitive AsChild>
                             <Button Variant="ButtonVariant.Link">@@johndoe</Button>
-                        </NeoUI.Blazor.Primitives.HoverCardTrigger>
-                        <NeoUI.Blazor.Primitives.HoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+                        </HoverCardTriggerPrimitive>
+                        <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
                             <div class="flex gap-3">
                                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-700"></div>
                                 <div>
@@ -52,8 +52,8 @@
                                     <p class="text-xs text-muted-foreground">Software Developer</p>
                                 </div>
                             </div>
-                        </NeoUI.Blazor.Primitives.HoverCardContent>
-                    </NeoUI.Blazor.Primitives.HoverCard>
+                        </HoverCardContentPrimitive>
+                    </HoverCardPrimitive>
                 </div>
             </div>
         </section>
@@ -64,18 +64,18 @@
         </p>
 
         <div class="flex items-center gap-4">
-            <NeoUI.Blazor.Primitives.HoverCard>
-                <NeoUI.Blazor.Primitives.HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+            <HoverCardPrimitive>
+                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
                     Hover me
-                </NeoUI.Blazor.Primitives.HoverCardTrigger>
+                </HoverCardTriggerPrimitive>
 
-                <NeoUI.Blazor.Primitives.HoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[280px]">
+                <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[280px]">
                     <div class="font-semibold mb-2">Hover Card Content</div>
                     <p class="text-sm text-muted-foreground">
                         This content appears when you hover over the trigger. It uses the primitive component with Tailwind classes.
                     </p>
-                </NeoUI.Blazor.Primitives.HoverCardContent>
-            </NeoUI.Blazor.Primitives.HoverCard>
+                </HoverCardContentPrimitive>
+            </HoverCardPrimitive>
         </div>
     </div>
 
@@ -86,25 +86,25 @@
         </p>
 
         <div class="flex items-center gap-8">
-            <NeoUI.Blazor.Primitives.HoverCard OpenDelay="200" CloseDelay="100">
-                <NeoUI.Blazor.Primitives.HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+            <HoverCardPrimitive OpenDelay="200" CloseDelay="100">
+                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
                     Quick (200ms)
-                </NeoUI.Blazor.Primitives.HoverCardTrigger>
+                </HoverCardTriggerPrimitive>
 
-                <NeoUI.Blazor.Primitives.HoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+                <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
                     <p class="text-sm">Opens quickly with 200ms delay.</p>
-                </NeoUI.Blazor.Primitives.HoverCardContent>
-            </NeoUI.Blazor.Primitives.HoverCard>
+                </HoverCardContentPrimitive>
+            </HoverCardPrimitive>
 
-            <NeoUI.Blazor.Primitives.HoverCard OpenDelay="1000" CloseDelay="500">
-                <NeoUI.Blazor.Primitives.HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+            <HoverCardPrimitive OpenDelay="1000" CloseDelay="500">
+                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
                     Slow (1000ms)
-                </NeoUI.Blazor.Primitives.HoverCardTrigger>
+                </HoverCardTriggerPrimitive>
 
-                <NeoUI.Blazor.Primitives.HoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+                <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
                     <p class="text-sm">Opens slowly with 1000ms delay.</p>
-                </NeoUI.Blazor.Primitives.HoverCardContent>
-            </NeoUI.Blazor.Primitives.HoverCard>
+                </HoverCardContentPrimitive>
+            </HoverCardPrimitive>
         </div>
     </div>
 
@@ -115,41 +115,41 @@
         </p>
 
         <div class="flex flex-wrap items-center gap-4">
-            <NeoUI.Blazor.Primitives.HoverCard>
-                <NeoUI.Blazor.Primitives.HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+            <HoverCardPrimitive>
+                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
                     Bottom (default)
-                </NeoUI.Blazor.Primitives.HoverCardTrigger>
-                <NeoUI.Blazor.Primitives.HoverCardContent Side="@PopoverSide.Bottom" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
+                </HoverCardTriggerPrimitive>
+                <HoverCardContentPrimitive Side="@PopoverSide.Bottom" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
                     Positioned at bottom
-                </NeoUI.Blazor.Primitives.HoverCardContent>
-            </NeoUI.Blazor.Primitives.HoverCard>
+                </HoverCardContentPrimitive>
+            </HoverCardPrimitive>
 
-            <NeoUI.Blazor.Primitives.HoverCard>
-                <NeoUI.Blazor.Primitives.HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+            <HoverCardPrimitive>
+                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
                     Top
-                </NeoUI.Blazor.Primitives.HoverCardTrigger>
-                <NeoUI.Blazor.Primitives.HoverCardContent Side="@PopoverSide.Top" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
+                </HoverCardTriggerPrimitive>
+                <HoverCardContentPrimitive Side="@PopoverSide.Top" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
                     Positioned at top
-                </NeoUI.Blazor.Primitives.HoverCardContent>
-            </NeoUI.Blazor.Primitives.HoverCard>
+                </HoverCardContentPrimitive>
+            </HoverCardPrimitive>
 
-            <NeoUI.Blazor.Primitives.HoverCard>
-                <NeoUI.Blazor.Primitives.HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+            <HoverCardPrimitive>
+                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
                     Right
-                </NeoUI.Blazor.Primitives.HoverCardTrigger>
-                <NeoUI.Blazor.Primitives.HoverCardContent Side="@PopoverSide.Right" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
+                </HoverCardTriggerPrimitive>
+                <HoverCardContentPrimitive Side="@PopoverSide.Right" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
                     Positioned at right
-                </NeoUI.Blazor.Primitives.HoverCardContent>
-            </NeoUI.Blazor.Primitives.HoverCard>
+                </HoverCardContentPrimitive>
+            </HoverCardPrimitive>
 
-            <NeoUI.Blazor.Primitives.HoverCard>
-                <NeoUI.Blazor.Primitives.HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+            <HoverCardPrimitive>
+                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
                     Left
-                </NeoUI.Blazor.Primitives.HoverCardTrigger>
-                <NeoUI.Blazor.Primitives.HoverCardContent Side="@PopoverSide.Left" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
+                </HoverCardTriggerPrimitive>
+                <HoverCardContentPrimitive Side="@PopoverSide.Left" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
                     Positioned at left
-                </NeoUI.Blazor.Primitives.HoverCardContent>
-            </NeoUI.Blazor.Primitives.HoverCard>
+                </HoverCardContentPrimitive>
+            </HoverCardPrimitive>
         </div>
     </div>
 
@@ -160,32 +160,32 @@
         </p>
 
         <div class="flex items-center gap-4">
-            <NeoUI.Blazor.Primitives.HoverCard>
-                <NeoUI.Blazor.Primitives.HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+            <HoverCardPrimitive>
+                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
                     Start Aligned
-                </NeoUI.Blazor.Primitives.HoverCardTrigger>
-                <NeoUI.Blazor.Primitives.HoverCardContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
+                </HoverCardTriggerPrimitive>
+                <HoverCardContentPrimitive Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
                     Aligned to start
-                </NeoUI.Blazor.Primitives.HoverCardContent>
-            </NeoUI.Blazor.Primitives.HoverCard>
+                </HoverCardContentPrimitive>
+            </HoverCardPrimitive>
 
-            <NeoUI.Blazor.Primitives.HoverCard>
-                <NeoUI.Blazor.Primitives.HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+            <HoverCardPrimitive>
+                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
                     Center Aligned
-                </NeoUI.Blazor.Primitives.HoverCardTrigger>
-                <NeoUI.Blazor.Primitives.HoverCardContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Center" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
+                </HoverCardTriggerPrimitive>
+                <HoverCardContentPrimitive Side="@PopoverSide.Bottom" Align="@PopoverAlign.Center" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
                     Centered
-                </NeoUI.Blazor.Primitives.HoverCardContent>
-            </NeoUI.Blazor.Primitives.HoverCard>
+                </HoverCardContentPrimitive>
+            </HoverCardPrimitive>
 
-            <NeoUI.Blazor.Primitives.HoverCard>
-                <NeoUI.Blazor.Primitives.HoverCardTrigger class="px-4 py-2 border rounded cursor-pointer">
+            <HoverCardPrimitive>
+                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
                     End Aligned
-                </NeoUI.Blazor.Primitives.HoverCardTrigger>
-                <NeoUI.Blazor.Primitives.HoverCardContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.End" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
+                </HoverCardTriggerPrimitive>
+                <HoverCardContentPrimitive Side="@PopoverSide.Bottom" Align="@PopoverAlign.End" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
                     Aligned to end
-                </NeoUI.Blazor.Primitives.HoverCardContent>
-            </NeoUI.Blazor.Primitives.HoverCard>
+                </HoverCardContentPrimitive>
+            </HoverCardPrimitive>
         </div>
     </div>
 
@@ -197,12 +197,12 @@
 
         <div class="flex items-center gap-2">
             <p class="text-sm">Hover over</p>
-            <NeoUI.Blazor.Primitives.HoverCard>
-                <NeoUI.Blazor.Primitives.HoverCardTrigger class="text-primary underline cursor-pointer">
+            <HoverCardPrimitive>
+                <HoverCardTriggerPrimitive class="text-primary underline cursor-pointer">
                     @@username
-                </NeoUI.Blazor.Primitives.HoverCardTrigger>
+                </HoverCardTriggerPrimitive>
 
-                <NeoUI.Blazor.Primitives.HoverCardContent class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[300px]">
+                <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[300px]">
                     <div class="flex gap-3">
                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-700"></div>
                         <div class="flex-1">
@@ -216,8 +216,8 @@
                             </div>
                         </div>
                     </div>
-                </NeoUI.Blazor.Primitives.HoverCardContent>
-            </NeoUI.Blazor.Primitives.HoverCard>
+                </HoverCardContentPrimitive>
+            </HoverCardPrimitive>
             <p class="text-sm">to see their profile.</p>
         </div>
     </div>

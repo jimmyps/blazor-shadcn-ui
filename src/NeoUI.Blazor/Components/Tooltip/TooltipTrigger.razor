@@ -2,23 +2,23 @@
 @* Styled TooltipTrigger - thin wrapper with contents class for layout *@
 @if (AsChild)
 {
-    <NeoUI.Blazor.Primitives.TooltipTrigger AsChild="true"
+    <TooltipTriggerPrimitive AsChild="true"
                                                       Focusable="@Focusable"
                                                       OnMouseEnter="@OnMouseEnter"
                                                       OnMouseLeave="@OnMouseLeave"
                                                       @attributes="AdditionalAttributes">
         @ChildContent
-    </NeoUI.Blazor.Primitives.TooltipTrigger>
+    </TooltipTriggerPrimitive>
 }
 else
 {
     <span class="@WrapperClass">
-        <NeoUI.Blazor.Primitives.TooltipTrigger Focusable="@Focusable"
+        <TooltipTriggerPrimitive Focusable="@Focusable"
                                                           OnMouseEnter="@OnMouseEnter"
                                                           OnMouseLeave="@OnMouseLeave"
                                                           @attributes="AdditionalAttributes">
             @ChildContent
-        </NeoUI.Blazor.Primitives.TooltipTrigger>
+        </TooltipTriggerPrimitive>
     </span>
 }
 

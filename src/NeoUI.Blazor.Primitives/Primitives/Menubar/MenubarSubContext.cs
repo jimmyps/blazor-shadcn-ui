@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// Context class for sharing state between MenubarSub, MenubarSubTrigger, and MenubarSubContent components.
+/// Context class for sharing state between MenubarSubPrimitive, MenubarSubTriggerPrimitive, and MenubarSubContentPrimitive components.
 /// </summary>
 public class MenubarSubContext
 {

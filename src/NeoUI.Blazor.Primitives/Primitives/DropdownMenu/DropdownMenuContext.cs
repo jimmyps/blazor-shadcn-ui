@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// State for the DropdownMenu primitive context.
+/// State for the DropdownMenuPrimitive primitive context.
 /// </summary>
 public class DropdownMenuState
 {
@@ -25,7 +25,7 @@ public class DropdownMenuState
 }
 
 /// <summary>
-/// Context for DropdownMenu primitive component and its children.
+/// Context for DropdownMenuPrimitive primitive component and its children.
 /// Manages dropdown menu state, provides IDs for ARIA attributes, and handles keyboard navigation.
 /// </summary>
 public class DropdownMenuContext : PrimitiveContextWithEvents<DropdownMenuState>
@@ -59,7 +59,7 @@ public class DropdownMenuContext : PrimitiveContextWithEvents<DropdownMenuState>
 
     /// <summary>
     /// Gets or sets default CSS classes to apply to all items in the menu.
-    /// Cascaded from the parent DropdownMenu's ItemClass parameter.
+    /// Cascaded from the parent DropdownMenuPrimitive's ItemClass parameter.
     /// </summary>
     public string? ItemClass { get; set; }
 
@@ -141,7 +141,7 @@ public class DropdownMenuContext : PrimitiveContextWithEvents<DropdownMenuState>
 
     /// <summary>
     /// Sets the trigger element reference for positioning.
-    /// This is called by DropdownMenuTrigger to ensure the element is available
+    /// This is called by DropdownMenuTriggerPrimitive to ensure the element is available
     /// even when the dropdown is opened programmatically.
     /// </summary>
     /// <param name="triggerElement">The trigger element reference.</param>

@@ -2,7 +2,7 @@
 @typeparam TValue
 
 @* Styled DropdownMenuRadioItem - wrapper with shadcn Tailwind classes *@
-<NeoUI.Blazor.Primitives.DropdownMenuRadioItem TValue="TValue"
+<DropdownMenuRadioItemPrimitive TValue="TValue"
                                                         class="@CssClass"
                                                         Disabled="@Disabled"
                                                         Value="@Value"
@@ -20,11 +20,11 @@
         }
     </span>
     <span>@ChildContent</span>
-</NeoUI.Blazor.Primitives.DropdownMenuRadioItem>
+</DropdownMenuRadioItemPrimitive>
 
 @code {
     [CascadingParameter]
-    private NeoUI.Blazor.Primitives.DropdownMenuRadioGroupContext<TValue>? RadioGroupContext { get; set; }
+    private DropdownMenuRadioGroupContext<TValue>? RadioGroupContext { get; set; }
 
     /// <summary>
     /// The content to display inside the radio item.

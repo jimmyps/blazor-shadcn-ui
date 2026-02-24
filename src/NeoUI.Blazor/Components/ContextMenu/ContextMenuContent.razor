@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor
 @* ContextMenuContent - styled content panel with transparent overlay *@
-<NeoUI.Blazor.Primitives.ContextMenuContent CloseOnEscape="@CloseOnEscape"
+<ContextMenuContentPrimitive CloseOnEscape="@CloseOnEscape"
                     CloseOnClickOutside="@CloseOnClickOutside"
                     ZIndex="@ZIndex"
                     LockScroll="@LockScroll"
@@ -8,7 +8,7 @@
                     class="@GetClass()"
                     @attributes="AdditionalAttributes">
     @ChildContent
-</NeoUI.Blazor.Primitives.ContextMenuContent>
+</ContextMenuContentPrimitive>
 
 @code {
     /// <summary>

@@ -4,14 +4,14 @@
     Wraps the AccordionContent primitive with shadcn/ui styling.
 *@
 
-<NeoUI.Blazor.Primitives.AccordionContent ForceMount="@ForceMount"
+<AccordionContentPrimitive ForceMount="@ForceMount"
                                                       class="@CssClass">
     <div class="overflow-hidden min-h-0">
         <div class="pb-4 pt-0 text-sm">
             @ChildContent
         </div>
     </div>
-</NeoUI.Blazor.Primitives.AccordionContent>
+</AccordionContentPrimitive>
 
 @code {
     /// <summary>

@@ -1,11 +1,11 @@
 @namespace NeoUI.Blazor
 @* ContextMenu - styled context menu wrapper *@
-<NeoUI.Blazor.Primitives.ContextMenuRoot Open="@Open"
+<ContextMenuRootPrimitive Open="@Open"
                  OpenChanged="OpenChanged"
                  OnOpen="OnOpen"
                  OnClose="OnClose">
     @ChildContent
-</NeoUI.Blazor.Primitives.ContextMenuRoot>
+</ContextMenuRootPrimitive>
 
 @code {
     /// <summary>

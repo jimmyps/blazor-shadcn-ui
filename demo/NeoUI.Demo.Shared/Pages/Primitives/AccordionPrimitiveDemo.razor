@@ -21,34 +21,34 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <NeoUI.Blazor.Primitives.Accordion DefaultValue="@(new HashSet<string> { "item-1" })" class="border rounded">
-                    <NeoUI.Blazor.Primitives.AccordionItem Value="item-1" class="border-b last:border-0">
-                        <NeoUI.Blazor.Primitives.AccordionTrigger class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
+                <AccordionPrimitive DefaultValue="@(new HashSet<string> { "item-1" })" class="border rounded">
+                    <AccordionItemPrimitive Value="item-1" class="border-b last:border-0">
+                        <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
                             Is it accessible?
-                        </NeoUI.Blazor.Primitives.AccordionTrigger>
-                        <NeoUI.Blazor.Primitives.AccordionContent class="p-4 pt-0">
+                        </AccordionTriggerPrimitive>
+                        <AccordionContentPrimitive class="p-4 pt-0">
                             Yes. It adheres to the WAI-ARIA design pattern with full keyboard navigation support.
-                        </NeoUI.Blazor.Primitives.AccordionContent>
-                    </NeoUI.Blazor.Primitives.AccordionItem>
+                        </AccordionContentPrimitive>
+                    </AccordionItemPrimitive>
 
-                    <NeoUI.Blazor.Primitives.AccordionItem Value="item-2" class="border-b last:border-0">
-                        <NeoUI.Blazor.Primitives.AccordionTrigger class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
+                    <AccordionItemPrimitive Value="item-2" class="border-b last:border-0">
+                        <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
                             Is it styled?
-                        </NeoUI.Blazor.Primitives.AccordionTrigger>
-                        <NeoUI.Blazor.Primitives.AccordionContent class="p-4 pt-0">
+                        </AccordionTriggerPrimitive>
+                        <AccordionContentPrimitive class="p-4 pt-0">
                             No. It's a headless primitive that provides behavior without any styling.
-                        </NeoUI.Blazor.Primitives.AccordionContent>
-                    </NeoUI.Blazor.Primitives.AccordionItem>
+                        </AccordionContentPrimitive>
+                    </AccordionItemPrimitive>
 
-                    <NeoUI.Blazor.Primitives.AccordionItem Value="item-3" class="border-b last:border-0">
-                        <NeoUI.Blazor.Primitives.AccordionTrigger class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
+                    <AccordionItemPrimitive Value="item-3" class="border-b last:border-0">
+                        <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
                             Can it be animated?
-                        </NeoUI.Blazor.Primitives.AccordionTrigger>
-                        <NeoUI.Blazor.Primitives.AccordionContent class="p-4 pt-0">
+                        </AccordionTriggerPrimitive>
+                        <AccordionContentPrimitive class="p-4 pt-0">
                             Yes! You can animate the open/close transition using CSS or JavaScript.
-                        </NeoUI.Blazor.Primitives.AccordionContent>
-                    </NeoUI.Blazor.Primitives.AccordionItem>
-                </NeoUI.Blazor.Primitives.Accordion>
+                        </AccordionContentPrimitive>
+                    </AccordionItemPrimitive>
+                </AccordionPrimitive>
             </div>
         </section>
 
@@ -81,53 +81,53 @@
                 </p>
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
-                    <NeoUI.Blazor.Primitives.Accordion @bind-Value="controlledValue" Type="AccordionType.Single" Collapsible="true" class="border rounded">
-                        <NeoUI.Blazor.Primitives.AccordionItem Value="controlled-1" class="border-b last:border-0">
-                            <NeoUI.Blazor.Primitives.AccordionTrigger class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
+                    <AccordionPrimitive @bind-Value="controlledValue" Type="AccordionType.Single" CollapsiblePrimitive="true" class="border rounded">
+                        <AccordionItemPrimitive Value="controlled-1" class="border-b last:border-0">
+                            <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
                                 Controlled Item 1
-                            </NeoUI.Blazor.Primitives.AccordionTrigger>
-                            <NeoUI.Blazor.Primitives.AccordionContent class="p-4 pt-0">
+                            </AccordionTriggerPrimitive>
+                            <AccordionContentPrimitive class="p-4 pt-0">
                                 This item's state is controlled externally.
-                            </NeoUI.Blazor.Primitives.AccordionContent>
-                        </NeoUI.Blazor.Primitives.AccordionItem>
+                            </AccordionContentPrimitive>
+                        </AccordionItemPrimitive>
 
-                        <NeoUI.Blazor.Primitives.AccordionItem Value="controlled-2" class="border-b last:border-0">
-                            <NeoUI.Blazor.Primitives.AccordionTrigger class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
+                        <AccordionItemPrimitive Value="controlled-2" class="border-b last:border-0">
+                            <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
                                 Controlled Item 2
-                            </NeoUI.Blazor.Primitives.AccordionTrigger>
-                            <NeoUI.Blazor.Primitives.AccordionContent class="p-4 pt-0">
+                            </AccordionTriggerPrimitive>
+                            <AccordionContentPrimitive class="p-4 pt-0">
                                 Use the buttons above to control which item is open.
-                            </NeoUI.Blazor.Primitives.AccordionContent>
-                        </NeoUI.Blazor.Primitives.AccordionItem>
-                    </NeoUI.Blazor.Primitives.Accordion>
+                            </AccordionContentPrimitive>
+                        </AccordionItemPrimitive>
+                    </AccordionPrimitive>
                 </div>
             </div>
         </section>
 
         <section class="space-y-4">
             <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Single Mode (Collapsible)</h2>
+                <h2 class="text-2xl font-semibold">Single Mode (CollapsiblePrimitive)</h2>
                 <p class="text-muted-foreground">
                     In single mode with collapsible enabled, clicking an open item closes it, leaving all items closed.
                 </p>
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <NeoUI.Blazor.Primitives.Accordion Type="AccordionType.Single" Collapsible="true" class="border rounded">
-                    <NeoUI.Blazor.Primitives.AccordionItem Value="item-1" class="border-b last:border-0">
-                        <NeoUI.Blazor.Primitives.AccordionTrigger class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">Item 1</NeoUI.Blazor.Primitives.AccordionTrigger>
-                        <NeoUI.Blazor.Primitives.AccordionContent class="p-4 pt-0">
+                <AccordionPrimitive Type="AccordionType.Single" CollapsiblePrimitive="true" class="border rounded">
+                    <AccordionItemPrimitive Value="item-1" class="border-b last:border-0">
+                        <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">Item 1</AccordionTriggerPrimitive>
+                        <AccordionContentPrimitive class="p-4 pt-0">
                             Content 1 - Click again to collapse.
-                        </NeoUI.Blazor.Primitives.AccordionContent>
-                    </NeoUI.Blazor.Primitives.AccordionItem>
+                        </AccordionContentPrimitive>
+                    </AccordionItemPrimitive>
 
-                    <NeoUI.Blazor.Primitives.AccordionItem Value="item-2" class="border-b last:border-0">
-                        <NeoUI.Blazor.Primitives.AccordionTrigger class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">Item 2</NeoUI.Blazor.Primitives.AccordionTrigger>
-                        <NeoUI.Blazor.Primitives.AccordionContent class="p-4 pt-0">
+                    <AccordionItemPrimitive Value="item-2" class="border-b last:border-0">
+                        <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">Item 2</AccordionTriggerPrimitive>
+                        <AccordionContentPrimitive class="p-4 pt-0">
                             Content 2 - Click again to collapse.
-                        </NeoUI.Blazor.Primitives.AccordionContent>
-                    </NeoUI.Blazor.Primitives.AccordionItem>
-                </NeoUI.Blazor.Primitives.Accordion>
+                        </AccordionContentPrimitive>
+                    </AccordionItemPrimitive>
+                </AccordionPrimitive>
             </div>
         </section>
 
@@ -140,28 +140,28 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <NeoUI.Blazor.Primitives.Accordion Type="AccordionType.Multiple" class="border rounded" DefaultValue="@(new HashSet<string> { "multiple-1" })">
-                    <NeoUI.Blazor.Primitives.AccordionItem Value="multiple-1" class="border-b last:border-0">
-                        <NeoUI.Blazor.Primitives.AccordionTrigger class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">First Section</NeoUI.Blazor.Primitives.AccordionTrigger>
-                        <NeoUI.Blazor.Primitives.AccordionContent class="p-4 pt-0">
+                <AccordionPrimitive Type="AccordionType.Multiple" class="border rounded" DefaultValue="@(new HashSet<string> { "multiple-1" })">
+                    <AccordionItemPrimitive Value="multiple-1" class="border-b last:border-0">
+                        <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">First Section</AccordionTriggerPrimitive>
+                        <AccordionContentPrimitive class="p-4 pt-0">
                             This can be open alongside other sections.
-                        </NeoUI.Blazor.Primitives.AccordionContent>
-                    </NeoUI.Blazor.Primitives.AccordionItem>
+                        </AccordionContentPrimitive>
+                    </AccordionItemPrimitive>
 
-                    <NeoUI.Blazor.Primitives.AccordionItem Value="multiple-2" class="border-b last:border-0">
-                        <NeoUI.Blazor.Primitives.AccordionTrigger class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">Second Section</NeoUI.Blazor.Primitives.AccordionTrigger>
-                        <NeoUI.Blazor.Primitives.AccordionContent class="p-4 pt-0">
+                    <AccordionItemPrimitive Value="multiple-2" class="border-b last:border-0">
+                        <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">Second Section</AccordionTriggerPrimitive>
+                        <AccordionContentPrimitive class="p-4 pt-0">
                             Open both sections at once to see them together.
-                        </NeoUI.Blazor.Primitives.AccordionContent>
-                    </NeoUI.Blazor.Primitives.AccordionItem>
+                        </AccordionContentPrimitive>
+                    </AccordionItemPrimitive>
 
-                    <NeoUI.Blazor.Primitives.AccordionItem Value="multiple-3" class="border-b last:border-0">
-                        <NeoUI.Blazor.Primitives.AccordionTrigger class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">Third Section</NeoUI.Blazor.Primitives.AccordionTrigger>
-                        <NeoUI.Blazor.Primitives.AccordionContent class="p-4 pt-0">
+                    <AccordionItemPrimitive Value="multiple-3" class="border-b last:border-0">
+                        <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">Third Section</AccordionTriggerPrimitive>
+                        <AccordionContentPrimitive class="p-4 pt-0">
                             All three can be open simultaneously in multiple mode.
-                        </NeoUI.Blazor.Primitives.AccordionContent>
-                    </NeoUI.Blazor.Primitives.AccordionItem>
-                </NeoUI.Blazor.Primitives.Accordion>
+                        </AccordionContentPrimitive>
+                    </AccordionItemPrimitive>
+                </AccordionPrimitive>
             </div>
         </section>
 
@@ -245,7 +245,7 @@
 
             <div class="space-y-4">
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">Accordion</h3>
+                    <h3 class="font-semibold mb-3">AccordionPrimitive</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">Type</code>
@@ -256,7 +256,7 @@
                             </p>
                         </div>
                         <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Collapsible</code>
+                            <code class="text-xs bg-muted px-1 py-0.5 rounded">CollapsiblePrimitive</code>
                             <p class="text-muted-foreground mt-1">
                                 <strong>Type:</strong> <code>bool</code><br/>
                                 <strong>Default:</strong> <code>false</code><br/>
@@ -281,7 +281,7 @@
                 </div>
 
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">AccordionItem</h3>
+                    <h3 class="font-semibold mb-3">AccordionItemPrimitive</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">Value</code>
@@ -302,7 +302,7 @@
                 </div>
 
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">AccordionTrigger</h3>
+                    <h3 class="font-semibold mb-3">AccordionTriggerPrimitive</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">ChildContent</code>
@@ -315,7 +315,7 @@
                 </div>
 
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">AccordionContent</h3>
+                    <h3 class="font-semibold mb-3">AccordionContentPrimitive</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">ChildContent</code>

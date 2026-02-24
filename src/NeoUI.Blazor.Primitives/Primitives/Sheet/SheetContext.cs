@@ -1,7 +1,7 @@
 namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// State for the Sheet primitive context.
+/// State for the SheetPrimitive primitive context.
 /// </summary>
 public class SheetState
 {
@@ -28,28 +28,28 @@ public class SheetState
 public enum SheetSide
 {
     /// <summary>
-    /// Sheet slides in from the top edge.
+    /// SheetPrimitive slides in from the top edge.
     /// </summary>
     Top,
 
     /// <summary>
-    /// Sheet slides in from the right edge (default).
+    /// SheetPrimitive slides in from the right edge (default).
     /// </summary>
     Right,
 
     /// <summary>
-    /// Sheet slides in from the bottom edge.
+    /// SheetPrimitive slides in from the bottom edge.
     /// </summary>
     Bottom,
 
     /// <summary>
-    /// Sheet slides in from the left edge.
+    /// SheetPrimitive slides in from the left edge.
     /// </summary>
     Left
 }
 
 /// <summary>
-/// Context for Sheet primitive component and its children.
+/// Context for SheetPrimitive primitive component and its children.
 /// Manages sheet state and provides IDs for ARIA attributes.
 /// </summary>
 public class SheetContext : PrimitiveContextWithEvents<SheetState>

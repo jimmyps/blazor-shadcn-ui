@@ -1,19 +1,18 @@
 @namespace NeoUI.Blazor
-@using NeoUI.Blazor.Primitives
 @*
     Styled Tabs component wrapper.
     Wraps the Tabs primitive with shadcn/ui styling.
 *@
 
 <div class="@Class" @attributes="AdditionalAttributes">
-    <NeoUI.Blazor.Primitives.Tabs Value="@Value"
+    <TabsPrimitive Value="@Value"
                                    ValueChanged="@ValueChanged"
                                    DefaultValue="@DefaultValue"
                                    OnValueChange="@OnValueChange"
                                    Orientation="@Orientation"
                                    ActivationMode="@ActivationMode">
         @ChildContent
-    </NeoUI.Blazor.Primitives.Tabs>
+    </TabsPrimitive>
 </div>
 
 @code {

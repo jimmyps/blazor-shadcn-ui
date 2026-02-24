@@ -1,11 +1,11 @@
 @namespace NeoUI.Blazor
 @* Styled MenubarItem - wrapper with shadcn Tailwind classes *@
-<NeoUI.Blazor.Primitives.MenubarItem class="@CssClass"
+<MenubarItemPrimitive class="@CssClass"
                                           Disabled="@Disabled"
                                           OnClick="@OnClick"
                                           CloseOnSelect="@CloseOnSelect">
     @ChildContent
-</NeoUI.Blazor.Primitives.MenubarItem>
+</MenubarItemPrimitive>
 
 @code {
     /// <summary>

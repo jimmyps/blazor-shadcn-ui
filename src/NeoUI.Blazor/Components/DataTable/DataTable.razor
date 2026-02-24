@@ -42,7 +42,7 @@
             }
             else
             {
-                <NeoUI.Blazor.Primitives.Table TData="TData"
+                <TablePrimitive TData="TData"
                                                  Data="@_processedData"
                                                  @bind-State="@_tableState"
                                                  SelectionMode="@GetPrimitiveSelectionMode()"
@@ -52,11 +52,11 @@
                                                  OnSelectionChange="HandleSelectionChange"
                                                  Class="@TableCssClass"
                                                  AriaLabel="@AriaLabel">
-                    <NeoUI.Blazor.Primitives.TableHeader>
-                        <NeoUI.Blazor.Primitives.TableRow TData="TData" Class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                    <TableHeaderPrimitive>
+                        <TableRowPrimitive TData="TData" Class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                             @if (SelectionMode == DataTableSelectionMode.Multiple)
                             {
-                                <NeoUI.Blazor.Primitives.TableHeaderCell TData="TData" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-12" role="columnheader">
+                                <TableHeaderCellPrimitive TData="TData" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-12" role="columnheader">
                                     <div @onclick:stopPropagation="true">
                                         @if (ShouldShowSelectAllPrompt())
                                         {
@@ -92,12 +92,12 @@
                                                       AriaLabel="Select all rows" />
                                         }
                                     </div>
-                                </NeoUI.Blazor.Primitives.TableHeaderCell>
+                                </TableHeaderCellPrimitive>
                             }
                             @foreach (var column in _columns.Where(c => c.Visible))
                             {
                                 var ariaSortValue = column.Sortable && _tableState.Sorting.SortedColumn == column.Id
-                                    ? (_tableState.Sorting.Direction == NeoUI.Blazor.Primitives.SortDirection.Ascending ? "ascending" : "descending")
+                                    ? (_tableState.Sorting.Direction == SortDirection.Ascending ? "ascending" : "descending")
                                     : (column.Sortable ? "none" : null);
                                 
                                 var alignmentClass = column.Alignment switch
@@ -114,7 +114,7 @@
                                     _ => ""
                                 };
 
-                                <NeoUI.Blazor.Primitives.TableHeaderCell TData="TData" ColumnId="@(column.Sortable ? column.Id : null)"
+                                <TableHeaderCellPrimitive TData="TData" ColumnId="@(column.Sortable ? column.Id : null)"
                                                  Class="@ClassNames.cn("h-12 px-4 align-middle font-medium text-muted-foreground", alignmentClass, column.Sortable ? "cursor-pointer select-none" : "", column.HeaderClass)"
                                                  style="@GetColumnWidthStyle(column)"
                                                  aria-sort="@ariaSortValue">
@@ -122,13 +122,13 @@
                                         <span>@column.Header</span>
                                         @if (column.Sortable && _tableState.Sorting.SortedColumn == column.Id)
                                         {
-                                            @if (_tableState.Sorting.Direction == NeoUI.Blazor.Primitives.SortDirection.Ascending)
+                                            @if (_tableState.Sorting.Direction == SortDirection.Ascending)
                                             {
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
                                                 </svg>
                                             }
-                                            else if (_tableState.Sorting.Direction == NeoUI.Blazor.Primitives.SortDirection.Descending)
+                                            else if (_tableState.Sorting.Direction == SortDirection.Descending)
                                             {
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -142,24 +142,24 @@
                                             </svg>
                                         }
                                     </div>
-                                </NeoUI.Blazor.Primitives.TableHeaderCell>
+                                </TableHeaderCellPrimitive>
                             }
-                        </NeoUI.Blazor.Primitives.TableRow>
-                    </NeoUI.Blazor.Primitives.TableHeader>
-                    <NeoUI.Blazor.Primitives.TableBody>
+                        </TableRowPrimitive>
+                    </TableHeaderPrimitive>
+                    <TableBodyPrimitive>
                         @foreach (var item in _processedData)
                         {
                             var isSelected = _tableState.Selection.IsSelected(item);
-                            <NeoUI.Blazor.Primitives.TableRow TData="TData" Item="@item" Class="@ClassNames.cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted", isSelected ? "bg-muted" : "")">
+                            <TableRowPrimitive TData="TData" Item="@item" Class="@ClassNames.cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted", isSelected ? "bg-muted" : "")">
                                 @if (SelectionMode == DataTableSelectionMode.Multiple)
                                 {
-                                    <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle w-12" role="gridcell">
+                                    <TableCellPrimitive Class="p-4 align-middle w-12" role="gridcell">
                                         <div @onclick:stopPropagation="true">
                                             <Checkbox Checked="@isSelected"
                                                       CheckedChanged="@(async (bool isChecked) => await HandleRowSelectionChanged(item, isChecked))"
                                                       AriaLabel="@($"Select this row")" />
                                         </div>
-                                    </NeoUI.Blazor.Primitives.TableCell>
+                                    </TableCellPrimitive>
                                 }
                                 @foreach (var column in _columns.Where(c => c.Visible))
                                 {
@@ -170,7 +170,7 @@
                                         _ => "text-left"
                                     };
                                     
-                                    <NeoUI.Blazor.Primitives.TableCell Class="@ClassNames.cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", cellAlignmentClass, column.CellClass)">
+                                    <TableCellPrimitive Class="@ClassNames.cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", cellAlignmentClass, column.CellClass)">
                                         @if (column.CellTemplate != null)
                                         {
                                             @column.CellTemplate(item)
@@ -180,12 +180,12 @@
                                             var value = column.Property(item);
                                             @(value?.ToString() ?? "")
                                         }
-                                    </NeoUI.Blazor.Primitives.TableCell>
+                                    </TableCellPrimitive>
                                 }
-                            </NeoUI.Blazor.Primitives.TableRow>
+                            </TableRowPrimitive>
                         }
-                    </NeoUI.Blazor.Primitives.TableBody>
-                </NeoUI.Blazor.Primitives.Table>
+                    </TableBodyPrimitive>
+                </TablePrimitive>
             }
         </div>
 

@@ -1,12 +1,12 @@
 namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// Context class for sharing state between RadioGroup and RadioGroupItem components.
+/// Context class for sharing state between RadioGroupPrimitive and RadioGroupItemPrimitive components.
 /// </summary>
 /// <typeparam name="TValue">The type of the value associated with radio group items.</typeparam>
 /// <remarks>
-/// This context is provided via Blazor's CascadingValue mechanism from the RadioGroup
-/// to its child RadioGroupItem components.
+/// This context is provided via Blazor's CascadingValue mechanism from the RadioGroupPrimitive
+/// to its child RadioGroupItemPrimitive components.
 /// </remarks>
 public class RadioGroupContext<TValue>
 {
@@ -41,5 +41,5 @@ public class RadioGroupContext<TValue>
     /// <summary>
     /// Gets or sets the list of registered radio group items.
     /// </summary>
-    public List<RadioGroupItem<TValue>> Items { get; set; } = new();
+    public List<RadioGroupItemPrimitive<TValue>> Items { get; set; } = new();
 }

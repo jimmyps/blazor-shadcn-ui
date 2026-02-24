@@ -1,13 +1,13 @@
 @namespace NeoUI.Blazor
 @* Styled DropdownMenuTrigger - passthrough wrapper without layout interference *@
-<NeoUI.Blazor.Primitives.DropdownMenuTrigger class="@Class"
+<DropdownMenuTriggerPrimitive class="@Class"
                                                             AsChild="@AsChild"
                                                             Disabled="@Disabled"
                                                             OnClick="@OnClick"
                                                             CustomClickHandling="@CustomClickHandling"
                                                             @attributes="AdditionalAttributes">
     @ChildContent
-</NeoUI.Blazor.Primitives.DropdownMenuTrigger>
+</DropdownMenuTriggerPrimitive>
 
 @code {
     /// <summary>

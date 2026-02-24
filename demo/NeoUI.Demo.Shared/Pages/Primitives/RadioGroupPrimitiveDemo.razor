@@ -19,18 +19,18 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <NeoUI.Blazor.Primitives.RadioGroup @bind-Value="basicValue" AriaLabel="Basic radio group">
+                <RadioGroupPrimitive @bind-Value="basicValue" AriaLabel="Basic radio group">
                     @foreach (var option in new[] { "Option 1", "Option 2", "Option 3" })
                     {
                         <div class="flex items-center gap-3 mb-2">
-                            <NeoUI.Blazor.Primitives.RadioGroupItem Value="@option" Id="@($"basic-{option}")"
+                            <RadioGroupItemPrimitive Value="@option" Id="@($"basic-{option}")"
                                                      class="h-4 w-4 rounded-full border-2 border-input cursor-pointer data-[state=checked]:border-primary data-[state=checked]:bg-primary flex items-center justify-center">
                                 <span class="h-2 w-2 rounded-full bg-background data-[state=unchecked]:scale-0 transition-transform" data-state="@(basicValue == option ? "checked" : "unchecked")"></span>
-                            </NeoUI.Blazor.Primitives.RadioGroupItem>
+                            </RadioGroupItemPrimitive>
                             <label for="@($"basic-{option}")" class="cursor-pointer">@option</label>
                         </div>
                     }
-                </NeoUI.Blazor.Primitives.RadioGroup>
+                </RadioGroupPrimitive>
                 <p class="text-sm text-muted-foreground mt-3">Selected: @(basicValue ?? "None")</p>
                 <p class="text-xs text-muted-foreground mt-1">Try using arrow keys ↑↓ to navigate!</p>
             </div>
@@ -47,29 +47,29 @@
             <div class="space-y-4">
                 <div class="flex gap-2">
                     <button @onclick='@(() => controlledValue = "Small")' class="px-3 py-2 border rounded text-sm">
-                        Select Small
+                        SelectPrimitive Small
                     </button>
                     <button @onclick='@(() => controlledValue = "Medium")' class="px-3 py-2 border rounded text-sm">
-                        Select Medium
+                        SelectPrimitive Medium
                     </button>
                     <button @onclick='@(() => controlledValue = "Large")' class="px-3 py-2 border rounded text-sm">
-                        Select Large
+                        SelectPrimitive Large
                     </button>
                 </div>
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
-                    <NeoUI.Blazor.Primitives.RadioGroup @bind-Value="controlledValue" AriaLabel="Size selection">
+                    <RadioGroupPrimitive @bind-Value="controlledValue" AriaLabel="Size selection">
                         @foreach (var size in new[] { "Small", "Medium", "Large" })
                         {
                             <div class="flex items-center gap-3 mb-2">
-                                <NeoUI.Blazor.Primitives.RadioGroupItem Value="@size" Id="@($"size-{size}")"
+                                <RadioGroupItemPrimitive Value="@size" Id="@($"size-{size}")"
                                                          class="h-4 w-4 rounded-full border-2 border-input cursor-pointer data-[state=checked]:border-primary data-[state=checked]:bg-primary flex items-center justify-center">
                                     <span class="h-2 w-2 rounded-full bg-background data-[state=unchecked]:scale-0 transition-transform" data-state="@(controlledValue == size ? "checked" : "unchecked")"></span>
-                                </NeoUI.Blazor.Primitives.RadioGroupItem>
+                                </RadioGroupItemPrimitive>
                                 <label for="@($"size-{size}")" class="cursor-pointer">@size</label>
                             </div>
                         }
-                    </NeoUI.Blazor.Primitives.RadioGroup>
+                    </RadioGroupPrimitive>
                     <p class="text-sm text-muted-foreground mt-3">Selected size: @(controlledValue ?? "None")</p>
                 </div>
             </div>
@@ -84,18 +84,18 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <NeoUI.Blazor.Primitives.RadioGroup @bind-Value="navValue" AriaLabel="Navigation demo" class="space-y-2">
+                <RadioGroupPrimitive @bind-Value="navValue" AriaLabel="Navigation demo" class="space-y-2">
                     @foreach (var direction in new[] { "North", "East", "South", "West" })
                     {
                         <div class="flex items-center gap-3">
-                            <NeoUI.Blazor.Primitives.RadioGroupItem Value="@direction" Id="@($"nav-{direction}")"
+                            <RadioGroupItemPrimitive Value="@direction" Id="@($"nav-{direction}")"
                                                      class="h-4 w-4 rounded-full border-2 border-input cursor-pointer data-[state=checked]:border-primary data-[state=checked]:bg-primary flex items-center justify-center focus-visible:ring-2 focus-visible:ring-ring">
                                 <span class="h-2 w-2 rounded-full bg-background data-[state=unchecked]:scale-0 transition-transform" data-state="@(navValue == direction ? "checked" : "unchecked")"></span>
-                            </NeoUI.Blazor.Primitives.RadioGroupItem>
+                            </RadioGroupItemPrimitive>
                             <label for="@($"nav-{direction}")" class="cursor-pointer">@direction</label>
                         </div>
                     }
-                </NeoUI.Blazor.Primitives.RadioGroup>
+                </RadioGroupPrimitive>
                 <p class="text-sm text-muted-foreground mt-3">Click an option, then use ↑↓ or ←→ arrow keys to navigate</p>
             </div>
         </section>
@@ -111,18 +111,18 @@
             <div class="rounded-lg border bg-card p-6 max-w-md space-y-4">
                 <div>
                     <h3 class="text-sm font-semibold mb-2">Disabled Group:</h3>
-                    <NeoUI.Blazor.Primitives.RadioGroup Value="@disabledValue" Disabled="true" AriaLabel="Disabled group" class="space-y-2 opacity-50">
+                    <RadioGroupPrimitive Value="@disabledValue" Disabled="true" AriaLabel="Disabled group" class="space-y-2 opacity-50">
                         @foreach (var opt in new[] { "Option A", "Option B" })
                         {
                             <div class="flex items-center gap-3">
-                                <NeoUI.Blazor.Primitives.RadioGroupItem Value="@opt" Id="@($"disabled-{opt}")"
+                                <RadioGroupItemPrimitive Value="@opt" Id="@($"disabled-{opt}")"
                                                          class="h-4 w-4 rounded-full border-2 border-input flex items-center justify-center cursor-not-allowed">
                                     <span class="h-2 w-2 rounded-full bg-muted"></span>
-                                </NeoUI.Blazor.Primitives.RadioGroupItem>
+                                </RadioGroupItemPrimitive>
                                 <label for="@($"disabled-{opt}")" class="cursor-not-allowed">@opt</label>
                             </div>
                         }
-                    </NeoUI.Blazor.Primitives.RadioGroup>
+                    </RadioGroupPrimitive>
                 </div>
             </div>
         </section>
@@ -177,7 +177,7 @@
                     <Kbd>Arrow Keys</Kbd>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium">Select option</span>
+                    <span class="text-sm font-medium">SelectPrimitive option</span>
                     <Kbd>Space / Enter</Kbd>
                 </div>
                 <div class="flex items-center justify-between">
@@ -197,7 +197,7 @@
 
             <div class="space-y-4">
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">RadioGroup&lt;TValue&gt;</h3>
+                    <h3 class="font-semibold mb-3">RadioGroupPrimitive&lt;TValue&gt;</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">Value</code>
@@ -235,7 +235,7 @@
                 </div>
 
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">RadioGroupItem&lt;TValue&gt;</h3>
+                    <h3 class="font-semibold mb-3">RadioGroupItemPrimitive&lt;TValue&gt;</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">Value</code>

@@ -4,14 +4,14 @@
     Wraps the HoverCard primitive with shadcn/ui styling.
 *@
 
-<NeoUI.Blazor.Primitives.HoverCard Open="@Open"
+<HoverCardPrimitive Open="@Open"
                                               OpenChanged="@OpenChanged"
                                               DefaultOpen="@DefaultOpen"
                                               OnOpenChange="@OnOpenChange"
                                               OpenDelay="@OpenDelay"
                                               CloseDelay="@CloseDelay">
     @ChildContent
-</NeoUI.Blazor.Primitives.HoverCard>
+</HoverCardPrimitive>
 
 @code {
     /// <summary>

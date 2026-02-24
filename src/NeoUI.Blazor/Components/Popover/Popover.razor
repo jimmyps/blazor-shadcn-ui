@@ -4,13 +4,13 @@
     Wraps the Popover primitive with shadcn/ui styling.
 *@
 
-<NeoUI.Blazor.Primitives.Popover Open="@Open"
+<PopoverPrimitive Open="@Open"
                                            OpenChanged="@OpenChanged"
                                            DefaultOpen="@DefaultOpen"
                                            OnOpenChange="@OnOpenChange"
                                            Modal="@Modal">
     @ChildContent
-</NeoUI.Blazor.Primitives.Popover>
+</PopoverPrimitive>
 
 @code {
     /// <summary>

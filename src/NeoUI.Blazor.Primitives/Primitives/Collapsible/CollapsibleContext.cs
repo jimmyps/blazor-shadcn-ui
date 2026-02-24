@@ -1,13 +1,13 @@
 namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// Provides context state for a Collapsible component and its sub-components.
+/// Provides context state for a CollapsiblePrimitive component and its sub-components.
 /// </summary>
 /// <remarks>
 /// <para>
-/// CollapsibleContext is used internally by the Collapsible primitive system to coordinate
-/// state between the container (Collapsible), trigger (CollapsibleTrigger), and content
-/// (CollapsibleContent) components via Blazor's CascadingValue mechanism.
+/// CollapsibleContext is used internally by the CollapsiblePrimitive primitive system to coordinate
+/// state between the container (CollapsiblePrimitive), trigger (CollapsibleTriggerPrimitive), and content
+/// (CollapsibleContentPrimitive) components via Blazor's CascadingValue mechanism.
 /// </para>
 /// <para>
 /// This context pattern enables:

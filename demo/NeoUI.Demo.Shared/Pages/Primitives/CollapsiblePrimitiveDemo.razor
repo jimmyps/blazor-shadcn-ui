@@ -26,16 +26,16 @@
                 <div class="space-y-3 p-4 border rounded-lg">
                     <h3 class="text-lg font-medium">Without AsChild</h3>
                     <p class="text-sm text-muted-foreground">
-                        CollapsibleTrigger renders its own button element.
+                        CollapsibleTriggerPrimitive renders its own button element.
                     </p>
-                    <NeoUI.Blazor.Primitives.Collapsible>
-                        <NeoUI.Blazor.Primitives.CollapsibleTrigger class="h-9 px-3 py-2 border rounded text-sm cursor-pointer">
+                    <CollapsiblePrimitive>
+                        <CollapsibleTriggerPrimitive class="h-9 px-3 py-2 border rounded text-sm cursor-pointer">
                             Click to toggle
-                        </NeoUI.Blazor.Primitives.CollapsibleTrigger>
-                        <NeoUI.Blazor.Primitives.CollapsibleContent class="mt-2">
+                        </CollapsibleTriggerPrimitive>
+                        <CollapsibleContentPrimitive class="mt-2">
                             Without AsChild - content controlled by the primitive.
-                        </NeoUI.Blazor.Primitives.CollapsibleContent>
-                    </NeoUI.Blazor.Primitives.Collapsible>
+                        </CollapsibleContentPrimitive>
+                    </CollapsiblePrimitive>
                 </div>
 
                 <!-- With AsChild -->
@@ -44,17 +44,17 @@
                     <p class="text-sm text-muted-foreground">
                         Button receives click behavior via TriggerContext.
                     </p>
-                    <NeoUI.Blazor.Primitives.Collapsible>
-                        <NeoUI.Blazor.Primitives.CollapsibleTrigger AsChild>
+                    <CollapsiblePrimitive>
+                        <CollapsibleTriggerPrimitive AsChild>
                             <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small">
                                 Click to toggle
                                 <LucideIcon Name="chevron-down" Size="16" Class="ml-2" />
                             </Button>
-                        </NeoUI.Blazor.Primitives.CollapsibleTrigger>
-                        <NeoUI.Blazor.Primitives.CollapsibleContent class="mt-2">
+                        </CollapsibleTriggerPrimitive>
+                        <CollapsibleContentPrimitive class="mt-2">
                             With AsChild - Button handles the trigger behavior.
-                        </NeoUI.Blazor.Primitives.CollapsibleContent>
-                    </NeoUI.Blazor.Primitives.Collapsible>
+                        </CollapsibleContentPrimitive>
+                    </CollapsiblePrimitive>
                 </div>
             </div>
         </section>
@@ -68,14 +68,14 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <NeoUI.Blazor.Primitives.Collapsible>
-                    <NeoUI.Blazor.Primitives.CollapsibleTrigger class="cursor-pointer">
+                <CollapsiblePrimitive>
+                    <CollapsibleTriggerPrimitive class="cursor-pointer">
                         Click to toggle (unstyled primitive)
-                    </NeoUI.Blazor.Primitives.CollapsibleTrigger>
-                    <NeoUI.Blazor.Primitives.CollapsibleContent class="mt-2">
+                    </CollapsibleTriggerPrimitive>
+                    <CollapsibleContentPrimitive class="mt-2">
                         This content is controlled by the headless primitive. Style it however you want!
-                    </NeoUI.Blazor.Primitives.CollapsibleContent>
-                </NeoUI.Blazor.Primitives.Collapsible>
+                    </CollapsibleContentPrimitive>
+                </CollapsiblePrimitive>
             </div>
         </section>
 
@@ -100,14 +100,14 @@
                 </div>
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
-                    <NeoUI.Blazor.Primitives.Collapsible @bind-Open="isPrimitiveOpen">
-                        <NeoUI.Blazor.Primitives.CollapsibleTrigger class="cursor-pointer">
+                    <CollapsiblePrimitive @bind-Open="isPrimitiveOpen">
+                        <CollapsibleTriggerPrimitive class="cursor-pointer">
                             Controlled Primitive (State: @(isPrimitiveOpen ? "Open" : "Closed"))
-                        </NeoUI.Blazor.Primitives.CollapsibleTrigger>
-                        <NeoUI.Blazor.Primitives.CollapsibleContent class="mt-2">
+                        </CollapsibleTriggerPrimitive>
+                        <CollapsibleContentPrimitive class="mt-2">
                             External buttons control this primitive's state.
-                        </NeoUI.Blazor.Primitives.CollapsibleContent>
-                    </NeoUI.Blazor.Primitives.Collapsible>
+                        </CollapsibleContentPrimitive>
+                    </CollapsiblePrimitive>
                 </div>
             </div>
         </section>
@@ -184,7 +184,7 @@
 
             <div class="space-y-4">
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">Collapsible</h3>
+                    <h3 class="font-semibold mb-3">CollapsiblePrimitive</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">Open</code>
@@ -213,7 +213,7 @@
                 </div>
 
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">CollapsibleTrigger</h3>
+                    <h3 class="font-semibold mb-3">CollapsibleTriggerPrimitive</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">ChildContent</code>
@@ -226,7 +226,7 @@
                 </div>
 
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">CollapsibleContent</h3>
+                    <h3 class="font-semibold mb-3">CollapsibleContentPrimitive</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">ChildContent</code>

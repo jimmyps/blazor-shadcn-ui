@@ -1,7 +1,7 @@
 namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// Context for Table primitive component and its children.
+/// Context for TablePrimitive primitive component and its children.
 /// Manages table state, column definitions, data processing, and event coordination.
 /// </summary>
 /// <typeparam name="TData">The type of data items in the table.</typeparam>

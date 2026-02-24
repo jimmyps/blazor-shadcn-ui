@@ -4,13 +4,13 @@
     Wraps the Dialog primitive with shadcn/ui styling.
 *@
 
-<NeoUI.Blazor.Primitives.Dialog Open="@Open"
+<DialogPrimitive Open="@Open"
                                          OpenChanged="@OpenChanged"
                                          DefaultOpen="@DefaultOpen"
                                          OnOpenChange="@OnOpenChange"
                                          Modal="@Modal">
     @ChildContent
-</NeoUI.Blazor.Primitives.Dialog>
+</DialogPrimitive>
 
 @code {
     /// <summary>

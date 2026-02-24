@@ -45,7 +45,7 @@ public enum RadioGroupItemVariant
 /// </example>
 public partial class RadioGroupItem<TValue> : ComponentBase
 {
-    private NeoUI.Blazor.Primitives.RadioGroupItem<TValue>? primitiveRef;
+    private RadioGroupItemPrimitive<TValue>? primitiveRef;
 
     /// <summary>
     /// Gets or sets the cascaded RadioGroup context from the parent.

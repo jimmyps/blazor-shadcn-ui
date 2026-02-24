@@ -1,11 +1,11 @@
 @namespace NeoUI.Blazor
 @* NavigationMenuContent - styled content panel *@
-<NeoUI.Blazor.Primitives.NavigationMenuContent 
+<NavigationMenuContentPrimitive 
     ForceMount="@ForceMount"
     class="@GetClass()" 
     @attributes="AdditionalAttributes">
     @ChildContent
-</NeoUI.Blazor.Primitives.NavigationMenuContent>
+</NavigationMenuContentPrimitive>
 
 @code {
     /// <summary>

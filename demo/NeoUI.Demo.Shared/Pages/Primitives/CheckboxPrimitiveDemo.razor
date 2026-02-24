@@ -22,14 +22,14 @@
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
                 <div class="flex items-center gap-3">
-                    <NeoUI.Blazor.Primitives.Checkbox @bind-Checked="basicChecked" Id="basic" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center">
+                    <CheckboxPrimitive @bind-Checked="basicChecked" Id="basic" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center">
                         @if (basicChecked)
                         {
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                                 <polyline points="20 6 9 17 4 12"></polyline>
                             </svg>
                         }
-                    </NeoUI.Blazor.Primitives.Checkbox>
+                    </CheckboxPrimitive>
                     <label for="basic">Unstyled primitive checkbox</label>
                 </div>
                 <p class="text-sm text-muted-foreground mt-2">
@@ -60,14 +60,14 @@
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
                     <div class="flex items-center gap-3">
-                        <NeoUI.Blazor.Primitives.Checkbox @bind-Checked="controlledChecked" Id="controlled" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center">
+                        <CheckboxPrimitive @bind-Checked="controlledChecked" Id="controlled" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center">
                             @if (controlledChecked)
                             {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
                             }
-                        </NeoUI.Blazor.Primitives.Checkbox>
+                        </CheckboxPrimitive>
                         <label for="controlled">
                             Controlled Checkbox (State: @(controlledChecked ? "Checked" : "Unchecked"))
                         </label>
@@ -87,7 +87,7 @@
             <div class="rounded-lg border bg-card p-6 max-w-md">
                 <div class="space-y-3">
                     <div class="flex items-center gap-3">
-                        <NeoUI.Blazor.Primitives.Checkbox Checked="@allChecked" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center"
+                        <CheckboxPrimitive Checked="@allChecked" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center"
                                            Indeterminate="@indeterminate"
                                            CheckedChanged="@HandleParentChanged"
                                            Id="parent">
@@ -103,41 +103,41 @@
                                     <line x1="5" y1="12" x2="19" y2="12"></line>
                                 </svg>
                             }
-                        </NeoUI.Blazor.Primitives.Checkbox>
-                        <label for="parent" class="font-medium">Select All</label>
+                        </CheckboxPrimitive>
+                        <label for="parent" class="font-medium">SelectPrimitive All</label>
                     </div>
                     <div class="ml-6 space-y-2">
                         <div class="flex items-center gap-3">
-                            <NeoUI.Blazor.Primitives.Checkbox Checked="@child1" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center" CheckedChanged="@(v => { child1 = v; HandleChildChanged(); })" Id="child1">
+                            <CheckboxPrimitive Checked="@child1" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center" CheckedChanged="@(v => { child1 = v; HandleChildChanged(); })" Id="child1">
                                 @if (child1)
                                 {
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
                                 }
-                            </NeoUI.Blazor.Primitives.Checkbox>
+                            </CheckboxPrimitive>
                             <label for="child1">Option 1</label>
                         </div>
                         <div class="flex items-center gap-3">
-                            <NeoUI.Blazor.Primitives.Checkbox Checked="@child2" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center" CheckedChanged="@(v => { child2 = v; HandleChildChanged(); })" Id="child2">
+                            <CheckboxPrimitive Checked="@child2" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center" CheckedChanged="@(v => { child2 = v; HandleChildChanged(); })" Id="child2">
                                 @if (child2)
                                 {
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
                                 }
-                            </NeoUI.Blazor.Primitives.Checkbox>
+                            </CheckboxPrimitive>
                             <label for="child2">Option 2</label>
                         </div>
                         <div class="flex items-center gap-3">
-                            <NeoUI.Blazor.Primitives.Checkbox Checked="@child3" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center" CheckedChanged="@(v => { child3 = v; HandleChildChanged(); })" Id="child3">
+                            <CheckboxPrimitive Checked="@child3" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center" CheckedChanged="@(v => { child3 = v; HandleChildChanged(); })" Id="child3">
                                 @if (child3)
                                 {
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
                                 }
-                            </NeoUI.Blazor.Primitives.Checkbox>
+                            </CheckboxPrimitive>
                             <label for="child3">Option 3</label>
                         </div>
                     </div>

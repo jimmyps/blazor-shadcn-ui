@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor
 @* Styled MenubarContent - wrapper with shadcn Tailwind classes *@
-<NeoUI.Blazor.Primitives.MenubarContent class="@CssClass"
+<MenubarContentPrimitive class="@CssClass"
                                               CloseOnEscape="@CloseOnEscape"
                                               CloseOnClickOutside="@CloseOnClickOutside"
                                               Side="@Side"
@@ -11,7 +11,7 @@
     <div class="p-1">
         @ChildContent
     </div>
-</NeoUI.Blazor.Primitives.MenubarContent>
+</MenubarContentPrimitive>
 
 @code {
     /// <summary>

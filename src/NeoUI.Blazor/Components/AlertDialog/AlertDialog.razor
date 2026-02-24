@@ -5,13 +5,13 @@
     Use AlertDialogContent to configure dismissal behavior (CloseOnClickOutside, CloseOnEscape).
 *@
 
-<NeoUI.Blazor.Primitives.Dialog Open="@Open"
+<DialogPrimitive Open="@Open"
                                    OpenChanged="@OpenChanged"
                                    DefaultOpen="@DefaultOpen"
                                    OnOpenChange="@OnOpenChange"
                                    Modal="true">
     @ChildContent
-</NeoUI.Blazor.Primitives.Dialog>
+</DialogPrimitive>
 
 @code {
     /// <summary>

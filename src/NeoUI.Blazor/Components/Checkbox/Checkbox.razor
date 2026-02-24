@@ -1,5 +1,5 @@
 @namespace NeoUI.Blazor
-<NeoUI.Blazor.Primitives.Checkbox
+<CheckboxPrimitive
     Id="@Id"
     Checked="@Checked"
     CheckedChanged="@HandleCheckedChanged"
@@ -40,7 +40,7 @@
             <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
     }
-</NeoUI.Blazor.Primitives.Checkbox>
+</CheckboxPrimitive>
 
 @* Hidden input for form submission *@
 @if (!string.IsNullOrEmpty(EffectiveName))

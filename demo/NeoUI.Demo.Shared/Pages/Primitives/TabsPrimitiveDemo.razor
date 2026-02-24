@@ -13,38 +13,38 @@
             A simple tabs implementation with minimal inline styles. Use arrow keys to navigate between tabs.
         </p>
 
-        <NeoUI.Blazor.Primitives.Tabs DefaultValue="tab1">
-            <NeoUI.Blazor.Primitives.TabsList class="flex gap-1 p-1 bg-muted rounded-md w-fit">
-                <NeoUI.Blazor.Primitives.TabsTrigger Value="tab1" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm aria-[selected=true]:bg-background aria-[selected=true]:shadow-sm">
+        <TabsPrimitive DefaultValue="tab1">
+            <TabsListPrimitive class="flex gap-1 p-1 bg-muted rounded-md w-fit">
+                <TabsTriggerPrimitive Value="tab1" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm aria-[selected=true]:bg-background aria-[selected=true]:shadow-sm">
                     Tab 1
-                </NeoUI.Blazor.Primitives.TabsTrigger>
-                <NeoUI.Blazor.Primitives.TabsTrigger Value="tab2" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm aria-[selected=true]:bg-background aria-[selected=true]:shadow-sm">
+                </TabsTriggerPrimitive>
+                <TabsTriggerPrimitive Value="tab2" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm aria-[selected=true]:bg-background aria-[selected=true]:shadow-sm">
                     Tab 2
-                </NeoUI.Blazor.Primitives.TabsTrigger>
-                <NeoUI.Blazor.Primitives.TabsTrigger Value="tab3" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm aria-[selected=true]:bg-background aria-[selected=true]:shadow-sm">
+                </TabsTriggerPrimitive>
+                <TabsTriggerPrimitive Value="tab3" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm aria-[selected=true]:bg-background aria-[selected=true]:shadow-sm">
                     Tab 3
-                </NeoUI.Blazor.Primitives.TabsTrigger>
-            </NeoUI.Blazor.Primitives.TabsList>
+                </TabsTriggerPrimitive>
+            </TabsListPrimitive>
 
-            <NeoUI.Blazor.Primitives.TabsContent Value="tab1" class="p-4 mt-2 border border-border rounded-md">
+            <TabsContentPrimitive Value="tab1" class="p-4 mt-2 border border-border rounded-md">
                 <h3 class="font-semibold mb-2">Tab 1 Content</h3>
                 <p>This is the content for the first tab. Navigate using arrow keys or click to switch tabs.</p>
-            </NeoUI.Blazor.Primitives.TabsContent>
+            </TabsContentPrimitive>
 
-            <NeoUI.Blazor.Primitives.TabsContent Value="tab2" class="p-4 mt-2 border border-border rounded-md">
+            <TabsContentPrimitive Value="tab2" class="p-4 mt-2 border border-border rounded-md">
                 <h3 class="font-semibold mb-2">Tab 2 Content</h3>
                 <p>This is the content for the second tab. The primitive handles all keyboard navigation automatically.</p>
-            </NeoUI.Blazor.Primitives.TabsContent>
+            </TabsContentPrimitive>
 
-            <NeoUI.Blazor.Primitives.TabsContent Value="tab3" class="p-4 mt-2 border border-border rounded-md">
+            <TabsContentPrimitive Value="tab3" class="p-4 mt-2 border border-border rounded-md">
                 <h3 class="font-semibold mb-2">Tab 3 Content</h3>
                 <p>This is the content for the third tab. Press Home/End to jump to first/last tab.</p>
-            </NeoUI.Blazor.Primitives.TabsContent>
-        </NeoUI.Blazor.Primitives.Tabs>
+            </TabsContentPrimitive>
+        </TabsPrimitive>
     </div>
 
     <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Controlled Tabs</h2>
+        <h2 class="text-2xl font-semibold">Controlled TabsPrimitive</h2>
         <p class="text-sm text-muted-foreground">
             Control the active tab from your component code using @@bind-Value.
         </p>
@@ -62,66 +62,66 @@
 
         <p class="text-xs text-muted-foreground">Current tab: <strong>@controlledValue</strong></p>
 
-        <NeoUI.Blazor.Primitives.Tabs @bind-Value="controlledValue">
-            <NeoUI.Blazor.Primitives.TabsList class="flex gap-1 p-1 bg-muted rounded-md w-fit">
-                <NeoUI.Blazor.Primitives.TabsTrigger Value="account" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
+        <TabsPrimitive @bind-Value="controlledValue">
+            <TabsListPrimitive class="flex gap-1 p-1 bg-muted rounded-md w-fit">
+                <TabsTriggerPrimitive Value="account" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
                     Account
-                </NeoUI.Blazor.Primitives.TabsTrigger>
-                <NeoUI.Blazor.Primitives.TabsTrigger Value="password" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                </TabsTriggerPrimitive>
+                <TabsTriggerPrimitive Value="password" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
                     Password
-                </NeoUI.Blazor.Primitives.TabsTrigger>
-            </NeoUI.Blazor.Primitives.TabsList>
+                </TabsTriggerPrimitive>
+            </TabsListPrimitive>
 
-            <NeoUI.Blazor.Primitives.TabsContent Value="account" class="p-4 mt-2 border border-border rounded-md">
+            <TabsContentPrimitive Value="account" class="p-4 mt-2 border border-border rounded-md">
                 <h3 class="font-semibold mb-2">Account Settings</h3>
                 <p>Make changes to your account here.</p>
-            </NeoUI.Blazor.Primitives.TabsContent>
+            </TabsContentPrimitive>
 
-            <NeoUI.Blazor.Primitives.TabsContent Value="password" class="p-4 mt-2 border border-border rounded-md">
+            <TabsContentPrimitive Value="password" class="p-4 mt-2 border border-border rounded-md">
                 <h3 class="font-semibold mb-2">Password Settings</h3>
                 <p>Change your password here.</p>
-            </NeoUI.Blazor.Primitives.TabsContent>
-        </NeoUI.Blazor.Primitives.Tabs>
+            </TabsContentPrimitive>
+        </TabsPrimitive>
     </div>
 
     <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Vertical Tabs</h2>
+        <h2 class="text-2xl font-semibold">Vertical TabsPrimitive</h2>
         <p class="text-sm text-muted-foreground">
-            Tabs can be arranged vertically. Use arrow up/down keys to navigate.
+            TabsPrimitive can be arranged vertically. Use arrow up/down keys to navigate.
         </p>
 
-        <NeoUI.Blazor.Primitives.Tabs DefaultValue="general" Orientation="TabsOrientation.Vertical">
+        <TabsPrimitive DefaultValue="general" Orientation="TabsOrientation.Vertical">
             <div class="flex gap-4">
-                <NeoUI.Blazor.Primitives.TabsList class="flex flex-col gap-1 p-1 bg-muted rounded-md w-[150px]">
-                    <NeoUI.Blazor.Primitives.TabsTrigger Value="general" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm text-left data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                <TabsListPrimitive class="flex flex-col gap-1 p-1 bg-muted rounded-md w-[150px]">
+                    <TabsTriggerPrimitive Value="general" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm text-left data-[state=active]:bg-background data-[state=active]:shadow-sm">
                         General
-                    </NeoUI.Blazor.Primitives.TabsTrigger>
-                    <NeoUI.Blazor.Primitives.TabsTrigger Value="security" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm text-left data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                    </TabsTriggerPrimitive>
+                    <TabsTriggerPrimitive Value="security" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm text-left data-[state=active]:bg-background data-[state=active]:shadow-sm">
                         Security
-                    </NeoUI.Blazor.Primitives.TabsTrigger>
-                    <NeoUI.Blazor.Primitives.TabsTrigger Value="notifications" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm text-left data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                    </TabsTriggerPrimitive>
+                    <TabsTriggerPrimitive Value="notifications" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm text-left data-[state=active]:bg-background data-[state=active]:shadow-sm">
                         Notifications
-                    </NeoUI.Blazor.Primitives.TabsTrigger>
-                </NeoUI.Blazor.Primitives.TabsList>
+                    </TabsTriggerPrimitive>
+                </TabsListPrimitive>
 
                 <div class="flex-1">
-                    <NeoUI.Blazor.Primitives.TabsContent Value="general" class="p-4 border border-border rounded-md">
+                    <TabsContentPrimitive Value="general" class="p-4 border border-border rounded-md">
                         <h3 class="font-semibold mb-2">General Settings</h3>
                         <p>Configure general application settings.</p>
-                    </NeoUI.Blazor.Primitives.TabsContent>
+                    </TabsContentPrimitive>
 
-                    <NeoUI.Blazor.Primitives.TabsContent Value="security" class="p-4 border border-border rounded-md">
+                    <TabsContentPrimitive Value="security" class="p-4 border border-border rounded-md">
                         <h3 class="font-semibold mb-2">Security Settings</h3>
                         <p>Manage your security preferences.</p>
-                    </NeoUI.Blazor.Primitives.TabsContent>
+                    </TabsContentPrimitive>
 
-                    <NeoUI.Blazor.Primitives.TabsContent Value="notifications" class="p-4 border border-border rounded-md">
+                    <TabsContentPrimitive Value="notifications" class="p-4 border border-border rounded-md">
                         <h3 class="font-semibold mb-2">Notification Settings</h3>
                         <p>Control how you receive notifications.</p>
-                    </NeoUI.Blazor.Primitives.TabsContent>
+                    </TabsContentPrimitive>
                 </div>
             </div>
-        </NeoUI.Blazor.Primitives.Tabs>
+        </TabsPrimitive>
     </div>
 
     <div class="space-y-6">
@@ -130,67 +130,67 @@
             In manual mode, tabs must be clicked or activated with Enter/Space. Arrow keys only move focus.
         </p>
 
-        <NeoUI.Blazor.Primitives.Tabs DefaultValue="overview" ActivationMode="TabsActivationMode.Manual">
-            <NeoUI.Blazor.Primitives.TabsList class="flex gap-1 p-1 bg-muted rounded-md w-fit">
-                <NeoUI.Blazor.Primitives.TabsTrigger Value="overview" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
+        <TabsPrimitive DefaultValue="overview" ActivationMode="TabsActivationMode.Manual">
+            <TabsListPrimitive class="flex gap-1 p-1 bg-muted rounded-md w-fit">
+                <TabsTriggerPrimitive Value="overview" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
                     Overview
-                </NeoUI.Blazor.Primitives.TabsTrigger>
-                <NeoUI.Blazor.Primitives.TabsTrigger Value="analytics" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                </TabsTriggerPrimitive>
+                <TabsTriggerPrimitive Value="analytics" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
                     Analytics
-                </NeoUI.Blazor.Primitives.TabsTrigger>
-                <NeoUI.Blazor.Primitives.TabsTrigger Value="reports" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                </TabsTriggerPrimitive>
+                <TabsTriggerPrimitive Value="reports" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
                     Reports
-                </NeoUI.Blazor.Primitives.TabsTrigger>
-            </NeoUI.Blazor.Primitives.TabsList>
+                </TabsTriggerPrimitive>
+            </TabsListPrimitive>
 
-            <NeoUI.Blazor.Primitives.TabsContent Value="overview" class="p-4 mt-2 border border-border rounded-md">
+            <TabsContentPrimitive Value="overview" class="p-4 mt-2 border border-border rounded-md">
                 <h3 class="font-semibold mb-2">Overview</h3>
                 <p>Use arrow keys to move focus, then press Enter or Space to activate a tab.</p>
-            </NeoUI.Blazor.Primitives.TabsContent>
+            </TabsContentPrimitive>
 
-            <NeoUI.Blazor.Primitives.TabsContent Value="analytics" class="p-4 mt-2 border border-border rounded-md">
+            <TabsContentPrimitive Value="analytics" class="p-4 mt-2 border border-border rounded-md">
                 <h3 class="font-semibold mb-2">Analytics</h3>
                 <p>View your analytics data here.</p>
-            </NeoUI.Blazor.Primitives.TabsContent>
+            </TabsContentPrimitive>
 
-            <NeoUI.Blazor.Primitives.TabsContent Value="reports" class="p-4 mt-2 border border-border rounded-md">
+            <TabsContentPrimitive Value="reports" class="p-4 mt-2 border border-border rounded-md">
                 <h3 class="font-semibold mb-2">Reports</h3>
                 <p>Generate and download reports.</p>
-            </NeoUI.Blazor.Primitives.TabsContent>
-        </NeoUI.Blazor.Primitives.Tabs>
+            </TabsContentPrimitive>
+        </TabsPrimitive>
     </div>
 
     <div class="space-y-6">
         <h2 class="text-2xl font-semibold">Disabled Tab</h2>
         <p class="text-sm text-muted-foreground">
-            Tabs can be disabled. Keyboard navigation will skip over disabled tabs.
+            TabsPrimitive can be disabled. Keyboard navigation will skip over disabled tabs.
         </p>
 
-        <NeoUI.Blazor.Primitives.Tabs DefaultValue="enabled1">
-            <NeoUI.Blazor.Primitives.TabsList class="flex gap-1 p-1 bg-muted rounded-md w-fit">
-                <NeoUI.Blazor.Primitives.TabsTrigger Value="enabled1" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
+        <TabsPrimitive DefaultValue="enabled1">
+            <TabsListPrimitive class="flex gap-1 p-1 bg-muted rounded-md w-fit">
+                <TabsTriggerPrimitive Value="enabled1" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
                     Enabled 1
-                </NeoUI.Blazor.Primitives.TabsTrigger>
-                <NeoUI.Blazor.Primitives.TabsTrigger Value="disabled" Disabled="true" class="px-4 py-2 border-none bg-transparent cursor-not-allowed rounded text-sm opacity-50">
+                </TabsTriggerPrimitive>
+                <TabsTriggerPrimitive Value="disabled" Disabled="true" class="px-4 py-2 border-none bg-transparent cursor-not-allowed rounded text-sm opacity-50">
                     Disabled
-                </NeoUI.Blazor.Primitives.TabsTrigger>
-                <NeoUI.Blazor.Primitives.TabsTrigger Value="enabled2" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                </TabsTriggerPrimitive>
+                <TabsTriggerPrimitive Value="enabled2" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
                     Enabled 2
-                </NeoUI.Blazor.Primitives.TabsTrigger>
-            </NeoUI.Blazor.Primitives.TabsList>
+                </TabsTriggerPrimitive>
+            </TabsListPrimitive>
 
-            <NeoUI.Blazor.Primitives.TabsContent Value="enabled1" class="p-4 mt-2 border border-border rounded-md">
+            <TabsContentPrimitive Value="enabled1" class="p-4 mt-2 border border-border rounded-md">
                 <p>First enabled tab content. Try using arrow keys - they'll skip the disabled tab.</p>
-            </NeoUI.Blazor.Primitives.TabsContent>
+            </TabsContentPrimitive>
 
-            <NeoUI.Blazor.Primitives.TabsContent Value="disabled" class="p-4 mt-2 border border-border rounded-md">
+            <TabsContentPrimitive Value="disabled" class="p-4 mt-2 border border-border rounded-md">
                 <p>This content won't be shown because the tab is disabled.</p>
-            </NeoUI.Blazor.Primitives.TabsContent>
+            </TabsContentPrimitive>
 
-            <NeoUI.Blazor.Primitives.TabsContent Value="enabled2" class="p-4 mt-2 border border-border rounded-md">
+            <TabsContentPrimitive Value="enabled2" class="p-4 mt-2 border border-border rounded-md">
                 <p>Second enabled tab content.</p>
-            </NeoUI.Blazor.Primitives.TabsContent>
-        </NeoUI.Blazor.Primitives.Tabs>
+            </TabsContentPrimitive>
+        </TabsPrimitive>
     </div>
 
     <div class="space-y-6">

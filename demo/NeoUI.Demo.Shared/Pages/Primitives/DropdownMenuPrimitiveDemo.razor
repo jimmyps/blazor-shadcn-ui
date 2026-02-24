@@ -24,17 +24,17 @@
                 <div class="space-y-3 p-4 border rounded-lg">
                     <h3 class="text-lg font-medium">Without AsChild</h3>
                     <p class="text-sm text-muted-foreground">
-                        DropdownMenuTrigger renders its own button element.
+                        DropdownMenuTriggerPrimitive renders its own button element.
                     </p>
-                    <NeoUI.Blazor.Primitives.DropdownMenu>
-                        <NeoUI.Blazor.Primitives.DropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                    <DropdownMenuPrimitive>
+                        <DropdownMenuTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                             Open Menu
-                        </NeoUI.Blazor.Primitives.DropdownMenuTrigger>
-                        <NeoUI.Blazor.Primitives.DropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
-                            <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</NeoUI.Blazor.Primitives.DropdownMenuItem>
-                            <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</NeoUI.Blazor.Primitives.DropdownMenuItem>
-                        </NeoUI.Blazor.Primitives.DropdownMenuContent>
-                    </NeoUI.Blazor.Primitives.DropdownMenu>
+                        </DropdownMenuTriggerPrimitive>
+                        <DropdownMenuContentPrimitive class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</DropdownMenuItemPrimitive>
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</DropdownMenuItemPrimitive>
+                        </DropdownMenuContentPrimitive>
+                    </DropdownMenuPrimitive>
                 </div>
 
                 <!-- With AsChild -->
@@ -43,18 +43,18 @@
                     <p class="text-sm text-muted-foreground">
                         Button receives click behavior via TriggerContext.
                     </p>
-                    <NeoUI.Blazor.Primitives.DropdownMenu>
-                        <NeoUI.Blazor.Primitives.DropdownMenuTrigger AsChild>
+                    <DropdownMenuPrimitive>
+                        <DropdownMenuTriggerPrimitive AsChild>
                             <Button Variant="ButtonVariant.Outline">
                                 Open Menu
                                 <LucideIcon Name="chevron-down" Size="16" Class="ml-2" />
                             </Button>
-                        </NeoUI.Blazor.Primitives.DropdownMenuTrigger>
-                        <NeoUI.Blazor.Primitives.DropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
-                            <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</NeoUI.Blazor.Primitives.DropdownMenuItem>
-                            <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</NeoUI.Blazor.Primitives.DropdownMenuItem>
-                        </NeoUI.Blazor.Primitives.DropdownMenuContent>
-                    </NeoUI.Blazor.Primitives.DropdownMenu>
+                        </DropdownMenuTriggerPrimitive>
+                        <DropdownMenuContentPrimitive class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</DropdownMenuItemPrimitive>
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</DropdownMenuItemPrimitive>
+                        </DropdownMenuContentPrimitive>
+                    </DropdownMenuPrimitive>
                 </div>
             </div>
         </section>
@@ -68,24 +68,24 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <NeoUI.Blazor.Primitives.DropdownMenu>
-                    <NeoUI.Blazor.Primitives.DropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                <DropdownMenuPrimitive>
+                    <DropdownMenuTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                         Open Menu
-                    </NeoUI.Blazor.Primitives.DropdownMenuTrigger>
+                    </DropdownMenuTriggerPrimitive>
 
-                    <NeoUI.Blazor.Primitives.DropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
-                        <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
+                    <DropdownMenuContentPrimitive class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
+                        <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
                             Profile
-                        </NeoUI.Blazor.Primitives.DropdownMenuItem>
-                        <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
+                        </DropdownMenuItemPrimitive>
+                        <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
                             Settings
-                        </NeoUI.Blazor.Primitives.DropdownMenuItem>
+                        </DropdownMenuItemPrimitive>
                         <Separator class="my-1" />
-                        <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
+                        <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
                             Logout
-                        </NeoUI.Blazor.Primitives.DropdownMenuItem>
-                    </NeoUI.Blazor.Primitives.DropdownMenuContent>
-                </NeoUI.Blazor.Primitives.DropdownMenu>
+                        </DropdownMenuItemPrimitive>
+                    </DropdownMenuContentPrimitive>
+                </DropdownMenuPrimitive>
             </div>
         </section>
 
@@ -109,23 +109,23 @@
                 </div>
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
-                    <NeoUI.Blazor.Primitives.DropdownMenu @bind-Open="isOpen">
-                        <NeoUI.Blazor.Primitives.DropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                    <DropdownMenuPrimitive @bind-Open="isOpen">
+                        <DropdownMenuTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                             Controlled Menu
-                        </NeoUI.Blazor.Primitives.DropdownMenuTrigger>
+                        </DropdownMenuTriggerPrimitive>
 
-                        <NeoUI.Blazor.Primitives.DropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
-                            <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent" OnClick="@(() => HandleItemClick("Item 1"))">
+                        <DropdownMenuContentPrimitive class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent" OnClick="@(() => HandleItemClick("Item 1"))">
                                 Item 1
-                            </NeoUI.Blazor.Primitives.DropdownMenuItem>
-                            <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent" OnClick="@(() => HandleItemClick("Item 2"))">
+                            </DropdownMenuItemPrimitive>
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent" OnClick="@(() => HandleItemClick("Item 2"))">
                                 Item 2
-                            </NeoUI.Blazor.Primitives.DropdownMenuItem>
-                            <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent" OnClick="@(() => HandleItemClick("Item 3"))">
+                            </DropdownMenuItemPrimitive>
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent" OnClick="@(() => HandleItemClick("Item 3"))">
                                 Item 3
-                            </NeoUI.Blazor.Primitives.DropdownMenuItem>
-                        </NeoUI.Blazor.Primitives.DropdownMenuContent>
-                    </NeoUI.Blazor.Primitives.DropdownMenu>
+                            </DropdownMenuItemPrimitive>
+                        </DropdownMenuContentPrimitive>
+                    </DropdownMenuPrimitive>
 
                     @if (!string.IsNullOrEmpty(lastClicked))
                     {
@@ -144,29 +144,29 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <NeoUI.Blazor.Primitives.DropdownMenu>
-                    <NeoUI.Blazor.Primitives.DropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                <DropdownMenuPrimitive>
+                    <DropdownMenuTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                         Keyboard Test Menu
-                    </NeoUI.Blazor.Primitives.DropdownMenuTrigger>
+                    </DropdownMenuTriggerPrimitive>
 
-                    <NeoUI.Blazor.Primitives.DropdownMenuContent class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
-                        <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
+                    <DropdownMenuContentPrimitive class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
+                        <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
                             First Item
-                        </NeoUI.Blazor.Primitives.DropdownMenuItem>
-                        <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
+                        </DropdownMenuItemPrimitive>
+                        <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
                             Second Item
-                        </NeoUI.Blazor.Primitives.DropdownMenuItem>
-                        <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 rounded opacity-50 cursor-not-allowed" Disabled="true">
+                        </DropdownMenuItemPrimitive>
+                        <DropdownMenuItemPrimitive class="px-2 py-1.5 rounded opacity-50 cursor-not-allowed" Disabled="true">
                             Disabled Item
-                        </NeoUI.Blazor.Primitives.DropdownMenuItem>
-                        <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
+                        </DropdownMenuItemPrimitive>
+                        <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
                             Third Item
-                        </NeoUI.Blazor.Primitives.DropdownMenuItem>
-                        <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
+                        </DropdownMenuItemPrimitive>
+                        <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">
                             Last Item
-                        </NeoUI.Blazor.Primitives.DropdownMenuItem>
-                    </NeoUI.Blazor.Primitives.DropdownMenuContent>
-                </NeoUI.Blazor.Primitives.DropdownMenu>
+                        </DropdownMenuItemPrimitive>
+                    </DropdownMenuContentPrimitive>
+                </DropdownMenuPrimitive>
                 <p class="text-sm text-muted-foreground mt-3">Try keyboard navigation!</p>
             </div>
         </section>
@@ -181,35 +181,35 @@
 
             <div class="rounded-lg border bg-card p-6">
                 <div class="flex gap-4 flex-wrap">
-                    <NeoUI.Blazor.Primitives.DropdownMenu>
-                        <NeoUI.Blazor.Primitives.DropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                    <DropdownMenuPrimitive>
+                        <DropdownMenuTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                             Bottom Start
-                        </NeoUI.Blazor.Primitives.DropdownMenuTrigger>
-                        <NeoUI.Blazor.Primitives.DropdownMenuContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" class="min-w-32 p-1 border rounded-md bg-popover shadow-md">
-                            <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</NeoUI.Blazor.Primitives.DropdownMenuItem>
-                            <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</NeoUI.Blazor.Primitives.DropdownMenuItem>
-                        </NeoUI.Blazor.Primitives.DropdownMenuContent>
-                    </NeoUI.Blazor.Primitives.DropdownMenu>
+                        </DropdownMenuTriggerPrimitive>
+                        <DropdownMenuContentPrimitive Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" class="min-w-32 p-1 border rounded-md bg-popover shadow-md">
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</DropdownMenuItemPrimitive>
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</DropdownMenuItemPrimitive>
+                        </DropdownMenuContentPrimitive>
+                    </DropdownMenuPrimitive>
 
-                    <NeoUI.Blazor.Primitives.DropdownMenu>
-                        <NeoUI.Blazor.Primitives.DropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                    <DropdownMenuPrimitive>
+                        <DropdownMenuTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                             Top Center
-                        </NeoUI.Blazor.Primitives.DropdownMenuTrigger>
-                        <NeoUI.Blazor.Primitives.DropdownMenuContent Side="@PopoverSide.Top" Align="@PopoverAlign.Center" class="min-w-32 p-1 border rounded-md bg-popover shadow-md">
-                            <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</NeoUI.Blazor.Primitives.DropdownMenuItem>
-                            <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</NeoUI.Blazor.Primitives.DropdownMenuItem>
-                        </NeoUI.Blazor.Primitives.DropdownMenuContent>
-                    </NeoUI.Blazor.Primitives.DropdownMenu>
+                        </DropdownMenuTriggerPrimitive>
+                        <DropdownMenuContentPrimitive Side="@PopoverSide.Top" Align="@PopoverAlign.Center" class="min-w-32 p-1 border rounded-md bg-popover shadow-md">
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</DropdownMenuItemPrimitive>
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</DropdownMenuItemPrimitive>
+                        </DropdownMenuContentPrimitive>
+                    </DropdownMenuPrimitive>
 
-                    <NeoUI.Blazor.Primitives.DropdownMenu>
-                        <NeoUI.Blazor.Primitives.DropdownMenuTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                    <DropdownMenuPrimitive>
+                        <DropdownMenuTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                             Right End
-                        </NeoUI.Blazor.Primitives.DropdownMenuTrigger>
-                        <NeoUI.Blazor.Primitives.DropdownMenuContent Side="@PopoverSide.Right" Align="@PopoverAlign.End" class="min-w-32 p-1 border rounded-md bg-popover shadow-md">
-                            <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</NeoUI.Blazor.Primitives.DropdownMenuItem>
-                            <NeoUI.Blazor.Primitives.DropdownMenuItem class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</NeoUI.Blazor.Primitives.DropdownMenuItem>
-                        </NeoUI.Blazor.Primitives.DropdownMenuContent>
-                    </NeoUI.Blazor.Primitives.DropdownMenu>
+                        </DropdownMenuTriggerPrimitive>
+                        <DropdownMenuContentPrimitive Side="@PopoverSide.Right" Align="@PopoverAlign.End" class="min-w-32 p-1 border rounded-md bg-popover shadow-md">
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</DropdownMenuItemPrimitive>
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</DropdownMenuItemPrimitive>
+                        </DropdownMenuContentPrimitive>
+                    </DropdownMenuPrimitive>
                 </div>
             </div>
         </section>
@@ -268,7 +268,7 @@
                     <Kbd>Home / End</Kbd>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium">Select item</span>
+                    <span class="text-sm font-medium">SelectPrimitive item</span>
                     <Kbd>Enter</Kbd>
                 </div>
                 <div class="flex items-center justify-between">
@@ -288,7 +288,7 @@
 
             <div class="space-y-4">
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">DropdownMenu</h3>
+                    <h3 class="font-semibold mb-3">DropdownMenuPrimitive</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">Open</code>
@@ -309,7 +309,7 @@
                 </div>
 
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">DropdownMenuContent</h3>
+                    <h3 class="font-semibold mb-3">DropdownMenuContentPrimitive</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">Side</code>
@@ -332,7 +332,7 @@
                 </div>
 
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">DropdownMenuItem</h3>
+                    <h3 class="font-semibold mb-3">DropdownMenuItemPrimitive</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">OnClick</code>

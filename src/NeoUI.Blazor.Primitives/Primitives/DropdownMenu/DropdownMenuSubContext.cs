@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// Context class for sharing state between DropdownMenuSub, DropdownMenuSubTrigger, and DropdownMenuSubContent components.
+/// Context class for sharing state between DropdownMenuSubPrimitive, DropdownMenuSubTriggerPrimitive, and DropdownMenuSubContentPrimitive components.
 /// </summary>
 public class DropdownMenuSubContext
 {

@@ -2,13 +2,13 @@
 @typeparam TValue
 
 @* Styled MenubarRadioGroup - wrapper for radio items *@
-<NeoUI.Blazor.Primitives.MenubarRadioGroup TValue="TValue"
+<MenubarRadioGroupPrimitive TValue="TValue"
                                                 Value="@Value"
                                                 ValueChanged="@ValueChanged"
                                                 OnValueChange="@OnValueChange"
                                                 class="@Class">
     @ChildContent
-</NeoUI.Blazor.Primitives.MenubarRadioGroup>
+</MenubarRadioGroupPrimitive>
 
 @code {
     /// <summary>

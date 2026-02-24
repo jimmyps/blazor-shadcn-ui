@@ -41,8 +41,8 @@ public enum AriaHasPopup
     Tree,
     /// <summary>Grid popup.</summary>
     Grid,
-    /// <summary>Dialog popup.</summary>
-    Dialog
+    /// <summary>DialogPrimitive popup.</summary>
+    DialogPrimitive
 }
 
 /// <summary>
@@ -89,7 +89,7 @@ public class AriaBuilder
     /// </summary>
     /// <param name="label">The accessible label text.</param>
     /// <returns>The builder for chaining.</returns>
-    public AriaBuilder Label(string? label)
+    public AriaBuilder LabelPrimitive(string? label)
     {
         return Set("aria-label", label);
     }
@@ -99,7 +99,7 @@ public class AriaBuilder
     /// </summary>
     /// <param name="id">The ID of the labeling element.</param>
     /// <returns>The builder for chaining.</returns>
-    public AriaBuilder LabelledBy(string? id)
+    public AriaBuilder LabelPrimitiveledBy(string? id)
     {
         return Set("aria-labelledby", id);
     }
@@ -178,7 +178,7 @@ public class AriaBuilder
     /// </summary>
     /// <param name="selected">Whether the element is selected.</param>
     /// <returns>The builder for chaining.</returns>
-    public AriaBuilder Selected(bool? selected)
+    public AriaBuilder SelectPrimitiveed(bool? selected)
     {
         return Set("aria-selected", selected?.ToString().ToLower());
     }

@@ -4,10 +4,10 @@
     By default, prevents dismissal via click-outside for standard alert dialog behavior.
 *@
 
-<NeoUI.Blazor.Primitives.DialogPortal>
-    <NeoUI.Blazor.Primitives.DialogOverlay CloseOnClick="@CloseOnClickOutside" class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
+<DialogPortalPrimitive>
+    <DialogOverlayPrimitive CloseOnClick="@CloseOnClickOutside" class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
 
-    <NeoUI.Blazor.Primitives.DialogContent
+    <DialogContentPrimitive
         class="@GetClassNames()"
         style="@($"z-index: {GetEffectiveContentZIndex()}")"
         CloseOnEscape="@CloseOnEscape"
@@ -16,8 +16,8 @@
         role="alertdialog"
         @attributes="AdditionalAttributes">
         @ChildContent
-    </NeoUI.Blazor.Primitives.DialogContent>
-</NeoUI.Blazor.Primitives.DialogPortal>
+    </DialogContentPrimitive>
+</DialogPortalPrimitive>
 
 @code {
     /// <summary>

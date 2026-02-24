@@ -1,7 +1,7 @@
 namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// State for the Accordion primitive context.
+/// State for the AccordionPrimitive primitive context.
 /// </summary>
 public class AccordionState
 {
@@ -18,7 +18,7 @@ public class AccordionState
     /// <summary>
     /// Gets or sets whether items can be collapsed in single mode.
     /// </summary>
-    public bool Collapsible { get; set; } = false;
+    public bool CollapsiblePrimitive { get; set; } = false;
 }
 
 /// <summary>
@@ -38,7 +38,7 @@ public enum AccordionType
 }
 
 /// <summary>
-/// Context for Accordion primitive component and its children.
+/// Context for AccordionPrimitive primitive component and its children.
 /// Manages accordion state and provides IDs for ARIA attributes.
 /// </summary>
 public class AccordionContext : PrimitiveContextWithEvents<AccordionState>
@@ -73,7 +73,7 @@ public class AccordionContext : PrimitiveContextWithEvents<AccordionState>
     /// <summary>
     /// Gets whether the accordion is collapsible in single mode.
     /// </summary>
-    public bool Collapsible => State.Collapsible;
+    public bool CollapsiblePrimitive => State.CollapsiblePrimitive;
 
     /// <summary>
     /// Checks if the specified item is currently open.
@@ -98,8 +98,8 @@ public class AccordionContext : PrimitiveContextWithEvents<AccordionState>
                 // Single mode: close others and toggle this one
                 if (state.OpenValues.Contains(value))
                 {
-                    // Only allow collapsing if Collapsible is true
-                    if (state.Collapsible)
+                    // Only allow collapsing if CollapsiblePrimitive is true
+                    if (state.CollapsiblePrimitive)
                     {
                         state.OpenValues.Clear();
                     }

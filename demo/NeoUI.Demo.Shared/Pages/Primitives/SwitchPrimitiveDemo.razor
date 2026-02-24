@@ -20,11 +20,11 @@
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
                 <div class="flex items-center gap-3">
-                    <NeoUI.Blazor.Primitives.Switch @bind-Checked="basicChecked"
+                    <SwitchPrimitive @bind-Checked="basicChecked"
                                      Id="basic"
                                      class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-input transition-colors data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted">
                         <span class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" data-state="@(basicChecked ? "checked" : "unchecked")"></span>
-                    </NeoUI.Blazor.Primitives.Switch>
+                    </SwitchPrimitive>
                     <label for="basic" class="cursor-pointer">Basic primitive switch</label>
                 </div>
                 <p class="text-sm text-muted-foreground mt-2">State: @(basicChecked ? "On" : "Off")</p>
@@ -53,12 +53,12 @@
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
                     <div class="flex items-center gap-3">
-                        <NeoUI.Blazor.Primitives.Switch @bind-Checked="controlledChecked" Id="controlled"
+                        <SwitchPrimitive @bind-Checked="controlledChecked" Id="controlled"
                                          class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-input transition-colors data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted">
                             <span class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" data-state="@(controlledChecked ? "checked" : "unchecked")"></span>
-                        </NeoUI.Blazor.Primitives.Switch>
+                        </SwitchPrimitive>
                         <label for="controlled" class="cursor-pointer">
-                            Controlled Switch (State: @(controlledChecked ? "On" : "Off"))
+                            Controlled SwitchPrimitive (State: @(controlledChecked ? "On" : "Off"))
                         </label>
                     </div>
                 </div>
@@ -75,17 +75,17 @@
 
             <div class="rounded-lg border bg-card p-6 max-w-md space-y-3">
                 <div class="flex items-center gap-3">
-                    <NeoUI.Blazor.Primitives.Switch Checked="true" Disabled="true" Id="disabled-on"
+                    <SwitchPrimitive Checked="true" Disabled="true" Id="disabled-on"
                                      class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-input transition-colors data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted disabled:opacity-50 disabled:cursor-not-allowed">
                         <span class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" data-state="checked"></span>
-                    </NeoUI.Blazor.Primitives.Switch>
+                    </SwitchPrimitive>
                     <label for="disabled-on" class="opacity-50">Disabled (On)</label>
                 </div>
                 <div class="flex items-center gap-3">
-                    <NeoUI.Blazor.Primitives.Switch Checked="false" Disabled="true" Id="disabled-off"
+                    <SwitchPrimitive Checked="false" Disabled="true" Id="disabled-off"
                                      class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-input transition-colors data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted disabled:opacity-50 disabled:cursor-not-allowed">
                         <span class="pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" data-state="unchecked"></span>
-                    </NeoUI.Blazor.Primitives.Switch>
+                    </SwitchPrimitive>
                     <label for="disabled-off" class="opacity-50">Disabled (Off)</label>
                 </div>
             </div>
@@ -156,7 +156,7 @@
             </div>
 
             <div class="rounded-lg border p-4">
-                <h3 class="font-semibold mb-3">Switch</h3>
+                <h3 class="font-semibold mb-3">SwitchPrimitive</h3>
                 <div class="space-y-3 text-sm">
                     <div>
                         <code class="text-xs bg-muted px-1 py-0.5 rounded">Checked</code>
