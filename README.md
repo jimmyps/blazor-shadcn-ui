@@ -4,7 +4,7 @@ A comprehensive UI component library for Blazor inspired by [shadcn/ui](https://
 
 ## 🌟 Overview
 
-NeoUI brings the beautiful design system of shadcn/ui to Blazor applications. This library provides **zero-config, plug-and-play UI components** with full shadcn/ui compatibility, featuring pre-built CSS, styled components, and headless primitives that work across all Blazor hosting models (Server, WebAssembly, and Hybrid).
+NeoUI for Blazor brings the beautiful design system of shadcn/ui to Blazor applications. This library provides **zero-config, plug-and-play UI components** with full shadcn/ui compatibility, featuring pre-built CSS, styled components, and headless primitives that work across all Blazor hosting models (Server, WebAssembly, and Hybrid).
 
 **No Tailwind CSS setup required** - just install the NuGet package and start building!
 
@@ -17,11 +17,11 @@ NeoUI brings the beautiful design system of shadcn/ui to Blazor applications. Th
 Install NeoUI packages from NuGet:
 
 ```bash
-# Headless primitives for custom styling
-dotnet add package NeoUI.Blazor.Primitives
-
 # Styled components with shadcn/ui design
 dotnet add package NeoUI.Blazor
+
+# (Optional) Headless primitives for custom styling
+dotnet add package NeoUI.Blazor.Primitives
 
 # Icon libraries (choose one or more)
 dotnet add package NeoUI.Icons.Lucide      # 1,640 icons - stroke-based, consistent
@@ -71,12 +71,12 @@ dotnet add package NeoUI.Icons.Feather     # 286 icons - minimalist, stroke-base
     <!-- Your theme CSS variables -->
     <link rel="stylesheet" href="styles/theme.css" />
     <!-- Pre-built NeoUI styles -->
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/components.css" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/components.css"]" />
     <HeadOutlet @rendermode="InteractiveAuto" />
 </head>
 <body>
     <Routes @rendermode="InteractiveAuto" />
-    <script src="_framework/blazor.web.js"></script>
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
 </html>
 ```
@@ -275,13 +275,13 @@ Simply add two CSS files to your `App.razor`:
     <link rel="stylesheet" href="styles/theme.css" />
 
     <!-- 2. Pre-built NeoUI styles (included in NuGet package) -->
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/components.css" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/components.css"]" />
 
     <HeadOutlet @rendermode="InteractiveAuto" />
 </head>
 <body>
     <Routes @rendermode="InteractiveAuto" />
-    <script src="_framework/blazor.web.js"></script>
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
 </html>
 ```
