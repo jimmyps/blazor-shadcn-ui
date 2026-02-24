@@ -115,9 +115,6 @@
     
     protected override void OnInitialized()
     {
-        if (Parent != null)
-        {
-            try { Parent.RegisterYAxis(this); } catch { }
-        }
+        Parent?.RegisterYAxis(this);
     }
 }
