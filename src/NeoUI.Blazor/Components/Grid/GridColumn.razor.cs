@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Grid;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines a column in a Grid component.

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using System.Globalization;
 
-namespace NeoUI.Blazor.Primitives.Utilities;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Utility for handling keyboard navigation in list-based components.

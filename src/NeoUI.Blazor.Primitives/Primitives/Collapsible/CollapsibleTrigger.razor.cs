@@ -1,8 +1,7 @@
-using NeoUI.Blazor.Primitives.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace NeoUI.Blazor.Primitives.Collapsible;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// A headless trigger button component that toggles the open/closed state of a Collapsible.

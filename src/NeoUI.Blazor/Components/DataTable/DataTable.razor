@@ -1,13 +1,5 @@
-@namespace NeoUI.Blazor.DataTable
+@namespace NeoUI.Blazor
 @typeparam TData where TData : class
-@using NeoUI.Blazor.Primitives.Table
-@using NeoUI.Blazor.Primitives.Services
-@using NeoUI.Blazor.Utilities
-@using NeoUI.Blazor.Checkbox
-@using NeoUI.Blazor.DropdownMenu
-@using NeoUI.Blazor.Empty
-@using NeoUI.Blazor.Pagination
-
 <CascadingValue Value="this" IsFixed="true">
     <div class="@ContainerCssClass">
         @if (ShowToolbar)
@@ -50,7 +42,7 @@
             }
             else
             {
-                <NeoUI.Blazor.Primitives.Table.Table TData="TData"
+                <NeoUI.Blazor.Primitives.Table TData="TData"
                                                  Data="@_processedData"
                                                  @bind-State="@_tableState"
                                                  SelectionMode="@GetPrimitiveSelectionMode()"
@@ -193,7 +185,7 @@
                             </TableRow>
                         }
                     </TableBody>
-                </NeoUI.Blazor.Primitives.Table.Table>
+                </NeoUI.Blazor.Primitives.Table>
             }
         </div>
 

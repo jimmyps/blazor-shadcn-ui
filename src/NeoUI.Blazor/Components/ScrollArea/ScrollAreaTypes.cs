@@ -1,4 +1,4 @@
-﻿namespace NeoUI.Blazor.ScrollArea;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Type of scrollbar behavior in a ScrollArea.

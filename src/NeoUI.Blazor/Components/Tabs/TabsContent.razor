@@ -1,17 +1,14 @@
-@namespace NeoUI.Blazor.Tabs
-@using NeoUI.Blazor.Utilities
-@using NeoUI.Blazor.Primitives.Tabs
-
+@namespace NeoUI.Blazor
 @*
     Styled TabsContent component.
     Wraps the TabsContent primitive with shadcn/ui styling.
 *@
 
-<NeoUI.Blazor.Primitives.Tabs.TabsContent Value="@Value"
+<NeoUI.Blazor.Primitives.TabsContent Value="@Value"
                                             ForceMount="@ForceMount"
                                             class="@CssClass">
     @ChildContent
-</NeoUI.Blazor.Primitives.Tabs.TabsContent>
+</NeoUI.Blazor.Primitives.TabsContent>
 
 @code {
     /// <summary>

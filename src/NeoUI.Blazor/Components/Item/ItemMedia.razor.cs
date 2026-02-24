@@ -1,7 +1,6 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Item;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A component for displaying visual content (icons/images) in an Item.

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace NeoUI.Blazor.Grid;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Represents a response from a server-side data source containing the requested data and metadata.

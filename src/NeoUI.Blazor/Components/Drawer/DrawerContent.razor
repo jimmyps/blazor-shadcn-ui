@@ -1,5 +1,4 @@
-@namespace NeoUI.Blazor.Drawer
-@using NeoUI.Blazor.Primitives.Services
+@namespace NeoUI.Blazor
 @using Microsoft.JSInterop
 @inject IFocusManager FocusManager
 @inject IJSRuntime JS
@@ -175,7 +174,7 @@
         _ => "inset-x-0 bottom-0 border-t data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom"
     };
 
-    private string CssClass => NeoUI.Blazor.Utilities.ClassNames.cn(
+    private string CssClass => ClassNames.cn(
         "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
         DirectionClasses,

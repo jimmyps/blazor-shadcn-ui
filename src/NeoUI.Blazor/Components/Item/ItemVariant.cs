@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Item;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the visual style variants for the Item component.

@@ -1,8 +1,6 @@
-using NeoUI.Blazor.Utilities;
-using NeoUI.Blazor.Primitives.Table;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.DataTable;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A styled data table component that wraps the Table Primitive with automatic sorting,

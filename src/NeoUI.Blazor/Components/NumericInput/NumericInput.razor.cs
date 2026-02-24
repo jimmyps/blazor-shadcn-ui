@@ -1,5 +1,3 @@
-using NeoUI.Blazor.Common;
-using NeoUI.Blazor.Utilities;
 using NeoUI.Blazor.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -8,7 +6,7 @@ using Microsoft.JSInterop;
 using System.Globalization;
 using System.Linq.Expressions;
 
-namespace NeoUI.Blazor.NumericInput;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A numeric input component that follows the shadcn/ui design system.

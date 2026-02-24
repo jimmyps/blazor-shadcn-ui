@@ -1,7 +1,6 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Item;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A container component that groups related items together.

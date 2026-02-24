@@ -1,5 +1,3 @@
-using NeoUI.Blazor.Common;
-using NeoUI.Blazor.Utilities;
 using NeoUI.Blazor.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -7,7 +5,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
-namespace NeoUI.Blazor.MaskedInput;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A masked input component that follows the shadcn/ui design system.

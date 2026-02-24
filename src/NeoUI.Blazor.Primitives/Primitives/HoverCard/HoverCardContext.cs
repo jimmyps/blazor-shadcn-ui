@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using NeoUI.Blazor.Primitives.Contexts;
-
-namespace NeoUI.Blazor.Primitives.HoverCard;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// State for the HoverCard primitive context.

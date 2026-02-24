@@ -1,6 +1,4 @@
 @page "/components/sheet"
-@using NeoUI.Blazor.Sheet
-
 <PageTitle>Sheet Component - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -56,7 +54,7 @@
                             Open Menu
                         </Button>
                     </SheetTrigger>
-                    <SheetContent Side="NeoUI.Blazor.Primitives.Sheet.SheetSide.Left">
+                    <SheetContent Side="NeoUI.Blazor.Primitives.SheetSide.Left">
                         <SheetHeader>
                             <SheetTitle>With AsChild</SheetTitle>
                             <SheetDescription>Button component styled trigger.</SheetDescription>
@@ -123,7 +121,7 @@
             A sheet that slides in from the top of the screen.
         </p>
 
-        <Sheet Side="NeoUI.Blazor.Primitives.Sheet.SheetSide.Top">
+        <Sheet Side="NeoUI.Blazor.Primitives.SheetSide.Top">
             <SheetTrigger AsChild>
                 <Button Variant="ButtonVariant.Outline">Open from Top</Button>
             </SheetTrigger>
@@ -169,7 +167,7 @@
             A sheet that slides in from the bottom of the screen.
         </p>
 
-        <Sheet Side="NeoUI.Blazor.Primitives.Sheet.SheetSide.Bottom">
+        <Sheet Side="NeoUI.Blazor.Primitives.SheetSide.Bottom">
             <SheetTrigger AsChild>
                 <Button Variant="ButtonVariant.Outline">Open from Bottom</Button>
             </SheetTrigger>
@@ -225,7 +223,7 @@
             A sheet that slides in from the left side of the screen.
         </p>
 
-        <Sheet Side="NeoUI.Blazor.Primitives.Sheet.SheetSide.Left">
+        <Sheet Side="NeoUI.Blazor.Primitives.SheetSide.Left">
             <SheetTrigger AsChild>
                 <Button Variant="ButtonVariant.Outline">Open from Left</Button>
             </SheetTrigger>
@@ -389,7 +387,7 @@
         <div class="space-y-2">
             <p class="text-sm text-muted-foreground">Add the following using statement to your _Imports.razor:</p>
             <div class="bg-muted p-4 rounded-md">
-                <code class="text-sm">@@using NeoUI.Blazor.Sheet</code>
+                <code class="text-sm">@@using NeoUI.Blazor
             </div>
         </div>
     </div>

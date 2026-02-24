@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Collapsible;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A styled content component that displays collapsible content controlled by a CollapsibleTrigger.

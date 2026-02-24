@@ -1,7 +1,4 @@
 @page "/primitives/popover"
-@using NeoUI.Blazor.Primitives.Services
-@using NeoUI.Blazor.Kbd
-
 <PageTitle>Popover Primitive - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -29,14 +26,14 @@
                     <p class="text-sm text-muted-foreground">
                         PopoverTrigger renders its own button element.
                     </p>
-                    <NeoUI.Blazor.Primitives.Popover.Popover>
-                        <NeoUI.Blazor.Primitives.Popover.PopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                    <NeoUI.Blazor.Primitives.Popover>
+                        <NeoUI.Blazor.Primitives.PopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                             Open Popover
-                        </NeoUI.Blazor.Primitives.Popover.PopoverTrigger>
-                        <NeoUI.Blazor.Primitives.Popover.PopoverContent class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+                        </NeoUI.Blazor.Primitives.PopoverTrigger>
+                        <NeoUI.Blazor.Primitives.PopoverContent class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
                             <p class="text-sm">Without AsChild content</p>
-                        </NeoUI.Blazor.Primitives.Popover.PopoverContent>
-                    </NeoUI.Blazor.Primitives.Popover.Popover>
+                        </NeoUI.Blazor.Primitives.PopoverContent>
+                    </NeoUI.Blazor.Primitives.Popover>
                 </div>
 
                 <!-- With AsChild -->
@@ -45,14 +42,14 @@
                     <p class="text-sm text-muted-foreground">
                         Button receives click behavior via TriggerContext.
                     </p>
-                    <NeoUI.Blazor.Primitives.Popover.Popover>
-                        <NeoUI.Blazor.Primitives.Popover.PopoverTrigger AsChild>
+                    <NeoUI.Blazor.Primitives.Popover>
+                        <NeoUI.Blazor.Primitives.PopoverTrigger AsChild>
                             <Button Variant="ButtonVariant.Outline">Open Popover</Button>
-                        </NeoUI.Blazor.Primitives.Popover.PopoverTrigger>
-                        <NeoUI.Blazor.Primitives.Popover.PopoverContent class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+                        </NeoUI.Blazor.Primitives.PopoverTrigger>
+                        <NeoUI.Blazor.Primitives.PopoverContent class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
                             <p class="text-sm">With AsChild content</p>
-                        </NeoUI.Blazor.Primitives.Popover.PopoverContent>
-                    </NeoUI.Blazor.Primitives.Popover.Popover>
+                        </NeoUI.Blazor.Primitives.PopoverContent>
+                    </NeoUI.Blazor.Primitives.Popover>
                 </div>
             </div>
         </section>
@@ -66,19 +63,19 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <NeoUI.Blazor.Primitives.Popover.Popover>
-                    <NeoUI.Blazor.Primitives.Popover.PopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                <NeoUI.Blazor.Primitives.Popover>
+                    <NeoUI.Blazor.Primitives.PopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                         Open Popover
-                    </NeoUI.Blazor.Primitives.Popover.PopoverTrigger>
-                    <NeoUI.Blazor.Primitives.Popover.PopoverContent class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+                    </NeoUI.Blazor.Primitives.PopoverTrigger>
+                    <NeoUI.Blazor.Primitives.PopoverContent class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
                         <div class="space-y-2">
                             <h4 class="font-medium leading-none">Primitive Popover</h4>
                             <p class="text-sm text-muted-foreground">
                                 This is a headless popover primitive with basic styling.
                             </p>
                         </div>
-                    </NeoUI.Blazor.Primitives.Popover.PopoverContent>
-                </NeoUI.Blazor.Primitives.Popover.Popover>
+                    </NeoUI.Blazor.Primitives.PopoverContent>
+                </NeoUI.Blazor.Primitives.Popover>
             </div>
         </section>
 
@@ -102,17 +99,17 @@
                 </div>
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
-                    <NeoUI.Blazor.Primitives.Popover.Popover @bind-Open="isOpen">
-                        <NeoUI.Blazor.Primitives.Popover.PopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                    <NeoUI.Blazor.Primitives.Popover @bind-Open="isOpen">
+                        <NeoUI.Blazor.Primitives.PopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                             @(isOpen ? "Close" : "Open") Controlled
-                        </NeoUI.Blazor.Primitives.Popover.PopoverTrigger>
-                        <NeoUI.Blazor.Primitives.Popover.PopoverContent class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+                        </NeoUI.Blazor.Primitives.PopoverTrigger>
+                        <NeoUI.Blazor.Primitives.PopoverContent class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
                             <p class="text-sm">Controlled by parent state: @isOpen</p>
                             <button @onclick="() => isOpen = false" class="mt-2 text-sm text-primary underline-offset-4 hover:underline">
                                 Close from content
                             </button>
-                        </NeoUI.Blazor.Primitives.Popover.PopoverContent>
-                    </NeoUI.Blazor.Primitives.Popover.Popover>
+                        </NeoUI.Blazor.Primitives.PopoverContent>
+                    </NeoUI.Blazor.Primitives.Popover>
                 </div>
             </div>
         </section>
@@ -127,32 +124,32 @@
 
             <div class="rounded-lg border bg-card p-6">
                 <div class="flex gap-4">
-                    <NeoUI.Blazor.Primitives.Popover.Popover>
-                        <NeoUI.Blazor.Primitives.Popover.PopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                    <NeoUI.Blazor.Primitives.Popover>
+                        <NeoUI.Blazor.Primitives.PopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                             Top
-                        </NeoUI.Blazor.Primitives.Popover.PopoverTrigger>
-                        <NeoUI.Blazor.Primitives.Popover.PopoverContent Side="@PopoverSide.Top" class="z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+                        </NeoUI.Blazor.Primitives.PopoverTrigger>
+                        <NeoUI.Blazor.Primitives.PopoverContent Side="@PopoverSide.Top" class="z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
                             <p class="text-sm">Positioned on top</p>
-                        </NeoUI.Blazor.Primitives.Popover.PopoverContent>
-                    </NeoUI.Blazor.Primitives.Popover.Popover>
+                        </NeoUI.Blazor.Primitives.PopoverContent>
+                    </NeoUI.Blazor.Primitives.Popover>
 
-                    <NeoUI.Blazor.Primitives.Popover.Popover>
-                        <NeoUI.Blazor.Primitives.Popover.PopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                    <NeoUI.Blazor.Primitives.Popover>
+                        <NeoUI.Blazor.Primitives.PopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                             Right
-                        </NeoUI.Blazor.Primitives.Popover.PopoverTrigger>
-                        <NeoUI.Blazor.Primitives.Popover.PopoverContent Side="@PopoverSide.Right" class="z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+                        </NeoUI.Blazor.Primitives.PopoverTrigger>
+                        <NeoUI.Blazor.Primitives.PopoverContent Side="@PopoverSide.Right" class="z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
                             <p class="text-sm">Positioned on right</p>
-                        </NeoUI.Blazor.Primitives.Popover.PopoverContent>
-                    </NeoUI.Blazor.Primitives.Popover.Popover>
+                        </NeoUI.Blazor.Primitives.PopoverContent>
+                    </NeoUI.Blazor.Primitives.Popover>
 
-                    <NeoUI.Blazor.Primitives.Popover.Popover>
-                        <NeoUI.Blazor.Primitives.Popover.PopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                    <NeoUI.Blazor.Primitives.Popover>
+                        <NeoUI.Blazor.Primitives.PopoverTrigger class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
                             Left
-                        </NeoUI.Blazor.Primitives.Popover.PopoverTrigger>
-                        <NeoUI.Blazor.Primitives.Popover.PopoverContent Side="@PopoverSide.Left" class="z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+                        </NeoUI.Blazor.Primitives.PopoverTrigger>
+                        <NeoUI.Blazor.Primitives.PopoverContent Side="@PopoverSide.Left" class="z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
                             <p class="text-sm">Positioned on left</p>
-                        </NeoUI.Blazor.Primitives.Popover.PopoverContent>
-                    </NeoUI.Blazor.Primitives.Popover.Popover>
+                        </NeoUI.Blazor.Primitives.PopoverContent>
+                    </NeoUI.Blazor.Primitives.Popover>
                 </div>
             </div>
         </section>

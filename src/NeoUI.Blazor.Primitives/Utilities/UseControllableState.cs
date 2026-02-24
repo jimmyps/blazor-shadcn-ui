@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Primitives.Utilities;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Utility for managing controlled and uncontrolled component state.

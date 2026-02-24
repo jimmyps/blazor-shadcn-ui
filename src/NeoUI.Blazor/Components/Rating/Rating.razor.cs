@@ -1,10 +1,9 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using System.Linq.Expressions;
 
-namespace NeoUI.Blazor.Rating;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A rating component for selecting a value with star/heart/circle icons.

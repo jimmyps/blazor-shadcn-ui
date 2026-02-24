@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using NeoUI.Blazor.Primitives.Contexts;
-
-namespace NeoUI.Blazor.Primitives.Select;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// State for the Select primitive context.

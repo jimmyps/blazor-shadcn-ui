@@ -1,6 +1,4 @@
-using NeoUI.Blazor.Primitives.Contexts;
-
-namespace NeoUI.Blazor.Primitives.Tabs;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// State for the Tabs primitive context.

@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.RenderState;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Provides runtime information about the app's render lifecycle state.

@@ -1,10 +1,9 @@
 @typeparam TValue
-@namespace NeoUI.Blazor.Select
-@using NeoUI.Blazor.Primitives.Select
+@namespace NeoUI.Blazor
 @attribute [CascadingTypeParameter(nameof(TValue))]
 
 @* Styled Select wrapper around Select *@
-<NeoUI.Blazor.Primitives.Select.Select TValue="TValue"
+<NeoUI.Blazor.Primitives.Select TValue="TValue"
                  Value="@Value"
                  ValueChanged="@ValueChanged"
                  @bind-Open="IsOpen"
@@ -12,7 +11,7 @@
                  DisplayTextSelector="@DisplayTextSelector"
                  class="@CssClass">
     @ChildContent
-</NeoUI.Blazor.Primitives.Select.Select>
+</NeoUI.Blazor.Primitives.Select>
 
 @code {
     /// <summary>

@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
-namespace NeoUI.Blazor.Utilities;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Provides Tailwind CSS class conflict resolution logic.

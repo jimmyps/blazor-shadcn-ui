@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Primitives.Collapsible;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// A headless primitive component that provides collapsible functionality with expandable/collapsible content sections.

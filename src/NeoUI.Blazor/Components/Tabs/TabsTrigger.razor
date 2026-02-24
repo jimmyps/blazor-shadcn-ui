@@ -1,17 +1,14 @@
-@namespace NeoUI.Blazor.Tabs
-@using NeoUI.Blazor.Utilities
-@using NeoUI.Blazor.Primitives.Tabs
-
+@namespace NeoUI.Blazor
 @*
     Styled TabsTrigger component.
     Wraps the TabsTrigger primitive with shadcn/ui styling.
 *@
 
-<NeoUI.Blazor.Primitives.Tabs.TabsTrigger Value="@Value"
+<NeoUI.Blazor.Primitives.TabsTrigger Value="@Value"
                                             Disabled="@Disabled"
                                             class="@CssClass">
     @ChildContent
-</NeoUI.Blazor.Primitives.Tabs.TabsTrigger>
+</NeoUI.Blazor.Primitives.TabsTrigger>
 
 @code {
     /// <summary>

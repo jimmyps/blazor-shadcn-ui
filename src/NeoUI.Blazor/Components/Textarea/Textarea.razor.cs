@@ -1,5 +1,3 @@
-using NeoUI.Blazor.Common;
-using NeoUI.Blazor.Utilities;
 using NeoUI.Blazor.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -7,7 +5,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
-namespace NeoUI.Blazor.Textarea;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A textarea component that follows the shadcn/ui design system.

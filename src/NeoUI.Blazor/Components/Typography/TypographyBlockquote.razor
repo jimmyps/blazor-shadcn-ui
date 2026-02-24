@@ -1,4 +1,4 @@
-@namespace NeoUI.Blazor.Typography
+@namespace NeoUI.Blazor
 
 <blockquote class="@CssClass">@ChildContent</blockquote>
 
@@ -9,7 +9,7 @@
     [Parameter]
     public string? Class { get; set; }
 
-    private string CssClass => NeoUI.Blazor.Utilities.ClassNames.cn(
+    private string CssClass => ClassNames.cn(
         "mt-6 border-l-2 pl-6 italic",
         Class
     );

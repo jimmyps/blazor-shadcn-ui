@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Grid;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Provides fine-grained control over AG Grid theme parameters.

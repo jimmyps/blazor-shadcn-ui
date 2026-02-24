@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Primitives.ContextMenu;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Context class for sharing state between ContextMenuSub, ContextMenuSubTrigger, and ContextMenuSubContent components.

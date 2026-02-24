@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace NeoUI.Blazor.Grid;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// An ObservableCollection that supports explicit change notification for item mutations.

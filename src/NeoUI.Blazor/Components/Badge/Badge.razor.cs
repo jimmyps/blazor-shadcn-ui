@@ -1,7 +1,6 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Badge;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A badge component that displays a small count or label.

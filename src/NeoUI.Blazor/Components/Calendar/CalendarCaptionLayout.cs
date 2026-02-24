@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Calendar;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Specifies the layout mode for the calendar caption (month/year display).

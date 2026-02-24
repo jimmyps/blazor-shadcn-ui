@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.RichTextEditor;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Event arguments for selection change events in the rich text editor.

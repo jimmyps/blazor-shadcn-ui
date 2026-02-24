@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Primitives.Table;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Extension methods for processing table data (sorting and pagination).

@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Button;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the position of an icon relative to the button text.

@@ -1,9 +1,6 @@
-@namespace NeoUI.Blazor.Tooltip
-@using NeoUI.Blazor.Primitives.Tooltip
-@using NeoUI.Blazor.Primitives.Services
-
+@namespace NeoUI.Blazor
 @* Styled Tooltip component - thin wrapper around Tooltip primitive *@
-<NeoUI.Blazor.Primitives.Tooltip.Tooltip Open="@Open"
+<NeoUI.Blazor.Primitives.Tooltip Open="@Open"
                                           OpenChanged="@OpenChanged"
                                           DefaultOpen="@DefaultOpen"
                                           DelayDuration="@DelayDuration"
@@ -11,7 +8,7 @@
                                           Placement="@Placement.ToValue()"
                                           Class="contents">
     @ChildContent
-</NeoUI.Blazor.Primitives.Tooltip.Tooltip>
+</NeoUI.Blazor.Primitives.Tooltip>
 
 @code {
     /// <summary>

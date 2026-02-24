@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.HeightAnimation;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Configuration for the HeightAnimation component.

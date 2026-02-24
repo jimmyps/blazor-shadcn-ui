@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Kbd;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Size variants for the Kbd component.

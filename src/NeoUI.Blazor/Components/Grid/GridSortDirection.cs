@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace NeoUI.Blazor.Grid;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Specifies the sort direction for a grid column.

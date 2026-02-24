@@ -1,11 +1,10 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
-namespace NeoUI.Blazor.RangeSlider;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A dual-handle range slider component that follows the shadcn/ui design system.

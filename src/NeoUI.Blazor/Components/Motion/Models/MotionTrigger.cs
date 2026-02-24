@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Motion;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines when the animation should be triggered.

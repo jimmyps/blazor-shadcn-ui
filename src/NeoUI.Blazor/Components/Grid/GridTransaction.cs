@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Grid;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Represents a batched transaction of changes to apply to the grid.

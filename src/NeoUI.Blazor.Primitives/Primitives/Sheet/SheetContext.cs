@@ -1,6 +1,4 @@
-using NeoUI.Blazor.Primitives.Contexts;
-
-namespace NeoUI.Blazor.Primitives.Sheet;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// State for the Sheet primitive context.

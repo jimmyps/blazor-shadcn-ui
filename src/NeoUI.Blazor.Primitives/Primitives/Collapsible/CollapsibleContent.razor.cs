@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Primitives.Collapsible;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// A headless content component that displays collapsible content controlled by a CollapsibleTrigger.

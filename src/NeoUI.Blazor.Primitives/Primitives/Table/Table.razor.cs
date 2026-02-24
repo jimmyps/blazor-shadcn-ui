@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Primitives.Table;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Headless table primitive component providing sorting, pagination, and selection capabilities.

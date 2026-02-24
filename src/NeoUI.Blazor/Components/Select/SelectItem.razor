@@ -1,9 +1,7 @@
 @typeparam TValue
-@namespace NeoUI.Blazor.Select
-@using NeoUI.Blazor.Primitives.Select
-
+@namespace NeoUI.Blazor
 @* Styled SelectItem wrapper around SelectItem primitive *@
-<NeoUI.Blazor.Primitives.Select.SelectItem TValue="TValue"
+<NeoUI.Blazor.Primitives.SelectItem TValue="TValue"
                                            Value="Value"
                                            TextValue="@GetDisplayText()"
                                            Disabled="Disabled"
@@ -30,7 +28,7 @@
             @Value?.ToString()
         }
     </span>
-</NeoUI.Blazor.Primitives.Select.SelectItem>
+</NeoUI.Blazor.Primitives.SelectItem>
 
 @code {
     [CascadingParameter]

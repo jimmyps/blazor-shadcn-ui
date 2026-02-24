@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using System.Text;
 
-namespace NeoUI.Blazor.Avatar;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Displays fallback content when an AvatarImage fails to load or is unavailable.

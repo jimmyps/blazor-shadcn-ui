@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Separator;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the orientation of a Separator component.

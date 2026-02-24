@@ -1,8 +1,8 @@
-@namespace NeoUI.Blazor.ContextMenu
+@namespace NeoUI.Blazor
 @typeparam TValue
 
 @* ContextMenuRadioItem - styled radio item *@
-<NeoUI.Blazor.Primitives.ContextMenu.ContextMenuRadioItem TValue="TValue"
+<NeoUI.Blazor.Primitives.ContextMenuRadioItem TValue="TValue"
                                                       Disabled="@Disabled"
                                                       Value="@Value"
                                                       CloseOnSelect="@CloseOnSelect"
@@ -21,11 +21,11 @@
         }
     </span>
     <span>@ChildContent</span>
-</NeoUI.Blazor.Primitives.ContextMenu.ContextMenuRadioItem>
+</NeoUI.Blazor.Primitives.ContextMenuRadioItem>
 
 @code {
     [CascadingParameter]
-    private NeoUI.Blazor.Primitives.ContextMenu.ContextMenuRadioGroupContext<TValue>? RadioGroupContext { get; set; }
+    private NeoUI.Blazor.Primitives.ContextMenuRadioGroupContext<TValue>? RadioGroupContext { get; set; }
 
     /// <summary>
     /// The content to display inside the radio item.

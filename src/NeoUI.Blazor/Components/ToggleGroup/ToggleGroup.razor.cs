@@ -1,7 +1,6 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.ToggleGroup;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A toggle group component that manages multiple toggle items.

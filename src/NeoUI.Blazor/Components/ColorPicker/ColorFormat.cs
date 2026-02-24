@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.ColorPicker;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Specifies the color format for the ColorPicker component.

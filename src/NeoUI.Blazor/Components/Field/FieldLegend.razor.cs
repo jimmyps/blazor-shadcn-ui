@@ -1,8 +1,7 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 
-namespace NeoUI.Blazor.Field;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A legend element for labeling fieldsets or field groups.

@@ -1,7 +1,6 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Spinner;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A spinner/loading indicator component.

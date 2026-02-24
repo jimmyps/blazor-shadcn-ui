@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.RichTextEditor;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Represents a selection range in the rich text editor.

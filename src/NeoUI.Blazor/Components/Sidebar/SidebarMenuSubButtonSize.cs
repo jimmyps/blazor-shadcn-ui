@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Sidebar;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines size variants for SidebarMenuSubButton component.

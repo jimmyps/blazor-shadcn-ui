@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Primitives.Collapsible;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Provides context state for a Collapsible component and its sub-components.

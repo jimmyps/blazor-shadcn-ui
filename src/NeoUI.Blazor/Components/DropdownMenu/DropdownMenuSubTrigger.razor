@@ -1,8 +1,6 @@
-@namespace NeoUI.Blazor.DropdownMenu
-@using NeoUI.Blazor.Primitives.DropdownMenu
-
+@namespace NeoUI.Blazor
 @* Styled DropdownMenuSubTrigger - wrapper with shadcn Tailwind classes *@
-<NeoUI.Blazor.Primitives.DropdownMenu.DropdownMenuSubTrigger class="@CssClass"
+<NeoUI.Blazor.Primitives.DropdownMenuSubTrigger class="@CssClass"
                                                           Disabled="@Disabled">
     @ChildContent
     <svg xmlns="http://www.w3.org/2000/svg"
@@ -17,7 +15,7 @@
          class="ml-auto h-4 w-4">
         <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
-</NeoUI.Blazor.Primitives.DropdownMenu.DropdownMenuSubTrigger>
+</NeoUI.Blazor.Primitives.DropdownMenuSubTrigger>
 
 @code {
     /// <summary>

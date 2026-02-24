@@ -1,7 +1,6 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.InputGroup;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A text container for displaying static content within InputGroup addons.

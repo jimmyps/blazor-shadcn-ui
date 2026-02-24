@@ -1,11 +1,10 @@
-using NeoUI.Blazor.Utilities;
 using Ganss.Xss;
 using Markdig;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
-namespace NeoUI.Blazor.MarkdownEditor;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A markdown editor component with toolbar and preview functionality.

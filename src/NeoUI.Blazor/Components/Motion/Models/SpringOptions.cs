@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Motion;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Spring physics configuration for natural, physics-based animations.

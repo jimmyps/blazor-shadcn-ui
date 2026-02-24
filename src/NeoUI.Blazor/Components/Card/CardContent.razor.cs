@@ -1,7 +1,6 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Card;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// The main content area of a card component.

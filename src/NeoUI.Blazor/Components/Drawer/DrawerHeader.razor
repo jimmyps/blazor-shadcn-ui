@@ -1,4 +1,4 @@
-@namespace NeoUI.Blazor.Drawer
+@namespace NeoUI.Blazor
 
 <div class="@CssClass">
     @ChildContent
@@ -11,7 +11,7 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    private string CssClass => NeoUI.Blazor.Utilities.ClassNames.cn(
+    private string CssClass => ClassNames.cn(
         "grid gap-1.5 p-4 text-center sm:text-left",
         Class
     );

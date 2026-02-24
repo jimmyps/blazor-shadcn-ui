@@ -1,19 +1,15 @@
-@using NeoUI.Blazor.Primitives.Services
-@namespace NeoUI.Blazor.HoverCard
-@using NeoUI.Blazor.Utilities
-@using NeoUI.Blazor.Primitives.HoverCard
-
+@namespace NeoUI.Blazor
 @*
     Styled HoverCardContent component.
     Wraps the HoverCardContent primitive with shadcn/ui styling.
 *@
 
-<NeoUI.Blazor.Primitives.HoverCard.HoverCardContent Side="@Side"
+<NeoUI.Blazor.Primitives.HoverCardContent Side="@Side"
                                                       Align="@Align"
                                                       Offset="@Offset"
                                                       class="@CssClass">
     @ChildContent
-</NeoUI.Blazor.Primitives.HoverCard.HoverCardContent>
+</NeoUI.Blazor.Primitives.HoverCardContent>
 
 @code {
     /// <summary>

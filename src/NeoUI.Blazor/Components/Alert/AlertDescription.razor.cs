@@ -1,7 +1,6 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Alert;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// The description component for an Alert.

@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Primitives.Table;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Manages the sorting configuration for a table.

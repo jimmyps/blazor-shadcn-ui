@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Alert;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the visual style variant for an Alert component.

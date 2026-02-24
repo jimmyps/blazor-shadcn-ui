@@ -1,4 +1,4 @@
-@namespace NeoUI.Blazor.Pagination
+@namespace NeoUI.Blazor
 @using NeoUI.Icons.Lucide
 
 <PaginationLink Size="PaginationLinkSize.Icon"
@@ -43,7 +43,7 @@
             await OnClick.InvokeAsync();
     }
 
-    private string CssClass => NeoUI.Blazor.Utilities.ClassNames.cn(
+    private string CssClass => ClassNames.cn(
         "h-8 w-8",
         Class
     );

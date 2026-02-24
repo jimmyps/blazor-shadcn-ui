@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Primitives.Table;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Container for all table state including sorting, pagination, and selection.

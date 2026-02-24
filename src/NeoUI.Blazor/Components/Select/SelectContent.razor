@@ -1,16 +1,14 @@
 @typeparam TValue
-@namespace NeoUI.Blazor.Select
-@using NeoUI.Blazor.Primitives.Select
-@using NeoUI.Blazor.Primitives.Services
+@namespace NeoUI.Blazor
 @attribute [CascadingTypeParameter(nameof(TValue))]
 
 @* Styled SelectContent wrapper around SelectContent primitive *@
-<NeoUI.Blazor.Primitives.Select.SelectContent TValue="TValue"
+<NeoUI.Blazor.Primitives.SelectContent TValue="TValue"
                                                class="@CssClass">
     <div class="p-1">
         @ChildContent
     </div>
-</NeoUI.Blazor.Primitives.Select.SelectContent>
+</NeoUI.Blazor.Primitives.SelectContent>
 
 @code {
     /// <summary>

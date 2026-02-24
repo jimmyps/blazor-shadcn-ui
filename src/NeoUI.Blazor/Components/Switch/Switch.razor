@@ -1,7 +1,5 @@
-@namespace NeoUI.Blazor.Switch
-@using NeoUI.Blazor.Primitives.Switch
-
-<NeoUI.Blazor.Primitives.Switch.Switch Checked="@Checked"
+@namespace NeoUI.Blazor
+<NeoUI.Blazor.Primitives.Switch Checked="@Checked"
                  CheckedChanged="@HandleCheckedChanged"
                  Disabled="@Disabled"
                  Id="@Id"
@@ -11,7 +9,7 @@
                  class="@CssClass">
     <span data-state="@(Checked ? "checked" : "unchecked")" class="@ThumbCssClass">
     </span>
-</NeoUI.Blazor.Primitives.Switch.Switch>
+</NeoUI.Blazor.Primitives.Switch>
 
 @* Hidden input for form submission *@
 @if (!string.IsNullOrEmpty(EffectiveName))

@@ -1,7 +1,4 @@
 @page "/primitives/radio-group"
-@using NeoUI.Blazor.Primitives.RadioGroup
-@using NeoUI.Blazor.Kbd
-
 <PageTitle>RadioGroup Primitive - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -22,18 +19,18 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <NeoUI.Blazor.Primitives.RadioGroup.RadioGroup @bind-Value="basicValue" AriaLabel="Basic radio group">
+                <NeoUI.Blazor.Primitives.RadioGroup @bind-Value="basicValue" AriaLabel="Basic radio group">
                     @foreach (var option in new[] { "Option 1", "Option 2", "Option 3" })
                     {
                         <div class="flex items-center gap-3 mb-2">
-                            <NeoUI.Blazor.Primitives.RadioGroup.RadioGroupItem Value="@option" Id="@($"basic-{option}")"
+                            <NeoUI.Blazor.Primitives.RadioGroupItem Value="@option" Id="@($"basic-{option}")"
                                                      class="h-4 w-4 rounded-full border-2 border-input cursor-pointer data-[state=checked]:border-primary data-[state=checked]:bg-primary flex items-center justify-center">
                                 <span class="h-2 w-2 rounded-full bg-background data-[state=unchecked]:scale-0 transition-transform" data-state="@(basicValue == option ? "checked" : "unchecked")"></span>
-                            </NeoUI.Blazor.Primitives.RadioGroup.RadioGroupItem>
+                            </NeoUI.Blazor.Primitives.RadioGroupItem>
                             <label for="@($"basic-{option}")" class="cursor-pointer">@option</label>
                         </div>
                     }
-                </NeoUI.Blazor.Primitives.RadioGroup.RadioGroup>
+                </NeoUI.Blazor.Primitives.RadioGroup>
                 <p class="text-sm text-muted-foreground mt-3">Selected: @(basicValue ?? "None")</p>
                 <p class="text-xs text-muted-foreground mt-1">Try using arrow keys ↑↓ to navigate!</p>
             </div>
@@ -61,18 +58,18 @@
                 </div>
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
-                    <NeoUI.Blazor.Primitives.RadioGroup.RadioGroup @bind-Value="controlledValue" AriaLabel="Size selection">
+                    <NeoUI.Blazor.Primitives.RadioGroup @bind-Value="controlledValue" AriaLabel="Size selection">
                         @foreach (var size in new[] { "Small", "Medium", "Large" })
                         {
                             <div class="flex items-center gap-3 mb-2">
-                                <NeoUI.Blazor.Primitives.RadioGroup.RadioGroupItem Value="@size" Id="@($"size-{size}")"
+                                <NeoUI.Blazor.Primitives.RadioGroupItem Value="@size" Id="@($"size-{size}")"
                                                          class="h-4 w-4 rounded-full border-2 border-input cursor-pointer data-[state=checked]:border-primary data-[state=checked]:bg-primary flex items-center justify-center">
                                     <span class="h-2 w-2 rounded-full bg-background data-[state=unchecked]:scale-0 transition-transform" data-state="@(controlledValue == size ? "checked" : "unchecked")"></span>
-                                </NeoUI.Blazor.Primitives.RadioGroup.RadioGroupItem>
+                                </NeoUI.Blazor.Primitives.RadioGroupItem>
                                 <label for="@($"size-{size}")" class="cursor-pointer">@size</label>
                             </div>
                         }
-                    </NeoUI.Blazor.Primitives.RadioGroup.RadioGroup>
+                    </NeoUI.Blazor.Primitives.RadioGroup>
                     <p class="text-sm text-muted-foreground mt-3">Selected size: @(controlledValue ?? "None")</p>
                 </div>
             </div>
@@ -87,18 +84,18 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <NeoUI.Blazor.Primitives.RadioGroup.RadioGroup @bind-Value="navValue" AriaLabel="Navigation demo" class="space-y-2">
+                <NeoUI.Blazor.Primitives.RadioGroup @bind-Value="navValue" AriaLabel="Navigation demo" class="space-y-2">
                     @foreach (var direction in new[] { "North", "East", "South", "West" })
                     {
                         <div class="flex items-center gap-3">
-                            <NeoUI.Blazor.Primitives.RadioGroup.RadioGroupItem Value="@direction" Id="@($"nav-{direction}")"
+                            <NeoUI.Blazor.Primitives.RadioGroupItem Value="@direction" Id="@($"nav-{direction}")"
                                                      class="h-4 w-4 rounded-full border-2 border-input cursor-pointer data-[state=checked]:border-primary data-[state=checked]:bg-primary flex items-center justify-center focus-visible:ring-2 focus-visible:ring-ring">
                                 <span class="h-2 w-2 rounded-full bg-background data-[state=unchecked]:scale-0 transition-transform" data-state="@(navValue == direction ? "checked" : "unchecked")"></span>
-                            </NeoUI.Blazor.Primitives.RadioGroup.RadioGroupItem>
+                            </NeoUI.Blazor.Primitives.RadioGroupItem>
                             <label for="@($"nav-{direction}")" class="cursor-pointer">@direction</label>
                         </div>
                     }
-                </NeoUI.Blazor.Primitives.RadioGroup.RadioGroup>
+                </NeoUI.Blazor.Primitives.RadioGroup>
                 <p class="text-sm text-muted-foreground mt-3">Click an option, then use ↑↓ or ←→ arrow keys to navigate</p>
             </div>
         </section>
@@ -114,18 +111,18 @@
             <div class="rounded-lg border bg-card p-6 max-w-md space-y-4">
                 <div>
                     <h3 class="text-sm font-semibold mb-2">Disabled Group:</h3>
-                    <NeoUI.Blazor.Primitives.RadioGroup.RadioGroup Value="@disabledValue" Disabled="true" AriaLabel="Disabled group" class="space-y-2 opacity-50">
+                    <NeoUI.Blazor.Primitives.RadioGroup Value="@disabledValue" Disabled="true" AriaLabel="Disabled group" class="space-y-2 opacity-50">
                         @foreach (var opt in new[] { "Option A", "Option B" })
                         {
                             <div class="flex items-center gap-3">
-                                <NeoUI.Blazor.Primitives.RadioGroup.RadioGroupItem Value="@opt" Id="@($"disabled-{opt}")"
+                                <NeoUI.Blazor.Primitives.RadioGroupItem Value="@opt" Id="@($"disabled-{opt}")"
                                                          class="h-4 w-4 rounded-full border-2 border-input flex items-center justify-center cursor-not-allowed">
                                     <span class="h-2 w-2 rounded-full bg-muted"></span>
-                                </NeoUI.Blazor.Primitives.RadioGroup.RadioGroupItem>
+                                </NeoUI.Blazor.Primitives.RadioGroupItem>
                                 <label for="@($"disabled-{opt}")" class="cursor-not-allowed">@opt</label>
                             </div>
                         }
-                    </NeoUI.Blazor.Primitives.RadioGroup.RadioGroup>
+                    </NeoUI.Blazor.Primitives.RadioGroup>
                 </div>
             </div>
         </section>

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace NeoUI.Blazor.Grid;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Represents the state of a single grid column.

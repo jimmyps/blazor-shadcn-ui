@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Slider;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the orientation of a Slider component.

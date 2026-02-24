@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using NeoUI.Blazor.Primitives.Services;
-
 namespace NeoUI.Blazor.Primitives.Extensions;
 
 /// <summary>

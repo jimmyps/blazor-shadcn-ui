@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.JSInterop;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace NeoUI.Blazor.Sidebar;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Provides context and state management for sidebar components with responsive behavior and persistence.

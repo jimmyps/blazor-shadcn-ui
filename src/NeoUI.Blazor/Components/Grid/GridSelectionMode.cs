@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace NeoUI.Blazor.Grid;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Specifies the row selection behavior for a grid.

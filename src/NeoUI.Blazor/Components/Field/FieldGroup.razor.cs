@@ -1,8 +1,7 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 
-namespace NeoUI.Blazor.Field;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A layout wrapper for stacking multiple Field components.

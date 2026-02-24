@@ -1,15 +1,12 @@
-@namespace NeoUI.Blazor.HoverCard
-@using NeoUI.Blazor.Utilities
-@using NeoUI.Blazor.Primitives.HoverCard
-
+@namespace NeoUI.Blazor
 @*
     Styled HoverCardTrigger component.
     Wraps the HoverCardTrigger primitive with shadcn/ui styling.
 *@
 
-<NeoUI.Blazor.Primitives.HoverCard.HoverCardTrigger AsChild="@AsChild" class="@CssClass">
+<NeoUI.Blazor.Primitives.HoverCardTrigger AsChild="@AsChild" class="@CssClass">
     @ChildContent
-</NeoUI.Blazor.Primitives.HoverCard.HoverCardTrigger>
+</NeoUI.Blazor.Primitives.HoverCardTrigger>
 
 @code {
     /// <summary>

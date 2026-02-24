@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Empty;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Size variants for the Empty component.

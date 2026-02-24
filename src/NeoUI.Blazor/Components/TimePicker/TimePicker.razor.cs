@@ -1,10 +1,8 @@
-using NeoUI.Blazor.Button;
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using System.Linq.Expressions;
 
-namespace NeoUI.Blazor.TimePicker;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A time picker component that follows the shadcn/ui design system.

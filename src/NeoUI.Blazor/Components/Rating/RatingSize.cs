@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Rating;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the size options for the rating component.

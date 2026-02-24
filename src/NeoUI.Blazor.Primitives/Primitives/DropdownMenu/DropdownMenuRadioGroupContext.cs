@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Primitives.DropdownMenu;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Context class for sharing state between DropdownMenuRadioGroup and DropdownMenuRadioItem components.

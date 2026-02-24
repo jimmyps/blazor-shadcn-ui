@@ -1,11 +1,10 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
-namespace NeoUI.Blazor.FileUpload;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A file upload component with drag-and-drop support following the shadcn/ui design system.

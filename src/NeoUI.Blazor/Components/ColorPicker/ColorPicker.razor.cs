@@ -1,10 +1,9 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
-namespace NeoUI.Blazor.ColorPicker;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A color picker component with popover, canvas-based selection, and preset swatches.

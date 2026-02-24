@@ -1,11 +1,11 @@
-@namespace NeoUI.Blazor.Menubar
+@namespace NeoUI.Blazor
 
 @* Styled MenubarSub - container for a submenu *@
-<NeoUI.Blazor.Primitives.Menubar.MenubarSub Open="@Open"
+<NeoUI.Blazor.Primitives.MenubarSub Open="@Open"
                                          OpenChanged="@OpenChanged"
                                          OnOpenChange="@OnOpenChange">
     @ChildContent
-</NeoUI.Blazor.Primitives.Menubar.MenubarSub>
+</NeoUI.Blazor.Primitives.MenubarSub>
 
 @code {
     /// <summary>

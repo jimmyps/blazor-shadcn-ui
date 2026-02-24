@@ -1,8 +1,6 @@
-﻿@namespace NeoUI.Blazor.DropdownMenu
-@using NeoUI.Blazor.Primitives.DropdownMenu
-
+@namespace NeoUI.Blazor
 @* Styled DropdownMenuCheckboxItem - wrapper with shadcn Tailwind classes *@
-<NeoUI.Blazor.Primitives.DropdownMenu.DropdownMenuCheckboxItem class="@CssClass"
+<NeoUI.Blazor.Primitives.DropdownMenuCheckboxItem class="@CssClass"
                                                            Disabled="@Disabled"
                                                            Checked="@Checked"
                                                            CheckedChanged="@OnCheckedChanged"
@@ -26,7 +24,7 @@
         }
     </span>
     <span>@ChildContent</span>
-</NeoUI.Blazor.Primitives.DropdownMenu.DropdownMenuCheckboxItem>
+</NeoUI.Blazor.Primitives.DropdownMenuCheckboxItem>
 
 @code {
 

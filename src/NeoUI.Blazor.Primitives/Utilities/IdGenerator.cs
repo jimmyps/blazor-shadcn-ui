@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Primitives.Utilities;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Thread-safe utility for generating unique component IDs.

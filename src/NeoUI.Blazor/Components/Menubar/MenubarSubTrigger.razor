@@ -1,9 +1,6 @@
-@namespace NeoUI.Blazor.Menubar
-@using NeoUI.Blazor.Utilities
-@using NeoUI.Blazor.Primitives.Menubar
-
+@namespace NeoUI.Blazor
 @* Styled MenubarSubTrigger - wrapper with shadcn Tailwind classes *@
-<NeoUI.Blazor.Primitives.Menubar.MenubarSubTrigger class="@CssClass"
+<NeoUI.Blazor.Primitives.MenubarSubTrigger class="@CssClass"
                                                  Disabled="@Disabled">
     @ChildContent
     <svg xmlns="http://www.w3.org/2000/svg"
@@ -18,7 +15,7 @@
          class="ml-auto h-4 w-4">
         <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
-</NeoUI.Blazor.Primitives.Menubar.MenubarSubTrigger>
+</NeoUI.Blazor.Primitives.MenubarSubTrigger>
 
 @code {
     /// <summary>

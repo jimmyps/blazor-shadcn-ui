@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Grid;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Specifies the row model type for the grid.

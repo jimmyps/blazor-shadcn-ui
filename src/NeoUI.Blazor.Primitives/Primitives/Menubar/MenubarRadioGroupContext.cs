@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Primitives.Menubar;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Context class for sharing state between MenubarRadioGroup and MenubarRadioItem components.

@@ -1,7 +1,6 @@
 using NeoUI.Blazor.Services;
 using NeoUI.Blazor.Services.Grid;
 using NeoUI.Blazor.Services.Theming;
-using NeoUI.Blazor.Toast;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 

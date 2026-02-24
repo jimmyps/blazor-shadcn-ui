@@ -1,8 +1,7 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 
-namespace NeoUI.Blazor.Field;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A visual divider for separating sections within field groups, with optional centered content.

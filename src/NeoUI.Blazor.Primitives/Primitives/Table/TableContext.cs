@@ -1,6 +1,4 @@
-using NeoUI.Blazor.Primitives.Contexts;
-
-namespace NeoUI.Blazor.Primitives.Table;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Context for Table primitive component and its children.

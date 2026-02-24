@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Primitives.Table;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Context provided to table render templates.

@@ -1,8 +1,6 @@
-using NeoUI.Blazor.Utilities;
-using NeoUI.Blazor.Separator;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.ButtonGroup;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A separator component designed to be used within a ButtonGroup.

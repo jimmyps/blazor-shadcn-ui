@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using NeoUI.Blazor.Grid;
-
 namespace NeoUI.Blazor.Services.Grid;
 
 /// <summary>

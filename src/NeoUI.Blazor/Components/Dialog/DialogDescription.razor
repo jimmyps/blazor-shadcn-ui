@@ -1,14 +1,11 @@
-@namespace NeoUI.Blazor.Dialog
-@using NeoUI.Blazor.Utilities
-@using NeoUI.Blazor.Primitives.Dialog
-
+@namespace NeoUI.Blazor
 @*
     Styled DialogDescription component with shadcn/ui classes.
 *@
 
-<NeoUI.Blazor.Primitives.Dialog.DialogDescription class="@GetClassNames()" @attributes="AdditionalAttributes">
+<NeoUI.Blazor.Primitives.DialogDescription class="@GetClassNames()" @attributes="AdditionalAttributes">
     @ChildContent
-</NeoUI.Blazor.Primitives.Dialog.DialogDescription>
+</NeoUI.Blazor.Primitives.DialogDescription>
 
 @code {
     /// <summary>

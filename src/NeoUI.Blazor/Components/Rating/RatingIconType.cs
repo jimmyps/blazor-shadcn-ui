@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Rating;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the icon types available for the rating component.

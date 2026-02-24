@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Toggle;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the visual style variant for a Toggle component.

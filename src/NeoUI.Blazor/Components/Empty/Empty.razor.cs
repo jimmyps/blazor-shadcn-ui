@@ -1,7 +1,6 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Empty;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// An empty state component for displaying when no data is available.

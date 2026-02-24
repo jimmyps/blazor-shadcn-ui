@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Motion;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Configuration options for Motion animations.

@@ -1,15 +1,13 @@
-@namespace NeoUI.Blazor.DropdownMenu
-@using NeoUI.Blazor.Primitives.DropdownMenu
-
+@namespace NeoUI.Blazor
 @* Styled DropdownMenu component - thin wrapper around DropdownMenu primitive *@
-<NeoUI.Blazor.Primitives.DropdownMenu.DropdownMenu Open="@Open"
+<NeoUI.Blazor.Primitives.DropdownMenu Open="@Open"
                                                       OpenChanged="@OpenChanged"
                                                       DefaultOpen="@DefaultOpen"
                                                       OnOpenChange="@OnOpenChange"
                                                       Modal="@Modal"
                                                       Dir="@Dir">
     @ChildContent
-</NeoUI.Blazor.Primitives.DropdownMenu.DropdownMenu>
+</NeoUI.Blazor.Primitives.DropdownMenu>
 
 @code {
     /// <summary>

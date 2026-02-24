@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using System.Text;
 
-namespace NeoUI.Blazor.Separator;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A separator component that visually or semantically divides content.

@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Primitives.Table;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Manages pagination configuration and state for a table.

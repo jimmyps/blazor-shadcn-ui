@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.RangeSlider;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the orientation of a slider component.

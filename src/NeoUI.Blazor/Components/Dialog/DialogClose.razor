@@ -1,18 +1,16 @@
-@namespace NeoUI.Blazor.Dialog
-@using NeoUI.Blazor.Primitives.Dialog
-
+@namespace NeoUI.Blazor
 @*
     Styled DialogClose component wrapper.
     Renders a button to close the dialog.
 *@
 
-<NeoUI.Blazor.Primitives.Dialog.DialogClose
+<NeoUI.Blazor.Primitives.DialogClose
     AsChild="@AsChild"
     OnClick="@OnClick"
     PreventClose="@PreventClose"
     @attributes="AdditionalAttributes">
     @ChildContent
-</NeoUI.Blazor.Primitives.Dialog.DialogClose>
+</NeoUI.Blazor.Primitives.DialogClose>
 
 @code {
     /// <summary>

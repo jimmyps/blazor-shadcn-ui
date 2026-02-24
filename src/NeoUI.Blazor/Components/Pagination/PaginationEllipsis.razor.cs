@@ -1,7 +1,6 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Pagination;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// An ellipsis component for pagination to indicate skipped pages.

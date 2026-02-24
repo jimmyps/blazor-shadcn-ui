@@ -1,6 +1,4 @@
-@namespace NeoUI.Blazor.Pagination
-@using NeoUI.Blazor.Primitives.Table
-
+@namespace NeoUI.Blazor
 <CascadingValue Value="@_context" IsFixed="false">
     <nav role="navigation" aria-label="pagination" class="@CssClass">
         @ChildContent
@@ -57,7 +55,7 @@
         };
     }
 
-    private string CssClass => NeoUI.Blazor.Utilities.ClassNames.cn(
+    private string CssClass => ClassNames.cn(
         "mx-auto flex w-full justify-center",
         Class
     );

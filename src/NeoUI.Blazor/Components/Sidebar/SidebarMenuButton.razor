@@ -1,10 +1,5 @@
-@namespace NeoUI.Blazor.Sidebar
-@using NeoUI.Blazor.Utilities
-@using NeoUI.Blazor.Tooltip
-@using NeoUI.Blazor.Primitives.Tooltip
-@using NeoUI.Blazor.Primitives.Collapsible
+@namespace NeoUI.Blazor
 @using Microsoft.AspNetCore.Components.Routing
-@using NeoUI.Blazor.Primitives.Services
 @inject NavigationManager NavigationManager
 
 @*
@@ -13,14 +8,14 @@
 
 @if (ShouldShowTooltip())
 {
-    <NeoUI.Blazor.Primitives.Tooltip.Tooltip>
-        <NeoUI.Blazor.Primitives.Tooltip.TooltipTrigger>
+    <NeoUI.Blazor.Primitives.Tooltip>
+        <NeoUI.Blazor.Primitives.TooltipTrigger>
             @RenderButton()
-        </NeoUI.Blazor.Primitives.Tooltip.TooltipTrigger>
+        </NeoUI.Blazor.Primitives.TooltipTrigger>
         <NeoUI.Blazor.Tooltip.TooltipContent Side="@(Context?.Side == SidebarSide.Right ? PopoverSide.Left : PopoverSide.Right)" Align="@PopoverAlign.Center">
             @Tooltip
         </NeoUI.Blazor.Tooltip.TooltipContent>
-    </NeoUI.Blazor.Primitives.Tooltip.Tooltip>
+    </NeoUI.Blazor.Primitives.Tooltip>
 }
 else
 {

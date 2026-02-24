@@ -1,8 +1,7 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace NeoUI.Blazor.InputGroup;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A textarea component optimized for use within InputGroup.

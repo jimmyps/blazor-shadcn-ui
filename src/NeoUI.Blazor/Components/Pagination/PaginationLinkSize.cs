@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Pagination;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the size variants for Pagination link components.

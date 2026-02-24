@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.TimePicker;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the time format for the TimePicker component.

@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Primitives.Utilities;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Context passed to child components when AsChild=true on trigger components.

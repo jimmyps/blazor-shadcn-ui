@@ -1,8 +1,4 @@
-@namespace NeoUI.Blazor.AlertDialog
-@using NeoUI.Blazor.Utilities
-@using NeoUI.Blazor.Primitives.Dialog
-@using NeoUI.Blazor.Primitives.Services
-
+@namespace NeoUI.Blazor
 @*
     AlertDialog content with alert-specific styling.
     By default, prevents dismissal via click-outside for standard alert dialog behavior.
@@ -11,7 +7,7 @@
 <DialogPortal>
     <DialogOverlay CloseOnClick="@CloseOnClickOutside" class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
 
-    <NeoUI.Blazor.Primitives.Dialog.DialogContent
+    <NeoUI.Blazor.Primitives.DialogContent
         class="@GetClassNames()"
         style="@($"z-index: {GetEffectiveContentZIndex()}")"
         CloseOnEscape="@CloseOnEscape"
@@ -20,7 +16,7 @@
         role="alertdialog"
         @attributes="AdditionalAttributes">
         @ChildContent
-    </NeoUI.Blazor.Primitives.Dialog.DialogContent>
+    </NeoUI.Blazor.Primitives.DialogContent>
 </DialogPortal>
 
 @code {

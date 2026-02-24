@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Typography;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the typography variant styles.

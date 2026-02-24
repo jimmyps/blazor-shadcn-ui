@@ -1,8 +1,7 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 
-namespace NeoUI.Blazor.ButtonGroup;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A text/label component designed to be used within a ButtonGroup.

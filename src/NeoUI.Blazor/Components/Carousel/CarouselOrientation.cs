@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Carousel;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the orientation of the carousel.

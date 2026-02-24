@@ -1,9 +1,8 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
-namespace NeoUI.Blazor.InputGroup;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A container for additional content positioned around an input control.

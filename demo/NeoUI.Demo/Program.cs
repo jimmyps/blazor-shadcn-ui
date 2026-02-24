@@ -1,8 +1,6 @@
 using NeoUI.Blazor.Extensions;
 using NeoUI.Demo;
 using NeoUI.Demo.Services;
-using NeoUI.Blazor.Primitives.Extensions;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

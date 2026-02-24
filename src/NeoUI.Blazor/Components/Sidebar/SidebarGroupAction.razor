@@ -1,22 +1,18 @@
-@namespace NeoUI.Blazor.Sidebar
-@using NeoUI.Blazor.Utilities
-@using NeoUI.Blazor.Primitives.Tooltip
-@using NeoUI.Blazor.Primitives.Services
-
+@namespace NeoUI.Blazor
 @*
     SidebarGroupAction component for action buttons in group headers.
 *@
 
 @if (!string.IsNullOrEmpty(Tooltip))
 {
-    <NeoUI.Blazor.Primitives.Tooltip.Tooltip>
-        <NeoUI.Blazor.Primitives.Tooltip.TooltipTrigger>
+    <NeoUI.Blazor.Primitives.Tooltip>
+        <NeoUI.Blazor.Primitives.TooltipTrigger>
             @RenderButton()
-        </NeoUI.Blazor.Primitives.Tooltip.TooltipTrigger>
-        <NeoUI.Blazor.Primitives.Tooltip.TooltipContent Side="@PopoverSide.Right">
+        </NeoUI.Blazor.Primitives.TooltipTrigger>
+        <NeoUI.Blazor.Primitives.TooltipContent Side="@PopoverSide.Right">
             <span>@Tooltip</span>
-        </NeoUI.Blazor.Primitives.Tooltip.TooltipContent>
-    </NeoUI.Blazor.Primitives.Tooltip.Tooltip>
+        </NeoUI.Blazor.Primitives.TooltipContent>
+    </NeoUI.Blazor.Primitives.Tooltip>
 }
 else
 {

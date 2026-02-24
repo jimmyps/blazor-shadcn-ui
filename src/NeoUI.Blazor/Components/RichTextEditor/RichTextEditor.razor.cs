@@ -1,10 +1,9 @@
 using System.Text.Json;
-using NeoUI.Blazor.Utilities;
 using Ganss.Xss;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace NeoUI.Blazor.RichTextEditor;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A rich text editor component built on Quill.js that follows the shadcn/ui design system.

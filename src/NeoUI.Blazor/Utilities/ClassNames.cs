@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace NeoUI.Blazor.Utilities;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Provides a utility for combining CSS class names intelligently.

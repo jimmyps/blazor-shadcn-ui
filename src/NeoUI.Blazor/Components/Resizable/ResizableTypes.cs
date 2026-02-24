@@ -1,4 +1,4 @@
-﻿namespace NeoUI.Blazor.Resizable;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Direction of the resizable panel layout.

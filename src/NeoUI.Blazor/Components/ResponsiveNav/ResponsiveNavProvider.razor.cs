@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace NeoUI.Blazor.ResponsiveNav;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Provider component for responsive navigation functionality.

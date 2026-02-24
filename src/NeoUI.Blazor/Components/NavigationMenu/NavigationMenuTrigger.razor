@@ -1,12 +1,12 @@
-﻿@namespace NeoUI.Blazor.NavigationMenu
+@namespace NeoUI.Blazor
 
 @* NavigationMenuTrigger - styled trigger button *@
-<NeoUI.Blazor.Primitives.NavigationMenu.NavigationMenuTrigger class="@GetClass()" @attributes="AdditionalAttributes">
+<NeoUI.Blazor.Primitives.NavigationMenuTrigger class="@GetClass()" @attributes="AdditionalAttributes">
     @ChildContent
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180" aria-hidden="true">
         <path d="m6 9 6 6 6-6"/>
     </svg>
-</NeoUI.Blazor.Primitives.NavigationMenu.NavigationMenuTrigger>
+</NeoUI.Blazor.Primitives.NavigationMenuTrigger>
 
 @code {
     /// <summary>

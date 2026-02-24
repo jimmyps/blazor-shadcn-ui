@@ -1,6 +1,4 @@
-using NeoUI.Blazor.Primitives.Utilities;
-
-namespace NeoUI.Blazor.Primitives.Contexts;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Base class for primitive component contexts.

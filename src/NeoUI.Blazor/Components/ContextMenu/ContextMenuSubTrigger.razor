@@ -1,7 +1,7 @@
-@namespace NeoUI.Blazor.ContextMenu
+@namespace NeoUI.Blazor
 
 @* ContextMenuSubTrigger - styled submenu trigger *@
-<NeoUI.Blazor.Primitives.ContextMenu.ContextMenuSubTrigger Disabled="@Disabled"
+<NeoUI.Blazor.Primitives.ContextMenuSubTrigger Disabled="@Disabled"
                                                         class="@GetClass()"
                                                         @attributes="AdditionalAttributes">
     @ChildContent
@@ -17,7 +17,7 @@
          class="ml-auto h-4 w-4">
         <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
-</NeoUI.Blazor.Primitives.ContextMenu.ContextMenuSubTrigger>
+</NeoUI.Blazor.Primitives.ContextMenuSubTrigger>
 
 @code {
     /// <summary>

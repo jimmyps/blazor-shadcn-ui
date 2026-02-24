@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace NeoUI.Blazor.Primitives.RadioGroup;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// A headless radio button item primitive that can be selected within a RadioGroup.

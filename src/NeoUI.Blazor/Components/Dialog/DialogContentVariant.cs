@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Dialog;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the visual variants for DialogContent styling.

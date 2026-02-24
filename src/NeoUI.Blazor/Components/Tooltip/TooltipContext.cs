@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Tooltip;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Provides context state for an individual Tooltip component and its sub-components.

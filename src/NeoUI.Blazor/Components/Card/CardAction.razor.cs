@@ -1,7 +1,6 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Card;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// An action area within the card header for buttons, links, or other interactive elements.

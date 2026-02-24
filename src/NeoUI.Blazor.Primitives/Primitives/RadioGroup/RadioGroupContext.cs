@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Primitives.RadioGroup;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Context class for sharing state between RadioGroup and RadioGroupItem components.

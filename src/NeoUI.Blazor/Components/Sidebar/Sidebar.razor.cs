@@ -1,9 +1,8 @@
-using NeoUI.Blazor.Primitives.Sheet;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using System;
 
-namespace NeoUI.Blazor.Sidebar;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Represents the main sidebar navigation component with responsive behavior and state management.

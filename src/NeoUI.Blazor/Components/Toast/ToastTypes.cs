@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Toast;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Options for displaying a toast notification.

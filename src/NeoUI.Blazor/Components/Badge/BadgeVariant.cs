@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Badge;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the visual style variant for a Badge component.

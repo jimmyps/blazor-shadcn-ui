@@ -1,8 +1,6 @@
-using NeoUI.Blazor.Primitives.Contexts;
-using NeoUI.Blazor.Primitives.Services;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Primitives.Popover;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// State for the Popover primitive context.

@@ -1,8 +1,5 @@
 @page "/components/theme-switcher"
-@using NeoUI.Blazor.Theme
 @using NeoUI.Blazor.Services.Theming
-@using NeoUI.Blazor.Alert
-@using NeoUI.Blazor.Primitives.Services
 @using NeoUI.Icons.Lucide
 @inject ThemeService ThemeService
 @implements IDisposable
@@ -58,7 +55,7 @@
         </div>
 
         <div class="rounded-lg border bg-muted/50 p-4">
-            <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor.Theme
+            <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor
 
 &lt;DarkModeToggle /&gt;</code></pre>
         </div>
@@ -72,7 +69,7 @@
         </div>
 
         <div class="rounded-lg border bg-muted/50 p-4">
-            <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor.Theme
+            <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor
 
 &lt;ThemeSwitcher /&gt;</code></pre>
         </div>
@@ -129,7 +126,7 @@
             </p>
         </div>
         <div class="rounded-lg border bg-muted/50 p-4">
-            <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor.Primitives.Services   @* for PositioningStrategy *@
+            <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor   @* for PositioningStrategy *@
 
 &lt;ThemeSwitcher Strategy="PositioningStrategy.Absolute" /&gt;</code></pre>
         </div>

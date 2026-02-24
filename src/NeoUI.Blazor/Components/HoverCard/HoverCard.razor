@@ -1,19 +1,17 @@
-@namespace NeoUI.Blazor.HoverCard
-@using NeoUI.Blazor.Primitives.HoverCard
-
+@namespace NeoUI.Blazor
 @*
     Styled HoverCard component wrapper.
     Wraps the HoverCard primitive with shadcn/ui styling.
 *@
 
-<NeoUI.Blazor.Primitives.HoverCard.HoverCard Open="@Open"
+<NeoUI.Blazor.Primitives.HoverCard Open="@Open"
                                               OpenChanged="@OpenChanged"
                                               DefaultOpen="@DefaultOpen"
                                               OnOpenChange="@OnOpenChange"
                                               OpenDelay="@OpenDelay"
                                               CloseDelay="@CloseDelay">
     @ChildContent
-</NeoUI.Blazor.Primitives.HoverCard.HoverCard>
+</NeoUI.Blazor.Primitives.HoverCard>
 
 @code {
     /// <summary>

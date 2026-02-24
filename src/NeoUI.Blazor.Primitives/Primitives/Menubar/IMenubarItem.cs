@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Primitives.Menubar;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Interface for menubar menu items to support keyboard navigation.

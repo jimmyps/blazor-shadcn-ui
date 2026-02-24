@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.NativeSelect;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Size variants for the NativeSelect component.

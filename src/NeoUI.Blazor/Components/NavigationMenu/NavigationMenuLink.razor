@@ -1,8 +1,8 @@
-﻿@namespace NeoUI.Blazor.NavigationMenu
+@namespace NeoUI.Blazor
 @using Microsoft.AspNetCore.Components.Routing
 
 @* NavigationMenuLink - styled navigation link *@
-<NeoUI.Blazor.Primitives.NavigationMenu.NavigationMenuLink Href="@Href"
+<NeoUI.Blazor.Primitives.NavigationMenuLink Href="@Href"
                     Active="@Active"
                     AutoActive="@AutoActive"
                     Match="@Match"
@@ -10,7 +10,7 @@
                     class="@GetClass()"
                     @attributes="AdditionalAttributes">
     @ChildContent
-</NeoUI.Blazor.Primitives.NavigationMenu.NavigationMenuLink>
+</NeoUI.Blazor.Primitives.NavigationMenuLink>
 
 @code {
     /// <summary>

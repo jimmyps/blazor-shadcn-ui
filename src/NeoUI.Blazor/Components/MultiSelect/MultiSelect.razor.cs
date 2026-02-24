@@ -5,7 +5,7 @@ using Microsoft.JSInterop;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace NeoUI.Blazor.MultiSelect;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A multi-select component that allows users to select multiple options from a searchable dropdown.

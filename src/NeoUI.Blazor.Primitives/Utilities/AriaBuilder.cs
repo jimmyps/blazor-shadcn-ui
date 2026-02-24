@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Primitives.Utilities;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// ARIA live region politeness settings.

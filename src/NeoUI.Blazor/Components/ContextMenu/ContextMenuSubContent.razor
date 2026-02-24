@@ -1,9 +1,6 @@
-@namespace NeoUI.Blazor.ContextMenu
-@using NeoUI.Blazor.Utilities
-@using NeoUI.Blazor.Primitives.Services
-
+@namespace NeoUI.Blazor
 @* ContextMenuSubContent - styled submenu content *@
-<NeoUI.Blazor.Primitives.ContextMenu.ContextMenuSubContent CloseOnEscape="@CloseOnEscape"
+<NeoUI.Blazor.Primitives.ContextMenuSubContent CloseOnEscape="@CloseOnEscape"
                                                         Offset="@Offset"
                                                         ZIndex="@ZIndex"
                                                         class="@GetClass()"
@@ -11,7 +8,7 @@
     <div class="p-1">
         @ChildContent
     </div>
-</NeoUI.Blazor.Primitives.ContextMenu.ContextMenuSubContent>
+</NeoUI.Blazor.Primitives.ContextMenuSubContent>
 
 @code {
     /// <summary>

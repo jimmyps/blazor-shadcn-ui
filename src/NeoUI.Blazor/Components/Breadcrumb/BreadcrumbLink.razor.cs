@@ -1,7 +1,6 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Breadcrumb;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A link component for a breadcrumb item.

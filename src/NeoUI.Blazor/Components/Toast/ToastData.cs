@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Toast;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Represents the data for a single toast notification.

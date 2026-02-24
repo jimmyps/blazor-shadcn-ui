@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Button;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the size variant for a Button component.

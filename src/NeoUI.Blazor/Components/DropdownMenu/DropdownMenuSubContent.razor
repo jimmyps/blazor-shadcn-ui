@@ -1,15 +1,13 @@
-@namespace NeoUI.Blazor.DropdownMenu
-@using NeoUI.Blazor.Primitives.Services
-
+@namespace NeoUI.Blazor
 @* Styled DropdownMenuSubContent - wrapper with shadcn Tailwind classes *@
-<NeoUI.Blazor.Primitives.DropdownMenu.DropdownMenuSubContent class="@CssClass"
+<NeoUI.Blazor.Primitives.DropdownMenuSubContent class="@CssClass"
                                                           CloseOnEscape="@CloseOnEscape"
                                                           Offset="@Offset"
                                                           ZIndex="@ZIndex">
     <div class="p-1">
         @ChildContent
     </div>
-</NeoUI.Blazor.Primitives.DropdownMenu.DropdownMenuSubContent>
+</NeoUI.Blazor.Primitives.DropdownMenuSubContent>
 
 @code {
     /// <summary>

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace NeoUI.Blazor.Primitives.RadioGroup;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// A headless radio group primitive that provides behavior and accessibility without styling.

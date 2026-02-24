@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using NeoUI.Blazor.Primitives.Contexts;
-
-namespace NeoUI.Blazor.Primitives.Tooltip;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Holds the state for a Tooltip primitive component.

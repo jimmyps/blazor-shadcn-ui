@@ -1,16 +1,12 @@
-@using NeoUI.Blazor.Utilities
-@using NeoUI.Blazor.Primitives.Services
-@namespace NeoUI.Blazor.Tooltip
-@using NeoUI.Blazor.Primitives.Tooltip
-
+@namespace NeoUI.Blazor
 @* Styled TooltipContent - wrapper with shadcn Tailwind classes *@
-<NeoUI.Blazor.Primitives.Tooltip.TooltipContent class="@CssClass"
+<NeoUI.Blazor.Primitives.TooltipContent class="@CssClass"
                                                   Side="@Side"
                                                   Align="@Align"
                                                   Offset="@Offset"
                                                   Strategy="@Strategy">
     @ChildContent
-</NeoUI.Blazor.Primitives.Tooltip.TooltipContent>
+</NeoUI.Blazor.Primitives.TooltipContent>
 
 @code {
     [CascadingParameter]

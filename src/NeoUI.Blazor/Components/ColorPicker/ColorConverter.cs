@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.ColorPicker;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Utility class for color conversions between RGB, HSL, and Hex formats.

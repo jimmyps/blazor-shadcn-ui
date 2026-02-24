@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Spinner;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the size options for a Spinner component.

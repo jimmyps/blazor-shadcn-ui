@@ -1,7 +1,6 @@
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Breadcrumb;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// An ordered list component for breadcrumb items.

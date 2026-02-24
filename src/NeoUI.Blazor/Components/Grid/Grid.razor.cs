@@ -1,11 +1,10 @@
 using NeoUI.Blazor.Services.Grid;
-using NeoUI.Blazor.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Collections.Specialized;
 
-namespace NeoUI.Blazor.Grid;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A renderer-agnostic data grid component with support for sorting, filtering,

@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.CurrencyInput;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Provides a catalog of supported currencies with their formatting information.

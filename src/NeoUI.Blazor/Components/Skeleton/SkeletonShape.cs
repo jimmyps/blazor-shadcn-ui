@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Skeleton;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the shape variant for a Skeleton component.

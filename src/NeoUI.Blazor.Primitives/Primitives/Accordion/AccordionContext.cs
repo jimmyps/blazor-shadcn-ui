@@ -1,6 +1,4 @@
-using NeoUI.Blazor.Primitives.Contexts;
-
-namespace NeoUI.Blazor.Primitives.Accordion;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// State for the Accordion primitive context.

@@ -1,14 +1,12 @@
-@namespace NeoUI.Blazor.Dialog
-@using NeoUI.Blazor.Primitives.Dialog
-
+@namespace NeoUI.Blazor
 @*
     Styled DialogTrigger component wrapper.
     Renders the trigger button for opening the dialog.
 *@
 
-<NeoUI.Blazor.Primitives.Dialog.DialogTrigger AsChild="@AsChild" @attributes="AdditionalAttributes">
+<NeoUI.Blazor.Primitives.DialogTrigger AsChild="@AsChild" @attributes="AdditionalAttributes">
     @ChildContent
-</NeoUI.Blazor.Primitives.Dialog.DialogTrigger>
+</NeoUI.Blazor.Primitives.DialogTrigger>
 
 @code {
     /// <summary>

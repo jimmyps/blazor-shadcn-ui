@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.ResponsiveNav;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// State container for the responsive navigation component.

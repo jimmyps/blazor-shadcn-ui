@@ -1,5 +1,3 @@
-using NeoUI.Blazor.Common;
-using NeoUI.Blazor.Utilities;
 using NeoUI.Blazor.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -7,7 +5,7 @@ using Microsoft.JSInterop;
 using System.Globalization;
 using System.Linq.Expressions;
 
-namespace NeoUI.Blazor.CurrencyInput;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A currency input component that follows the shadcn/ui design system.

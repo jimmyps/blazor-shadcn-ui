@@ -1,17 +1,14 @@
-@namespace NeoUI.Blazor.Accordion
-@using NeoUI.Blazor.Utilities
-@using NeoUI.Blazor.Primitives.Accordion
-
+@namespace NeoUI.Blazor
 @*
     Styled AccordionItem component.
     Wraps the AccordionItem primitive with shadcn/ui styling.
 *@
 
-<NeoUI.Blazor.Primitives.Accordion.AccordionItem Value="@Value"
+<NeoUI.Blazor.Primitives.AccordionItem Value="@Value"
                                                    Disabled="@Disabled"
                                                    class="@CssClass">
     @ChildContent
-</NeoUI.Blazor.Primitives.Accordion.AccordionItem>
+</NeoUI.Blazor.Primitives.AccordionItem>
 
 @code {
     /// <summary>

@@ -1,9 +1,5 @@
-@namespace NeoUI.Blazor.Combobox
+@namespace NeoUI.Blazor
 @typeparam TItem
-@using NeoUI.Blazor.Popover
-@using NeoUI.Blazor.Command
-@using NeoUI.Blazor.Primitives.Services
-
 <CascadingValue Value="this" IsFixed="false">
     <div class="@ContainerClass">
         <Popover Open="_isOpen" OpenChanged="HandleOpenChanged">

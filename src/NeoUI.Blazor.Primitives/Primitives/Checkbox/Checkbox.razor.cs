@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace NeoUI.Blazor.Primitives.Checkbox;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// A headless checkbox primitive that provides behavior and accessibility without styling.
