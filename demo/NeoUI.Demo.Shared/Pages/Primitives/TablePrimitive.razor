@@ -1,4 +1,6 @@
+@using NeoUI.Blazor.Primitives.Services
 @page "/primitives/table"
+@using NeoUI.Blazor.Primitives
 @using NeoUI.Icons.Lucide
 
 <PageTitle>Table Primitive - NeoUI</PageTitle>
@@ -21,27 +23,27 @@
         </div>
 
         <div class="rounded-md border">
-            <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
-                <TableHeader Class="[&_tr]:border-b">
-                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody Class="[&_tr:last-child]:border-0">
+            <NeoUI.Blazor.Primitives.Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
+                <NeoUI.Blazor.Primitives.TableHeader Class="[&_tr]:border-b">
+                    <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                        <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</NeoUI.Blazor.Primitives.TableHeaderCell>
+                        <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</NeoUI.Blazor.Primitives.TableHeaderCell>
+                        <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</NeoUI.Blazor.Primitives.TableHeaderCell>
+                        <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</NeoUI.Blazor.Primitives.TableHeaderCell>
+                    </NeoUI.Blazor.Primitives.TableRow>
+                </NeoUI.Blazor.Primitives.TableHeader>
+                <NeoUI.Blazor.Primitives.TableBody Class="[&_tr:last-child]:border-0">
                     @foreach (var person in people)
                     {
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                        </TableRow>
+                        <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Name</NeoUI.Blazor.Primitives.TableCell>
+                            <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Email</NeoUI.Blazor.Primitives.TableCell>
+                            <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Age</NeoUI.Blazor.Primitives.TableCell>
+                            <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Department</NeoUI.Blazor.Primitives.TableCell>
+                        </NeoUI.Blazor.Primitives.TableRow>
                     }
-                </TableBody>
-            </Table>
+                </NeoUI.Blazor.Primitives.TableBody>
+            </NeoUI.Blazor.Primitives.Table>
         </div>
     </section>
 
@@ -53,60 +55,60 @@
         </div>
 
         <div class="rounded-md border">
-            <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
-                <TableHeader Class="[&_tr]:border-b">
-                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</TableHeaderCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody Class="[&_tr:last-child]:border-0">
+            <NeoUI.Blazor.Primitives.Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
+                <NeoUI.Blazor.Primitives.TableHeader Class="[&_tr]:border-b">
+                    <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                        <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</NeoUI.Blazor.Primitives.TableHeaderCell>
+                        <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</NeoUI.Blazor.Primitives.TableHeaderCell>
+                        <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</NeoUI.Blazor.Primitives.TableHeaderCell>
+                        <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</NeoUI.Blazor.Primitives.TableHeaderCell>
+                    </NeoUI.Blazor.Primitives.TableRow>
+                </NeoUI.Blazor.Primitives.TableHeader>
+                <NeoUI.Blazor.Primitives.TableBody Class="[&_tr:last-child]:border-0">
                     @foreach (var person in people)
                     {
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableCell Class="p-4 align-middle font-medium">@person.Name</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                            <TableCell Class="p-4 align-middle text-right">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger>
+                        <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle font-medium">@person.Name</NeoUI.Blazor.Primitives.TableCell>
+                            <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Email</NeoUI.Blazor.Primitives.TableCell>
+                            <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Department</NeoUI.Blazor.Primitives.TableCell>
+                            <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle text-right">
+                                <NeoUI.Blazor.Primitives.DropdownMenu>
+                                    <NeoUI.Blazor.Primitives.DropdownMenuTrigger>
                                         <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="h-8 w-8" AriaLabel="Open menu">
                                             <LucideIcon Name="ellipsis" Size="16" />
                                         </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent Class="w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md" Align="PopoverAlign.End">
+                                    </NeoUI.Blazor.Primitives.DropdownMenuTrigger>
+                                    <NeoUI.Blazor.Primitives.DropdownMenuContent Class="w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md" Align="PopoverAlign.End">
                                         <DropdownMenuLabel Class="px-2 py-1.5 text-sm font-semibold">Actions</DropdownMenuLabel>
-                                        <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
-                                        <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                        <NeoUI.Blazor.Primitives.DropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                        <NeoUI.Blazor.Primitives.DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                           OnClick="@(() => HandleViewDetails(person))">
                                             <LucideIcon Name="eye" Size="16" Class="mr-2" />
                                             View details
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                        </NeoUI.Blazor.Primitives.DropdownMenuItem>
+                                        <NeoUI.Blazor.Primitives.DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                           OnClick="@(() => HandleEdit(person))">
                                             <LucideIcon Name="pencil" Size="16" Class="mr-2" />
                                             Edit
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                        </NeoUI.Blazor.Primitives.DropdownMenuItem>
+                                        <NeoUI.Blazor.Primitives.DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                           OnClick="@(() => HandleDuplicate(person))">
                                             <LucideIcon Name="copy" Size="16" Class="mr-2" />
                                             Duplicate
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
-                                        <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground text-destructive"
+                                        </NeoUI.Blazor.Primitives.DropdownMenuItem>
+                                        <NeoUI.Blazor.Primitives.DropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                        <NeoUI.Blazor.Primitives.DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground text-destructive"
                                                           OnClick="@(() => HandleDelete(person))">
                                             <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
                                             Delete
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </TableCell>
-                        </TableRow>
+                                        </NeoUI.Blazor.Primitives.DropdownMenuItem>
+                                    </NeoUI.Blazor.Primitives.DropdownMenuContent>
+                                </NeoUI.Blazor.Primitives.DropdownMenu>
+                            </NeoUI.Blazor.Primitives.TableCell>
+                        </NeoUI.Blazor.Primitives.TableRow>
                     }
-                </TableBody>
-            </Table>
+                </NeoUI.Blazor.Primitives.TableBody>
+            </NeoUI.Blazor.Primitives.Table>
         </div>
 
         @if (!string.IsNullOrEmpty(actionMessage))
@@ -125,10 +127,10 @@
         </div>
 
         <div class="rounded-md border">
-            <Table TData="Person" Data="@GetSortedPeople()" @bind-State="@sortableTableState" Class="w-full caption-bottom text-sm">
-                <TableHeader Class="[&_tr]:border-b">
-                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                        <TableHeaderCell TData="Person" ColumnId="name" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+            <NeoUI.Blazor.Primitives.Table TData="Person" Data="@GetSortedPeople()" @bind-State="@sortableTableState" Class="w-full caption-bottom text-sm">
+                <NeoUI.Blazor.Primitives.TableHeader Class="[&_tr]:border-b">
+                    <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                        <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" ColumnId="name" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
                             <div class="flex items-center gap-2">
                                 <span>Name</span>
                                 @if (sortableTableState.Sorting.SortedColumn == "name")
@@ -143,8 +145,8 @@
                                     }
                                 }
                             </div>
-                        </TableHeaderCell>
-                        <TableHeaderCell TData="Person" ColumnId="email" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+                        </NeoUI.Blazor.Primitives.TableHeaderCell>
+                        <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" ColumnId="email" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
                             <div class="flex items-center gap-2">
                                 <span>Email</span>
                                 @if (sortableTableState.Sorting.SortedColumn == "email")
@@ -159,8 +161,8 @@
                                     }
                                 }
                             </div>
-                        </TableHeaderCell>
-                        <TableHeaderCell TData="Person" ColumnId="age" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+                        </NeoUI.Blazor.Primitives.TableHeaderCell>
+                        <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" ColumnId="age" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
                             <div class="flex items-center gap-2">
                                 <span>Age</span>
                                 @if (sortableTableState.Sorting.SortedColumn == "age")
@@ -175,8 +177,8 @@
                                     }
                                 }
                             </div>
-                        </TableHeaderCell>
-                        <TableHeaderCell TData="Person" ColumnId="department" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+                        </NeoUI.Blazor.Primitives.TableHeaderCell>
+                        <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" ColumnId="department" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
                             <div class="flex items-center gap-2">
                                 <span>Department</span>
                                 @if (sortableTableState.Sorting.SortedColumn == "department")
@@ -191,21 +193,21 @@
                                     }
                                 }
                             </div>
-                        </TableHeaderCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody Class="[&_tr:last-child]:border-0">
+                        </NeoUI.Blazor.Primitives.TableHeaderCell>
+                    </NeoUI.Blazor.Primitives.TableRow>
+                </NeoUI.Blazor.Primitives.TableHeader>
+                <NeoUI.Blazor.Primitives.TableBody Class="[&_tr:last-child]:border-0">
                     @foreach (var person in GetSortedPeople())
                     {
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                        </TableRow>
+                        <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Name</NeoUI.Blazor.Primitives.TableCell>
+                            <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Email</NeoUI.Blazor.Primitives.TableCell>
+                            <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Age</NeoUI.Blazor.Primitives.TableCell>
+                            <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Department</NeoUI.Blazor.Primitives.TableCell>
+                        </NeoUI.Blazor.Primitives.TableRow>
                     }
-                </TableBody>
-            </Table>
+                </NeoUI.Blazor.Primitives.TableBody>
+            </NeoUI.Blazor.Primitives.Table>
         </div>
 
         <div class="rounded-lg border bg-card p-4">
@@ -226,33 +228,33 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <Table TData="Person" Data="@largePeopleDataset" @bind-State="@paginatedTableState"
+                <NeoUI.Blazor.Primitives.Table TData="Person" Data="@largePeopleDataset" @bind-State="@paginatedTableState"
                        OnPageChange="@HandlePaginationChange"
                        OnPageSizeChange="@HandlePaginationChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
+                    <NeoUI.Blazor.Primitives.TableHeader Class="[&_tr]:border-b">
+                        <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</NeoUI.Blazor.Primitives.TableHeaderCell>
+                        </NeoUI.Blazor.Primitives.TableRow>
+                    </NeoUI.Blazor.Primitives.TableHeader>
+                    <NeoUI.Blazor.Primitives.TableBody Class="[&_tr:last-child]:border-0">
                         @foreach (var person in GetPaginatedData())
                         {
-                            <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                                <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                            </TableRow>
+                            <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Name</NeoUI.Blazor.Primitives.TableCell>
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Email</NeoUI.Blazor.Primitives.TableCell>
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Age</NeoUI.Blazor.Primitives.TableCell>
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Department</NeoUI.Blazor.Primitives.TableCell>
+                            </NeoUI.Blazor.Primitives.TableRow>
                         }
-                    </TableBody>
-                </Table>
+                    </NeoUI.Blazor.Primitives.TableBody>
+                </NeoUI.Blazor.Primitives.Table>
             </div>
 
-            <TablePagination TData="Person" State="@paginatedTableState.Pagination"
+            <NeoUI.Blazor.Primitives.TablePagination TData="Person" State="@paginatedTableState.Pagination"
                              OnPageChange="@HandlePaginationChange"
                              OnPageSizeChange="@HandlePaginationChange">
                 <PaginationTemplate Context="context">
@@ -307,7 +309,7 @@
                         </div>
                     </div>
                 </PaginationTemplate>
-            </TablePagination>
+            </NeoUI.Blazor.Primitives.TablePagination>
         </div>
     </section>
 
@@ -329,33 +331,33 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <Table TData="Person" Data="@people" @bind-State="@selectableTableState"
+                <NeoUI.Blazor.Primitives.Table TData="Person" Data="@people" @bind-State="@selectableTableState"
                        SelectionMode="SelectionMode.Multiple"
                        EnableKeyboardNavigation="@enableKeyboardNavigation"
                        OnSelectionChange="@HandleSelectionChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 w-12 px-4">
+                    <NeoUI.Blazor.Primitives.TableHeader Class="[&_tr]:border-b">
+                        <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 w-12 px-4">
                                 <input type="checkbox"
                                        checked="@selectAllChecked"
                                        @onchange="@((e) => { selectAllChecked = (bool)(e.Value ?? false); HandleSelectAllChanged(); })"
                                        class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                                        aria-label="Select all" />
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
+                            </NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</NeoUI.Blazor.Primitives.TableHeaderCell>
+                        </NeoUI.Blazor.Primitives.TableRow>
+                    </NeoUI.Blazor.Primitives.TableHeader>
+                    <NeoUI.Blazor.Primitives.TableBody Class="[&_tr:last-child]:border-0">
                         @foreach (var person in people)
                         {
                             var isSelected = selectableTableState.Selection.IsSelected(person);
-                            <TableRow TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
-                                <TableCell Class="w-12 px-4">
+                            <NeoUI.Blazor.Primitives.TableRow TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
+                                <NeoUI.Blazor.Primitives.TableCell Class="w-12 px-4">
                                     <input type="checkbox"
                                            checked="@isSelected"
                                            @onchange="@(() => ToggleRowSelection(person))"
@@ -364,49 +366,49 @@
                                            tabindex="-1"
                                            class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                                            aria-label="@($"Select {person.Name}")" />
-                                </TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                                <TableCell Class="p-4 align-middle text-right" @onclick:stopPropagation="true">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger>
+                                </NeoUI.Blazor.Primitives.TableCell>
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Name</NeoUI.Blazor.Primitives.TableCell>
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Email</NeoUI.Blazor.Primitives.TableCell>
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Age</NeoUI.Blazor.Primitives.TableCell>
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Department</NeoUI.Blazor.Primitives.TableCell>
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle text-right" @onclick:stopPropagation="true">
+                                    <NeoUI.Blazor.Primitives.DropdownMenu>
+                                        <NeoUI.Blazor.Primitives.DropdownMenuTrigger>
                                             <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="h-8 w-8" AriaLabel="Open menu">
                                                 <LucideIcon Name="ellipsis" Size="16" />
                                             </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent Class="w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md" Align="PopoverAlign.End">
+                                        </NeoUI.Blazor.Primitives.DropdownMenuTrigger>
+                                        <NeoUI.Blazor.Primitives.DropdownMenuContent Class="w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md" Align="PopoverAlign.End">
                                             <DropdownMenuLabel Class="px-2 py-1.5 text-sm font-semibold">Actions</DropdownMenuLabel>
-                                            <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
-                                            <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                            <NeoUI.Blazor.Primitives.DropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                            <NeoUI.Blazor.Primitives.DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                               OnClick="@(() => HandleViewDetails(person))">
                                                 <LucideIcon Name="eye" Size="16" Class="mr-2" />
                                                 View details
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                            </NeoUI.Blazor.Primitives.DropdownMenuItem>
+                                            <NeoUI.Blazor.Primitives.DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                               OnClick="@(() => HandleEdit(person))">
                                                 <LucideIcon Name="pencil" Size="16" Class="mr-2" />
                                                 Edit
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                            </NeoUI.Blazor.Primitives.DropdownMenuItem>
+                                            <NeoUI.Blazor.Primitives.DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                               OnClick="@(() => HandleDuplicate(person))">
                                                 <LucideIcon Name="copy" Size="16" Class="mr-2" />
                                                 Duplicate
-                                            </DropdownMenuItem>
-                                            <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
-                                            <DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground text-destructive"
+                                            </NeoUI.Blazor.Primitives.DropdownMenuItem>
+                                            <NeoUI.Blazor.Primitives.DropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                            <NeoUI.Blazor.Primitives.DropdownMenuItem Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground text-destructive"
                                                               OnClick="@(() => HandleDelete(person))">
                                                 <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
                                                 Delete
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
+                                            </NeoUI.Blazor.Primitives.DropdownMenuItem>
+                                        </NeoUI.Blazor.Primitives.DropdownMenuContent>
+                                    </NeoUI.Blazor.Primitives.DropdownMenu>
+                                </NeoUI.Blazor.Primitives.TableCell>
+                            </NeoUI.Blazor.Primitives.TableRow>
                         }
-                    </TableBody>
-                </Table>
+                    </NeoUI.Blazor.Primitives.TableBody>
+                </NeoUI.Blazor.Primitives.Table>
             </div>
 
             <div class="rounded-lg border bg-card p-4">
@@ -436,22 +438,22 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <Table TData="Person" Data="@GetSortedCombinedData()" @bind-State="@combinedTableState"
+                <NeoUI.Blazor.Primitives.Table TData="Person" Data="@GetSortedCombinedData()" @bind-State="@combinedTableState"
                        SelectionMode="SelectionMode.Multiple"
                        OnPageChange="@HandleCombinedPaginationChange"
                        OnPageSizeChange="@HandleCombinedPaginationChange"
                        OnSelectionChange="@HandleCombinedSelectionChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 w-12 px-4">
+                    <NeoUI.Blazor.Primitives.TableHeader Class="[&_tr]:border-b">
+                        <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 w-12 px-4">
                                 <input type="checkbox"
                                        checked="@combinedSelectAllChecked"
                                        @onchange="@((e) => { combinedSelectAllChecked = (bool)(e.Value ?? false); HandleCombinedSelectAllChanged(); })"
                                        class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                                        aria-label="Select all on page" />
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center justify-between gap-2">
                                     <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
                                          @onclick="@(() => combinedTableState.Sorting.ToggleSort("name"))">
@@ -468,14 +470,14 @@
                                             }
                                         }
                                     </div>
-                                    <Popover>
-                                        <PopoverTrigger>
+                                    <NeoUI.Blazor.Primitives.Popover>
+                                        <NeoUI.Blazor.Primitives.PopoverTrigger>
                                             <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedNameFilter) ? "text-primary" : "text-muted-foreground")"
                                                     aria-label="Filter name">
                                                 <LucideIcon Name="filter" Size="14" />
                                             </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                        </NeoUI.Blazor.Primitives.PopoverTrigger>
+                                        <NeoUI.Blazor.Primitives.PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
                                             <div class="space-y-2">
                                                 <h4 class="font-medium text-sm">Filter by Name</h4>
                                                 <input type="text"
@@ -492,11 +494,11 @@
                                                     </button>
                                                 }
                                             </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                        </NeoUI.Blazor.Primitives.PopoverContent>
+                                    </NeoUI.Blazor.Primitives.Popover>
                                 </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center justify-between gap-2">
                                     <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
                                          @onclick="@(() => combinedTableState.Sorting.ToggleSort("email"))">
@@ -513,14 +515,14 @@
                                             }
                                         }
                                     </div>
-                                    <Popover>
-                                        <PopoverTrigger>
+                                    <NeoUI.Blazor.Primitives.Popover>
+                                        <NeoUI.Blazor.Primitives.PopoverTrigger>
                                             <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedEmailFilter) ? "text-primary" : "text-muted-foreground")"
                                                     aria-label="Filter email">
                                                 <LucideIcon Name="filter" Size="14" />
                                             </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                        </NeoUI.Blazor.Primitives.PopoverTrigger>
+                                        <NeoUI.Blazor.Primitives.PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
                                             <div class="space-y-2">
                                                 <h4 class="font-medium text-sm">Filter by Email</h4>
                                                 <input type="text"
@@ -537,11 +539,11 @@
                                                     </button>
                                                 }
                                             </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                        </NeoUI.Blazor.Primitives.PopoverContent>
+                                    </NeoUI.Blazor.Primitives.Popover>
                                 </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center justify-between gap-2">
                                     <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
                                          @onclick="@(() => combinedTableState.Sorting.ToggleSort("age"))">
@@ -558,14 +560,14 @@
                                             }
                                         }
                                     </div>
-                                    <Popover>
-                                        <PopoverTrigger>
+                                    <NeoUI.Blazor.Primitives.Popover>
+                                        <NeoUI.Blazor.Primitives.PopoverTrigger>
                                             <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedAgeFilter) ? "text-primary" : "text-muted-foreground")"
                                                     aria-label="Filter age">
                                                 <LucideIcon Name="filter" Size="14" />
                                             </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                        </NeoUI.Blazor.Primitives.PopoverTrigger>
+                                        <NeoUI.Blazor.Primitives.PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
                                             <div class="space-y-2">
                                                 <h4 class="font-medium text-sm">Filter by Age</h4>
                                                 <input type="text"
@@ -582,11 +584,11 @@
                                                     </button>
                                                 }
                                             </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                        </NeoUI.Blazor.Primitives.PopoverContent>
+                                    </NeoUI.Blazor.Primitives.Popover>
                                 </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center justify-between gap-2">
                                     <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
                                          @onclick="@(() => combinedTableState.Sorting.ToggleSort("department"))">
@@ -603,14 +605,14 @@
                                             }
                                         }
                                     </div>
-                                    <Popover>
-                                        <PopoverTrigger>
+                                    <NeoUI.Blazor.Primitives.Popover>
+                                        <NeoUI.Blazor.Primitives.PopoverTrigger>
                                             <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedDepartmentFilter) ? "text-primary" : "text-muted-foreground")"
                                                     aria-label="Filter department">
                                                 <LucideIcon Name="filter" Size="14" />
                                             </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                        </NeoUI.Blazor.Primitives.PopoverTrigger>
+                                        <NeoUI.Blazor.Primitives.PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
                                             <div class="space-y-2">
                                                 <h4 class="font-medium text-sm">Filter by Department</h4>
                                                 <input type="text"
@@ -627,18 +629,18 @@
                                                     </button>
                                                 }
                                             </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                        </NeoUI.Blazor.Primitives.PopoverContent>
+                                    </NeoUI.Blazor.Primitives.Popover>
                                 </div>
-                            </TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
+                            </NeoUI.Blazor.Primitives.TableHeaderCell>
+                        </NeoUI.Blazor.Primitives.TableRow>
+                    </NeoUI.Blazor.Primitives.TableHeader>
+                    <NeoUI.Blazor.Primitives.TableBody Class="[&_tr:last-child]:border-0">
                         @foreach (var person in GetCombinedPageData())
                         {
                             var isSelected = combinedTableState.Selection.IsSelected(person);
-                            <TableRow TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
-                                <TableCell Class="w-12 px-4">
+                            <NeoUI.Blazor.Primitives.TableRow TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
+                                <NeoUI.Blazor.Primitives.TableCell Class="w-12 px-4">
                                     <input type="checkbox"
                                            checked="@isSelected"
                                            @onchange="@(() => ToggleCombinedRowSelection(person))"
@@ -647,18 +649,18 @@
                                            tabindex="-1"
                                            class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                                            aria-label="@($"Select {person.Name}")" />
-                                </TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                            </TableRow>
+                                </NeoUI.Blazor.Primitives.TableCell>
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Name</NeoUI.Blazor.Primitives.TableCell>
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Email</NeoUI.Blazor.Primitives.TableCell>
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Age</NeoUI.Blazor.Primitives.TableCell>
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Department</NeoUI.Blazor.Primitives.TableCell>
+                            </NeoUI.Blazor.Primitives.TableRow>
                         }
-                    </TableBody>
-                </Table>
+                    </NeoUI.Blazor.Primitives.TableBody>
+                </NeoUI.Blazor.Primitives.Table>
             </div>
 
-            <TablePagination TData="Person" State="@combinedTableState.Pagination"
+            <NeoUI.Blazor.Primitives.TablePagination TData="Person" State="@combinedTableState.Pagination"
                              OnPageChange="@HandleCombinedPaginationChange"
                              OnPageSizeChange="@HandleCombinedPaginationChange">
                 <PaginationTemplate Context="context">
@@ -721,7 +723,7 @@
                         </div>
                     </div>
                 </PaginationTemplate>
-            </TablePagination>
+            </NeoUI.Blazor.Primitives.TablePagination>
 
             <div class="rounded-lg border bg-card p-4">
                 <h3 class="font-semibold mb-2">Current State</h3>
@@ -746,23 +748,23 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <Table TData="Person" Data="@GetFilteredPeople()" @bind-State="@filteredTableState"
+                <NeoUI.Blazor.Primitives.Table TData="Person" Data="@GetFilteredPeople()" @bind-State="@filteredTableState"
                        OnPageChange="@HandleFilteredPaginationChange"
                        OnPageSizeChange="@HandleFilteredPaginationChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                    <NeoUI.Blazor.Primitives.TableHeader Class="[&_tr]:border-b">
+                        <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center gap-2">
                                     <span>Name</span>
-                                    <Popover>
-                                        <PopoverTrigger>
+                                    <NeoUI.Blazor.Primitives.Popover>
+                                        <NeoUI.Blazor.Primitives.PopoverTrigger>
                                             <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(nameFilter) ? "text-primary" : "text-muted-foreground")"
                                                     aria-label="Filter name">
                                                 <LucideIcon Name="filter" Size="14" />
                                             </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                        </NeoUI.Blazor.Primitives.PopoverTrigger>
+                                        <NeoUI.Blazor.Primitives.PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
                                             <div class="space-y-2">
                                                 <h4 class="font-medium text-sm">Filter by Name</h4>
                                                 <input type="text"
@@ -779,21 +781,21 @@
                                                     </button>
                                                 }
                                             </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                        </NeoUI.Blazor.Primitives.PopoverContent>
+                                    </NeoUI.Blazor.Primitives.Popover>
                                 </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center gap-2">
                                     <span>Email</span>
-                                    <Popover>
-                                        <PopoverTrigger>
+                                    <NeoUI.Blazor.Primitives.Popover>
+                                        <NeoUI.Blazor.Primitives.PopoverTrigger>
                                             <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(emailFilter) ? "text-primary" : "text-muted-foreground")"
                                                     aria-label="Filter email">
                                                 <LucideIcon Name="filter" Size="14" />
                                             </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                        </NeoUI.Blazor.Primitives.PopoverTrigger>
+                                        <NeoUI.Blazor.Primitives.PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
                                             <div class="space-y-2">
                                                 <h4 class="font-medium text-sm">Filter by Email</h4>
                                                 <input type="text"
@@ -810,21 +812,21 @@
                                                     </button>
                                                 }
                                             </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                        </NeoUI.Blazor.Primitives.PopoverContent>
+                                    </NeoUI.Blazor.Primitives.Popover>
                                 </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center gap-2">
                                     <span>Department</span>
-                                    <Popover>
-                                        <PopoverTrigger>
+                                    <NeoUI.Blazor.Primitives.Popover>
+                                        <NeoUI.Blazor.Primitives.PopoverTrigger>
                                             <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(departmentFilter) ? "text-primary" : "text-muted-foreground")"
                                                     aria-label="Filter department">
                                                 <LucideIcon Name="filter" Size="14" />
                                             </button>
-                                        </PopoverTrigger>
-                                        <PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                        </NeoUI.Blazor.Primitives.PopoverTrigger>
+                                        <NeoUI.Blazor.Primitives.PopoverContent Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
                                             <div class="space-y-2">
                                                 <h4 class="font-medium text-sm">Filter by Department</h4>
                                                 <input type="text"
@@ -841,13 +843,13 @@
                                                     </button>
                                                 }
                                             </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                        </NeoUI.Blazor.Primitives.PopoverContent>
+                                    </NeoUI.Blazor.Primitives.Popover>
                                 </div>
-                            </TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
+                            </NeoUI.Blazor.Primitives.TableHeaderCell>
+                        </NeoUI.Blazor.Primitives.TableRow>
+                    </NeoUI.Blazor.Primitives.TableHeader>
+                    <NeoUI.Blazor.Primitives.TableBody Class="[&_tr:last-child]:border-0">
                         @{
                             var filteredPeople = GetFilteredPageData().ToList();
                         }
@@ -855,26 +857,26 @@
                         {
                             @foreach (var person in filteredPeople)
                             {
-                                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                                    <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                                    <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                                    <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                                </TableRow>
+                                <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                    <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Name</NeoUI.Blazor.Primitives.TableCell>
+                                    <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Email</NeoUI.Blazor.Primitives.TableCell>
+                                    <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Department</NeoUI.Blazor.Primitives.TableCell>
+                                </NeoUI.Blazor.Primitives.TableRow>
                             }
                         }
                         else
                         {
-                            <TableRow TData="Person" Class="border-b">
-                                <TableCell Class="p-4 align-middle text-center text-muted-foreground" colspan="3">
+                            <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b">
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle text-center text-muted-foreground" colspan="3">
                                     No results found
-                                </TableCell>
-                            </TableRow>
+                                </NeoUI.Blazor.Primitives.TableCell>
+                            </NeoUI.Blazor.Primitives.TableRow>
                         }
-                    </TableBody>
-                </Table>
+                    </NeoUI.Blazor.Primitives.TableBody>
+                </NeoUI.Blazor.Primitives.Table>
             </div>
 
-            <TablePagination TData="Person" State="@filteredTableState.Pagination"
+            <NeoUI.Blazor.Primitives.TablePagination TData="Person" State="@filteredTableState.Pagination"
                              OnPageChange="@HandleFilteredPaginationChange"
                              OnPageSizeChange="@HandleFilteredPaginationChange">
                 <PaginationTemplate Context="context">
@@ -929,7 +931,7 @@
                         </div>
                     </div>
                 </PaginationTemplate>
-            </TablePagination>
+            </NeoUI.Blazor.Primitives.TablePagination>
 
             <div class="rounded-lg border bg-card p-4">
                 <h3 class="font-semibold mb-2">Filter State</h3>
@@ -973,19 +975,19 @@
             </div>
 
             <div class="rounded-md border">
-                <Table TData="Person" Data="@GetGloballyFilteredPeople()" @bind-State="@globalSearchTableState"
+                <NeoUI.Blazor.Primitives.Table TData="Person" Data="@GetGloballyFilteredPeople()" @bind-State="@globalSearchTableState"
                        OnPageChange="@HandleGlobalSearchPaginationChange"
                        OnPageSizeChange="@HandleGlobalSearchPaginationChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
+                    <NeoUI.Blazor.Primitives.TableHeader Class="[&_tr]:border-b">
+                        <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</NeoUI.Blazor.Primitives.TableHeaderCell>
+                            <NeoUI.Blazor.Primitives.TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</NeoUI.Blazor.Primitives.TableHeaderCell>
+                        </NeoUI.Blazor.Primitives.TableRow>
+                    </NeoUI.Blazor.Primitives.TableHeader>
+                    <NeoUI.Blazor.Primitives.TableBody Class="[&_tr:last-child]:border-0">
                         @{
                             var globalFilteredPeople = GetGlobalSearchPageData().ToList();
                         }
@@ -993,27 +995,27 @@
                         {
                             @foreach (var person in globalFilteredPeople)
                             {
-                                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                                    <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                                    <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                                    <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                                    <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                                </TableRow>
+                                <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                    <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Name</NeoUI.Blazor.Primitives.TableCell>
+                                    <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Email</NeoUI.Blazor.Primitives.TableCell>
+                                    <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Age</NeoUI.Blazor.Primitives.TableCell>
+                                    <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle">@person.Department</NeoUI.Blazor.Primitives.TableCell>
+                                </NeoUI.Blazor.Primitives.TableRow>
                             }
                         }
                         else
                         {
-                            <TableRow TData="Person" Class="border-b">
-                                <TableCell Class="p-4 align-middle text-center text-muted-foreground" colspan="4">
+                            <NeoUI.Blazor.Primitives.TableRow TData="Person" Class="border-b">
+                                <NeoUI.Blazor.Primitives.TableCell Class="p-4 align-middle text-center text-muted-foreground" colspan="4">
                                     No results found for "@globalSearchFilter"
-                                </TableCell>
-                            </TableRow>
+                                </NeoUI.Blazor.Primitives.TableCell>
+                            </NeoUI.Blazor.Primitives.TableRow>
                         }
-                    </TableBody>
-                </Table>
+                    </NeoUI.Blazor.Primitives.TableBody>
+                </NeoUI.Blazor.Primitives.Table>
             </div>
 
-            <TablePagination TData="Person" State="@globalSearchTableState.Pagination"
+            <NeoUI.Blazor.Primitives.TablePagination TData="Person" State="@globalSearchTableState.Pagination"
                              OnPageChange="@HandleGlobalSearchPaginationChange"
                              OnPageSizeChange="@HandleGlobalSearchPaginationChange">
                 <PaginationTemplate Context="context">
@@ -1068,7 +1070,7 @@
                         </div>
                     </div>
                 </PaginationTemplate>
-            </TablePagination>
+            </NeoUI.Blazor.Primitives.TablePagination>
 
             <div class="rounded-lg border bg-card p-4">
                 <h3 class="font-semibold mb-2">Search Results</h3>

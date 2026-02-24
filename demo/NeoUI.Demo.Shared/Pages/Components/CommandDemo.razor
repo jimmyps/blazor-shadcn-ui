@@ -162,7 +162,7 @@
                 <!-- This is just an example using a simple popup. Best practice is to use Dialog or Popover component, see Spotlight example above. -->
                 <div class="relative w-full max-w-lg mx-4" @onclick:stopPropagation="true">
                     <div class="border rounded-lg shadow-2xl bg-background animate-in animate-duration-300 fade-in-0 zoom-in-95">
-                        <NeoUI.Blazor.Command.Command OnValueChange="@HandlePaletteSelect">
+                        <NeoUI.Blazor.Command OnValueChange="@HandlePaletteSelect">
                             <CommandInput Placeholder="Type a command or search..." AutoFocus="true" />
                             <CommandList>
                                 <CommandEmpty>No results found.</CommandEmpty>
@@ -199,7 +199,7 @@
                                     </CommandItem>
                                 </CommandGroup>
                             </CommandList>
-                        </NeoUI.Blazor.Command.Command>
+                        </NeoUI.Blazor.Command>
                     </div>
                 </div>
             </div>
@@ -215,7 +215,7 @@
 
         <div class="flex flex-col gap-2">
             <div class="border rounded-lg shadow-sm max-w-md">
-                <NeoUI.Blazor.Command.Command OnValueChange="@HandleBasicSelect">
+                <NeoUI.Blazor.Command OnValueChange="@HandleBasicSelect">
                     <CommandInput Placeholder="Type a command or search..." />
                     <CommandList>
                         <CommandEmpty>No results found.</CommandEmpty>
@@ -226,7 +226,7 @@
                             <CommandItem Value="settings">Settings</CommandItem>
                         </CommandGroup>
                     </CommandList>
-                </NeoUI.Blazor.Command.Command>
+                </NeoUI.Blazor.Command>
             </div>
             @if (!string.IsNullOrEmpty(basicSelected))
             {
@@ -244,7 +244,7 @@
 
         <div class="flex flex-col gap-2">
             <div class="border rounded-lg shadow-sm max-w-md">
-                <NeoUI.Blazor.Command.Command OnValueChange="@HandleGroupSelect">
+                <NeoUI.Blazor.Command OnValueChange="@HandleGroupSelect">
                     <CommandInput Placeholder="Search commands..." />
                     <CommandList>
                         <CommandEmpty>No results found.</CommandEmpty>
@@ -278,7 +278,7 @@
                             </CommandItem>
                         </CommandGroup>
                     </CommandList>
-                </NeoUI.Blazor.Command.Command>
+                </NeoUI.Blazor.Command>
             </div>
             @if (!string.IsNullOrEmpty(groupSelected))
             {
@@ -296,7 +296,7 @@
 
         <div class="flex flex-col gap-2">
             <div class="border rounded-lg shadow-sm max-w-md">
-                <NeoUI.Blazor.Command.Command OnValueChange="@HandleShortcutSelect">
+                <NeoUI.Blazor.Command OnValueChange="@HandleShortcutSelect">
                     <CommandInput Placeholder="Search commands..." />
                     <CommandList>
                         <CommandEmpty>No results found.</CommandEmpty>
@@ -330,7 +330,7 @@
                             </CommandItem>
                         </CommandGroup>
                     </CommandList>
-                </NeoUI.Blazor.Command.Command>
+                </NeoUI.Blazor.Command>
             </div>
             @if (!string.IsNullOrEmpty(shortcutSelected))
             {
@@ -348,7 +348,7 @@
 
         <div class="flex flex-col gap-2">
             <div class="border rounded-lg shadow-sm max-w-md">
-                <NeoUI.Blazor.Command.Command OnValueChange="@HandleDisabledSelect">
+                <NeoUI.Blazor.Command OnValueChange="@HandleDisabledSelect">
                     <CommandInput Placeholder="Search commands..." />
                     <CommandList>
                         <CommandEmpty>No results found.</CommandEmpty>
@@ -360,7 +360,7 @@
                             <CommandItem Value="delete" Disabled="true">Delete (Disabled)</CommandItem>
                         </CommandGroup>
                     </CommandList>
-                </NeoUI.Blazor.Command.Command>
+                </NeoUI.Blazor.Command>
             </div>
             @if (!string.IsNullOrEmpty(disabledSelected))
             {
@@ -378,7 +378,7 @@
 
         <div class="flex flex-col gap-2">
             <div class="border rounded-lg shadow-sm max-w-md">
-                <NeoUI.Blazor.Command.Command>
+                <NeoUI.Blazor.Command>
                     <CommandInput Placeholder="Try searching for xyz..." />
                     <CommandList>
                         <CommandEmpty>
@@ -393,7 +393,7 @@
                             <CommandItem Value="cherry">Cherry</CommandItem>
                         </CommandGroup>
                     </CommandList>
-                </NeoUI.Blazor.Command.Command>
+                </NeoUI.Blazor.Command>
             </div>
         </div>
     </section>
@@ -407,7 +407,7 @@
 
         <div class="flex flex-col gap-2">
             <div class="border rounded-lg shadow-sm max-w-lg">
-                <NeoUI.Blazor.Command.Command OnValueChange="@HandleComplexSelect">
+                <NeoUI.Blazor.Command OnValueChange="@HandleComplexSelect">
                     <CommandInput Placeholder="Type a command or search..." />
                     <CommandList>
                         <CommandEmpty>No results found.</CommandEmpty>
@@ -467,7 +467,7 @@
                             </CommandItem>
                         </CommandGroup>
                     </CommandList>
-                </NeoUI.Blazor.Command.Command>
+                </NeoUI.Blazor.Command>
             </div>
             @if (!string.IsNullOrEmpty(complexSelected))
             {
@@ -486,7 +486,7 @@
 
         <div class="flex flex-col gap-2">
             <div class="border rounded-lg shadow-sm max-w-md">
-                <NeoUI.Blazor.Command.Command OnValueChange="@HandleLazySelect">
+                <NeoUI.Blazor.Command OnValueChange="@HandleLazySelect">
                     <CommandInput Placeholder="@($"Search {TotalIconCount} icons...")" />
                     <CommandList Class="max-h-[300px]">
                         <CommandEmpty>No icons found.</CommandEmpty>
@@ -529,7 +529,7 @@
                             </ItemTemplate>
                         </CommandVirtualizedGroup>
                     </CommandList>
-                </NeoUI.Blazor.Command.Command>
+                </NeoUI.Blazor.Command>
             </div>
             @if (!string.IsNullOrEmpty(lazySelected))
             {

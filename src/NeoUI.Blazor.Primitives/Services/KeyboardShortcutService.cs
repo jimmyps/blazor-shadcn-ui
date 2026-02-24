@@ -1,4 +1,4 @@
-using NeoUI.Blazor.Primitives.Utilities;
+using NeoUI.Blazor.Primitives;
 using Microsoft.JSInterop;
 
 namespace NeoUI.Blazor.Primitives.Services;

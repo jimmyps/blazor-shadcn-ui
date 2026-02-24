@@ -2,15 +2,15 @@
 @using NeoUI.Icons.Lucide
 @inherits TimePickerBase
 
-<Popover @bind-Open="_isOpen">
-<PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
+<NeoUI.Blazor.Popover @bind-Open="_isOpen">
+<NeoUI.Blazor.PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
     @if (ShowIcon)
     {
         <LucideIcon Name="clock" Class="h-4 w-4" />
     }
     <span>@GetDisplayText()</span>
-</PopoverTrigger>
-    <PopoverContent Class="@GetPopoverContentClass()" Align="PopoverAlign.Start">
+</NeoUI.Blazor.PopoverTrigger>
+    <NeoUI.Blazor.PopoverContent Class="@GetPopoverContentClass()" Align="PopoverAlign.Start">
         <div class="flex items-center gap-2">
             @if (!Use12Hour)
             {
@@ -79,8 +79,8 @@
                 Apply
             </Button>
         </div>
-    </PopoverContent>
-</Popover>
+    </NeoUI.Blazor.PopoverContent>
+</NeoUI.Blazor.Popover>
 
 @if (ShowValidationError && _fieldIdentifier.FieldName != null && EditContext != null)
 {

@@ -1,4 +1,6 @@
+using NeoUI.Blazor;
 using NeoUI.Blazor.Extensions;
+using NeoUI.Blazor.Primitives.Extensions;
 using NeoUI.Demo.Services;
 using NeoUI.Demo.Shared;
 using Microsoft.AspNetCore.Components.Web;

@@ -1,4 +1,5 @@
 @page "/primitives/dialog"
+@using NeoUI.Blazor.Primitives
 <PageTitle>Dialog Primitive - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -26,21 +27,21 @@
                     <p class="text-sm text-muted-foreground">
                         DialogTrigger renders its own button element.
                     </p>
-                    <Dialog>
-                        <DialogTrigger class="px-3 py-2 border rounded text-sm">
+                    <NeoUI.Blazor.Primitives.Dialog>
+                        <NeoUI.Blazor.Primitives.DialogTrigger class="px-3 py-2 border rounded text-sm">
                             Open Dialog
-                        </DialogTrigger>
+                        </NeoUI.Blazor.Primitives.DialogTrigger>
                         <DialogPortal>
                             <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
-                            <DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
-                                <DialogTitle class="text-lg font-semibold mb-2">Without AsChild</DialogTitle>
-                                <DialogDescription class="text-sm text-muted-foreground mb-4">
+                            <NeoUI.Blazor.Primitives.DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
+                                <NeoUI.Blazor.Primitives.DialogTitle class="text-lg font-semibold mb-2">Without AsChild</NeoUI.Blazor.Primitives.DialogTitle>
+                                <NeoUI.Blazor.Primitives.DialogDescription class="text-sm text-muted-foreground mb-4">
                                     Trigger rendered its own button element.
-                                </DialogDescription>
-                                <DialogClose class="px-3 py-2 border rounded text-sm">Close</DialogClose>
-                            </DialogContent>
+                                </NeoUI.Blazor.Primitives.DialogDescription>
+                                <NeoUI.Blazor.Primitives.DialogClose class="px-3 py-2 border rounded text-sm">Close</NeoUI.Blazor.Primitives.DialogClose>
+                            </NeoUI.Blazor.Primitives.DialogContent>
                         </DialogPortal>
-                    </Dialog>
+                    </NeoUI.Blazor.Primitives.Dialog>
                 </div>
 
                 <!-- With AsChild -->
@@ -49,23 +50,23 @@
                     <p class="text-sm text-muted-foreground">
                         Button receives click behavior via TriggerContext.
                     </p>
-                    <Dialog>
-                        <DialogTrigger AsChild>
+                    <NeoUI.Blazor.Primitives.Dialog>
+                        <NeoUI.Blazor.Primitives.DialogTrigger AsChild>
                             <Button Variant="ButtonVariant.Outline">Open Dialog</Button>
-                        </DialogTrigger>
+                        </NeoUI.Blazor.Primitives.DialogTrigger>
                         <DialogPortal>
                             <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
-                            <DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
-                                <DialogTitle class="text-lg font-semibold mb-2">With AsChild</DialogTitle>
-                                <DialogDescription class="text-sm text-muted-foreground mb-4">
+                            <NeoUI.Blazor.Primitives.DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
+                                <NeoUI.Blazor.Primitives.DialogTitle class="text-lg font-semibold mb-2">With AsChild</NeoUI.Blazor.Primitives.DialogTitle>
+                                <NeoUI.Blazor.Primitives.DialogDescription class="text-sm text-muted-foreground mb-4">
                                     Button component handles the trigger behavior.
-                                </DialogDescription>
-                                <DialogClose AsChild>
+                                </NeoUI.Blazor.Primitives.DialogDescription>
+                                <NeoUI.Blazor.Primitives.DialogClose AsChild>
                                     <Button Variant="ButtonVariant.Secondary">Close</Button>
-                                </DialogClose>
-                            </DialogContent>
+                                </NeoUI.Blazor.Primitives.DialogClose>
+                            </NeoUI.Blazor.Primitives.DialogContent>
                         </DialogPortal>
-                    </Dialog>
+                    </NeoUI.Blazor.Primitives.Dialog>
                 </div>
             </div>
         </section>
@@ -79,31 +80,31 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <Dialog>
-                    <DialogTrigger class="px-3 py-2 border rounded text-sm">
+                <NeoUI.Blazor.Primitives.Dialog>
+                    <NeoUI.Blazor.Primitives.DialogTrigger class="px-3 py-2 border rounded text-sm">
                         Open Dialog
-                    </DialogTrigger>
+                    </NeoUI.Blazor.Primitives.DialogTrigger>
 
                     <DialogPortal>
                         <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
 
-                        <DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
-                            <DialogTitle class="text-lg font-semibold mb-2">
+                        <NeoUI.Blazor.Primitives.DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
+                            <NeoUI.Blazor.Primitives.DialogTitle class="text-lg font-semibold mb-2">
                                 Dialog Title
-                            </DialogTitle>
+                            </NeoUI.Blazor.Primitives.DialogTitle>
 
-                            <DialogDescription class="text-sm text-muted-foreground mb-4">
+                            <NeoUI.Blazor.Primitives.DialogDescription class="text-sm text-muted-foreground mb-4">
                                 This is a basic dialog using the unstyled primitive components.
-                            </DialogDescription>
+                            </NeoUI.Blazor.Primitives.DialogDescription>
 
                             <div class="flex justify-end gap-2">
-                                <DialogClose class="px-3 py-2 border rounded text-sm">
+                                <NeoUI.Blazor.Primitives.DialogClose class="px-3 py-2 border rounded text-sm">
                                     Close
-                                </DialogClose>
+                                </NeoUI.Blazor.Primitives.DialogClose>
                             </div>
-                        </DialogContent>
+                        </NeoUI.Blazor.Primitives.DialogContent>
                     </DialogPortal>
-                </Dialog>
+                </NeoUI.Blazor.Primitives.Dialog>
             </div>
         </section>
 
@@ -129,27 +130,27 @@
                 </div>
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
-                    <Dialog @bind-Open="isControlledOpen">
+                    <NeoUI.Blazor.Primitives.Dialog @bind-Open="isControlledOpen">
                         <DialogPortal>
                             <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
 
-                            <DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
-                                <DialogTitle class="text-lg font-semibold mb-2">
+                            <NeoUI.Blazor.Primitives.DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
+                                <NeoUI.Blazor.Primitives.DialogTitle class="text-lg font-semibold mb-2">
                                     Controlled Dialog
-                                </DialogTitle>
+                                </NeoUI.Blazor.Primitives.DialogTitle>
 
-                                <DialogDescription class="text-sm text-muted-foreground mb-4">
+                                <NeoUI.Blazor.Primitives.DialogDescription class="text-sm text-muted-foreground mb-4">
                                     This dialog's state is controlled by the parent component. The "Close from Outside" button demonstrates external state control.
-                                </DialogDescription>
+                                </NeoUI.Blazor.Primitives.DialogDescription>
 
                                 <p class="mb-4">Open state: <strong>@isControlledOpen</strong></p>
 
-                                <DialogClose class="px-3 py-2 border rounded text-sm">
+                                <NeoUI.Blazor.Primitives.DialogClose class="px-3 py-2 border rounded text-sm">
                                     Close
-                                </DialogClose>
-                            </DialogContent>
+                                </NeoUI.Blazor.Primitives.DialogClose>
+                            </NeoUI.Blazor.Primitives.DialogContent>
                         </DialogPortal>
-                    </Dialog>
+                    </NeoUI.Blazor.Primitives.Dialog>
                 </div>
             </div>
         </section>
@@ -163,22 +164,22 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <Dialog>
-                    <DialogTrigger class="px-3 py-2 border rounded text-sm">
+                <NeoUI.Blazor.Primitives.Dialog>
+                    <NeoUI.Blazor.Primitives.DialogTrigger class="px-3 py-2 border rounded text-sm">
                         Open Modal Dialog
-                    </DialogTrigger>
+                    </NeoUI.Blazor.Primitives.DialogTrigger>
 
                     <DialogPortal>
                         <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
 
-                        <DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
-                            <DialogTitle class="text-lg font-semibold mb-2">
+                        <NeoUI.Blazor.Primitives.DialogContent class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
+                            <NeoUI.Blazor.Primitives.DialogTitle class="text-lg font-semibold mb-2">
                                 Modal Dialog
-                            </DialogTitle>
+                            </NeoUI.Blazor.Primitives.DialogTitle>
 
-                            <DialogDescription class="text-sm text-muted-foreground mb-4">
+                            <NeoUI.Blazor.Primitives.DialogDescription class="text-sm text-muted-foreground mb-4">
                                 Try clicking the overlay or pressing Escape to close this dialog.
-                            </DialogDescription>
+                            </NeoUI.Blazor.Primitives.DialogDescription>
 
                             <ul class="text-sm space-y-1 mb-4">
                                 <li>✓ Click overlay to close</li>
@@ -188,12 +189,12 @@
                                 <li>✓ Body scroll locked</li>
                             </ul>
 
-                            <DialogClose class="px-3 py-2 border rounded text-sm">
+                            <NeoUI.Blazor.Primitives.DialogClose class="px-3 py-2 border rounded text-sm">
                                 Close
-                            </DialogClose>
-                        </DialogContent>
+                            </NeoUI.Blazor.Primitives.DialogClose>
+                        </NeoUI.Blazor.Primitives.DialogContent>
                     </DialogPortal>
-                </Dialog>
+                </NeoUI.Blazor.Primitives.Dialog>
             </div>
         </section>
 

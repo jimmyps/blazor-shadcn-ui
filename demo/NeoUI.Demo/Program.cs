@@ -1,4 +1,5 @@
 using NeoUI.Blazor.Extensions;
+using NeoUI.Blazor.Primitives.Extensions;
 using NeoUI.Demo;
 using NeoUI.Demo.Services;
 var builder = WebApplication.CreateBuilder(args);

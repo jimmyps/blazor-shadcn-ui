@@ -4,19 +4,19 @@
     {
         <p class="text-sm font-medium">@Label</p>
     }
-    <Select TValue="string"
+    <NeoUI.Blazor.Select TValue="string"
             Value="@_pageSizeValue"
             ValueChanged="@HandlePageSizeChanged">
-        <SelectTrigger Class="@TriggerCssClass">
-            <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
+        <NeoUI.Blazor.SelectTrigger Class="@TriggerCssClass">
+            <NeoUI.Blazor.SelectValue />
+        </NeoUI.Blazor.SelectTrigger>
+        <NeoUI.Blazor.SelectContent>
             @foreach (var size in EffectivePageSizes)
             {
-                <SelectItem Value="@size.ToString()">@size</SelectItem>
+                <NeoUI.Blazor.SelectItem Value="@size.ToString()">@size</NeoUI.Blazor.SelectItem>
             }
-        </SelectContent>
-    </Select>
+        </NeoUI.Blazor.SelectContent>
+    </NeoUI.Blazor.Select>
 </div>
 
 @code {

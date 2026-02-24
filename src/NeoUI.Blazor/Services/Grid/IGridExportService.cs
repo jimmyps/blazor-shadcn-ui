@@ -1,3 +1,4 @@
+using NeoUI.Blazor;
 namespace NeoUI.Blazor.Services.Grid;
 
 /// <summary>
@@ -12,7 +13,7 @@ public interface IGridExportService
     /// <param name="definition">The grid definition containing column configuration.</param>
     /// <param name="data">The data to export.</param>
     /// <returns>A byte array containing the CSV file content (UTF-8 encoded).</returns>
-    Task<byte[]> ExportToCsvAsync<TItem>(NeoUI.Blazor.Grid.GridDefinition<TItem> definition, IEnumerable<TItem> data);
+    Task<byte[]> ExportToCsvAsync<TItem>(GridDefinition<TItem> definition, IEnumerable<TItem> data);
 
     /// <summary>
     /// Exports grid data to Excel format.
@@ -21,5 +22,5 @@ public interface IGridExportService
     /// <param name="definition">The grid definition containing column configuration.</param>
     /// <param name="data">The data to export.</param>
     /// <returns>A byte array containing the Excel file content.</returns>
-    Task<byte[]> ExportToExcelAsync<TItem>(NeoUI.Blazor.Grid.GridDefinition<TItem> definition, IEnumerable<TItem> data);
+    Task<byte[]> ExportToExcelAsync<TItem>(GridDefinition<TItem> definition, IEnumerable<TItem> data);
 }

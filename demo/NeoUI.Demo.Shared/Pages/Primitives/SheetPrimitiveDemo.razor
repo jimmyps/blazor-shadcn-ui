@@ -1,4 +1,5 @@
 @page "/primitives/sheet"
+@using NeoUI.Blazor.Primitives
 <PageTitle>Sheet Primitive - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -26,21 +27,21 @@
                     <p class="text-sm text-muted-foreground">
                         SheetTrigger renders its own button element.
                     </p>
-                    <Sheet>
-                        <SheetTrigger class="px-3 py-2 border rounded text-sm">
+                    <NeoUI.Blazor.Primitives.Sheet>
+                        <NeoUI.Blazor.Primitives.SheetTrigger class="px-3 py-2 border rounded text-sm">
                             Open Sheet
-                        </SheetTrigger>
+                        </NeoUI.Blazor.Primitives.SheetTrigger>
                         <SheetPortal>
                             <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                            <SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
-                                <SheetTitle class="text-lg font-semibold mb-2">Without AsChild</SheetTitle>
-                                <SheetDescription class="text-sm text-muted-foreground mb-4">
+                            <NeoUI.Blazor.Primitives.SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
+                                <NeoUI.Blazor.Primitives.SheetTitle class="text-lg font-semibold mb-2">Without AsChild</NeoUI.Blazor.Primitives.SheetTitle>
+                                <NeoUI.Blazor.Primitives.SheetDescription class="text-sm text-muted-foreground mb-4">
                                     Trigger rendered its own button element.
-                                </SheetDescription>
-                                <SheetClose class="px-3 py-2 border rounded text-sm">Close</SheetClose>
-                            </SheetContent>
+                                </NeoUI.Blazor.Primitives.SheetDescription>
+                                <NeoUI.Blazor.Primitives.SheetClose class="px-3 py-2 border rounded text-sm">Close</NeoUI.Blazor.Primitives.SheetClose>
+                            </NeoUI.Blazor.Primitives.SheetContent>
                         </SheetPortal>
-                    </Sheet>
+                    </NeoUI.Blazor.Primitives.Sheet>
                 </div>
 
                 <!-- With AsChild -->
@@ -49,23 +50,23 @@
                     <p class="text-sm text-muted-foreground">
                         Button receives click behavior via TriggerContext.
                     </p>
-                    <Sheet>
-                        <SheetTrigger AsChild>
+                    <NeoUI.Blazor.Primitives.Sheet>
+                        <NeoUI.Blazor.Primitives.SheetTrigger AsChild>
                             <Button Variant="ButtonVariant.Outline">Open Sheet</Button>
-                        </SheetTrigger>
+                        </NeoUI.Blazor.Primitives.SheetTrigger>
                         <SheetPortal>
                             <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                            <SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
-                                <SheetTitle class="text-lg font-semibold mb-2">With AsChild</SheetTitle>
-                                <SheetDescription class="text-sm text-muted-foreground mb-4">
+                            <NeoUI.Blazor.Primitives.SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
+                                <NeoUI.Blazor.Primitives.SheetTitle class="text-lg font-semibold mb-2">With AsChild</NeoUI.Blazor.Primitives.SheetTitle>
+                                <NeoUI.Blazor.Primitives.SheetDescription class="text-sm text-muted-foreground mb-4">
                                     Button component handles the trigger behavior.
-                                </SheetDescription>
-                                <SheetClose AsChild>
+                                </NeoUI.Blazor.Primitives.SheetDescription>
+                                <NeoUI.Blazor.Primitives.SheetClose AsChild>
                                     <Button Variant="ButtonVariant.Secondary">Close</Button>
-                                </SheetClose>
-                            </SheetContent>
+                                </NeoUI.Blazor.Primitives.SheetClose>
+                            </NeoUI.Blazor.Primitives.SheetContent>
                         </SheetPortal>
-                    </Sheet>
+                    </NeoUI.Blazor.Primitives.Sheet>
                 </div>
             </div>
         </section>
@@ -79,31 +80,31 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <Sheet>
-                    <SheetTrigger class="px-3 py-2 border rounded text-sm">
+                <NeoUI.Blazor.Primitives.Sheet>
+                    <NeoUI.Blazor.Primitives.SheetTrigger class="px-3 py-2 border rounded text-sm">
                         Open Sheet
-                    </SheetTrigger>
+                    </NeoUI.Blazor.Primitives.SheetTrigger>
 
                     <SheetPortal>
                         <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
 
-                        <SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
-                            <SheetTitle class="text-lg font-semibold mb-2">
+                        <NeoUI.Blazor.Primitives.SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
+                            <NeoUI.Blazor.Primitives.SheetTitle class="text-lg font-semibold mb-2">
                                 Sheet Title
-                            </SheetTitle>
+                            </NeoUI.Blazor.Primitives.SheetTitle>
 
-                            <SheetDescription class="text-sm text-muted-foreground mb-4">
+                            <NeoUI.Blazor.Primitives.SheetDescription class="text-sm text-muted-foreground mb-4">
                                 This is a basic sheet using the unstyled primitive components.
-                            </SheetDescription>
+                            </NeoUI.Blazor.Primitives.SheetDescription>
 
                             <div class="flex justify-end gap-2">
-                                <SheetClose class="px-3 py-2 border rounded text-sm">
+                                <NeoUI.Blazor.Primitives.SheetClose class="px-3 py-2 border rounded text-sm">
                                     Close
-                                </SheetClose>
+                                </NeoUI.Blazor.Primitives.SheetClose>
                             </div>
-                        </SheetContent>
+                        </NeoUI.Blazor.Primitives.SheetContent>
                     </SheetPortal>
-                </Sheet>
+                </NeoUI.Blazor.Primitives.Sheet>
             </div>
         </section>
 
@@ -116,69 +117,69 @@
             </div>
 
             <div class="flex flex-wrap gap-2">
-                <Sheet Side="SheetSide.Top">
-                    <SheetTrigger class="px-3 py-2 border rounded text-sm">
+                <NeoUI.Blazor.Primitives.Sheet Side="SheetSide.Top">
+                    <NeoUI.Blazor.Primitives.SheetTrigger class="px-3 py-2 border rounded text-sm">
                         Top
-                    </SheetTrigger>
+                    </NeoUI.Blazor.Primitives.SheetTrigger>
                     <SheetPortal>
                         <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                        <SheetContent class="fixed top-0 inset-x-0 z-50 border-b bg-background p-6">
-                            <SheetTitle class="text-lg font-semibold mb-2">Sheet from Top</SheetTitle>
-                            <SheetDescription class="text-sm text-muted-foreground">
+                        <NeoUI.Blazor.Primitives.SheetContent class="fixed top-0 inset-x-0 z-50 border-b bg-background p-6">
+                            <NeoUI.Blazor.Primitives.SheetTitle class="text-lg font-semibold mb-2">Sheet from Top</NeoUI.Blazor.Primitives.SheetTitle>
+                            <NeoUI.Blazor.Primitives.SheetDescription class="text-sm text-muted-foreground">
                                 This sheet slides in from the top of the screen.
-                            </SheetDescription>
-                            <SheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClose>
-                        </SheetContent>
+                            </NeoUI.Blazor.Primitives.SheetDescription>
+                            <NeoUI.Blazor.Primitives.SheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</NeoUI.Blazor.Primitives.SheetClose>
+                        </NeoUI.Blazor.Primitives.SheetContent>
                     </SheetPortal>
-                </Sheet>
+                </NeoUI.Blazor.Primitives.Sheet>
 
-                <Sheet Side="SheetSide.Right">
-                    <SheetTrigger class="px-3 py-2 border rounded text-sm">
+                <NeoUI.Blazor.Primitives.Sheet Side="SheetSide.Right">
+                    <NeoUI.Blazor.Primitives.SheetTrigger class="px-3 py-2 border rounded text-sm">
                         Right
-                    </SheetTrigger>
+                    </NeoUI.Blazor.Primitives.SheetTrigger>
                     <SheetPortal>
                         <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                        <SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm border-l bg-background p-6">
-                            <SheetTitle class="text-lg font-semibold mb-2">Sheet from Right</SheetTitle>
-                            <SheetDescription class="text-sm text-muted-foreground">
+                        <NeoUI.Blazor.Primitives.SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm border-l bg-background p-6">
+                            <NeoUI.Blazor.Primitives.SheetTitle class="text-lg font-semibold mb-2">Sheet from Right</NeoUI.Blazor.Primitives.SheetTitle>
+                            <NeoUI.Blazor.Primitives.SheetDescription class="text-sm text-muted-foreground">
                                 This sheet slides in from the right side (default).
-                            </SheetDescription>
-                            <SheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClose>
-                        </SheetContent>
+                            </NeoUI.Blazor.Primitives.SheetDescription>
+                            <NeoUI.Blazor.Primitives.SheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</NeoUI.Blazor.Primitives.SheetClose>
+                        </NeoUI.Blazor.Primitives.SheetContent>
                     </SheetPortal>
-                </Sheet>
+                </NeoUI.Blazor.Primitives.Sheet>
 
-                <Sheet Side="SheetSide.Bottom">
-                    <SheetTrigger class="px-3 py-2 border rounded text-sm">
+                <NeoUI.Blazor.Primitives.Sheet Side="SheetSide.Bottom">
+                    <NeoUI.Blazor.Primitives.SheetTrigger class="px-3 py-2 border rounded text-sm">
                         Bottom
-                    </SheetTrigger>
+                    </NeoUI.Blazor.Primitives.SheetTrigger>
                     <SheetPortal>
                         <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                        <SheetContent class="fixed bottom-0 inset-x-0 z-50 border-t bg-background p-6">
-                            <SheetTitle class="text-lg font-semibold mb-2">Sheet from Bottom</SheetTitle>
-                            <SheetDescription class="text-sm text-muted-foreground">
+                        <NeoUI.Blazor.Primitives.SheetContent class="fixed bottom-0 inset-x-0 z-50 border-t bg-background p-6">
+                            <NeoUI.Blazor.Primitives.SheetTitle class="text-lg font-semibold mb-2">Sheet from Bottom</NeoUI.Blazor.Primitives.SheetTitle>
+                            <NeoUI.Blazor.Primitives.SheetDescription class="text-sm text-muted-foreground">
                                 This sheet slides in from the bottom of the screen.
-                            </SheetDescription>
-                            <SheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClose>
-                        </SheetContent>
+                            </NeoUI.Blazor.Primitives.SheetDescription>
+                            <NeoUI.Blazor.Primitives.SheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</NeoUI.Blazor.Primitives.SheetClose>
+                        </NeoUI.Blazor.Primitives.SheetContent>
                     </SheetPortal>
-                </Sheet>
+                </NeoUI.Blazor.Primitives.Sheet>
 
-                <Sheet Side="SheetSide.Left">
-                    <SheetTrigger class="px-3 py-2 border rounded text-sm">
+                <NeoUI.Blazor.Primitives.Sheet Side="SheetSide.Left">
+                    <NeoUI.Blazor.Primitives.SheetTrigger class="px-3 py-2 border rounded text-sm">
                         Left
-                    </SheetTrigger>
+                    </NeoUI.Blazor.Primitives.SheetTrigger>
                     <SheetPortal>
                         <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                        <SheetContent class="fixed left-0 top-0 z-50 h-full w-3/4 sm:max-w-sm border-r bg-background p-6">
-                            <SheetTitle class="text-lg font-semibold mb-2">Sheet from Left</SheetTitle>
-                            <SheetDescription class="text-sm text-muted-foreground">
+                        <NeoUI.Blazor.Primitives.SheetContent class="fixed left-0 top-0 z-50 h-full w-3/4 sm:max-w-sm border-r bg-background p-6">
+                            <NeoUI.Blazor.Primitives.SheetTitle class="text-lg font-semibold mb-2">Sheet from Left</NeoUI.Blazor.Primitives.SheetTitle>
+                            <NeoUI.Blazor.Primitives.SheetDescription class="text-sm text-muted-foreground">
                                 This sheet slides in from the left side.
-                            </SheetDescription>
-                            <SheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClose>
-                        </SheetContent>
+                            </NeoUI.Blazor.Primitives.SheetDescription>
+                            <NeoUI.Blazor.Primitives.SheetClose class="px-3 py-2 border rounded text-sm mt-4">Close</NeoUI.Blazor.Primitives.SheetClose>
+                        </NeoUI.Blazor.Primitives.SheetContent>
                     </SheetPortal>
-                </Sheet>
+                </NeoUI.Blazor.Primitives.Sheet>
             </div>
         </section>
 
@@ -204,27 +205,27 @@
                 </div>
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
-                    <Sheet @bind-Open="isControlledOpen">
+                    <NeoUI.Blazor.Primitives.Sheet @bind-Open="isControlledOpen">
                         <SheetPortal>
                             <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
 
-                            <SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
-                                <SheetTitle class="text-lg font-semibold mb-2">
+                            <NeoUI.Blazor.Primitives.SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
+                                <NeoUI.Blazor.Primitives.SheetTitle class="text-lg font-semibold mb-2">
                                     Controlled Sheet
-                                </SheetTitle>
+                                </NeoUI.Blazor.Primitives.SheetTitle>
 
-                                <SheetDescription class="text-sm text-muted-foreground mb-4">
+                                <NeoUI.Blazor.Primitives.SheetDescription class="text-sm text-muted-foreground mb-4">
                                     This sheet's state is controlled by the parent component. The "Close from Outside" button demonstrates external state control.
-                                </SheetDescription>
+                                </NeoUI.Blazor.Primitives.SheetDescription>
 
                                 <p class="mb-4">Open state: <strong>@isControlledOpen</strong></p>
 
-                                <SheetClose class="px-3 py-2 border rounded text-sm">
+                                <NeoUI.Blazor.Primitives.SheetClose class="px-3 py-2 border rounded text-sm">
                                     Close
-                                </SheetClose>
-                            </SheetContent>
+                                </NeoUI.Blazor.Primitives.SheetClose>
+                            </NeoUI.Blazor.Primitives.SheetContent>
                         </SheetPortal>
-                    </Sheet>
+                    </NeoUI.Blazor.Primitives.Sheet>
                 </div>
             </div>
         </section>
@@ -238,22 +239,22 @@
             </div>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <Sheet>
-                    <SheetTrigger class="px-3 py-2 border rounded text-sm">
+                <NeoUI.Blazor.Primitives.Sheet>
+                    <NeoUI.Blazor.Primitives.SheetTrigger class="px-3 py-2 border rounded text-sm">
                         Open Modal Sheet
-                    </SheetTrigger>
+                    </NeoUI.Blazor.Primitives.SheetTrigger>
 
                     <SheetPortal>
                         <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
 
-                        <SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
-                            <SheetTitle class="text-lg font-semibold mb-2">
+                        <NeoUI.Blazor.Primitives.SheetContent class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
+                            <NeoUI.Blazor.Primitives.SheetTitle class="text-lg font-semibold mb-2">
                                 Modal Sheet
-                            </SheetTitle>
+                            </NeoUI.Blazor.Primitives.SheetTitle>
 
-                            <SheetDescription class="text-sm text-muted-foreground mb-4">
+                            <NeoUI.Blazor.Primitives.SheetDescription class="text-sm text-muted-foreground mb-4">
                                 Try clicking the overlay or pressing Escape to close this sheet.
-                            </SheetDescription>
+                            </NeoUI.Blazor.Primitives.SheetDescription>
 
                             <ul class="text-sm space-y-1 mb-4">
                                 <li>✓ Click overlay to close</li>
@@ -263,12 +264,12 @@
                                 <li>✓ Body scroll locked</li>
                             </ul>
 
-                            <SheetClose class="px-3 py-2 border rounded text-sm">
+                            <NeoUI.Blazor.Primitives.SheetClose class="px-3 py-2 border rounded text-sm">
                                 Close
-                            </SheetClose>
-                        </SheetContent>
+                            </NeoUI.Blazor.Primitives.SheetClose>
+                        </NeoUI.Blazor.Primitives.SheetContent>
                     </SheetPortal>
-                </Sheet>
+                </NeoUI.Blazor.Primitives.Sheet>
             </div>
         </section>
 

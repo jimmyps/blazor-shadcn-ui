@@ -1,3 +1,4 @@
+using NeoUI.Blazor.Primitives;
 using Microsoft.AspNetCore.Components;
 
 namespace NeoUI.Blazor;
@@ -768,14 +769,14 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// Converts the DataTable's selection mode to the underlying table primitive's selection mode enum.
     /// </summary>
     /// <returns>The corresponding primitive selection mode.</returns>
-    private SelectionMode GetPrimitiveSelectionMode()
+    private NeoUI.Blazor.Primitives.SelectionMode GetPrimitiveSelectionMode()
     {
         return SelectionMode switch
         {
-            DataTableSelectionMode.None => Primitives.Table.SelectionMode.None,
-            DataTableSelectionMode.Single => Primitives.Table.SelectionMode.Single,
-            DataTableSelectionMode.Multiple => Primitives.Table.SelectionMode.Multiple,
-            _ => Primitives.Table.SelectionMode.None
+            DataTableSelectionMode.None => NeoUI.Blazor.Primitives.SelectionMode.None,
+            DataTableSelectionMode.Single => NeoUI.Blazor.Primitives.SelectionMode.Single,
+            DataTableSelectionMode.Multiple => NeoUI.Blazor.Primitives.SelectionMode.Multiple,
+            _ => NeoUI.Blazor.Primitives.SelectionMode.None
         };
     }
 

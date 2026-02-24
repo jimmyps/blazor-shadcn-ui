@@ -1,4 +1,5 @@
 @page "/primitives/label"
+@using NeoUI.Blazor.Primitives
 <PageTitle>Label Primitive - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
@@ -20,9 +21,9 @@
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
                 <div class="space-y-2">
-                    <Label For="basic-input" class="text-sm font-medium">
+                    <NeoUI.Blazor.Primitives.Label For="basic-input" class="text-sm font-medium">
                         Basic label
-                    </Label>
+                    </NeoUI.Blazor.Primitives.Label>
                     <input type="text" id="basic-input" placeholder="Click the label to focus" class="w-full px-3 py-2 border border-input rounded-md bg-background" />
                 </div>
                 <p class="text-sm text-muted-foreground mt-3">
@@ -41,16 +42,16 @@
 
             <div class="rounded-lg border bg-card p-6 max-w-md space-y-4">
                 <div class="space-y-2">
-                    <Label For="text-input" class="block text-sm font-medium">
+                    <NeoUI.Blazor.Primitives.Label For="text-input" class="block text-sm font-medium">
                         Text Input
-                    </Label>
+                    </NeoUI.Blazor.Primitives.Label>
                     <input type="text" id="text-input" class="w-full px-3 py-2 border border-input rounded-md bg-background" placeholder="Enter text" />
                 </div>
 
                 <div class="space-y-2">
-                    <Label For="select-input" class="block text-sm font-medium">
+                    <NeoUI.Blazor.Primitives.Label For="select-input" class="block text-sm font-medium">
                         Select Dropdown
-                    </Label>
+                    </NeoUI.Blazor.Primitives.Label>
                     <select id="select-input" class="w-full px-3 py-2 border border-input rounded-md bg-background">
                         <option>Option 1</option>
                         <option>Option 2</option>
@@ -59,24 +60,24 @@
                 </div>
 
                 <div class="space-y-2">
-                    <Label For="textarea-input" class="block text-sm font-medium">
+                    <NeoUI.Blazor.Primitives.Label For="textarea-input" class="block text-sm font-medium">
                         Textarea
-                    </Label>
+                    </NeoUI.Blazor.Primitives.Label>
                     <textarea id="textarea-input" rows="3" class="w-full px-3 py-2 border border-input rounded-md bg-background" placeholder="Enter longer text..."></textarea>
                 </div>
 
                 <div class="flex items-center gap-2">
                     <input type="checkbox" id="checkbox-input" class="h-4 w-4 border border-input rounded cursor-pointer" />
-                    <Label For="checkbox-input" class="text-sm font-medium cursor-pointer">
+                    <NeoUI.Blazor.Primitives.Label For="checkbox-input" class="text-sm font-medium cursor-pointer">
                         Checkbox Label (clickable)
-                    </Label>
+                    </NeoUI.Blazor.Primitives.Label>
                 </div>
 
                 <div class="flex items-center gap-2">
                     <input type="radio" id="radio-input" name="radio-group" class="h-4 w-4 border border-input rounded-full cursor-pointer" />
-                    <Label For="radio-input" class="text-sm font-medium cursor-pointer">
+                    <NeoUI.Blazor.Primitives.Label For="radio-input" class="text-sm font-medium cursor-pointer">
                         Radio Label (clickable)
-                    </Label>
+                    </NeoUI.Blazor.Primitives.Label>
                 </div>
             </div>
         </section>
@@ -91,16 +92,16 @@
 
             <div class="rounded-lg border bg-card p-6 max-w-md space-y-4">
                 <div class="space-y-2">
-                    <Label For="required-input" class="block text-sm font-medium">
+                    <NeoUI.Blazor.Primitives.Label For="required-input" class="block text-sm font-medium">
                         Username <span class="text-red-500">*</span>
-                    </Label>
+                    </NeoUI.Blazor.Primitives.Label>
                     <input type="text" id="required-input" required class="w-full px-3 py-2 border border-input rounded-md bg-background" placeholder="Required field" />
                 </div>
 
                 <div class="space-y-2">
-                    <Label For="optional-input" class="block text-sm font-medium">
+                    <NeoUI.Blazor.Primitives.Label For="optional-input" class="block text-sm font-medium">
                         Nickname <span class="text-muted-foreground text-xs">(optional)</span>
-                    </Label>
+                    </NeoUI.Blazor.Primitives.Label>
                     <input type="text" id="optional-input" class="w-full px-3 py-2 border border-input rounded-md bg-background" placeholder="Optional field" />
                 </div>
             </div>

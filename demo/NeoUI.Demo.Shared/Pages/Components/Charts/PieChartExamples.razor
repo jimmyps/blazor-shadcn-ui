@@ -26,7 +26,7 @@
         <CardContent Class="px-2 pt-4 sm:px-6 sm:pt-6">
             <ChartContainer Height="250" Class="w-full">
                 <PieChart Data="@FilteredBrowserData">
-                    <Tooltip />
+                    <NeoUI.Blazor.Chart.Tooltip />
                     <Legend Show="false" />
                     <Pie DataKey="value" NameKey="name" Color="var(--chart-1)">
                         <LabelList Color="var(--muted-foreground)" />
@@ -46,7 +46,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <PieChart Data="@browserData">
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Pie DataKey="value" NameKey="name">
                             <LabelList Show="false" />
@@ -65,7 +65,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <PieChart Data="@browserData">
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Pie DataKey="value" NameKey="name" InnerRadius="30%">
                             <LabelList Color="var(--muted-foreground)" />
@@ -84,7 +84,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <PieChart Data="@browserData">
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Pie DataKey="value" NameKey="name" InnerRadius="60%" EmphasisScaleSize="10">
                             <LabelList Color="var(--muted-foreground)" />
@@ -103,7 +103,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <PieChart Data="@browserData">
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Pie DataKey="value" NameKey="name" RoseType="radius">
                             <LabelList Color="var(--muted-foreground)" />
@@ -122,7 +122,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <PieChart Data="@browserData">
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Pie DataKey="value" NameKey="name" ShowLabel="true">
                             <LabelList Position="LabelPosition.Outside" Formatter="{b}: {c}%" FontSize="10" Color="var(--muted-foreground)" />
@@ -141,7 +141,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <PieChart Data="@browserData">
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Pie DataKey="value" NameKey="name" ShowLabel="true">
                             <LabelList Position="LabelPosition.Outside" Formatter="function(params) { return params.name + '\n' + params.value + '%'; }" FontSize="9" Color="var(--muted-foreground)" />
@@ -160,7 +160,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <PieChart Data="@browserData">
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Pie DataKey="value" NameKey="name" ShowLabel="true">
                             <LabelList Position="LabelPosition.Outside" Formatter="{b}" FontSize="10" Color="var(--muted-foreground)" />
@@ -180,7 +180,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <PieChart Data="@browserData">
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Pie DataKey="value" NameKey="name" ShowLabel="true">
                             <LabelList Position="LabelPosition.Inside" Formatter="{c}%" FontSize="11" Color="var(--color-white)" />
@@ -199,7 +199,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <PieChart Data="@browserData">
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend VerticalAlign="LegendVerticalAlign.Bottom" Align="LegendAlign.Center" />
                         <Pie DataKey="value" NameKey="name" OuterRadius="40%" Center="@(new string[] {"50%", "40%"})">
                             <LabelList Color="var(--muted-foreground)" />
@@ -218,7 +218,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <PieChart Data="@browserData">
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Pie DataKey="value" NameKey="name" PadAngle="5">
                             <LabelList Color="var(--muted-foreground)" />
@@ -237,7 +237,7 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <PieChart Data="@browserData">
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Pie DataKey="value" NameKey="name" StartAngle="180" EndAngle="360" InnerRadius="50%">
                             <LabelList Color="var(--muted-foreground)" />

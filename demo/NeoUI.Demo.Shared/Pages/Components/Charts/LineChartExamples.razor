@@ -26,14 +26,14 @@
         <CardContent Class="p-6 pt-2 sm:px-6 sm:pt-6">
             <ChartContainer Height="250" Class="w-full">
                 <LineChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
-                    <Grid Vertical="false" Stroke="var(--border)" />
+                    <NeoUI.Blazor.Chart.Grid Vertical="false" Stroke="var(--border)" />
                     <XAxis DataKey="date" TickLine="false" Color="var(--border)">
                         <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
                     </XAxis>
                     <YAxis Show="false" TickLine="false">
                         <AxisLabel Show="false" />
                     </YAxis>
-                    <Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" Formatter="@tooltipFormatter" />
+                    <NeoUI.Blazor.Chart.Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" Formatter="@tooltipFormatter" />
                     <Legend TextColor="var(--foreground)" />
                     <Line DataKey="desktop" Name="Desktop" Color="var(--chart-1)" />
                     <Line DataKey="mobile" Name="Mobile" Color="var(--chart-2)" />
@@ -52,14 +52,14 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Stroke="var(--border)" />
+                        <NeoUI.Blazor.Chart.Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" Color="var(--chart-1)" />
                     </LineChart>
@@ -76,14 +76,14 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <LineChart Data="@multiData" Padding="@(new Padding(6, 0, 32, 0))">
-                        <Grid Show="false" />
+                        <NeoUI.Blazor.Chart.Grid Show="false" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Interval="100" Position="YAxisPosition.Right" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend TextColor="var(--foreground)" VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Circle" />
                         <Line DataKey="product1" Name="Product A" Color="var(--chart-1)" />
                         <Line DataKey="product2" Name="Product B" Color="var(--chart-2)" />
@@ -101,14 +101,14 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Stroke="var(--border)" />
+                        <NeoUI.Blazor.Chart.Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" ShowDots="true" Color="var(--chart-3)" />
                     </LineChart>
@@ -125,14 +125,14 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <LineChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Stroke="var(--border)" />
+                        <NeoUI.Blazor.Chart.Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Line DataKey="product1" Name="Product A" ShowDots="true" Color="var(--chart-1)" />
                         <Line DataKey="product2" Name="Product B" ShowDots="true" Color="var(--chart-2)" />
@@ -150,14 +150,14 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Stroke="var(--border)" />
+                        <NeoUI.Blazor.Chart.Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" ShowDots="true" DotSize="8"
                               DotShape="SymbolShape.Diamond" Color="var(--chart-4)" />
@@ -175,14 +175,14 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Stroke="var(--border)" />
+                        <NeoUI.Blazor.Chart.Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" Interpolation="InterpolationType.Linear" Color="var(--chart-5)" />
                     </LineChart>
@@ -199,14 +199,14 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Stroke="var(--border)" />
+                        <NeoUI.Blazor.Chart.Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" Interpolation="InterpolationType.Step" Color="var(--chart-1)" />
                     </LineChart>
@@ -223,14 +223,14 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Stroke="var(--border)" />
+                        <NeoUI.Blazor.Chart.Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" ShowDots="true" ShowLabel="true" LabelPosition="LabelPosition.Top" Color="var(--chart-2)">
                             <LabelList Position="LabelPosition.Top" Formatter="{c}" FontSize="10" Color="#666" />
@@ -249,14 +249,14 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Stroke="var(--border)" />
+                        <NeoUI.Blazor.Chart.Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" ShowDots="true" ShowLabel="true" Color="var(--chart-3)">
                             <LabelList Position="LabelPosition.Top" Formatter="function(params) { return '$' + params.value; }" FontSize="9" Color="#2563eb" />
@@ -275,14 +275,14 @@
             <CardContent>
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Stroke="var(--border)" />
+                        <NeoUI.Blazor.Chart.Grid Stroke="var(--border)" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <NeoUI.Blazor.Chart.Tooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Forecast" Dashed="true" ShowDots="true" Color="var(--chart-4)" />
                     </LineChart>

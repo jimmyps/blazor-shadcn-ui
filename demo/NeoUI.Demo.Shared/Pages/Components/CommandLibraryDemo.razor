@@ -69,17 +69,17 @@
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @onclick="CloseModal"></div>
 
         <div class="relative w-full max-w-2xl mx-4 z-10">
-            <NeoUI.Blazor.Command.Command Class="border rounded-lg shadow-2xl bg-background" OnValueChange="HandleCommandSelect">
-                <NeoUI.Blazor.Command.CommandInput Placeholder="Search primitives, components, and icons..." AutoFocus="true" />
-                <NeoUI.Blazor.Command.CommandList Class="max-h-[400px]">
-                    <NeoUI.Blazor.Command.CommandEmpty>
+            <NeoUI.Blazor.Command Class="border rounded-lg shadow-2xl bg-background" OnValueChange="HandleCommandSelect">
+                <NeoUI.Blazor.CommandInput Placeholder="Search primitives, components, and icons..." AutoFocus="true" />
+                <NeoUI.Blazor.CommandList Class="max-h-[400px]">
+                    <NeoUI.Blazor.CommandEmpty>
                         <div class="flex flex-col items-center gap-2 py-6">
                             <LucideIcon Name="search-x" Size="32" Class="text-muted-foreground" />
                             <p class="text-sm text-muted-foreground">No items found.</p>
                         </div>
-                    </NeoUI.Blazor.Command.CommandEmpty>
+                    </NeoUI.Blazor.CommandEmpty>
 
-                    <NeoUI.Blazor.Command.CommandVirtualizedGroup TItem="LibraryItem"
+                    <NeoUI.Blazor.CommandVirtualizedGroup TItem="LibraryItem"
                         Heading="Primitives"
                         Items="Primitives"
                         ItemValue="@(item => item.Url)"
@@ -90,11 +90,11 @@
                             @item.Name
                             <span class="ml-auto text-xs text-muted-foreground">Headless</span>
                         </ItemTemplate>
-                    </NeoUI.Blazor.Command.CommandVirtualizedGroup>
+                    </NeoUI.Blazor.CommandVirtualizedGroup>
 
-                    <NeoUI.Blazor.Command.CommandSeparator />
+                    <NeoUI.Blazor.CommandSeparator />
 
-                    <NeoUI.Blazor.Command.CommandVirtualizedGroup TItem="LibraryItem"
+                    <NeoUI.Blazor.CommandVirtualizedGroup TItem="LibraryItem"
                         Heading="Components"
                         Items="Components"
                         ItemValue="@(item => item.Url)"
@@ -105,11 +105,11 @@
                             @item.Name
                             <span class="ml-auto text-xs text-muted-foreground">Styled</span>
                         </ItemTemplate>
-                    </NeoUI.Blazor.Command.CommandVirtualizedGroup>
+                    </NeoUI.Blazor.CommandVirtualizedGroup>
 
-                    <NeoUI.Blazor.Command.CommandSeparator />
+                    <NeoUI.Blazor.CommandSeparator />
 
-                    <NeoUI.Blazor.Command.CommandVirtualizedGroup TItem="string"
+                    <NeoUI.Blazor.CommandVirtualizedGroup TItem="string"
                         Heading="Lucide Icons"
                         Items="AllLucideIcons"
                         ItemValue="@(name => $"/icons/lucide?search={name}")"
@@ -120,11 +120,11 @@
                             @FormatIconName(iconName)
                             <span class="ml-auto text-xs text-muted-foreground">Lucide</span>
                         </ItemTemplate>
-                    </NeoUI.Blazor.Command.CommandVirtualizedGroup>
+                    </NeoUI.Blazor.CommandVirtualizedGroup>
 
-                    <NeoUI.Blazor.Command.CommandSeparator />
+                    <NeoUI.Blazor.CommandSeparator />
 
-                    <NeoUI.Blazor.Command.CommandVirtualizedGroup TItem="string"
+                    <NeoUI.Blazor.CommandVirtualizedGroup TItem="string"
                         Heading="Heroicons"
                         Items="AllHeroIcons"
                         ItemValue="@(name => $"/icons/heroicons?search={name}")"
@@ -135,11 +135,11 @@
                             @FormatIconName(iconName)
                             <span class="ml-auto text-xs text-muted-foreground">Heroicons</span>
                         </ItemTemplate>
-                    </NeoUI.Blazor.Command.CommandVirtualizedGroup>
+                    </NeoUI.Blazor.CommandVirtualizedGroup>
 
-                    <NeoUI.Blazor.Command.CommandSeparator />
+                    <NeoUI.Blazor.CommandSeparator />
 
-                    <NeoUI.Blazor.Command.CommandVirtualizedGroup TItem="string"
+                    <NeoUI.Blazor.CommandVirtualizedGroup TItem="string"
                         Heading="Feather Icons"
                         Items="AllFeatherIcons"
                         ItemValue="@(name => $"/icons/feather?search={name}")"
@@ -150,9 +150,9 @@
                             @FormatIconName(iconName)
                             <span class="ml-auto text-xs text-muted-foreground">Feather</span>
                         </ItemTemplate>
-                    </NeoUI.Blazor.Command.CommandVirtualizedGroup>
-                </NeoUI.Blazor.Command.CommandList>
-            </NeoUI.Blazor.Command.Command>
+                    </NeoUI.Blazor.CommandVirtualizedGroup>
+                </NeoUI.Blazor.CommandList>
+            </NeoUI.Blazor.Command>
         </div>
     </div>
 }

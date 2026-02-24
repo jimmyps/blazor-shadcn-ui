@@ -3,8 +3,8 @@
 @using NeoUI.Icons.Lucide
 
 <div class="@ContainerClass">
-    <Popover Open="_isOpen" OpenChanged="HandleOpenChanged">
-        <PopoverTrigger role="combobox"
+    <NeoUI.Blazor.Popover Open="_isOpen" OpenChanged="HandleOpenChanged">
+        <NeoUI.Blazor.PopoverTrigger role="combobox"
                         aria-expanded="@_isOpen.ToString().ToLower()"
                         aria-controls="@($"{Id}-listbox")"
                         aria-haspopup="listbox"
@@ -50,9 +50,9 @@
                 }
                 <LucideIcon Name="chevron-down" Size="16" Class="h-4 w-4 shrink-0 opacity-50" />
             </div>
-        </PopoverTrigger>
+        </NeoUI.Blazor.PopoverTrigger>
 
-        <PopoverContent Side="@PopoverSide.Bottom"
+        <NeoUI.Blazor.PopoverContent Side="@PopoverSide.Bottom"
                         Align="@PopoverAlign.Start"
                         CloseOnClickOutside="@AutoClose"
                         CloseOnEscape="false"
@@ -102,7 +102,7 @@
                              @onclick="HandleSelectAllToggle"
                              @onclick:stopPropagation="true"
                              class="@ItemCssClass">
-                            <Checkbox Checked="@(selectAllState == SelectAllState.All)"
+                            <NeoUI.Blazor.Checkbox Checked="@(selectAllState == SelectAllState.All)"
                                       Indeterminate="@(selectAllState == SelectAllState.Indeterminate)"
                                       class="@CheckboxCssClass"
                                       AriaLabel="@SelectAllLabel">
@@ -114,7 +114,7 @@
                                 {
                                     <LucideIcon Name="minus" Size="14" Class="h-3.5 w-3.5 stroke-current" />
                                 }
-                            </Checkbox>
+                            </NeoUI.Blazor.Checkbox>
                             <span class="font-medium">@SelectAllLabel</span>
                         </div>
                         <Separator Decorative="false" Class="my-1" />
@@ -133,14 +133,14 @@
                              @onclick="GetToggleHandler(item)"
                              @onclick:stopPropagation="true"
                              class="@ItemCssClass">
-                            <Checkbox Checked="@isSelected"
+                            <NeoUI.Blazor.Checkbox Checked="@isSelected"
                                       class="@CheckboxCssClass"
                                       AriaLabel="@displayText">
                                 @if (isSelected)
                                 {
                                     <LucideIcon Name="check" Size="14" Class="h-3.5 w-3.5 stroke-current" />
                                 }
-                            </Checkbox>
+                            </NeoUI.Blazor.Checkbox>
                             <span>@displayText</span>
                         </div>
                     }
@@ -162,6 +162,6 @@
                     @CloseLabel
                 </button>
             </div>
-        </PopoverContent>
-    </Popover>
+        </NeoUI.Blazor.PopoverContent>
+    </NeoUI.Blazor.Popover>
 </div>

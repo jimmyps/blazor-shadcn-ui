@@ -4,6 +4,8 @@ using NeoUI.Blazor.Services.Theming;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
+using NeoUI.Blazor.Primitives;
+using NeoUI.Blazor.Primitives.Services;
 namespace NeoUI.Blazor.Extensions;
 
 /// <summary>

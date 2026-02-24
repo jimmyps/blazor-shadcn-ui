@@ -1,4 +1,6 @@
+@using NeoUI.Blazor.Primitives.Services
 @page "/primitives/tooltip"
+@using NeoUI.Blazor.Primitives
 <PageTitle>Tooltip Primitive - NeoUI</PageTitle>
 
 <div class="space-y-6">
@@ -26,14 +28,14 @@
                     <p class="text-sm text-muted-foreground">
                         TooltipTrigger renders its own span element.
                     </p>
-                    <Tooltip>
-                        <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                    <NeoUI.Blazor.Primitives.Tooltip>
+                        <NeoUI.Blazor.Primitives.TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                             Hover me
-                        </TooltipTrigger>
-                        <TooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
+                        </NeoUI.Blazor.Primitives.TooltipTrigger>
+                        <NeoUI.Blazor.Primitives.TooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
                             Without AsChild tooltip
-                        </TooltipContent>
-                    </Tooltip>
+                        </NeoUI.Blazor.Primitives.TooltipContent>
+                    </NeoUI.Blazor.Primitives.Tooltip>
                 </div>
 
                 <!-- With AsChild -->
@@ -42,16 +44,16 @@
                     <p class="text-sm text-muted-foreground">
                         Button receives hover/focus behavior via TriggerContext.
                     </p>
-                    <Tooltip>
-                        <TooltipTrigger AsChild>
+                    <NeoUI.Blazor.Primitives.Tooltip>
+                        <NeoUI.Blazor.Primitives.TooltipTrigger AsChild>
                             <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Icon">
                                 <LucideIcon Name="info" Size="16" />
                             </Button>
-                        </TooltipTrigger>
-                        <TooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
+                        </NeoUI.Blazor.Primitives.TooltipTrigger>
+                        <NeoUI.Blazor.Primitives.TooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
                             With AsChild tooltip
-                        </TooltipContent>
-                    </Tooltip>
+                        </NeoUI.Blazor.Primitives.TooltipContent>
+                    </NeoUI.Blazor.Primitives.Tooltip>
                 </div>
             </div>
         </section>
@@ -65,15 +67,15 @@
             </p>
 
             <div class="rounded-lg border bg-card p-6 max-w-md">
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <NeoUI.Blazor.Primitives.Tooltip>
+                    <NeoUI.Blazor.Primitives.TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Hover me
-                    </TooltipTrigger>
+                    </NeoUI.Blazor.Primitives.TooltipTrigger>
 
-                    <TooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
+                    <NeoUI.Blazor.Primitives.TooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
                         This is a tooltip
-                    </TooltipContent>
-                </Tooltip>
+                    </NeoUI.Blazor.Primitives.TooltipContent>
+                </NeoUI.Blazor.Primitives.Tooltip>
             </div>
         </section>
 
@@ -94,15 +96,15 @@
                     </span>
                 </div>
 
-                <Tooltip @bind-Open="isOpen">
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <NeoUI.Blazor.Primitives.Tooltip @bind-Open="isOpen">
+                    <NeoUI.Blazor.Primitives.TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Controlled Tooltip
-                    </TooltipTrigger>
+                    </NeoUI.Blazor.Primitives.TooltipTrigger>
 
-                    <TooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
+                    <NeoUI.Blazor.Primitives.TooltipContent class="px-4 py-2 border rounded bg-card shadow-lg">
                         This tooltip is controlled externally
-                    </TooltipContent>
-                </Tooltip>
+                    </NeoUI.Blazor.Primitives.TooltipContent>
+                </NeoUI.Blazor.Primitives.Tooltip>
             </div>
         </section>
 
@@ -114,41 +116,41 @@
             </p>
 
             <div class="rounded-lg border bg-card p-6 flex gap-4 flex-wrap">
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <NeoUI.Blazor.Primitives.Tooltip>
+                    <NeoUI.Blazor.Primitives.TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Top
-                    </TooltipTrigger>
-                    <TooltipContent Side="@PopoverSide.Top" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </NeoUI.Blazor.Primitives.TooltipTrigger>
+                    <NeoUI.Blazor.Primitives.TooltipContent Side="@PopoverSide.Top" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Top positioned
-                    </TooltipContent>
-                </Tooltip>
+                    </NeoUI.Blazor.Primitives.TooltipContent>
+                </NeoUI.Blazor.Primitives.Tooltip>
 
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <NeoUI.Blazor.Primitives.Tooltip>
+                    <NeoUI.Blazor.Primitives.TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Bottom
-                    </TooltipTrigger>
-                    <TooltipContent Side="@PopoverSide.Bottom" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </NeoUI.Blazor.Primitives.TooltipTrigger>
+                    <NeoUI.Blazor.Primitives.TooltipContent Side="@PopoverSide.Bottom" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Bottom positioned
-                    </TooltipContent>
-                </Tooltip>
+                    </NeoUI.Blazor.Primitives.TooltipContent>
+                </NeoUI.Blazor.Primitives.Tooltip>
 
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <NeoUI.Blazor.Primitives.Tooltip>
+                    <NeoUI.Blazor.Primitives.TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Left
-                    </TooltipTrigger>
-                    <TooltipContent Side="@PopoverSide.Left" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </NeoUI.Blazor.Primitives.TooltipTrigger>
+                    <NeoUI.Blazor.Primitives.TooltipContent Side="@PopoverSide.Left" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Left positioned
-                    </TooltipContent>
-                </Tooltip>
+                    </NeoUI.Blazor.Primitives.TooltipContent>
+                </NeoUI.Blazor.Primitives.Tooltip>
 
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <NeoUI.Blazor.Primitives.Tooltip>
+                    <NeoUI.Blazor.Primitives.TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Right
-                    </TooltipTrigger>
-                    <TooltipContent Side="@PopoverSide.Right" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </NeoUI.Blazor.Primitives.TooltipTrigger>
+                    <NeoUI.Blazor.Primitives.TooltipContent Side="@PopoverSide.Right" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Right positioned
-                    </TooltipContent>
-                </Tooltip>
+                    </NeoUI.Blazor.Primitives.TooltipContent>
+                </NeoUI.Blazor.Primitives.Tooltip>
             </div>
         </section>
 
@@ -160,32 +162,32 @@
             </p>
 
             <div class="rounded-lg border bg-card p-6 flex gap-4 flex-wrap">
-                <Tooltip DelayDuration="0">
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <NeoUI.Blazor.Primitives.Tooltip DelayDuration="0">
+                    <NeoUI.Blazor.Primitives.TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Instant (0ms)
-                    </TooltipTrigger>
-                    <TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </NeoUI.Blazor.Primitives.TooltipTrigger>
+                    <NeoUI.Blazor.Primitives.TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Shows immediately
-                    </TooltipContent>
-                </Tooltip>
+                    </NeoUI.Blazor.Primitives.TooltipContent>
+                </NeoUI.Blazor.Primitives.Tooltip>
 
-                <Tooltip DelayDuration="700">
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <NeoUI.Blazor.Primitives.Tooltip DelayDuration="700">
+                    <NeoUI.Blazor.Primitives.TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Default (700ms)
-                    </TooltipTrigger>
-                    <TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </NeoUI.Blazor.Primitives.TooltipTrigger>
+                    <NeoUI.Blazor.Primitives.TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Shows after 700ms
-                    </TooltipContent>
-                </Tooltip>
+                    </NeoUI.Blazor.Primitives.TooltipContent>
+                </NeoUI.Blazor.Primitives.Tooltip>
 
-                <Tooltip DelayDuration="1500">
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <NeoUI.Blazor.Primitives.Tooltip DelayDuration="1500">
+                    <NeoUI.Blazor.Primitives.TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Slow (1500ms)
-                    </TooltipTrigger>
-                    <TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </NeoUI.Blazor.Primitives.TooltipTrigger>
+                    <NeoUI.Blazor.Primitives.TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Shows after 1.5 seconds
-                    </TooltipContent>
-                </Tooltip>
+                    </NeoUI.Blazor.Primitives.TooltipContent>
+                </NeoUI.Blazor.Primitives.Tooltip>
             </div>
         </section>
 
@@ -197,32 +199,32 @@
             </p>
 
             <div class="rounded-lg border bg-card p-6 flex gap-4 flex-wrap">
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <NeoUI.Blazor.Primitives.Tooltip>
+                    <NeoUI.Blazor.Primitives.TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Top Start
-                    </TooltipTrigger>
-                    <TooltipContent Side="@PopoverSide.Top" Align="@PopoverAlign.Start" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </NeoUI.Blazor.Primitives.TooltipTrigger>
+                    <NeoUI.Blazor.Primitives.TooltipContent Side="@PopoverSide.Top" Align="@PopoverAlign.Start" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Aligned to start
-                    </TooltipContent>
-                </Tooltip>
+                    </NeoUI.Blazor.Primitives.TooltipContent>
+                </NeoUI.Blazor.Primitives.Tooltip>
 
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <NeoUI.Blazor.Primitives.Tooltip>
+                    <NeoUI.Blazor.Primitives.TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Top Center
-                    </TooltipTrigger>
-                    <TooltipContent Side="@PopoverSide.Top" Align="@PopoverAlign.Center" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </NeoUI.Blazor.Primitives.TooltipTrigger>
+                    <NeoUI.Blazor.Primitives.TooltipContent Side="@PopoverSide.Top" Align="@PopoverAlign.Center" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Centered (default)
-                    </TooltipContent>
-                </Tooltip>
+                    </NeoUI.Blazor.Primitives.TooltipContent>
+                </NeoUI.Blazor.Primitives.Tooltip>
 
-                <Tooltip>
-                    <TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
+                <NeoUI.Blazor.Primitives.Tooltip>
+                    <NeoUI.Blazor.Primitives.TooltipTrigger class="px-4 py-2 border rounded cursor-pointer">
                         Top End
-                    </TooltipTrigger>
-                    <TooltipContent Side="@PopoverSide.Top" Align="@PopoverAlign.End" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                    </NeoUI.Blazor.Primitives.TooltipTrigger>
+                    <NeoUI.Blazor.Primitives.TooltipContent Side="@PopoverSide.Top" Align="@PopoverAlign.End" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                         Aligned to end
-                    </TooltipContent>
-                </Tooltip>
+                    </NeoUI.Blazor.Primitives.TooltipContent>
+                </NeoUI.Blazor.Primitives.Tooltip>
             </div>
         </section>
 
@@ -238,23 +240,23 @@
                     Try tabbing to the triggers below to see tooltips appear on focus:
                 </p>
                 <div class="flex gap-4">
-                    <Tooltip>
-                        <TooltipTrigger Focusable="true" class="px-4 py-2 border rounded cursor-pointer">
+                    <NeoUI.Blazor.Primitives.Tooltip>
+                        <NeoUI.Blazor.Primitives.TooltipTrigger Focusable="true" class="px-4 py-2 border rounded cursor-pointer">
                             Focusable trigger
-                        </TooltipTrigger>
-                        <TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                        </NeoUI.Blazor.Primitives.TooltipTrigger>
+                        <NeoUI.Blazor.Primitives.TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                             Shows on focus
-                        </TooltipContent>
-                    </Tooltip>
+                        </NeoUI.Blazor.Primitives.TooltipContent>
+                    </NeoUI.Blazor.Primitives.Tooltip>
 
-                    <Tooltip>
-                        <TooltipTrigger Focusable="true" class="px-4 py-2 border rounded cursor-pointer">
+                    <NeoUI.Blazor.Primitives.Tooltip>
+                        <NeoUI.Blazor.Primitives.TooltipTrigger Focusable="true" class="px-4 py-2 border rounded cursor-pointer">
                             Another trigger
-                        </TooltipTrigger>
-                        <TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
+                        </NeoUI.Blazor.Primitives.TooltipTrigger>
+                        <NeoUI.Blazor.Primitives.TooltipContent class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
                             Also shows on focus
-                        </TooltipContent>
-                    </Tooltip>
+                        </NeoUI.Blazor.Primitives.TooltipContent>
+                    </NeoUI.Blazor.Primitives.Tooltip>
                 </div>
             </div>
 

@@ -1,3 +1,5 @@
+using NeoUI.Blazor.Primitives;
+using NeoUI.Blazor.Primitives.Services;
 namespace NeoUI.Blazor.Services;
 
 /// <summary>
@@ -5,13 +7,13 @@ namespace NeoUI.Blazor.Services;
 /// </summary>
 public class DialogService
 {
-    private DialogHost.DialogHost? _dialogHost;
+    private DialogHost? _dialogHost;
     private TaskCompletionSource<DialogResult>? _currentTask;
 
     /// <summary>
     /// Register the dialog host component instance
     /// </summary>
-    internal void RegisterHost(DialogHost.DialogHost host)
+    internal void RegisterHost(DialogHost host)
     {
         _dialogHost = host;
     }
