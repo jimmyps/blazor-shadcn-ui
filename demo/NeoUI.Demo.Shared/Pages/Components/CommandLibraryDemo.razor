@@ -69,7 +69,7 @@
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @onclick="CloseModal"></div>
 
         <div class="relative w-full max-w-2xl mx-4 z-10">
-            <NeoUI.Blazor.Command Class="border rounded-lg shadow-2xl bg-background" OnValueChange="HandleCommandSelect">
+            <CommandContent Class="border rounded-lg shadow-2xl bg-background" OnValueChange="HandleCommandSelect">
                 <CommandInput Placeholder="Search primitives, components, and icons..." AutoFocus="true" />
                 <CommandList Class="max-h-[400px]">
                     <CommandEmpty>
@@ -152,7 +152,7 @@
                         </ItemTemplate>
                     </CommandVirtualizedGroup>
                 </CommandList>
-            </NeoUI.Blazor.Command>
+            </CommandContent>
         </div>
     </div>
 }
