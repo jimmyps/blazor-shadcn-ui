@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor;
+namespace NeoUI.Blazor.Charts;
 
 /// <summary>
 /// Represents padding values for chart elements.

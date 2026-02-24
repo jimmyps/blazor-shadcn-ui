@@ -2,7 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace NeoUI.Blazor;
+namespace NeoUI.Blazor.Charts;
 
 /// <summary>
 /// ECharts renderer implementation (SVG-based).

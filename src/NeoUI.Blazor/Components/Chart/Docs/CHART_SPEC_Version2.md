@@ -50,7 +50,7 @@ We will **not** use a `.v2` namespace. The new API becomes canonical.
 
 - **New charts (this spec)**
   - Folder: `src/NeoUI.Blazor/Components/Chart`
-  - Namespace: `NeoUI.Blazor.Chart`
+  - Namespace: `NeoUI.Blazor.Charts`
 
 - **Legacy/unused charts**
   - Folder: `src/NeoUI.Blazor/Components/Old/Chart`

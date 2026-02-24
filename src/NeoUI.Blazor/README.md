@@ -43,7 +43,7 @@ This package automatically includes:
 @using NeoUI.Blazor.Avatar
 @using NeoUI.Blazor.Badge
 @using NeoUI.Blazor.Card
-@using NeoUI.Blazor.Chart
+@using NeoUI.Blazor.Charts
 @using NeoUI.Blazor.DataTable
 @using NeoUI.Icons.Lucide
 ```

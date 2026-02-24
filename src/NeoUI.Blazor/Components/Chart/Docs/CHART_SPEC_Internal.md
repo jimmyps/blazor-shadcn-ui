@@ -50,7 +50,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace NeoUI.Blazor.Chart;
+namespace NeoUI.Blazor.Charts;
 
 public sealed class EChartsOption
 {

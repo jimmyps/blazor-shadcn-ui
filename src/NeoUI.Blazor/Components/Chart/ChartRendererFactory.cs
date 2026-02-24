@@ -1,6 +1,6 @@
 using Microsoft.JSInterop;
 
-namespace NeoUI.Blazor;
+namespace NeoUI.Blazor.Charts;
 
 /// <summary>
 /// Factory for creating chart renderers based on engine type.

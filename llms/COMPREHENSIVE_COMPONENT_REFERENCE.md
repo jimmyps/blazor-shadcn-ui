@@ -935,7 +935,7 @@ Slideshow component with touch gestures and animations. Displays content in a ro
 ### Chart
 
 **Package:** `NeoUI.Blazor`  
-**Namespace:** `NeoUI.Blazor.Chart`
+**Namespace:** `NeoUI.Blazor.Charts`
 
 **Installation:**
 ```bash
@@ -944,7 +944,7 @@ dotnet add package NeoUI.Blazor
 
 **Import:**
 ```razor
-@using NeoUI.Blazor.Chart
+@using NeoUI.Blazor.Charts
 ```
 
 **Description:**

@@ -1,4 +1,4 @@
-using NeoUI.Blazor;
+using NeoUI.Blazor.Charts;
 
 namespace NeoUI.Demo.Shared.Pages.Components.Charts
 {
