@@ -60,33 +60,33 @@
                                     <div @onclick:stopPropagation="true">
                                         @if (ShouldShowSelectAllPrompt())
                                         {
-                                            <NeoUI.Blazor.DropdownMenu @bind-Open="_selectAllDropdownOpen">
-                                                <NeoUI.Blazor.DropdownMenuTrigger Class="inline-flex items-center justify-center p-0 bg-transparent border-0 hover:bg-transparent focus:outline-none">
-                                                    <NeoUI.Blazor.Checkbox Checked="@IsAllSelected()"
+                                            <DropdownMenu @bind-Open="_selectAllDropdownOpen">
+                                                <DropdownMenuTrigger Class="inline-flex items-center justify-center p-0 bg-transparent border-0 hover:bg-transparent focus:outline-none">
+                                                    <Checkbox Checked="@IsAllSelected()"
                                                               Indeterminate="@IsSomeSelected()"
                                                               AriaLabel="Select rows - click to see options"
                                                               Class="pointer-events-none" />
-                                                </NeoUI.Blazor.DropdownMenuTrigger>
-                                                <NeoUI.Blazor.DropdownMenuContent Side="PopoverSide.Bottom" Align="PopoverAlign.Start">
-                                                    <NeoUI.Blazor.DropdownMenuItem OnClick="@HandleSelectAllOnCurrentPage">
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent Side="PopoverSide.Bottom" Align="PopoverAlign.Start">
+                                                    <DropdownMenuItem OnClick="@HandleSelectAllOnCurrentPage">
                                                         Select all on this page (@_processedData.Count() items)
-                                                    </NeoUI.Blazor.DropdownMenuItem>
-                                                    <NeoUI.Blazor.DropdownMenuItem OnClick="@HandleSelectAllItems">
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem OnClick="@HandleSelectAllItems">
                                                         Select all @GetTotalFilteredItemCount() items
-                                                    </NeoUI.Blazor.DropdownMenuItem>
+                                                    </DropdownMenuItem>
                                                     @if (_tableState.Selection.HasSelection)
                                                     {
-                                                        <NeoUI.Blazor.DropdownMenuSeparator />
-                                                        <NeoUI.Blazor.DropdownMenuItem OnClick="@HandleClearSelection">
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem OnClick="@HandleClearSelection">
                                                             Clear selection
-                                                        </NeoUI.Blazor.DropdownMenuItem>
+                                                        </DropdownMenuItem>
                                                     }
-                                                </NeoUI.Blazor.DropdownMenuContent>
-                                            </NeoUI.Blazor.DropdownMenu>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         }
                                         else
                                         {
-                                            <NeoUI.Blazor.Checkbox Checked="@IsAllSelected()"
+                                            <Checkbox Checked="@IsAllSelected()"
                                                       CheckedChanged="@(async (bool isChecked) => await HandleSelectAllChanged(isChecked))"
                                                       Indeterminate="@IsSomeSelected()"
                                                       AriaLabel="Select all rows" />
@@ -155,7 +155,7 @@
                                 {
                                     <TableCell Class="p-4 align-middle w-12" role="gridcell">
                                         <div @onclick:stopPropagation="true">
-                                            <NeoUI.Blazor.Checkbox Checked="@isSelected"
+                                            <Checkbox Checked="@isSelected"
                                                       CheckedChanged="@(async (bool isChecked) => await HandleRowSelectionChanged(item, isChecked))"
                                                       AriaLabel="@($"Select this row")" />
                                         </div>

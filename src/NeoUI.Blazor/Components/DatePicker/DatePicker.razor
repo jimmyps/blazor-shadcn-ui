@@ -2,8 +2,8 @@
 @using NeoUI.Icons.Lucide
 @* DatePicker - Date selection with Calendar in Popover *@
 
-<NeoUI.Blazor.Popover @bind-Open="_isOpen">
-    <NeoUI.Blazor.PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()" @onclick="OnTriggerClick">
+<Popover @bind-Open="_isOpen">
+    <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()" @onclick="OnTriggerClick">
         @if (ShowIcon)
         {
             <LucideIcon Name="calendar" Class="@GetIconClass()" />
@@ -13,8 +13,8 @@
         {
             <LucideIcon Name="chevron-down" Class="ml-auto h-4 w-4 opacity-50" />
         }
-    </NeoUI.Blazor.PopoverTrigger>
-    <NeoUI.Blazor.PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
+    </PopoverTrigger>
+    <PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
         <Calendar @ref="_calendar" @bind-SelectedDate="_selectedDate"
                   MinDate="@MinDate"
                   MaxDate="@MaxDate"
@@ -23,8 +23,8 @@
                   CaptionLayout="@CaptionLayout"
                   Class="@GetCalendarClass()"
                   RowClass="!mt-0" />
-    </NeoUI.Blazor.PopoverContent>
-</NeoUI.Blazor.Popover>
+    </PopoverContent>
+</Popover>
 
 @code {
 private Calendar? _calendar;

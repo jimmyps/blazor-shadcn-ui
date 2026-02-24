@@ -424,7 +424,7 @@
                                 <Field>
                                     <FieldLabel For="profile-name">Full Name *</FieldLabel>
                                     <FieldContent>
-                                        <Input Id="profile-name"
+                                        <NeoUI.Blazor.Input Id="profile-name"
                                                @bind-Value="userProfileModel.Name"
                                                ShowValidationError="true"
                                                Placeholder="Enter your full name" />
@@ -434,7 +434,7 @@
                                 <Field>
                                     <FieldLabel For="profile-username">Username</FieldLabel>
                                     <FieldContent>
-                                        <Input Id="profile-username"
+                                        <NeoUI.Blazor.Input Id="profile-username"
                                                @bind-Value="userProfileModel.Username"
                                                ShowValidationError="true"
                                                Placeholder="username" />
@@ -445,7 +445,7 @@
                             <Field>
                                 <FieldLabel For="profile-email">Email Address *</FieldLabel>
                                 <FieldContent>
-                                    <Input Id="profile-email"
+                                    <NeoUI.Blazor.Input Id="profile-email"
                                            @bind-Value="userProfileModel.Email"
                                            ShowValidationError="true"
                                            Type="InputType.Email"
@@ -661,7 +661,7 @@
                         <Field>
                             <FieldLabel For="promo-code">Promo Code (Optional)</FieldLabel>
                             <FieldContent>
-                                <Input Id="promo-code"
+                                <NeoUI.Blazor.Input Id="promo-code"
                                        @bind-Value="subscriptionModel.PromoCode"
                                        Placeholder="Enter promo code" />
                             </FieldContent>
@@ -751,7 +751,7 @@
                             <Field>
                             <FieldLabel For="invite-email">Email Address *</FieldLabel>
                             <FieldContent>
-                                <Input Id="invite-email"
+                                <NeoUI.Blazor.Input Id="invite-email"
                                        @bind-Value="teamInviteModel.Email"
                                        ShowValidationError="true"
                                        Type="InputType.Email"
@@ -908,7 +908,7 @@
                         <Field>
                             <FieldLabel For="product-name">Product Name</FieldLabel>
                             <FieldContent>
-                                <Input Id="product-name"
+                                <NeoUI.Blazor.Input Id="product-name"
                                        @bind-Value="productConfigModel.ProductName"
                                        Placeholder="Enter product name" />
                             </FieldContent>
@@ -1074,7 +1074,7 @@
                             <Field>
                             <FieldLabel For="project-name">Project Name *</FieldLabel>
                             <FieldContent>
-                                <Input Id="project-name"
+                                <NeoUI.Blazor.Input Id="project-name"
                                        @bind-Value="projectModel.ProjectName"
                                        ShowValidationError="true"
                                        Placeholder="my-awesome-project" />
@@ -1162,7 +1162,7 @@
                         <Field>
                             <FieldLabel For="build-command">Build Command</FieldLabel>
                             <FieldContent>
-                                <Input Id="build-command"
+                                <NeoUI.Blazor.Input Id="build-command"
                                        @bind-Value="advancedSettingsModel.BuildCommand"
                                        Placeholder="npm run build" />
                             </FieldContent>

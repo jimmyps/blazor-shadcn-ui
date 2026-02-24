@@ -2,8 +2,8 @@
 @typeparam TItem
 <CascadingValue Value="this" IsFixed="false">
     <div class="@ContainerClass">
-        <NeoUI.Blazor.Popover Open="_isOpen" OpenChanged="HandleOpenChanged">
-            <NeoUI.Blazor.PopoverTrigger role="combobox"
+        <Popover Open="_isOpen" OpenChanged="HandleOpenChanged">
+            <PopoverTrigger role="combobox"
                            aria-expanded="@GetIsOpen().ToString().ToLower()"
                            aria-controls="@($"{Id}-listbox")"
                            aria-haspopup="listbox"
@@ -24,9 +24,9 @@
                      class="ml-2 h-4 w-4 shrink-0 opacity-50">
                     <path d="m6 9 6 6 6-6" />
                 </svg>
-            </NeoUI.Blazor.PopoverTrigger>
-            <NeoUI.Blazor.PopoverContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" MatchTriggerWidth="@MatchTriggerWidth" OnContentReady="@HandleContentReady" Class="@(MatchTriggerWidth ? "!p-0" : $"{PopoverWidth} !p-0")">
-                <Command>
+            </PopoverTrigger>
+            <PopoverContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" MatchTriggerWidth="@MatchTriggerWidth" OnContentReady="@HandleContentReady" Class="@(MatchTriggerWidth ? "!p-0" : $"{PopoverWidth} !p-0")">
+                <NeoUI.Blazor.Command>
                     <CommandInput @ref="_commandInputRef" AutoFocus="true" Placeholder="@SearchPlaceholder" />
                     <CommandList>
                         <CommandEmpty>@EmptyMessage</CommandEmpty>
@@ -61,8 +61,8 @@
                             }
                         </CommandGroup>
                     </CommandList>
-                </Command>
-            </NeoUI.Blazor.PopoverContent>
-        </NeoUI.Blazor.Popover>
+                </NeoUI.Blazor.Command>
+            </PopoverContent>
+        </Popover>
     </div>
 </CascadingValue>

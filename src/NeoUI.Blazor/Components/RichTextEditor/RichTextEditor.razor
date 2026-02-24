@@ -25,61 +25,61 @@
                     <Separator Orientation="SeparatorOrientation.Vertical" Class="h-6 mx-1" />
                 }
 
-                <NeoUI.Blazor.Toggle Pressed="@_isBold"
+                <Toggle Pressed="@_isBold"
                         PressedChanged="@(async _ => await ToggleFormatAsync("bold"))"
                         Size="ToggleSize.Small"
                         Disabled="@Disabled"
                         Class="h-8 w-8 p-0"
                         title="Bold (Ctrl+B)">
                     <LucideIcon Name="bold" Size="16" />
-                </NeoUI.Blazor.Toggle>
-                <NeoUI.Blazor.Toggle Pressed="@_isItalic"
+                </Toggle>
+                <Toggle Pressed="@_isItalic"
                         PressedChanged="@(async _ => await ToggleFormatAsync("italic"))"
                         Size="ToggleSize.Small"
                         Disabled="@Disabled"
                         Class="h-8 w-8 p-0"
                         title="Italic (Ctrl+I)">
                     <LucideIcon Name="italic" Size="16" />
-                </NeoUI.Blazor.Toggle>
-                <NeoUI.Blazor.Toggle Pressed="@_isUnderline"
+                </Toggle>
+                <Toggle Pressed="@_isUnderline"
                         PressedChanged="@(async _ => await ToggleFormatAsync("underline"))"
                         Size="ToggleSize.Small"
                         Disabled="@Disabled"
                         Class="h-8 w-8 p-0"
                         title="Underline (Ctrl+U)">
                     <LucideIcon Name="underline" Size="16" />
-                </NeoUI.Blazor.Toggle>
+                </Toggle>
 
                 @if (Toolbar >= ToolbarPreset.Standard)
                 {
-                    <NeoUI.Blazor.Toggle Pressed="@_isStrike"
+                    <Toggle Pressed="@_isStrike"
                             PressedChanged="@(async _ => await ToggleFormatAsync("strike"))"
                             Size="ToggleSize.Small"
                             Disabled="@Disabled"
                             Class="h-8 w-8 p-0"
                             title="Strikethrough">
                         <LucideIcon Name="strikethrough" Size="16" />
-                    </NeoUI.Blazor.Toggle>
+                    </Toggle>
                 }
 
                 <Separator Orientation="SeparatorOrientation.Vertical" Class="h-6 mx-1" />
 
-                <NeoUI.Blazor.Toggle Pressed="@_isBulletList"
+                <Toggle Pressed="@_isBulletList"
                         PressedChanged="@(async _ => await ToggleFormatAsync("list", "bullet"))"
                         Size="ToggleSize.Small"
                         Disabled="@Disabled"
                         Class="h-8 w-8 p-0"
                         title="Bullet List">
                     <LucideIcon Name="list" Size="16" />
-                </NeoUI.Blazor.Toggle>
-                <NeoUI.Blazor.Toggle Pressed="@_isOrderedList"
+                </Toggle>
+                <Toggle Pressed="@_isOrderedList"
                         PressedChanged="@(async _ => await ToggleFormatAsync("list", "ordered"))"
                         Size="ToggleSize.Small"
                         Disabled="@Disabled"
                         Class="h-8 w-8 p-0"
                         title="Numbered List">
                     <LucideIcon Name="list-ordered" Size="16" />
-                </NeoUI.Blazor.Toggle>
+                </Toggle>
 
                 @if (Toolbar >= ToolbarPreset.Standard)
                 {
@@ -98,22 +98,22 @@
                 @if (Toolbar == ToolbarPreset.Full)
                 {
                     <Separator Orientation="SeparatorOrientation.Vertical" Class="h-6 mx-1" />
-                    <NeoUI.Blazor.Toggle Pressed="@_isBlockquote"
+                    <Toggle Pressed="@_isBlockquote"
                             PressedChanged="@(async _ => await ToggleFormatAsync("blockquote"))"
                             Size="ToggleSize.Small"
                             Disabled="@Disabled"
                             Class="h-8 w-8 p-0"
                             title="Blockquote">
                         <LucideIcon Name="quote" Size="16" />
-                    </NeoUI.Blazor.Toggle>
-                    <NeoUI.Blazor.Toggle Pressed="@_isCodeBlock"
+                    </Toggle>
+                    <Toggle Pressed="@_isCodeBlock"
                             PressedChanged="@(async _ => await ToggleFormatAsync("code-block"))"
                             Size="ToggleSize.Small"
                             Disabled="@Disabled"
                             Class="h-8 w-8 p-0"
                             title="Code Block">
                         <LucideIcon Name="code" Size="16" />
-                    </NeoUI.Blazor.Toggle>
+                    </Toggle>
                 }
             </div>
         </div>
@@ -136,18 +136,18 @@
     </div>
 
     @* Link Dialog *@
-    <NeoUI.Blazor.Dialog @bind-Open="_linkDialogOpen">
-        <NeoUI.Blazor.DialogContent Class="sm:max-w-md">
+    <Dialog @bind-Open="_linkDialogOpen">
+        <DialogContent Class="sm:max-w-md">
             <DialogHeader>
-                <NeoUI.Blazor.DialogTitle>@(_hasExistingLink ? "Edit Link" : "Insert Link")</NeoUI.Blazor.DialogTitle>
-                <NeoUI.Blazor.DialogDescription>
+                <DialogTitle>@(_hasExistingLink ? "Edit Link" : "Insert Link")</DialogTitle>
+                <DialogDescription>
                     @(_hasExistingLink ? "Update the URL or remove the link." : "Enter the URL for the selected text.")
-                </NeoUI.Blazor.DialogDescription>
+                </DialogDescription>
             </DialogHeader>
             <div class="grid gap-4 py-4">
                 <div class="grid gap-2">
-                    <NeoUI.Blazor.Label For="link-url">URL</NeoUI.Blazor.Label>
-                    <Input Id="link-url"
+                    <Label For="link-url">URL</Label>
+                    <NeoUI.Blazor.Input Id="link-url"
                            Type="InputType.Url"
                            Placeholder="https://example.com"
                            @bind-Value="_linkUrl"
@@ -174,6 +174,6 @@
                     @(_hasExistingLink ? "Update" : "Insert")
                 </Button>
             </DialogFooter>
-        </NeoUI.Blazor.DialogContent>
-    </NeoUI.Blazor.Dialog>
+        </DialogContent>
+    </Dialog>
 </div>

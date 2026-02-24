@@ -12,9 +12,9 @@
         <NeoUI.Blazor.Primitives.TooltipTrigger>
             @RenderButton()
         </NeoUI.Blazor.Primitives.TooltipTrigger>
-        <NeoUI.Blazor.Tooltip.TooltipContent Side="@(Context?.Side == SidebarSide.Right ? PopoverSide.Left : PopoverSide.Right)" Align="@PopoverAlign.Center">
+        <Tooltip Side="@(Context?.Side == SidebarSide.Right ? PopoverSide.Left : PopoverSide.Right)" Align="@PopoverAlign.Center">
             @Tooltip
-        </NeoUI.Blazor.Tooltip.TooltipContent>
+        </Tooltip>
     </NeoUI.Blazor.Primitives.Tooltip>
 }
 else

@@ -6,23 +6,23 @@
 @namespace NeoUI.Blazor
 
 <TooltipProvider>
-    <NeoUI.Blazor.Popover>
-        <NeoUI.Blazor.Tooltip>
-            <NeoUI.Blazor.TooltipTrigger>
-                <NeoUI.Blazor.PopoverTrigger AsChild>
+    <Popover>
+        <Tooltip>
+            <TooltipTrigger>
+                <PopoverTrigger AsChild>
                     <Button Variant="ButtonVariant.Outline" 
                             Size="ButtonSize.Icon"
                             Class="@GetTriggerButtonClass()"
                             AriaLabel="Change theme">
                         <div class="size-4 rounded-full" style="@GetTriggerFillStyle()"></div>
                     </Button>
-                </NeoUI.Blazor.PopoverTrigger>
-            </NeoUI.Blazor.TooltipTrigger>
-            <NeoUI.Blazor.TooltipContent Strategy="@Strategy">
+                </PopoverTrigger>
+            </TooltipTrigger>
+            <TooltipContent Strategy="@Strategy">
                 <p>@_currentBaseColor / @_currentPrimaryColor</p>
-            </NeoUI.Blazor.TooltipContent>
-        </NeoUI.Blazor.Tooltip>
-    <NeoUI.Blazor.PopoverContent Class="@($"w-80 shadow-lg{(string.IsNullOrEmpty(PopoverContentClass) ? "" : $" {PopoverContentClass}")}")"
+            </TooltipContent>
+        </Tooltip>
+    <PopoverContent Class="@($"w-80 shadow-lg{(string.IsNullOrEmpty(PopoverContentClass) ? "" : $" {PopoverContentClass}")}")"
                     Align="@Align" Strategy="@Strategy" ZIndex="@ZIndex">
         <div class="space-y-4">
             <div class="space-y-2">
@@ -62,8 +62,8 @@
                 </div>
             </div>
         </div>
-    </NeoUI.Blazor.PopoverContent>
-    </NeoUI.Blazor.Popover>
+    </PopoverContent>
+    </Popover>
 </TooltipProvider>
 
 @code {

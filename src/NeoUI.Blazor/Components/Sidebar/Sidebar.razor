@@ -9,11 +9,11 @@
     @if (Context.IsMobile)
     {
         @* Mobile: Render as Sheet *@
-        <NeoUI.Blazor.Sheet Open="@MobileOpen" OpenChanged="@(value => MobileOpen = value)" Side="@GetSheetSide()">
-            <NeoUI.Blazor.SheetContent Class="@GetMobileClasses()" ShowClose="false">
+        <Sheet Open="@MobileOpen" OpenChanged="@(value => MobileOpen = value)" Side="@GetSheetSide()">
+            <SheetContent Class="@GetMobileClasses()" ShowClose="false">
                 @ChildContent
-            </NeoUI.Blazor.SheetContent>
-        </NeoUI.Blazor.Sheet>
+            </SheetContent>
+        </Sheet>
     }
     else
     {

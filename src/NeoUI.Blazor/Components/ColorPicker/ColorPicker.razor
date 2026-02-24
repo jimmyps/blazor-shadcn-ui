@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor
-<NeoUI.Blazor.Popover @bind-Open="_isOpen">
-    <NeoUI.Blazor.PopoverTrigger AsChild="true">
+<Popover @bind-Open="_isOpen">
+    <PopoverTrigger AsChild="true">
         <Button Variant="ButtonVariant.Outline"
                 Class="@TriggerCssClass"
                 Disabled="@Disabled">
@@ -9,9 +9,9 @@
             </div>
             <span class="text-sm text-muted-foreground">@CurrentColorString</span>
         </Button>
-    </NeoUI.Blazor.PopoverTrigger>
+    </PopoverTrigger>
 
-    <NeoUI.Blazor.PopoverContent Class="@($"{PopoverWidth} {PopoverPadding}")" Align="PopoverAlign.Start">
+    <PopoverContent Class="@($"{PopoverWidth} {PopoverPadding}")" Align="PopoverAlign.Start">
         <div class="@SpacingClass">
             @* 2D Saturation/Lightness Canvas *@
             <div class="relative">
@@ -114,5 +114,5 @@
                 </div>
             }
         </div>
-    </NeoUI.Blazor.PopoverContent>
-</NeoUI.Blazor.Popover>
+    </PopoverContent>
+</Popover>

@@ -16,14 +16,14 @@
     
     Usage:
     <SidebarCollapsibleGroup StateKey="sidebar-menu-name" DefaultOpen="false">
-        <NeoUI.Blazor.CollapsibleTrigger>...</NeoUI.Blazor.CollapsibleTrigger>
-        <NeoUI.Blazor.CollapsibleContent>...</NeoUI.Blazor.CollapsibleContent>
+        <CollapsibleTrigger>...</CollapsibleTrigger>
+        <CollapsibleContent>...</CollapsibleContent>
     </SidebarCollapsibleGroup>
 *@
 
-<NeoUI.Blazor.Collapsible Open="@_isOpen" OpenChanged="@OnIsOpenChanged">
+<Collapsible Open="@_isOpen" OpenChanged="@OnIsOpenChanged">
     @ChildContent
-</NeoUI.Blazor.Collapsible>
+</Collapsible>
 
 @code {
     /// <summary>

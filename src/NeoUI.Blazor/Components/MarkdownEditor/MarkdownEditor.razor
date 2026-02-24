@@ -6,17 +6,17 @@
 *@
 
 <div class="@ContainerCssClass" data-slot="markdown-editor">
-    <NeoUI.Blazor.Tabs DefaultValue="write" OnValueChange="HandleTabChange">
+    <Tabs DefaultValue="write" OnValueChange="HandleTabChange">
         @* Header with tabs and toolbar *@
         <div class="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-input bg-muted/40">
             @* Write/Preview tabs - GitHub style boxed tabs *@
             <div class="inline-flex items-center rounded-md border border-input bg-muted/60 p-0.5">
-                <NeoUI.Blazor.TabsTrigger Value="write"
+                <TabsTrigger Value="write"
                              Class="@GetTabClass("write")"
-                             Disabled="@Disabled">Write</NeoUI.Blazor.TabsTrigger>
-                <NeoUI.Blazor.TabsTrigger Value="preview"
+                             Disabled="@Disabled">Write</TabsTrigger>
+                <TabsTrigger Value="preview"
                              Class="@GetTabClass("preview")"
-                             Disabled="@Disabled">Preview</NeoUI.Blazor.TabsTrigger>
+                             Disabled="@Disabled">Preview</TabsTrigger>
             </div>
 
             @* Toolbar - only visible in Write mode *@
@@ -24,8 +24,8 @@
             {
                 <div class="flex items-center gap-1 ml-auto">
                     @* Heading dropdown *@
-                    <NeoUI.Blazor.DropdownMenu>
-                        <NeoUI.Blazor.DropdownMenuTrigger AsChild>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger AsChild>
                             <Button Variant="ButtonVariant.Ghost"
                                     Size="ButtonSize.IconSmall"
                                     AriaLabel="Select heading level"
@@ -33,28 +33,28 @@
                                     Class="h-7 w-7">
                                 <LucideIcon Name="pilcrow" Size="14" />
                             </Button>
-                        </NeoUI.Blazor.DropdownMenuTrigger>
-                        <NeoUI.Blazor.DropdownMenuContent Align="PopoverAlign.Start" Class="w-40">
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent Align="PopoverAlign.Start" Class="w-40">
                             <DropdownMenuLabel>Text Style</DropdownMenuLabel>
-                            <NeoUI.Blazor.DropdownMenuSeparator />
-                            <NeoUI.Blazor.DropdownMenuItem OnClick="@(() => ApplyHeading(0))">
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem OnClick="@(() => ApplyHeading(0))">
                                 <LucideIcon Name="pilcrow" Size="14" Class="mr-2" />
                                 Normal
-                            </NeoUI.Blazor.DropdownMenuItem>
-                            <NeoUI.Blazor.DropdownMenuItem OnClick="@(() => ApplyHeading(1))">
+                            </DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => ApplyHeading(1))">
                                 <LucideIcon Name="heading-1" Size="14" Class="mr-2" />
                                 Heading 1
-                            </NeoUI.Blazor.DropdownMenuItem>
-                            <NeoUI.Blazor.DropdownMenuItem OnClick="@(() => ApplyHeading(2))">
+                            </DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => ApplyHeading(2))">
                                 <LucideIcon Name="heading-2" Size="14" Class="mr-2" />
                                 Heading 2
-                            </NeoUI.Blazor.DropdownMenuItem>
-                            <NeoUI.Blazor.DropdownMenuItem OnClick="@(() => ApplyHeading(3))">
+                            </DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => ApplyHeading(3))">
                                 <LucideIcon Name="heading-3" Size="14" Class="mr-2" />
                                 Heading 3
-                            </NeoUI.Blazor.DropdownMenuItem>
-                        </NeoUI.Blazor.DropdownMenuContent>
-                    </NeoUI.Blazor.DropdownMenu>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
                     @* Text formatting buttons *@
                     <ButtonGroup>
@@ -110,7 +110,7 @@
         </div>
 
         @* Content area *@
-        <NeoUI.Blazor.TabsContent Value="write" Class="mt-0">
+        <TabsContent Value="write" Class="mt-0">
             <textarea @ref="_textareaRef"
                       id="@Id"
                       class="@TextareaCssClass"
@@ -123,12 +123,12 @@
                       @oninput="HandleInput"
                       @onkeydown="HandleKeyDown"
                       @onkeydown:preventDefault="_shouldPreventKeydown"></textarea>
-        </NeoUI.Blazor.TabsContent>
+        </TabsContent>
 
-        <NeoUI.Blazor.TabsContent Value="preview" Class="mt-0">
+        <TabsContent Value="preview" Class="mt-0">
             <div class="@PreviewCssClass">
                 @((MarkupString)RenderedHtml)
             </div>
-        </NeoUI.Blazor.TabsContent>
-    </NeoUI.Blazor.Tabs>
+        </TabsContent>
+    </Tabs>
 </div>

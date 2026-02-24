@@ -26,7 +26,7 @@
                 <Field>
                     <FieldLabel For="username">Username</FieldLabel>
                     <FieldContent>
-                        <Input Id="username" Type="InputType.Text" Placeholder="Enter your username" />
+                        <NeoUI.Blazor.Input Id="username" Type="InputType.Text" Placeholder="Enter your username" />
                         <FieldDescription>Choose a unique username for your account.</FieldDescription>
                     </FieldContent>
                 </Field>
@@ -37,7 +37,7 @@
                 <Field>
                     <FieldLabel For="email">Email Address</FieldLabel>
                     <FieldContent>
-                        <Input Id="email" Type="InputType.Email" Placeholder="you@example.com" />
+                        <NeoUI.Blazor.Input Id="email" Type="InputType.Email" Placeholder="you@example.com" />
                         <FieldDescription>We'll never share your email with anyone else.</FieldDescription>
                     </FieldContent>
                 </Field>
@@ -48,7 +48,7 @@
                 <Field>
                     <FieldLabel For="password">Password</FieldLabel>
                     <FieldContent>
-                        <Input Id="password" Type="InputType.Password" />
+                        <NeoUI.Blazor.Input Id="password" Type="InputType.Password" />
                         <FieldDescription>Must be at least 8 characters long.</FieldDescription>
                     </FieldContent>
                 </Field>
@@ -82,7 +82,7 @@
                 <Field IsInvalid="true">
                     <FieldLabel For="username-error">Username</FieldLabel>
                     <FieldContent>
-                        <Input Id="username-error" Type="InputType.Text" Placeholder="Enter your username" AriaInvalid="true" />
+                        <NeoUI.Blazor.Input Id="username-error" Type="InputType.Text" Placeholder="Enter your username" AriaInvalid="true" />
                         <FieldError>
                             Username is already taken. Please choose another.
                         </FieldError>
@@ -95,7 +95,7 @@
                 <Field IsInvalid="true">
                     <FieldLabel For="password-errors">Password</FieldLabel>
                     <FieldContent>
-                        <Input Id="password-errors" Type="InputType.Password" AriaInvalid="true" />
+                        <NeoUI.Blazor.Input Id="password-errors" Type="InputType.Password" AriaInvalid="true" />
                         <FieldError Errors="passwordErrors" />
                     </FieldContent>
                 </Field>
@@ -106,7 +106,7 @@
                 <Field IsInvalid="true">
                     <FieldLabel For="email-invalid">Email Address</FieldLabel>
                     <FieldContent>
-                        <Input Id="email-invalid" Type="InputType.Email" Value="invalid-email" AriaInvalid="true" />
+                        <NeoUI.Blazor.Input Id="email-invalid" Type="InputType.Email" Value="invalid-email" AriaInvalid="true" />
                         <FieldError>
                             Please enter a valid email address.
                         </FieldError>
@@ -131,7 +131,7 @@
                 <Field Orientation="FieldOrientation.Horizontal">
                     <FieldLabel For="name-horizontal" Class="w-32 pt-2">Full Name</FieldLabel>
                     <FieldContent>
-                        <Input Id="name-horizontal" Type="InputType.Text" Placeholder="John Doe" />
+                        <NeoUI.Blazor.Input Id="name-horizontal" Type="InputType.Text" Placeholder="John Doe" />
                         <FieldDescription>Enter your first and last name.</FieldDescription>
                     </FieldContent>
                 </Field>
@@ -167,7 +167,7 @@
                 <Field Orientation="FieldOrientation.Responsive">
                     <FieldLabel For="company-responsive" Class="w-full md:w-32 md:pt-2">Company</FieldLabel>
                     <FieldContent>
-                        <Input Id="company-responsive" Type="InputType.Text" Placeholder="Acme Inc." />
+                        <NeoUI.Blazor.Input Id="company-responsive" Type="InputType.Text" Placeholder="Acme Inc." />
                         <FieldDescription>Your company or organization name.</FieldDescription>
                     </FieldContent>
                 </Field>
@@ -191,13 +191,13 @@
                     <Field>
                         <FieldLabel For="first-name">First Name</FieldLabel>
                         <FieldContent>
-                            <Input Id="first-name" Type="InputType.Text" Placeholder="John" />
+                            <NeoUI.Blazor.Input Id="first-name" Type="InputType.Text" Placeholder="John" />
                         </FieldContent>
                     </Field>
                     <Field>
                         <FieldLabel For="last-name">Last Name</FieldLabel>
                         <FieldContent>
-                            <Input Id="last-name" Type="InputType.Text" Placeholder="Doe" />
+                            <NeoUI.Blazor.Input Id="last-name" Type="InputType.Text" Placeholder="Doe" />
                         </FieldContent>
                     </Field>
                 </FieldGroup>
@@ -209,19 +209,19 @@
                     <Field Class="flex-1">
                         <FieldLabel For="city">City</FieldLabel>
                         <FieldContent>
-                            <Input Id="city" Type="InputType.Text" Placeholder="New York" />
+                            <NeoUI.Blazor.Input Id="city" Type="InputType.Text" Placeholder="New York" />
                         </FieldContent>
                     </Field>
                     <Field Class="flex-1">
                         <FieldLabel For="state">State</FieldLabel>
                         <FieldContent>
-                            <Input Id="state" Type="InputType.Text" Placeholder="NY" />
+                            <NeoUI.Blazor.Input Id="state" Type="InputType.Text" Placeholder="NY" />
                         </FieldContent>
                     </Field>
                     <Field Class="w-32">
                         <FieldLabel For="zip">ZIP</FieldLabel>
                         <FieldContent>
-                            <Input Id="zip" Type="InputType.Text" Placeholder="10001" />
+                            <NeoUI.Blazor.Input Id="zip" Type="InputType.Text" Placeholder="10001" />
                         </FieldContent>
                     </Field>
                 </FieldGroup>
@@ -233,13 +233,13 @@
                     <Field>
                         <FieldLabel For="account-name">Account Name</FieldLabel>
                         <FieldContent>
-                            <Input Id="account-name" Type="InputType.Text" />
+                            <NeoUI.Blazor.Input Id="account-name" Type="InputType.Text" />
                         </FieldContent>
                     </Field>
                     <Field>
                         <FieldLabel For="account-email">Account Email</FieldLabel>
                         <FieldContent>
-                            <Input Id="account-email" Type="InputType.Email" />
+                            <NeoUI.Blazor.Input Id="account-email" Type="InputType.Email" />
                         </FieldContent>
                     </Field>
 
@@ -248,13 +248,13 @@
                     <Field>
                         <FieldLabel For="billing-name">Billing Name</FieldLabel>
                         <FieldContent>
-                            <Input Id="billing-name" Type="InputType.Text" />
+                            <NeoUI.Blazor.Input Id="billing-name" Type="InputType.Text" />
                         </FieldContent>
                     </Field>
                     <Field>
                         <FieldLabel For="billing-address">Billing Address</FieldLabel>
                         <FieldContent>
-                            <Input Id="billing-address" Type="InputType.Text" />
+                            <NeoUI.Blazor.Input Id="billing-address" Type="InputType.Text" />
                         </FieldContent>
                     </Field>
                 </FieldGroup>
@@ -266,13 +266,13 @@
                     <Field>
                         <FieldLabel For="email-signup">Email Address</FieldLabel>
                         <FieldContent>
-                            <Input Id="email-signup" Type="InputType.Email" Placeholder="you@example.com" />
+                            <NeoUI.Blazor.Input Id="email-signup" Type="InputType.Email" Placeholder="you@example.com" />
                         </FieldContent>
                     </Field>
                     <Field>
                         <FieldLabel For="password-signup">Password</FieldLabel>
                         <FieldContent>
-                            <Input Id="password-signup" Type="InputType.Password" />
+                            <NeoUI.Blazor.Input Id="password-signup" Type="InputType.Password" />
                         </FieldContent>
                     </Field>
 
@@ -317,13 +317,13 @@
                         <Field>
                             <FieldLabel For="contact-email">Email</FieldLabel>
                             <FieldContent>
-                                <Input Id="contact-email" Type="InputType.Email" />
+                                <NeoUI.Blazor.Input Id="contact-email" Type="InputType.Email" />
                             </FieldContent>
                         </Field>
                         <Field>
                             <FieldLabel For="contact-phone">Phone</FieldLabel>
                             <FieldContent>
-                                <Input Id="contact-phone" Type="InputType.Tel" />
+                                <NeoUI.Blazor.Input Id="contact-phone" Type="InputType.Tel" />
                             </FieldContent>
                         </Field>
                     </FieldGroup>
@@ -369,13 +369,13 @@
                             <Field Class="flex-1">
                                 <FieldLabel For="profile-first">First Name</FieldLabel>
                                 <FieldContent>
-                                    <Input Id="profile-first" Type="InputType.Text" />
+                                    <NeoUI.Blazor.Input Id="profile-first" Type="InputType.Text" />
                                 </FieldContent>
                             </Field>
                             <Field Class="flex-1">
                                 <FieldLabel For="profile-last">Last Name</FieldLabel>
                                 <FieldContent>
-                                    <Input Id="profile-last" Type="InputType.Text" />
+                                    <NeoUI.Blazor.Input Id="profile-last" Type="InputType.Text" />
                                 </FieldContent>
                             </Field>
                         </FieldGroup>
@@ -383,7 +383,7 @@
                         <Field>
                             <FieldLabel For="profile-username">Username</FieldLabel>
                             <FieldContent>
-                                <Input Id="profile-username" Type="InputType.Text" />
+                                <NeoUI.Blazor.Input Id="profile-username" Type="InputType.Text" />
                                 <FieldDescription>This will be your public display name.</FieldDescription>
                             </FieldContent>
                         </Field>

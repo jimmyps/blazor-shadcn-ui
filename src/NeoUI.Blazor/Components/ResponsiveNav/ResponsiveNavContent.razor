@@ -11,8 +11,8 @@
 
 @if (Context != null)
 {
-    <NeoUI.Blazor.Sheet.Sheet Open="@Context.OpenMobile" OpenChanged="@(EventCallback.Factory.Create<bool>(this, OnOpenChanged))" Side="@Side">
-        <NeoUI.Blazor.Sheet.SheetContent Class="@ContentClass" ShowClose="@ShowClose">
+    <Sheet Open="@Context.OpenMobile" OpenChanged="@(EventCallback.Factory.Create<bool>(this, OnOpenChanged))" Side="@Side">
+        <Sheet Class="@ContentClass" ShowClose="@ShowClose">
             @if (Header != null)
             {
                 <div class="border-b pb-4 mb-4">
@@ -26,8 +26,8 @@
                     @Footer
                 </div>
             }
-        </NeoUI.Blazor.Sheet.SheetContent>
-    </NeoUI.Blazor.Sheet.Sheet>
+        </Sheet>
+    </Sheet>
 }
 
 @code {
@@ -57,7 +57,7 @@
     /// Default is Left.
     /// </summary>
     [Parameter]
-    public SheetSide Side { get; set; } = SheetSide.Left;
+    public NeoUI.Blazor.Primitives.SheetSide Side { get; set; } = NeoUI.Blazor.Primitives.SheetSide.Left;
 
     /// <summary>
     /// Whether to show the close button.

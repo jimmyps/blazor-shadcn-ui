@@ -2,8 +2,8 @@
 @using NeoUI.Icons.Lucide
 @* DateRangePicker - Date range selection with two dates *@
 
-<NeoUI.Blazor.Popover @bind-Open="_isOpen">
-    <NeoUI.Blazor.PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
+<Popover @bind-Open="_isOpen">
+    <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
         @if (ShowIcon)
         {
             <LucideIcon Name="calendar" Class="@GetIconClass()" />
@@ -13,8 +13,8 @@
         {
             <LucideIcon Name="chevron-down" Class="ml-auto h-4 w-4 opacity-50" />
         }
-    </NeoUI.Blazor.PopoverTrigger>
-    <NeoUI.Blazor.PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
+    </PopoverTrigger>
+    <PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
         <div class="flex gap-0 border rounded-md bg-card shadow-sm">
             @if (ShowPresets)
             {
@@ -99,8 +99,8 @@
                 }
             </div>
         </div>
-    </NeoUI.Blazor.PopoverContent>
-</NeoUI.Blazor.Popover>
+    </PopoverContent>
+</Popover>
 
 @code {
     private bool _isOpen;
