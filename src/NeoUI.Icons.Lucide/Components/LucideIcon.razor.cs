@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using NeoUI.Icons.Lucide.Data;
 
 namespace NeoUI.Icons.Lucide;
 

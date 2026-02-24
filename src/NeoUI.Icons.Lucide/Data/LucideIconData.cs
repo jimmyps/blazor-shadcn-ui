@@ -1,7 +1,7 @@
-﻿// This file is auto-generated. Do not edit manually.
+// This file is auto-generated. Do not edit manually.
 // Generated from lucide.json on 2025-11-02 15:28:14
 
-namespace NeoUI.Icons.Lucide.Data;
+namespace NeoUI.Icons.Lucide;
 
 /// <summary>
 /// Provides access to Lucide icon SVG data.

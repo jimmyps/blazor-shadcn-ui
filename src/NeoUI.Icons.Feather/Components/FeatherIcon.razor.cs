@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using NeoUI.Icons.Feather.Data;
 
 namespace NeoUI.Icons.Feather;
 

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using NeoUI.Icons.Heroicons.Data;
 
 namespace NeoUI.Icons.Heroicons;
 

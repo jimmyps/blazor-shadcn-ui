@@ -103,14 +103,24 @@ public class MockDataService
 /// </summary>
 public class Person
 {
+    /// <summary>Gets or sets the unique identifier.</summary>
     public int Id { get; set; }
+    /// <summary>Gets or sets the full name.</summary>
     public string Name { get; set; } = string.Empty;
+    /// <summary>Gets or sets the email address.</summary>
     public string Email { get; set; } = string.Empty;
+    /// <summary>Gets or sets the age.</summary>
     public int Age { get; set; }
+    /// <summary>Gets or sets the job role.</summary>
     public string Role { get; set; } = string.Empty;
+    /// <summary>Gets or sets the account status.</summary>
     public string Status { get; set; } = string.Empty;
+    /// <summary>Gets or sets the department name.</summary>
     public string Department { get; set; } = string.Empty;
+    /// <summary>Gets or sets the salary.</summary>
     public int Salary { get; set; }
+    /// <summary>Gets or sets the date the person joined.</summary>
     public DateTime JoinDate { get; set; }
+    /// <summary>Gets or sets a value indicating whether the account is active.</summary>
     public bool IsActive { get; set; }
 }

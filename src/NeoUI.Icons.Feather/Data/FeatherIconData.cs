@@ -1,7 +1,7 @@
 // This file is auto-generated. Do not edit manually.
 // Generated from feather.json on 2025-11-16
 
-namespace NeoUI.Icons.Feather.Data;
+namespace NeoUI.Icons.Feather;
 
 /// <summary>
 /// Provides access to Feather icon SVG data.

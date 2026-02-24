@@ -1,7 +1,7 @@
 // This file is auto-generated. Do not edit manually.
 // Generated from heroicons.json on 2025-11-16
 
-namespace NeoUI.Icons.Heroicons.Data;
+namespace NeoUI.Icons.Heroicons;
 
 /// <summary>
 /// Icon variant for Heroicons.
