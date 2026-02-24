@@ -58,7 +58,7 @@
     /// Default is false (one item must always be open).
     /// </summary>
     [Parameter]
-    public bool CollapsiblePrimitive { get; set; } = false;
+    public bool Collapsible { get; set; } = false;
 
     /// <summary>
     /// Additional attributes to apply to the root div element.
@@ -79,7 +79,7 @@
         // Sync initial state to context
         _context.State.OpenValues = new HashSet<string>(_state.Value);
         _context.State.Type = Type;
-        _context.State.CollapsiblePrimitive = CollapsiblePrimitive;
+        _context.State.Collapsible = Collapsible;
 
         // Subscribe to context state changes
         _context.OnStateChanged += HandleContextStateChanged;
@@ -96,7 +96,7 @@
 
         // Update type and collapsible settings
         _context.State.Type = Type;
-        _context.State.CollapsiblePrimitive = CollapsiblePrimitive;
+        _context.State.Collapsible = Collapsible;
     }
 
     private void HandleContextStateChanged()

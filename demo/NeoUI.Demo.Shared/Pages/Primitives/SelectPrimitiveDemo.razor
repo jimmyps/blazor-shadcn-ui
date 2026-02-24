@@ -73,7 +73,7 @@
                     <div class="w-[280px]">
                         <SelectPrimitive TValue="string" @bind-Value="controlledValue" style="position: relative;">
                             <SelectTriggerPrimitive TValue="string" class="flex items-center justify-between w-full px-3 py-2 border border-input rounded-md bg-background">
-                                <span>@(string.IsNullOrEmpty(controlledValue) ? "SelectPrimitive a fruit" : controlledValue)</span>
+                                <span>@(string.IsNullOrEmpty(controlledValue) ? "Select a fruit" : controlledValue)</span>
                                 <span>▼</span>
                             </SelectTriggerPrimitive>
                             <SelectContentPrimitive TValue="string" class="z-50 mt-1 w-full max-h-60 overflow-auto border border-border rounded-md bg-popover shadow-md">
@@ -107,14 +107,14 @@
             <div class="space-y-2">
                 <h2 class="text-2xl font-semibold tracking-tight">Disabled State</h2>
                 <p class="text-sm text-muted-foreground">
-                    SelectPrimitive with disabled state
+                    Select with disabled state
                 </p>
             </div>
             <div class="rounded-lg border border-border bg-card p-6">
                 <div class="w-[280px]">
                     <SelectPrimitive TValue="string" Disabled="true" DefaultValue="@("disabled")" style="position: relative;">
                         <SelectTriggerPrimitive TValue="string" class="flex items-center justify-between w-full px-3 py-2 border border-input rounded-md bg-background opacity-50 cursor-not-allowed">
-                            <span>Disabled SelectPrimitive</span>
+                            <span>Disabled Select</span>
                             <span>▼</span>
                         </SelectTriggerPrimitive>
                         <SelectContentPrimitive TValue="string" class="z-50 mt-1 w-full border border-border rounded-md bg-popover shadow-md">
@@ -157,7 +157,7 @@
                     <div class="text-sm text-muted-foreground space-y-1">
                         <p><Kbd>↑</Kbd> <Kbd>↓</Kbd> Navigate items</p>
                         <p><Kbd>Home</Kbd> <Kbd>End</Kbd> First/Last item</p>
-                        <p><Kbd>Enter</Kbd> <Kbd>Space</Kbd> SelectPrimitive item</p>
+                        <p><Kbd>Enter</Kbd> <Kbd>Space</Kbd> Select item</p>
                         <p><Kbd>Esc</Kbd> Close dropdown</p>
                         <p><Kbd>Tab</Kbd> Close and move focus</p>
                     </div>

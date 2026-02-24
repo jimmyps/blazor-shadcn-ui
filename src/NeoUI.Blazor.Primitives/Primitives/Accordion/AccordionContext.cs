@@ -18,7 +18,7 @@ public class AccordionState
     /// <summary>
     /// Gets or sets whether items can be collapsed in single mode.
     /// </summary>
-    public bool CollapsiblePrimitive { get; set; } = false;
+    public bool Collapsible { get; set; } = false;
 }
 
 /// <summary>
@@ -73,7 +73,7 @@ public class AccordionContext : PrimitiveContextWithEvents<AccordionState>
     /// <summary>
     /// Gets whether the accordion is collapsible in single mode.
     /// </summary>
-    public bool CollapsiblePrimitive => State.CollapsiblePrimitive;
+    public bool Collapsible => State.Collapsible;
 
     /// <summary>
     /// Checks if the specified item is currently open.
@@ -98,8 +98,8 @@ public class AccordionContext : PrimitiveContextWithEvents<AccordionState>
                 // Single mode: close others and toggle this one
                 if (state.OpenValues.Contains(value))
                 {
-                    // Only allow collapsing if CollapsiblePrimitive is true
-                    if (state.CollapsiblePrimitive)
+                    // Only allow collapsing if Collapsible is true
+                    if (state.Collapsible)
                     {
                         state.OpenValues.Clear();
                     }
