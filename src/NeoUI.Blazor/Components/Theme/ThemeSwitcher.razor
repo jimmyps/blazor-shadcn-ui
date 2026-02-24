@@ -27,7 +27,7 @@
             </TooltipContent>
         </Tooltip>
     <PopoverContent Class="@($"w-80 shadow-lg{(string.IsNullOrEmpty(PopoverContentClass) ? "" : $" {PopoverContentClass}")}")"
-                    Align="PopoverAlign.End" Strategy="@Strategy" ZIndex="@ZIndex">
+                    Align="@Align" Strategy="@Strategy" ZIndex="@ZIndex">
         <div class="space-y-4">
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
@@ -96,6 +96,13 @@
     /// </summary>
     [Parameter]
     public string? PopoverContentClass { get; set; }
+
+    /// <summary>
+    /// Alignment of the popover content relative to the trigger.
+    /// Default is End.
+    /// </summary>
+    [Parameter]
+    public PopoverAlign Align { get; set; } = PopoverAlign.End;
 
     private BaseColor _currentBaseColor;
     private PrimaryColor _currentPrimaryColor;

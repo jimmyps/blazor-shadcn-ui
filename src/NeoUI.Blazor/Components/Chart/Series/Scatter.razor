@@ -7,7 +7,7 @@
 </CascadingValue>
 
 @code {
-    [CascadingParameter] private dynamic? Parent { get; set; }
+    [CascadingParameter] private IScatterSeriesParent? Parent { get; set; }
     
     /// <summary>
     /// Gets or sets the marker color (legacy, use Fill instead).
@@ -94,9 +94,6 @@
     
     protected override void OnInitialized()
     {
-        if (Parent != null)
-        {
-            try { Parent.RegisterScatter(this); } catch { }
-        }
+        Parent?.RegisterScatter(this);
     }
 }

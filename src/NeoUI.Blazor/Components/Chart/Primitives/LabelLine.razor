@@ -7,7 +7,7 @@ Child of Pie series component.
 *@
 
 @code {
-    [CascadingParameter] private dynamic? Parent { get; set; }
+    [CascadingParameter] private Pie? Parent { get; set; }
 
     /// <summary>
     /// Whether to show the label line.
@@ -37,17 +37,6 @@ Child of Pie series component.
 
     protected override void OnInitialized()
     {
-        // Register with parent series
-        if (Parent != null)
-        {
-            try
-            {
-                Parent.RegisterLabelLine(this);
-            }
-            catch
-            {
-                // Parent doesn't support LabelLine
-            }
-        }
+        Parent?.RegisterLabelLine(this);
     }
 }

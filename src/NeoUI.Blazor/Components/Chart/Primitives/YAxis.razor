@@ -1,11 +1,12 @@
 @namespace NeoUI.Blazor.Chart
+@implements IAxisParent
 
 <CascadingValue Value="this">
     @ChildContent
 </CascadingValue>
 
 @code {
-    [CascadingParameter] private dynamic? Parent { get; set; }
+    [CascadingParameter] private ICartesianChartParent? Parent { get; set; }
     
     /// <summary>
     /// Gets or sets whether to show the Y axis.

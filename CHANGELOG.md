@@ -2,7 +2,183 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-2-21 - JS-Delegated Keyboard Navigation for All Menu Overlays
+## 2026-2-23 - UI/X Improvements on All Menu Components and New ThemeSwitcher demo page
+
+### 🐛 Menu Hover Sensitivity — Grace Period & Debounce
+
+**Affected:** `MenubarItem`, `MenubarSubTrigger`, `DropdownMenuItem`, `DropdownMenuSubTrigger`, `ContextMenuItem`, `ContextMenuSubTrigger`
+
+Hovering quickly over menu items or briefly leaving a sub-trigger while navigating toward its open
+submenu panel caused the submenu to close immediately — matching no platform UX convention
+(Windows and macOS both use a ~200–300 ms grace period before closing).
+
+#### Changes
+
+**Regular items** (`MenubarItem`, `DropdownMenuItem`, `ContextMenuItem`)
+
+- Added `CancellationTokenSource _hoverCts` per item.
+- `HandleMouseEnter` now waits **250 ms** before calling `CloseActiveSubMenu()`. If the mouse
+  leaves the item within that window, `HandleMouseLeave` cancels the token and the close is
+  abandoned — the open submenu keeps showing.
+- Added `@onmouseleave` / `HandleMouseLeave` (was missing entirely on `DropdownMenuItem` and
+  `ContextMenuItem`).
+- `_hoverCts` is disposed in `Dispose()`.
+
+**Sub-triggers** (`MenubarSubTrigger`, `DropdownMenuSubTrigger`, `ContextMenuSubTrigger`)
+
+- Added `CancellationTokenSource _hoverCts` per component.
+- Added `isAlreadyActive` guard at the top of `HandleMouseEnter`: if this submenu is already open
+  and registered as the active submenu, the handler returns immediately — prevents the
+  close-then-300 ms-reopen flicker that occurred when the mouse briefly left and re-entered the
+  same trigger.
+- Sibling submenu is now **closed immediately** (before the delay) when a new sub-trigger is
+  entered, eliminating the visual conflict where two triggers appeared selected simultaneously and
+  preventing the open sibling's panel from overlapping the new trigger and firing spurious
+  `mouseleave` events.
+- The **300 ms open delay** is preserved to prevent flash-opens on quick pass-through. If
+  `HandleMouseLeave` fires before the delay, the token is cancelled and neither the close nor the
+  open occurs — the original submenu remains visible.
+- `_hoverCts` cancelled and disposed in `Dispose()`.
+
+---
+
+### 🐛 Bug Fix: Menu Open Auto-Focus — Container vs. First Item
+
+**Affected:** `MenubarContent`, `MenubarSubContent`, `ContextMenuContent`, `ContextMenuSubContent`, `DropdownMenuSubContent`, `menu-keyboard.js`
+
+All menu content containers passed `initialFocus: "first"` to `menu-keyboard.js`, which caused the
+first enabled item to receive focus the moment the menu opened. This is non-standard for menus
+(Windows/macOS highlight nothing until the user presses a key or moves the mouse).
+
+#### Changes
+
+- **`menu-keyboard.js`** — added new `initialFocus = "container"` branch: calls
+  `focusWithDoubleRaf(container)` to focus the `[tabindex="-1"]` container div (enabling keyboard
+  event reception) without moving focus to any item. The existing `"first"` / `"last"` paths are
+  untouched so `DropdownMenuContent` behaviour is unchanged.
+- `MenubarContent` — changed `initialFocus` from `"first"` to `"container"`.
+- `MenubarSubContent` — changed `initialFocus` from `"first"` to `"container"`.
+- `ContextMenuContent` — changed `initialFocus` from `"first"` to `"container"`.
+- `ContextMenuSubContent` — changed `initialFocus` from `"first"` to `"container"`.
+- `DropdownMenuSubContent` — changed `initialFocus` from `"first"` to `"container"`.
+
+`ArrowDown` with nothing focused still navigates to the first item (`currentIndex === -1 → 0`),
+preserving full keyboard accessibility.
+
+---
+
+### ✨ Feature: `TooltipContent` — `Strategy` Parameter
+
+**Affected:** `NeoUI.Blazor.Primitives.Tooltip.TooltipContent`, `NeoUI.Blazor.Tooltip.TooltipContent`
+
+The `FloatingPortal` inside `TooltipContent` previously had `Strategy` hardcoded to
+`PositioningStrategy.Absolute`. Tooltips inside transformed or `overflow: hidden` containers
+(e.g. sidebars) were clipped or mis-positioned.
+
+- Added `[Parameter] PositioningStrategy Strategy` (default `Absolute`) to the **primitive**
+  `TooltipContent` and wired it to `FloatingPortal`.
+- Added the same parameter to the **component** `TooltipContent` wrapper, passed through to the
+  primitive.
+
+---
+
+### ✨ Feature: `ThemeSwitcher` — New Parameters
+
+**Affected:** `ThemeSwitcher`
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `TriggerClass` | `string?` | — | Extra CSS classes merged onto the trigger `Button` |
+| `PopoverContentClass` | `string?` | — | Extra CSS classes merged onto the `PopoverContent` panel |
+| `Align` | `PopoverAlign` | `End` | Alignment of the popover panel relative to the trigger |
+
+- `Strategy` is now also forwarded to `TooltipContent` so the tooltip escapes stacking contexts
+  when `Strategy = Fixed`.
+
+---
+
+### 📖 Demo: ThemeSwitcher Page
+
+New demo page at `/components/theme-switcher` covering:
+
+- Live `ThemeSwitcher` demo with reactive current-theme readout (base color + primary color)
+- Standalone `DarkModeToggle` demo
+- Usage snippets (minimal, layout placement)
+- Customisation examples (`TriggerClass`, `PopoverContentClass`)
+- `Strategy` / fixed-positioning guidance
+- `ThemeSwitcher` parameter API table
+- `ThemeService` member reference table with injectable usage example
+- **App.razor Setup** section (core stylesheet, base color CSS, primary color CSS, theme JS +
+  `initialize()`, `Program.cs` service registration)
+- `Alert Variant="Warning"` production tip to trim unused theme CSS files
+
+Added to sidebar navigation, component index grid, and Spotlight search palette.
+Added "What's New" callout card to the home page.
+
+---
+
+### 🐛 Bug Fix: Chart Series Always 0 in Layout-Embedded Charts
+
+**Affected:** All chart series and primitives — `Pie`, `Bar`, `Line`, `Area`, `Scatter`, `Radar`,
+`RadialBar`, `Tooltip`, `Legend`, `Grid`, `XAxis`, `YAxis`, `PolarGrid`, `RadarGrid`,
+`CenterLabel`, `AxisLabel`, `LabelList`, `LabelLine`, `Fill`
+
+Charts in complex scenarios (e.g. `ChartTile`) always rendered with zero series while the
+same chart on a standalone page worked correctly.
+
+#### Root Cause
+
+All series and chart primitives used `[CascadingParameter] private dynamic? Parent` to receive
+their parent chart. Without a type or name constraint, Blazor matched the parameter to the
+**nearest** ancestor `CascadingValue` — which in the layout context was `SidebarContext` from
+`SidebarProvider`, not the chart root. Dynamic dispatch then called `RegisterPie` (etc.) on the
+wrong type, threw a `RuntimeBinderException`, and the original empty `catch { }` silently
+discarded it. `_pies` was never populated → Series count = 0.
+
+On standalone pages there were no competing cascading values above the chart, so the correct
+parent was matched by accident.
+
+A secondary cause was that all chart-level `Register*` methods were `internal`. The C# DLR
+`RuntimeBinder` does not resolve `internal` members through `dynamic` dispatch even within the
+same assembly, compounding the failure.
+
+#### Fix — Interface-Based Cascading (no more `dynamic`)
+
+Introduced `ChartInterfaces.cs` with a typed interface hierarchy:
+
+```
+IChartParent              ← Tooltip, Legend
+  IXAxisParent            ← XAxis; also RadarChart, RadialBarChart
+    ICartesianChartParent ← Grid, YAxis
+      IBarSeriesParent    ← Bar  (BarChart + ComposedChart)
+      ILineSeriesParent   ← Line (LineChart + ComposedChart)
+      IAreaSeriesParent   ← Area (AreaChart + ComposedChart)
+      IScatterSeriesParent← Scatter (ScatterChart + ComposedChart)
+  IPieChartParent         ← Pie
+  IRadarChartParent       ← Radar, RadarGrid
+  IRadialBarChartParent   ← RadialBar, PolarGrid, CenterLabel
+
+IAxisParent               ← AxisLabel  (XAxis, YAxis implement this)
+IFillParent               ← Fill       (Line, Area implement this)
+SeriesBase (type)         ← LabelList  (all series inherit this)
+Pie (type)                ← LabelLine  (Pie-specific)
+```
+
+- All 8 chart root components declare `@implements I*Parent` and use an unnamed
+  `CascadingValue Value="this" IsFixed="true"`. Blazor's type-based `IsAssignableFrom` matching
+  now discriminates chart parents precisely — `SidebarContext` and any other unrelated cascading
+  value can never satisfy these interfaces.
+- `ComposedChart` naturally implements all four `I*SeriesParent` interfaces, preserving full
+  composed-chart support without dual cascading parameters or any other workaround.
+- All `dynamic?` cascading parameters replaced with the appropriate interface or concrete type.
+  All `try { } catch { }` blocks removed — misuse is now a compile-time error rather than a
+  silent runtime no-op.
+- All chart `Register*` methods changed from `internal` to `public` (required for interface
+  implementation and correct as component registration protocol).
+
+---
+
+## 2026-2-21
 
 ### ⚡ Performance: Replaced C# `@onkeydown` Handlers with `menu-keyboard.js` in All Menu Content Containers
 
@@ -27,7 +203,7 @@ leave the browser.
 
 ### 🆕 New JS Module: `menu-keyboard.js`
 
-`src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/menu-keyboard.js`
+`src/BlazorUI.Primitives/wwwroot/js/primitives/menu-keyboard.js`
 
 Supports three modes attached to a `role="menu"` container:
 
@@ -113,7 +289,7 @@ and C# `HandleKeyDown` method have been removed.
 ### 🐛 Bug Fix: `PopoverContent` Container Not Auto-Focused on Open
 
 `PopoverContent` was missing the `data-autofocus` attribute on its content `<div>`. As a result:
-- `portal.js`'s `neoui:visible` auto-focus listener never moved focus into the popover
+- `portal.js`'s `blazorui:visible` auto-focus listener never moved focus into the popover
 - The new `dialog.js` Escape handler (capture-phase, requires focus inside the element) therefore
   never fired when Escape was pressed
 
@@ -155,7 +331,7 @@ header-triggered sorting.
 
 #### New JS module: `table-row-nav.js`
 
-`src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/table-row-nav.js`
+`src/BlazorUI.Primitives/wwwroot/js/primitives/table-row-nav.js`
 
 | Export | Purpose |
 |---|---|
@@ -302,21 +478,21 @@ open/close state is communicated via `IsOpen`, and `ForceMount` handles visibili
 **Migrated the entire theme system to NeoUI.Blazor for zero-configuration, reusable theming:**
 
 **What Changed:**
-- **ThemeService** - Moved from demo project to `src/NeoUI.Blazor/Services/Theming/ThemeService.cs`
+- **ThemeService** - Moved from demo project to `src/BlazorUI.Components/Services/Theming/ThemeService.cs`
   - Now part of the component library for easy consumption
   - Zero configuration required - just add the service and components
   - Manages theme state, dark/light mode, base colors (5 options), and primary colors (17 options)
   - Includes LocalStorage persistence and SSR-safe initialization
 
-- **Theme Components** - Moved to `src/NeoUI.Blazor/Components/Theme/`
+- **Theme Components** - Moved to `src/BlazorUI.Components/Components/Theme/`
   - **ThemeSwitcher** - Popover-based theme configuration panel with live preview
   - **DarkModeToggle** - Switch component for dark/light mode switching
 
-- **Theme JavaScript** - Moved to `src/NeoUI.Blazor/wwwroot/js/theme.js`
+- **Theme JavaScript** - Moved to `src/BlazorUI.Components/wwwroot/js/theme.js`
   - CSP-compliant theme application and dark mode detection
   - Available via `_content/NeoUI.Blazor/js/theme.js`
 
-- **Theme CSS Files** - Moved to `src/NeoUI.Blazor/wwwroot/css/themes/`
+- **Theme CSS Files** - Moved to `src/BlazorUI.Components/wwwroot/css/themes/`
   - All 5 base color themes (Zinc, Slate, Gray, Neutral, Stone)
   - All 17 primary color themes (Red, Rose, Orange, Amber, Yellow, Lime, Green, Emerald, Teal, Cyan, Sky, Blue, Indigo, Violet, Purple, Fuchsia, Pink)
   - Available via `_content/NeoUI.Blazor/css/themes/...`
@@ -394,7 +570,7 @@ open/close state is communicated via `IsOpen`, and `ForceMount` handles visibili
 
 ### 🏗️ Implementation Details
 
-**1. ThemeService (demo\NeoUI.Demo.Shared\Services\ThemeService.cs):**
+**1. ThemeService (demo\BlazorUI.Demo.Shared\Services\ThemeService.cs):**
 ```csharp
 // Core service managing theme state
 - BaseColor enum: Zinc, Slate, Gray, Neutral, Stone
@@ -407,7 +583,7 @@ open/close state is communicated via `IsOpen`, and `ForceMount` handles visibili
 
 **2. Theme UI Components:**
 
-**ThemeSwitcher (demo\NeoUI.Demo.Shared\Common\ThemeSwitcher.razor):**
+**ThemeSwitcher (demo\BlazorUI.Demo.Shared\Common\ThemeSwitcher.razor):**
 - Popover-based theme configuration panel
 - Visual color pickers with preview swatches
 - Grid layout for base colors (5 options) and primary colors (17 options)
@@ -415,12 +591,12 @@ open/close state is communicated via `IsOpen`, and `ForceMount` handles visibili
 - Integrated DarkModeToggle
 - Tooltip showing current theme selection (e.g., "Zinc / Blue")
 
-**DarkModeToggle (demo\NeoUI.Demo.Shared\Common\DarkModeToggle.razor):**
+**DarkModeToggle (demo\BlazorUI.Demo.Shared\Common\DarkModeToggle.razor):**
 - Switch component with sun/moon icons
 - Real-time dark/light mode switching
 - Visual feedback of current mode
 
-**3. JavaScript Integration (demo\NeoUI.Demo.Client\wwwroot\js\theme.js):**
+**3. JavaScript Integration (demo\BlazorUI.Demo.Client\wwwroot\js\theme.js):**
 ```javascript
 window.theme = {
     apply: function(config) { /* Applies theme classes dynamically */ },
@@ -428,7 +604,7 @@ window.theme = {
 }
 ```
 
-**4. CSS Theme System (demo\NeoUI.Demo.Client\wwwroot\styles\theme.css):**
+**4. CSS Theme System (demo\BlazorUI.Demo.Client\wwwroot\styles\theme.css):**
 - OKLCH color space for perceptually uniform colors
 - Comprehensive CSS custom properties for all theme variables
 - Separate light/dark mode definitions
@@ -529,7 +705,7 @@ window.theme = {
 **Key Changes:**
 
 1. **New InputValidationBehavior Class (Shared Validation Logic):**
-   - Created `src/NeoUI.Blazor/Validation/InputValidationBehavior.cs` (212 lines)
+   - Created `src/BlazorUI.Components/Validation/InputValidationBehavior.cs` (212 lines)
    - Encapsulates all validation logic: error display, focus management, first-invalid tracking
    - Reusable across all input components via composition pattern
    - Handles EditContext integration, validation state changes, and ARIA attributes
@@ -550,7 +726,7 @@ window.theme = {
 
 4. **Dialog Performance Optimization:**
    - **Critical Fix:** Moved `@onkeydown` event handling from C# to JavaScript in DialogContent
-   - Created `src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/dialog.js` keyboard handler
+   - Created `src/BlazorUI.Primitives/wwwroot/js/primitives/dialog.js` keyboard handler
    - **Performance gain:** Zero C# roundtrips for regular typing (only Escape key triggers C# callback)
    - **Before:** Every keystroke in dialog caused C# interop → parent re-render → all inputs re-render
    - **After:** JavaScript intercepts all keydown events, only calls C# for Escape key
@@ -697,17 +873,17 @@ window.theme = {
    - Font weight consistency applied (font-medium removed from trigger)
 
 **Component Changes:**
-- `src/NeoUI.Blazor/Components/RadioGroup/RadioGroupItem.razor` - Check variant unselected state
-- `src/NeoUI.Blazor/Components/RadioGroup/RadioGroupItem.razor.cs` - Check variant logic
-- `src/NeoUI.Blazor/Components/MultiSelect/MultiSelect.razor.cs` - Removed font-medium
-- `src/NeoUI.Blazor/Components/Combobox/Combobox.razor.cs` - Removed font-medium
-- `src/NeoUI.Blazor/Components/Combobox/Combobox.razor` - Template refinements
-- `src/NeoUI.Blazor/Components/Select/SelectTrigger.razor` - Hover behavior when open
-- `src/NeoUI.Blazor/Components/DatePicker/DatePicker.razor` - Minor updates
-- `src/NeoUI.Blazor/Components/DateRangePicker/DateRangePicker.razor` - File reorganization
-- `src/NeoUI.Blazor/Components/ScrollArea/ScrollArea.razor` - Enhanced behavior
-- `src/NeoUI.Blazor/wwwroot/js/scroll-area.js` - Dynamic content improvements
-- `src/NeoUI.Blazor/wwwroot/components.css` - Scrolling styles
+- `src/BlazorUI.Components/Components/RadioGroup/RadioGroupItem.razor` - Check variant unselected state
+- `src/BlazorUI.Components/Components/RadioGroup/RadioGroupItem.razor.cs` - Check variant logic
+- `src/BlazorUI.Components/Components/MultiSelect/MultiSelect.razor.cs` - Removed font-medium
+- `src/BlazorUI.Components/Components/Combobox/Combobox.razor.cs` - Removed font-medium
+- `src/BlazorUI.Components/Components/Combobox/Combobox.razor` - Template refinements
+- `src/BlazorUI.Components/Components/Select/SelectTrigger.razor` - Hover behavior when open
+- `src/BlazorUI.Components/Components/DatePicker/DatePicker.razor` - Minor updates
+- `src/BlazorUI.Components/Components/DateRangePicker/DateRangePicker.razor` - File reorganization
+- `src/BlazorUI.Components/Components/ScrollArea/ScrollArea.razor` - Enhanced behavior
+- `src/BlazorUI.Components/wwwroot/js/scroll-area.js` - Dynamic content improvements
+- `src/BlazorUI.Components/wwwroot/blazorui.css` - Scrolling styles
 
 
 ## 2026-02-11 - Added ForceMount to FloatingPortal, Improved Select Component Reliability
@@ -793,15 +969,15 @@ Select component now sets ForceMount to true by default. You can disable the beh
 - Backward compatible - DisplayTextSelector still works as fallback
 
 **Files Changed:**
-- `src/NeoUI.Blazor.Primitives/Primitives/Floating/FloatingPortal.razor` - ForceMount implementation
-- `src/NeoUI.Blazor.Primitives/Primitives/Select/SelectContent.razor` - ForceMount enabled by default
-- `src/NeoUI.Blazor.Primitives/Primitives/Select/SelectContext.cs` - Item registration with ClearItems
-- `src/NeoUI.Blazor.Primitives/Primitives/Select/Select.razor` - OnParametersSet value restoration for modals
-- `src/NeoUI.Blazor.Primitives/Primitives/Select/SelectValue.razor` - Direct DisplayText reading (removed caching)
-- `src/NeoUI.Blazor.Primitives/Services/IPositioningService.cs` - Show/Hide methods
-- `src/NeoUI.Blazor.Primitives/Services/PositioningService.cs` - Show/Hide implementation
-- `src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/positioning.js` - showFloating/hideFloating with data-state toggle
-- `src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/select.js` - focusContent for repeated opens
+- `src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor` - ForceMount implementation
+- `src/BlazorUI.Primitives/Primitives/Select/SelectContent.razor` - ForceMount enabled by default
+- `src/BlazorUI.Primitives/Primitives/Select/SelectContext.cs` - Item registration with ClearItems
+- `src/BlazorUI.Primitives/Primitives/Select/Select.razor` - OnParametersSet value restoration for modals
+- `src/BlazorUI.Primitives/Primitives/Select/SelectValue.razor` - Direct DisplayText reading (removed caching)
+- `src/BlazorUI.Primitives/Services/IPositioningService.cs` - Show/Hide methods
+- `src/BlazorUI.Primitives/Services/PositioningService.cs` - Show/Hide implementation
+- `src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js` - showFloating/hideFloating with data-state toggle
+- `src/BlazorUI.Primitives/wwwroot/js/primitives/select.js` - focusContent for repeated opens
 - Demo pages: Removed DisplayTextSelector from SelectPrimitiveDemo, AreaChart, BarChart, LineChart, PieChart examples
 
 ---
@@ -1114,7 +1290,7 @@ if (!string.IsNullOrWhiteSpace(Class)) classes.Add(Class);
 return string.Join(" ", classes);
 ```
 
-**NeoUI Standard Pattern:**
+**NeoBlazorUI Standard Pattern:**
 ```csharp
 // ✅ ClassNames.cn() with grouped classes by intent
 ClassNames.cn(
@@ -1237,7 +1413,7 @@ ClassNames.cn(
 
 **Files Changed:**
 ```
-demo/NeoUI.Demo.Shared/Pages/Components/Charts/PieChartExamples.razor
+demo/BlazorUI.Demo.Shared/Pages/Components/Charts/PieChartExamples.razor
 ```
 
 **Benefits:**
@@ -1324,11 +1500,11 @@ demo/NeoUI.Demo.Shared/Pages/Components/Charts/PieChartExamples.razor
 
 **Files Changed:**
 ```
-src/NeoUI.Blazor/Components/Input/Input.razor.cs
-src/NeoUI.Blazor/Components/CurrencyInput/CurrencyInput.razor.cs
-src/NeoUI.Blazor/Components/MaskedInput/MaskedInput.razor.cs
-src/NeoUI.Blazor/Components/NumericInput/NumericInput.razor.cs
-src/NeoUI.Blazor/Components/Textarea/Textarea.razor.cs
+src/BlazorUI.Components/Components/Input/Input.razor.cs
+src/BlazorUI.Components/Components/CurrencyInput/CurrencyInput.razor.cs
+src/BlazorUI.Components/Components/MaskedInput/MaskedInput.razor.cs
+src/BlazorUI.Components/Components/NumericInput/NumericInput.razor.cs
+src/BlazorUI.Components/Components/Textarea/Textarea.razor.cs
 ```
 
 **Breaking Change:** ⚠️ Minor
@@ -1401,16 +1577,16 @@ private string EffectiveId
 
 **Files Changed:**
 ```
-src/NeoUI.Blazor/Components/Input/Input.razor.cs
-src/NeoUI.Blazor/Components/Input/Input.razor
-src/NeoUI.Blazor/Components/CurrencyInput/CurrencyInput.razor.cs
-src/NeoUI.Blazor/Components/CurrencyInput/CurrencyInput.razor
-src/NeoUI.Blazor/Components/MaskedInput/MaskedInput.razor.cs
-src/NeoUI.Blazor/Components/MaskedInput/MaskedInput.razor
-src/NeoUI.Blazor/Components/NumericInput/NumericInput.razor.cs
-src/NeoUI.Blazor/Components/NumericInput/NumericInput.razor
-src/NeoUI.Blazor/Components/Textarea/Textarea.razor.cs
-src/NeoUI.Blazor/Components/Textarea/Textarea.razor
+src/BlazorUI.Components/Components/Input/Input.razor.cs
+src/BlazorUI.Components/Components/Input/Input.razor
+src/BlazorUI.Components/Components/CurrencyInput/CurrencyInput.razor.cs
+src/BlazorUI.Components/Components/CurrencyInput/CurrencyInput.razor
+src/BlazorUI.Components/Components/MaskedInput/MaskedInput.razor.cs
+src/BlazorUI.Components/Components/MaskedInput/MaskedInput.razor
+src/BlazorUI.Components/Components/NumericInput/NumericInput.razor.cs
+src/BlazorUI.Components/Components/NumericInput/NumericInput.razor
+src/BlazorUI.Components/Components/Textarea/Textarea.razor.cs
+src/BlazorUI.Components/Components/Textarea/Textarea.razor
 ```
 
 ---
@@ -1446,10 +1622,10 @@ _validationModule = _inputModule; // Reuse same module
 
 **Files Changed:**
 ```
-src/NeoUI.Blazor/wwwroot/js/input.js (consolidated)
-src/NeoUI.Blazor/Components/CurrencyInput/CurrencyInput.razor.cs
-src/NeoUI.Blazor/Components/MaskedInput/MaskedInput.razor.cs
-src/NeoUI.Blazor/Components/NumericInput/NumericInput.razor.cs
+src/BlazorUI.Components/wwwroot/js/input.js (consolidated)
+src/BlazorUI.Components/Components/CurrencyInput/CurrencyInput.razor.cs
+src/BlazorUI.Components/Components/MaskedInput/MaskedInput.razor.cs
+src/BlazorUI.Components/Components/NumericInput/NumericInput.razor.cs
 ```
 
 ---
@@ -1589,12 +1765,12 @@ Result: Feels instant instead of laggy
 
 **Files Changed:**
 ```
-src/NeoUI.Blazor/wwwroot/js/input.js (event handling logic)
-src/NeoUI.Blazor/Components/Input/Input.razor (removed @oninput/@onchange)
-src/NeoUI.Blazor/Components/CurrencyInput/CurrencyInput.razor
-src/NeoUI.Blazor/Components/MaskedInput/MaskedInput.razor
-src/NeoUI.Blazor/Components/NumericInput/NumericInput.razor
-src/NeoUI.Blazor/Components/Textarea/Textarea.razor
+src/BlazorUI.Components/wwwroot/js/input.js (event handling logic)
+src/BlazorUI.Components/Components/Input/Input.razor (removed @oninput/@onchange)
+src/BlazorUI.Components/Components/CurrencyInput/CurrencyInput.razor
+src/BlazorUI.Components/Components/MaskedInput/MaskedInput.razor
+src/BlazorUI.Components/Components/NumericInput/NumericInput.razor
+src/BlazorUI.Components/Components/Textarea/Textarea.razor
 ```
 
 ---
@@ -1614,7 +1790,7 @@ src/NeoUI.Blazor/Components/Textarea/Textarea.razor
 
 **Files Changed:**
 ```javascript
-src/NeoUI.Blazor/wwwroot/js/masked-input.js
+src/BlazorUI.Components/wwwroot/js/masked-input.js
 ```
 
 ---
@@ -1660,10 +1836,10 @@ src/NeoUI.Blazor/wwwroot/js/masked-input.js
 
 **Files Changed:**
 ```
-demo/NeoUI.Demo.Shared/Pages/Components/InputDemo.razor
-demo/NeoUI.Demo.Shared/Pages/Components/CurrencyInputDemo.razor
-demo/NeoUI.Demo.Shared/Pages/Components/MaskedInputDemo.razor
-demo/NeoUI.Demo.Shared/Pages/Components/NumericInputDemo.razor
+demo/BlazorUI.Demo.Shared/Pages/Components/InputDemo.razor
+demo/BlazorUI.Demo.Shared/Pages/Components/CurrencyInputDemo.razor
+demo/BlazorUI.Demo.Shared/Pages/Components/MaskedInputDemo.razor
+demo/BlazorUI.Demo.Shared/Pages/Components/NumericInputDemo.razor
 ```
 
 ---
@@ -1768,12 +1944,12 @@ focus-visible:!ring-0  /* No focus ring */
 
 **Files Changed:**
 ```javascript
-src/NeoUI.Blazor/wwwroot/js/input.js
+src/BlazorUI.Components/wwwroot/js/input.js
   - Added initializeCommandInput()
   - Added disposeCommandInput()
   - Command input keyboard state tracking
 
-src/NeoUI.Blazor/Components/Command/CommandInput.razor
+src/BlazorUI.Components/Components/Command/CommandInput.razor
   - Replaced <input> with <Input> component
   - Added JavaScript keyboard navigation integration
   - Removed manual timer and cached dictionary
@@ -1909,7 +2085,7 @@ No migration needed! Components auto-generate IDs when not specified.
 
 **Files Changed:**
 ```
-src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/positioning.js
+src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js
 ```
 
 ---
@@ -1965,10 +2141,10 @@ private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
 
 **Files Changed:**
 ```
-src/NeoUI.Blazor/Components/Sidebar/SidebarInset.razor
-src/NeoUI.Blazor/Components/Sidebar/SidebarInset.razor.cs
-src/NeoUI.Blazor/wwwroot/js/sidebar.js
-demo/NeoUI.Demo.Shared/Common/MainLayout.razor
+src/BlazorUI.Components/Components/Sidebar/SidebarInset.razor
+src/BlazorUI.Components/Components/Sidebar/SidebarInset.razor.cs
+src/BlazorUI.Components/wwwroot/js/sidebar.js
+demo/BlazorUI.Demo.Shared/Common/MainLayout.razor
 ```
 
 ---
@@ -1990,10 +2166,10 @@ demo/NeoUI.Demo.Shared/Common/MainLayout.razor
 ---
 
 ## 2026-02-05 - Input Components & Positioning Enhancements
-src/NeoUI.Blazor/Components/MaskedInput/MaskedInput.razor.cs (JS)
-src/NeoUI.Blazor/Components/NumericInput/NumericInput.razor.cs
-src/NeoUI.Blazor/wwwroot/js/input.js (new, renamed from input-validation.js)
-src/NeoUI.Blazor/wwwroot/js/masked-input.js
+src/BlazorUI.Components/Components/MaskedInput/MaskedInput.razor.cs (JS)
+src/BlazorUI.Components/Components/NumericInput/NumericInput.razor.cs
+src/BlazorUI.Components/wwwroot/js/input.js (new, renamed from input-validation.js)
+src/BlazorUI.Components/wwwroot/js/masked-input.js
 ```
 
 **Breaking Change:** ⚠️ Minor
@@ -2029,7 +2205,7 @@ src/NeoUI.Blazor/wwwroot/js/masked-input.js
 
 **Files Changed:**
 ```javascript
-src/NeoUI.Blazor/wwwroot/js/masked-input.js
+src/BlazorUI.Components/wwwroot/js/masked-input.js
 ```
 
 ---
@@ -2165,7 +2341,7 @@ If you relied on immediate updates (old default behavior):
 ### 🆕 New Components
 
 #### **1. TimePicker Component**
-**Location:** `src\NeoUI.Blazor\Components\TimePicker\`
+**Location:** `src\BlazorUI.Components\Components\TimePicker\`
 
 **Description:** Time selection component with hour/minute dropdowns and optional AM/PM toggle.
 
@@ -2207,7 +2383,7 @@ If you relied on immediate updates (old default behavior):
 ---
 
 #### **2. DateRangePicker Component**
-**Location:** `src\NeoUI.Blazor\Components\DateRangePicker\`
+**Location:** `src\BlazorUI.Components\Components\DateRangePicker\`
 
 **Description:** Date range selection with preset date ranges and two-calendar view.
 
@@ -2243,7 +2419,7 @@ If you relied on immediate updates (old default behavior):
 ---
 
 #### **3. Color Picker Component**
-**Location:** `src\NeoUI.Blazor\Components\ColorPicker\`
+**Location:** `src\BlazorUI.Components\Components\ColorPicker\`
 
 **Description:** Color selection with hex, RGB, and HSL support.
 
@@ -2258,7 +2434,7 @@ If you relied on immediate updates (old default behavior):
 ---
 
 #### **4. Currency Input Component**
-**Location:** `src\NeoUI.Blazor\Components\CurrencyInput\`
+**Location:** `src\BlazorUI.Components\Components\CurrencyInput\`
 
 **Description:** Formatted currency input with locale support.
 
@@ -2273,7 +2449,7 @@ If you relied on immediate updates (old default behavior):
 ---
 
 #### **5. Drawer Component**
-**Location:** `src\NeoUI.Blazor\Components\Drawer\`
+**Location:** `src\BlazorUI.Components\Components\Drawer\`
 
 **Description:** Slide-out panel with gesture controls and backdrop.
 
@@ -2288,7 +2464,7 @@ If you relied on immediate updates (old default behavior):
 ---
 
 #### **6. Masked Input Component**
-**Location:** `src\NeoUI.Blazor\Components\MaskedInput\`
+**Location:** `src\BlazorUI.Components\Components\MaskedInput\`
 
 **Description:** Text input with customizable format masks (phone, date, etc.).
 
@@ -2303,7 +2479,7 @@ If you relied on immediate updates (old default behavior):
 ---
 
 #### **7. Numeric Input Component**
-**Location:** `src\NeoUI.Blazor\Components\NumericInput\`
+**Location:** `src\BlazorUI.Components\Components\NumericInput\`
 
 **Description:** Number input with increment/decrement buttons and formatting.
 
@@ -2319,7 +2495,7 @@ If you relied on immediate updates (old default behavior):
 ---
 
 #### **8. Range Slider Component**
-**Location:** `src\NeoUI.Blazor\Components\RangeSlider\`
+**Location:** `src\BlazorUI.Components\Components\RangeSlider\`
 
 **Description:** Dual-handle slider for selecting value ranges.
 
@@ -2335,7 +2511,7 @@ If you relied on immediate updates (old default behavior):
 ---
 
 #### **9. Rating Component**
-**Location:** `src\NeoUI.Blazor\Components\Rating\`
+**Location:** `src\BlazorUI.Components\Components\Rating\`
 
 **Description:** Star rating input with half-star precision and readonly mode.
 
@@ -2353,7 +2529,7 @@ If you relied on immediate updates (old default behavior):
 ### 🔄 Enhanced Components
 
 #### **NativeSelect - Enhanced Styling**
-**Location:** `src\NeoUI.Blazor\Components\NativeSelect\`
+**Location:** `src\BlazorUI.Components\Components\NativeSelect\`
 
 **Changes:**
 
@@ -2393,7 +2569,7 @@ focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50
 ---
 
 #### **DataTableToolbar - Accessibility Enhancement**
-**Location:** `src\NeoUI.Blazor\Components\DataTable\DataTableToolbar.razor`
+**Location:** `src\BlazorUI.Components\Components\DataTable\DataTableToolbar.razor`
 
 **Changes:**
 
@@ -2518,7 +2694,7 @@ Viewport Edge
 
 **README Updates:**
 - Main `README.md` - Updated component count to 85+, added all new components to lists
-- `src\NeoUI.Blazor\README.md` - Updated to 85+ components with full descriptions
+- `src\BlazorUI.Components\README.md` - Updated to 85+ components with full descriptions
 - `SESSION_SUMMARY.md` - Complete session documentation with all changes
 
 ---
@@ -2739,7 +2915,7 @@ private async Task<bool> FocusElementAsync(ElementReference element, string elem
     if (!_keyboardNavModuleLoaded)
     {
         _keyboardNavModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/keyboard-nav.js");
+            "import", "./_content/NeoBlazorUI.Primitives/js/primitives/keyboard-nav.js");
         _keyboardNavModuleLoaded = true;
     }
 
@@ -3550,7 +3726,7 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 
 ### Added
 - HeightAnimation documentation and usage examples to CommandDemo
-- CSS variables to components-input.css
+- CSS variables to blazorui-input.css
 
 ### Changed
 - Visual styles with auto dynamic list height

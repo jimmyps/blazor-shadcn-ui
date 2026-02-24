@@ -1,13 +1,14 @@
 @namespace NeoUI.Blazor.Chart
 @using NeoUI.Blazor.Chart.Series
 @inherits SeriesBase
+@implements IFillParent
 
 <CascadingValue Value="this" IsFixed="true">
     @ChildContent
 </CascadingValue>
 
 @code {
-    [CascadingParameter] private dynamic? Parent { get; set; }
+    [CascadingParameter] private ILineSeriesParent? Parent { get; set; }
     
     /// <summary>
     /// Gets or sets the line color (legacy, use Fill instead).
@@ -87,17 +88,6 @@
     
     protected override void OnInitialized()
     {
-        // Register with parent chart
-        if (Parent != null)
-        {
-            try
-            {
-                Parent.RegisterLine(this);
-            }
-            catch
-            {
-                // Parent doesn't support Line series
-            }
-        }
+        Parent?.RegisterLine(this);
     }
 }

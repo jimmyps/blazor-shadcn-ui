@@ -1,0 +1,399 @@
+@page "/components/theme-switcher"
+@using NeoUI.Blazor.Theme
+@using NeoUI.Blazor.Services.Theming
+@using NeoUI.Blazor.Alert
+@using NeoUI.Blazor.Primitives.Services
+@using NeoUI.Icons.Lucide
+@inject ThemeService ThemeService
+@implements IDisposable
+
+<PageTitle>ThemeSwitcher Component - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div class="space-y-3">
+        <h1 class="text-4xl font-bold tracking-tight">ThemeSwitcher Component</h1>
+        <p class="text-xl text-muted-foreground">
+            An all-in-one popover panel that lets users pick a base color scheme and a primary accent color at runtime,
+            with changes persisted across sessions via <code class="text-sm bg-muted px-1 py-0.5 rounded">localStorage</code>.
+        </p>
+    </div>
+
+    <!-- ─── Live Demo ────────────────────────────────────────────────────────── -->
+    <section class="space-y-4">
+        <div class="space-y-1">
+            <h2 class="text-2xl font-semibold">Demo</h2>
+            <p class="text-muted-foreground">
+                Click the circle button to open the theme panel. Changes apply immediately across the whole demo site.
+            </p>
+        </div>
+
+        <div class="flex items-center gap-6 p-6 border rounded-lg bg-muted/30">
+            <ThemeSwitcher Align="PopoverAlign.Start" />
+            <div class="space-y-0.5">
+                <p class="text-sm font-medium">Current theme</p>
+                <p class="text-sm text-muted-foreground">
+                    Base: <span class="font-mono text-foreground">@ThemeService.CurrentBaseColor</span>
+                    &nbsp;/&nbsp;
+                    Primary: <span class="font-mono text-foreground">@ThemeService.CurrentPrimaryColor</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── DarkModeToggle ───────────────────────────────────────────────────── -->
+    <section class="space-y-4">
+        <div class="space-y-1">
+            <h2 class="text-2xl font-semibold">DarkModeToggle</h2>
+            <p class="text-muted-foreground">
+                A companion component bundled in the same namespace.
+                It uses the same <code class="text-sm bg-muted px-1 py-0.5 rounded">ThemeService</code> and
+                is already embedded inside <code class="text-sm bg-muted px-1 py-0.5 rounded">ThemeSwitcher</code>'s
+                popover header, but can also be placed standalone anywhere in your layout.
+            </p>
+        </div>
+
+        <div class="flex items-center gap-4 p-6 border rounded-lg bg-muted/30">
+            <DarkModeToggle />
+            <p class="text-sm text-muted-foreground">Dark mode: <span class="font-mono text-foreground">@(ThemeService.IsDarkMode ? "on" : "off")</span></p>
+        </div>
+
+        <div class="rounded-lg border bg-muted/50 p-4">
+            <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor.Theme
+
+&lt;DarkModeToggle /&gt;</code></pre>
+        </div>
+    </section>
+
+    <!-- ─── Usage ────────────────────────────────────────────────────────────── -->
+    <section class="space-y-4">
+        <div class="space-y-1">
+            <h2 class="text-2xl font-semibold">Usage</h2>
+            <p class="text-muted-foreground">Minimal usage — drop it anywhere in your layout.</p>
+        </div>
+
+        <div class="rounded-lg border bg-muted/50 p-4">
+            <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor.Theme
+
+&lt;ThemeSwitcher /&gt;</code></pre>
+        </div>
+
+        <p class="text-sm text-muted-foreground">
+            Typical placement is in a top-bar or sidebar footer alongside
+            <code class="text-sm bg-muted px-1 py-0.5 rounded">DarkModeToggle</code>:
+        </p>
+
+        <div class="rounded-lg border bg-muted/50 p-4">
+            <pre class="text-sm overflow-x-auto"><code>&lt;header class="flex items-center gap-2"&gt;
+    &lt;ThemeSwitcher /&gt;
+    &lt;DarkModeToggle /&gt;
+&lt;/header&gt;</code></pre>
+        </div>
+    </section>
+
+    <!-- ─── Customisation ────────────────────────────────────────────────────── -->
+    <section class="space-y-4">
+        <div class="space-y-1">
+            <h2 class="text-2xl font-semibold">Customisation</h2>
+            <p class="text-muted-foreground">
+                Use <code class="text-sm bg-muted px-1 py-0.5 rounded">TriggerClass</code> and
+                <code class="text-sm bg-muted px-1 py-0.5 rounded">PopoverContentClass</code> to tailor the
+                trigger button and panel without subclassing.
+            </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-4 p-6 border rounded-lg bg-muted/30">
+            <ThemeSwitcher Align="PopoverAlign.Start" TriggerClass="rounded-full ring-2 ring-primary ring-offset-2 ring-offset-background" />
+            <ThemeSwitcher Align="PopoverAlign.Start" PopoverContentClass="!w-72" />
+        </div>
+
+        <div class="rounded-lg border bg-muted/50 p-4">
+            <pre class="text-sm overflow-x-auto"><code>&lt;!-- Extra ring on trigger --&gt;
+&lt;ThemeSwitcher TriggerClass="rounded-full ring-2 ring-primary ring-offset-2 ring-offset-background" /&gt;
+
+&lt;!-- Narrower popover panel --&gt;
+&lt;ThemeSwitcher PopoverContentClass="!w-72" /&gt;</code></pre>
+        </div>
+    </section>
+
+    <!-- ─── Fixed positioning ───────────────────────────────────────────────── -->
+    <section class="space-y-4">
+        <div class="space-y-1">
+            <h2 class="text-2xl font-semibold">Fixed positioning</h2>
+            <p class="text-muted-foreground">
+                By default <code class="text-sm bg-muted px-1 py-0.5 rounded">Strategy</code> is
+                <code class="text-sm bg-muted px-1 py-0.5 rounded">Fixed</code> so the popover and tooltip
+                correctly escape any CSS stacking context (e.g. sidebars with <code class="text-sm bg-muted px-1 py-0.5 rounded">overflow: hidden</code>
+                or <code class="text-sm bg-muted px-1 py-0.5 rounded">transform</code>).
+                Switch to <code class="text-sm bg-muted px-1 py-0.5 rounded">Absolute</code> if you embed the
+                switcher in a regular document flow where fixed positioning causes layout shifts.
+            </p>
+        </div>
+        <div class="rounded-lg border bg-muted/50 p-4">
+            <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor.Primitives.Services   @* for PositioningStrategy *@
+
+&lt;ThemeSwitcher Strategy="PositioningStrategy.Absolute" /&gt;</code></pre>
+        </div>
+    </section>
+
+    <!-- ─── API ──────────────────────────────────────────────────────────────── -->
+    <section class="space-y-4">
+        <h2 class="text-2xl font-semibold">API</h2>
+
+        <div class="overflow-x-auto rounded-lg border">
+            <table class="w-full text-sm">
+                <thead class="bg-muted/50">
+                    <tr>
+                        <th class="text-left px-4 py-3 font-semibold">Parameter</th>
+                        <th class="text-left px-4 py-3 font-semibold">Type</th>
+                        <th class="text-left px-4 py-3 font-semibold">Default</th>
+                        <th class="text-left px-4 py-3 font-semibold">Description</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    <tr class="hover:bg-muted/30">
+                        <td class="px-4 py-3 font-mono text-xs">TriggerClass</td>
+                        <td class="px-4 py-3 text-muted-foreground">string?</td>
+                        <td class="px-4 py-3 text-muted-foreground">—</td>
+                        <td class="px-4 py-3 text-muted-foreground">Additional CSS classes merged onto the trigger <code class="bg-muted px-1 rounded">Button</code></td>
+                    </tr>
+                    <tr class="hover:bg-muted/30">
+                        <td class="px-4 py-3 font-mono text-xs">PopoverContentClass</td>
+                        <td class="px-4 py-3 text-muted-foreground">string?</td>
+                        <td class="px-4 py-3 text-muted-foreground">—</td>
+                        <td class="px-4 py-3 text-muted-foreground">Additional CSS classes merged onto the <code class="bg-muted px-1 rounded">PopoverContent</code> panel</td>
+                    </tr>
+                    <tr class="hover:bg-muted/30">
+                        <td class="px-4 py-3 font-mono text-xs">Strategy</td>
+                        <td class="px-4 py-3 text-muted-foreground">PositioningStrategy</td>
+                        <td class="px-4 py-3 font-mono text-xs">Fixed</td>
+                        <td class="px-4 py-3 text-muted-foreground">Forwarded to both the popover and the tooltip. Use <code class="bg-muted px-1 rounded">Fixed</code> inside transformed/overflow-hidden containers</td>
+                    </tr>
+                    <tr class="hover:bg-muted/30">
+                        <td class="px-4 py-3 font-mono text-xs">ZIndex</td>
+                        <td class="px-4 py-3 text-muted-foreground">int</td>
+                        <td class="px-4 py-3 font-mono text-xs">ZIndexLevels.PopoverContent</td>
+                        <td class="px-4 py-3 text-muted-foreground">Z-index for the popover panel</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ─── ThemeService API ─────────────────────────────────────────────────── -->
+    <section class="space-y-4">
+        <div class="space-y-1">
+            <h2 class="text-2xl font-semibold">ThemeService</h2>
+            <p class="text-muted-foreground">
+                Inject <code class="text-sm bg-muted px-1 py-0.5 rounded">ThemeService</code> directly if you need
+                to read or change the theme programmatically without rendering the switcher UI.
+            </p>
+        </div>
+
+        <div class="overflow-x-auto rounded-lg border">
+            <table class="w-full text-sm">
+                <thead class="bg-muted/50">
+                    <tr>
+                        <th class="text-left px-4 py-3 font-semibold">Member</th>
+                        <th class="text-left px-4 py-3 font-semibold">Kind</th>
+                        <th class="text-left px-4 py-3 font-semibold">Description</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    <tr class="hover:bg-muted/30">
+                        <td class="px-4 py-3 font-mono text-xs">CurrentBaseColor</td>
+                        <td class="px-4 py-3 text-muted-foreground">Property</td>
+                        <td class="px-4 py-3 text-muted-foreground">Currently active <code class="bg-muted px-1 rounded">BaseColor</code></td>
+                    </tr>
+                    <tr class="hover:bg-muted/30">
+                        <td class="px-4 py-3 font-mono text-xs">CurrentPrimaryColor</td>
+                        <td class="px-4 py-3 text-muted-foreground">Property</td>
+                        <td class="px-4 py-3 text-muted-foreground">Currently active <code class="bg-muted px-1 rounded">PrimaryColor</code></td>
+                    </tr>
+                    <tr class="hover:bg-muted/30">
+                        <td class="px-4 py-3 font-mono text-xs">IsDarkMode</td>
+                        <td class="px-4 py-3 text-muted-foreground">Property</td>
+                        <td class="px-4 py-3 text-muted-foreground">Whether dark mode is currently active</td>
+                    </tr>
+                    <tr class="hover:bg-muted/30">
+                        <td class="px-4 py-3 font-mono text-xs">OnThemeChanged</td>
+                        <td class="px-4 py-3 text-muted-foreground">Event</td>
+                        <td class="px-4 py-3 text-muted-foreground">Fired whenever base color, primary color, or dark mode changes</td>
+                    </tr>
+                    <tr class="hover:bg-muted/30">
+                        <td class="px-4 py-3 font-mono text-xs">InitializeAsync()</td>
+                        <td class="px-4 py-3 text-muted-foreground">Method</td>
+                        <td class="px-4 py-3 text-muted-foreground">Reads persisted preferences from <code class="bg-muted px-1 rounded">localStorage</code> and applies them</td>
+                    </tr>
+                    <tr class="hover:bg-muted/30">
+                        <td class="px-4 py-3 font-mono text-xs">SetBaseColorAsync(BaseColor)</td>
+                        <td class="px-4 py-3 text-muted-foreground">Method</td>
+                        <td class="px-4 py-3 text-muted-foreground">Changes and persists the base color scheme</td>
+                    </tr>
+                    <tr class="hover:bg-muted/30">
+                        <td class="px-4 py-3 font-mono text-xs">SetPrimaryColorAsync(PrimaryColor)</td>
+                        <td class="px-4 py-3 text-muted-foreground">Method</td>
+                        <td class="px-4 py-3 text-muted-foreground">Changes and persists the primary accent color</td>
+                    </tr>
+                    <tr class="hover:bg-muted/30">
+                        <td class="px-4 py-3 font-mono text-xs">SetThemeAsync(bool isDark)</td>
+                        <td class="px-4 py-3 text-muted-foreground">Method</td>
+                        <td class="px-4 py-3 text-muted-foreground">Toggles dark mode and persists the preference</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="rounded-lg border bg-muted/50 p-4">
+            <pre class="text-sm overflow-x-auto"><code>@@inject ThemeService ThemeService
+
+&lt;!-- Read current values --&gt;
+&lt;p&gt;@@ThemeService.CurrentBaseColor / @@ThemeService.CurrentPrimaryColor&lt;/p&gt;
+
+@@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ThemeService.InitializeAsync();
+        ThemeService.OnThemeChanged += () => InvokeAsync(StateHasChanged);
+    }
+
+    private Task ApplyGreenTheme() =>
+        ThemeService.SetPrimaryColorAsync(PrimaryColor.Green);
+}</code></pre>
+        </div>
+    </section>
+
+    <!-- ─── App.razor Setup ─────────────────────────────────────────────────── -->
+    <section class="space-y-4">
+        <div class="space-y-1">
+            <h2 class="text-2xl font-semibold">App.razor Setup</h2>
+            <p class="text-muted-foreground">
+                The theme system requires a small amount of boilerplate in your host page.
+                Add the following to the <code class="text-sm bg-muted px-1 py-0.5 rounded">&lt;head&gt;</code> of
+                <code class="text-sm bg-muted px-1 py-0.5 rounded">App.razor</code> (Blazor Web) or
+                <code class="text-sm bg-muted px-1 py-0.5 rounded">index.html</code> (Blazor WASM).
+            </p>
+        </div>
+
+        <!-- Main stylesheet -->
+        <div class="space-y-2">
+            <h3 class="text-lg font-semibold">1 — Core stylesheet</h3>
+            <p class="text-sm text-muted-foreground">
+                The main NeoUI stylesheet provides all component styles and CSS variables.
+            </p>
+            <div class="rounded-lg border bg-muted/50 p-4">
+                <pre class="text-sm overflow-x-auto"><code>&lt;link href="_content/NeoUI.Blazor/components.css" rel="stylesheet" /&gt;</code></pre>
+            </div>
+        </div>
+
+        <!-- Base color themes -->
+        <div class="space-y-2">
+            <h3 class="text-lg font-semibold">2 — Base color stylesheets</h3>
+            <p class="text-sm text-muted-foreground">
+                Each base color is a separate CSS file.
+                <strong>In production include only the ones you actually offer to users</strong> — if your app
+                only uses Zinc, ship only <code class="text-sm bg-muted px-1 py-0.5 rounded">zinc.css</code>.
+            </p>
+            <div class="rounded-lg border bg-muted/50 p-4">
+                <pre class="text-sm overflow-x-auto"><code>&lt;!-- Base color themes (include only those you need) --&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/zinc.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/slate.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/gray.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/neutral.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/stone.css" /&gt;</code></pre>
+            </div>
+        </div>
+
+        <!-- Primary color themes -->
+        <div class="space-y-2">
+            <h3 class="text-lg font-semibold">3 — Primary color stylesheets</h3>
+            <p class="text-sm text-muted-foreground">
+                Same rule applies — only include the accent colors your app exposes.
+                Omitting unused files reduces the CSS bundle size.
+            </p>
+            <div class="rounded-lg border bg-muted/50 p-4">
+                <pre class="text-sm overflow-x-auto"><code>&lt;!-- Primary color themes (include only those you need) --&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/red.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/rose.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/orange.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/amber.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/yellow.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/lime.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/green.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/emerald.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/teal.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/cyan.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/sky.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/blue.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/indigo.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/violet.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/purple.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/fuchsia.css" /&gt;
+&lt;link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/pink.css" /&gt;</code></pre>
+            </div>
+
+            <Alert Variant="AlertVariant.Warning">
+                <Icon>
+                    <LucideIcon Name="triangle-alert" Class="h-4 w-4" />
+                </Icon>
+                <ChildContent>
+                    <AlertTitle>Production tip — trim unused theme files</AlertTitle>
+                    <AlertDescription>
+                        If your application only allows a fixed set of themes (e.g. Zinc base + Blue or Green accent),
+                        include only those CSS files. Each file is small but shipping all 22 stylesheets adds unnecessary
+                        weight for apps with a locked-down theme palette.
+                    </AlertDescription>
+                </ChildContent>
+            </Alert>
+        </div>
+
+        <!-- Theme JS + init -->
+        <div class="space-y-2">
+            <h3 class="text-lg font-semibold">4 — Theme JavaScript</h3>
+            <p class="text-sm text-muted-foreground">
+                The theme script must load <em>before</em> Blazor initialises to avoid a flash of unstyled content (FOUC).
+                Place both tags at the end of <code class="text-sm bg-muted px-1 py-0.5 rounded">&lt;head&gt;</code>,
+                after the stylesheets.
+            </p>
+            <div class="rounded-lg border bg-muted/50 p-4">
+                <pre class="text-sm overflow-x-auto"><code>&lt;!-- Theme JS — must come before Blazor boots to prevent FOUC --&gt;
+&lt;script src="_content/NeoUI.Blazor/js/theme.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+    window.theme.initialize();
+&lt;/script&gt;</code></pre>
+            </div>
+        </div>
+
+        <!-- Service registration -->
+        <div class="space-y-2">
+            <h3 class="text-lg font-semibold">5 — Service registration</h3>
+            <p class="text-sm text-muted-foreground">
+                <code class="text-sm bg-muted px-1 py-0.5 rounded">ThemeService</code> is registered automatically
+                when you call <code class="text-sm bg-muted px-1 py-0.5 rounded">AddNeoUIComponents()</code> in
+                <code class="text-sm bg-muted px-1 py-0.5 rounded">Program.cs</code>.
+            </p>
+            <div class="rounded-lg border bg-muted/50 p-4">
+                <pre class="text-sm overflow-x-auto"><code>// Program.cs
+builder.Services.AddNeoUIPrimitives();
+builder.Services.AddNeoUIComponents(); // registers ThemeService</code></pre>
+            </div>
+        </div>
+    </section>
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ThemeService.InitializeAsync();
+        ThemeService.OnThemeChanged += HandleThemeChanged;
+    }
+
+    private void HandleThemeChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        ThemeService.OnThemeChanged -= HandleThemeChanged;
+    }
+}

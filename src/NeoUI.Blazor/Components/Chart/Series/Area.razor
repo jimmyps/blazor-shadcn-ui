@@ -1,13 +1,14 @@
 @namespace NeoUI.Blazor.Chart
 @using NeoUI.Blazor.Chart.Series
 @inherits SeriesBase
+@implements IFillParent
 
 <CascadingValue Value="this" IsFixed="true">
     @ChildContent
 </CascadingValue>
 
 @code {
-    [CascadingParameter] private dynamic? Parent { get; set; }
+    [CascadingParameter] private IAreaSeriesParent? Parent { get; set; }
     
     /// <summary>
     /// Gets or sets the area color (legacy, use Fill instead).
@@ -73,9 +74,6 @@
     
     protected override void OnInitialized()
     {
-        if (Parent != null)
-        {
-            try { Parent.RegisterArea(this); } catch { }
-        }
+        Parent?.RegisterArea(this);
     }
 }

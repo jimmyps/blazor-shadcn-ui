@@ -2,6 +2,7 @@
 @using NeoUI.Blazor.Chart.Internal
 @typeparam TData
 @inherits ChartBase<TData>
+@implements IRadarChartParent
 
 <CascadingValue Value="this" IsFixed="true">
     <div class="chart-radar-container" style="width: 100%; height: 100%; position: relative;">
@@ -262,26 +263,26 @@
         return TooltipMode.Item;
     }
     
-    internal void RegisterRadar(Radar radar)
+    public void RegisterRadar(Radar radar)
     {
         _radars.Add(radar);
         StateHasChanged();
     }
     
-    internal void RegisterRadarGrid(RadarGrid radarGrid)
+    public void RegisterRadarGrid(RadarGrid radarGrid)
     {
         _radarGrid = radarGrid;
         StateHasChanged();
     }
 
-    internal void RegisterXAxis(XAxis xAxis)
+    public void RegisterXAxis(XAxis xAxis)
     {
         _xAxis = xAxis;
         StateHasChanged();
     }
 
     
-    internal void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
-    internal void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+    public void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    public void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
 
 }
