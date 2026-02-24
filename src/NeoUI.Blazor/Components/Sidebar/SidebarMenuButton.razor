@@ -1,5 +1,6 @@
 @namespace NeoUI.Blazor
 @using Microsoft.AspNetCore.Components.Routing
+@using NeoUI.Blazor.Primitives
 @inject NavigationManager NavigationManager
 
 @*
@@ -12,9 +13,9 @@
         <NeoUI.Blazor.Primitives.TooltipTrigger>
             @RenderButton()
         </NeoUI.Blazor.Primitives.TooltipTrigger>
-        <Tooltip Side="@(Context?.Side == SidebarSide.Right ? PopoverSide.Left : PopoverSide.Right)" Align="@PopoverAlign.Center">
+        <NeoUI.Blazor.Primitives.TooltipContent Side="@(Context?.Side == SidebarSide.Right ? PopoverSide.Left : PopoverSide.Right)" Align="@PopoverAlign.Center">
             @Tooltip
-        </Tooltip>
+        </NeoUI.Blazor.Primitives.TooltipContent>
     </NeoUI.Blazor.Primitives.Tooltip>
 }
 else

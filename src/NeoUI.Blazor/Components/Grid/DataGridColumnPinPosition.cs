@@ -6,7 +6,7 @@ namespace NeoUI.Blazor;
 /// Specifies the pinning position for a grid column.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum DataDataGridColumnPinPosition
+public enum DataGridColumnPinPosition
 {
     /// <summary>Not pinned.</summary>
     None,

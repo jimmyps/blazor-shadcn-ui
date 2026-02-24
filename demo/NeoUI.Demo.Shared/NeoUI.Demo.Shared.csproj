@@ -4,6 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>$(NoWarn);RZ1042</NoWarn>
     <RootNamespace>NeoUI.Demo.Shared</RootNamespace>
     <AssemblyName>NeoUI.Demo.Shared</AssemblyName>
   </PropertyGroup>

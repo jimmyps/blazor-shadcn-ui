@@ -36,7 +36,7 @@ public class DataGridState
     /// Gets or sets the list of column states (visibility, width, pinning, order).
     /// </summary>
     [JsonPropertyName("columnStates")]
-    public List<DataDataGridColumnState> ColumnStates { get; set; } = new();
+    public List<DataGridColumnState> ColumnStates { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the list of selected row IDs.

@@ -637,8 +637,8 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
             width = ParseWidth(col.Width),
             minWidth = ParseWidth(col.MinWidth),
             maxWidth = ParseWidth(col.MaxWidth),
-            pinned = col.Pinned == DataDataGridColumnPinPosition.Left ? "left" :
-                     col.Pinned == DataDataGridColumnPinPosition.Right ? "right" : null,
+            pinned = col.Pinned == DataGridColumnPinPosition.Left ? "left" :
+                     col.Pinned == DataGridColumnPinPosition.Right ? "right" : null,
             resizable = col.AllowResize,
             editable = col.CellEditTemplate != null,
             // Template handling - will use HtmlRenderer when available

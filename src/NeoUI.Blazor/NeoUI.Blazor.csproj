@@ -1,9 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <NoWarn>$(NoWarn);RZ1042</NoWarn>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 
     <!-- NuGet Package Configuration -->

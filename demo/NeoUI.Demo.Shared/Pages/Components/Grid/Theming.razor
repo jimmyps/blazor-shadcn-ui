@@ -1,4 +1,4 @@
-@page "/components/grid/theming"
+@page "/components/datagrid/theming"
 @using NeoUI.Blazor
 @using NeoUI.Demo.Shared.Data
 
@@ -6,7 +6,7 @@
 
 <div class="space-y-8">
     <div>
-        <h2 class="text-3xl font-bold tracking-tight mb-2">Grid Theme Customization</h2>
+        <h2 class="text-2xl font-semibold">Grid Theme Customization</h2>
         <p class="text-muted-foreground">
             Explore the three-level customization system: High-level presets, fine-grained parameters, and CSS overrides.
         </p>
@@ -71,7 +71,7 @@
         <div>
             <h3 class="text-2xl font-semibold mb-2">Level 2: Fine-Grained Parameters</h3>
             <p class="text-muted-foreground mb-4">
-                Override specific theme settings with DataDataGridThemeParameters component.
+                Override specific theme settings with DataGridThemeParameters component.
             </p>
         </div>
 
@@ -88,7 +88,7 @@
                           Density="DataGridDensity.Comfortable"
                           Height="250px">
                         <Columns>
-                            <DataDataGridThemeParameters
+                            <DataGridThemeParameters
                                 AccentColor="#dc2626"
                                 RowHeight="36"
                                 RowHoverColor="#dc262633" />
@@ -112,7 +112,7 @@
                           Density="DataGridDensity.Comfortable"
                           Height="250px">
                         <Columns>
-                            <DataDataGridThemeParameters
+                            <DataGridThemeParameters
                                 FontSize="16"
                                 BorderRadius="8"
                                 HeaderFontWeight="700"
@@ -193,7 +193,7 @@
         <div>
             <h3 class="text-2xl font-semibold mb-2">Precedence Demonstration</h3>
             <p class="text-muted-foreground mb-4">
-                DataDataGridThemeParameters overrides Density presets. Compact sets rowHeight=28, but we override it to 50.
+                DataGridThemeParameters overrides Density presets. Compact sets rowHeight=28, but we override it to 50.
             </p>
         </div>
 
@@ -230,7 +230,7 @@
                           Density="DataGridDensity.Compact"
                           Height="250px">
                         <Columns>
-                            <DataDataGridThemeParameters
+                            <DataGridThemeParameters
                                 RowHeight="50"
                             />
                             <DataGridColumn TItem="Product" Field="Name" Header="Product" />
@@ -259,7 +259,7 @@
 
 @@* Level 2: Fine-Grained Parameters *@@
 &lt;Grid TItem="Order" Items="@@orders"&gt;
-    &lt;DataDataGridThemeParameters
+    &lt;DataGridThemeParameters
         AccentColor="#ff6b6b"
         BorderRadius="8"
         RowHeight="48"

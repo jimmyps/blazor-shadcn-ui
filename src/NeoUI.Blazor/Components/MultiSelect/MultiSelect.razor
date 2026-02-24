@@ -102,7 +102,7 @@
                              @onclick="HandleSelectAllToggle"
                              @onclick:stopPropagation="true"
                              class="@ItemCssClass">
-                            <Checkbox Checked="@(selectAllState == SelectAllState.All)"
+                            <NeoUI.Blazor.Primitives.Checkbox Checked="@(selectAllState == SelectAllState.All)"
                                       Indeterminate="@(selectAllState == SelectAllState.Indeterminate)"
                                       class="@CheckboxCssClass"
                                       AriaLabel="@SelectAllLabel">
@@ -114,7 +114,7 @@
                                 {
                                     <LucideIcon Name="minus" Size="14" Class="h-3.5 w-3.5 stroke-current" />
                                 }
-                            </Checkbox>
+                            </NeoUI.Blazor.Primitives.Checkbox>
                             <span class="font-medium">@SelectAllLabel</span>
                         </div>
                         <Separator Decorative="false" Class="my-1" />
@@ -133,14 +133,14 @@
                              @onclick="GetToggleHandler(item)"
                              @onclick:stopPropagation="true"
                              class="@ItemCssClass">
-                            <Checkbox Checked="@isSelected"
+                            <NeoUI.Blazor.Primitives.Checkbox Checked="@isSelected"
                                       class="@CheckboxCssClass"
                                       AriaLabel="@displayText">
                                 @if (isSelected)
                                 {
                                     <LucideIcon Name="check" Size="14" Class="h-3.5 w-3.5 stroke-current" />
                                 }
-                            </Checkbox>
+                            </NeoUI.Blazor.Primitives.Checkbox>
                             <span>@displayText</span>
                         </div>
                     }

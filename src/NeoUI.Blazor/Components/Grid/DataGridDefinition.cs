@@ -12,7 +12,7 @@ public class DataGridDefinition<TItem>
     /// <summary>
     /// Gets or sets the list of column definitions.
     /// </summary>
-    public List<DataDataGridColumnDefinition<TItem>> Columns { get; set; } = new();
+    public List<DataGridColumnDefinition<TItem>> Columns { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the selection mode for the grid.

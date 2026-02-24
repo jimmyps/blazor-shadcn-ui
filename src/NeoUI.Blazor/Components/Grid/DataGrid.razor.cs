@@ -59,9 +59,9 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     private bool _actionsRegistered = false;
     
     /// <summary>
-    /// Custom theme parameters provided by DataDataGridThemeParameters component.
+    /// Custom theme parameters provided by DataGridThemeParameters component.
     /// </summary>
-    private DataDataGridThemeParameters? _themeParameters;
+    private DataGridThemeParameters? _themeParameters;
     
     /// <summary>
     /// Tracks previously selected items to detect selection changes.
@@ -546,9 +546,9 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Registers custom theme parameters (called by DataDataGridThemeParameters component).
+    /// Registers custom theme parameters (called by DataGridThemeParameters component).
     /// </summary>
-    internal void RegisterThemeParameters(DataDataGridThemeParameters parameters)
+    internal void RegisterThemeParameters(DataGridThemeParameters parameters)
     {
         _themeParameters = parameters;
     }
@@ -721,11 +721,11 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Merges theme parameters with precedence: ThemeDefaults &lt; Density &lt; VisualStyle &lt; DataDataGridThemeParameters.
+    /// Merges theme parameters with precedence: ThemeDefaults &lt; Density &lt; VisualStyle &lt; DataGridThemeParameters.
     /// </summary>
     private Dictionary<string, object> GetMergedThemeParams()
     {
-        // Merge theme parameters with precedence: ThemeDefaults < Density < VisualStyle < DataDataGridThemeParameters
+        // Merge theme parameters with precedence: ThemeDefaults < Density < VisualStyle < DataGridThemeParameters
         var themeParams = GetThemeDefaults(Theme);
         
         // Apply density preset
@@ -740,7 +740,7 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
             themeParams[kvp.Key] = kvp.Value;
         }
         
-        // Apply user's DataDataGridThemeParameters (highest priority)
+        // Apply user's DataGridThemeParameters (highest priority)
         if (_themeParameters != null)
         {
             foreach (var kvp in _themeParameters.ToDictionary())

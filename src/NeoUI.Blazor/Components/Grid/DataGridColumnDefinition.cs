@@ -7,7 +7,7 @@ namespace NeoUI.Blazor;
 /// Used by renderers to configure grid columns.
 /// </summary>
 /// <typeparam name="TItem">The type of items in the grid.</typeparam>
-public class DataDataGridColumnDefinition<TItem>
+public class DataGridColumnDefinition<TItem>
 {
     /// <summary>
     /// Gets or sets the unique identifier for this column.
@@ -53,7 +53,7 @@ public class DataDataGridColumnDefinition<TItem>
     /// <summary>
     /// Gets or sets the column pinning position.
     /// </summary>
-    public DataDataGridColumnPinPosition Pinned { get; set; } = DataDataGridColumnPinPosition.None;
+    public DataGridColumnPinPosition Pinned { get; set; } = DataGridColumnPinPosition.None;
 
     /// <summary>
     /// Gets or sets whether the column can be resized.

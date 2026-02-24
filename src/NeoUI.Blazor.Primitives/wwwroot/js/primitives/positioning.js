@@ -25,7 +25,7 @@ function injectRequiredStyles() {
     `;
 
   const style = document.createElement('style');
-  style.setAttribute('data-blazorui-primitives', 'positioning');
+  style.setAttribute('data-neoui-primitives', 'positioning');
   style.textContent = css;
   document.head.appendChild(style);
   stylesInjected = true;

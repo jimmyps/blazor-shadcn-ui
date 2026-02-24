@@ -9,8 +9,8 @@ namespace NeoUI.Blazor;
 /// </summary>
 /// <example>
 /// <code>
-/// &lt;Grid TItem="Order" Items="@orders"&gt;
-///     &lt;DataDataGridThemeParameters
+/// &lt;DataGrid TItem="Order" Items="@orders"&gt;
+///     &lt;DataGridThemeParameters
 ///         AccentColor="#ff6b6b"
 ///         BorderRadius="8"
 ///         RowHeight="48"
@@ -18,10 +18,10 @@ namespace NeoUI.Blazor;
 ///     &lt;Columns&gt;
 ///         &lt;DataGridColumn Field="OrderId" Header="Order ID" /&gt;
 ///     &lt;/Columns&gt;
-/// &lt;/Grid&gt;
+/// &lt;/DataGrid&gt;
 /// </code>
 /// </example>
-public partial class DataDataGridThemeParameters : ComponentBase
+public partial class DataGridThemeParameters : ComponentBase
 {
     [CascadingParameter]
     private object? Parent { get; set; }
@@ -291,7 +291,7 @@ public partial class DataDataGridThemeParameters : ComponentBase
         if (Parent == null || !IsGridComponent(Parent))
         {
             throw new InvalidOperationException(
-                "DataDataGridThemeParameters must be used as a child component of a DataGrid component.");
+                "DataGridThemeParameters must be used as a child component of a DataGrid component.");
         }
 
         // Register with parent grid
@@ -312,7 +312,7 @@ public partial class DataDataGridThemeParameters : ComponentBase
                 // Check if the generic type definition's full name contains Grid
                 // This is more specific than just checking the name
                 if (genericTypeDef.FullName != null && 
-                    genericTypeDef.FullName.Contains("NeoUI.Blazor.Grid.Grid"))
+                    genericTypeDef.FullName.Contains("NeoUI.Blazor.DataGrid"))
                 {
                     return true;
                 }

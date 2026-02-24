@@ -21,7 +21,7 @@ dotnet add package NeoUI.Blazor.Primitives
 
 ## 🚀 Quick Start
 
-**[Try the Live Demo](https://blazoruidemo20251223130817-bch0fhddfkh2bthv.indonesiacentral-01.azurewebsites.net)** - Explore all primitives and styled components with interactive examples and full documentation.
+**[Try the Live Demo](https://demos.neoui.io)** - Explore all primitives and styled components with interactive examples and full documentation.
 
 
 ## 📚 Available Primitives

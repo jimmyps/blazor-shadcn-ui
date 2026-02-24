@@ -62,7 +62,7 @@ public partial class DataGridColumn<TItem> : ComponentBase
     /// Gets or sets the column pinning position.
     /// </summary>
     [Parameter]
-    public DataDataGridColumnPinPosition Pinned { get; set; } = DataDataGridColumnPinPosition.None;
+    public DataGridColumnPinPosition Pinned { get; set; } = DataGridColumnPinPosition.None;
 
     /// <summary>
     /// Gets or sets whether the column can be resized.
@@ -158,7 +158,7 @@ public partial class DataGridColumn<TItem> : ComponentBase
         ParentGrid.RegisterColumn(this);
     }
 
-    internal DataDataGridColumnDefinition<TItem> ToDefinition()
+    internal DataGridColumnDefinition<TItem> ToDefinition()
     {
         // Generate ID from Field first, then Header as fallback
         // Use Guid suffix to ensure uniqueness if neither Field nor Header are suitable
@@ -188,7 +188,7 @@ public partial class DataGridColumn<TItem> : ComponentBase
             }
         }
 
-        return new DataDataGridColumnDefinition<TItem>
+        return new DataGridColumnDefinition<TItem>
         {
             Id = Id ?? generatedId,
             Field = Field,

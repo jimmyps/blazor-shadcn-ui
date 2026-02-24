@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
     <ProjectReference Include="..\NeoUI.Demo.Shared\NeoUI.Demo.Shared.csproj" />
@@ -17,6 +17,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>$(NoWarn);RZ1042</NoWarn>
     <RootNamespace>NeoUI.Demo</RootNamespace>
     <AssemblyName>NeoUI.Demo</AssemblyName>
     <NoWarn>CS1591</NoWarn>

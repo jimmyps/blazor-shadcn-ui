@@ -4,6 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>$(NoWarn);RZ1042</NoWarn>
     <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
     <RootNamespace>NeoUI.Demo.Client</RootNamespace>
     <AssemblyName>NeoUI.Demo.Client</AssemblyName>
