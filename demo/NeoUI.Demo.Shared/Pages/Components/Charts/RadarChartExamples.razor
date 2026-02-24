@@ -1,6 +1,4 @@
 @page "/components/chart/radar"
-@using NeoUI.Blazor.Chart
-
 <PageTitle>Chart Components - Radar Chart</PageTitle>
 
 <div class="space-y-8">
@@ -15,7 +13,7 @@
                 <ChartContainer Height="200">
                     <RadarChart Data="@skillData">
                         <XAxis DataKey="skill" />
-                        <NeoUI.Blazor.Chart.Tooltip Show="false" />
+                        <ChartTooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-1)" />
                     </RadarChart>
@@ -33,7 +31,7 @@
                 <ChartContainer Height="200">
                     <RadarChart Data="@teamSkillData">
                         <XAxis DataKey="skill" />
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <RadarGrid Radius="50%" Center="@(new string[] { "50%", "65%" })" />
                         <Radar DataKey="developer1" Name="Dev A" FillArea="true" AreaOpacity="0.2" Color="var(--chart-1)" />
@@ -53,7 +51,7 @@
                 <ChartContainer Height="200">
                     <RadarChart Data="@skillData">
                         <XAxis DataKey="skill" />
-                        <NeoUI.Blazor.Chart.Tooltip Show="false" />
+                        <ChartTooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.6" Color="var(--chart-3)" />
                     </RadarChart>
@@ -72,7 +70,7 @@
                     <RadarChart Data="@skillData">
                         <RadarGrid Shape="RadarShape.Circle" SplitNumber="4" />
                         <XAxis DataKey="skill" />
-                        <NeoUI.Blazor.Chart.Tooltip Show="false" />
+                        <ChartTooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-4)" />
                     </RadarChart>
@@ -90,7 +88,7 @@
                 <ChartContainer Height="200">
                     <RadarChart Data="@performanceData">
                         <XAxis DataKey="metric" />
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <RadarGrid Radius="60%" Center="@(new string[] { "50%", "65%" })" />
                         <Radar DataKey="sales" Name="Sales" FillArea="true" AreaOpacity="0.25" Color="var(--chart-1)" />
@@ -110,7 +108,7 @@
                 <ChartContainer Height="200">
                     <RadarChart Data="@productComparison">
                         <XAxis DataKey="feature" />
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Diamond" />
                         <RadarGrid Radius="50%" />
                         <Radar DataKey="productA" Name="Product A" Emphasis="true" FillArea="true" AreaOpacity="0.2" Color="var(--chart-3)" />
@@ -132,7 +130,7 @@
                     <RadarChart Data="@skillData">
                         <RadarGrid Shape="RadarShape.Polygon" SplitNumber="5" />
                         <XAxis DataKey="skill" />
-                        <NeoUI.Blazor.Chart.Tooltip Show="false" />
+                        <ChartTooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-5)" />
                     </RadarChart>
@@ -150,7 +148,7 @@
                 <ChartContainer Height="200">
                     <RadarChart Data="@skillData">
                         <XAxis DataKey="skill" />
-                        <NeoUI.Blazor.Chart.Tooltip Show="false" />
+                        <ChartTooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="false" Color="var(--chart-2)" />
                     </RadarChart>
@@ -172,7 +170,7 @@
                             IndicatorColor="var(--foreground)"
                             IndicatorFontSize="12"
                             IndicatorFontWeight="bold" />
-                        <NeoUI.Blazor.Chart.Tooltip Show="false" />
+                        <ChartTooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-3)" />
                     </RadarChart>
@@ -191,7 +189,7 @@
                     <RadarChart Data="@skillData">
                         <XAxis DataKey="skill" />
                         <RadarGrid ShowIndicatorLabels="false" />
-                        <NeoUI.Blazor.Chart.Tooltip Show="false" />
+                        <ChartTooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.4" Color="var(--chart-4)" />
                     </RadarChart>

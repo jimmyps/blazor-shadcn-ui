@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace NeoUI.Blazor.Chart;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Specifies the type of chart to render.

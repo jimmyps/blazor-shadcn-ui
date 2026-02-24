@@ -1,5 +1,4 @@
-@namespace NeoUI.Blazor.Chart
-@using NeoUI.Blazor.Chart.Internal
+@namespace NeoUI.Blazor
 @typeparam TData
 @inherits ChartBase<TData>
 @implements ILineSeriesParent
@@ -229,7 +228,7 @@
     /// <summary>
     /// Internal method to register a Tooltip component.
     /// </summary>
-    public void RegisterTooltip(Tooltip tooltip)
+    public void RegisterChartTooltip(ChartTooltip tooltip)
     {
         _tooltip = tooltip;
         StateHasChanged();

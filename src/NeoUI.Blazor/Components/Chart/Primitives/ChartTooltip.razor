@@ -1,4 +1,4 @@
-@namespace NeoUI.Blazor.Chart
+@namespace NeoUI.Blazor
 
 @code {
     [CascadingParameter] private IChartParent? Parent { get; set; }
@@ -61,6 +61,6 @@
     
     protected override void OnInitialized()
     {
-        Parent?.RegisterTooltip(this);
+        Parent?.RegisterChartTooltip(this);
     }
 }

@@ -1,6 +1,4 @@
 @page "/components/chart/bar"
-@using NeoUI.Blazor.Chart
-
 <PageTitle>Chart Components - Bar Chart</PageTitle>
 
 <div class="space-y-8">
@@ -33,7 +31,7 @@
                     <YAxis Show="false" TickLine="false">
                         <AxisLabel Show="false" />
                     </YAxis>
-                    <NeoUI.Blazor.Chart.Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Shadow" />
+                    <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Shadow" />
                     <Legend TextColor="var(--foreground)" />
                     <Bar DataKey="desktop" Name="Desktop" Radius="4" Color="var(--chart-1)" />
                     <Bar DataKey="mobile" Name="Mobile" Radius="4" Color="var(--chart-2)" />
@@ -59,7 +57,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-1)" />
                     </BarChart>
@@ -83,7 +81,7 @@
                         <YAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-2)" />
                     </BarChart>
@@ -107,7 +105,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="product1" Name="Product A" Radius="4" Color="var(--chart-1)" />
                         <Bar DataKey="product2" Name="Product B" Radius="4" Color="var(--chart-2)" />
@@ -132,7 +130,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="product1" Name="Product A" StackId="total" Radius="4" Color="var(--chart-1)" />
                         <Bar DataKey="product2" Name="Product B" StackId="total" Radius="4" Color="var(--chart-2)" />
@@ -157,7 +155,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Bar DataKey="sales" Name="Sales" Radius="4" ShowLabel="true" LabelPosition="LabelPosition.Top" Color="var(--chart-3)">
                             <LabelList Position="LabelPosition.Top" Formatter="{c}" FontSize="11" Color="#666" />
@@ -183,7 +181,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Bar DataKey="sales" Name="Sales" Radius="4" ShowLabel="true" Color="var(--chart-4)">
                             <LabelList Position="LabelPosition.Inside" Formatter="function(params) { return '$' + params.value; }" FontSize="10" Color="#fff" />
@@ -209,7 +207,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip Formatter="function(params) { return params.seriesName + ': ' + params.value.toFixed(1) + '%'; }" />
+                        <ChartTooltip Formatter="function(params) { return params.seriesName + ': ' + params.value.toFixed(1) + '%'; }" />
                         <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="product1" Name="Product A" StackId="total" Radius="4" Color="var(--chart-1)" />
                         <Bar DataKey="product2" Name="Product B" StackId="total" Radius="4" Color="var(--chart-2)" />
@@ -234,7 +232,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-5)" />
                     </BarChart>
@@ -258,7 +256,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="product1" Name="Product A" Radius="4" Color="var(--chart-1)" />
                         <Line DataKey="product2" Name="Product B" Color="var(--chart-2)" />
@@ -283,7 +281,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Bar DataKey="value" Name="Profit/Loss" Radius="4" Color="var(--chart-3)" />
                     </BarChart>

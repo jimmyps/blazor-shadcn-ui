@@ -1,6 +1,4 @@
 @page "/components/chart/area"
-@using NeoUI.Blazor.Chart
-
 <PageTitle>Chart Components - Area Chart</PageTitle>
 
 <div class="space-y-8">
@@ -33,7 +31,7 @@
                     <YAxis Show="false" TickLine="false">
                         <AxisLabel Show="false" />
                     </YAxis>
-                    <NeoUI.Blazor.Chart.Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Line" Formatter="@tooltipFormatter" />
+                    <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Line" Formatter="@tooltipFormatter" />
                     <Legend TextColor="var(--foreground)" />
                     <Area DataKey="desktop" Name="Desktop" StackId="Total">
                         <Fill>
@@ -73,7 +71,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" Color="var(--chart-1)" />
                     </AreaChart>
@@ -97,7 +95,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Area DataKey="product1" Name="Product A" StackId="total" Color="var(--chart-1)" />
                         <Area DataKey="product2" Name="Product B" StackId="total" Color="var(--chart-2)" />
@@ -123,7 +121,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip Cursor="TooltipCursor.Shadow" />
+                        <ChartTooltip Cursor="TooltipCursor.Shadow" />
                         <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales">
                             <Fill>
@@ -154,7 +152,7 @@
                         <YAxis Show="true" Position="YAxisPosition.Right" AxisLine="true" TickLine="true" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" Color="var(--chart-2)" Opacity="0.8" />
                     </AreaChart>
@@ -178,7 +176,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" Align="LegendAlign.Right" VerticalAlign="LegendVerticalAlign.Bottom" />
                         <Area DataKey="product1" Name="Product A" Color="var(--chart-1)" />
                         <Area DataKey="product2" Name="Product B" Color="var(--chart-2)" />
@@ -203,7 +201,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Area DataKey="product1" Name="Product A" Color="var(--chart-1)" />
                         <Area DataKey="product2" Name="Product B" Color="var(--chart-2)" />
@@ -228,7 +226,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" ShowDots="true" Color="var(--chart-3)" />
                     </AreaChart>
@@ -252,7 +250,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" Color="var(--chart-4)" />
                     </AreaChart>
@@ -276,7 +274,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" LineWidth="3" Color="var(--chart-5)" />
                     </AreaChart>
@@ -300,7 +298,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" Interpolation="InterpolationType.Step" Color="var(--chart-1)" />
                     </AreaChart>
@@ -324,7 +322,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip Formatter="function(params) { return params.seriesName + ': ' + params.value.toFixed(1) + '%'; }" />
+                        <ChartTooltip Formatter="function(params) { return params.seriesName + ': ' + params.value.toFixed(1) + '%'; }" />
                         <Legend TextColor="var(--foreground)" />
                         <Area DataKey="product1" Name="Product A" StackId="total" Color="var(--chart-1)" />
                         <Area DataKey="product2" Name="Product B" StackId="total" Color="var(--chart-2)" />

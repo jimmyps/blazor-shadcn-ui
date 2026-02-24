@@ -1,6 +1,4 @@
 @page "/components/chart/scatter"
-@using NeoUI.Blazor.Chart
-
 <PageTitle>Chart Components - Scatter Chart</PageTitle>
 
 <div class="space-y-8">
@@ -21,7 +19,7 @@
                         <YAxis DataKey="weight" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Scatter DataKey="weight" SymbolSize="8" Symbol="SymbolShape.Circle" Color="var(--chart-1)" />
                     </ScatterChart>
@@ -45,7 +43,7 @@
                         <YAxis DataKey="spending" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Scatter DataKey="premium" Name="Premium" SymbolSize="8" Color="var(--chart-1)" />
                         <Scatter DataKey="standard" Name="Standard" SymbolSize="8" Color="var(--chart-2)" />
@@ -70,7 +68,7 @@
                         <YAxis DataKey="customers" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Scatter DataKey="customers" SymbolSize="12" Color="var(--chart-3)" />
                     </ScatterChart>
@@ -94,7 +92,7 @@
                         <YAxis DataKey="y" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Scatter DataKey="diamonds" Name="Diamond" SymbolSize="10" Symbol="SymbolShape.Diamond" Color="var(--chart-1)" />
                         <Scatter DataKey="triangles" Name="Triangle" SymbolSize="10" Symbol="SymbolShape.Triangle" Color="var(--chart-2)" />
@@ -119,7 +117,7 @@
                         <YAxis DataKey="weight" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Scatter DataKey="weight" SymbolSize="8" Color="var(--chart-4)" />
                     </ScatterChart>
@@ -143,7 +141,7 @@
                         <YAxis DataKey="y" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Scatter DataKey="y" SymbolSize="4" Color="var(--chart-5)" />
                     </ScatterChart>
@@ -167,7 +165,7 @@
                         <YAxis DataKey="salary" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Scatter DataKey="salary" SymbolSize="8" Color="var(--chart-1)" />
                     </ScatterChart>
@@ -191,7 +189,7 @@
                         <YAxis DataKey="y" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Scatter DataKey="series1" Name="Series A" SymbolSize="8" Color="var(--chart-3)" />
                         <Scatter DataKey="series2" Name="Series B" SymbolSize="8" Color="var(--chart-4)" />

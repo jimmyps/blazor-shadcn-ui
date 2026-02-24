@@ -1,5 +1,4 @@
-@namespace NeoUI.Blazor.Chart
-@using NeoUI.Blazor.Chart.Internal
+@namespace NeoUI.Blazor
 @typeparam TData
 @inherits ChartBase<TData>
 @implements IAreaSeriesParent
@@ -123,7 +122,7 @@
                     series.Label = new EChartsLabel
                     {
                         Show = labelList?.Show ?? area.ShowLabel,
-                        Position = MapLabelPosition(labelList?.Position ?? area.LabelPosition ?? Chart.LabelPosition.Top),
+                        Position = MapLabelPosition(labelList?.Position ?? area.LabelPosition ?? LabelPosition.Top),
                         Formatter = labelList?.Formatter ?? area.LabelFormatter,
                         Color = labelList?.Color,
                         FontSize = labelList?.FontSize,
@@ -244,6 +243,6 @@
     public void RegisterGrid(Grid grid) { _grid = grid; StateHasChanged(); }
     public void RegisterXAxis(XAxis xAxis) { _xAxis = xAxis; StateHasChanged(); }
     public void RegisterYAxis(YAxis yAxis) { _yAxis = yAxis; StateHasChanged(); }
-    public void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    public void RegisterChartTooltip(ChartTooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
     public void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
 }

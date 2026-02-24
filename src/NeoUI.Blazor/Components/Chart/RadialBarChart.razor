@@ -1,5 +1,4 @@
-@namespace NeoUI.Blazor.Chart
-@using NeoUI.Blazor.Chart.Internal
+@namespace NeoUI.Blazor
 @typeparam TData
 @inherits ChartBase<TData>
 @implements IRadialBarChartParent
@@ -249,7 +248,7 @@
         StateHasChanged();
     }
     
-    public void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    public void RegisterChartTooltip(ChartTooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
     public void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
     public void RegisterXAxis(XAxis xAxis) { _xAxis = xAxis; StateHasChanged(); }
 }

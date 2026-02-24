@@ -1,6 +1,6 @@
 using Microsoft.JSInterop;
 
-namespace NeoUI.Blazor.Chart;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Service for managing chart themes and coordinating theme changes across all charts.

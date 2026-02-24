@@ -1,6 +1,4 @@
 @page "/components/chart/composed"
-@using NeoUI.Blazor.Chart
-
 <PageTitle>Chart Components - Composed Chart</PageTitle>
 
 <div class="space-y-8">
@@ -21,7 +19,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="actual" Name="Actual Revenue" Radius="4" Color="var(--chart-1)" />
                         <Line DataKey="target" Name="Target" Color="var(--chart-2)" />
@@ -46,7 +44,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-1)" />
                         <Line DataKey="forecast" Name="Forecast" Dashed="true" Color="var(--chart-2)" />
@@ -71,7 +69,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="stock" Name="Stock Level" Radius="4" Color="var(--chart-1)" />
                         <Line DataKey="reorder" Name="Reorder Point" Color="var(--chart-3)" />
@@ -97,7 +95,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="newCustomers" Name="New Customers" Radius="4" Color="var(--chart-4)" />
                         <Line DataKey="retention" Name="Retention Rate" Color="var(--chart-5)" />
@@ -122,7 +120,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="expenses" Name="Expenses" Radius="4" Color="var(--chart-3)" />
                         <Line DataKey="revenue" Name="Revenue" Color="var(--chart-1)" />
@@ -148,7 +146,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="adSpend" Name="Ad Spend" Radius="4" Color="var(--chart-5)" />
                         <Line DataKey="conversions" Name="Conversions" Color="var(--chart-1)" />
@@ -173,7 +171,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="pageViews" Name="Page Views" Radius="4" Color="var(--chart-2)" />
                         <Line DataKey="bounceRate" Name="Bounce Rate" Color="var(--chart-3)" />
@@ -199,7 +197,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Bar DataKey="actual" Name="Actual" Radius="4" Color="var(--chart-1)" />
                         <Line DataKey="threshold" Name="Threshold" Dashed="true" Color="var(--chart-3)" />

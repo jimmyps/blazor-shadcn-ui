@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace NeoUI.Blazor.Chart.Internal;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Root ECharts option object - represents the complete configuration for an ECharts instance.

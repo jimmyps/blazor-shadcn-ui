@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Chart;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Animation types for different chart behaviors.

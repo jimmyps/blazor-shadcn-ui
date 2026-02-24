@@ -1,9 +1,9 @@
-namespace NeoUI.Blazor.Chart;
+namespace NeoUI.Blazor;
 
 /// <summary>Implemented by all chart roots. Used by Tooltip and Legend.</summary>
 public interface IChartParent
 {
-    void RegisterTooltip(Tooltip tooltip);
+    void RegisterChartTooltip(ChartTooltip tooltip);
     void RegisterLegend(Legend legend);
 }
 

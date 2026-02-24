@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using NeoUI.Blazor.Chart.Internal;
 using System.Text.Json;
 
-namespace NeoUI.Blazor.Chart;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Base class for chart root components with common rendering logic.
@@ -126,7 +125,7 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Collected tooltip primitive component.
     /// </summary>
-    protected Tooltip? _tooltip;
+    protected ChartTooltip? _tooltip;
     
     /// <summary>
     /// Collected legend primitive component.
@@ -305,7 +304,7 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     /// </summary>
     protected EChartsTooltip BuildTooltip()
     {
-        var tooltip = _tooltip ?? new Tooltip { Mode = GetDefaultTooltipMode() };
+        var tooltip = _tooltip ?? new ChartTooltip { Mode = GetDefaultTooltipMode() };
         var mode = tooltip.Mode ?? GetDefaultTooltipMode();
         
         // Build text style if TextColor is specified

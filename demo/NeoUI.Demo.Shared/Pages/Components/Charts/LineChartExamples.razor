@@ -1,6 +1,4 @@
 @page "/components/chart/line"
-@using NeoUI.Blazor.Chart
-
 <PageTitle>Chart Components - Line Chart</PageTitle>
 
 <div class="space-y-8">
@@ -33,7 +31,7 @@
                     <YAxis Show="false" TickLine="false">
                         <AxisLabel Show="false" />
                     </YAxis>
-                    <NeoUI.Blazor.Chart.Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" Formatter="@tooltipFormatter" />
+                    <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" Formatter="@tooltipFormatter" />
                     <Legend TextColor="var(--foreground)" />
                     <Line DataKey="desktop" Name="Desktop" Color="var(--chart-1)" />
                     <Line DataKey="mobile" Name="Mobile" Color="var(--chart-2)" />
@@ -59,7 +57,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" Color="var(--chart-1)" />
                     </LineChart>
@@ -83,7 +81,7 @@
                         <YAxis Interval="100" Position="YAxisPosition.Right" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Circle" />
                         <Line DataKey="product1" Name="Product A" Color="var(--chart-1)" />
                         <Line DataKey="product2" Name="Product B" Color="var(--chart-2)" />
@@ -108,7 +106,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" ShowDots="true" Color="var(--chart-3)" />
                     </LineChart>
@@ -132,7 +130,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Line DataKey="product1" Name="Product A" ShowDots="true" Color="var(--chart-1)" />
                         <Line DataKey="product2" Name="Product B" ShowDots="true" Color="var(--chart-2)" />
@@ -157,7 +155,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" ShowDots="true" DotSize="8"
                               DotShape="SymbolShape.Diamond" Color="var(--chart-4)" />
@@ -182,7 +180,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" Interpolation="InterpolationType.Linear" Color="var(--chart-5)" />
                     </LineChart>
@@ -206,7 +204,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" Interpolation="InterpolationType.Step" Color="var(--chart-1)" />
                     </LineChart>
@@ -230,7 +228,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" ShowDots="true" ShowLabel="true" LabelPosition="LabelPosition.Top" Color="var(--chart-2)">
                             <LabelList Position="LabelPosition.Top" Formatter="{c}" FontSize="10" Color="#666" />
@@ -256,7 +254,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" ShowDots="true" ShowLabel="true" Color="var(--chart-3)">
                             <LabelList Position="LabelPosition.Top" Formatter="function(params) { return '$' + params.value; }" FontSize="9" Color="#2563eb" />
@@ -282,7 +280,7 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <NeoUI.Blazor.Chart.Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Forecast" Dashed="true" ShowDots="true" Color="var(--chart-4)" />
                     </LineChart>
