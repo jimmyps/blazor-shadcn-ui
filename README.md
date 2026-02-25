@@ -8,7 +8,7 @@ NeoUI for Blazor brings the beautiful design system of shadcn/ui to Blazor appli
 
 **No Tailwind CSS setup required** - just install the NuGet package and start building!
 
-**[🚀 Try the Live Demo](https://blazoruidemo20251223130817-bch0fhddfkh2bthv.indonesiacentral-01.azurewebsites.net)** - Explore all 85+ components with interactive examples
+**[🚀 Try the Live Demo](https://demos.neoui.io)** - Explore all 85+ components with interactive examples
 
 ## 🚀 Getting Started
 
