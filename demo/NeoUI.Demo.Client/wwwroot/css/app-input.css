@@ -28,6 +28,38 @@
   }
 }
 
+/* ── Syntax highlighting (ColorCode.HTML — HtmlClassFormatter tokens) ──── */
+/* GitHub Light token colors */
+@layer base {
+  .htmlElementName                    { color: #0550ae; }
+  .htmlAttributeName                  { color: #116329; }
+  .htmlAttributeValue,
+  .htmlAttributeQuotes                { color: #0a3069; }
+  .htmlTagDelimiter,
+  .htmlOperator                       { color: #57606a; }
+  .htmlComment                        { color: #6e7781; font-style: italic; }
+  .htmlEntity                         { color: #0550ae; }
+  .keyword                            { color: #cf222e; }
+  .string                             { color: #0a3069; }
+  .comment                            { color: #6e7781; font-style: italic; }
+  .number                             { color: #0550ae; }
+  .plainText                          { color: inherit; }
+
+  /* GitHub Dark token overrides */
+  .dark .htmlElementName              { color: #79c0ff; }
+  .dark .htmlAttributeName            { color: #7ee787; }
+  .dark .htmlAttributeValue,
+  .dark .htmlAttributeQuotes          { color: #a5d6ff; }
+  .dark .htmlTagDelimiter,
+  .dark .htmlOperator                 { color: #8b949e; }
+  .dark .htmlComment                  { color: #8b949e; }
+  .dark .htmlEntity                   { color: #79c0ff; }
+  .dark .keyword                      { color: #ff7b72; }
+  .dark .string                       { color: #a5d6ff; }
+  .dark .comment                      { color: #8b949e; }
+  .dark .number                       { color: #79c0ff; }
+}
+
 /* Hide number input spinners (up/down arrows) - must be in base layer for proper specificity */
 @layer base {
   input[type="number"]::-webkit-outer-spin-button,
@@ -35,6 +67,7 @@
     -webkit-appearance: none !important;
     margin: 0;
   }
+
   input[type="number"] {
     -moz-appearance: textfield !important;
     appearance: textfield !important;
