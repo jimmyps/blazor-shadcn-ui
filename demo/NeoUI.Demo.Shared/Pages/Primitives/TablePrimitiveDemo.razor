@@ -20,7 +20,7 @@
         </div>
 
         <div class="rounded-md border">
-            <NeoUI.Blazor.Primitives.TablePrimitive TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
+            <TablePrimitive TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
                 <TableHeaderPrimitive Class="[&_tr]:border-b">
                     <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
                         <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCellPrimitive>
@@ -40,7 +40,7 @@
                         </TableRowPrimitive>
                     }
                 </TableBodyPrimitive>
-            </NeoUI.Blazor.Primitives.TablePrimitive>
+            </TablePrimitive>
         </div>
     </section>
 
@@ -52,7 +52,7 @@
         </div>
 
         <div class="rounded-md border">
-            <NeoUI.Blazor.Primitives.TablePrimitive TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
+            <TablePrimitive TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
                 <TableHeaderPrimitive Class="[&_tr]:border-b">
                     <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
                         <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCellPrimitive>
@@ -105,7 +105,7 @@
                         </TableRowPrimitive>
                     }
                 </TableBodyPrimitive>
-            </NeoUI.Blazor.Primitives.TablePrimitive>
+            </TablePrimitive>
         </div>
 
         @if (!string.IsNullOrEmpty(actionMessage))
@@ -124,7 +124,7 @@
         </div>
 
         <div class="rounded-md border">
-            <NeoUI.Blazor.Primitives.TablePrimitive TData="Person" Data="@GetSortedPeople()" @bind-State="@sortableTableState" Class="w-full caption-bottom text-sm">
+            <TablePrimitive TData="Person" Data="@GetSortedPeople()" @bind-State="@sortableTableState" Class="w-full caption-bottom text-sm">
                 <TableHeaderPrimitive Class="[&_tr]:border-b">
                     <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
                         <TableHeaderCellPrimitive TData="Person" ColumnId="name" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
@@ -204,7 +204,7 @@
                         </TableRowPrimitive>
                     }
                 </TableBodyPrimitive>
-            </NeoUI.Blazor.Primitives.TablePrimitive>
+            </TablePrimitive>
         </div>
 
         <div class="rounded-lg border bg-card p-4">
@@ -225,7 +225,7 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <NeoUI.Blazor.Primitives.TablePrimitive TData="Person" Data="@largePeopleDataset" @bind-State="@paginatedTableState"
+                <TablePrimitive TData="Person" Data="@largePeopleDataset" @bind-State="@paginatedTableState"
                        OnPageChange="@HandlePaginationChange"
                        OnPageSizeChange="@HandlePaginationChange"
                        Class="w-full caption-bottom text-sm">
@@ -248,7 +248,7 @@
                             </TableRowPrimitive>
                         }
                     </TableBodyPrimitive>
-                </NeoUI.Blazor.Primitives.TablePrimitive>
+                </TablePrimitive>
             </div>
 
             <TablePaginationPrimitive TData="Person" State="@paginatedTableState.Pagination"
@@ -313,7 +313,7 @@
     @* Selectable TablePrimitive Example *@
     <section class="space-y-4">
         <div>
-            <h2 class="text-2xl font-semibold">Selectable TablePrimitive (Multi-SelectPrimitive)</h2>
+            <h2 class="text-2xl font-semibold">Selectable TablePrimitive (Multi-Select)</h2>
             <p class="text-sm text-muted-foreground">Click rows or checkboxes to select. Click header checkbox to select/deselect all. Use arrow keys to navigate and Enter/Space to select.</p>
         </div>
 
@@ -328,7 +328,7 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <NeoUI.Blazor.Primitives.TablePrimitive TData="Person" Data="@people" @bind-State="@selectableTableState"
+                <TablePrimitive TData="Person" Data="@people" @bind-State="@selectableTableState"
                        SelectionMode="SelectionMode.Multiple"
                        EnableKeyboardNavigation="@enableKeyboardNavigation"
                        OnSelectionChange="@HandleSelectionChange"
@@ -340,7 +340,7 @@
                                        checked="@selectAllChecked"
                                        @onchange="@((e) => { selectAllChecked = (bool)(e.Value ?? false); HandleSelectAllChanged(); })"
                                        class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
-                                       aria-label="SelectPrimitive all" />
+                                       aria-label="Select all" />
                             </TableHeaderCellPrimitive>
                             <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCellPrimitive>
                             <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCellPrimitive>
@@ -362,7 +362,7 @@
                                            @onkeydown:stopPropagation="true"
                                            tabindex="-1"
                                            class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
-                                           aria-label="@($"SelectPrimitive {person.Name}")" />
+                                           aria-label="@($"Select {person.Name}")" />
                                 </TableCellPrimitive>
                                 <TableCellPrimitive Class="p-4 align-middle">@person.Name</TableCellPrimitive>
                                 <TableCellPrimitive Class="p-4 align-middle">@person.Email</TableCellPrimitive>
@@ -405,7 +405,7 @@
                             </TableRowPrimitive>
                         }
                     </TableBodyPrimitive>
-                </NeoUI.Blazor.Primitives.TablePrimitive>
+                </TablePrimitive>
             </div>
 
             <div class="rounded-lg border bg-card p-4">
@@ -435,7 +435,7 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <NeoUI.Blazor.Primitives.TablePrimitive TData="Person" Data="@GetSortedCombinedData()" @bind-State="@combinedTableState"
+                <TablePrimitive TData="Person" Data="@GetSortedCombinedData()" @bind-State="@combinedTableState"
                        SelectionMode="SelectionMode.Multiple"
                        OnPageChange="@HandleCombinedPaginationChange"
                        OnPageSizeChange="@HandleCombinedPaginationChange"
@@ -448,7 +448,7 @@
                                        checked="@combinedSelectAllChecked"
                                        @onchange="@((e) => { combinedSelectAllChecked = (bool)(e.Value ?? false); HandleCombinedSelectAllChanged(); })"
                                        class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
-                                       aria-label="SelectPrimitive all on page" />
+                                       aria-label="Select all on page" />
                             </TableHeaderCellPrimitive>
                             <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center justify-between gap-2">
@@ -645,7 +645,7 @@
                                            @onkeydown:stopPropagation="true"
                                            tabindex="-1"
                                            class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
-                                           aria-label="@($"SelectPrimitive {person.Name}")" />
+                                           aria-label="@($"Select {person.Name}")" />
                                 </TableCellPrimitive>
                                 <TableCellPrimitive Class="p-4 align-middle">@person.Name</TableCellPrimitive>
                                 <TableCellPrimitive Class="p-4 align-middle">@person.Email</TableCellPrimitive>
@@ -654,7 +654,7 @@
                             </TableRowPrimitive>
                         }
                     </TableBodyPrimitive>
-                </NeoUI.Blazor.Primitives.TablePrimitive>
+                </TablePrimitive>
             </div>
 
             <TablePaginationPrimitive TData="Person" State="@combinedTableState.Pagination"
@@ -745,7 +745,7 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <NeoUI.Blazor.Primitives.TablePrimitive TData="Person" Data="@GetFilteredPeople()" @bind-State="@filteredTableState"
+                <TablePrimitive TData="Person" Data="@GetFilteredPeople()" @bind-State="@filteredTableState"
                        OnPageChange="@HandleFilteredPaginationChange"
                        OnPageSizeChange="@HandleFilteredPaginationChange"
                        Class="w-full caption-bottom text-sm">
@@ -870,7 +870,7 @@
                             </TableRowPrimitive>
                         }
                     </TableBodyPrimitive>
-                </NeoUI.Blazor.Primitives.TablePrimitive>
+                </TablePrimitive>
             </div>
 
             <TablePaginationPrimitive TData="Person" State="@filteredTableState.Pagination"
@@ -972,7 +972,7 @@
             </div>
 
             <div class="rounded-md border">
-                <NeoUI.Blazor.Primitives.TablePrimitive TData="Person" Data="@GetGloballyFilteredPeople()" @bind-State="@globalSearchTableState"
+                <TablePrimitive TData="Person" Data="@GetGloballyFilteredPeople()" @bind-State="@globalSearchTableState"
                        OnPageChange="@HandleGlobalSearchPaginationChange"
                        OnPageSizeChange="@HandleGlobalSearchPaginationChange"
                        Class="w-full caption-bottom text-sm">
@@ -1009,7 +1009,7 @@
                             </TableRowPrimitive>
                         }
                     </TableBodyPrimitive>
-                </NeoUI.Blazor.Primitives.TablePrimitive>
+                </TablePrimitive>
             </div>
 
             <TablePaginationPrimitive TData="Person" State="@globalSearchTableState.Pagination"
