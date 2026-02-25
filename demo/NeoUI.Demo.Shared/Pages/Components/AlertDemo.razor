@@ -8,6 +8,21 @@
         Title="Alert"
         Description="Displays a callout for important messages that attract user attention." />
 
+    <!-- Basic -->
+    <DemoSection
+        Title="Basic"
+        Description="A simple alert with an icon, title, and description.">
+        <DemoBlock Code="@_basicCode">
+            <Alert>
+                <Icon><LucideIcon Name="terminal" Class="h-4 w-4" /></Icon>
+                <ChildContent>
+                    <AlertTitle>Heads up!</AlertTitle>
+                    <AlertDescription>You can add components to your app using the CLI.</AlertDescription>
+                </ChildContent>
+            </Alert>
+        </DemoBlock>
+    </DemoSection>
+
     <!-- Variants -->
     <DemoSection
         Title="Variants"
@@ -151,6 +166,17 @@
         new("ChildContent", "RenderFragment?",  null,        "Alert body. Nest <code class=\"text-xs bg-muted px-1 rounded\">AlertTitle</code> and <code class=\"text-xs bg-muted px-1 rounded\">AlertDescription</code> here."),
         new("Class",        "string?",          null,        "Additional CSS classes appended to the root element."),
     ];
+
+    private const string _basicCode =
+        """
+        <Alert>
+            <Icon><LucideIcon Name="terminal" Class="h-4 w-4" /></Icon>
+            <ChildContent>
+                <AlertTitle>Heads up!</AlertTitle>
+                <AlertDescription>You can add components to your app using the CLI.</AlertDescription>
+            </ChildContent>
+        </Alert>
+        """;
 
     private const string _variantsCode =
         """

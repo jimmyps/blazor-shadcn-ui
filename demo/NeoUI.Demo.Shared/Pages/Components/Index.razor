@@ -70,7 +70,7 @@
                 @foreach (var group in ComponentRegistry.GetGroupedComponents())
                 {
                     <div class="space-y-4">
-                        <h3 class="text-lg font-semibold text-foreground/80 border-b pb-2">@group.Category.DisplayName</h3>
+                        <h3 class="text-lg font-semibold text-foreground/80">@group.Category.DisplayName</h3>
                         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             @foreach (var entry in group.Entries)
                             {

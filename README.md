@@ -37,6 +37,14 @@ dotnet add package NeoUI.Icons.Feather     # 286 icons - minimalist, stroke-base
 @using NeoUI.Blazor
 ```
 
+   **Optional icon packages** — add whichever you need:
+
+```razor
+@using NeoUI.Icons.Lucide      @* 1,640+ icons *@
+@using NeoUI.Icons.Heroicons   @* 1,288 icons across 4 variants *@
+@using NeoUI.Icons.Feather     @* 286 minimalist icons *@
+```
+
 2. **Add PortalHost to your layout:**
 
    For overlay components (Dialog, Sheet, Popover, etc.) to work correctly, add portal hosts to your root layout:

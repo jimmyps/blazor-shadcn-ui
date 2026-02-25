@@ -102,26 +102,34 @@ public static class ComponentRegistry
         _all.Where(e => e.Tier == ComponentTier.Primitive).ToList().AsReadOnly();
 
     /// <summary>
-    /// Returns styled-component entries grouped by category in definition order.
+    /// Returns styled-component entries grouped by category in definition order,
+    /// with entries within each category sorted alphabetically by title.
     /// Sub-page entries (e.g. chart sub-pages, anchor-only links) are excluded.
     /// </summary>
     public static IReadOnlyList<ComponentCategoryGroup> GetGroupedComponents() =>
-        _all
-            .Where(e => e.Tier == ComponentTier.Component && !e.IsSubPage)
-            .GroupBy(e => e.Category)
-            .Select(g => new ComponentCategoryGroup(g.Key, g.ToList().AsReadOnly()))
+        ComponentCategories.All
+            .Select(cat => new ComponentCategoryGroup(
+                cat,
+                _all.Where(e => e.Tier == ComponentTier.Component && !e.IsSubPage && e.Category == cat)
+                    .OrderBy(e => e.Title)
+                    .ToList().AsReadOnly()))
+            .Where(g => g.Entries.Count > 0)
             .ToList()
             .AsReadOnly();
 
     /// <summary>
-    /// Returns headless-primitive entries grouped by category in definition order.
+    /// Returns headless-primitive entries grouped by category in definition order,
+    /// with entries within each category sorted alphabetically by title.
     /// Sub-page entries are excluded.
     /// </summary>
     public static IReadOnlyList<ComponentCategoryGroup> GetGroupedPrimitives() =>
-        _all
-            .Where(e => e.Tier == ComponentTier.Primitive && !e.IsSubPage)
-            .GroupBy(e => e.Category)
-            .Select(g => new ComponentCategoryGroup(g.Key, g.ToList().AsReadOnly()))
+        ComponentCategories.All
+            .Select(cat => new ComponentCategoryGroup(
+                cat,
+                _all.Where(e => e.Tier == ComponentTier.Primitive && !e.IsSubPage && e.Category == cat)
+                    .OrderBy(e => e.Title)
+                    .ToList().AsReadOnly()))
+            .Where(g => g.Entries.Count > 0)
             .ToList()
             .AsReadOnly();
 
@@ -138,13 +146,15 @@ public static class ComponentRegistry
 
     /// <summary>
     /// Get the previous and next navigable entry for the given route.
+    /// Entries are ordered as a flat alphabetical list — components A–Z, then
+    /// primitives A–Z — mirroring the sidebar display order.
     /// Sub-page entries (e.g. anchor links) are excluded from navigation.
     /// Returns (null, null) when the route is not found or has no neighbours.
     /// </summary>
     public static (ComponentRegistryEntry? Prev, ComponentRegistryEntry? Next) GetNeighbors(string route)
     {
         var normalized = NormalizeRoute(route);
-        var navigable = _all.Where(e => !e.IsSubPage).ToList();
+        var navigable = GetSortedNavigable().ToList();
         for (var i = 0; i < navigable.Count; i++)
         {
             if (!navigable[i].Route.Equals(normalized, StringComparison.OrdinalIgnoreCase))
@@ -155,6 +165,18 @@ public static class ComponentRegistry
         }
         return (null, null);
     }
+
+    /// <summary>
+    /// All navigable entries as a flat alphabetical list: all components A–Z,
+    /// then all primitives A–Z — matching the sidebar collapsible order.
+    /// Sub-pages are excluded.
+    /// </summary>
+    private static IEnumerable<ComponentRegistryEntry> GetSortedNavigable() =>
+        _all.Where(e => e.Tier == ComponentTier.Component && !e.IsSubPage)
+            .OrderBy(e => e.Title)
+        .Concat(
+            _all.Where(e => e.Tier == ComponentTier.Primitive && !e.IsSubPage)
+                .OrderBy(e => e.Title));
 
     private static string NormalizeRoute(string route) =>
         route.TrimStart('/').Split('#')[0].ToLowerInvariant();

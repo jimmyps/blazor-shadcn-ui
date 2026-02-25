@@ -73,7 +73,7 @@
                                 </SidebarMenuButton>
                                 <CollapsibleContent>
                                     <SidebarMenuSub>
-                                        @foreach (var entry in ComponentRegistry.Primitives)
+                                        @foreach (var entry in ComponentRegistry.Primitives.OrderBy(e => e.Title))
                                         {
                                             <SidebarMenuSubItem>
                                                 <SidebarMenuSubButton Href="@entry.Route">
@@ -102,7 +102,7 @@
                                 </SidebarMenuButton>
                                 <CollapsibleContent>
                                     <SidebarMenuSub>
-                                        @foreach (var entry in ComponentRegistry.Components.Where(e => !e.IsSubPage))
+                                        @foreach (var entry in ComponentRegistry.Components.Where(e => !e.IsSubPage).OrderBy(e => e.Title))
                                         {
                                             <SidebarMenuSubItem>
                                                 <SidebarMenuSubButton Href="@entry.Route" Match="@(entry.ExactNavMatch ? NavLinkMatch.All : NavLinkMatch.Prefix)">

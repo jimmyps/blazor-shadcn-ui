@@ -25,6 +25,8 @@ dotnet add package NeoUI.Blazor
 This package automatically includes:
 - `NeoUI.Blazor.Primitives` - Headless primitives providing behavior and accessibility
 - `NeoUI.Icons.Lucide` - 1,640+ beautiful icons
+- `NeoUI.Icons.Heroicons` - 1,288 icons across 4 variants
+- `NeoUI.Icons.Feather` - 286 minimalist icons
 - Pre-built CSS - No Tailwind setup required!
 
 ## 🚀 Quick Start
@@ -33,10 +35,17 @@ This package automatically includes:
 
 ```razor
 @using NeoUI.Blazor
-@using NeoUI.Icons.Lucide
 ```
 
 All components and their enums (e.g. `ButtonVariant`, `InputType`) live in the single `NeoUI.Blazor` namespace. If you use chart components, also add `@using NeoUI.Blazor.Charts`.
+
+**Optional icon packages** — add whichever you need:
+
+```razor
+@using NeoUI.Icons.Lucide      @* 1,640+ icons *@
+@using NeoUI.Icons.Heroicons   @* 1,288 icons across 4 variants *@
+@using NeoUI.Icons.Feather     @* 286 minimalist icons *@
+```
 
 ### 2. Add CSS to your `App.razor`:
 
