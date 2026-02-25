@@ -1,4 +1,4 @@
-namespace BlazorUI.Demo.Shared;
+namespace NeoUI.Demo.Shared;
 
 /// <summary>Tier of a registry entry: styled component or headless primitive.</summary>
 public enum ComponentTier { Component, Primitive }
@@ -215,9 +215,9 @@ public static class ComponentRegistry
             new("avatar",           "Avatar",           "User profile images with fallback initials and icons",                          "user",                  C, DD),
             new("badge",            "Badge",            "Labels for status, categories, and metadata",                                   "award",                 C, DD),
             new("card",             "Card",             "Container for grouped content with header and footer",                          "credit-card",           C, DD),
+            new("datagrid",         "Data Grid",        "Advanced data grid with sorting, filtering, pagination, and state management",  "table-2",               C, DD),
             new("datatable",        "Data Table",       "Powerful tables with sorting, filtering, pagination, and selection",            "table",                 C, DD),
             new("empty",            "Empty",            "Empty state displays with icon, title, and actions",                            "inbox",                 C, DD),
-            new("grid",             "Grid",             "Advanced data grid with sorting, filtering, pagination, and state management",  "table-2",               C, DD),
             new("item",             "Item",             "Flexible list items with media, content, and actions",                          "circle",                C, DD),
             new("kbd",              "Kbd",              "Keyboard shortcut badges with semantic markup",                                  "keyboard",              C, DD),
             new("scroll-area",      "Scroll Area",      "Custom scrollbars for styled scroll regions",                                   "scroll-text",           C, DD),
@@ -259,6 +259,7 @@ public static class ComponentRegistry
             new("resizable",        "Resizable",        "Split layouts with draggable handles",                                           "panel-left",            C, LY),
             new("separator",        "Separator",        "Visual dividers for content sections",                                           "minus",                 C, LY),
             new("tabs",             "Tabs",             "Tabbed interface for organizing related content",                                "folder",                C, LY),
+            new("theme-switcher",   "Theme Switcher",   "Multi-theme colour palette switcher with live preview",                         "palette",               C, LY),
 
             // ── Charts ────────────────────────────────────────────────────
             new("chart",            "Chart",            "Beautiful data visualizations with 8 chart types",                             "area-chart",            C, CH),
