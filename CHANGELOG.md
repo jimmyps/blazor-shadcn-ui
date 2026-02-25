@@ -178,6 +178,146 @@ Pie (type)                ← LabelLine  (Pie-specific)
 
 ---
 
+## 2026-2-24 – RC Namespace Flattening & Brand Rename: `BlazorUI.*` → `NeoUI.*`
+
+> **Breaking change.** Every package ID, namespace, filename, CSS class, JS token, localStorage key, and CI/CD reference has been updated to the new `NeoUI.*` scheme. See migration notes below.
+
+---
+
+### 📦 Package IDs renamed
+
+| Old | New |
+|---|---|
+| `NeoBlazorUI.Components` | `NeoUI.Blazor` |
+| `NeoBlazorUI.Primitives` | `NeoUI.Blazor.Primitives` |
+| `NeoBlazorUI.Icons.Lucide` | `NeoUI.Icons.Lucide` |
+| `NeoBlazorUI.Icons.Heroicons` | `NeoUI.Icons.Heroicons` |
+| `NeoBlazorUI.Icons.Feather` | `NeoUI.Icons.Feather` |
+
+---
+
+### 📁 Filesystem renames (`git mv`)
+
+| Old path | New path |
+|---|---|
+| `BlazorUI.sln` | `NeoUI.Blazor.sln` |
+| `src/BlazorUI.Components/` | `src/NeoUI.Blazor/` |
+| `src/BlazorUI.Primitives/` | `src/NeoUI.Blazor.Primitives/` |
+| `src/BlazorUI.Icons.Lucide/` | `src/NeoUI.Icons.Lucide/` |
+| `src/BlazorUI.Icons.Heroicons/` | `src/NeoUI.Icons.Heroicons/` |
+| `src/BlazorUI.Icons.Feather/` | `src/NeoUI.Icons.Feather/` |
+| `demo/BlazorUI.Demo/` | `demo/NeoUI.Demo/` |
+| `demo/BlazorUI.Demo.Shared/` | `demo/NeoUI.Demo.Shared/` |
+| `demo/BlazorUI.Demo.Client/` | `demo/NeoUI.Demo.Client/` |
+| `wwwroot/blazorui.css` | `wwwroot/components.css` |
+| `wwwroot/css/blazorui-input.css` | `wwwroot/css/components-input.css` |
+
+---
+
+### 🗂️ Namespace flattening
+
+All per-component sub-namespaces have been collapsed to a single top-level import. Consumers no longer need per-component `@using` lines.
+
+**Before:**
+```razor
+@using NeoUI.Blazor.Button
+@using NeoUI.Blazor.Dialog
+@using NeoUI.Blazor.Sidebar
+@using NeoUI.Blazor.Collapsible
+```
+
+**After:**
+```razor
+@using NeoUI.Blazor
+@using NeoUI.Blazor.Primitives   @* if using primitive components directly *@
+```
+
+| Layer | Namespace | Notes |
+|---|---|---|
+| Styled components | `NeoUI.Blazor` | All component, enum, and service types |
+| Primitive components | `NeoUI.Blazor.Primitives` | See Primitive suffix convention below |
+| Primitive services | `NeoUI.Blazor.Primitives.Services` | `DropdownManagerService`, `KeyboardShortcutService`, etc. |
+| Chart components & types | `NeoUI.Blazor.Charts` | Scoped separately to avoid IntelliSense pollution for non-chart users; matches Syncfusion/Infragistics convention |
+
+`Utilities` and `Contexts` sub-namespaces have been merged into their parent (`NeoUI.Blazor` and `NeoUI.Blazor.Primitives` respectively). `Services` is retained.
+
+---
+
+### 🏷️ Primitive component naming convention
+
+To disambiguate styled components from same-named primitives when both are used in the same file, **all primitive `.razor` components that have a styled counterpart now carry a `Primitive` suffix**:
+
+```razor
+@* Styled component — short name *@
+<Accordion>...</Accordion>
+
+@* Primitive component — Primitive suffix *@
+<AccordionPrimitive>...</AccordionPrimitive>
+```
+
+**Infrastructure primitives** with no styled counterpart use no suffix (same as `FloatingPortal`):
+
+| No-suffix primitives |
+|---|
+| `FloatingPortal` |
+| `Table`, `TableBody`, `TableHeader`, `TableHeaderCell`, `TableCell`, `TableRow`, `TablePagination` |
+| `DialogPortal`, `DialogOverlay` |
+| `SheetPortal`, `SheetOverlay` |
+| `NavigationMenuRoot` |
+
+Support types (context records, enums, services) keep their original names with no suffix in all cases.
+
+---
+
+### 🔀 Component renames to eliminate ambiguity
+
+| Old name | New name | Reason |
+|---|---|---|
+| `Grid<TItem>` | `DataGrid<TItem>` | Clash with `NeoUI.Blazor.Charts.Grid` (chart grid lines) |
+| `GridColumn` | `DataGridColumn` | Same — all `Grid*` types renamed to `DataGrid*` |
+| `GridDefinition` | `DataGridDefinition` | |
+| `Chart.Tooltip` | `ChartTooltip` | Clash with styled `Tooltip` component |
+| `Command` | `CommandContent` | Razor RZ1042 void-element clash for `<command>` |
+
+---
+
+### 🌐 Runtime token renames
+
+| Before | After |
+|---|---|
+| `blazorui:visible` / `blazorui:hidden` (JS events) | `neoui:visible` / `neoui:hidden` |
+| `blazorui-portal-root` (DOM id) | `neoui-portal-root` |
+| `.blazorui-portal` (CSS class) | `.neoui-portal` |
+| `blazorui:collapsible:` (localStorage prefix) | `neoui:collapsible:` |
+| `_content/NeoBlazorUI.Components/` | `_content/NeoUI.Blazor/` |
+| `_content/NeoBlazorUI.Primitives/` | `_content/NeoUI.Blazor.Primitives/` |
+| `blazorui.css` | `components.css` |
+| `blazorui-input.css` | `components-input.css` |
+| `BuildBlazorUICSS` (MSBuild target) | `BuildNeoUICSS` |
+
+---
+
+### ⚙️ CI/CD & tooling
+
+- `nuget-publish.yml` — `case` block updated to new `csproj` paths and `NeoUI.*` package IDs.
+- Three Azure deploy workflows (`BlazorUIDemo20251223130817.yml`, `*-preview.yml`, `*-staging.yml`) — `AZURE_WEBAPP_PACKAGE_PATH` and `WORKING_DIRECTORY` updated to `demo\NeoUI.Demo`.
+- `scripts/release-components.sh` — all variable names, grep/sed patterns, NuGet API URLs, display strings, and git commit messages updated.
+- `demo/NeoUI.Demo.Client/tailwind.config.js` — content globs updated to scan `src/NeoUI.Blazor/**`, `src/NeoUI.Blazor.Primitives/**`, and each icon project folder.
+- Icon codegen scripts (`GenerateIconData.ps1`, `generate-icon-data.js`) — generated namespace output lines updated.
+
+---
+
+### 📖 Migration guide
+
+1. **Update NuGet references** — swap old package IDs in your `.csproj` files (see Package IDs table above).
+2. **Update `@using` directives** — replace all per-component `@using BlazorUI.Components.*` with `@using NeoUI.Blazor`. Add `@using NeoUI.Blazor.Primitives` if using primitive components directly.
+3. **Update static asset references** — change `_content/NeoBlazorUI.Components/blazorui.css` to `_content/NeoUI.Blazor/components.css` in `App.razor` / `index.html`.
+4. **Update `Program.cs`** — rename `AddBlazorUIComponents()` / `AddNeoBlazorUIPrimitives()` → `AddNeoUIComponents()` / `AddNeoUIPrimitives()` (check your `ServiceCollectionExtensions`).
+5. **Rename component tags** — `<Grid>` → `<DataGrid>`, `<GridColumn>` → `<DataGridColumn>`, `<Command>` → `<CommandContent>`, chart `<Tooltip>` → `<ChartTooltip>`.
+6. **localStorage** — `blazorui:collapsible:*` keys are now `neoui:collapsible:*`. Existing persisted state will be ignored on first load (treated as missing); no data loss beyond preference reset.
+
+---
+
 ## 2026-2-21
 
 ### ⚡ Performance: Replaced C# `@onkeydown` Handlers with `menu-keyboard.js` in All Menu Content Containers
