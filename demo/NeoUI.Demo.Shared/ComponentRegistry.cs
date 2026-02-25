@@ -216,6 +216,18 @@ public static class ComponentRegistry
             new("badge",            "Badge",            "Labels for status, categories, and metadata",                                   "award",                 C, DD),
             new("card",             "Card",             "Container for grouped content with header and footer",                          "credit-card",           C, DD),
             new("datagrid",         "Data Grid",        "Advanced data grid with sorting, filtering, pagination, and state management",  "table-2",               C, DD),
+            // DataGrid sub-pages: searchable and shown in the DataGrid sidebar section, excluded from main indexes and prev/next navigation
+            new("datagrid/basic",         "Basic",            "Basic DataGrid usage with data binding and columns",                      "table-2",               C, DD, IsSubPage: true),
+            new("datagrid/templating",    "Templating",       "Custom cell and column templates with RenderFragments",                   "layout-template",       C, DD, IsSubPage: true),
+            new("datagrid/selection",     "Selection",        "Row selection with single and multi-select modes",                        "mouse-pointer-click",   C, DD, IsSubPage: true),
+            new("datagrid/transactions",  "Transactions",     "Inline editing with pending change tracking and commit/rollback",         "git-commit-vertical",   C, DD, IsSubPage: true),
+            new("datagrid/sorting",       "Sorting & Filtering","Column sorting and row filtering with client-side and server-side modes","arrow-up-down",        C, DD, IsSubPage: true),
+            new("datagrid/state",         "State",            "State persistence: column widths, sort, filter, and page stored to localStorage","save",           C, DD, IsSubPage: true),
+            new("datagrid/server-side",   "Server-Side",      "Server-side pagination, sorting, and filtering via async callbacks",     "server",                C, DD, IsSubPage: true),
+            new("datagrid/advanced",      "Advanced",         "Advanced features: frozen columns, row grouping, and virtual scrolling", "settings-2",            C, DD, IsSubPage: true),
+            new("datagrid/theming",       "Theming",          "Custom styles, CSS variables, and Tailwind overrides for the DataGrid",  "palette",               C, DD, IsSubPage: true),
+            new("datagrid/data-mutation", "Data Mutation",    "Add, update, and delete rows with optimistic UI and undo support",       "database",              C, DD, IsSubPage: true),
+            new("datagrid/refresh",       "Refresh",          "Manual and automatic data refresh with loading indicators",              "refresh-cw",            C, DD, IsSubPage: true),
             new("datatable",        "Data Table",       "Powerful tables with sorting, filtering, pagination, and selection",            "table",                 C, DD),
             new("empty",            "Empty",            "Empty state displays with icon, title, and actions",                            "inbox",                 C, DD),
             new("item",             "Item",             "Flexible list items with media, content, and actions",                          "circle",                C, DD),
@@ -227,9 +239,11 @@ public static class ComponentRegistry
             // ── Navigation ────────────────────────────────────────────────
             new("breadcrumb",       "Breadcrumb",       "Hierarchical navigation with customizable separators",                          "chevron-right",         C, NV),
             new("command",          "Command",          "Command palette for quick actions and navigation",                              "terminal",              C, NV),
+            new("command-library",  "Component Library Command", "Interactive command palette showcasing all NeoUI primitives, components, and icons", "library", C, NV),
             new("menubar",          "Menubar",          "Desktop application-style horizontal menu bar",                                 "square-menu",           C, NV),
             new("navigation-menu",  "Navigation Menu",  "Horizontal navigation with dropdown panels",                                    "compass",               C, NV),
             new("pagination",       "Pagination",       "Page navigation with Previous/Next/Ellipsis",                                   "chevrons-left-right",   C, NV),
+            new("responsive-nav",   "Responsive Nav",   "Responsive wrapper that shows hamburger on mobile and full nav on desktop",     "menu",                  C, NV),
             new("sidebar",          "Sidebar",          "Responsive navigation sidebar with collapsible menus",                          "panel-left",            C, NV),
 
             // ── Overlays ──────────────────────────────────────────────────
@@ -275,6 +289,7 @@ public static class ComponentRegistry
             // ── Animation ─────────────────────────────────────────────────
             new("carousel",         "Carousel",         "Slideshow component with touch gestures and animations",                        "images",                C, AN),
             new("motion",           "Motion",           "Declarative animation system with 20+ presets",                                 "zap",                   C, AN),
+            new("page-transition",  "Page Transition",  "Smooth SSR-safe page transitions with configurable enter/exit animations",      "gallery-horizontal",    C, AN),
         };
 
         var primitives = new List<ComponentRegistryEntry>

@@ -146,7 +146,7 @@
                     </SidebarMenu>
                 </SidebarGroup>
 
-                <!-- Data Grid Section with Collapsible Submenu -->
+                <!-- Data Grid Section with Collapsible Submenu (registry-driven) -->
                 <SidebarGroup>
                     <SidebarMenu>
                         <SidebarMenuItem>
@@ -160,51 +160,14 @@
                                 </SidebarMenuButton>
                                 <CollapsibleContent>
                                     <SidebarMenuSub>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/datagrid/basic">
-                                                <span>Basic</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/datagrid/templating">
-                                                <span>Templating</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/datagrid/selection">
-                                                <span>Selection</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/datagrid/transactions">
-                                                <span>Transactions</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/datagrid/sorting">
-                                                <span>Sorting & Filtering</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/datagrid/state">
-                                                <span>State</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/datagrid/server-side">
-                                                <span>Server-Side</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/datagrid/advanced">
-                                                <span>Advanced</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/datagrid/theming">
-                                                <span>Theming</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
+                                        @foreach (var entry in ComponentRegistry.Components.Where(e => e.Category == ComponentCategories.DataDisplay && e.IsSubPage && e.Slug.StartsWith("datagrid/")))
+                                        {
+                                            <SidebarMenuSubItem>
+                                                <SidebarMenuSubButton Href="@entry.Route">
+                                                    <span>@entry.Title</span>
+                                                </SidebarMenuSubButton>
+                                            </SidebarMenuSubItem>
+                                        }
                                     </SidebarMenuSub>
                                 </CollapsibleContent>
                             </SidebarCollapsibleGroup>
