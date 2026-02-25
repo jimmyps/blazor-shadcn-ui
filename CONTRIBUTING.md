@@ -1,6 +1,6 @@
-# Contributing to BlazorUI
+# Contributing to NeoUI
 
-Thank you for your interest in contributing to BlazorUI! We welcome contributions from the community.
+Thank you for your interest in contributing to NeoUI! We welcome contributions from the community.
 
 ## How to Contribute
 
@@ -46,16 +46,16 @@ dotnet build
 ```
 
 This builds all five NuGet packages:
-- `BlazorUI.Components` - Styled components
-- `BlazorUI.Primitives` - Headless primitives
-- `BlazorUI.Icons.Lucide` - Lucide icon library
-- `BlazorUI.Icons.Heroicons` - Heroicons library
-- `BlazorUI.Icons.Feather` - Feather icon library
+- `NeoUI.Blazor` - Styled components
+- `NeoUI.Blazor.Primitives` - Headless primitives
+- `NeoUI.Icons.Lucide` - Lucide icon library
+- `NeoUI.Icons.Heroicons` - Heroicons library
+- `NeoUI.Icons.Feather` - Feather icon library
 
 ### Run the Demo Application
 
 ```bash
-cd demo/BlazorUI.Demo
+cd demo/NeoUI.Demo
 dotnet watch run
 ```
 
@@ -68,17 +68,17 @@ The demo app will be available at `https://localhost:5001`
 This is a mono-repo containing:
 
 ```
-BlazorUI/
+NeoUI.Blazor/
 ├── src/
-│   ├── BlazorUI.Components/      # Styled components (shadcn/ui design)
-│   ├── BlazorUI.Primitives/      # Headless UI primitives
-│   ├── BlazorUI.Icons.Lucide/    # Lucide icon integration
-│   ├── BlazorUI.Icons.Heroicons/ # Heroicons integration
-│   └── BlazorUI.Icons.Feather/   # Feather icon integration
+│   ├── NeoUI.Blazor/      # Styled components (shadcn/ui design)
+│   ├── NeoUI.Blazor.Primitives/      # Headless UI primitives
+│   ├── NeoUI.Icons.Lucide/    # Lucide icon integration
+│   ├── NeoUI.Icons.Heroicons/ # Heroicons integration
+│   └── NeoUI.Icons.Feather/   # Feather icon integration
 ├── demo/
-│   └── BlazorUI.Demo/            # Demo Blazor Server app
+│   └── NeoUI.Demo/            # Demo Blazor Server app
 ├── website/
-│   └── BlazorUI.Website/         # Documentation website
+│   └── NeoUI.Website/         # Documentation website
 ├── .devflow/                     # DevFlow documentation and standards
 ├── scripts/                      # Release automation scripts
 └── .github/                      # CI/CD workflows
@@ -96,7 +96,7 @@ For detailed technical architecture, see [.devflow/architecture.md](../.devflow/
 
 ## Code Style Guidelines
 
-BlazorUI follows the coding standards documented in `.devflow/constitution.md`. Key guidelines:
+NeoUI follows the coding standards documented in `.devflow/constitution.md`. Key guidelines:
 
 ### Naming Conventions
 - **PascalCase** for public members, types, and namespaces
@@ -131,12 +131,12 @@ Before submitting a pull request, please:
 
 ## License
 
-By contributing to BlazorUI, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE).
+By contributing to NeoUI, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE).
 
 This means:
 - Your contributions will be freely available to everyone
 - You retain copyright to your contributions
-- You grant BlazorUI and its users the rights specified in the Apache License 2.0
+- You grant NeoUI and its users the rights specified in the Apache License 2.0
 
 ## Code of Conduct
 
@@ -163,4 +163,4 @@ If you have questions about contributing, feel free to:
 - Join the community discussions on GitHub
 - Reach out to the maintainers
 
-Thank you for contributing to BlazorUI!
+Thank you for contributing to NeoUI!

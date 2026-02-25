@@ -1,0 +1,211 @@
+@namespace NeoUI.Blazor
+@using NeoUI.Icons.Lucide
+@inject IPortalService PortalService
+
+@*
+    Styled DialogContent component with shadcn/ui classes.
+    Includes overlay, dialog box, and close button.
+*@
+
+<DialogPortal>
+    <DialogOverlay class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
+
+    <DialogContentPrimitive
+        class="@GetClassNames()"
+        style="@($"z-index: {GetEffectiveContentZIndex()}")"
+        CloseOnEscape="@CloseOnEscape"
+        TrapFocus="@TrapFocus"
+        LockScroll="@LockScroll"
+        OnEscapeKeyDown="@OnEscapeKeyDown"
+        @attributes="AdditionalAttributes">
+            @ChildContent
+
+            @if (ShowClose)
+            {
+                <DialogClosePrimitive class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                    <LucideIcon Name="x" Class="h-4 w-4" />
+                    <span class="sr-only">Close</span>
+                </DialogClosePrimitive>
+            }
+        </DialogContentPrimitive>
+</DialogPortal>
+
+@code {
+    [CascadingParameter]
+    private DialogContext Context { get; set; } = null!;
+
+    /// <summary>
+    /// The content to render inside the dialog.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes to apply to the dialog content.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes to apply to the dialog overlay/backdrop.
+    /// Merged with built-in defaults using ClassNames.cn.
+    /// </summary>
+    [Parameter]
+    public string? OverlayClass { get; set; }
+
+    /// <summary>
+    /// The visual variant for the dialog content.
+    /// Default uses bg-background for simple dialogs.
+    /// Form uses bg-card with scroll shadow customization for form-heavy dialogs.
+    /// </summary>
+    [Parameter]
+    public DialogContentVariant Variant { get; set; } = DialogContentVariant.Default;
+
+    /// <summary>
+    /// When true, do not include default animation-related classes
+    /// so consumers can provide completely custom animations.
+    /// </summary>
+    [Parameter]
+    public bool UseCustomAnimations { get; set; } = false;
+
+    /// <summary>
+    /// Additional attributes to apply to the dialog content.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Whether to show the close button (X icon).
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool ShowClose { get; set; } = true;
+
+    /// <summary>
+    /// Whether pressing Escape should close the dialog.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool CloseOnEscape { get; set; } = true;
+
+    /// <summary>
+    /// Whether to trap focus within the dialog.
+    /// Default is true for modal dialogs.
+    /// </summary>
+    [Parameter]
+    public bool TrapFocus { get; set; } = true;
+
+    /// <summary>
+    /// Whether to lock body scroll when dialog is open.
+    /// Default is true for modal dialogs.
+    /// </summary>
+    [Parameter]
+    public bool LockScroll { get; set; } = true;
+
+    /// <summary>
+    /// Event callback invoked when Escape key is pressed.
+    /// </summary>
+    [Parameter]
+    public EventCallback<KeyboardEventArgs> OnEscapeKeyDown { get; set; }
+
+    /// <summary>
+    /// Gets the nesting depth of this dialog based on portal registration order.
+    /// Returns 0 for the first dialog, 1 for a dialog nested within it, etc.
+    /// </summary>
+    private int GetDialogDepth()
+    {
+        if (Context == null) return 0;
+
+        var portalId = $"{Context.Id}-portal";
+        var depth = PortalService.GetPortalDepth(portalId);
+        return Math.Max(0, depth);
+    }
+
+    /// <summary>
+    /// Calculates the z-index for the dialog overlay based on nesting depth.
+    /// Formula: Max(Base overlay z-index, previous content z-index) + (depth * 2)
+    /// For depth 0: Max(DialogOverlay, DialogContent - 2) + 0
+    /// For depth 1: Max(DialogOverlay, DialogContent) + 2
+    /// This ensures each nested dialog's overlay appears above the previous dialog's content.
+    /// </summary>
+    private int GetEffectiveOverlayZIndex()
+    {
+        var depth = GetDialogDepth();
+        var lastContentZIndex = ZIndexLevels.DialogContent + ((depth - 1) * 2);
+        return Math.Max(ZIndexLevels.DialogOverlay, lastContentZIndex) + (depth * 2);
+    }
+
+    /// <summary>
+    /// Calculates the z-index for the dialog content based on nesting depth.
+    /// Formula: Base content z-index + (depth * 2)
+    /// Content is always overlay z-index + 1 to appear above its overlay.
+    /// </summary>
+    private int GetEffectiveContentZIndex()
+    {
+        return GetEffectiveOverlayZIndex() + 1;
+    }
+
+    /// <summary>
+    /// Gets the computed CSS classes for the dialog content.
+    /// Uses the cn() utility for intelligent class merging and Tailwind conflict resolution.
+    /// </summary>
+    private string GetClassNames()
+    {
+        var baseClasses = new List<string>
+        {
+            "fixed p-6 gap-4 left-[50%] top-[50%] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
+            "border border-border/60 dark:border-border/40 dark:ring-1 dark:ring-white/10",
+            "shadow-xl dark:shadow-2xl",
+            "sm:rounded-lg"
+        };
+
+        // Apply variant-specific background and scroll shadow styling
+        if (Variant == DialogContentVariant.Form)
+        {
+            baseClasses.Add("bg-card");
+            baseClasses.Add("[--scroll-shadow-bg:var(--card)]"); // Match ScrollArea shadows to card background
+        }
+        else
+        {
+            baseClasses.Add("bg-background");
+        }
+
+        if (!UseCustomAnimations)
+        {
+            baseClasses.AddRange(new[]
+            {
+                "data-[state=open]:animate-in data-[state=closed]:animate-out",
+                "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+                "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-75",
+                "animate-duration-300 animate-ease-cubic-out"
+            });
+        }
+
+        return ClassNames.cn(baseClasses.Append(Class).ToArray());
+    }
+
+    /// <summary>
+    /// Gets the computed CSS classes for the dialog overlay/backdrop.
+    /// Merges built-in defaults with user-defined OverlayClass.
+    /// </summary>
+    private string GetOverlayClass()
+    {
+        var baseClasses = new List<string>
+        {
+            "fixed inset-0 bg-black/40 backdrop-blur-sm"
+        };
+
+        if (!UseCustomAnimations)
+        {
+            baseClasses.AddRange(new[]
+            {
+                "data-[state=open]:animate-in data-[state=closed]:animate-out",
+                "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+                "animate-duration-200 animate-ease-out"
+            });
+        }
+
+        baseClasses.Add(OverlayClass ?? string.Empty);
+        return ClassNames.cn(baseClasses.ToArray());
+    }
+}

@@ -1,0 +1,287 @@
+@namespace NeoUI.Blazor.Charts
+@typeparam TData
+@inherits ChartBase<TData>
+@implements IRadarChartParent
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-radar-container" style="width: 100%; height: 100%; position: relative;">
+        <div @ref="_canvasRef" style="width: 100%; height: 100%;"></div>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private List<Radar> _radars = new();
+    private RadarGrid? _radarGrid;
+    
+    protected override EChartsOption BuildEChartsOption()
+    {
+        var option = new EChartsOption
+        {
+            Legend = BuildLegend(),
+            Tooltip = BuildTooltip(),
+            Radar = BuildRadarCoordinate(),
+            Series = BuildSeries(),
+            Animation = EnableAnimation,
+            AnimationDuration = EnableAnimation ? AnimationDuration : 0,
+            AnimationEasing = MapAnimationEasing(AnimationEasing),
+            AnimationDelay = AnimationDelay,
+            AnimationDurationUpdate = AnimationDurationUpdate,
+            AnimationEasingUpdate = MapAnimationEasing(AnimationEasingUpdate)
+        };
+        
+        return option;
+    }
+    
+    private EChartsRadar BuildRadarCoordinate()
+    {
+        var radarGrid = _radarGrid ?? new RadarGrid(); // Implicit default
+        
+        // Build radar indicators from data or XAxis
+        var indicators = new List<EChartsRadarIndicator>();
+        
+        if (_xAxis != null && !string.IsNullOrEmpty(_xAxis.DataKey))
+        {
+            // Use XAxis DataKey to get indicator names
+            var labels = DataExtractor.GetStringValues(Data, _xAxis.DataKey);
+            
+            foreach (var label in labels)
+            {
+                indicators.Add(new EChartsRadarIndicator
+                {
+                    Name = label,
+                    Min = _xAxis.Min,
+                    Max = _xAxis.Max
+                });
+            }
+        }
+        else if (_radars.Any() && Data.Any())
+        {
+            // Fallback to property-based indicators
+            var properties = typeof(TData).GetProperties()
+                .Where(p => p.PropertyType == typeof(int) || 
+                           p.PropertyType == typeof(double) || 
+                           p.PropertyType == typeof(decimal) ||
+                           p.PropertyType == typeof(float) ||
+                           p.PropertyType == typeof(int?) ||
+                           p.PropertyType == typeof(double?) ||
+                           p.PropertyType == typeof(decimal?) ||
+                           p.PropertyType == typeof(float?))
+                .ToList();
+            
+            foreach (var prop in properties)
+            {
+                // Calculate max value across all data items for this property
+                var values = Data.Select(d => {
+                    var val = prop.GetValue(d);
+                    return val != null ? Convert.ToDouble(val) : 0.0;
+                }).ToList();
+                
+                var maxValue = values.Any() ? values.Max() : 100;
+                indicators.Add(new EChartsRadarIndicator
+                {
+                    Name = prop.Name,
+                    Max = Math.Max(maxValue * 1.2, 1) // Add 20% headroom, minimum 1
+                });
+            }
+        }
+        
+        return new EChartsRadar
+        {
+            Shape = radarGrid.Shape == RadarShape.Circle ? "circle" : "polygon",
+            SplitNumber = radarGrid.SplitNumber,
+            Radius = radarGrid.Radius,
+            Center = radarGrid.Center ?? new[] { "50%", "50%" },
+            Indicator = indicators.Any() ? indicators : null,
+            AxisName = new EChartsRadarAxisName
+            {
+                Show = radarGrid.ShowIndicatorLabels,
+                Color = radarGrid.IndicatorColor ?? "var(--foreground)",
+                FontSize = radarGrid.IndicatorFontSize,
+                FontWeight = radarGrid.IndicatorFontWeight
+            },
+            AxisLine = new EChartsAxisLine
+            {
+                Show = radarGrid.ShowAxisLine,
+                LineStyle = new EChartsLineStyle
+                {
+                    Color = radarGrid.AxisLineColor,
+                    Width = radarGrid.AxisLineWidth
+                }
+            },
+            SplitLine = new EChartsSplitLine
+            {
+                Show = radarGrid.ShowSplitLine,
+                LineStyle = new EChartsLineStyle
+                {
+                    Color = radarGrid.SplitLineColor,
+                    Width = radarGrid.SplitLineWidth
+                }
+            }
+        };
+    }
+    
+    private List<EChartsSeries> BuildSeries()
+    {
+        var seriesList = new List<EChartsSeries>();
+        
+        if (_radars.Any())
+        {
+            // Get numeric properties once
+            var properties = typeof(TData).GetProperties()
+                .Where(p => p.PropertyType == typeof(int) || 
+                           p.PropertyType == typeof(double) || 
+                           p.PropertyType == typeof(decimal) ||
+                           p.PropertyType == typeof(float) ||
+                           p.PropertyType == typeof(int?) ||
+                           p.PropertyType == typeof(double?) ||
+                           p.PropertyType == typeof(decimal?) ||
+                           p.PropertyType == typeof(float?))
+                .ToList();
+            
+            for (int i = 0; i < _radars.Count; i++)
+            {
+                var radar = _radars[i];
+                
+                // Build radar data - extract values using DataKey to create one series
+                List<double> values;
+                if (!string.IsNullOrEmpty(radar.DataKey))
+                {
+                    // Extract one value per data item using DataKey (e.g., "score" from each skill record)
+                    // This creates a list like [85, 70, 90, 75, 80] for radar chart axes
+                    values = DataExtractor.GetNumericValues(Data, radar.DataKey);
+                }
+                else
+                {
+                    // Fallback: use all numeric properties from first data item only
+                    // Note: This is a legacy fallback and may not represent the full dataset
+                    values = new List<double>();
+                    var firstItem = Data.FirstOrDefault();
+                    if (firstItem != null)
+                    {
+                        foreach (var prop in properties)
+                        {
+                            var val = prop.GetValue(firstItem);
+                            values.Add(val != null ? Convert.ToDouble(val) : 0.0);
+                        }
+                    }
+                }
+                
+                // Create single radar data entry with all values
+                var radarData = new List<Dictionary<string, object>>
+                {
+                    new Dictionary<string, object>
+                    {
+                        ["value"] = values,
+                        ["name"] = radar.Name ?? radar.DataKey
+                    }
+                };
+                
+                var series = new EChartsSeries
+                {
+                    Type = "radar",
+                    Name = radar.Name ?? radar.DataKey,
+                    Data = radarData.Cast<object>().ToList(),
+                    ItemStyle = new EChartsItemStyle
+                    {
+                        Color = GetSeriesColor(i, radar.Color)
+                    },
+                    AreaStyle = radar.FillArea ? new EChartsAreaStyle
+                    {
+                        Color = GetSeriesColor(i, radar.Color),
+                        Opacity = radar.AreaOpacity ?? 0.3
+                    } : null,
+                    LineStyle = new EChartsLineStyle
+                    {
+                        Color = GetSeriesColor(i, radar.Color),
+                        Width = radar.LineWidth
+                    },
+                    Emphasis = new EChartsEmphasis
+                    {
+                        Disabled = !radar.Emphasis,
+                        Focus = radar.Focus == Focus.Self ? "self" : null
+                    }
+                };
+                
+                // Map label parameters to ECharts series.label
+                if (radar.ShowLabel || radar.LabelList != null)
+                {
+                    var labelList = radar.LabelList;
+                    series.Label = new EChartsLabel
+                    {
+                        Show = labelList?.Show ?? radar.ShowLabel,
+                        Position = MapLabelPosition(labelList?.Position ?? radar.LabelPosition ?? LabelPosition.Top),
+                        Formatter = labelList?.Formatter ?? radar.LabelFormatter,
+                        Color = labelList?.Color,
+                        FontSize = labelList?.FontSize,
+                        Offset = labelList?.Offset
+                    };
+                }
+                
+                // Map animation properties (series-level overrides chart-level defaults)
+                series.Animation = radar.EnableAnimation ?? EnableAnimation;
+                series.AnimationDuration = radar.AnimationDuration ?? AnimationDuration;
+                series.AnimationEasing = MapAnimationEasing(radar.AnimationEasing ?? AnimationEasing);
+                series.AnimationDelay = radar.AnimationDelay ?? AnimationDelay;
+                series.AnimationDurationUpdate = radar.AnimationDurationUpdate ?? AnimationDurationUpdate;
+                series.AnimationEasingUpdate = MapAnimationEasing(radar.AnimationEasingUpdate ?? AnimationEasingUpdate);
+                
+                seriesList.Add(series);
+            }
+        }
+        
+        return seriesList;
+    }
+    
+    private string MapLabelPosition(LabelPosition position)
+    {
+        return position switch
+        {
+            LabelPosition.Top => "top",
+            LabelPosition.Bottom => "bottom",
+            LabelPosition.Left => "left",
+            LabelPosition.Right => "right",
+            LabelPosition.Inside => "inside",
+            LabelPosition.InsideTop => "insideTop",
+            LabelPosition.InsideBottom => "insideBottom",
+            LabelPosition.InsideLeft => "insideLeft",
+            LabelPosition.InsideRight => "insideRight",
+            LabelPosition.Center => "center",
+            LabelPosition.Outside => "outside",
+            _ => "top"
+        };
+    }
+    
+    protected override ChartType GetChartType()
+    {
+        return ChartType.Radar;
+    }
+    
+    protected override TooltipMode GetDefaultTooltipMode()
+    {
+        return TooltipMode.Item;
+    }
+    
+    public void RegisterRadar(Radar radar)
+    {
+        _radars.Add(radar);
+        StateHasChanged();
+    }
+    
+    public void RegisterRadarGrid(RadarGrid radarGrid)
+    {
+        _radarGrid = radarGrid;
+        StateHasChanged();
+    }
+
+    public void RegisterXAxis(XAxis xAxis)
+    {
+        _xAxis = xAxis;
+        StateHasChanged();
+    }
+
+    
+    public void RegisterChartTooltip(ChartTooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    public void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
+
+}

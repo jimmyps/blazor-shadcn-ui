@@ -1,0 +1,93 @@
+@namespace NeoUI.Blazor
+@using NeoUI.Icons.Lucide
+@inherits TimePickerBase
+
+<Popover @bind-Open="_isOpen">
+<PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
+    @if (ShowIcon)
+    {
+        <LucideIcon Name="clock" Class="h-4 w-4" />
+    }
+    <span>@GetDisplayText()</span>
+</PopoverTrigger>
+    <PopoverContent Class="@GetPopoverContentClass()" Align="PopoverAlign.Start">
+        <div class="flex items-center gap-2">
+            @if (!Use12Hour)
+            {
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-medium text-muted-foreground">Hour</label>
+                    <NativeSelect @bind-Value="_hour24" Size="NativeSelectSize.Small" Disabled="@Disabled">
+                        @for (int h = 0; h <= 23; h++)
+                        {
+                            <option value="@h">@h.ToString("D2")</option>
+                        }
+                    </NativeSelect>
+                </div>
+            }
+            else
+            {
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-medium text-muted-foreground">Hour</label>
+                    <NativeSelect @bind-Value="_hour12" Size="NativeSelectSize.Small" Disabled="@Disabled">
+                        @for (int h = 1; h <= 12; h++)
+                        {
+                            <option value="@h">@h.ToString("D2")</option>
+                        }
+                    </NativeSelect>
+                </div>
+            }
+            
+            <div class="flex flex-col gap-2">
+                <label class="text-xs font-medium text-muted-foreground">Minute</label>
+                <NativeSelect @bind-Value="_minute" Size="NativeSelectSize.Small" Disabled="@Disabled">
+                    @for (int m = 0; m < 60; m += MinuteStep)
+                    {
+                        <option value="@m">@m.ToString("D2")</option>
+                    }
+                </NativeSelect>
+            </div>
+
+            @if (ShowSeconds)
+            {
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-medium text-muted-foreground">Second</label>
+                    <NativeSelect @bind-Value="_second" Size="NativeSelectSize.Small" Disabled="@Disabled">
+                        @for (int s = 0; s < 60; s++)
+                        {
+                            <option value="@s">@s.ToString("D2")</option>
+                        }
+                    </NativeSelect>
+                </div>
+            }
+
+            @if (Use12Hour)
+            {
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-medium text-muted-foreground">Period</label>
+                    <NativeSelect Value="@(_isPM ? "PM" : "AM")" ValueChanged="@((string? value) => OnPeriodChangedFromSelect(value))" Size="NativeSelectSize.Small" Disabled="@Disabled">
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </NativeSelect>
+                </div>
+            }
+        </div>
+        <div class="mt-4 flex justify-end gap-2">
+            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" @onclick="@(() => _isOpen = false)">
+                Cancel
+            </Button>
+            <Button Variant="ButtonVariant.Default" Size="ButtonSize.Small" @onclick="ApplyTime">
+                Apply
+            </Button>
+        </div>
+    </PopoverContent>
+</Popover>
+
+@if (ShowValidationError && _fieldIdentifier.FieldName != null && EditContext != null)
+{
+    <div class="text-sm text-destructive mt-1">
+        @foreach (var message in EditContext.GetValidationMessages(_fieldIdentifier))
+        {
+            <div>@message</div>
+        }
+    </div>
+}

@@ -2,6 +2,146 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-2-24 – RC Namespace Flattening & Brand Rename: `BlazorUI.*` → `NeoUI.*`
+
+> **Breaking change.** Every package ID, namespace, filename, CSS class, JS token, localStorage key, and CI/CD reference has been updated to the new `NeoUI.*` scheme. See migration notes below.
+
+---
+
+### 📦 Package IDs renamed
+
+| Old | New |
+|---|---|
+| `NeoBlazorUI.Components` | `NeoUI.Blazor` |
+| `NeoBlazorUI.Primitives` | `NeoUI.Blazor.Primitives` |
+| `NeoBlazorUI.Icons.Lucide` | `NeoUI.Icons.Lucide` |
+| `NeoBlazorUI.Icons.Heroicons` | `NeoUI.Icons.Heroicons` |
+| `NeoBlazorUI.Icons.Feather` | `NeoUI.Icons.Feather` |
+
+---
+
+### 📁 Filesystem renames (`git mv`)
+
+| Old path | New path |
+|---|---|
+| `BlazorUI.sln` | `NeoUI.Blazor.sln` |
+| `src/BlazorUI.Components/` | `src/NeoUI.Blazor/` |
+| `src/BlazorUI.Primitives/` | `src/NeoUI.Blazor.Primitives/` |
+| `src/BlazorUI.Icons.Lucide/` | `src/NeoUI.Icons.Lucide/` |
+| `src/BlazorUI.Icons.Heroicons/` | `src/NeoUI.Icons.Heroicons/` |
+| `src/BlazorUI.Icons.Feather/` | `src/NeoUI.Icons.Feather/` |
+| `demo/BlazorUI.Demo/` | `demo/NeoUI.Demo/` |
+| `demo/BlazorUI.Demo.Shared/` | `demo/NeoUI.Demo.Shared/` |
+| `demo/BlazorUI.Demo.Client/` | `demo/NeoUI.Demo.Client/` |
+| `wwwroot/blazorui.css` | `wwwroot/components.css` |
+| `wwwroot/css/blazorui-input.css` | `wwwroot/css/components-input.css` |
+
+---
+
+### 🗂️ Namespace flattening
+
+All per-component sub-namespaces have been collapsed to a single top-level import. Consumers no longer need per-component `@using` lines.
+
+**Before:**
+```razor
+@using NeoUI.Blazor.Button
+@using NeoUI.Blazor.Dialog
+@using NeoUI.Blazor.Sidebar
+@using NeoUI.Blazor.Collapsible
+```
+
+**After:**
+```razor
+@using NeoUI.Blazor
+@using NeoUI.Blazor.Primitives   @* if using primitive components directly *@
+```
+
+| Layer | Namespace | Notes |
+|---|---|---|
+| Styled components | `NeoUI.Blazor` | All component, enum, and service types |
+| Primitive components | `NeoUI.Blazor.Primitives` | See Primitive suffix convention below |
+| Primitive services | `NeoUI.Blazor.Primitives.Services` | `DropdownManagerService`, `KeyboardShortcutService`, etc. |
+| Chart components & types | `NeoUI.Blazor.Charts` | Scoped separately to avoid IntelliSense pollution for non-chart users; matches Syncfusion/Infragistics convention |
+
+`Utilities` and `Contexts` sub-namespaces have been merged into their parent (`NeoUI.Blazor` and `NeoUI.Blazor.Primitives` respectively). `Services` is retained.
+
+---
+
+### 🏷️ Primitive component naming convention
+
+To disambiguate styled components from same-named primitives when both are used in the same file, **all primitive `.razor` components that have a styled counterpart now carry a `Primitive` suffix**:
+
+```razor
+@* Styled component — short name *@
+<Accordion>...</Accordion>
+
+@* Primitive component — Primitive suffix *@
+<AccordionPrimitive>...</AccordionPrimitive>
+```
+
+**Infrastructure primitives** with no styled counterpart use no suffix (same as `FloatingPortal`):
+
+| No-suffix primitives |
+|---|
+| `FloatingPortal` |
+| `Table`, `TableBody`, `TableHeader`, `TableHeaderCell`, `TableCell`, `TableRow`, `TablePagination` |
+| `DialogPortal`, `DialogOverlay` |
+| `SheetPortal`, `SheetOverlay` |
+| `NavigationMenuRoot` |
+
+Support types (context records, enums, services) keep their original names with no suffix in all cases.
+
+---
+
+### 🔀 Component renames to eliminate ambiguity
+
+| Old name | New name | Reason |
+|---|---|---|
+| `Grid<TItem>` | `DataGrid<TItem>` | Clash with `NeoUI.Blazor.Charts.Grid` (chart grid lines) |
+| `GridColumn` | `DataGridColumn` | Same — all `Grid*` types renamed to `DataGrid*` |
+| `GridDefinition` | `DataGridDefinition` | |
+| `Chart.Tooltip` | `ChartTooltip` | Clash with styled `Tooltip` component |
+| `Command` | `CommandContent` | Razor RZ1042 void-element clash for `<command>` |
+
+---
+
+### 🌐 Runtime token renames
+
+| Before | After |
+|---|---|
+| `blazorui:visible` / `blazorui:hidden` (JS events) | `neoui:visible` / `neoui:hidden` |
+| `blazorui-portal-root` (DOM id) | `neoui-portal-root` |
+| `.blazorui-portal` (CSS class) | `.neoui-portal` |
+| `blazorui:collapsible:` (localStorage prefix) | `neoui:collapsible:` |
+| `_content/NeoBlazorUI.Components/` | `_content/NeoUI.Blazor/` |
+| `_content/NeoBlazorUI.Primitives/` | `_content/NeoUI.Blazor.Primitives/` |
+| `blazorui.css` | `components.css` |
+| `blazorui-input.css` | `components-input.css` |
+| `BuildBlazorUICSS` (MSBuild target) | `BuildNeoUICSS` |
+
+---
+
+### ⚙️ CI/CD & tooling
+
+- `nuget-publish.yml` — `case` block updated to new `csproj` paths and `NeoUI.*` package IDs.
+- Three Azure deploy workflows (`BlazorUIDemo20251223130817.yml`, `*-preview.yml`, `*-staging.yml`) — `AZURE_WEBAPP_PACKAGE_PATH` and `WORKING_DIRECTORY` updated to `demo\NeoUI.Demo`.
+- `scripts/release-components.sh` — all variable names, grep/sed patterns, NuGet API URLs, display strings, and git commit messages updated.
+- `demo/NeoUI.Demo.Client/tailwind.config.js` — content globs updated to scan `src/NeoUI.Blazor/**`, `src/NeoUI.Blazor.Primitives/**`, and each icon project folder.
+- Icon codegen scripts (`GenerateIconData.ps1`, `generate-icon-data.js`) — generated namespace output lines updated.
+
+---
+
+### 📖 Migration guide
+
+1. **Update NuGet references** — swap old package IDs in your `.csproj` files (see Package IDs table above).
+2. **Update `@using` directives** — replace all per-component `@using BlazorUI.Components.*` with `@using NeoUI.Blazor`. Add `@using NeoUI.Blazor.Primitives` if using primitive components directly.
+3. **Update static asset references** — change `_content/NeoBlazorUI.Components/blazorui.css` to `_content/NeoUI.Blazor/components.css` in `App.razor` / `index.html`.
+4. **Update `Program.cs`** — rename `AddBlazorUIComponents()` / `AddNeoBlazorUIPrimitives()` → `AddNeoUIComponents()` / `AddNeoUIPrimitives()` (check your `ServiceCollectionExtensions`).
+5. **Rename component tags** — `<Grid>` → `<DataGrid>`, `<GridColumn>` → `<DataGridColumn>`, `<Command>` → `<CommandContent>`, chart `<Tooltip>` → `<ChartTooltip>`.
+6. **localStorage** — `blazorui:collapsible:*` keys are now `neoui:collapsible:*`. Existing persisted state will be ignored on first load (treated as missing); no data loss beyond preference reset.
+
+---
+
 ## 2026-2-23 - UI/X Improvements on All Menu Components and New ThemeSwitcher demo page
 
 ### 🐛 Menu Hover Sensitivity — Grace Period & Debounce
@@ -69,7 +209,7 @@ preserving full keyboard accessibility.
 
 ### ✨ Feature: `TooltipContent` — `Strategy` Parameter
 
-**Affected:** `BlazorUI.Primitives.Tooltip.TooltipContent`, `BlazorUI.Components.Tooltip.TooltipContent`
+**Affected:** `NeoUI.Blazor.Primitives.Tooltip.TooltipContent`, `NeoUI.Blazor.Tooltip.TooltipContent`
 
 The `FloatingPortal` inside `TooltipContent` previously had `Strategy` hardcoded to
 `PositioningStrategy.Absolute`. Tooltips inside transformed or `overflow: hidden` containers
@@ -475,7 +615,7 @@ open/close state is communicated via `IsOpen`, and `ForceMount` handles visibili
 
 ### 🎨 Theme System Migration to Component Library
 
-**Migrated the entire theme system to NeoBlazorUI.Components for zero-configuration, reusable theming:**
+**Migrated the entire theme system to NeoUI.Blazor for zero-configuration, reusable theming:**
 
 **What Changed:**
 - **ThemeService** - Moved from demo project to `src/BlazorUI.Components/Services/Theming/ThemeService.cs`
@@ -490,12 +630,12 @@ open/close state is communicated via `IsOpen`, and `ForceMount` handles visibili
 
 - **Theme JavaScript** - Moved to `src/BlazorUI.Components/wwwroot/js/theme.js`
   - CSP-compliant theme application and dark mode detection
-  - Available via `_content/NeoBlazorUI.Components/js/theme.js`
+  - Available via `_content/NeoUI.Blazor/js/theme.js`
 
 - **Theme CSS Files** - Moved to `src/BlazorUI.Components/wwwroot/css/themes/`
   - All 5 base color themes (Zinc, Slate, Gray, Neutral, Stone)
   - All 17 primary color themes (Red, Rose, Orange, Amber, Yellow, Lime, Green, Emerald, Teal, Cyan, Sky, Blue, Indigo, Violet, Purple, Fuchsia, Pink)
-  - Available via `_content/NeoBlazorUI.Components/css/themes/...`
+  - Available via `_content/NeoUI.Blazor/css/themes/...`
 
 **Benefits:**
 - ✅ **Zero Configuration** - Just reference the component library
@@ -507,11 +647,11 @@ open/close state is communicated via `IsOpen`, and `ForceMount` handles visibili
 **Migration Path:**
 ```razor
 <!-- Reference theme CSS from component library -->
-<link href="_content/NeoBlazorUI.Components/css/themes/base/zinc.css" rel="stylesheet" />
-<link href="_content/NeoBlazorUI.Components/css/themes/primary/blue.css" rel="stylesheet" />
+<link href="_content/NeoUI.Blazor/css/themes/base/zinc.css" rel="stylesheet" />
+<link href="_content/NeoUI.Blazor/css/themes/primary/blue.css" rel="stylesheet" />
 
 <!-- Include theme JavaScript -->
-<script src="_content/NeoBlazorUI.Components/js/theme.js"></script>
+<script src="_content/NeoUI.Blazor/js/theme.js"></script>
 ```
 
 ---
@@ -586,7 +726,7 @@ open/close state is communicated via `IsOpen`, and `ForceMount` handles visibili
 **ThemeSwitcher (demo\BlazorUI.Demo.Shared\Common\ThemeSwitcher.razor):**
 - Popover-based theme configuration panel
 - Visual color pickers with preview swatches
-- Grid layout for base colors (5 options) and primary colors (17 options)
+- DataGrid layout for base colors (5 options) and primary colors (17 options)
 - Selected state indicators with ring highlights
 - Integrated DarkModeToggle
 - Tooltip showing current theme selection (e.g., "Zinc / Blue")
@@ -830,8 +970,8 @@ window.theme = {
      - `AlertDialogContent`
 
 **Breaking Changes:**
-- **Moved ZIndexLevels** from `BlazorUI.Primitives.Constants` to `BlazorUI.Primitives.Services`
-  - **Migration**: Update `using` statements from `BlazorUI.Primitives.Constants` to `BlazorUI.Primitives.Services`
+- **Moved ZIndexLevels** from `NeoUI.Blazor.Primitives.Constants` to `NeoUI.Blazor.Primitives.Services`
+  - **Migration**: Update `using` statements from `NeoUI.Blazor.Primitives.Constants` to `NeoUI.Blazor.Primitives.Services`
 
 ## 2026-02-11 - UI Consistency Improvements for Select, Combobox, MultiSelect, and RadioGroup
 
@@ -1240,7 +1380,7 @@ private string? GetParentPortalId()
 
 **Changes:**
 - Updated 14 component files to replace non-standard class merging patterns
-- Added `@using BlazorUI.Components.Utilities` directive to all affected components
+- Added `@using NeoUI.Blazor.Utilities` directive to all affected components
 - Grouped CSS classes by intent/purpose following Input component pattern
 - Removed legacy patterns: `StringBuilder`, `List<string>`, manual string concatenation
 
@@ -1325,7 +1465,7 @@ ClassNames.cn(
 ### 🎨 UI/UX Enhancements & Demo Improvements
 
 **Status:** ✅ Complete, Production Ready  
-**Impact:** Enhanced navigation structure, improved component styling consistency, and standardized demo documentation across Grid examples.
+**Impact:** Enhanced navigation structure, improved component styling consistency, and standardized demo documentation across DataGrid examples.
 
 ---
 
@@ -1333,18 +1473,18 @@ ClassNames.cn(
 
 #### **Chart and Grid Root-Level Navigation**
 
-**Added dedicated navigation sections for Chart and Grid components:**
+**Added dedicated navigation sections for Chart and DataGrid components:**
 
 **Changes:**
 - Added Chart section with collapsible submenu in MainLayout
   - Area Chart, Bar Chart, Line Chart, Pie Chart, Scatter Chart, Radar Chart, Composed Chart
-- Added Grid section with collapsible submenu in MainLayout
+- Added DataGrid section with collapsible submenu in MainLayout
   - Basic, Templating, Selection, Transactions, Sorting & Filtering, State, Server-Side, Advanced, Theming
 - Replaced all custom SVG icons with LucideIcon components for consistency
-- Fixed Chart and Grid routing - updated hrefs from hash fragments to proper routes
+- Fixed Chart and DataGrid routing - updated hrefs from hash fragments to proper routes
 
 **Benefits:**
-- ✅ Chart and Grid components get extra visibility with dedicated navigation
+- ✅ Chart and DataGrid components get extra visibility with dedicated navigation
 - ✅ Direct access to specific chart types and grid features
 - ✅ Consistent icon system throughout navigation
 - ✅ Proper Blazor routing with bookmarkable URLs
@@ -1428,7 +1568,7 @@ demo/BlazorUI.Demo.Shared/Pages/Components/Charts/PieChartExamples.razor
 
 #### **Standardized Information Boxes with Alert Component**
 
-**Replaced all custom info boxes with standardized Alert components across Grid demos:**
+**Replaced all custom info boxes with standardized Alert components across DataGrid demos:**
 
 **Alert Variants Used:**
 - `Info` - Instructional/informational content (default for most boxes)
@@ -1440,15 +1580,15 @@ demo/BlazorUI.Demo.Shared/Pages/Components/Charts/PieChartExamples.razor
 ### 📊 Summary
 
 **Components Enhanced:** 4 (SelectTrigger, MultiSelect, CommandInput, PieChartExamples)  
-**Navigation Improvements:** Chart and Grid root-level sections with 16 new navigation links  
-**Demo Pages Standardized:** 3 Grid demo pages with 11 Alert components  
+**Navigation Improvements:** Chart and DataGrid root-level sections with 16 new navigation links  
+**Demo Pages Standardized:** 3 DataGrid demo pages with 11 Alert components  
 **Icons Standardized:** All navigation icons now use LucideIcon  
 **Routing Fixed:** 13 chart/grid pages with proper @page directives  
 
 **Impact:**
 - Enhanced user experience with smoother transitions and better visual feedback
 - Improved navigation structure for easier component discovery
-- Consistent, professional documentation across Grid examples
+- Consistent, professional documentation across DataGrid examples
 - Better accessibility and maintainability
 
 ---
@@ -1711,7 +1851,7 @@ protected override async Task OnAfterRenderAsync(bool firstRender)
     if (firstRender)
     {
         _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/NeoBlazorUI.Components/js/input.js");
+            "import", "./_content/NeoUI.Blazor/js/input.js");
         
         _dotNetRef = DotNetObjectReference.Create(this);
         
@@ -2733,13 +2873,13 @@ Viewport Edge
                  ButtonSize="ButtonSize" />
 ```
 
-**Breaking Change:** Namespace changed from `BlazorUI.Components.DatePicker` to `BlazorUI.Components.DateRangePicker`
+**Breaking Change:** Namespace changed from `NeoUI.Blazor.DatePicker` to `NeoUI.Blazor.DateRangePicker`
 ```razor
 @* Before *@
-@using BlazorUI.Components.DatePicker
+@using NeoUI.Blazor.DatePicker
 
 @* After *@
-@using BlazorUI.Components.DateRangePicker
+@using NeoUI.Blazor.DateRangePicker
 ```
 
 ---
@@ -3474,21 +3614,21 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 - SSRM demo showcasing server-side sorting, filtering, and paging
 
 ### Changed
-- GridImportMap refactored to simplify developer experience in App.razor
+- DataGridImportMap refactored to simplify developer experience in App.razor
 - Selection sample updated to use new TrackableObservableCollection
 
 ## 2026-01-14
 
 ### Added
 - Comprehensive movie database demo with TMDb API integration
-- Server-side row model with GridRowModelType and demo pages
+- Server-side row model with DataGridRowModelType and demo pages
 - NotifyItemsChanged pattern with TrackableObservableCollection
 - Grid Component Milestones 1-4 with complete demo pages
-- Complete AG Grid state management with @bind-State and hash-based mutation detection
+- Complete AG DataGrid state management with @bind-State and hash-based mutation detection
 
 ### Changed
-- Grid added to indexes for production ready
-- All Grid demos finalized with working functions
+- DataGrid added to indexes for production ready
+- All DataGrid demos finalized with working functions
 
 ### Fixed
 - Code review fixes for hash properties, firstRender check, and unused filterable property
@@ -3499,12 +3639,12 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 ### Added
 - @bind-State with hash-based mutation detection for natural state management
 - InitialState application and programmatic state updates for controlled sort/filter demos
-- GetStateAsync to Grid component
-- Three-level AG Grid theme customization with Shadcn integration
+- GetStateAsync to DataGrid component
+- Three-level AG DataGrid theme customization with Shadcn integration
 
 ### Changed
-- GridState and GridColumnState expanded with complete AG Grid properties
-- All Grid demos finalized (minus sorting and states)
+- DataGridState and DataDataGridColumnState expanded with complete AG DataGrid properties
+- All DataGrid demos finalized (minus sorting and states)
 - Proper marshalling between JS and C# for row selections
 - Comprehensive Transactions and Refresh API for granular controls
 
@@ -3539,7 +3679,7 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 ### Added
 - Template rendering framework supporting cell templates and header templates
 - GridAction for easy JS interop from Blazor components inside templates
-- DataFormatString in GridColumn for easy data formatting
+- DataFormatString in DataGridColumn for easy data formatting
 
 ### Changed
 - Templating demo finalized with DataFormatString implementation
@@ -3555,7 +3695,7 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 - Theme application using native withParams API
 
 ### Fixed
-- AG Grid theming regression
+- AG DataGrid theming regression
 - Theme parameter handling
 
 ### Removed
@@ -3585,8 +3725,8 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 ## 2025-12-24
 
 ### Added
-- Grid component with 20 comprehensive demo examples
-- Grid demo tabs following charting pattern
+- DataGrid component with 20 comprehensive demo examples
+- DataGrid demo tabs following charting pattern
 - SearchInterval in CommandInput for faster query performance
 
 ### Changed
@@ -3603,7 +3743,7 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 
 ### Added
 - Grid Component Milestones 1-4 (Core Object Model, Components, Renderer Abstraction, AG Grid Renderer)
-- Grid architecture documentation (GRID_DEMOS_V1.md, GRID_VS_DATATABLE.md)
+- DataGrid architecture documentation (GRID_DEMOS_V1.md, GRID_VS_DATATABLE.md)
 - CI/CD setup for GitHub and Azure App Service
 
 ### Changed
@@ -3612,8 +3752,8 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 - All components list added to sidebar, index, and spotlight search
 
 ### Fixed
-- Missing using directives in Grid component
-- BuildGridDefinition timing issues
+- Missing using directives in DataGrid component
+- BuildDataGridDefinition timing issues
 - Page number calculation in Grid
 - CSV formula injection mitigation added
 
@@ -3682,7 +3822,7 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 ### Added
 - Animation system for declarative chart API
 - Fill/LinearGradient/Stop with complete ECharts gradient mapping
-- 6 production-ready features: YAxis position, Grid styling, Axis min/max, Tooltip styling, Symbol customization, Series opacity
+- 6 production-ready features: YAxis position, DataGrid styling, Axis min/max, Tooltip styling, Symbol customization, Series opacity
 
 ### Fixed
 - ECharts renderer: v6 download, improved color detection, single-flight loading

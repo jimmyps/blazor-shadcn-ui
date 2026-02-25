@@ -1,0 +1,172 @@
+@namespace NeoUI.Blazor.Primitives
+@implements IContextMenuItem
+@implements IDisposable
+
+@* ContextMenuItemPrimitive - an individual menu action *@
+<div @ref="_itemRef"
+     role="menuitem"
+     tabindex="-1"
+     @onclick="HandleClick"
+     @onmouseenter="HandleMouseEnter"
+     @onmouseleave="HandleMouseLeave"
+     @attributes="AdditionalAttributes"
+     aria-disabled="@Disabled.ToString().ToLowerInvariant()"
+     data-disabled="@(Disabled ? "true" : null)">
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter]
+    private ContextMenuContext Context { get; set; } = null!;
+
+    [CascadingParameter]
+    private ContextMenuContentPrimitive? ContentContainer { get; set; }
+    
+    [CascadingParameter(Name = "ParentSubContext")]
+    private ContextMenuSubContext? ParentSubContext { get; set; }
+    
+    [CascadingParameter]
+    private ContextMenuSubContentPrimitive? SubContentContext { get; set; }
+
+    private ElementReference _itemRef;
+    private CancellationTokenSource? _hoverCts;
+
+    /// <summary>
+    /// The child content to render within the item.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Whether the item is disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    /// <summary>
+    /// Event callback invoked when the item is clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    /// <summary>
+    /// Additional attributes to apply to the item element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    bool IContextMenuItem.Disabled => Disabled;
+
+    protected override void OnInitialized()
+    {
+        if (Context == null)
+        {
+            throw new InvalidOperationException(
+                "ContextMenuItemPrimitive must be used within a ContextMenuRootPrimitive component.");
+        }
+
+        // Register this item with the appropriate content for keyboard navigation
+        // If we're inside a submenu, register with the submenu content
+        // Otherwise, register with the root menu content
+        if (SubContentContext != null)
+        {
+            SubContentContext.RegisterItem(this);
+        }
+        else
+        {
+            ContentContainer?.RegisterItem(this);
+        }
+    }
+
+    private async Task HandleClick()
+    {
+        if (Disabled) return;
+
+        if (OnClick.HasDelegate)
+        {
+            await OnClick.InvokeAsync();
+        }
+
+        Context.Close();
+    }
+
+    private async void HandleMouseEnter(MouseEventArgs args)
+    {
+        // Cancel any in-flight hover operation from a previous rapid mouse-enter
+        _hoverCts?.Cancel();
+        _hoverCts?.Dispose();
+        _hoverCts = new CancellationTokenSource();
+        var token = _hoverCts.Token;
+
+        // Grace period before closing any open submenu.
+        // HandleMouseLeave cancels the token so a quick pass-through never dismisses it.
+        try
+        {
+            await Task.Delay(250, token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        // Track if there was an active submenu that we're closing
+        bool hadActiveSubmenu = false;
+
+        if (ParentSubContext != null)
+        {
+            hadActiveSubmenu = ParentSubContext.ActiveSubMenu != null;
+            ParentSubContext.CloseActiveSubMenu();
+        }
+        else
+        {
+            hadActiveSubmenu = Context?.ActiveSubMenu != null;
+            Context?.CloseActiveSubMenu();
+        }
+
+        if (token.IsCancellationRequested) return;
+
+        if (hadActiveSubmenu)
+        {
+            if (SubContentContext != null)
+            {
+                await SubContentContext.FocusContainerAsync();
+            }
+            else if (ContentContainer != null)
+            {
+                await ContentContainer.FocusContainerAsync();
+            }
+        }
+    }
+
+    private void HandleMouseLeave(MouseEventArgs args)
+    {
+        // Cancel the pending close so a quick pass-through never dismisses the submenu
+        _hoverCts?.Cancel();
+    }
+
+    public async Task FocusAsync()
+    {
+        try
+        {
+            await _itemRef.FocusAsync();
+        }
+        catch
+        {
+            // Ignore focus errors (element might not be mounted yet)
+        }
+    }
+
+    public void Dispose()
+    {
+        _hoverCts?.Cancel();
+        _hoverCts?.Dispose();
+        if (SubContentContext != null)
+        {
+            SubContentContext.UnregisterItem(this);
+        }
+        else
+        {
+            ContentContainer?.UnregisterItem(this);
+        }
+    }
+}
