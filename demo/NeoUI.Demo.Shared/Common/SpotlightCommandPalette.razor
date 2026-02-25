@@ -46,7 +46,7 @@
 
                     <CommandVirtualizedGroup TItem="ComponentRegistryEntry"
                             Heading="Components"
-                            Items="@ComponentRegistry.Components"
+                            Items="@_sortedComponents"
                             ItemValue="@(entry => entry.Route)"
                             ItemSearchText="@(entry => entry.Title)"
                             MaxDisplayCount="0">
@@ -61,7 +61,7 @@
 
                     <CommandVirtualizedGroup TItem="ComponentRegistryEntry"
                             Heading="Primitives"
-                            Items="@ComponentRegistry.Primitives"
+                            Items="@_sortedPrimitives"
                             ItemValue="@(entry => entry.Route)"
                             ItemSearchText="@(entry => entry.Title)"
                             MaxDisplayCount="0">
@@ -177,6 +177,11 @@
             char.ToUpper(word[0]) + word.Substring(1)));
     }
     
+    private static readonly IReadOnlyList<ComponentRegistryEntry> _sortedComponents =
+        ComponentRegistry.Components.Where(e => !e.IsSubPage || e.Category.Id == "charts" ).OrderBy(e => e.Title).ToList().AsReadOnly();
+    private static readonly IReadOnlyList<ComponentRegistryEntry> _sortedPrimitives =
+        ComponentRegistry.Primitives.OrderBy(e => e.Title).ToList().AsReadOnly();
+
     private static readonly string[] AllLucideIcons = LucideIconData.GetAvailableIcons().OrderBy(x => x).ToArray();
     private static readonly string[] AllHeroIcons = HeroIconData.GetAvailableIcons(HeroIconVariant.Outline).OrderBy(x => x).ToArray();
     private static readonly string[] AllFeatherIcons = FeatherIconData.GetAvailableIcons().OrderBy(x => x).ToArray();

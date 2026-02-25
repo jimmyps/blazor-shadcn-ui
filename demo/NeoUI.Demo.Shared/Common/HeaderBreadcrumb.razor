@@ -1,0 +1,197 @@
+@* HeaderBreadcrumb — sticky-header breadcrumb + compact prev/next nav for the demo layout. *@
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<div class="flex-1 min-w-0 flex items-center gap-1.5">
+
+    @* Full breadcrumb — hidden on small screens *@
+    <Breadcrumb Class="hidden sm:flex flex-1 min-w-0">
+        <BreadcrumbList Class="flex-nowrap min-w-0 overflow-hidden">
+            @{
+                var startIndex = _segments.Count > 2 ? 1 : 0;
+            }
+            @for (var i = startIndex; i < _segments.Count; i++)
+            {
+                var seg = _segments[i];
+                @if (i > startIndex)
+                {
+                    <BreadcrumbSeparator />
+                }
+                <BreadcrumbItem Class="@(i == _segments.Count - 1 ? "flex-1 min-w-0" : null)">
+                    @if (seg.Href is not null)
+                    {
+                        <BreadcrumbLink Href="@seg.Href">@seg.Label</BreadcrumbLink>
+                    }
+                    else
+                    {
+                        <BreadcrumbPage Class="truncate flex-1 min-w-0">@seg.Label</BreadcrumbPage>
+                    }
+                </BreadcrumbItem>
+            }
+        </BreadcrumbList>
+    </Breadcrumb>
+
+    @* Mobile: current page title only *@
+    @if (_segments.Count > 1)
+    {
+        <span class="sm:hidden text-sm font-medium truncate text-foreground">@_segments[^1].Label</span>
+    }
+
+    @* Compact prev/next — only on registered non-sub-page component/primitive routes; hidden on mobile *@
+    @if (_currentEntry is not null && !_currentEntry.IsSubPage)
+    {
+        <div class="hidden sm:flex items-center shrink-0 ml-1">
+            @if (_prev is not null)
+            {
+                var prev = _prev;
+                <Tooltip>
+                    <TooltipTrigger AsChild>
+                        <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon"
+                                Class="h-7 w-7"
+                                OnClick="@(() => NavigationManager.NavigateTo($"/{prev.Route}"))">
+                            <LucideIcon Name="arrow-left" Size="14" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent Side="PopoverSide.Bottom">← @_prev.Title</TooltipContent>
+                </Tooltip>
+            }
+            else
+            {
+                <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon"
+                        Class="h-7 w-7" Disabled="true">
+                    <LucideIcon Name="arrow-left" Size="14" />
+                </Button>
+            }
+
+            @if (_next is not null)
+            {
+                var next = _next;
+                <Tooltip>
+                    <TooltipTrigger AsChild>
+                        <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon"
+                                Class="h-7 w-7"
+                                OnClick="@(() => NavigationManager.NavigateTo($"/{next.Route}"))">
+                            <LucideIcon Name="arrow-right" Size="14" />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent Side="PopoverSide.Bottom">@_next.Title →</TooltipContent>
+                </Tooltip>
+            }
+            else
+            {
+                <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon"
+                        Class="h-7 w-7" Disabled="true">
+                    <LucideIcon Name="arrow-right" Size="14" />
+                </Button>
+            }
+        </div>
+    }
+
+</div>
+
+@code {
+    private List<Segment> _segments = [];
+    private ComponentRegistryEntry? _currentEntry;
+    private ComponentRegistryEntry? _prev;
+    private ComponentRegistryEntry? _next;
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+        Refresh();
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        Refresh();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void Refresh()
+    {
+        var relative = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        _segments = BuildSegments(relative);
+
+        _currentEntry = ComponentRegistry.FindByRoute(relative);
+        (_prev, _next) = _currentEntry is { IsSubPage: false }
+            ? ComponentRegistry.GetNeighbors(relative)
+            : (null, null);
+    }
+
+    private static List<Segment> BuildSegments(string route)
+    {
+        var normalized = route.TrimStart('/').Split('#')[0];
+        var segments = new List<Segment> { new("Home", "/") };
+
+        if (string.IsNullOrEmpty(normalized))
+            return segments;
+
+        var parts = normalized.Split('/');
+        switch (parts[0].ToLowerInvariant())
+        {
+            case "components":
+                segments.Add(new("Components", "/components"));
+                if (parts.Length > 1)
+                    AppendRegistrySegments(segments, "components", parts[1..]);
+                break;
+
+            case "primitives":
+                segments.Add(new("Primitives", "/primitives"));
+                if (parts.Length > 1)
+                    AppendRegistrySegments(segments, "primitives", parts[1..]);
+                break;
+
+            case "icons":
+                segments.Add(new("Icons", null));
+                if (parts.Length > 1)
+                {
+                    var label = parts[1].ToLowerInvariant() switch
+                    {
+                        "lucide"    => "Lucide Icons",
+                        "heroicons" => "Heroicons",
+                        "feather"   => "Feather Icons",
+                        _           => Capitalize(parts[1])
+                    };
+                    segments.Add(new(label, null));
+                }
+                break;
+
+            default:
+                segments.Add(new(Capitalize(parts[0]), null));
+                break;
+        }
+
+        return segments;
+    }
+
+    private static void AppendRegistrySegments(List<Segment> segments, string tier, string[] slugParts)
+    {
+        var fullRoute = $"{tier}/{string.Join("/", slugParts)}";
+        var entry = ComponentRegistry.FindByRoute(fullRoute);
+
+        if (entry is { IsSubPage: true } && slugParts.Length > 1)
+        {
+            // Sub-page (e.g. datagrid/basic, chart/area): add parent as link, current as page
+            var parentRoute = $"{tier}/{slugParts[0]}";
+            var parent = ComponentRegistry.FindByRoute(parentRoute);
+            if (parent is not null)
+                segments.Add(new(parent.Title, $"/{parent.Route}"));
+            segments.Add(new(entry.Title, null));
+        }
+        else if (entry is not null)
+        {
+            segments.Add(new(entry.Title, null));
+        }
+        else
+        {
+            segments.Add(new(Capitalize(slugParts[0]), null));
+        }
+    }
+
+    private static string Capitalize(string s) =>
+        string.IsNullOrEmpty(s) ? s : char.ToUpper(s[0]) + s[1..];
+
+    private sealed record Segment(string Label, string? Href);
+
+    public void Dispose() => NavigationManager.LocationChanged -= OnLocationChanged;
+}

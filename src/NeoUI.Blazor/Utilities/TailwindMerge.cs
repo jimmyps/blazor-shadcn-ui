@@ -94,6 +94,11 @@ public static class TailwindMerge
         ["flex-col"] = "flex-direction",
         ["flex-col-reverse"] = "flex-direction",
 
+        // Flex Wrap
+        ["flex-wrap"] = "flex-wrap",
+        ["flex-nowrap"] = "flex-wrap",
+        ["flex-wrap-reverse"] = "flex-wrap",
+
         // Justify Content
         ["justify-start"] = "justify-content",
         ["justify-end"] = "justify-content",
