@@ -436,7 +436,7 @@ Apply custom CSS classes to cells and headers:
 
 ```razor
 @page "/orders"
-@using NeoUI.Blazor.Grid
+@using NeoUI.Blazor
 
 <div class="container py-6">
     <h1 class="text-3xl font-bold mb-6">Orders</h1>

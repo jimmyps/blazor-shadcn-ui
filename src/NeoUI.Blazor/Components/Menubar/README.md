@@ -15,7 +15,7 @@ A horizontally-oriented menu bar that provides access to a consistent set of com
 ### Basic Example
 
 ```razor
-@using NeoUI.Blazor.Menubar
+@using NeoUI.Blazor
 
 <Menubar>
     <MenubarMenu>

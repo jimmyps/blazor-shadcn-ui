@@ -15,7 +15,7 @@ A reusable Blazor component that provides smooth height transitions for dynamic 
 ### Basic Example
 
 ```razor
-@using NeoUI.Blazor.HeightAnimation
+@using NeoUI.Blazor
 
 <HeightAnimation Config="@_config">
     <Command OnSelect="@HandleSelect">

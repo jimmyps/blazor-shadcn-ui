@@ -22,9 +22,9 @@ builder.Services.AddSingleton<IToastService, ToastService>();
 Add the `ToastProvider` to your `MainLayout.razor`:
 
 ```razor
-@using NeoUI.Blazor.Toast
+@using NeoUI.Blazor
 
-<ToastProvider Position="ToastPosition.BottomRight">
+<ToastProvider
     @Body
 </ToastProvider>
 ```
@@ -34,8 +34,8 @@ Add the `ToastProvider` to your `MainLayout.razor`:
 ### Basic Usage
 
 ```razor
-@using NeoUI.Blazor.Toast
-@inject IToastService Toasts
+@using NeoUI.Blazor
+@inject IToastService
 
 <button @onclick="ShowToast">Show Toast</button>
 

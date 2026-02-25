@@ -33,46 +33,32 @@ This package automatically includes:
 
 ```razor
 @using NeoUI.Blazor
-@using NeoUI.Blazor.Button
-@using NeoUI.Blazor.Input
-@using NeoUI.Blazor.Dialog
-@using NeoUI.Blazor.Sheet
-@using NeoUI.Blazor.Accordion
-@using NeoUI.Blazor.Tabs
-@using NeoUI.Blazor.Select
-@using NeoUI.Blazor.Avatar
-@using NeoUI.Blazor.Badge
-@using NeoUI.Blazor.Card
-@using NeoUI.Blazor.Charts
-@using NeoUI.Blazor.DataTable
 @using NeoUI.Icons.Lucide
 ```
 
-Add imports for each component namespace you use. This gives access to component-specific enums like `ButtonVariant`, `InputType`, etc.
+All components and their enums (e.g. `ButtonVariant`, `InputType`) live in the single `NeoUI.Blazor` namespace. If you use chart components, also add `@using NeoUI.Blazor.Charts`.
 
-### 2. Add CSS to your `App.razor` or `index.html`:
+### 2. Add CSS to your `App.razor`:
 
 NeoUI.Blazor Components come with pre-built CSS - no Tailwind setup required!
 
-```html
+```razor
 <!DOCTYPE html>
-<html lang="en" data-theme="default">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
 
-    <!-- Optional: Your custom theme (defines CSS variables) -->
-    <link rel="stylesheet" href="styles/theme.css" />
+    <!-- Pre-built NeoUI.Blazor styles -->
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/components.css"]" />
 
-    <!-- Pre-built NeoUI.Blazor styles (included in NuGet package) -->
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/components.css" />
-
-    <HeadOutlet @rendermode="InteractiveAuto" />
+    <ImportMap />
+    <HeadOutlet />
 </head>
 <body>
-    <Routes @rendermode="InteractiveAuto" />
-    <script src="_framework/blazor.web.js"></script>
+    <Routes />
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
 </html>
 ```
@@ -103,6 +89,8 @@ NeoUI.Blazor Components come with pre-built CSS - no Tailwind setup required!
 ```
 
 That's it! No Tailwind installation, no build configuration needed.
+
+> 💡 **Pre-built themes**: NeoUI ships with pre-built themes built on shadcn/ui defaults — ready to use out of the box with no extra setup. See the [Theming](#-theming) section for details on applying and customizing themes.
 
 ## 📚 Available Components (85+)
 

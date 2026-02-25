@@ -21,7 +21,7 @@ A **declarative, strongly-typed animation system** for Blazor that wraps the [Mo
 Add to your `_Imports.razor`:
 
 ```razor
-@using NeoUI.Blazor.Motion
+@using NeoUI.Blazor
 ```
 
 That's it! The Motion.dev library loads automatically on first use.

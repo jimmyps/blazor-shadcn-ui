@@ -14,7 +14,7 @@ Horizontal navigation bar with dropdown panels for app and marketing site naviga
 ### Basic Navigation Menu
 
 ```razor
-@using NeoUI.Blazor.NavigationMenu
+@using NeoUI.Blazor
 
 <NavigationMenu>
     <NavigationMenuList>

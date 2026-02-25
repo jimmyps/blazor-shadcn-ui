@@ -17,7 +17,7 @@ Split layout components with draggable handles for horizontal/vertical split lay
 ### Basic Horizontal Split
 
 ```razor
-@using NeoUI.Blazor.Resizable
+@using NeoUI.Blazor
 
 <ResizablePanelGroup Direction="ResizableDirection.Horizontal" Class="min-h-[200px] max-w-md rounded-lg border">
     <ResizablePanel DefaultSize="50">

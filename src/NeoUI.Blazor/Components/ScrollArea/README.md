@@ -16,7 +16,7 @@ A styled scrollable region with custom scrollbars, scroll shadows, and enhanced 
 ### Basic Vertical Scroll with Shadows
 
 ```razor
-@using NeoUI.Blazor.ScrollArea
+@using NeoUI.Blazor
 
 <ScrollArea Class="h-72 w-48 rounded-md border">
     <div class="p-4">

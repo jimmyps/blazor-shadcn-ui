@@ -1,6 +1,6 @@
 using Microsoft.JSInterop;
 
-namespace NeoUI.Blazor.Services.Theming;
+namespace NeoUI.Blazor.Services;
 
 /// <summary>
 /// Base color options for the theme system.
