@@ -2,11 +2,620 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-2-24 – RC Namespace Flattening & Brand Rename: `BlazorUI.*` → `NeoUI.*`
+
+> **Breaking change.** Every package ID, namespace, filename, CSS class, JS token, localStorage key, and CI/CD reference has been updated to the new `NeoUI.*` scheme. See migration notes below.
+
+---
+
+### 📦 Package IDs renamed
+
+| Old | New |
+|---|---|
+| `NeoBlazorUI.Components` | `NeoUI.Blazor` |
+| `NeoBlazorUI.Primitives` | `NeoUI.Blazor.Primitives` |
+| `NeoBlazorUI.Icons.Lucide` | `NeoUI.Icons.Lucide` |
+| `NeoBlazorUI.Icons.Heroicons` | `NeoUI.Icons.Heroicons` |
+| `NeoBlazorUI.Icons.Feather` | `NeoUI.Icons.Feather` |
+
+---
+
+### 📁 Filesystem renames (`git mv`)
+
+| Old path | New path |
+|---|---|
+| `BlazorUI.sln` | `NeoUI.Blazor.sln` |
+| `src/BlazorUI.Components/` | `src/NeoUI.Blazor/` |
+| `src/BlazorUI.Primitives/` | `src/NeoUI.Blazor.Primitives/` |
+| `src/BlazorUI.Icons.Lucide/` | `src/NeoUI.Icons.Lucide/` |
+| `src/BlazorUI.Icons.Heroicons/` | `src/NeoUI.Icons.Heroicons/` |
+| `src/BlazorUI.Icons.Feather/` | `src/NeoUI.Icons.Feather/` |
+| `demo/BlazorUI.Demo/` | `demo/NeoUI.Demo/` |
+| `demo/BlazorUI.Demo.Shared/` | `demo/NeoUI.Demo.Shared/` |
+| `demo/BlazorUI.Demo.Client/` | `demo/NeoUI.Demo.Client/` |
+| `wwwroot/blazorui.css` | `wwwroot/components.css` |
+| `wwwroot/css/blazorui-input.css` | `wwwroot/css/components-input.css` |
+
+---
+
+### 🗂️ Namespace flattening
+
+All per-component sub-namespaces have been collapsed to a single top-level import. Consumers no longer need per-component `@using` lines.
+
+**Before:**
+```razor
+@using NeoUI.Blazor.Button
+@using NeoUI.Blazor.Dialog
+@using NeoUI.Blazor.Sidebar
+@using NeoUI.Blazor.Collapsible
+```
+
+**After:**
+```razor
+@using NeoUI.Blazor
+@using NeoUI.Blazor.Primitives   @* if using primitive components directly *@
+```
+
+| Layer | Namespace | Notes |
+|---|---|---|
+| Styled components | `NeoUI.Blazor` | All component, enum, and service types |
+| Primitive components | `NeoUI.Blazor.Primitives` | See Primitive suffix convention below |
+| Primitive services | `NeoUI.Blazor.Primitives.Services` | `DropdownManagerService`, `KeyboardShortcutService`, etc. |
+| Chart components & types | `NeoUI.Blazor.Charts` | Scoped separately to avoid IntelliSense pollution for non-chart users; matches Syncfusion/Infragistics convention |
+
+`Utilities` and `Contexts` sub-namespaces have been merged into their parent (`NeoUI.Blazor` and `NeoUI.Blazor.Primitives` respectively). `Services` is retained.
+
+---
+
+### 🏷️ Primitive component naming convention
+
+To disambiguate styled components from same-named primitives when both are used in the same file, **all primitive `.razor` components that have a styled counterpart now carry a `Primitive` suffix**:
+
+```razor
+@* Styled component — short name *@
+<Accordion>...</Accordion>
+
+@* Primitive component — Primitive suffix *@
+<AccordionPrimitive>...</AccordionPrimitive>
+```
+
+**Infrastructure primitives** with no styled counterpart use no suffix (same as `FloatingPortal`):
+
+| No-suffix primitives |
+|---|
+| `FloatingPortal` |
+| `Table`, `TableBody`, `TableHeader`, `TableHeaderCell`, `TableCell`, `TableRow`, `TablePagination` |
+| `DialogPortal`, `DialogOverlay` |
+| `SheetPortal`, `SheetOverlay` |
+| `NavigationMenuRoot` |
+
+Support types (context records, enums, services) keep their original names with no suffix in all cases.
+
+---
+
+### 🔀 Component renames to eliminate ambiguity
+
+| Old name | New name | Reason |
+|---|---|---|
+| `Grid<TItem>` | `DataGrid<TItem>` | Clash with `NeoUI.Blazor.Charts.Grid` (chart grid lines) |
+| `GridColumn` | `DataGridColumn` | Same — all `Grid*` types renamed to `DataGrid*` |
+| `GridDefinition` | `DataGridDefinition` | |
+| `Chart.Tooltip` | `ChartTooltip` | Clash with styled `Tooltip` component |
+| `Command` | `CommandContent` | Razor RZ1042 void-element clash for `<command>` |
+
+---
+
+### 🌐 Runtime token renames
+
+| Before | After |
+|---|---|
+| `blazorui:visible` / `blazorui:hidden` (JS events) | `neoui:visible` / `neoui:hidden` |
+| `blazorui-portal-root` (DOM id) | `neoui-portal-root` |
+| `.blazorui-portal` (CSS class) | `.neoui-portal` |
+| `blazorui:collapsible:` (localStorage prefix) | `neoui:collapsible:` |
+| `_content/NeoBlazorUI.Components/` | `_content/NeoUI.Blazor/` |
+| `_content/NeoBlazorUI.Primitives/` | `_content/NeoUI.Blazor.Primitives/` |
+| `blazorui.css` | `components.css` |
+| `blazorui-input.css` | `components-input.css` |
+| `BuildBlazorUICSS` (MSBuild target) | `BuildNeoUICSS` |
+
+---
+
+### ⚙️ CI/CD & tooling
+
+- `nuget-publish.yml` — `case` block updated to new `csproj` paths and `NeoUI.*` package IDs.
+- Three Azure deploy workflows (`BlazorUIDemo20251223130817.yml`, `*-preview.yml`, `*-staging.yml`) — `AZURE_WEBAPP_PACKAGE_PATH` and `WORKING_DIRECTORY` updated to `demo\NeoUI.Demo`.
+- `scripts/release-components.sh` — all variable names, grep/sed patterns, NuGet API URLs, display strings, and git commit messages updated.
+- `demo/NeoUI.Demo.Client/tailwind.config.js` — content globs updated to scan `src/NeoUI.Blazor/**`, `src/NeoUI.Blazor.Primitives/**`, and each icon project folder.
+- Icon codegen scripts (`GenerateIconData.ps1`, `generate-icon-data.js`) — generated namespace output lines updated.
+
+---
+
+### 📖 Migration guide
+
+1. **Update NuGet references** — swap old package IDs in your `.csproj` files (see Package IDs table above).
+2. **Update `@using` directives** — replace all per-component `@using BlazorUI.Components.*` with `@using NeoUI.Blazor`. Add `@using NeoUI.Blazor.Primitives` if using primitive components directly.
+3. **Update static asset references** — change `_content/NeoBlazorUI.Components/blazorui.css` to `_content/NeoUI.Blazor/components.css` in `App.razor` / `index.html`.
+4. **Update `Program.cs`** — rename `AddBlazorUIComponents()` / `AddNeoBlazorUIPrimitives()` → `AddNeoUIComponents()` / `AddNeoUIPrimitives()` (check your `ServiceCollectionExtensions`).
+5. **Rename component tags** — `<Grid>` → `<DataGrid>`, `<GridColumn>` → `<DataGridColumn>`, `<Command>` → `<CommandContent>`, chart `<Tooltip>` → `<ChartTooltip>`.
+6. **localStorage** — `blazorui:collapsible:*` keys are now `neoui:collapsible:*`. Existing persisted state will be ignored on first load (treated as missing); no data loss beyond preference reset.
+
+---
+
+## 2026-2-23 - UI/X Improvements on All Menu Components and New ThemeSwitcher demo page
+
+### 🐛 Menu Hover Sensitivity — Grace Period & Debounce
+
+**Affected:** `MenubarItem`, `MenubarSubTrigger`, `DropdownMenuItem`, `DropdownMenuSubTrigger`, `ContextMenuItem`, `ContextMenuSubTrigger`
+
+Hovering quickly over menu items or briefly leaving a sub-trigger while navigating toward its open
+submenu panel caused the submenu to close immediately — matching no platform UX convention
+(Windows and macOS both use a ~200–300 ms grace period before closing).
+
+#### Changes
+
+**Regular items** (`MenubarItem`, `DropdownMenuItem`, `ContextMenuItem`)
+
+- Added `CancellationTokenSource _hoverCts` per item.
+- `HandleMouseEnter` now waits **250 ms** before calling `CloseActiveSubMenu()`. If the mouse
+  leaves the item within that window, `HandleMouseLeave` cancels the token and the close is
+  abandoned — the open submenu keeps showing.
+- Added `@onmouseleave` / `HandleMouseLeave` (was missing entirely on `DropdownMenuItem` and
+  `ContextMenuItem`).
+- `_hoverCts` is disposed in `Dispose()`.
+
+**Sub-triggers** (`MenubarSubTrigger`, `DropdownMenuSubTrigger`, `ContextMenuSubTrigger`)
+
+- Added `CancellationTokenSource _hoverCts` per component.
+- Added `isAlreadyActive` guard at the top of `HandleMouseEnter`: if this submenu is already open
+  and registered as the active submenu, the handler returns immediately — prevents the
+  close-then-300 ms-reopen flicker that occurred when the mouse briefly left and re-entered the
+  same trigger.
+- Sibling submenu is now **closed immediately** (before the delay) when a new sub-trigger is
+  entered, eliminating the visual conflict where two triggers appeared selected simultaneously and
+  preventing the open sibling's panel from overlapping the new trigger and firing spurious
+  `mouseleave` events.
+- The **300 ms open delay** is preserved to prevent flash-opens on quick pass-through. If
+  `HandleMouseLeave` fires before the delay, the token is cancelled and neither the close nor the
+  open occurs — the original submenu remains visible.
+- `_hoverCts` cancelled and disposed in `Dispose()`.
+
+---
+
+### 🐛 Bug Fix: Menu Open Auto-Focus — Container vs. First Item
+
+**Affected:** `MenubarContent`, `MenubarSubContent`, `ContextMenuContent`, `ContextMenuSubContent`, `DropdownMenuSubContent`, `menu-keyboard.js`
+
+All menu content containers passed `initialFocus: "first"` to `menu-keyboard.js`, which caused the
+first enabled item to receive focus the moment the menu opened. This is non-standard for menus
+(Windows/macOS highlight nothing until the user presses a key or moves the mouse).
+
+#### Changes
+
+- **`menu-keyboard.js`** — added new `initialFocus = "container"` branch: calls
+  `focusWithDoubleRaf(container)` to focus the `[tabindex="-1"]` container div (enabling keyboard
+  event reception) without moving focus to any item. The existing `"first"` / `"last"` paths are
+  untouched so `DropdownMenuContent` behaviour is unchanged.
+- `MenubarContent` — changed `initialFocus` from `"first"` to `"container"`.
+- `MenubarSubContent` — changed `initialFocus` from `"first"` to `"container"`.
+- `ContextMenuContent` — changed `initialFocus` from `"first"` to `"container"`.
+- `ContextMenuSubContent` — changed `initialFocus` from `"first"` to `"container"`.
+- `DropdownMenuSubContent` — changed `initialFocus` from `"first"` to `"container"`.
+
+`ArrowDown` with nothing focused still navigates to the first item (`currentIndex === -1 → 0`),
+preserving full keyboard accessibility.
+
+---
+
+### ✨ Feature: `TooltipContent` — `Strategy` Parameter
+
+**Affected:** `NeoUI.Blazor.Primitives.Tooltip.TooltipContent`, `NeoUI.Blazor.Tooltip.TooltipContent`
+
+The `FloatingPortal` inside `TooltipContent` previously had `Strategy` hardcoded to
+`PositioningStrategy.Absolute`. Tooltips inside transformed or `overflow: hidden` containers
+(e.g. sidebars) were clipped or mis-positioned.
+
+- Added `[Parameter] PositioningStrategy Strategy` (default `Absolute`) to the **primitive**
+  `TooltipContent` and wired it to `FloatingPortal`.
+- Added the same parameter to the **component** `TooltipContent` wrapper, passed through to the
+  primitive.
+
+---
+
+### ✨ Feature: `ThemeSwitcher` — New Parameters
+
+**Affected:** `ThemeSwitcher`
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `TriggerClass` | `string?` | — | Extra CSS classes merged onto the trigger `Button` |
+| `PopoverContentClass` | `string?` | — | Extra CSS classes merged onto the `PopoverContent` panel |
+| `Align` | `PopoverAlign` | `End` | Alignment of the popover panel relative to the trigger |
+
+- `Strategy` is now also forwarded to `TooltipContent` so the tooltip escapes stacking contexts
+  when `Strategy = Fixed`.
+
+---
+
+### 📖 Demo: ThemeSwitcher Page
+
+New demo page at `/components/theme-switcher` covering:
+
+- Live `ThemeSwitcher` demo with reactive current-theme readout (base color + primary color)
+- Standalone `DarkModeToggle` demo
+- Usage snippets (minimal, layout placement)
+- Customisation examples (`TriggerClass`, `PopoverContentClass`)
+- `Strategy` / fixed-positioning guidance
+- `ThemeSwitcher` parameter API table
+- `ThemeService` member reference table with injectable usage example
+- **App.razor Setup** section (core stylesheet, base color CSS, primary color CSS, theme JS +
+  `initialize()`, `Program.cs` service registration)
+- `Alert Variant="Warning"` production tip to trim unused theme CSS files
+
+Added to sidebar navigation, component index grid, and Spotlight search palette.
+Added "What's New" callout card to the home page.
+
+---
+
+### 🐛 Bug Fix: Chart Series Always 0 in Layout-Embedded Charts
+
+**Affected:** All chart series and primitives — `Pie`, `Bar`, `Line`, `Area`, `Scatter`, `Radar`,
+`RadialBar`, `Tooltip`, `Legend`, `Grid`, `XAxis`, `YAxis`, `PolarGrid`, `RadarGrid`,
+`CenterLabel`, `AxisLabel`, `LabelList`, `LabelLine`, `Fill`
+
+Charts in complex scenarios (e.g. `ChartTile`) always rendered with zero series while the
+same chart on a standalone page worked correctly.
+
+#### Root Cause
+
+All series and chart primitives used `[CascadingParameter] private dynamic? Parent` to receive
+their parent chart. Without a type or name constraint, Blazor matched the parameter to the
+**nearest** ancestor `CascadingValue` — which in the layout context was `SidebarContext` from
+`SidebarProvider`, not the chart root. Dynamic dispatch then called `RegisterPie` (etc.) on the
+wrong type, threw a `RuntimeBinderException`, and the original empty `catch { }` silently
+discarded it. `_pies` was never populated → Series count = 0.
+
+On standalone pages there were no competing cascading values above the chart, so the correct
+parent was matched by accident.
+
+A secondary cause was that all chart-level `Register*` methods were `internal`. The C# DLR
+`RuntimeBinder` does not resolve `internal` members through `dynamic` dispatch even within the
+same assembly, compounding the failure.
+
+#### Fix — Interface-Based Cascading (no more `dynamic`)
+
+Introduced `ChartInterfaces.cs` with a typed interface hierarchy:
+
+```
+IChartParent              ← Tooltip, Legend
+  IXAxisParent            ← XAxis; also RadarChart, RadialBarChart
+    ICartesianChartParent ← Grid, YAxis
+      IBarSeriesParent    ← Bar  (BarChart + ComposedChart)
+      ILineSeriesParent   ← Line (LineChart + ComposedChart)
+      IAreaSeriesParent   ← Area (AreaChart + ComposedChart)
+      IScatterSeriesParent← Scatter (ScatterChart + ComposedChart)
+  IPieChartParent         ← Pie
+  IRadarChartParent       ← Radar, RadarGrid
+  IRadialBarChartParent   ← RadialBar, PolarGrid, CenterLabel
+
+IAxisParent               ← AxisLabel  (XAxis, YAxis implement this)
+IFillParent               ← Fill       (Line, Area implement this)
+SeriesBase (type)         ← LabelList  (all series inherit this)
+Pie (type)                ← LabelLine  (Pie-specific)
+```
+
+- All 8 chart root components declare `@implements I*Parent` and use an unnamed
+  `CascadingValue Value="this" IsFixed="true"`. Blazor's type-based `IsAssignableFrom` matching
+  now discriminates chart parents precisely — `SidebarContext` and any other unrelated cascading
+  value can never satisfy these interfaces.
+- `ComposedChart` naturally implements all four `I*SeriesParent` interfaces, preserving full
+  composed-chart support without dual cascading parameters or any other workaround.
+- All `dynamic?` cascading parameters replaced with the appropriate interface or concrete type.
+  All `try { } catch { }` blocks removed — misuse is now a compile-time error rather than a
+  silent runtime no-op.
+- All chart `Register*` methods changed from `internal` to `public` (required for interface
+  implementation and correct as component registration protocol).
+
+---
+
+## 2026-2-21
+
+### ⚡ Performance: Replaced C# `@onkeydown` Handlers with `menu-keyboard.js` in All Menu Content Containers
+
+**Motivation:** Every `DropdownMenu`, `Menubar`, and `ContextMenu` content container handled
+keyboard navigation (ArrowDown/Up, Home/End, Enter/Space, Escape, ArrowLeft/Right) via
+Blazor `@onkeydown` — a full C# SignalR round-trip per keystroke. Each individual item
+(`MenuItem`, `CheckboxItem`, `RadioItem`, `SubTrigger`) also duplicated Enter/Space handlers.
+This caused:
+- One Blazor round-trip per keydown event even for simple focus movement
+- Navigation `await` latency visible at ≥ 100 ms on Interactive Server
+- Duplicated keydown logic scattered across 15+ components
+- `FocusElementAsync` JS interop helper duplicated in every item component
+
+**What Changed:**
+
+A new `menu-keyboard.js` ES module centralises all menu keyboard behaviour in JavaScript.
+C# is called back only for **state-changing events** (Escape closes, ArrowLeft closes submenu,
+ArrowRight/Left switches Menubar menus). Item focus movement and Enter/Space activation never
+leave the browser.
+
+---
+
+### 🆕 New JS Module: `menu-keyboard.js`
+
+`src/BlazorUI.Primitives/wwwroot/js/primitives/menu-keyboard.js`
+
+Supports three modes attached to a `role="menu"` container:
+
+| Mode | Used by | Extra keys |
+|---|---|---|
+| `vertical` | `DropdownMenuContent`, `ContextMenuContent` | — |
+| `menubar` | `MenubarContent` | ArrowRight/Left → `JsOnNextMenu` / `JsOnPreviousMenu` |
+| `submenu` | `*SubContent` (all three families) | ArrowLeft → `JsOnCloseSubMenu` |
+
+Options: `loop` (wrap navigation), `initialFocus` (`"first"` focuses first enabled item on open).
+
+JS calls back to C# only via:
+- `JsOnEscapeKey()` — close the menu/root
+- `JsOnCloseSubMenu()` — close submenu + restore focus to trigger
+- `JsOnNextMenu()` / `JsOnPreviousMenu()` — switch Menubar menu (menubar mode only)
+
+---
+
+### 🔧 Components Changed
+
+#### DropdownMenu
+
+| Component | Change |
+|---|---|
+| `DropdownMenuContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` with `menu-keyboard.js` "vertical" mode; added `[JSInvokable] JsOnEscapeKey` |
+| `DropdownMenuSubContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` with `menu-keyboard.js` "submenu" mode; added `JsOnEscapeKey`, `JsOnCloseSubMenu` |
+| `DropdownMenuItem` | Removed `@onkeydown`, `@inject IJSRuntime`, `FocusElementAsync` helper; added `Href`/`Target` params (renders `<a>` when set) and `MergedAttributes` (merges `Context.ItemClass`) |
+| `DropdownMenuCheckboxItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `DropdownMenuRadioItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `DropdownMenuSubTrigger` | Removed `@onkeydown` / `HandleKeyDown`; removed `@inject IJSRuntime` / `FocusElementAsync` |
+| `DropdownMenuContext.cs` | Added `ItemClass` property (cascaded from `DropdownMenu.ItemClass`) |
+| `DropdownMenu.razor` | Added `ItemClass` parameter; synced to context in `OnParametersSet` |
+
+#### Menubar
+
+| Component | Change |
+|---|---|
+| `MenubarContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` / navigation methods with `menu-keyboard.js` "menubar" mode; added `JsOnEscapeKey`, `JsOnNextMenu`, `JsOnPreviousMenu`; simplified `FocusContainerAsync` |
+| `MenubarSubContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` with `menu-keyboard.js` "submenu" mode; added `JsOnEscapeKey`, `JsOnCloseSubMenu` |
+| `MenubarItem` | Removed `@onkeydown`, `@inject IJSRuntime`, `FocusElementAsync` helper |
+| `MenubarCheckboxItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `MenubarRadioItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `MenubarSubTrigger` | Removed `@onkeydown` / `HandleKeyDown` |
+
+#### ContextMenu
+
+| Component | Change |
+|---|---|
+| `ContextMenuContent` | Replaced `keyboard-nav.js` + C# `HandleKeyDown` + inline navigation methods with `menu-keyboard.js` "vertical" mode; added `JsOnEscapeKey` |
+| `ContextMenuSubContent` | Replaced C# `HandleKeyDown` + `FocusNextItem`/`FocusPreviousItem` helpers with `menu-keyboard.js` "submenu" mode; added `JsOnEscapeKey`, `JsOnCloseSubMenu` |
+| `ContextMenuItem` | Removed `@onkeydown`, `@inject IJSRuntime`, `FocusElementAsync` helper |
+| `ContextMenuCheckboxItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `ContextMenuRadioItem` | Removed `@onkeydown` / `HandleKeyDown` |
+| `ContextMenuSubTrigger` | Removed `@onkeydown` / `HandleKeyDown` |
+
+---
+
+### 🐛 Bug Fix: Submenu Close Chain Broken for Keyboard-Opened Submenus
+
+**Affected:** `DropdownMenuSubTrigger`, `MenubarSubTrigger`, `ContextMenuSubTrigger`
+
+`HandleMouseEnter` registered `SubContext` as `ActiveSubMenu` on the parent context, but
+`HandleClick` (called by both mouse click and keyboard Enter/Space/ArrowRight via JS `click()`)
+did not. This meant that when a submenu was opened via keyboard, `Context.Close()` /
+`MenuContext.CloseMenu()` could not recurse into the submenu — only the root menu closed while
+the submenu panel remained visible.
+
+**Fix:** `HandleClick` now registers `SubContext` as `ActiveSubMenu` on the parent context
+(matching what `HandleMouseEnter` already did) before calling `SubContext.Open()`.
+
+---
+
+### ⚡ Performance: `PopoverContent` Escape Key Migrated to `dialog.js`
+
+`PopoverContent` previously handled Escape via `@onkeydown` (one Blazor round-trip per keydown
+inside the popover). It now reuses `dialog.js` (`initializeKeyboardHandler` /
+`disposeKeyboardHandler`) — the same module `DialogContent` uses — which attaches a single
+capture-phase JS listener and calls back to C# only when Escape is actually pressed.
+
+Added `[JSInvokable] HandleEscapeKey()` matching the Dialog pattern. The `@onkeydown` binding
+and C# `HandleKeyDown` method have been removed.
+
+### 🐛 Bug Fix: `PopoverContent` Container Not Auto-Focused on Open
+
+`PopoverContent` was missing the `data-autofocus` attribute on its content `<div>`. As a result:
+- `portal.js`'s `blazorui:visible` auto-focus listener never moved focus into the popover
+- The new `dialog.js` Escape handler (capture-phase, requires focus inside the element) therefore
+  never fired when Escape was pressed
+
+**Fix:** Added `data-autofocus` to the content div, consistent with `DropdownMenuContent`.
+
+---
+
+### ⌨️ Feature: DataTable Keyboard Navigation for Row Selection and Column Sorting
+
+Keyboard navigation is now fully functional in the `Table` primitive for both row selection and
+header-triggered sorting.
+
+#### `TableRow` — Row selection keyboard nav
+
+| Key | Behaviour |
+|---|---|
+| `ArrowDown` | Move focus to the next selectable row |
+| `ArrowUp` | Move focus to the previous selectable row |
+| `Enter` / `Space` | Toggle selection of the focused row |
+
+- Rows receive `tabindex="0"` only when `EnableKeyboardNavigation` is true on the `TableContext`
+- A visible focus ring (`focus:ring-2 focus:ring-ring focus:ring-inset`) is automatically added
+  to keyboard-navigable rows via `ComputedClass`
+- Focus movement is handled by a new `table-row-nav.js` JS module (`moveFocusToNextRow` /
+  `moveFocusToPreviousRow`) using DOM sibling traversal — no C# round-trip required per move
+- A capture-phase JS listener (`preventSpaceKeyScroll`) prevents Space and Arrow keys from
+  scrolling the page while a row is focused; attached once on first render via `OnAfterRenderAsync`
+
+#### `TableHeaderCell` — Sortable header keyboard nav
+
+| Key | Behaviour |
+|---|---|
+| `Enter` / `Space` | Toggle sort direction for the column |
+
+- Sortable header cells (those with a `ColumnId`) receive `tabindex="0"`; non-sortable cells
+  remain at `tabindex="-1"` and are skipped in tab order
+- `aria-sort` attribute reflects the current sort direction (`ascending`, `descending`, `none`)
+  for correct screen-reader announcement
+
+#### New JS module: `table-row-nav.js`
+
+`src/BlazorUI.Primitives/wwwroot/js/primitives/table-row-nav.js`
+
+| Export | Purpose |
+|---|---|
+| `preventSpaceKeyScroll(element)` | Capture-phase handler; prevents Space / ArrowUp / ArrowDown scroll; returns `{ dispose }` cleanup |
+| `moveFocusToNextRow(element)` | Advances focus to the next sibling row with `tabindex`, manages `tabindex` roving |
+| `moveFocusToPreviousRow(element)` | Same as above, backwards |
+
+---
+
+## 2026-02-20 - Force-Mount Overlay Architecture for All FloatingPortal Consumers
+
+### 🏗️ Major Refactoring and Improvements to FloatingPortal
+
+Several improvements were applied to `FloatingPortal.razor` alongside the force-mount work. These harden the lifecycle and eliminate
+a class of WASM-specific rendering artefacts.
+
+#### 1. JS-Delegated AutoUpdate Lifecycle
+
+`showFloating` and `hideFloating` in `positioning.js` now own the full AutoUpdate lifecycle:
+
+- **On hide (`hideFloating`):** AutoUpdate is disposed *synchronously before* the `requestAnimationFrame`
+  callback. This stops wasted position computations while the portal is invisible and matches the
+  upstream dispose-on-hide intent.
+- **On show (`showFloating`):** AutoUpdate is re-created *after* recomputing the current position.
+  JS handles the full sequence: dispose old → `computePosition` → set up new `autoUpdate` → show via
+  `requestAnimationFrame`. A single C# `await ShowFloatingAsync(...)` call drives this entire chain.
+
+The C# side no longer holds an `_positioningCleanup` handle in the ForceMount re-open path —
+JS owns AutoUpdate exclusively via `element._autoUpdateCleanupId` stored on the DOM element itself.
+
+```
+Before (ForceMount re-open):   C# disposes old handle → JS computes → JS recreates AutoUpdate
+After  (ForceMount re-open):   Single ShowFloatingAsync → JS owns full lifecycle internally
+```
+
+#### 2. `ForceMount` Lifecycle Guard: `_isUpdatingVisibility` + `_previousIsOpen` Edge Detection
+
+Two flags cooperate to prevent re-entrant visibility updates during async transitions (critical
+in WASM where `await` yields to the browser event loop):
+
+- **`_previousIsOpen`** — set to the new value *before* the first `await`, so any re-render
+  triggered by the async operation sees a stable snapshot and does not re-enter the branch.
+- **`_isUpdatingVisibility`** — set to `true` for the duration of the async update; a concurrent
+  `OnAfterRenderAsync` call that arrives while a transition is in-flight skips silently.
+
+This eliminates the flicker/duplication class of bugs that occurred in Interactive Server when
+Blazor's re-render cycle raced with the JS `requestAnimationFrame` callback.
+
+#### 3. Separated ForceMount and Standard Lifecycle Paths
+
+`OnAfterRenderAsync` is now split into two dedicated methods with a single dispatch:
+
+- **`HandleForceMountLifecycleAsync()`** — portal registers once on first mount and stays
+  registered indefinitely. Open/close transitions call `ShowFloatingAsync` / `HideAsync`
+  without touching portal registration. The `_isPositioned` flag persists across visibility
+  cycles so Blazor's virtual DOM diff never rewrites the `style` attribute after JS has taken
+  ownership of position and visibility.
+
+- **`HandleStandardLifecycleAsync()`** — portal mounts on open and fully unregisters on close
+  via `CleanupAsync`. The original, backward-compatible path preserved for `ForceMount=false`
+  consumers (e.g. `TooltipContent`, `HoverCardContent`) where DOM economy outweighs remount cost.
+
+Each path is independently readable with no conditional branches bleeding across the two modes.
+Adding behaviour to one lifecycle cannot accidentally affect the other.
+
+---
+
+### ⚡ Performance: `FloatingPortal.ForceMount` Now Defaults to `true`
+
+`ForceMount` was previously opt-in (`false` by default, first introduced 2026-02-11). It is now
+`true` by default across the entire library. Every floating portal stays registered in the DOM and
+is hidden/shown exclusively via JS — eliminating remount overhead and enabling CSS exit animations
+by default for all consumers without any parameter changes.
+
+**Migration:** No action required. If a specific consumer should still unmount on close (e.g. to
+keep the DOM lean when many instances coexist), pass `ForceMount="false"` explicitly. Both
+`TooltipContent` and `HoverCardContent` already do this.
+
+---
+
+### ⚡ Performance: Eliminated Outer `@if` Gates on All Floating Overlays
+
+**Motivation:** Every `FloatingPortal` consumer had an outer `@if (Context.IsOpen)` guard that destroyed
+and recreated the entire component subtree on each open/close cycle — directly defeating `ForceMount`,
+which was already the default on `FloatingPortal`. This caused:
+- Full portal unmount/remount, losing all cached JS handles and DOM state
+- Re-execution of `MountPortalAsync`, JS module imports, and `SetupAsync` on every open
+- Visible re-mount latency, especially under Interactive Server (SignalR round-trips)
+
+**What Changed:**
+
+The outer `@if` gate was removed from **9 components**. `FloatingPortal` is now always rendered;
+open/close state is communicated via `IsOpen`, and `ForceMount` handles visibility via JS
+(`requestAnimationFrame` + `data-state` transitions) without any Blazor re-mount overhead.
+
+#### Components changed to always-mounted (`ForceMount=true`, default)
+
+| Component | File |
+|---|---|
+| `DropdownMenuContent` | `Primitives/DropdownMenu/DropdownMenuContent.razor` |
+| `DropdownMenuSubContent` | `Primitives/DropdownMenu/DropdownMenuSubContent.razor` |
+| `PopoverContent` | `Primitives/Popover/PopoverContent.razor` |
+| `SelectContent` | `Primitives/Select/SelectContent.razor` |
+
+#### Components changed to standard lifecycle (`ForceMount=false`, explicit)
+
+| Component | File | Reason |
+|---|---|---|
+| `TooltipContent` | `Primitives/Tooltip/TooltipContent.razor` | Can have 30–100+ instances per page; hover delay absorbs mount cost |
+| `HoverCardContent` | `Primitives/HoverCard/HoverCardContent.razor` | Same multiplicity concern; richer content makes N hidden portals expensive |
+| `ContextMenuContent` | `Primitives/ContextMenu/ContextMenuContent.razor` | Not fit by design |
+| `ContextMenuSubContent` | `Primitives/ContextMenu/ContextMenuSubContent.razor` | Not fit by design |
+| `MenubarSubContent` | `Primitives/Menubar/MenubarSubContent.razor` | Not fit by design |
+
+#### Already correct (no change needed)
+
+- `MenubarContent` — was already unconditionally rendered
+
+**Specific changes per component:**
+
+- **All 9 components:** `IsOpen="true"` → `IsOpen="@Context.IsOpen"` (or equivalent context property)
+- **`ContextMenuContent`:** Overlay `<div>` kept in its own narrow `@if (Context.IsOpen)` — it is a
+  full-screen fixed hit-test layer and should not persist in the DOM when the menu is closed
+- **`SelectContent`:** Removed redundant `ForceMount="@ForceMount"` pass-through (FloatingPortal
+  already defaults to `true`); fixed `AnchorElement` to null-safe `_context?.State.TriggerElement`
+  since the outer gate previously guaranteed `_context` was non-null
+- **`TooltipContent` / `HoverCardContent`:** Added explicit `ForceMount="false"` — component instance
+  stays alive (preserving `_portalId` and event subscriptions) but the portal DOM node is
+  created/destroyed per open cycle, keeping the DOM lean when many instances coexist
+
+**Benefits:**
+- ✅ **Zero re-mount overhead** on reopen for force-mounted components — JS toggles visibility directly
+- ✅ **JS handles stay warm** — `_keyboardNavCleanup`, `_clickOutsideCleanup`, etc. survive close/reopen cycles
+- ✅ **CSS exit animations** — `data-state` transitions work correctly because the DOM node is never destroyed mid-animation
+- ✅ **WASM-friendly** — single `ShowFloatingAsync` call replaces full portal setup on reopen
+- ✅ **Lean DOM** for hover-triggered components — Tooltip and HoverCard nodes only exist when open
+
+---
+
 ## 2026-02-18 - Theme System Migration & Complete XML Documentation
 
 ### 🎨 Theme System Migration to Component Library
 
-**Migrated the entire theme system to NeoBlazorUI.Components for zero-configuration, reusable theming:**
+**Migrated the entire theme system to NeoUI.Blazor for zero-configuration, reusable theming:**
 
 **What Changed:**
 - **ThemeService** - Moved from demo project to `src/BlazorUI.Components/Services/Theming/ThemeService.cs`
@@ -21,12 +630,12 @@ All notable changes to this project will be documented in this file.
 
 - **Theme JavaScript** - Moved to `src/BlazorUI.Components/wwwroot/js/theme.js`
   - CSP-compliant theme application and dark mode detection
-  - Available via `_content/NeoBlazorUI.Components/js/theme.js`
+  - Available via `_content/NeoUI.Blazor/js/theme.js`
 
 - **Theme CSS Files** - Moved to `src/BlazorUI.Components/wwwroot/css/themes/`
   - All 5 base color themes (Zinc, Slate, Gray, Neutral, Stone)
   - All 17 primary color themes (Red, Rose, Orange, Amber, Yellow, Lime, Green, Emerald, Teal, Cyan, Sky, Blue, Indigo, Violet, Purple, Fuchsia, Pink)
-  - Available via `_content/NeoBlazorUI.Components/css/themes/...`
+  - Available via `_content/NeoUI.Blazor/css/themes/...`
 
 **Benefits:**
 - ✅ **Zero Configuration** - Just reference the component library
@@ -38,11 +647,11 @@ All notable changes to this project will be documented in this file.
 **Migration Path:**
 ```razor
 <!-- Reference theme CSS from component library -->
-<link href="_content/NeoBlazorUI.Components/css/themes/base/zinc.css" rel="stylesheet" />
-<link href="_content/NeoBlazorUI.Components/css/themes/primary/blue.css" rel="stylesheet" />
+<link href="_content/NeoUI.Blazor/css/themes/base/zinc.css" rel="stylesheet" />
+<link href="_content/NeoUI.Blazor/css/themes/primary/blue.css" rel="stylesheet" />
 
 <!-- Include theme JavaScript -->
-<script src="_content/NeoBlazorUI.Components/js/theme.js"></script>
+<script src="_content/NeoUI.Blazor/js/theme.js"></script>
 ```
 
 ---
@@ -117,7 +726,7 @@ All notable changes to this project will be documented in this file.
 **ThemeSwitcher (demo\BlazorUI.Demo.Shared\Common\ThemeSwitcher.razor):**
 - Popover-based theme configuration panel
 - Visual color pickers with preview swatches
-- Grid layout for base colors (5 options) and primary colors (17 options)
+- DataGrid layout for base colors (5 options) and primary colors (17 options)
 - Selected state indicators with ring highlights
 - Integrated DarkModeToggle
 - Tooltip showing current theme selection (e.g., "Zinc / Blue")
@@ -361,8 +970,8 @@ window.theme = {
      - `AlertDialogContent`
 
 **Breaking Changes:**
-- **Moved ZIndexLevels** from `BlazorUI.Primitives.Constants` to `BlazorUI.Primitives.Services`
-  - **Migration**: Update `using` statements from `BlazorUI.Primitives.Constants` to `BlazorUI.Primitives.Services`
+- **Moved ZIndexLevels** from `NeoUI.Blazor.Primitives.Constants` to `NeoUI.Blazor.Primitives.Services`
+  - **Migration**: Update `using` statements from `NeoUI.Blazor.Primitives.Constants` to `NeoUI.Blazor.Primitives.Services`
 
 ## 2026-02-11 - UI Consistency Improvements for Select, Combobox, MultiSelect, and RadioGroup
 
@@ -771,7 +1380,7 @@ private string? GetParentPortalId()
 
 **Changes:**
 - Updated 14 component files to replace non-standard class merging patterns
-- Added `@using BlazorUI.Components.Utilities` directive to all affected components
+- Added `@using NeoUI.Blazor.Utilities` directive to all affected components
 - Grouped CSS classes by intent/purpose following Input component pattern
 - Removed legacy patterns: `StringBuilder`, `List<string>`, manual string concatenation
 
@@ -856,7 +1465,7 @@ ClassNames.cn(
 ### 🎨 UI/UX Enhancements & Demo Improvements
 
 **Status:** ✅ Complete, Production Ready  
-**Impact:** Enhanced navigation structure, improved component styling consistency, and standardized demo documentation across Grid examples.
+**Impact:** Enhanced navigation structure, improved component styling consistency, and standardized demo documentation across DataGrid examples.
 
 ---
 
@@ -864,18 +1473,18 @@ ClassNames.cn(
 
 #### **Chart and Grid Root-Level Navigation**
 
-**Added dedicated navigation sections for Chart and Grid components:**
+**Added dedicated navigation sections for Chart and DataGrid components:**
 
 **Changes:**
 - Added Chart section with collapsible submenu in MainLayout
   - Area Chart, Bar Chart, Line Chart, Pie Chart, Scatter Chart, Radar Chart, Composed Chart
-- Added Grid section with collapsible submenu in MainLayout
+- Added DataGrid section with collapsible submenu in MainLayout
   - Basic, Templating, Selection, Transactions, Sorting & Filtering, State, Server-Side, Advanced, Theming
 - Replaced all custom SVG icons with LucideIcon components for consistency
-- Fixed Chart and Grid routing - updated hrefs from hash fragments to proper routes
+- Fixed Chart and DataGrid routing - updated hrefs from hash fragments to proper routes
 
 **Benefits:**
-- ✅ Chart and Grid components get extra visibility with dedicated navigation
+- ✅ Chart and DataGrid components get extra visibility with dedicated navigation
 - ✅ Direct access to specific chart types and grid features
 - ✅ Consistent icon system throughout navigation
 - ✅ Proper Blazor routing with bookmarkable URLs
@@ -959,7 +1568,7 @@ demo/BlazorUI.Demo.Shared/Pages/Components/Charts/PieChartExamples.razor
 
 #### **Standardized Information Boxes with Alert Component**
 
-**Replaced all custom info boxes with standardized Alert components across Grid demos:**
+**Replaced all custom info boxes with standardized Alert components across DataGrid demos:**
 
 **Alert Variants Used:**
 - `Info` - Instructional/informational content (default for most boxes)
@@ -971,15 +1580,15 @@ demo/BlazorUI.Demo.Shared/Pages/Components/Charts/PieChartExamples.razor
 ### 📊 Summary
 
 **Components Enhanced:** 4 (SelectTrigger, MultiSelect, CommandInput, PieChartExamples)  
-**Navigation Improvements:** Chart and Grid root-level sections with 16 new navigation links  
-**Demo Pages Standardized:** 3 Grid demo pages with 11 Alert components  
+**Navigation Improvements:** Chart and DataGrid root-level sections with 16 new navigation links  
+**Demo Pages Standardized:** 3 DataGrid demo pages with 11 Alert components  
 **Icons Standardized:** All navigation icons now use LucideIcon  
 **Routing Fixed:** 13 chart/grid pages with proper @page directives  
 
 **Impact:**
 - Enhanced user experience with smoother transitions and better visual feedback
 - Improved navigation structure for easier component discovery
-- Consistent, professional documentation across Grid examples
+- Consistent, professional documentation across DataGrid examples
 - Better accessibility and maintainability
 
 ---
@@ -1242,7 +1851,7 @@ protected override async Task OnAfterRenderAsync(bool firstRender)
     if (firstRender)
     {
         _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/NeoBlazorUI.Components/js/input.js");
+            "import", "./_content/NeoUI.Blazor/js/input.js");
         
         _dotNetRef = DotNetObjectReference.Create(this);
         
@@ -2264,13 +2873,13 @@ Viewport Edge
                  ButtonSize="ButtonSize" />
 ```
 
-**Breaking Change:** Namespace changed from `BlazorUI.Components.DatePicker` to `BlazorUI.Components.DateRangePicker`
+**Breaking Change:** Namespace changed from `NeoUI.Blazor.DatePicker` to `NeoUI.Blazor.DateRangePicker`
 ```razor
 @* Before *@
-@using BlazorUI.Components.DatePicker
+@using NeoUI.Blazor.DatePicker
 
 @* After *@
-@using BlazorUI.Components.DateRangePicker
+@using NeoUI.Blazor.DateRangePicker
 ```
 
 ---
@@ -3005,21 +3614,21 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 - SSRM demo showcasing server-side sorting, filtering, and paging
 
 ### Changed
-- GridImportMap refactored to simplify developer experience in App.razor
+- DataGridImportMap refactored to simplify developer experience in App.razor
 - Selection sample updated to use new TrackableObservableCollection
 
 ## 2026-01-14
 
 ### Added
 - Comprehensive movie database demo with TMDb API integration
-- Server-side row model with GridRowModelType and demo pages
+- Server-side row model with DataGridRowModelType and demo pages
 - NotifyItemsChanged pattern with TrackableObservableCollection
 - Grid Component Milestones 1-4 with complete demo pages
-- Complete AG Grid state management with @bind-State and hash-based mutation detection
+- Complete AG DataGrid state management with @bind-State and hash-based mutation detection
 
 ### Changed
-- Grid added to indexes for production ready
-- All Grid demos finalized with working functions
+- DataGrid added to indexes for production ready
+- All DataGrid demos finalized with working functions
 
 ### Fixed
 - Code review fixes for hash properties, firstRender check, and unused filterable property
@@ -3030,12 +3639,12 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 ### Added
 - @bind-State with hash-based mutation detection for natural state management
 - InitialState application and programmatic state updates for controlled sort/filter demos
-- GetStateAsync to Grid component
-- Three-level AG Grid theme customization with Shadcn integration
+- GetStateAsync to DataGrid component
+- Three-level AG DataGrid theme customization with Shadcn integration
 
 ### Changed
-- GridState and GridColumnState expanded with complete AG Grid properties
-- All Grid demos finalized (minus sorting and states)
+- DataGridState and DataDataGridColumnState expanded with complete AG DataGrid properties
+- All DataGrid demos finalized (minus sorting and states)
 - Proper marshalling between JS and C# for row selections
 - Comprehensive Transactions and Refresh API for granular controls
 
@@ -3070,7 +3679,7 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 ### Added
 - Template rendering framework supporting cell templates and header templates
 - GridAction for easy JS interop from Blazor components inside templates
-- DataFormatString in GridColumn for easy data formatting
+- DataFormatString in DataGridColumn for easy data formatting
 
 ### Changed
 - Templating demo finalized with DataFormatString implementation
@@ -3086,7 +3695,7 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 - Theme application using native withParams API
 
 ### Fixed
-- AG Grid theming regression
+- AG DataGrid theming regression
 - Theme parameter handling
 
 ### Removed
@@ -3116,8 +3725,8 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 ## 2025-12-24
 
 ### Added
-- Grid component with 20 comprehensive demo examples
-- Grid demo tabs following charting pattern
+- DataGrid component with 20 comprehensive demo examples
+- DataGrid demo tabs following charting pattern
 - SearchInterval in CommandInput for faster query performance
 
 ### Changed
@@ -3134,7 +3743,7 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 
 ### Added
 - Grid Component Milestones 1-4 (Core Object Model, Components, Renderer Abstraction, AG Grid Renderer)
-- Grid architecture documentation (GRID_DEMOS_V1.md, GRID_VS_DATATABLE.md)
+- DataGrid architecture documentation (GRID_DEMOS_V1.md, GRID_VS_DATATABLE.md)
 - CI/CD setup for GitHub and Azure App Service
 
 ### Changed
@@ -3143,8 +3752,8 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 - All components list added to sidebar, index, and spotlight search
 
 ### Fixed
-- Missing using directives in Grid component
-- BuildGridDefinition timing issues
+- Missing using directives in DataGrid component
+- BuildDataGridDefinition timing issues
 - Page number calculation in Grid
 - CSV formula injection mitigation added
 
@@ -3213,7 +3822,7 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 ### Added
 - Animation system for declarative chart API
 - Fill/LinearGradient/Stop with complete ECharts gradient mapping
-- 6 production-ready features: YAxis position, Grid styling, Axis min/max, Tooltip styling, Symbol customization, Series opacity
+- 6 production-ready features: YAxis position, DataGrid styling, Axis min/max, Tooltip styling, Symbol customization, Series opacity
 
 ### Fixed
 - ECharts renderer: v6 download, improved color detection, single-flight loading

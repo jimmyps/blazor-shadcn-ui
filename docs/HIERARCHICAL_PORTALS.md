@@ -347,22 +347,22 @@ Test scenarios:
 ## Files Changed
 
 ### Layer 1: Categorized Portal Hosts (Phase 1-3)
-- `src/BlazorUI.Primitives/Services/PortalCategory.cs` - Portal category enum
-- `src/BlazorUI.Primitives/Services/IPortalService.cs` - Added category support
-- `src/BlazorUI.Primitives/Services/PortalService.cs` - Category-based event system
-- `src/BlazorUI.Primitives/Services/CategoryPortalHost.razor` - Base category host
-- `src/BlazorUI.Primitives/Services/ContainerPortalHost.razor` - Container category host
-- `src/BlazorUI.Primitives/Services/OverlayPortalHost.razor` - Overlay category host
+- `src/NeoUI.Blazor.Primitives/Services/PortalCategory.cs` - Portal category enum
+- `src/NeoUI.Blazor.Primitives/Services/IPortalService.cs` - Added category support
+- `src/NeoUI.Blazor.Primitives/Services/PortalService.cs` - Category-based event system
+- `src/NeoUI.Blazor.Primitives/Services/CategoryPortalHost.razor` - Base category host
+- `src/NeoUI.Blazor.Primitives/Services/ContainerPortalHost.razor` - Container category host
+- `src/NeoUI.Blazor.Primitives/Services/OverlayPortalHost.razor` - Overlay category host
 
 ### Layer 2: Hierarchical Portal Scopes
-- `src/BlazorUI.Primitives/Services/IPortalService.cs` - Added hierarchical methods
-- `src/BlazorUI.Primitives/Services/PortalService.cs` - Implemented PortalScope system
-- `src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor` - Added ParentPortalId parameter
+- `src/NeoUI.Blazor.Primitives/Services/IPortalService.cs` - Added hierarchical methods
+- `src/NeoUI.Blazor.Primitives/Services/PortalService.cs` - Implemented PortalScope system
+- `src/NeoUI.Blazor.Primitives/Primitives/Floating/FloatingPortal.razor` - Added ParentPortalId parameter
 
 ### Component Migrations
-- `src/BlazorUI.Primitives/Primitives/DropdownMenu/DropdownMenuSubContent.razor` - Uses hierarchical portals
-- `src/BlazorUI.Primitives/Primitives/Menubar/MenubarSubContent.razor` - Uses hierarchical portals
-- `src/BlazorUI.Primitives/Primitives/ContextMenu/ContextMenuSubContent.razor` - Migrated to FloatingPortal + hierarchical portals
+- `src/NeoUI.Blazor.Primitives/Primitives/DropdownMenu/DropdownMenuSubContent.razor` - Uses hierarchical portals
+- `src/NeoUI.Blazor.Primitives/Primitives/Menubar/MenubarSubContent.razor` - Uses hierarchical portals
+- `src/NeoUI.Blazor.Primitives/Primitives/ContextMenu/ContextMenuSubContent.razor` - Migrated to FloatingPortal + hierarchical portals
 
 ### Removed Legacy Code
 - Rate limiting logic from FloatingPortal (no longer needed with categorized hosts)

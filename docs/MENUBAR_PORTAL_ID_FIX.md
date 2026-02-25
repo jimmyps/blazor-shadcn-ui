@@ -48,7 +48,7 @@ After fixing all three components, here are the correct patterns:
 
 ## Files Changed
 
-**src/BlazorUI.Primitives/Primitives/Menubar/MenubarSubContent.razor**
+**src/NeoUI.Blazor.Primitives/Primitives/Menubar/MenubarSubContent.razor**
 - Changed portal ID from: `$"menubar-menu-{MenubarMenuContext.TriggerId}"`
 - Changed to: `MenubarMenuContext.ContentId`
 - **Added critical cascading:** Must re-cascade both `MenuContext` AND `MenubarMenuContext`

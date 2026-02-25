@@ -1,0 +1,685 @@
+@namespace NeoUI.Blazor
+@using System.Globalization
+
+@* Calendar - accessible month/day grid for date selection *@
+<div @ref="_calendarRef" @attributes="GetAttributes()" role="application" aria-label="Calendar" tabindex="0" 
+     @onkeydown="HandleKeyDown" @onkeydown:preventDefault="@_shouldPreventDefault"
+     @onfocus="OnFocus" @onblur="OnBlur" @onfocusin="OnFocusIn">
+    @* Header with navigation *@
+    <div class="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
+        <div class="space-y-4">
+            @* Month navigation *@
+            <div class="relative flex w-full items-center justify-center pt-1">
+                <button type="button"
+                        @onclick="PreviousMonth"
+                        disabled="@(!CanNavigatePrevious)"
+                        class="@GetPrevNavButtonClass()"
+                        aria-label="Go to previous month">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m15 18-6-6 6-6"/>
+                    </svg>
+                </button>
+                @if (CaptionLayout == CalendarCaptionLayout.Dropdown)
+                {
+                    <div class="flex items-center gap-1">
+                        <select @bind="SelectedMonth" class="@GetDropdownClass()" aria-label="Select month"
+                                @onfocus="() => _isDropdownFocused = true" @onblur="() => _isDropdownFocused = false">
+                            @foreach (var month in GetMonths())
+                            {
+                                <option value="@month.Value">@month.Name</option>
+                            }
+                        </select>
+                        <select @bind="SelectedYear" class="@GetDropdownClass()" aria-label="Select year"
+                                @onfocus="() => _isDropdownFocused = true" @onblur="() => _isDropdownFocused = false">
+                            @foreach (var year in GetYears())
+                            {
+                                <option value="@year">@year</option>
+                            }
+                        </select>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-sm font-medium" aria-live="polite">
+                        @DisplayedMonth.ToString("MMMM yyyy", Culture)
+                    </div>
+                }
+                <button type="button"
+                        @onclick="NextMonth"
+                        disabled="@(!CanNavigateNext)"
+                        class="@GetNextNavButtonClass()"
+                        aria-label="Go to next month">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                </button>
+            </div>
+
+            @* Day grid *@
+            <table class="w-full border-collapse space-y-1" role="grid" aria-label="@DisplayedMonth.ToString("MMMM yyyy", Culture)">
+                <thead>
+                    <tr class="flex">
+                        @foreach (var dayName in GetDayNames())
+                        {
+                            <th scope="col" class="text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]">
+                                @dayName
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody @key="_displayedMonth">
+                    @foreach (var week in GetWeeks())
+                    {
+                        <tr class="@ClassNames.cn("flex w-full mt-2", RowClass)">
+                            @foreach (var day in week)
+                            {
+                                <td class="relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md">
+                                    @if (day.HasValue)
+                                    {
+                                        <button type="button"
+                                                tabindex="-1"
+                                                @onclick="@(() => { SelectDate(day.Value); _calendarRef.FocusAsync(); })"
+                                                disabled="@(!IsDateEnabled(day.Value))"
+                                                class="@GetDayClass(day.Value)"
+                                                data-focused="@IsFocused(day.Value)"
+                                                aria-label="@day.Value.ToString("D", Culture)"
+                                                aria-selected="@IsSelected(day.Value)">
+                                            @day.Value.Day
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="inline-flex h-9 w-9"></span>
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    private DateOnly _displayedMonth;
+    private DateOnly _focusedDate;
+    private DateOnly? _previousSelectedDate;
+    private ElementReference _calendarRef;
+    private bool _shouldPreventDefault;
+    private bool _isDropdownFocused;
+    private bool _hasFocus;
+    private bool _needsRefocus;
+    
+    /// <summary>
+    /// Programmatically focuses the calendar container.
+    /// </summary>
+    public async Task FocusAsync()
+    {
+        await _calendarRef.FocusAsync();
+    }
+    
+    /// <summary>
+    /// The currently selected date.
+    /// </summary>
+    [Parameter]
+    public DateOnly? SelectedDate { get; set; }
+
+    /// <summary>
+    /// Event callback invoked when the selected date changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<DateOnly?> SelectedDateChanged { get; set; }
+
+    /// <summary>
+    /// The minimum selectable date.
+    /// </summary>
+    [Parameter]
+    public DateOnly? MinDate { get; set; }
+
+    /// <summary>
+    /// The maximum selectable date.
+    /// </summary>
+    [Parameter]
+    public DateOnly? MaxDate { get; set; }
+
+    /// <summary>
+    /// The culture to use for formatting.
+    /// Default is the current culture.
+    /// </summary>
+    [Parameter]
+    public CultureInfo Culture { get; set; } = CultureInfo.CurrentCulture;
+
+    /// <summary>
+    /// The initial month to display.
+    /// Defaults to the selected date's month or current month.
+    /// </summary>
+    [Parameter]
+    public DateOnly? InitialMonth { get; set; }
+
+    /// <summary>
+    /// Function to determine if a specific date is disabled.
+    /// </summary>
+    [Parameter]
+    public Func<DateOnly, bool>? IsDateDisabled { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes to apply to the calendar.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes to apply to each week row in the day grid.
+    /// </summary>
+    [Parameter]
+    public string? RowClass { get; set; }
+
+    /// <summary>
+    /// Additional attributes to apply to the calendar element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// The caption layout mode for month/year display.
+    /// Default is Label (static text). Dropdown allows quick month/year selection.
+    /// </summary>
+    [Parameter]
+    public CalendarCaptionLayout CaptionLayout { get; set; } = CalendarCaptionLayout.Label;
+
+    /// <summary>
+    /// The number of years to show before and after the current year in dropdown mode.
+    /// Default is 20 years in each direction.
+    /// </summary>
+    [Parameter]
+    public int YearRange { get; set; } = 20;
+
+    /// <summary>
+    /// The start date of a range selection (for visual styling).
+    /// </summary>
+    [Parameter]
+    public DateOnly? RangeStart { get; set; }
+
+    /// <summary>
+    /// The end date of a range selection (for visual styling).
+    /// </summary>
+    [Parameter]
+    public DateOnly? RangeEnd { get; set; }
+
+    /// <summary>
+    /// Event callback invoked when the displayed month changes.
+    /// This fires whenever the user navigates to a different month via buttons, keyboard, or dropdown.
+    /// </summary>
+    [Parameter]
+    public EventCallback<DateOnly> DisplayedMonthChanged { get; set; }
+
+    public void NavigateMonth(DateOnly month, bool notifyMonthChanged = false)
+    {
+        if (month != _displayedMonth)
+        {
+            _displayedMonth = month;
+
+            if (notifyMonthChanged)
+                _ = NotifyMonthChanged();
+        }
+    }
+
+    private DateOnly DisplayedMonth => _displayedMonth;
+
+    /// <summary>
+    /// Property for binding the selected month in dropdown mode.
+    /// </summary>
+    private int SelectedMonth
+    {
+        get => _displayedMonth.Month;
+        set
+        {
+            if (value != _displayedMonth.Month)
+            {
+                var daysInNewMonth = DateTime.DaysInMonth(_displayedMonth.Year, value);
+                var preservedDay = Math.Min(_focusedDate.Day, daysInNewMonth);
+                _displayedMonth = new DateOnly(_displayedMonth.Year, value, 1);
+                _focusedDate = new DateOnly(_displayedMonth.Year, value, preservedDay);
+                _ = NotifyMonthChanged();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Property for binding the selected year in dropdown mode.
+    /// </summary>
+    private int SelectedYear
+    {
+        get => _displayedMonth.Year;
+        set
+        {
+            if (value != _displayedMonth.Year)
+            {
+                var daysInNewMonth = DateTime.DaysInMonth(value, _displayedMonth.Month);
+                var preservedDay = Math.Min(_focusedDate.Day, daysInNewMonth);
+                _displayedMonth = new DateOnly(value, _displayedMonth.Month, 1);
+                _focusedDate = new DateOnly(value, _displayedMonth.Month, preservedDay);
+                _ = NotifyMonthChanged();
+            }
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        _displayedMonth = InitialMonth ?? SelectedDate ?? DateOnly.FromDateTime(DateTime.Today);
+        _displayedMonth = new DateOnly(_displayedMonth.Year, _displayedMonth.Month, 1);
+        _focusedDate = SelectedDate ?? DateOnly.FromDateTime(DateTime.Today);
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Only update focused date if selected date actually changed
+        if (SelectedDate.HasValue && SelectedDate != _previousSelectedDate)
+        {
+            var selectedMonth = new DateOnly(SelectedDate.Value.Year, SelectedDate.Value.Month, 1);
+            if (selectedMonth != _displayedMonth)
+            {
+                _displayedMonth = selectedMonth;
+            }
+            _focusedDate = SelectedDate.Value;
+        }
+        _previousSelectedDate = SelectedDate;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Refocus the calendar container after month changes due to keyboard navigation
+        // This is needed because @key="_displayedMonth" on tbody recreates the DOM,
+        // which causes the browser to lose focus on the calendar container
+        if (_needsRefocus)
+        {
+            _needsRefocus = false;
+            await _calendarRef.FocusAsync();
+            // Trigger re-render to update focus ring visibility after focus is restored
+            // The FocusAsync() call triggers OnFocus which sets _hasFocus = true,
+            // but we need StateHasChanged to re-render and show the focus ring
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>
+    /// Gets the list of months for dropdown selection.
+    /// </summary>
+    private IEnumerable<(int Value, string Name)> GetMonths()
+    {
+        for (int i = 1; i <= 12; i++)
+        {
+            var date = new DateOnly(2000, i, 1);
+            yield return (i, date.ToString("MMMM", Culture));
+        }
+    }
+
+    /// <summary>
+    /// Gets the list of years for dropdown selection.
+    /// </summary>
+    private IEnumerable<int> GetYears()
+    {
+        var startYear = MinDate?.Year ?? DateTime.Today.Year - YearRange;
+        var endYear = MaxDate?.Year ?? DateTime.Today.Year + YearRange;
+        
+        // Ensure valid range
+        if (startYear > endYear)
+        {
+            (startYear, endYear) = (endYear, startYear);
+        }
+        
+        for (int year = startYear; year <= endYear; year++)
+        {
+            yield return year;
+        }
+    }
+
+    /// <summary>
+    /// Handles keyboard navigation within the calendar.
+    /// </summary>
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        // Don't handle keyboard events when dropdown selects have focus
+        if (_isDropdownFocused) return;
+        
+        _shouldPreventDefault = false;
+        
+        switch (e.Key)
+        {
+            case "ArrowLeft":
+                _shouldPreventDefault = true;
+                MoveFocus(-1);
+                break;
+            case "ArrowRight":
+                _shouldPreventDefault = true;
+                MoveFocus(1);
+                break;
+            case "ArrowUp":
+                _shouldPreventDefault = true;
+                MoveFocus(-7);
+                break;
+            case "ArrowDown":
+                _shouldPreventDefault = true;
+                MoveFocus(7);
+                break;
+            case "Enter":
+            case " ":
+                _shouldPreventDefault = true;
+                if (IsDateEnabled(_focusedDate))
+                {
+                    await SelectDate(_focusedDate);
+                }
+                break;
+            case "Home":
+                _shouldPreventDefault = true;
+                _focusedDate = new DateOnly(_focusedDate.Year, _focusedDate.Month, 1);
+                ClampFocusedDateToRange();
+                EnsureVisibleMonth();
+                break;
+            case "End":
+                _shouldPreventDefault = true;
+                _focusedDate = new DateOnly(_focusedDate.Year, _focusedDate.Month, DateTime.DaysInMonth(_focusedDate.Year, _focusedDate.Month));
+                ClampFocusedDateToRange();
+                EnsureVisibleMonth();
+                break;
+            case "PageUp":
+                _shouldPreventDefault = true;
+                _focusedDate = e.ShiftKey
+                    ? _focusedDate.AddYears(-1)
+                    : _focusedDate.AddMonths(-1);
+                ClampFocusedDateToRange();
+                EnsureVisibleMonth();
+                break;
+            case "PageDown":
+                _shouldPreventDefault = true;
+                _focusedDate = e.ShiftKey
+                    ? _focusedDate.AddYears(1)
+                    : _focusedDate.AddMonths(1);
+                ClampFocusedDateToRange();
+                EnsureVisibleMonth();
+                break;
+        }
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Moves focus by the specified number of days, respecting date constraints.
+    /// </summary>
+    private void MoveFocus(int days)
+    {
+        _focusedDate = _focusedDate.AddDays(days);
+        ClampFocusedDateToRange();
+        EnsureVisibleMonth();
+    }
+
+    /// <summary>
+    /// Clamps the focused date to be within MinDate and MaxDate constraints.
+    /// </summary>
+    private void ClampFocusedDateToRange()
+    {
+        if (MinDate.HasValue && _focusedDate < MinDate.Value)
+        {
+            _focusedDate = MinDate.Value;
+        }
+        if (MaxDate.HasValue && _focusedDate > MaxDate.Value)
+        {
+            _focusedDate = MaxDate.Value;
+        }
+    }
+
+    /// <summary>
+    /// Ensures the focused date's month is visible.
+    /// Sets _needsRefocus flag when month changes to restore focus after DOM recreation.
+    /// </summary>
+    private void EnsureVisibleMonth()
+    {
+        var focusedMonth = new DateOnly(_focusedDate.Year, _focusedDate.Month, 1);
+        if (focusedMonth != _displayedMonth)
+        {
+            _displayedMonth = focusedMonth;
+            // Month changed - the @key directive will recreate the tbody,
+            // so we need to refocus the calendar container after render
+            _needsRefocus = true;
+            _ = NotifyMonthChanged();
+        }
+    }
+
+    /// <summary>
+    /// Checks if the date is the currently focused date (for keyboard navigation).
+    /// Only shows focus ring when the calendar container has focus.
+    /// Returns true only for the exact date matching _focusedDate when _hasFocus is true.
+    /// </summary>
+    private bool IsFocused(DateOnly date)
+    {
+        // Must have focus on the calendar container
+        if (!_hasFocus) return false;
+        
+        // Only the exact focused date gets the ring (DateOnly compares by value: year, month, day)
+        return date == _focusedDate;
+    }
+
+    private void OnFocus() => _hasFocus = true;
+    private void OnBlur()
+    {
+        _hasFocus = false;
+        // Trigger re-render to remove focus ring when focus leaves the calendar
+        StateHasChanged();
+    }
+    private void OnFocusIn() => _hasFocus = true;
+
+    private bool CanNavigatePrevious =>
+        !MinDate.HasValue || 
+        new DateOnly(_displayedMonth.Year, _displayedMonth.Month, 1).AddMonths(-1) >= new DateOnly(MinDate.Value.Year, MinDate.Value.Month, 1);
+
+    private bool CanNavigateNext =>
+        !MaxDate.HasValue ||
+        new DateOnly(_displayedMonth.Year, _displayedMonth.Month, 1).AddMonths(1) <= new DateOnly(MaxDate.Value.Year, MaxDate.Value.Month, 1);
+
+    private void PreviousMonth()
+    {
+        if (CanNavigatePrevious)
+        {
+            _displayedMonth = _displayedMonth.AddMonths(-1);
+            _ = NotifyMonthChanged();
+        }
+    }
+
+    private void NextMonth()
+    {
+        if (CanNavigateNext)
+        {
+            _displayedMonth = _displayedMonth.AddMonths(1);
+            _ = NotifyMonthChanged();
+        }
+    }
+
+    private async Task SelectDate(DateOnly date)
+    {
+        if (!IsDateEnabled(date)) return;
+
+        await SelectedDateChanged.InvokeAsync(date);
+    }
+
+    private bool IsSelected(DateOnly date) => SelectedDate.HasValue && SelectedDate.Value == date;
+
+    private bool IsRangeStart(DateOnly date) => RangeStart.HasValue && RangeStart.Value == date;
+    
+    private bool IsRangeEnd(DateOnly date) => RangeEnd.HasValue && RangeEnd.Value == date;
+    
+    private bool IsInRange(DateOnly date)
+    {
+        if (!RangeStart.HasValue || !RangeEnd.HasValue) return false;
+        return date >= RangeStart.Value && date <= RangeEnd.Value;
+    }
+
+    private bool IsToday(DateOnly date) => date == DateOnly.FromDateTime(DateTime.Today);
+
+    private bool IsCurrentMonth(DateOnly date) => 
+        date.Year == _displayedMonth.Year && date.Month == _displayedMonth.Month;
+
+    private bool IsDateEnabled(DateOnly date)
+    {
+        if (MinDate.HasValue && date < MinDate.Value) return false;
+        if (MaxDate.HasValue && date > MaxDate.Value) return false;
+        if (IsDateDisabled != null && IsDateDisabled(date)) return false;
+        return true;
+    }
+
+    private IEnumerable<string> GetDayNames()
+    {
+        var firstDayOfWeek = Culture.DateTimeFormat.FirstDayOfWeek;
+        var dayNames = Culture.DateTimeFormat.AbbreviatedDayNames;
+        
+        for (int i = 0; i < 7; i++)
+        {
+            var index = ((int)firstDayOfWeek + i) % 7;
+            var dayName = dayNames[index];
+            yield return dayName.Substring(0, Math.Min(dayName.Length, 2));
+        }
+    }
+
+    private IEnumerable<DateOnly?[]> GetWeeks()
+    {
+        var firstDayOfWeek = Culture.DateTimeFormat.FirstDayOfWeek;
+        var firstOfMonth = new DateOnly(_displayedMonth.Year, _displayedMonth.Month, 1);
+        var daysInMonth = DateTime.DaysInMonth(_displayedMonth.Year, _displayedMonth.Month);
+
+        var currentDate = firstOfMonth;
+        var dayOfWeek = (int)currentDate.DayOfWeek;
+        var firstDayOffset = (dayOfWeek - (int)firstDayOfWeek + 7) % 7;
+
+        var weeks = new List<DateOnly?[]>();
+        var week = new DateOnly?[7];
+
+        // Fill in empty days before the first of the month
+        for (int i = 0; i < firstDayOffset; i++)
+        {
+            week[i] = null;
+        }
+
+        // Fill in the days of the month
+        for (int day = 1; day <= daysInMonth; day++)
+        {
+            var date = new DateOnly(_displayedMonth.Year, _displayedMonth.Month, day);
+            var position = (firstDayOffset + day - 1) % 7;
+
+            if (position == 0 && day > 1)
+            {
+                weeks.Add(week);
+                week = new DateOnly?[7];
+            }
+
+            week[position] = date;
+        }
+
+        // Add the last week
+        weeks.Add(week);
+
+        return weeks;
+    }
+
+    /// <summary>
+    /// Notifies the parent component when the displayed month changes.
+    /// </summary>
+    private async Task NotifyMonthChanged()
+    {
+        if (DisplayedMonthChanged.HasDelegate)
+        {
+            await DisplayedMonthChanged.InvokeAsync(_displayedMonth);
+        }
+    }
+
+    private string GetPrevNavButtonClass()
+    {
+        return "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors " +
+               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
+               "disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground " +
+               "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute left-1";
+    }
+
+    private string GetNextNavButtonClass()
+    {
+        return "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors " +
+               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
+               "disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground " +
+               "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute right-1";
+    }
+
+    private string GetDayClass(DateOnly date)
+    {
+        // Note: We don't use focus-visible:ring styles here because we manage focus rings programmatically
+        // via IsFocused() to prevent duplicate focus rings when Blazor reuses DOM elements during month changes
+        var baseClass = "inline-flex h-9 w-9 items-center justify-center whitespace-nowrap rounded-md text-sm font-normal ring-offset-background transition-colors " +
+                       "focus-visible:outline-none " +
+                       "disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground";
+
+        var classes = new List<string> { baseClass };
+
+        // Range selection styling
+        var isRangeStart = IsRangeStart(date);
+        var isRangeEnd = IsRangeEnd(date);
+        var inRange = IsInRange(date);
+
+        if (isRangeStart || isRangeEnd || IsSelected(date))
+        {
+            classes.Add("bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground");
+        }
+        else if (inRange)
+        {
+            classes.Add("bg-accent text-accent-foreground");
+        }
+        else if (IsToday(date))
+        {
+            classes.Add("bg-accent text-accent-foreground");
+        }
+
+        // Add focus ring for keyboard navigation
+        if (IsFocused(date) && !IsSelected(date) && !isRangeStart && !isRangeEnd)
+        {
+            classes.Add("ring-2 ring-ring/50 ring-offset-2");
+        }
+
+        if (!IsCurrentMonth(date))
+        {
+            classes.Add("text-muted-foreground opacity-50");
+        }
+
+        if (!IsDateEnabled(date))
+        {
+            classes.Add("text-muted-foreground opacity-50");
+        }
+
+        return string.Join(" ", classes);
+    }
+
+    private string GetDropdownClass()
+    {
+        return "h-7 px-2 text-sm font-medium rounded-md border border-input bg-background " +
+               "hover:bg-accent hover:text-accent-foreground cursor-pointer " +
+               "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2";
+    }
+
+    private Dictionary<string, object> GetAttributes()
+    {
+        // Apply border, shadow, default cursor, and intrinsic width at container level
+        // Using inline-block for intrinsic width since w-fit may not be in Tailwind build
+        var baseClass = "inline-block bg-background no-focus-ring p-3 rounded-md border shadow-sm cursor-default";
+        var classValue = string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
+
+        var attributes = new Dictionary<string, object>
+        {
+            ["class"] = classValue
+        };
+
+        if (AdditionalAttributes != null)
+        {
+            foreach (var kvp in AdditionalAttributes.Where(kvp => kvp.Key != "class"))
+            {
+                attributes[kvp.Key] = kvp.Value;
+            }
+        }
+
+        return attributes;
+    }
+}

@@ -1,6 +1,6 @@
 # Mobile Responsiveness Checklist
 
-Use this checklist when developing or reviewing mobile-responsive features in BlazorUI applications.
+Use this checklist when developing or reviewing mobile-responsive features in NeoUI applications.
 
 ## Pre-Development Checklist
 
@@ -252,7 +252,7 @@ Common Breakpoints:
 
 - [Mobile Best Practices](/docs/MOBILE_BEST_PRACTICES.md)
 - [Mobile Analysis Report](/docs/MOBILE_RESPONSIVE_ANALYSIS.md)
-- [BlazorUI Component Docs](/docs)
+- [NeoUI Component Docs](/docs)
 - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 - [Google Mobile SEO](https://developers.google.com/search/mobile-sites)
 

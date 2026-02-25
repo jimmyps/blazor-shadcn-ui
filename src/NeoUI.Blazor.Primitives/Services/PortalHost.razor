@@ -1,0 +1,14 @@
+@namespace NeoUI.Blazor.Primitives.Services
+
+@*
+    Legacy PortalHost - Wraps both category hosts for backward compatibility.
+    
+    For better performance, use separate portal hosts in your layout:
+    <ContainerPortalHost />
+    <OverlayPortalHost />
+    
+    This prevents render cascades between different portal categories.
+*@
+
+<ContainerPortalHost />
+<OverlayPortalHost />

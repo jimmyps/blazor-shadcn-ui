@@ -1,0 +1,31 @@
+@namespace NeoUI.Blazor
+@*
+    Main Sidebar component that renders as a Sheet on mobile and a sidebar on desktop.
+    Provides the container for all sidebar content.
+*@
+
+@if (Context != null)
+{
+    @if (Context.IsMobile)
+    {
+        @* Mobile: Render as Sheet *@
+        <Sheet Open="@MobileOpen" OpenChanged="@(value => MobileOpen = value)" Side="@GetSheetSide()">
+            <SheetContent Class="@GetMobileClasses()" ShowClose="false">
+                @ChildContent
+            </SheetContent>
+        </Sheet>
+    }
+    else
+    {
+        @* Desktop: Render as sidebar *@
+        <aside class="@GetDesktopClasses()" 
+               @attributes="AdditionalAttributes" 
+               data-sidebar="sidebar"
+               data-state="@GetDataState()" 
+               data-collapsible="@(Collapsible ? (!Context.Open ? "icon" : "none") : "none")" 
+               data-variant="@Context.Variant.ToString().ToLowerInvariant()" 
+               data-side="@Context.Side.ToString().ToLowerInvariant()">
+            @ChildContent
+        </aside>
+    }
+}

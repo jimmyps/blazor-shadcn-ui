@@ -46,7 +46,7 @@ Fix critical z-index conflicts and infinite loop issues with nested floating por
 ### 1. Z-Index Hierarchy System
 
 #### Created ZIndexLevels Constants
-**File:** `src/BlazorUI.Primitives/Constants/ZIndexLevels.cs`
+**File:** `src/NeoUI.Blazor.Primitives/Constants/ZIndexLevels.cs`
 
 ```csharp
 public static class ZIndexLevels
@@ -169,7 +169,7 @@ protected override void OnParametersSet()
 
 ### 3. TailwindMerge Regex Fix
 
-**File:** `src/BlazorUI.Components/Utilities/TailwindMerge.cs`
+**File:** `src/NeoUI.Blazor/Utilities/TailwindMerge.cs`
 
 ```csharp
 // Before
@@ -188,7 +188,7 @@ protected override void OnParametersSet()
 
 ### 4. Kbd Component Demo Fix
 
-**File:** `demo/BlazorUI.Demo.Shared/Pages/Components/DropdownMenuDemo.razor`
+**File:** `demo/NeoUI.Demo.Shared/Pages/Components/DropdownMenuDemo.razor`
 
 ```razor
 <!-- Before (WRONG - Keys parameter doesn't exist) -->
@@ -208,37 +208,37 @@ protected override void OnParametersSet()
 ## 📊 Files Modified
 
 ### New Files (2)
-- `src/BlazorUI.Primitives/Constants/ZIndexLevels.cs` - Z-index constants
+- `src/NeoUI.Blazor.Primitives/Constants/ZIndexLevels.cs` - Z-index constants
 - `docs/internal/FLOATING_PORTAL_GUARD_FIX.md` - Fix documentation
 
 ### Modified Files (15)
 
 **Primitives (4):**
-- `src/BlazorUI.Primitives/Primitives/Popover/PopoverContent.razor`
-- `src/BlazorUI.Primitives/Primitives/DropdownMenu/DropdownMenuContent.razor`
-- `src/BlazorUI.Primitives/Primitives/Menubar/MenubarContent.razor`
-- `src/BlazorUI.Primitives/Primitives/ContextMenu/ContextMenuContent.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/Popover/PopoverContent.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/DropdownMenu/DropdownMenuContent.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/Menubar/MenubarContent.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/ContextMenu/ContextMenuContent.razor`
 
 **Components (6):**
-- `src/BlazorUI.Components/Components/DropdownMenu/DropdownMenuContent.razor`
-- `src/BlazorUI.Components/Components/DropdownMenu/DropdownMenuSubContent.razor`
-- `src/BlazorUI.Components/Components/ContextMenu/ContextMenuContent.razor`
-- `src/BlazorUI.Components/Components/ContextMenu/ContextMenuSubContent.razor`
-- `src/BlazorUI.Components/Components/Menubar/MenubarContent.razor`
-- `src/BlazorUI.Components/Components/Menubar/MenubarSubContent.razor`
+- `src/NeoUI.Blazor/Components/DropdownMenu/DropdownMenuContent.razor`
+- `src/NeoUI.Blazor/Components/DropdownMenu/DropdownMenuSubContent.razor`
+- `src/NeoUI.Blazor/Components/ContextMenu/ContextMenuContent.razor`
+- `src/NeoUI.Blazor/Components/ContextMenu/ContextMenuSubContent.razor`
+- `src/NeoUI.Blazor/Components/Menubar/MenubarContent.razor`
+- `src/NeoUI.Blazor/Components/Menubar/MenubarSubContent.razor`
 
 **JavaScript (2):**
-- `src/BlazorUI.Primitives/wwwroot/js/primitives/portal.js`
-- `src/BlazorUI.Primitives/wwwroot/js/primitives/positioning.js`
+- `src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/portal.js`
+- `src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/positioning.js`
 
 **Utilities (1):**
-- `src/BlazorUI.Components/Utilities/TailwindMerge.cs`
+- `src/NeoUI.Blazor/Utilities/TailwindMerge.cs`
 
 **Demos (1):**
-- `demo/BlazorUI.Demo.Shared/Pages/Components/DropdownMenuDemo.razor`
+- `demo/NeoUI.Demo.Shared/Pages/Components/DropdownMenuDemo.razor`
 
 **Infrastructure (1):**
-- `src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/Floating/FloatingPortal.razor`
 
 ---
 

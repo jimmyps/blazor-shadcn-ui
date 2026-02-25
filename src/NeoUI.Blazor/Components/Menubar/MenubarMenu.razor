@@ -1,0 +1,13 @@
+@namespace NeoUI.Blazor
+@* Styled MenubarMenu - groups trigger and content *@
+<MenubarMenuPrimitive>
+    @ChildContent
+</MenubarMenuPrimitive>
+
+@code {
+    /// <summary>
+    /// The child content, typically MenubarTrigger and MenubarContent.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

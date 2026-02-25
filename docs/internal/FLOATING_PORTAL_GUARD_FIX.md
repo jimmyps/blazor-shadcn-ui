@@ -215,7 +215,7 @@ finally { _isUpdating = false; }
 
 ## Files Modified
 
-- `src/BlazorUI.Primitives/Primitives/Floating/FloatingPortal.razor`
+- `src/NeoUI.Blazor.Primitives/Primitives/Floating/FloatingPortal.razor`
 
 ## Breaking Changes
 

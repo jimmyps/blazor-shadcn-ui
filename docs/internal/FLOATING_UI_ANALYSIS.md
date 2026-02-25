@@ -22,7 +22,7 @@ Analyzing the architectural changes from upstream's Floating UI refactor.
 
 **Dependencies:**
 ```csharp
-@using BlazorUI.Primitives.Services
+@using NeoUI.Blazor.Primitives.Services
 @inject IPositioningService PositioningService
 @inject IPortalService PortalService
 @inject IJSRuntime JSRuntime
@@ -82,8 +82,8 @@ private async Task CleanupAsync()
 
 **Dependencies:**
 ```csharp
-@using BlazorUI.Primitives.Floating
-@using BlazorUI.Primitives.Services
+@using NeoUI.Blazor.Primitives.Floating
+@using NeoUI.Blazor.Primitives.Services
 ```
 
 **Component Pattern:**

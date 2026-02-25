@@ -8,10 +8,10 @@ permissions:
   contents: read
 env:
   AZURE_WEBAPP_NAME: BlazorUIDemo20251223130817
-  AZURE_WEBAPP_PACKAGE_PATH: demo\BlazorUI.Demo\published
+  AZURE_WEBAPP_PACKAGE_PATH: demo\NeoUI.Demo\published
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 10.0.x
-  WORKING_DIRECTORY: demo\BlazorUI.Demo
+  WORKING_DIRECTORY: demo\NeoUI.Demo
 jobs:
   build:
     runs-on: windows-latest

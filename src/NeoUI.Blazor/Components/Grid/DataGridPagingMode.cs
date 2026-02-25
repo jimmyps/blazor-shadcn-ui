@@ -1,0 +1,22 @@
+using System.Text.Json.Serialization;
+
+namespace NeoUI.Blazor;
+
+/// <summary>
+/// Specifies how pagination is handled in a grid.
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum DataGridPagingMode
+{
+    /// <summary>All data displayed, no pagination.</summary>
+    None,
+    
+    /// <summary>All data loaded, paginated client-side.</summary>
+    Client,
+    
+    /// <summary>Data fetched page-by-page from server.</summary>
+    Server,
+    
+    /// <summary>Incremental loading as user scrolls.</summary>
+    InfiniteScroll
+}

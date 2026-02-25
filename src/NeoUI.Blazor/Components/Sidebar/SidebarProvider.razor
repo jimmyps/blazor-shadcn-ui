@@ -1,0 +1,72 @@
+@namespace NeoUI.Blazor
+@implements IAsyncDisposable
+
+@*
+    SidebarProvider component that manages sidebar state, persistence, and responsive behavior.
+    Wraps the entire application or page layout to provide sidebar context.
+*@
+
+@if (StaticRendering)
+{
+    <HeadContent>
+        <script src="_content/NeoUI.Blazor/js/sidebar-static.js"></script>
+    </HeadContent>
+}
+
+<TooltipProvider>
+    <CascadingValue Value="@Context" IsFixed="false">
+        <div class="@($"flex w-full {HeightClass}")">
+            @ChildContent
+        </div>
+    </CascadingValue>
+</TooltipProvider>
+
+@code {
+    /// <summary>
+    /// The content to render inside the sidebar provider.
+    /// Should typically contain SidebarLayout with Sidebar and SidebarInset.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Default open state for the sidebar on desktop.
+    /// </summary>
+    [Parameter]
+    public bool DefaultOpen { get; set; } = true;
+
+    /// <summary>
+    /// The sidebar variant/style.
+    /// </summary>
+    [Parameter]
+    public SidebarVariant Variant { get; set; } = SidebarVariant.Sidebar;
+
+    /// <summary>
+    /// Which side the sidebar appears on.
+    /// </summary>
+    [Parameter]
+    public SidebarSide Side { get; set; } = SidebarSide.Left;
+
+    /// <summary>
+    /// Cookie key for persisting sidebar state.
+    /// Set to null to disable persistence.
+    /// </summary>
+    [Parameter]
+    public string? CookieKey { get; set; } = "sidebar:state";
+
+    /// <summary>
+    /// CSS class for controlling the container height.
+    /// Defaults to "h-screen" for fixed viewport height with independent scrolling areas.
+    /// Can be set to "min-h-screen" to grow with content or "h-full" for contained layouts.
+    /// </summary>
+    [Parameter]
+    public string HeightClass { get; set; } = "h-screen";
+
+    /// <summary>
+    /// Enable static rendering mode for SSR/prerendering scenarios.
+    /// When true, JS will set up click delegation to call C# toggle via interop.
+    /// Set to true when using rendermode="InteractiveServer" or "InteractiveAuto" in MainLayout.
+    /// </summary>
+    [Parameter]
+    public bool StaticRendering { get; set; } = false;
+}
