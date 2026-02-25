@@ -1,31 +1,38 @@
 @* DemoBlock — a bordered panel with Preview / Code tabs for a single demo example. *@
 
-<div class="rounded-lg border overflow-hidden">
-    <Tabs DefaultValue="preview">
-        <TabsList Class="w-full rounded-none border-b bg-muted/50 h-10 px-2 justify-start">
-            <TabsTrigger Value="preview" Class="text-xs h-8">Preview</TabsTrigger>
+<div class="space-y-3">
+    <div class="rounded-lg border overflow-hidden">
+        <Tabs DefaultValue="preview">
+            <TabsList Class="w-full rounded-none border-b bg-muted/50 h-10 px-2 justify-start">
+                <TabsTrigger Value="preview" Class="text-xs h-8">Preview</TabsTrigger>
+                @if (!string.IsNullOrWhiteSpace(Code))
+                {
+                    <TabsTrigger Value="code" Class="text-xs h-8">Code</TabsTrigger>
+                }
+            </TabsList>
+
+            <TabsContent Value="preview" Class="p-6 m-0">
+                @ChildContent
+            </TabsContent>
+
             @if (!string.IsNullOrWhiteSpace(Code))
             {
-                <TabsTrigger Value="code" Class="text-xs h-8">Code</TabsTrigger>
+                <TabsContent Value="code" Class="p-0 m-0 mt-0">
+                    <div class="relative">
+                        <ScrollArea ShowHorizontalScrollbar="true" ShowVerticalScrollbar="false" EnableScrollShadows="true">
+                            <pre class="p-4 text-sm bg-muted/30 font-mono leading-relaxed"><code>@((MarkupString)_highlighted)</code></pre>
+                        </ScrollArea>
+                        <DemoCopyButton Text="@Code" Class="absolute top-2 right-2" />
+                    </div>
+                </TabsContent>
             }
-        </TabsList>
+        </Tabs>
+    </div>
 
-        <TabsContent Value="preview" Class="p-6 m-0">
-            @ChildContent
-        </TabsContent>
-
-        @if (!string.IsNullOrWhiteSpace(Code))
-        {
-            <TabsContent Value="code" Class="p-0 m-0 mt-0">
-                <div class="relative">
-                    <ScrollArea ShowHorizontalScrollbar="true" ShowVerticalScrollbar="false" EnableScrollShadows="true">
-                        <pre class="p-4 text-sm bg-muted/30 font-mono leading-relaxed"><code>@((MarkupString)_highlighted)</code></pre>
-                    </ScrollArea>
-                    <DemoCopyButton Text="@Code" Class="absolute top-2 right-2" />
-                </div>
-            </TabsContent>
-        }
-    </Tabs>
+    @if (AdditionalContent is not null)
+    {
+        <div>@AdditionalContent</div>
+    }
 </div>
 
 @code {
@@ -37,6 +44,12 @@
     /// When omitted the Code tab is hidden.
     /// </summary>
     [Parameter] public string? Code { get; set; }
+
+    /// <summary>
+    /// Optional supplementary content rendered below the Preview/Code tabs panel.
+    /// Use this for contextual notes, alerts, or any additional info about the demo.
+    /// </summary>
+    [Parameter] public RenderFragment? AdditionalContent { get; set; }
 
     private string _highlighted = string.Empty;
 
