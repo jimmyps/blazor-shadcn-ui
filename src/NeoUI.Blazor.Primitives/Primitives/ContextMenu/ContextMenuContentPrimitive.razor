@@ -4,10 +4,10 @@
 
 @*
     ContextMenuContentPrimitive - the dropdown content for the context menu
-    Uses FloatingPortalPrimitive with X/Y coordinates for positioning at mouse location.
+    Uses FloatingPortal with X/Y coordinates for positioning at mouse location.
 *@
 
-@* Both overlay and FloatingPortalPrimitive are conditionally rendered (ForceMount=false). *@
+@* Both overlay and FloatingPortal are conditionally rendered (ForceMount=false). *@
 @if (Context.IsOpen)
 {
     <div class="@OverlayClass"
@@ -133,7 +133,7 @@ private readonly List<IContextMenuItem> _menuItems = new();
 
     private async Task HandleFloatingReady()
     {
-        // FloatingPortalPrimitive has positioned the content, now set up behavior
+        // FloatingPortal has positioned the content, now set up behavior
         if (CloseOnClickOutside)
         {
             await SetupClickOutsideAsync();

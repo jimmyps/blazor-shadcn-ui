@@ -134,7 +134,7 @@
     {
         if (AdditionalAttributes == null) return null;
 
-        // Return all attributes except 'style' since FloatingPortalPrimitive handles positioning styles
+        // Return all attributes except 'style' since FloatingPortal handles positioning styles
         return AdditionalAttributes
             .Where(kvp => kvp.Key != "style")
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);

@@ -4,7 +4,7 @@
 
 @*
     MenubarSubContentPrimitive - the content panel for a submenu
-    Uses FloatingPortalPrimitive for positioning infrastructure.
+    Uses FloatingPortal for positioning infrastructure.
 *@
 
 @if (SubContext.IsOpen && SubContext.TriggerElement.HasValue)
@@ -120,7 +120,7 @@ private readonly List<IMenubarItem> _menuItems = new();
              @onmouseleave="HandleMouseLeave"
              @attributes="AdditionalAttributes"
              data-state="open">
-            @* Re-cascade MenuContext since FloatingPortalPrimitive breaks cascading chain *@
+            @* Re-cascade MenuContext since FloatingPortal breaks cascading chain *@
             <CascadingValue Value="MenuContext" IsFixed="false">
                 @* CRITICAL: Also cascade as MenubarMenuContext for nested submenus to receive *@
                 <CascadingValue Value="MenubarMenuContext" IsFixed="false">

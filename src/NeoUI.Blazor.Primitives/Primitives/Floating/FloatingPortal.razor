@@ -7,7 +7,7 @@
 @implements IAsyncDisposable
 
 @*
-    FloatingPortalPrimitive - Unified infrastructure for floating content.
+    FloatingPortal - Unified infrastructure for floating content.
     Handles ONLY: portal registration, positioning, and lifecycle management.
     Does NOT handle: click-outside, keyboard navigation, or any behavior.
 
@@ -154,7 +154,7 @@
 
     private static readonly Action<ILogger, string, string, Exception?> LogSetupFailed =
         LoggerMessage.Define<string, string>(LogLevel.Warning, new EventId(2, "FloatingPortalSetupFailed"),
-            "FloatingPortalPrimitive '{PortalId}' setup failed: {ErrorMessage}");
+            "FloatingPortal '{PortalId}' setup failed: {ErrorMessage}");
 
     private static readonly Action<ILogger, string, string, Exception?> LogPositioningFailed =
         LoggerMessage.Define<string, string>(LogLevel.Warning, new EventId(3, "PositioningFailed"),
@@ -162,7 +162,7 @@
 
     private static readonly Action<ILogger, string, Exception?> LogMissingPositioningParameters =
         LoggerMessage.Define<string>(LogLevel.Warning, new EventId(4, "MissingPositioningParameters"),
-            "FloatingPortalPrimitive '{PortalId}' - Neither AnchorElement nor X/Y coordinates provided.");
+            "FloatingPortal '{PortalId}' - Neither AnchorElement nor X/Y coordinates provided.");
 
     private IAsyncDisposable? _positioningCleanup;
     private bool _isMounted = false;
@@ -181,7 +181,7 @@
         if (string.IsNullOrEmpty(PortalId))
         {
             throw new InvalidOperationException(
-                "FloatingPortalPrimitive requires a PortalId to be specified. " +
+                "FloatingPortal requires a PortalId to be specified. " +
                 "Each floating element must have a unique identifier.");
         }
 
@@ -207,7 +207,7 @@
         // delegate, which would break ElementReference stability. The existing delegate
         // captures 'this', so PortalHost reads current ChildContent automatically.
         // Note: PortalHost ignores refresh calls during its own render cycle, preventing
-        // infinite loops when FloatingPortalPrimitive is nested inside another portal.
+        // infinite loops when FloatingPortal is nested inside another portal.
         if (_isMounted && !string.IsNullOrEmpty(PortalId))
         {
             PortalService.RefreshPortal(PortalId);
