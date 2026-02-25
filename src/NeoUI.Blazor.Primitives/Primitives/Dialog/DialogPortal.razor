@@ -3,7 +3,7 @@
 @implements IDisposable
 
 @*
-    DialogPortalPrimitive renders its content at the document body level using PortalService.
+    DialogPortal renders its content at the document body level using PortalService.
     This ensures proper z-index stacking for overlays.
 *@
 
@@ -12,7 +12,7 @@
     private DialogContext Context { get; set; } = null!;
 
     /// <summary>
-    /// The content to render in the portal (typically DialogOverlayPrimitive and DialogContentPrimitive).
+    /// The content to render in the portal (typically DialogOverlay and DialogContentPrimitive).
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -40,8 +40,8 @@
         if (Context == null)
         {
             throw new InvalidOperationException(
-                "DialogPortalPrimitive must be used within a DialogPrimitive component. " +
-                "Ensure DialogPortalPrimitive is a child of a DialogPrimitive component.");
+                "DialogPortal must be used within a DialogPrimitive component. " +
+                "Ensure DialogPortal is a child of a DialogPrimitive component.");
         }
 
         _portalId = $"{Context.Id}-portal";

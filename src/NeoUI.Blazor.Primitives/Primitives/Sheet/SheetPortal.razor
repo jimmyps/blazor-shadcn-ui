@@ -3,7 +3,7 @@
 @implements IDisposable
 
 @*
-    SheetPortalPrimitive renders its content at the document body level using PortalService.
+    SheetPortal renders its content at the document body level using PortalService.
     This ensures proper z-index stacking for overlays.
 *@
 
@@ -12,7 +12,7 @@
     private SheetContext Context { get; set; } = null!;
 
     /// <summary>
-    /// The content to render in the portal (typically SheetOverlayPrimitive and SheetContentPrimitive).
+    /// The content to render in the portal (typically SheetOverlay and SheetContentPrimitive).
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -40,8 +40,8 @@
         if (Context == null)
         {
             throw new InvalidOperationException(
-                "SheetPortalPrimitive must be used within a SheetPrimitive component. " +
-                "Ensure SheetPortalPrimitive is a child of a SheetPrimitive component.");
+                "SheetPortal must be used within a SheetPrimitive component. " +
+                "Ensure SheetPortal is a child of a SheetPrimitive component.");
         }
 
         _portalId = $"{Context.Id}-portal";

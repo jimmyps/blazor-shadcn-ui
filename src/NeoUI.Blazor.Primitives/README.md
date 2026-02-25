@@ -82,12 +82,12 @@ Lucide Icons (1,640+), Heroicons (1,288), Feather Icons (286)
 ### Accordion
 
 ```razor
-<Accordion Type="AccordionType.Single" Collapsible="true" DefaultValue="item-1">
-    <AccordionItem Value="item-1">
-        <AccordionTrigger>Section 1</AccordionTrigger>
-        <AccordionContent>Content 1</AccordionContent>
-    </AccordionItem>
-</Accordion>
+<AccordionPrimitive Type="AccordionType.Single" Collapsible="true" DefaultValue="item-1">
+    <AccordionItemPrimitive Value="item-1">
+        <AccordionTriggerPrimitive>Section 1</AccordionTriggerPrimitive>
+        <AccordionContentPrimitive>Content 1</AccordionContentPrimitive>
+    </AccordionItemPrimitive>
+</AccordionPrimitive>
 ```
 
 | Parameter | Type | Default | Values |
@@ -98,15 +98,15 @@ Lucide Icons (1,640+), Heroicons (1,288), Feather Icons (286)
 ### Tabs
 
 ```razor
-<Tabs
+<TabsPrimitive
     DefaultValue="tab1"
     Orientation="TabsOrientation.Horizontal"
     ActivationMode="TabsActivationMode.Automatic">
-    <TabsList>
-        <TabsTrigger Value="tab1">Tab 1</TabsTrigger>
-    </TabsList>
-    <TabsContent Value="tab1">Content</TabsContent>
-</Tabs>
+    <TabsListPrimitive>
+        <TabsTriggerPrimitive Value="tab1">Tab 1</TabsTriggerPrimitive>
+    </TabsListPrimitive>
+    <TabsContentPrimitive Value="tab1">Content</TabsContentPrimitive>
+</TabsPrimitive>
 ```
 
 | Parameter | Type | Default | Values |
@@ -117,17 +117,17 @@ Lucide Icons (1,640+), Heroicons (1,288), Feather Icons (286)
 ### Sheet
 
 ```razor
-<Sheet>
-    <SheetTrigger>Open</SheetTrigger>
+<SheetPrimitive>
+    <SheetTriggerPrimitive>Open</SheetTriggerPrimitive>
     <SheetPortal>
         <SheetOverlay />
-        <SheetContent Side="SheetSide.Right">
-            <SheetTitle>Title</SheetTitle>
-            <SheetDescription>Description</SheetDescription>
-            <SheetClose>Close</SheetClose>
-        </SheetContent>
+        <SheetContentPrimitive Side="SheetSide.Right">
+            <SheetTitlePrimitive>Title</SheetTitlePrimitive>
+            <SheetDescriptionPrimitive>Description</SheetDescriptionPrimitive>
+            <SheetClosePrimitive>Close</SheetClosePrimitive>
+        </SheetContentPrimitive>
     </SheetPortal>
-</Sheet>
+</SheetPrimitive>
 ```
 
 | Parameter | Type | Default | Values |
@@ -137,12 +137,12 @@ Lucide Icons (1,640+), Heroicons (1,288), Feather Icons (286)
 ### Popover
 
 ```razor
-<Popover>
-    <PopoverTrigger>Open</PopoverTrigger>
-    <PopoverContent Side="PopoverSide.Bottom" Align="PopoverAlign.Center">
+<PopoverPrimitive>
+    <PopoverTriggerPrimitive>Open</PopoverTriggerPrimitive>
+    <PopoverContentPrimitive Side="PopoverSide.Bottom" Align="PopoverAlign.Center">
         Content here
-    </PopoverContent>
-</Popover>
+    </PopoverContentPrimitive>
+</PopoverPrimitive>
 ```
 
 | Parameter | Type | Default | Values |
@@ -155,10 +155,10 @@ Lucide Icons (1,640+), Heroicons (1,288), Feather Icons (286)
 ### Tooltip
 
 ```razor
-<Tooltip DelayDuration="400" HideDelay="0">
-    <TooltipTrigger>Hover me</TooltipTrigger>
-    <TooltipContent>Tooltip text</TooltipContent>
-</Tooltip>
+<TooltipPrimitive DelayDuration="400" HideDelay="0">
+    <TooltipTriggerPrimitive>Hover me</TooltipTriggerPrimitive>
+    <TooltipContentPrimitive>Tooltip text</TooltipContentPrimitive>
+</TooltipPrimitive>
 ```
 
 | Parameter | Type | Default | Description |
@@ -169,10 +169,10 @@ Lucide Icons (1,640+), Heroicons (1,288), Feather Icons (286)
 ### HoverCard
 
 ```razor
-<HoverCard OpenDelay="700" CloseDelay="300">
-    <HoverCardTrigger>Hover for preview</HoverCardTrigger>
-    <HoverCardContent>Rich preview content</HoverCardContent>
-</HoverCard>
+<HoverCardPrimitive OpenDelay="700" CloseDelay="300">
+    <HoverCardTriggerPrimitive>Hover for preview</HoverCardTriggerPrimitive>
+    <HoverCardContentPrimitive>Rich preview content</HoverCardContentPrimitive>
+</HoverCardPrimitive>
 ```
 
 | Parameter | Type | Default | Description |
@@ -183,7 +183,7 @@ Lucide Icons (1,640+), Heroicons (1,288), Feather Icons (286)
 ### Checkbox
 
 ```razor
-<Checkbox
+<CheckboxPrimitive
     @bind-Checked="isChecked"
     Indeterminate="@isIndeterminate"
     IndeterminateChanged="HandleIndeterminateChange" />
@@ -197,15 +197,15 @@ Lucide Icons (1,640+), Heroicons (1,288), Feather Icons (286)
 ### Select
 
 ```razor
-<Select TValue="string" @bind-Value="selected" @bind-Open="isOpen">
-    <SelectTrigger>
-        <SelectValue Placeholder="Choose..." />
-    </SelectTrigger>
-    <SelectContent>
-        <SelectItem Value="@("a")">Option A</SelectItem>
-        <SelectItem Value="@("b")">Option B</SelectItem>
-    </SelectContent>
-</Select>
+<SelectPrimitive TValue="string" @bind-Value="selected" @bind-Open="isOpen">
+    <SelectTriggerPrimitive>
+        Choose an option...
+    </SelectTriggerPrimitive>
+    <SelectContentPrimitive>
+        <SelectItemPrimitive Value="@("a")">Option A</SelectItemPrimitive>
+        <SelectItemPrimitive Value="@("b")">Option B</SelectItemPrimitive>
+    </SelectContentPrimitive>
+</SelectPrimitive>
 ```
 
 Select is generic (`TValue`). Supports both value and open state binding.
@@ -262,24 +262,24 @@ Select is generic (`TValue`). Supports both value and open state binding.
 ## 🚀 Usage Example
 
 ```razor
-@using NeoUI.Blazor.Primitives.Dialog
+@using NeoUI.Blazor.Primitives
 
 <DialogPrimitive>
-    <DialogTrigger class="my-custom-button-class">
+    <DialogTriggerPrimitive class="my-custom-button-class">
         Open Dialog
-    </DialogTrigger>
+    </DialogTriggerPrimitive>
     <DialogPortal>
         <DialogOverlay class="my-overlay-styles" />
-        <DialogContent class="my-custom-dialog-styles">
-            <DialogTitle class="my-title-styles">
+        <DialogContentPrimitive class="my-custom-dialog-styles">
+            <DialogTitlePrimitive class="my-title-styles">
                 Custom Styled Dialog
-            </DialogTitle>
-            <DialogDescription class="my-description-styles">
+            </DialogTitlePrimitive>
+            <DialogDescriptionPrimitive class="my-description-styles">
                 This is a fully customizable dialog.
-            </DialogDescription>
+            </DialogDescriptionPrimitive>
             <p class="my-content-styles">Your content here</p>
-            <DialogClose class="my-close-button">Close</DialogClose>
-        </DialogContent>
+            <DialogClosePrimitive class="my-close-button">Close</DialogClosePrimitive>
+        </DialogContentPrimitive>
     </DialogPortal>
 </DialogPrimitive>
 ```
@@ -295,10 +295,13 @@ All stateful primitives support both controlled and uncontrolled modes:
 
 ```razor
 <DialogPrimitive>
-    <DialogTrigger>Open</DialogTrigger>
-    <DialogContent>
-        <!-- Component handles open/close internally -->
-    </DialogContent>
+    <DialogTriggerPrimitive>Open</DialogTriggerPrimitive>
+    <DialogPortal>
+        <DialogOverlay />
+        <DialogContentPrimitive>
+            <!-- Component handles open/close internally -->
+        </DialogContentPrimitive>
+    </DialogPortal>
 </DialogPrimitive>
 ```
 
@@ -306,10 +309,13 @@ All stateful primitives support both controlled and uncontrolled modes:
 
 ```razor
 <DialogPrimitive @bind-Open="isDialogOpen">
-    <DialogTrigger>Open</DialogTrigger>
-    <DialogContent>
-        <button @onclick="() => isDialogOpen = false">Close</button>
-    </DialogContent>
+    <DialogTriggerPrimitive>Open</DialogTriggerPrimitive>
+    <DialogPortal>
+        <DialogOverlay />
+        <DialogContentPrimitive>
+            <button @onclick="() => isDialogOpen = false">Close</button>
+        </DialogContentPrimitive>
+    </DialogPortal>
 </DialogPrimitive>
 
 @code {
@@ -347,7 +353,7 @@ NeoUI.Blazor.Primitives follows the "headless component" pattern popularized by 
 ## 📖 Documentation
 
 For full documentation, examples, and API reference, visit:
-- **[Live Demo](https://blazoruidemo20251223130817-bch0fhddfkh2bthv.indonesiacentral-01.azurewebsites.net)** - Interactive examples and documentation
+- **[Live Demo](https://demos.neoui.io)** - Interactive examples and documentation
 - [GitHub Repository](https://github.com/jimmyps/blazor-shadcn-ui)
 
 

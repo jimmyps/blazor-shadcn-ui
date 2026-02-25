@@ -30,8 +30,8 @@
                         <DialogTriggerPrimitive class="px-3 py-2 border rounded text-sm">
                             Open DialogPrimitive
                         </DialogTriggerPrimitive>
-                        <DialogPortalPrimitive>
-                            <DialogOverlayPrimitive class="fixed inset-0 bg-black/50 z-50" />
+                        <DialogPortal>
+                            <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
                             <DialogContentPrimitive class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
                                 <DialogTitlePrimitive class="text-lg font-semibold mb-2">Without AsChild</DialogTitlePrimitive>
                                 <DialogDescriptionPrimitive class="text-sm text-muted-foreground mb-4">
@@ -39,7 +39,7 @@
                                 </DialogDescriptionPrimitive>
                                 <DialogClosePrimitive class="px-3 py-2 border rounded text-sm">Close</DialogClosePrimitive>
                             </DialogContentPrimitive>
-                        </DialogPortalPrimitive>
+                        </DialogPortal>
                     </DialogPrimitive>
                 </div>
 
@@ -53,8 +53,8 @@
                         <DialogTriggerPrimitive AsChild>
                             <Button Variant="ButtonVariant.Outline">Open DialogPrimitive</Button>
                         </DialogTriggerPrimitive>
-                        <DialogPortalPrimitive>
-                            <DialogOverlayPrimitive class="fixed inset-0 bg-black/50 z-50" />
+                        <DialogPortal>
+                            <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
                             <DialogContentPrimitive class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
                                 <DialogTitlePrimitive class="text-lg font-semibold mb-2">With AsChild</DialogTitlePrimitive>
                                 <DialogDescriptionPrimitive class="text-sm text-muted-foreground mb-4">
@@ -64,7 +64,7 @@
                                     <Button Variant="ButtonVariant.Secondary">Close</Button>
                                 </DialogClosePrimitive>
                             </DialogContentPrimitive>
-                        </DialogPortalPrimitive>
+                        </DialogPortal>
                     </DialogPrimitive>
                 </div>
             </div>
@@ -84,8 +84,8 @@
                         Open DialogPrimitive
                     </DialogTriggerPrimitive>
 
-                    <DialogPortalPrimitive>
-                        <DialogOverlayPrimitive class="fixed inset-0 bg-black/50 z-50" />
+                    <DialogPortal>
+                        <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
 
                         <DialogContentPrimitive class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
                             <DialogTitlePrimitive class="text-lg font-semibold mb-2">
@@ -102,7 +102,7 @@
                                 </DialogClosePrimitive>
                             </div>
                         </DialogContentPrimitive>
-                    </DialogPortalPrimitive>
+                    </DialogPortal>
                 </DialogPrimitive>
             </div>
         </section>
@@ -130,8 +130,8 @@
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
                     <DialogPrimitive @bind-Open="isControlledOpen">
-                        <DialogPortalPrimitive>
-                            <DialogOverlayPrimitive class="fixed inset-0 bg-black/50 z-50" />
+                        <DialogPortal>
+                            <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
 
                             <DialogContentPrimitive class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
                                 <DialogTitlePrimitive class="text-lg font-semibold mb-2">
@@ -148,7 +148,7 @@
                                     Close
                                 </DialogClosePrimitive>
                             </DialogContentPrimitive>
-                        </DialogPortalPrimitive>
+                        </DialogPortal>
                     </DialogPrimitive>
                 </div>
             </div>
@@ -168,8 +168,8 @@
                         Open Modal DialogPrimitive
                     </DialogTriggerPrimitive>
 
-                    <DialogPortalPrimitive>
-                        <DialogOverlayPrimitive class="fixed inset-0 bg-black/50 z-50" />
+                    <DialogPortal>
+                        <DialogOverlay class="fixed inset-0 bg-black/50 z-50" />
 
                         <DialogContentPrimitive class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background p-6 rounded-lg border max-w-md z-50">
                             <DialogTitlePrimitive class="text-lg font-semibold mb-2">
@@ -192,7 +192,7 @@
                                 Close
                             </DialogClosePrimitive>
                         </DialogContentPrimitive>
-                    </DialogPortalPrimitive>
+                    </DialogPortal>
                 </DialogPrimitive>
             </div>
         </section>
@@ -323,7 +323,7 @@
                 </div>
 
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">DialogPortalPrimitive</h3>
+                    <h3 class="font-semibold mb-3">DialogPortal</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">ChildContent</code>
@@ -336,7 +336,7 @@
                 </div>
 
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">DialogOverlayPrimitive</h3>
+                    <h3 class="font-semibold mb-3">DialogOverlay</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">CloseOnClick</code>

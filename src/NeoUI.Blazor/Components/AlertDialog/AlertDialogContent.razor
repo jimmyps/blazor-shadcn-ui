@@ -4,8 +4,8 @@
     By default, prevents dismissal via click-outside for standard alert dialog behavior.
 *@
 
-<DialogPortalPrimitive>
-    <DialogOverlayPrimitive CloseOnClick="@CloseOnClickOutside" class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
+<DialogPortal>
+    <DialogOverlay CloseOnClick="@CloseOnClickOutside" class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
 
     <DialogContentPrimitive
         class="@GetClassNames()"
@@ -17,7 +17,7 @@
         @attributes="AdditionalAttributes">
         @ChildContent
     </DialogContentPrimitive>
-</DialogPortalPrimitive>
+</DialogPortal>
 
 @code {
     /// <summary>

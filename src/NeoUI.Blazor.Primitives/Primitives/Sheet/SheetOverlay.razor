@@ -3,14 +3,14 @@
 @implements IAsyncDisposable
 
 @*
-    DialogOverlayPrimitive provides a background overlay for modal dialogs.
+    SheetOverlay provides a background overlay for modal sheets.
     Can handle click-outside-to-close if configured.
 *@
 
 @if (Context.IsOpen)
 {
     <div @ref="_overlayRef"
-         id="@(Context.Id)-overlay"
+         id="@Context.OverlayId"
          @onclick="HandleClick"
          @attributes="AdditionalAttributes"
          data-state="@(Context.IsOpen ? "open" : "closed")">
@@ -20,7 +20,7 @@
 
 @code {
     [CascadingParameter]
-    private DialogContext Context { get; set; } = null!;
+    private SheetContext Context { get; set; } = null!;
 
     /// <summary>
     /// The content to render within the overlay (typically empty for a simple backdrop).
@@ -35,7 +35,7 @@
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     /// <summary>
-    /// Whether clicking the overlay should close the dialog.
+    /// Whether clicking the overlay should close the sheet.
     /// Default is true.
     /// </summary>
     [Parameter]
@@ -54,8 +54,8 @@
         if (Context == null)
         {
             throw new InvalidOperationException(
-                "DialogOverlayPrimitive must be used within a DialogPrimitive component. " +
-                "Ensure DialogOverlayPrimitive is a child of a DialogPrimitive component.");
+                "SheetOverlay must be used within a SheetPrimitive component. " +
+                "Ensure SheetOverlay is a child of a SheetPrimitive component.");
         }
     }
 
@@ -67,7 +67,7 @@
             await OnClick.InvokeAsync(args);
         }
 
-        // Close dialog if configured
+        // Close sheet if configured
         if (CloseOnClick)
         {
             Context.Close();

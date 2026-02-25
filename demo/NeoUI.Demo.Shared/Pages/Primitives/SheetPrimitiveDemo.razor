@@ -30,8 +30,8 @@
                         <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">
                             Open SheetPrimitive
                         </SheetTriggerPrimitive>
-                        <SheetPortalPrimitive>
-                            <SheetOverlayPrimitive class="fixed inset-0 bg-black/50 z-50" />
+                        <SheetPortal>
+                            <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
                             <SheetContentPrimitive class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
                                 <SheetTitlePrimitive class="text-lg font-semibold mb-2">Without AsChild</SheetTitlePrimitive>
                                 <SheetDescriptionPrimitive class="text-sm text-muted-foreground mb-4">
@@ -39,7 +39,7 @@
                                 </SheetDescriptionPrimitive>
                                 <SheetClosePrimitive class="px-3 py-2 border rounded text-sm">Close</SheetClosePrimitive>
                             </SheetContentPrimitive>
-                        </SheetPortalPrimitive>
+                        </SheetPortal>
                     </SheetPrimitive>
                 </div>
 
@@ -53,8 +53,8 @@
                         <SheetTriggerPrimitive AsChild>
                             <Button Variant="ButtonVariant.Outline">Open SheetPrimitive</Button>
                         </SheetTriggerPrimitive>
-                        <SheetPortalPrimitive>
-                            <SheetOverlayPrimitive class="fixed inset-0 bg-black/50 z-50" />
+                        <SheetPortal>
+                            <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
                             <SheetContentPrimitive class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
                                 <SheetTitlePrimitive class="text-lg font-semibold mb-2">With AsChild</SheetTitlePrimitive>
                                 <SheetDescriptionPrimitive class="text-sm text-muted-foreground mb-4">
@@ -64,7 +64,7 @@
                                     <Button Variant="ButtonVariant.Secondary">Close</Button>
                                 </SheetClosePrimitive>
                             </SheetContentPrimitive>
-                        </SheetPortalPrimitive>
+                        </SheetPortal>
                     </SheetPrimitive>
                 </div>
             </div>
@@ -84,8 +84,8 @@
                         Open SheetPrimitive
                     </SheetTriggerPrimitive>
 
-                    <SheetPortalPrimitive>
-                        <SheetOverlayPrimitive class="fixed inset-0 bg-black/50 z-50" />
+                    <SheetPortal>
+                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
 
                         <SheetContentPrimitive class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
                             <SheetTitlePrimitive class="text-lg font-semibold mb-2">
@@ -102,7 +102,7 @@
                                 </SheetClosePrimitive>
                             </div>
                         </SheetContentPrimitive>
-                    </SheetPortalPrimitive>
+                    </SheetPortal>
                 </SheetPrimitive>
             </div>
         </section>
@@ -120,8 +120,8 @@
                     <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">
                         Top
                     </SheetTriggerPrimitive>
-                    <SheetPortalPrimitive>
-                        <SheetOverlayPrimitive class="fixed inset-0 bg-black/50 z-50" />
+                    <SheetPortal>
+                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
                         <SheetContentPrimitive class="fixed top-0 inset-x-0 z-50 border-b bg-background p-6">
                             <SheetTitlePrimitive class="text-lg font-semibold mb-2">SheetPrimitive from Top</SheetTitlePrimitive>
                             <SheetDescriptionPrimitive class="text-sm text-muted-foreground">
@@ -129,15 +129,15 @@
                             </SheetDescriptionPrimitive>
                             <SheetClosePrimitive class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClosePrimitive>
                         </SheetContentPrimitive>
-                    </SheetPortalPrimitive>
+                    </SheetPortal>
                 </SheetPrimitive>
 
                 <SheetPrimitive Side="SheetSide.Right">
                     <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">
                         Right
                     </SheetTriggerPrimitive>
-                    <SheetPortalPrimitive>
-                        <SheetOverlayPrimitive class="fixed inset-0 bg-black/50 z-50" />
+                    <SheetPortal>
+                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
                         <SheetContentPrimitive class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm border-l bg-background p-6">
                             <SheetTitlePrimitive class="text-lg font-semibold mb-2">SheetPrimitive from Right</SheetTitlePrimitive>
                             <SheetDescriptionPrimitive class="text-sm text-muted-foreground">
@@ -145,15 +145,15 @@
                             </SheetDescriptionPrimitive>
                             <SheetClosePrimitive class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClosePrimitive>
                         </SheetContentPrimitive>
-                    </SheetPortalPrimitive>
+                    </SheetPortal>
                 </SheetPrimitive>
 
                 <SheetPrimitive Side="SheetSide.Bottom">
                     <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">
                         Bottom
                     </SheetTriggerPrimitive>
-                    <SheetPortalPrimitive>
-                        <SheetOverlayPrimitive class="fixed inset-0 bg-black/50 z-50" />
+                    <SheetPortal>
+                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
                         <SheetContentPrimitive class="fixed bottom-0 inset-x-0 z-50 border-t bg-background p-6">
                             <SheetTitlePrimitive class="text-lg font-semibold mb-2">SheetPrimitive from Bottom</SheetTitlePrimitive>
                             <SheetDescriptionPrimitive class="text-sm text-muted-foreground">
@@ -161,15 +161,15 @@
                             </SheetDescriptionPrimitive>
                             <SheetClosePrimitive class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClosePrimitive>
                         </SheetContentPrimitive>
-                    </SheetPortalPrimitive>
+                    </SheetPortal>
                 </SheetPrimitive>
 
                 <SheetPrimitive Side="SheetSide.Left">
                     <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">
                         Left
                     </SheetTriggerPrimitive>
-                    <SheetPortalPrimitive>
-                        <SheetOverlayPrimitive class="fixed inset-0 bg-black/50 z-50" />
+                    <SheetPortal>
+                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
                         <SheetContentPrimitive class="fixed left-0 top-0 z-50 h-full w-3/4 sm:max-w-sm border-r bg-background p-6">
                             <SheetTitlePrimitive class="text-lg font-semibold mb-2">SheetPrimitive from Left</SheetTitlePrimitive>
                             <SheetDescriptionPrimitive class="text-sm text-muted-foreground">
@@ -177,7 +177,7 @@
                             </SheetDescriptionPrimitive>
                             <SheetClosePrimitive class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClosePrimitive>
                         </SheetContentPrimitive>
-                    </SheetPortalPrimitive>
+                    </SheetPortal>
                 </SheetPrimitive>
             </div>
         </section>
@@ -205,8 +205,8 @@
 
                 <div class="rounded-lg border bg-card p-6 max-w-md">
                     <SheetPrimitive @bind-Open="isControlledOpen">
-                        <SheetPortalPrimitive>
-                            <SheetOverlayPrimitive class="fixed inset-0 bg-black/50 z-50" />
+                        <SheetPortal>
+                            <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
 
                             <SheetContentPrimitive class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
                                 <SheetTitlePrimitive class="text-lg font-semibold mb-2">
@@ -223,7 +223,7 @@
                                     Close
                                 </SheetClosePrimitive>
                             </SheetContentPrimitive>
-                        </SheetPortalPrimitive>
+                        </SheetPortal>
                     </SheetPrimitive>
                 </div>
             </div>
@@ -243,8 +243,8 @@
                         Open Modal SheetPrimitive
                     </SheetTriggerPrimitive>
 
-                    <SheetPortalPrimitive>
-                        <SheetOverlayPrimitive class="fixed inset-0 bg-black/50 z-50" />
+                    <SheetPortal>
+                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
 
                         <SheetContentPrimitive class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
                             <SheetTitlePrimitive class="text-lg font-semibold mb-2">
@@ -267,7 +267,7 @@
                                 Close
                             </SheetClosePrimitive>
                         </SheetContentPrimitive>
-                    </SheetPortalPrimitive>
+                    </SheetPortal>
                 </SheetPrimitive>
             </div>
         </section>
@@ -411,7 +411,7 @@
                 </div>
 
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">SheetPortalPrimitive</h3>
+                    <h3 class="font-semibold mb-3">SheetPortal</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">ChildContent</code>
@@ -424,7 +424,7 @@
                 </div>
 
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">SheetOverlayPrimitive</h3>
+                    <h3 class="font-semibold mb-3">SheetOverlay</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">CloseOnClick</code>
