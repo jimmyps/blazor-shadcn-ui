@@ -42,7 +42,7 @@
             }
             else
             {
-                <TablePrimitive TData="TData"
+                <Table TData="TData"
                                                  Data="@_processedData"
                                                  @bind-State="@_tableState"
                                                  SelectionMode="@GetPrimitiveSelectionMode()"
@@ -52,11 +52,11 @@
                                                  OnSelectionChange="HandleSelectionChange"
                                                  Class="@TableCssClass"
                                                  AriaLabel="@AriaLabel">
-                    <TableHeaderPrimitive>
-                        <TableRowPrimitive TData="TData" Class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                    <TableHeader>
+                        <TableRow TData="TData" Class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                             @if (SelectionMode == DataTableSelectionMode.Multiple)
                             {
-                                <TableHeaderCellPrimitive TData="TData" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-12" role="columnheader">
+                                <TableHeaderCell TData="TData" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-12" role="columnheader">
                                     <div @onclick:stopPropagation="true">
                                         @if (ShouldShowSelectAllPrompt())
                                         {
@@ -92,7 +92,7 @@
                                                       AriaLabel="Select all rows" />
                                         }
                                     </div>
-                                </TableHeaderCellPrimitive>
+                                </TableHeaderCell>
                             }
                             @foreach (var column in _columns.Where(c => c.Visible))
                             {
@@ -114,7 +114,7 @@
                                     _ => ""
                                 };
 
-                                <TableHeaderCellPrimitive TData="TData" ColumnId="@(column.Sortable ? column.Id : null)"
+                                <TableHeaderCell TData="TData" ColumnId="@(column.Sortable ? column.Id : null)"
                                                  Class="@ClassNames.cn("h-12 px-4 align-middle font-medium text-muted-foreground", alignmentClass, column.Sortable ? "cursor-pointer select-none" : "", column.HeaderClass)"
                                                  style="@GetColumnWidthStyle(column)"
                                                  aria-sort="@ariaSortValue">
@@ -142,24 +142,24 @@
                                             </svg>
                                         }
                                     </div>
-                                </TableHeaderCellPrimitive>
+                                </TableHeaderCell>
                             }
-                        </TableRowPrimitive>
-                    </TableHeaderPrimitive>
-                    <TableBodyPrimitive>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
                         @foreach (var item in _processedData)
                         {
                             var isSelected = _tableState.Selection.IsSelected(item);
-                            <TableRowPrimitive TData="TData" Item="@item" Class="@ClassNames.cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted", isSelected ? "bg-muted" : "")">
+                            <TableRow TData="TData" Item="@item" Class="@ClassNames.cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted", isSelected ? "bg-muted" : "")">
                                 @if (SelectionMode == DataTableSelectionMode.Multiple)
                                 {
-                                    <TableCellPrimitive Class="p-4 align-middle w-12" role="gridcell">
+                                    <TableCell Class="p-4 align-middle w-12" role="gridcell">
                                         <div @onclick:stopPropagation="true">
                                             <Checkbox Checked="@isSelected"
                                                       CheckedChanged="@(async (bool isChecked) => await HandleRowSelectionChanged(item, isChecked))"
                                                       AriaLabel="@($"Select this row")" />
                                         </div>
-                                    </TableCellPrimitive>
+                                    </TableCell>
                                 }
                                 @foreach (var column in _columns.Where(c => c.Visible))
                                 {
@@ -170,7 +170,7 @@
                                         _ => "text-left"
                                     };
                                     
-                                    <TableCellPrimitive Class="@ClassNames.cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", cellAlignmentClass, column.CellClass)">
+                                    <TableCell Class="@ClassNames.cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", cellAlignmentClass, column.CellClass)">
                                         @if (column.CellTemplate != null)
                                         {
                                             @column.CellTemplate(item)
@@ -180,12 +180,12 @@
                                             var value = column.Property(item);
                                             @(value?.ToString() ?? "")
                                         }
-                                    </TableCellPrimitive>
+                                    </TableCell>
                                 }
-                            </TableRowPrimitive>
+                            </TableRow>
                         }
-                    </TableBodyPrimitive>
-                </TablePrimitive>
+                    </TableBody>
+                </Table>
             }
         </div>
 

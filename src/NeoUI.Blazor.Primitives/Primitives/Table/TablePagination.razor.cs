@@ -7,7 +7,7 @@ namespace NeoUI.Blazor.Primitives;
 /// Developers have complete control over the markup and styling.
 /// </summary>
 /// <typeparam name="TData">The type of data displayed in the table.</typeparam>
-public partial class TablePaginationPrimitive<TData> : ComponentBase, IDisposable
+public partial class TablePagination<TData> : ComponentBase, IDisposable
 {
     private bool _disposed;
     private PaginationContext _context = default!;

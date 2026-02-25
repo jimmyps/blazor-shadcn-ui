@@ -7,7 +7,7 @@ namespace NeoUI.Blazor.Primitives;
 /// This component wraps the HTML table element and provides behavior without styling.
 /// </summary>
 /// <typeparam name="TData">The type of data items in the table.</typeparam>
-public partial class TablePrimitive<TData> : ComponentBase, IDisposable where TData : class
+public partial class Table<TData> : ComponentBase, IDisposable where TData : class
 {
     private TableContext<TData> _context = null!;
     private TableState<TData> _internalState = new();
@@ -78,7 +78,7 @@ public partial class TablePrimitive<TData> : ComponentBase, IDisposable where TD
     public EventCallback<IReadOnlyCollection<TData>> OnSelectionChange { get; set; }
 
     /// <summary>
-    /// Child content for the table (TableHeaderPrimitive, TableBodyPrimitive, etc.).
+    /// Child content for the table (TableHeader, TableBody, etc.).
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }

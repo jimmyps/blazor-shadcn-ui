@@ -12,35 +12,35 @@
 
     <div class="space-y-6">
 
-    @* Basic TablePrimitive Example *@
+    @* Basic Table Example *@
     <section class="space-y-4">
         <div>
-            <h2 class="text-2xl font-semibold">Basic TablePrimitive</h2>
+            <h2 class="text-2xl font-semibold">Basic Table</h2>
             <p class="text-sm text-muted-foreground">Simple table with no sorting, pagination, or selection</p>
         </div>
 
         <div class="rounded-md border">
-            <TablePrimitive TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
-                <TableHeaderPrimitive Class="[&_tr]:border-b">
-                    <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                        <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCellPrimitive>
-                        <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCellPrimitive>
-                        <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCellPrimitive>
-                        <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCellPrimitive>
-                    </TableRowPrimitive>
-                </TableHeaderPrimitive>
-                <TableBodyPrimitive Class="[&_tr:last-child]:border-0">
+            <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
+                <TableHeader Class="[&_tr]:border-b">
+                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
+                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
+                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
+                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody Class="[&_tr:last-child]:border-0">
                     @foreach (var person in people)
                     {
-                        <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableCellPrimitive Class="p-4 align-middle">@person.Name</TableCellPrimitive>
-                            <TableCellPrimitive Class="p-4 align-middle">@person.Email</TableCellPrimitive>
-                            <TableCellPrimitive Class="p-4 align-middle">@person.Age</TableCellPrimitive>
-                            <TableCellPrimitive Class="p-4 align-middle">@person.Department</TableCellPrimitive>
-                        </TableRowPrimitive>
+                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <TableCell Class="p-4 align-middle">@person.Name</TableCell>
+                            <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                            <TableCell Class="p-4 align-middle">@person.Age</TableCell>
+                            <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                        </TableRow>
                     }
-                </TableBodyPrimitive>
-            </TablePrimitive>
+                </TableBody>
+            </Table>
         </div>
     </section>
 
@@ -48,27 +48,27 @@
     <section class="space-y-4">
         <div>
             <h2 class="text-2xl font-semibold">Row Actions</h2>
-            <p class="text-sm text-muted-foreground">TablePrimitive with an actions dropdown menu for each row</p>
+            <p class="text-sm text-muted-foreground">Table with an actions dropdown menu for each row</p>
         </div>
 
         <div class="rounded-md border">
-            <TablePrimitive TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
-                <TableHeaderPrimitive Class="[&_tr]:border-b">
-                    <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                        <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCellPrimitive>
-                        <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCellPrimitive>
-                        <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCellPrimitive>
-                        <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</TableHeaderCellPrimitive>
-                    </TableRowPrimitive>
-                </TableHeaderPrimitive>
-                <TableBodyPrimitive Class="[&_tr:last-child]:border-0">
+            <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
+                <TableHeader Class="[&_tr]:border-b">
+                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
+                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
+                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
+                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody Class="[&_tr:last-child]:border-0">
                     @foreach (var person in people)
                     {
-                        <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableCellPrimitive Class="p-4 align-middle font-medium">@person.Name</TableCellPrimitive>
-                            <TableCellPrimitive Class="p-4 align-middle">@person.Email</TableCellPrimitive>
-                            <TableCellPrimitive Class="p-4 align-middle">@person.Department</TableCellPrimitive>
-                            <TableCellPrimitive Class="p-4 align-middle text-right">
+                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <TableCell Class="p-4 align-middle font-medium">@person.Name</TableCell>
+                            <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                            <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                            <TableCell Class="p-4 align-middle text-right">
                                 <DropdownMenuPrimitive>
                                     <DropdownMenuTriggerPrimitive>
                                             <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="h-8 w-8" AriaLabel="Open menu">
@@ -101,11 +101,11 @@
                                         </DropdownMenuItemPrimitive>
                                     </DropdownMenuContentPrimitive>
                                 </DropdownMenuPrimitive>
-                            </TableCellPrimitive>
-                        </TableRowPrimitive>
+                            </TableCell>
+                        </TableRow>
                     }
-                </TableBodyPrimitive>
-            </TablePrimitive>
+                </TableBody>
+            </Table>
         </div>
 
         @if (!string.IsNullOrEmpty(actionMessage))
@@ -116,18 +116,18 @@
         }
     </section>
 
-    @* Sortable TablePrimitive Example *@
+    @* Sortable Table Example *@
     <section class="space-y-4">
         <div>
-            <h2 class="text-2xl font-semibold">Sortable TablePrimitive</h2>
+            <h2 class="text-2xl font-semibold">Sortable Table</h2>
             <p class="text-sm text-muted-foreground">Click column headers to sort. Three-state cycle: None → Ascending → Descending → None</p>
         </div>
 
         <div class="rounded-md border">
-            <TablePrimitive TData="Person" Data="@GetSortedPeople()" @bind-State="@sortableTableState" Class="w-full caption-bottom text-sm">
-                <TableHeaderPrimitive Class="[&_tr]:border-b">
-                    <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                        <TableHeaderCellPrimitive TData="Person" ColumnId="name" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+            <Table TData="Person" Data="@GetSortedPeople()" @bind-State="@sortableTableState" Class="w-full caption-bottom text-sm">
+                <TableHeader Class="[&_tr]:border-b">
+                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                        <TableHeaderCell TData="Person" ColumnId="name" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
                             <div class="flex items-center gap-2">
                                 <span>Name</span>
                                 @if (sortableTableState.Sorting.SortedColumn == "name")
@@ -142,8 +142,8 @@
                                     }
                                 }
                             </div>
-                        </TableHeaderCellPrimitive>
-                        <TableHeaderCellPrimitive TData="Person" ColumnId="email" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+                        </TableHeaderCell>
+                        <TableHeaderCell TData="Person" ColumnId="email" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
                             <div class="flex items-center gap-2">
                                 <span>Email</span>
                                 @if (sortableTableState.Sorting.SortedColumn == "email")
@@ -158,8 +158,8 @@
                                     }
                                 }
                             </div>
-                        </TableHeaderCellPrimitive>
-                        <TableHeaderCellPrimitive TData="Person" ColumnId="age" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+                        </TableHeaderCell>
+                        <TableHeaderCell TData="Person" ColumnId="age" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
                             <div class="flex items-center gap-2">
                                 <span>Age</span>
                                 @if (sortableTableState.Sorting.SortedColumn == "age")
@@ -174,8 +174,8 @@
                                     }
                                 }
                             </div>
-                        </TableHeaderCellPrimitive>
-                        <TableHeaderCellPrimitive TData="Person" ColumnId="department" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+                        </TableHeaderCell>
+                        <TableHeaderCell TData="Person" ColumnId="department" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
                             <div class="flex items-center gap-2">
                                 <span>Department</span>
                                 @if (sortableTableState.Sorting.SortedColumn == "department")
@@ -190,21 +190,21 @@
                                     }
                                 }
                             </div>
-                        </TableHeaderCellPrimitive>
-                    </TableRowPrimitive>
-                </TableHeaderPrimitive>
-                <TableBodyPrimitive Class="[&_tr:last-child]:border-0">
+                        </TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody Class="[&_tr:last-child]:border-0">
                     @foreach (var person in GetSortedPeople())
                     {
-                        <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableCellPrimitive Class="p-4 align-middle">@person.Name</TableCellPrimitive>
-                            <TableCellPrimitive Class="p-4 align-middle">@person.Email</TableCellPrimitive>
-                            <TableCellPrimitive Class="p-4 align-middle">@person.Age</TableCellPrimitive>
-                            <TableCellPrimitive Class="p-4 align-middle">@person.Department</TableCellPrimitive>
-                        </TableRowPrimitive>
+                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <TableCell Class="p-4 align-middle">@person.Name</TableCell>
+                            <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                            <TableCell Class="p-4 align-middle">@person.Age</TableCell>
+                            <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                        </TableRow>
                     }
-                </TableBodyPrimitive>
-            </TablePrimitive>
+                </TableBody>
+            </Table>
         </div>
 
         <div class="rounded-lg border bg-card p-4">
@@ -216,42 +216,42 @@
         </div>
     </section>
 
-    @* Paginated TablePrimitive Example *@
+    @* Paginated Table Example *@
     <section class="space-y-4">
         <div>
-            <h2 class="text-2xl font-semibold">Paginated TablePrimitive</h2>
-            <p class="text-sm text-muted-foreground">TablePrimitive with pagination controls and configurable page size</p>
+            <h2 class="text-2xl font-semibold">Paginated Table</h2>
+            <p class="text-sm text-muted-foreground">Table with pagination controls and configurable page size</p>
         </div>
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <TablePrimitive TData="Person" Data="@largePeopleDataset" @bind-State="@paginatedTableState"
+                <Table TData="Person" Data="@largePeopleDataset" @bind-State="@paginatedTableState"
                        OnPageChange="@HandlePaginationChange"
                        OnPageSizeChange="@HandlePaginationChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeaderPrimitive Class="[&_tr]:border-b">
-                        <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCellPrimitive>
-                        </TableRowPrimitive>
-                    </TableHeaderPrimitive>
-                    <TableBodyPrimitive Class="[&_tr:last-child]:border-0">
+                    <TableHeader Class="[&_tr]:border-b">
+                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody Class="[&_tr:last-child]:border-0">
                         @foreach (var person in GetPaginatedData())
                         {
-                            <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                                <TableCellPrimitive Class="p-4 align-middle">@person.Name</TableCellPrimitive>
-                                <TableCellPrimitive Class="p-4 align-middle">@person.Email</TableCellPrimitive>
-                                <TableCellPrimitive Class="p-4 align-middle">@person.Age</TableCellPrimitive>
-                                <TableCellPrimitive Class="p-4 align-middle">@person.Department</TableCellPrimitive>
-                            </TableRowPrimitive>
+                            <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                <TableCell Class="p-4 align-middle">@person.Name</TableCell>
+                                <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                                <TableCell Class="p-4 align-middle">@person.Age</TableCell>
+                                <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                            </TableRow>
                         }
-                    </TableBodyPrimitive>
-                </TablePrimitive>
+                    </TableBody>
+                </Table>
             </div>
 
-            <TablePaginationPrimitive TData="Person" State="@paginatedTableState.Pagination"
+            <TablePagination TData="Person" State="@paginatedTableState.Pagination"
                              OnPageChange="@HandlePaginationChange"
                              OnPageSizeChange="@HandlePaginationChange">
                 <PaginationTemplate Context="context">
@@ -306,14 +306,14 @@
                         </div>
                     </div>
                 </PaginationTemplate>
-            </TablePaginationPrimitive>
+            </TablePagination>
         </div>
     </section>
 
-    @* Selectable TablePrimitive Example *@
+    @* Selectable Table Example *@
     <section class="space-y-4">
         <div>
-            <h2 class="text-2xl font-semibold">Selectable TablePrimitive (Multi-Select)</h2>
+            <h2 class="text-2xl font-semibold">Selectable Table (Multi-Select)</h2>
             <p class="text-sm text-muted-foreground">Click rows or checkboxes to select. Click header checkbox to select/deselect all. Use arrow keys to navigate and Enter/Space to select.</p>
         </div>
 
@@ -328,33 +328,33 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <TablePrimitive TData="Person" Data="@people" @bind-State="@selectableTableState"
+                <Table TData="Person" Data="@people" @bind-State="@selectableTableState"
                        SelectionMode="SelectionMode.Multiple"
                        EnableKeyboardNavigation="@enableKeyboardNavigation"
                        OnSelectionChange="@HandleSelectionChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeaderPrimitive Class="[&_tr]:border-b">
-                        <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 w-12 px-4">
+                    <TableHeader Class="[&_tr]:border-b">
+                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <TableHeaderCell TData="Person" Class="h-12 w-12 px-4">
                                 <input type="checkbox"
                                        checked="@selectAllChecked"
                                        @onchange="@((e) => { selectAllChecked = (bool)(e.Value ?? false); HandleSelectAllChanged(); })"
                                        class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                                        aria-label="Select all" />
-                            </TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</TableHeaderCellPrimitive>
-                        </TableRowPrimitive>
-                    </TableHeaderPrimitive>
-                    <TableBodyPrimitive Class="[&_tr:last-child]:border-0">
+                            </TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody Class="[&_tr:last-child]:border-0">
                         @foreach (var person in people)
                         {
                             var isSelected = selectableTableState.Selection.IsSelected(person);
-                            <TableRowPrimitive TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
-                                <TableCellPrimitive Class="w-12 px-4">
+                            <TableRow TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
+                                <TableCell Class="w-12 px-4">
                                     <input type="checkbox"
                                            checked="@isSelected"
                                            @onchange="@(() => ToggleRowSelection(person))"
@@ -363,12 +363,12 @@
                                            tabindex="-1"
                                            class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                                            aria-label="@($"Select {person.Name}")" />
-                                </TableCellPrimitive>
-                                <TableCellPrimitive Class="p-4 align-middle">@person.Name</TableCellPrimitive>
-                                <TableCellPrimitive Class="p-4 align-middle">@person.Email</TableCellPrimitive>
-                                <TableCellPrimitive Class="p-4 align-middle">@person.Age</TableCellPrimitive>
-                                <TableCellPrimitive Class="p-4 align-middle">@person.Department</TableCellPrimitive>
-                                <TableCellPrimitive Class="p-4 align-middle text-right" @onclick:stopPropagation="true">
+                                </TableCell>
+                                <TableCell Class="p-4 align-middle">@person.Name</TableCell>
+                                <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                                <TableCell Class="p-4 align-middle">@person.Age</TableCell>
+                                <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                                <TableCell Class="p-4 align-middle text-right" @onclick:stopPropagation="true">
                                     <DropdownMenuPrimitive>
                                         <DropdownMenuTriggerPrimitive>
                                             <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="h-8 w-8" AriaLabel="Open menu">
@@ -401,11 +401,11 @@
                                             </DropdownMenuItemPrimitive>
                                         </DropdownMenuContentPrimitive>
                                     </DropdownMenuPrimitive>
-                                </TableCellPrimitive>
-                            </TableRowPrimitive>
+                                </TableCell>
+                            </TableRow>
                         }
-                    </TableBodyPrimitive>
-                </TablePrimitive>
+                    </TableBody>
+                </Table>
             </div>
 
             <div class="rounded-lg border bg-card p-4">
@@ -435,22 +435,22 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <TablePrimitive TData="Person" Data="@GetSortedCombinedData()" @bind-State="@combinedTableState"
+                <Table TData="Person" Data="@GetSortedCombinedData()" @bind-State="@combinedTableState"
                        SelectionMode="SelectionMode.Multiple"
                        OnPageChange="@HandleCombinedPaginationChange"
                        OnPageSizeChange="@HandleCombinedPaginationChange"
                        OnSelectionChange="@HandleCombinedSelectionChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeaderPrimitive Class="[&_tr]:border-b">
-                        <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 w-12 px-4">
+                    <TableHeader Class="[&_tr]:border-b">
+                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <TableHeaderCell TData="Person" Class="h-12 w-12 px-4">
                                 <input type="checkbox"
                                        checked="@combinedSelectAllChecked"
                                        @onchange="@((e) => { combinedSelectAllChecked = (bool)(e.Value ?? false); HandleCombinedSelectAllChanged(); })"
                                        class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                                        aria-label="Select all on page" />
-                            </TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center justify-between gap-2">
                                     <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
                                          @onclick="@(() => combinedTableState.Sorting.ToggleSort("name"))">
@@ -494,8 +494,8 @@
                                         </PopoverContentPrimitive>
                                     </PopoverPrimitive>
                                 </div>
-                            </TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center justify-between gap-2">
                                     <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
                                          @onclick="@(() => combinedTableState.Sorting.ToggleSort("email"))">
@@ -539,8 +539,8 @@
                                         </PopoverContentPrimitive>
                                     </PopoverPrimitive>
                                 </div>
-                            </TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center justify-between gap-2">
                                     <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
                                          @onclick="@(() => combinedTableState.Sorting.ToggleSort("age"))">
@@ -584,8 +584,8 @@
                                         </PopoverContentPrimitive>
                                     </PopoverPrimitive>
                                 </div>
-                            </TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center justify-between gap-2">
                                     <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
                                          @onclick="@(() => combinedTableState.Sorting.ToggleSort("department"))">
@@ -629,15 +629,15 @@
                                         </PopoverContentPrimitive>
                                     </PopoverPrimitive>
                                 </div>
-                            </TableHeaderCellPrimitive>
-                        </TableRowPrimitive>
-                    </TableHeaderPrimitive>
-                    <TableBodyPrimitive Class="[&_tr:last-child]:border-0">
+                            </TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody Class="[&_tr:last-child]:border-0">
                         @foreach (var person in GetCombinedPageData())
                         {
                             var isSelected = combinedTableState.Selection.IsSelected(person);
-                            <TableRowPrimitive TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
-                                <TableCellPrimitive Class="w-12 px-4">
+                            <TableRow TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
+                                <TableCell Class="w-12 px-4">
                                     <input type="checkbox"
                                            checked="@isSelected"
                                            @onchange="@(() => ToggleCombinedRowSelection(person))"
@@ -646,18 +646,18 @@
                                            tabindex="-1"
                                            class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                                            aria-label="@($"Select {person.Name}")" />
-                                </TableCellPrimitive>
-                                <TableCellPrimitive Class="p-4 align-middle">@person.Name</TableCellPrimitive>
-                                <TableCellPrimitive Class="p-4 align-middle">@person.Email</TableCellPrimitive>
-                                <TableCellPrimitive Class="p-4 align-middle">@person.Age</TableCellPrimitive>
-                                <TableCellPrimitive Class="p-4 align-middle">@person.Department</TableCellPrimitive>
-                            </TableRowPrimitive>
+                                </TableCell>
+                                <TableCell Class="p-4 align-middle">@person.Name</TableCell>
+                                <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                                <TableCell Class="p-4 align-middle">@person.Age</TableCell>
+                                <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                            </TableRow>
                         }
-                    </TableBodyPrimitive>
-                </TablePrimitive>
+                    </TableBody>
+                </Table>
             </div>
 
-            <TablePaginationPrimitive TData="Person" State="@combinedTableState.Pagination"
+            <TablePagination TData="Person" State="@combinedTableState.Pagination"
                              OnPageChange="@HandleCombinedPaginationChange"
                              OnPageSizeChange="@HandleCombinedPaginationChange">
                 <PaginationTemplate Context="context">
@@ -720,7 +720,7 @@
                         </div>
                     </div>
                 </PaginationTemplate>
-            </TablePaginationPrimitive>
+            </TablePagination>
 
             <div class="rounded-lg border bg-card p-4">
                 <h3 class="font-semibold mb-2">Current State</h3>
@@ -745,13 +745,13 @@
 
         <div class="space-y-4">
             <div class="rounded-md border">
-                <TablePrimitive TData="Person" Data="@GetFilteredPeople()" @bind-State="@filteredTableState"
+                <Table TData="Person" Data="@GetFilteredPeople()" @bind-State="@filteredTableState"
                        OnPageChange="@HandleFilteredPaginationChange"
                        OnPageSizeChange="@HandleFilteredPaginationChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeaderPrimitive Class="[&_tr]:border-b">
-                        <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                    <TableHeader Class="[&_tr]:border-b">
+                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center gap-2">
                                     <span>Name</span>
                                     <PopoverPrimitive>
@@ -781,8 +781,8 @@
                                         </PopoverContentPrimitive>
                                     </PopoverPrimitive>
                                 </div>
-                            </TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center gap-2">
                                     <span>Email</span>
                                     <PopoverPrimitive>
@@ -812,8 +812,8 @@
                                         </PopoverContentPrimitive>
                                     </PopoverPrimitive>
                                 </div>
-                            </TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            </TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                                 <div class="flex items-center gap-2">
                                     <span>Department</span>
                                     <PopoverPrimitive>
@@ -843,10 +843,10 @@
                                         </PopoverContentPrimitive>
                                     </PopoverPrimitive>
                                 </div>
-                            </TableHeaderCellPrimitive>
-                        </TableRowPrimitive>
-                    </TableHeaderPrimitive>
-                    <TableBodyPrimitive Class="[&_tr:last-child]:border-0">
+                            </TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody Class="[&_tr:last-child]:border-0">
                         @{
                             var filteredPeople = GetFilteredPageData().ToList();
                         }
@@ -854,26 +854,26 @@
                         {
                             @foreach (var person in filteredPeople)
                             {
-                                <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                                    <TableCellPrimitive Class="p-4 align-middle">@person.Name</TableCellPrimitive>
-                                    <TableCellPrimitive Class="p-4 align-middle">@person.Email</TableCellPrimitive>
-                                    <TableCellPrimitive Class="p-4 align-middle">@person.Department</TableCellPrimitive>
-                                </TableRowPrimitive>
+                                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                    <TableCell Class="p-4 align-middle">@person.Name</TableCell>
+                                    <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                                    <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                                </TableRow>
                             }
                         }
                         else
                         {
-                            <TableRowPrimitive TData="Person" Class="border-b">
-                                <TableCellPrimitive Class="p-4 align-middle text-center text-muted-foreground" colspan="3">
+                            <TableRow TData="Person" Class="border-b">
+                                <TableCell Class="p-4 align-middle text-center text-muted-foreground" colspan="3">
                                     No results found
-                                </TableCellPrimitive>
-                            </TableRowPrimitive>
+                                </TableCell>
+                            </TableRow>
                         }
-                    </TableBodyPrimitive>
-                </TablePrimitive>
+                    </TableBody>
+                </Table>
             </div>
 
-            <TablePaginationPrimitive TData="Person" State="@filteredTableState.Pagination"
+            <TablePagination TData="Person" State="@filteredTableState.Pagination"
                              OnPageChange="@HandleFilteredPaginationChange"
                              OnPageSizeChange="@HandleFilteredPaginationChange">
                 <PaginationTemplate Context="context">
@@ -928,7 +928,7 @@
                         </div>
                     </div>
                 </PaginationTemplate>
-            </TablePaginationPrimitive>
+            </TablePagination>
 
             <div class="rounded-lg border bg-card p-4">
                 <h3 class="font-semibold mb-2">Filter State</h3>
@@ -972,19 +972,19 @@
             </div>
 
             <div class="rounded-md border">
-                <TablePrimitive TData="Person" Data="@GetGloballyFilteredPeople()" @bind-State="@globalSearchTableState"
+                <Table TData="Person" Data="@GetGloballyFilteredPeople()" @bind-State="@globalSearchTableState"
                        OnPageChange="@HandleGlobalSearchPaginationChange"
                        OnPageSizeChange="@HandleGlobalSearchPaginationChange"
                        Class="w-full caption-bottom text-sm">
-                    <TableHeaderPrimitive Class="[&_tr]:border-b">
-                        <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCellPrimitive>
-                            <TableHeaderCellPrimitive TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCellPrimitive>
-                        </TableRowPrimitive>
-                    </TableHeaderPrimitive>
-                    <TableBodyPrimitive Class="[&_tr:last-child]:border-0">
+                    <TableHeader Class="[&_tr]:border-b">
+                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
+                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody Class="[&_tr:last-child]:border-0">
                         @{
                             var globalFilteredPeople = GetGlobalSearchPageData().ToList();
                         }
@@ -992,27 +992,27 @@
                         {
                             @foreach (var person in globalFilteredPeople)
                             {
-                                <TableRowPrimitive TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                                    <TableCellPrimitive Class="p-4 align-middle">@person.Name</TableCellPrimitive>
-                                    <TableCellPrimitive Class="p-4 align-middle">@person.Email</TableCellPrimitive>
-                                    <TableCellPrimitive Class="p-4 align-middle">@person.Age</TableCellPrimitive>
-                                    <TableCellPrimitive Class="p-4 align-middle">@person.Department</TableCellPrimitive>
-                                </TableRowPrimitive>
+                                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                    <TableCell Class="p-4 align-middle">@person.Name</TableCell>
+                                    <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                                    <TableCell Class="p-4 align-middle">@person.Age</TableCell>
+                                    <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                                </TableRow>
                             }
                         }
                         else
                         {
-                            <TableRowPrimitive TData="Person" Class="border-b">
-                                <TableCellPrimitive Class="p-4 align-middle text-center text-muted-foreground" colspan="4">
+                            <TableRow TData="Person" Class="border-b">
+                                <TableCell Class="p-4 align-middle text-center text-muted-foreground" colspan="4">
                                     No results found for "@globalSearchFilter"
-                                </TableCellPrimitive>
-                            </TableRowPrimitive>
+                                </TableCell>
+                            </TableRow>
                         }
-                    </TableBodyPrimitive>
-                </TablePrimitive>
+                    </TableBody>
+                </Table>
             </div>
 
-            <TablePaginationPrimitive TData="Person" State="@globalSearchTableState.Pagination"
+            <TablePagination TData="Person" State="@globalSearchTableState.Pagination"
                              OnPageChange="@HandleGlobalSearchPaginationChange"
                              OnPageSizeChange="@HandleGlobalSearchPaginationChange">
                 <PaginationTemplate Context="context">
@@ -1067,7 +1067,7 @@
                         </div>
                     </div>
                 </PaginationTemplate>
-            </TablePaginationPrimitive>
+            </TablePagination>
 
             <div class="rounded-lg border bg-card p-4">
                 <h3 class="font-semibold mb-2">Search Results</h3>
@@ -1156,7 +1156,7 @@
 
             <div class="space-y-4">
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">TablePrimitive</h3>
+                    <h3 class="font-semibold mb-3">Table</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">Data</code>
@@ -1214,7 +1214,7 @@
                 </div>
 
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">TableRowPrimitive</h3>
+                    <h3 class="font-semibold mb-3">TableRow</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">Item</code>
@@ -1234,7 +1234,7 @@
                 </div>
 
                 <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">TableHeaderCellPrimitive</h3>
+                    <h3 class="font-semibold mb-3">TableHeaderCell</h3>
                     <div class="space-y-3 text-sm">
                         <div>
                             <code class="text-xs bg-muted px-1 py-0.5 rounded">ColumnId</code>
