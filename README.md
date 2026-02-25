@@ -1,14 +1,38 @@
 # NeoUI
 
+[![Website](https://img.shields.io/badge/Website-neoui.io-blue)](https://neoui.io)
+[![NuGet](https://img.shields.io/nuget/v/NeoUI.Blazor)](https://www.nuget.org/packages/NeoUI.Blazor)
+[![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
+
 A comprehensive UI component library for Blazor inspired by [shadcn/ui](https://ui.shadcn.com/).
+
+<p align="center">
+  <a href="https://neoui.io">
+    <img src=".github/assets/hero.png" alt="NeoUI - Beautiful Components for Blazor" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://neoui.io"><strong>Website</strong></a> &nbsp;·&nbsp;
+  <a href="https://demos.neoui.io"><strong>Live Demo</strong></a>
+</p>
+
+<p align="center">
+  <table align="center">
+    <tr>
+      <td align="center"><b>⚡ Zero Config</b><br/>Pre-built CSS, no Node.js or build tools required</td>
+      <td align="center"><b>🧩 85+ Components</b><br/>Production-ready, composable UI components</td>
+      <td align="center"><b>🎨 shadcn/ui Themes</b><br/>Drop in any shadcn/ui or tweakcn theme</td>
+      <td align="center"><b>🌙 Dark Mode</b><br/>Built-in light &amp; dark with CSS variables</td>
+    </tr>
+  </table>
+</p>
 
 ## 🌟 Overview
 
 NeoUI for Blazor brings the beautiful design system of shadcn/ui to Blazor applications. This library provides **zero-config, plug-and-play UI components** with full shadcn/ui compatibility, featuring pre-built CSS, styled components, and headless primitives that work across all Blazor hosting models (Server, WebAssembly, and Hybrid).
 
 **No Tailwind CSS setup required** - just install the NuGet package and start building!
-
-**[🚀 Try the Live Demo](https://demos.neoui.io)** - Explore all 85+ components with interactive examples
 
 ## 🚀 Getting Started
 
