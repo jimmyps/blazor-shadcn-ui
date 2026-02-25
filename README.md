@@ -21,7 +21,7 @@ A comprehensive UI component library for Blazor inspired by [shadcn/ui](https://
   <table align="center">
     <tr>
       <td align="center"><b>⚡ Zero Config</b><br/>Pre-built CSS, no Node.js or build tools required</td>
-      <td align="center"><b>🧩 85+ Components</b><br/>Production-ready, composable UI components</td>
+      <td align="center"><b>🧩 85+ Components</b><br/>Modern, composable UI components</td>
       <td align="center"><b>🎨 shadcn/ui Themes</b><br/>Drop in any shadcn/ui or tweakcn theme</td>
       <td align="center"><b>🌙 Dark Mode</b><br/>Built-in light &amp; dark with CSS variables</td>
     </tr>
