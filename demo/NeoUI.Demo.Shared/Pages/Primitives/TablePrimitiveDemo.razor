@@ -3,981 +3,26 @@
 <PageTitle>Table Primitive - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-7xl">
+    <DemoPageHeader Title="Table Primitive"
+                    Description="Headless, unstyled table primitive with sorting, pagination, and selection capabilities." />
 
-    <DemoPageHeader
-        Title="Table Primitive"
-        Description="Headless, unstyled table primitive with sorting, pagination, and selection capabilities." />
+    <div class="space-y-6">
 
-    <DemoSection
-        Title="Basic Table"
-        Description="Simple table with no sorting, pagination, or selection.">
-        <DemoBlock Code="@_basicCode">
-
-        <div class="rounded-md border">
-            <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
-                <TableHeader Class="[&_tr]:border-b">
-                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody Class="[&_tr:last-child]:border-0">
-                    @foreach (var person in people)
-                    {
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                        </TableRow>
-                    }
-                </TableBody>
-            </Table>
-        </div>
-        </DemoBlock>
-    </DemoSection>
-
-    <DemoSection
-        Title="Row Actions"
-        Description="Table with an actions dropdown menu for each row.">
-        <DemoBlock Code="@_rowActionsCode">
-
-        <div class="rounded-md border">
-            <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
-                <TableHeader Class="[&_tr]:border-b">
-                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                        <TableHeaderCell TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</TableHeaderCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody Class="[&_tr:last-child]:border-0">
-                    @foreach (var person in people)
-                    {
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableCell Class="p-4 align-middle font-medium">@person.Name</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                            <TableCell Class="p-4 align-middle text-right">
-                                <DropdownMenuPrimitive>
-                                    <DropdownMenuTriggerPrimitive>
-                                            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="h-8 w-8" AriaLabel="Open menu">
-                                            <LucideIcon Name="ellipsis" Size="16" />
-                                        </Button>
-                                    </DropdownMenuTriggerPrimitive>
-                                    <DropdownMenuContentPrimitive Class="w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md" Align="PopoverAlign.End">
-                                        <DropdownMenuLabel Class="px-2 py-1.5 text-sm font-semibold">Actions</DropdownMenuLabel>
-                                        <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
-                                        <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                                          OnClick="@(() => HandleViewDetails(person))">
-                                            <LucideIcon Name="eye" Size="16" Class="mr-2" />
-                                            View details
-                                        </DropdownMenuItemPrimitive>
-                                        <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                                          OnClick="@(() => HandleEdit(person))">
-                                            <LucideIcon Name="pencil" Size="16" Class="mr-2" />
-                                            Edit
-                                        </DropdownMenuItemPrimitive>
-                                        <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                                          OnClick="@(() => HandleDuplicate(person))">
-                                            <LucideIcon Name="copy" Size="16" Class="mr-2" />
-                                            Duplicate
-                                        </DropdownMenuItemPrimitive>
-                                        <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
-                                        <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground text-destructive"
-                                                          OnClick="@(() => HandleDelete(person))">
-                                            <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
-                                            Delete
-                                        </DropdownMenuItemPrimitive>
-                                    </DropdownMenuContentPrimitive>
-                                </DropdownMenuPrimitive>
-                            </TableCell>
-                        </TableRow>
-                    }
-                </TableBody>
-            </Table>
-        </div>
-
-        @if (!string.IsNullOrEmpty(actionMessage))
-        {
-            <div class="rounded-lg border bg-card p-4">
-                <p class="text-sm">@actionMessage</p>
-            </div>
-        }
-        </DemoBlock>
-    </DemoSection>
-
-    <DemoSection
-        Title="Sortable Table"
-        Description="Click column headers to sort. Three-state cycle: None → Ascending → Descending → None.">
-        <DemoBlock Code="@_sortableCode">
-
-        <div class="rounded-md border">
-            <Table TData="Person" Data="@GetSortedPeople()" @bind-State="@sortableTableState" Class="w-full caption-bottom text-sm">
-                <TableHeader Class="[&_tr]:border-b">
-                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                        <TableHeaderCell TData="Person" ColumnId="name" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
-                            <div class="flex items-center gap-2">
-                                <span>Name</span>
-                                @if (sortableTableState.Sorting.SortedColumn == "name")
-                                {
-                                    @if (sortableTableState.Sorting.Direction == SortDirection.Ascending)
-                                    {
-                                        <span class="text-xs">↑</span>
-                                    }
-                                    else if (sortableTableState.Sorting.Direction == SortDirection.Descending)
-                                    {
-                                        <span class="text-xs">↓</span>
-                                    }
-                                }
-                            </div>
-                        </TableHeaderCell>
-                        <TableHeaderCell TData="Person" ColumnId="email" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
-                            <div class="flex items-center gap-2">
-                                <span>Email</span>
-                                @if (sortableTableState.Sorting.SortedColumn == "email")
-                                {
-                                    @if (sortableTableState.Sorting.Direction == SortDirection.Ascending)
-                                    {
-                                        <span class="text-xs">↑</span>
-                                    }
-                                    else if (sortableTableState.Sorting.Direction == SortDirection.Descending)
-                                    {
-                                        <span class="text-xs">↓</span>
-                                    }
-                                }
-                            </div>
-                        </TableHeaderCell>
-                        <TableHeaderCell TData="Person" ColumnId="age" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
-                            <div class="flex items-center gap-2">
-                                <span>Age</span>
-                                @if (sortableTableState.Sorting.SortedColumn == "age")
-                                {
-                                    @if (sortableTableState.Sorting.Direction == SortDirection.Ascending)
-                                    {
-                                        <span class="text-xs">↑</span>
-                                    }
-                                    else if (sortableTableState.Sorting.Direction == SortDirection.Descending)
-                                    {
-                                        <span class="text-xs">↓</span>
-                                    }
-                                }
-                            </div>
-                        </TableHeaderCell>
-                        <TableHeaderCell TData="Person" ColumnId="department" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
-                            <div class="flex items-center gap-2">
-                                <span>Department</span>
-                                @if (sortableTableState.Sorting.SortedColumn == "department")
-                                {
-                                    @if (sortableTableState.Sorting.Direction == SortDirection.Ascending)
-                                    {
-                                        <span class="text-xs">↑</span>
-                                    }
-                                    else if (sortableTableState.Sorting.Direction == SortDirection.Descending)
-                                    {
-                                        <span class="text-xs">↓</span>
-                                    }
-                                }
-                            </div>
-                        </TableHeaderCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody Class="[&_tr:last-child]:border-0">
-                    @foreach (var person in GetSortedPeople())
-                    {
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                            <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                        </TableRow>
-                    }
-                </TableBody>
-            </Table>
-        </div>
-
-        <div class="rounded-lg border bg-card p-4">
-            <h3 class="font-semibold mb-2">Current Sort State</h3>
-            <div class="text-sm space-y-1">
-                <p><span class="font-medium">Column:</span> @(sortableTableState.Sorting.SortedColumn ?? "None")</p>
-                <p><span class="font-medium">Direction:</span> @sortableTableState.Sorting.Direction</p>
-            </div>
-        </div>
-        </DemoBlock>
-    </DemoSection>
-
-    <DemoSection
-        Title="Paginated Table"
-        Description="Table with pagination controls and configurable page size.">
-        <DemoBlock Code="@_paginatedCode">
-
-        <div class="space-y-4">
-            <div class="rounded-md border">
-                <Table TData="Person" Data="@largePeopleDataset" @bind-State="@paginatedTableState"
-                       OnPageChange="@HandlePaginationChange"
-                       OnPageSizeChange="@HandlePaginationChange"
-                       Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
-                        @foreach (var person in GetPaginatedData())
-                        {
+        @* Basic Table Example *@
+        <DemoSection Title="Basic Table" Description="Simple table with no sorting, pagination, or selection">
+            <DemoBlock Code="@_basicTableCode">
+                <div class="rounded-md border">
+                    <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
+                        <TableHeader Class="[&_tr]:border-b">
                             <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                                <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                                <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
+                                <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
+                                <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
+                                <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
                             </TableRow>
-                        }
-                    </TableBody>
-                </Table>
-            </div>
-
-            <TablePagination TData="Person" State="@paginatedTableState.Pagination"
-                             OnPageChange="@HandlePaginationChange"
-                             OnPageSizeChange="@HandlePaginationChange">
-                <PaginationTemplate Context="context">
-                    <div class="flex items-center justify-between px-2">
-                        <div class="flex-1 text-sm text-muted-foreground">
-                            @context.GetPageInfoText()
-                        </div>
-                        <div class="flex items-center space-x-6 lg:space-x-8">
-                            <div class="flex items-center space-x-2">
-                                <p class="text-sm font-medium">Rows per page</p>
-                                <select @onchange="@((e) => context.ChangePageSize(int.Parse(e.Value?.ToString() ?? "10")))"
-                                        class="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm">
-                                    @foreach (var size in context.PageSizeOptions)
-                                    {
-                                        <option value="@size" selected="@(context.State.PageSize == size)">@size</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="flex w-[100px] items-center justify-center text-sm font-medium">
-                                Page @context.State.CurrentPage of @context.State.TotalPages
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToFirstPage"
-                                        Disabled="@(!context.State.CanGoPrevious)"
-                                        AriaLabel="Go to first page">
-                                    <LucideIcon Name="chevrons-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToPreviousPage"
-                                        Disabled="@(!context.State.CanGoPrevious)"
-                                        AriaLabel="Go to previous page">
-                                    <LucideIcon Name="chevron-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToNextPage"
-                                        Disabled="@(!context.State.CanGoNext)"
-                                        AriaLabel="Go to next page">
-                                    <LucideIcon Name="chevron-right" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToLastPage"
-                                        Disabled="@(!context.State.CanGoNext)"
-                                        AriaLabel="Go to last page">
-                                    <LucideIcon Name="chevrons-right" Size="16" />
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </PaginationTemplate>
-            </TablePagination>
-        </div>
-        </DemoBlock>
-    </DemoSection>
-
-    <DemoSection
-        Title="Selectable Table (Multi-Select)"
-        Description="Click rows or checkboxes to select. Click header checkbox to select/deselect all. Use arrow keys to navigate and Enter/Space to select.">
-        <DemoBlock Code="@_selectableCode">
-
-        <div class="flex items-center gap-2 mb-2">
-            <input type="checkbox"
-                   id="enableKeyboardNav"
-                   checked="@enableKeyboardNavigation"
-                   @onchange="@((e) => enableKeyboardNavigation = (bool)(e.Value ?? true))"
-                   class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary" />
-            <label for="enableKeyboardNav" class="text-sm font-medium">Enable keyboard navigation</label>
-        </div>
-
-        <div class="space-y-4">
-            <div class="rounded-md border">
-                <Table TData="Person" Data="@people" @bind-State="@selectableTableState"
-                       SelectionMode="SelectionMode.Multiple"
-                       EnableKeyboardNavigation="@enableKeyboardNavigation"
-                       OnSelectionChange="@HandleSelectionChange"
-                       Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 w-12 px-4">
-                                <input type="checkbox"
-                                       checked="@selectAllChecked"
-                                       @onchange="@((e) => { selectAllChecked = (bool)(e.Value ?? false); HandleSelectAllChanged(); })"
-                                       class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
-                                       aria-label="Select all" />
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
-                        @foreach (var person in people)
-                        {
-                            var isSelected = selectableTableState.Selection.IsSelected(person);
-                            <TableRow TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
-                                <TableCell Class="w-12 px-4">
-                                    <input type="checkbox"
-                                           checked="@isSelected"
-                                           @onchange="@(() => ToggleRowSelection(person))"
-                                           @onclick:stopPropagation="true"
-                                           @onkeydown:stopPropagation="true"
-                                           tabindex="-1"
-                                           class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
-                                           aria-label="@($"Select {person.Name}")" />
-                                </TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                                <TableCell Class="p-4 align-middle text-right" @onclick:stopPropagation="true">
-                                    <DropdownMenuPrimitive>
-                                        <DropdownMenuTriggerPrimitive>
-                                            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="h-8 w-8" AriaLabel="Open menu">
-                                                <LucideIcon Name="ellipsis" Size="16" />
-                                            </Button>
-                                        </DropdownMenuTriggerPrimitive>
-                                        <DropdownMenuContentPrimitive Class="w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md" Align="PopoverAlign.End">
-                                            <DropdownMenuLabel Class="px-2 py-1.5 text-sm font-semibold">Actions</DropdownMenuLabel>
-                                            <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
-                                            <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                                              OnClick="@(() => HandleViewDetails(person))">
-                                                <LucideIcon Name="eye" Size="16" Class="mr-2" />
-                                                View details
-                                            </DropdownMenuItemPrimitive>
-                                            <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                                              OnClick="@(() => HandleEdit(person))">
-                                                <LucideIcon Name="pencil" Size="16" Class="mr-2" />
-                                                Edit
-                                            </DropdownMenuItemPrimitive>
-                                            <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                                              OnClick="@(() => HandleDuplicate(person))">
-                                                <LucideIcon Name="copy" Size="16" Class="mr-2" />
-                                                Duplicate
-                                            </DropdownMenuItemPrimitive>
-                                            <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
-                                            <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground text-destructive"
-                                                              OnClick="@(() => HandleDelete(person))">
-                                                <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
-                                                Delete
-                                            </DropdownMenuItemPrimitive>
-                                        </DropdownMenuContentPrimitive>
-                                    </DropdownMenuPrimitive>
-                                </TableCell>
-                            </TableRow>
-                        }
-                    </TableBody>
-                </Table>
-            </div>
-
-            <div class="rounded-lg border bg-card p-4">
-                <h3 class="font-semibold mb-2">Selection State</h3>
-                <div class="text-sm space-y-1">
-                    <p><span class="font-medium">Selected:</span> @selectableTableState.Selection.SelectedCount rows</p>
-                    @if (selectableTableState.Selection.SelectedCount > 0)
-                    {
-                        <div class="mt-2">
-                            <button @onclick="@(() => { selectableTableState.Selection.Clear(); selectAllChecked = false; })"
-                                    class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-4">
-                                Clear Selection
-                            </button>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-        </DemoBlock>
-    </DemoSection>
-
-    <DemoSection
-        Title="All Features Combined"
-        Description="Filtering, sorting, pagination, and selection all working together.">
-        <DemoBlock Code="@_combinedCode">
-
-        <div class="space-y-4">
-            <div class="rounded-md border">
-                <Table TData="Person" Data="@GetSortedCombinedData()" @bind-State="@combinedTableState"
-                       SelectionMode="SelectionMode.Multiple"
-                       OnPageChange="@HandleCombinedPaginationChange"
-                       OnPageSizeChange="@HandleCombinedPaginationChange"
-                       OnSelectionChange="@HandleCombinedSelectionChange"
-                       Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 w-12 px-4">
-                                <input type="checkbox"
-                                       checked="@combinedSelectAllChecked"
-                                       @onchange="@((e) => { combinedSelectAllChecked = (bool)(e.Value ?? false); HandleCombinedSelectAllChanged(); })"
-                                       class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
-                                       aria-label="Select all on page" />
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                <div class="flex items-center justify-between gap-2">
-                                    <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
-                                         @onclick="@(() => combinedTableState.Sorting.ToggleSort("name"))">
-                                        <span>Name</span>
-                                        @if (combinedTableState.Sorting.SortedColumn == "name")
-                                        {
-                                            @if (combinedTableState.Sorting.Direction == SortDirection.Ascending)
-                                            {
-                                                <span class="text-xs">↑</span>
-                                            }
-                                            else if (combinedTableState.Sorting.Direction == SortDirection.Descending)
-                                            {
-                                                <span class="text-xs">↓</span>
-                                            }
-                                        }
-                                    </div>
-                                    <PopoverPrimitive>
-                                        <PopoverTriggerPrimitive>
-                                            <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedNameFilter) ? "text-primary" : "text-muted-foreground")"
-                                                    aria-label="Filter name">
-                                                <LucideIcon Name="filter" Size="14" />
-                                            </button>
-                                        </PopoverTriggerPrimitive>
-                                        <PopoverContentPrimitive Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
-                                            <div class="space-y-2">
-                                                <h4 class="font-medium text-sm">Filter by Name</h4>
-                                                <input type="text"
-                                                       @bind="combinedNameFilter"
-                                                       @bind:event="oninput"
-                                                       @onchange="@((e) => StateHasChanged())"
-                                                       placeholder="Enter name..."
-                                                       class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
-                                                @if (!string.IsNullOrWhiteSpace(combinedNameFilter))
-                                                {
-                                                    <button @onclick="@(() => { combinedNameFilter = ""; StateHasChanged(); })"
-                                                            class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
-                                                        Clear
-                                                    </button>
-                                                }
-                                            </div>
-                                        </PopoverContentPrimitive>
-                                    </PopoverPrimitive>
-                                </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                <div class="flex items-center justify-between gap-2">
-                                    <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
-                                         @onclick="@(() => combinedTableState.Sorting.ToggleSort("email"))">
-                                        <span>Email</span>
-                                        @if (combinedTableState.Sorting.SortedColumn == "email")
-                                        {
-                                            @if (combinedTableState.Sorting.Direction == SortDirection.Ascending)
-                                            {
-                                                <span class="text-xs">↑</span>
-                                            }
-                                            else if (combinedTableState.Sorting.Direction == SortDirection.Descending)
-                                            {
-                                                <span class="text-xs">↓</span>
-                                            }
-                                        }
-                                    </div>
-                                    <PopoverPrimitive>
-                                        <PopoverTriggerPrimitive>
-                                            <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedEmailFilter) ? "text-primary" : "text-muted-foreground")"
-                                                    aria-label="Filter email">
-                                                <LucideIcon Name="filter" Size="14" />
-                                            </button>
-                                        </PopoverTriggerPrimitive>
-                                        <PopoverContentPrimitive Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
-                                            <div class="space-y-2">
-                                                <h4 class="font-medium text-sm">Filter by Email</h4>
-                                                <input type="text"
-                                                       @bind="combinedEmailFilter"
-                                                       @bind:event="oninput"
-                                                       @onchange="@((e) => StateHasChanged())"
-                                                       placeholder="Enter email..."
-                                                       class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
-                                                @if (!string.IsNullOrWhiteSpace(combinedEmailFilter))
-                                                {
-                                                    <button @onclick="@(() => { combinedEmailFilter = ""; StateHasChanged(); })"
-                                                            class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
-                                                        Clear
-                                                    </button>
-                                                }
-                                            </div>
-                                        </PopoverContentPrimitive>
-                                    </PopoverPrimitive>
-                                </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                <div class="flex items-center justify-between gap-2">
-                                    <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
-                                         @onclick="@(() => combinedTableState.Sorting.ToggleSort("age"))">
-                                        <span>Age</span>
-                                        @if (combinedTableState.Sorting.SortedColumn == "age")
-                                        {
-                                            @if (combinedTableState.Sorting.Direction == SortDirection.Ascending)
-                                            {
-                                                <span class="text-xs">↑</span>
-                                            }
-                                            else if (combinedTableState.Sorting.Direction == SortDirection.Descending)
-                                            {
-                                                <span class="text-xs">↓</span>
-                                            }
-                                        }
-                                    </div>
-                                    <PopoverPrimitive>
-                                        <PopoverTriggerPrimitive>
-                                            <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedAgeFilter) ? "text-primary" : "text-muted-foreground")"
-                                                    aria-label="Filter age">
-                                                <LucideIcon Name="filter" Size="14" />
-                                            </button>
-                                        </PopoverTriggerPrimitive>
-                                        <PopoverContentPrimitive Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
-                                            <div class="space-y-2">
-                                                <h4 class="font-medium text-sm">Filter by Age</h4>
-                                                <input type="text"
-                                                       @bind="combinedAgeFilter"
-                                                       @bind:event="oninput"
-                                                       @onchange="@((e) => StateHasChanged())"
-                                                       placeholder="Enter age..."
-                                                       class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
-                                                @if (!string.IsNullOrWhiteSpace(combinedAgeFilter))
-                                                {
-                                                    <button @onclick="@(() => { combinedAgeFilter = ""; StateHasChanged(); })"
-                                                            class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
-                                                        Clear
-                                                    </button>
-                                                }
-                                            </div>
-                                        </PopoverContentPrimitive>
-                                    </PopoverPrimitive>
-                                </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                <div class="flex items-center justify-between gap-2">
-                                    <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
-                                         @onclick="@(() => combinedTableState.Sorting.ToggleSort("department"))">
-                                        <span>Department</span>
-                                        @if (combinedTableState.Sorting.SortedColumn == "department")
-                                        {
-                                            @if (combinedTableState.Sorting.Direction == SortDirection.Ascending)
-                                            {
-                                                <span class="text-xs">↑</span>
-                                            }
-                                            else if (combinedTableState.Sorting.Direction == SortDirection.Descending)
-                                            {
-                                                <span class="text-xs">↓</span>
-                                            }
-                                        }
-                                    </div>
-                                    <PopoverPrimitive>
-                                        <PopoverTriggerPrimitive>
-                                            <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedDepartmentFilter) ? "text-primary" : "text-muted-foreground")"
-                                                    aria-label="Filter department">
-                                                <LucideIcon Name="filter" Size="14" />
-                                            </button>
-                                        </PopoverTriggerPrimitive>
-                                        <PopoverContentPrimitive Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
-                                            <div class="space-y-2">
-                                                <h4 class="font-medium text-sm">Filter by Department</h4>
-                                                <input type="text"
-                                                       @bind="combinedDepartmentFilter"
-                                                       @bind:event="oninput"
-                                                       @onchange="@((e) => StateHasChanged())"
-                                                       placeholder="Enter department..."
-                                                       class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
-                                                @if (!string.IsNullOrWhiteSpace(combinedDepartmentFilter))
-                                                {
-                                                    <button @onclick="@(() => { combinedDepartmentFilter = ""; StateHasChanged(); })"
-                                                            class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
-                                                        Clear
-                                                    </button>
-                                                }
-                                            </div>
-                                        </PopoverContentPrimitive>
-                                    </PopoverPrimitive>
-                                </div>
-                            </TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
-                        @foreach (var person in GetCombinedPageData())
-                        {
-                            var isSelected = combinedTableState.Selection.IsSelected(person);
-                            <TableRow TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
-                                <TableCell Class="w-12 px-4">
-                                    <input type="checkbox"
-                                           checked="@isSelected"
-                                           @onchange="@(() => ToggleCombinedRowSelection(person))"
-                                           @onclick:stopPropagation="true"
-                                           @onkeydown:stopPropagation="true"
-                                           tabindex="-1"
-                                           class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
-                                           aria-label="@($"Select {person.Name}")" />
-                                </TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Age</TableCell>
-                                <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                            </TableRow>
-                        }
-                    </TableBody>
-                </Table>
-            </div>
-
-            <TablePagination TData="Person" State="@combinedTableState.Pagination"
-                             OnPageChange="@HandleCombinedPaginationChange"
-                             OnPageSizeChange="@HandleCombinedPaginationChange">
-                <PaginationTemplate Context="context">
-                    <div class="flex items-center justify-between px-2">
-                        <div class="flex-1 text-sm text-muted-foreground">
-                            @{
-                                var selectedOnPage = combinedTableState.Selection.SelectedCount;
-                                var pageInfo = context.GetPageInfoText();
-                            }
-                            @pageInfo
-                            @if (selectedOnPage > 0)
-                            {
-                                <span class="ml-2">(@selectedOnPage selected)</span>
-                            }
-                        </div>
-                        <div class="flex items-center space-x-6 lg:space-x-8">
-                            <div class="flex items-center space-x-2">
-                                <p class="text-sm font-medium">Rows per page</p>
-                                <select @onchange="@((e) => context.ChangePageSize(int.Parse(e.Value?.ToString() ?? "10")))"
-                                        class="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm">
-                                    @foreach (var size in context.PageSizeOptions)
-                                    {
-                                        <option value="@size" selected="@(context.State.PageSize == size)">@size</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="flex w-[100px] items-center justify-center text-sm font-medium">
-                                Page @context.State.CurrentPage of @context.State.TotalPages
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToFirstPage"
-                                        Disabled="@(!context.State.CanGoPrevious)"
-                                        AriaLabel="Go to first page">
-                                    <LucideIcon Name="chevrons-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToPreviousPage"
-                                        Disabled="@(!context.State.CanGoPrevious)"
-                                        AriaLabel="Go to previous page">
-                                    <LucideIcon Name="chevron-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToNextPage"
-                                        Disabled="@(!context.State.CanGoNext)"
-                                        AriaLabel="Go to next page">
-                                    <LucideIcon Name="chevron-right" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToLastPage"
-                                        Disabled="@(!context.State.CanGoNext)"
-                                        AriaLabel="Go to last page">
-                                    <LucideIcon Name="chevrons-right" Size="16" />
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </PaginationTemplate>
-            </TablePagination>
-
-            <div class="rounded-lg border bg-card p-4">
-                <h3 class="font-semibold mb-2">Current State</h3>
-                <div class="text-sm space-y-1">
-                    <p><span class="font-medium">Active Filters:</span> @(new[] { combinedNameFilter, combinedEmailFilter, combinedAgeFilter, combinedDepartmentFilter }.Count(f => !string.IsNullOrWhiteSpace(f)))</p>
-                    <p><span class="font-medium">Sort Column:</span> @(combinedTableState.Sorting.SortedColumn ?? "None")</p>
-                    <p><span class="font-medium">Sort Direction:</span> @combinedTableState.Sorting.Direction</p>
-                    <p><span class="font-medium">Current Page:</span> @combinedTableState.Pagination.CurrentPage / @combinedTableState.Pagination.TotalPages</p>
-                    <p><span class="font-medium">Selected Rows:</span> @combinedTableState.Selection.SelectedCount</p>
-                    <p><span class="font-medium">Filtered Results:</span> @GetSortedCombinedData().Count() / @largePeopleDataset.Count</p>
-                </div>
-            </div>
-        </div>
-        </DemoBlock>
-    </DemoSection>
-
-    <DemoSection
-        Title="Column Filtering"
-        Description="Click filter icons in headers to filter by column.">
-        <DemoBlock Code="@_columnFilterCode">
-
-        <div class="space-y-4">
-            <div class="rounded-md border">
-                <Table TData="Person" Data="@GetFilteredPeople()" @bind-State="@filteredTableState"
-                       OnPageChange="@HandleFilteredPaginationChange"
-                       OnPageSizeChange="@HandleFilteredPaginationChange"
-                       Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                <div class="flex items-center gap-2">
-                                    <span>Name</span>
-                                    <PopoverPrimitive>
-                                        <PopoverTriggerPrimitive>
-                                            <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(nameFilter) ? "text-primary" : "text-muted-foreground")"
-                                                    aria-label="Filter name">
-                                                <LucideIcon Name="filter" Size="14" />
-                                            </button>
-                                        </PopoverTriggerPrimitive>
-                                        <PopoverContentPrimitive Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
-                                            <div class="space-y-2">
-                                                <h4 class="font-medium text-sm">Filter by Name</h4>
-                                                <input type="text"
-                                                       @bind="nameFilter"
-                                                       @bind:event="oninput"
-                                                       @onchange="@((e) => { filteredTableState.Pagination.Reset(); StateHasChanged(); })"
-                                                       placeholder="Enter name..."
-                                                       class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
-                                                @if (!string.IsNullOrWhiteSpace(nameFilter))
-                                                {
-                                                    <button @onclick="@(() => { nameFilter = ""; filteredTableState.Pagination.Reset(); StateHasChanged(); })"
-                                                            class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
-                                                        Clear
-                                                    </button>
-                                                }
-                                            </div>
-                                        </PopoverContentPrimitive>
-                                    </PopoverPrimitive>
-                                </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                <div class="flex items-center gap-2">
-                                    <span>Email</span>
-                                    <PopoverPrimitive>
-                                        <PopoverTriggerPrimitive>
-                                            <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(emailFilter) ? "text-primary" : "text-muted-foreground")"
-                                                    aria-label="Filter email">
-                                                <LucideIcon Name="filter" Size="14" />
-                                            </button>
-                                        </PopoverTriggerPrimitive>
-                                        <PopoverContentPrimitive Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
-                                            <div class="space-y-2">
-                                                <h4 class="font-medium text-sm">Filter by Email</h4>
-                                                <input type="text"
-                                                       @bind="emailFilter"
-                                                       @bind:event="oninput"
-                                                       @onchange="@((e) => { filteredTableState.Pagination.Reset(); StateHasChanged(); })"
-                                                       placeholder="Enter email..."
-                                                       class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
-                                                @if (!string.IsNullOrWhiteSpace(emailFilter))
-                                                {
-                                                    <button @onclick="@(() => { emailFilter = ""; filteredTableState.Pagination.Reset(); StateHasChanged(); })"
-                                                            class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
-                                                        Clear
-                                                    </button>
-                                                }
-                                            </div>
-                                        </PopoverContentPrimitive>
-                                    </PopoverPrimitive>
-                                </div>
-                            </TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                                <div class="flex items-center gap-2">
-                                    <span>Department</span>
-                                    <PopoverPrimitive>
-                                        <PopoverTriggerPrimitive>
-                                            <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(departmentFilter) ? "text-primary" : "text-muted-foreground")"
-                                                    aria-label="Filter department">
-                                                <LucideIcon Name="filter" Size="14" />
-                                            </button>
-                                        </PopoverTriggerPrimitive>
-                                        <PopoverContentPrimitive Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
-                                            <div class="space-y-2">
-                                                <h4 class="font-medium text-sm">Filter by Department</h4>
-                                                <input type="text"
-                                                       @bind="departmentFilter"
-                                                       @bind:event="oninput"
-                                                       @onchange="@((e) => { filteredTableState.Pagination.Reset(); StateHasChanged(); })"
-                                                       placeholder="Enter department..."
-                                                       class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
-                                                @if (!string.IsNullOrWhiteSpace(departmentFilter))
-                                                {
-                                                    <button @onclick="@(() => { departmentFilter = ""; filteredTableState.Pagination.Reset(); StateHasChanged(); })"
-                                                            class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
-                                                        Clear
-                                                    </button>
-                                                }
-                                            </div>
-                                        </PopoverContentPrimitive>
-                                    </PopoverPrimitive>
-                                </div>
-                            </TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
-                        @{
-                            var filteredPeople = GetFilteredPageData().ToList();
-                        }
-                        @if (filteredPeople.Any())
-                        {
-                            @foreach (var person in filteredPeople)
-                            {
-                                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                                    <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                                    <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                                    <TableCell Class="p-4 align-middle">@person.Department</TableCell>
-                                </TableRow>
-                            }
-                        }
-                        else
-                        {
-                            <TableRow TData="Person" Class="border-b">
-                                <TableCell Class="p-4 align-middle text-center text-muted-foreground" colspan="3">
-                                    No results found
-                                </TableCell>
-                            </TableRow>
-                        }
-                    </TableBody>
-                </Table>
-            </div>
-
-            <TablePagination TData="Person" State="@filteredTableState.Pagination"
-                             OnPageChange="@HandleFilteredPaginationChange"
-                             OnPageSizeChange="@HandleFilteredPaginationChange">
-                <PaginationTemplate Context="context">
-                    <div class="flex items-center justify-between px-2">
-                        <div class="flex-1 text-sm text-muted-foreground">
-                            @context.GetPageInfoText()
-                        </div>
-                        <div class="flex items-center space-x-6 lg:space-x-8">
-                            <div class="flex items-center space-x-2">
-                                <p class="text-sm font-medium">Rows per page</p>
-                                <select @onchange="@((e) => context.ChangePageSize(int.Parse(e.Value?.ToString() ?? "10")))"
-                                        class="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm">
-                                    @foreach (var size in context.PageSizeOptions)
-                                    {
-                                        <option value="@size" selected="@(context.State.PageSize == size)">@size</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="flex w-[100px] items-center justify-center text-sm font-medium">
-                                Page @context.State.CurrentPage of @context.State.TotalPages
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToFirstPage"
-                                        Disabled="@(!context.State.CanGoPrevious)"
-                                        AriaLabel="Go to first page">
-                                    <LucideIcon Name="chevrons-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToPreviousPage"
-                                        Disabled="@(!context.State.CanGoPrevious)"
-                                        AriaLabel="Go to previous page">
-                                    <LucideIcon Name="chevron-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToNextPage"
-                                        Disabled="@(!context.State.CanGoNext)"
-                                        AriaLabel="Go to next page">
-                                    <LucideIcon Name="chevron-right" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToLastPage"
-                                        Disabled="@(!context.State.CanGoNext)"
-                                        AriaLabel="Go to last page">
-                                    <LucideIcon Name="chevrons-right" Size="16" />
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </PaginationTemplate>
-            </TablePagination>
-
-            <div class="rounded-lg border bg-card p-4">
-                <h3 class="font-semibold mb-2">Filter State</h3>
-                <div class="text-sm space-y-1">
-                    <p><span class="font-medium">Active Filters:</span> @(new[] { nameFilter, emailFilter, departmentFilter }.Count(f => !string.IsNullOrWhiteSpace(f)))</p>
-                    <p><span class="font-medium">Results:</span> @GetFilteredPeople().Count() / @people.Count</p>
-                    @if (new[] { nameFilter, emailFilter, departmentFilter }.Any(f => !string.IsNullOrWhiteSpace(f)))
-                    {
-                        <button @onclick="@(() => { nameFilter = ""; emailFilter = ""; departmentFilter = ""; StateHasChanged(); })"
-                                class="mt-2 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-4">
-                            Clear Filters
-                        </button>
-                    }
-                </div>
-            </div>
-        </div>
-        </DemoBlock>
-    </DemoSection>
-
-    <DemoSection
-        Title="Global Search"
-        Description="Search across all columns simultaneously.">
-        <DemoBlock Code="@_globalSearchCode">
-
-        <div class="space-y-4">
-            <div class="flex items-center gap-4">
-                <input type="text"
-                       @bind="globalSearchFilter"
-                       @bind:event="oninput"
-                       @onchange="@(() => { globalSearchTableState.Pagination.Reset(); StateHasChanged(); })"
-                       placeholder="Search across all columns..."
-                       class="flex-1 h-10 px-3 rounded-md border border-input bg-background" />
-                @if (!string.IsNullOrWhiteSpace(globalSearchFilter))
-                {
-                    <button @onclick="@(() => { globalSearchFilter = ""; globalSearchTableState.Pagination.Reset(); StateHasChanged(); })"
-                            class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4">
-                        Clear
-                    </button>
-                }
-            </div>
-
-            <div class="rounded-md border">
-                <Table TData="Person" Data="@GetGloballyFilteredPeople()" @bind-State="@globalSearchTableState"
-                       OnPageChange="@HandleGlobalSearchPaginationChange"
-                       OnPageSizeChange="@HandleGlobalSearchPaginationChange"
-                       Class="w-full caption-bottom text-sm">
-                    <TableHeader Class="[&_tr]:border-b">
-                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
-                            <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody Class="[&_tr:last-child]:border-0">
-                        @{
-                            var globalFilteredPeople = GetGlobalSearchPageData().ToList();
-                        }
-                        @if (globalFilteredPeople.Any())
-                        {
-                            @foreach (var person in globalFilteredPeople)
+                        </TableHeader>
+                        <TableBody Class="[&_tr:last-child]:border-0">
+                            @foreach (var person in people)
                             {
                                 <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
                                     <TableCell Class="p-4 align-middle">@person.Name</TableCell>
@@ -986,99 +31,1087 @@
                                     <TableCell Class="p-4 align-middle">@person.Department</TableCell>
                                 </TableRow>
                             }
-                        }
-                        else
-                        {
-                            <TableRow TData="Person" Class="border-b">
-                                <TableCell Class="p-4 align-middle text-center text-muted-foreground" colspan="4">
-                                    No results found for "@globalSearchFilter"
-                                </TableCell>
-                            </TableRow>
-                        }
-                    </TableBody>
-                </Table>
-            </div>
+                        </TableBody>
+                    </Table>
+                </div>
+            </DemoBlock>
+        </DemoSection>
 
-            <TablePagination TData="Person" State="@globalSearchTableState.Pagination"
-                             OnPageChange="@HandleGlobalSearchPaginationChange"
-                             OnPageSizeChange="@HandleGlobalSearchPaginationChange">
-                <PaginationTemplate Context="context">
-                    <div class="flex items-center justify-between px-2">
-                        <div class="flex-1 text-sm text-muted-foreground">
-                            @context.GetPageInfoText()
-                        </div>
-                        <div class="flex items-center space-x-6 lg:space-x-8">
-                            <div class="flex items-center space-x-2">
-                                <p class="text-sm font-medium">Rows per page</p>
-                                <select @onchange="@((e) => context.ChangePageSize(int.Parse(e.Value?.ToString() ?? "10")))"
-                                        class="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm">
-                                    @foreach (var size in context.PageSizeOptions)
-                                    {
-                                        <option value="@size" selected="@(context.State.PageSize == size)">@size</option>
-                                    }
-                                </select>
+        @* Row Actions Example *@
+        <DemoSection Title="Row Actions" Description="Table with an actions dropdown menu for each row">
+            <DemoBlock Code="@_rowActionsCode">
+                <div class="rounded-md border">
+                    <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
+                        <TableHeader Class="[&_tr]:border-b">
+                            <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
+                                <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
+                                <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
+                                <TableHeaderCell TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody Class="[&_tr:last-child]:border-0">
+                            @foreach (var person in people)
+                            {
+                                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                    <TableCell Class="p-4 align-middle font-medium">@person.Name</TableCell>
+                                    <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                                    <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                                    <TableCell Class="p-4 align-middle text-right">
+                                        <DropdownMenuPrimitive>
+                                            <DropdownMenuTriggerPrimitive>
+                                                <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="h-8 w-8" AriaLabel="Open menu">
+                                                    <LucideIcon Name="ellipsis" Size="16" />
+                                                </Button>
+                                            </DropdownMenuTriggerPrimitive>
+                                            <DropdownMenuContentPrimitive Class="w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md" Align="PopoverAlign.End">
+                                                <DropdownMenuLabel Class="px-2 py-1.5 text-sm font-semibold">Actions</DropdownMenuLabel>
+                                                <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                                <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                                                           OnClick="@(() => HandleViewDetails(person))">
+                                                    <LucideIcon Name="eye" Size="16" Class="mr-2" />
+                                                    View details
+                                                </DropdownMenuItemPrimitive>
+                                                <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                                                           OnClick="@(() => HandleEdit(person))">
+                                                    <LucideIcon Name="pencil" Size="16" Class="mr-2" />
+                                                    Edit
+                                                </DropdownMenuItemPrimitive>
+                                                <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                                                           OnClick="@(() => HandleDuplicate(person))">
+                                                    <LucideIcon Name="copy" Size="16" Class="mr-2" />
+                                                    Duplicate
+                                                </DropdownMenuItemPrimitive>
+                                                <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                                <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground text-destructive"
+                                                                           OnClick="@(() => HandleDelete(person))">
+                                                    <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
+                                                    Delete
+                                                </DropdownMenuItemPrimitive>
+                                            </DropdownMenuContentPrimitive>
+                                        </DropdownMenuPrimitive>
+                                    </TableCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                </div>
+
+                @if (!string.IsNullOrEmpty(actionMessage))
+                {
+                    <div class="rounded-lg border bg-card p-4">
+                        <p class="text-sm">@actionMessage</p>
+                    </div>
+                }
+            </DemoBlock>
+        </DemoSection>
+
+        @* Sortable Table Example *@
+        <DemoSection Title="Sortable Table" Description="Click column headers to sort. Three-state cycle: None → Ascending → Descending → None">
+            <DemoBlock Code="@_sortableTableCode">
+                <div class="rounded-md border">
+                    <Table TData="Person" Data="@GetSortedPeople()" @bind-State="@sortableTableState" Class="w-full caption-bottom text-sm">
+                        <TableHeader Class="[&_tr]:border-b">
+                            <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                <TableHeaderCell TData="Person" ColumnId="name" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+                                    <div class="flex items-center gap-2">
+                                        <span>Name</span>
+                                        @if (sortableTableState.Sorting.SortedColumn == "name")
+                                        {
+                                            @if (sortableTableState.Sorting.Direction == SortDirection.Ascending)
+                                            {
+                                                <span class="text-xs">↑</span>
+                                            }
+                                            else if (sortableTableState.Sorting.Direction == SortDirection.Descending)
+                                            {
+                                                <span class="text-xs">↓</span>
+                                            }
+                                        }
+                                    </div>
+                                </TableHeaderCell>
+                                <TableHeaderCell TData="Person" ColumnId="email" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+                                    <div class="flex items-center gap-2">
+                                        <span>Email</span>
+                                        @if (sortableTableState.Sorting.SortedColumn == "email")
+                                        {
+                                            @if (sortableTableState.Sorting.Direction == SortDirection.Ascending)
+                                            {
+                                                <span class="text-xs">↑</span>
+                                            }
+                                            else if (sortableTableState.Sorting.Direction == SortDirection.Descending)
+                                            {
+                                                <span class="text-xs">↓</span>
+                                            }
+                                        }
+                                    </div>
+                                </TableHeaderCell>
+                                <TableHeaderCell TData="Person" ColumnId="age" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+                                    <div class="flex items-center gap-2">
+                                        <span>Age</span>
+                                        @if (sortableTableState.Sorting.SortedColumn == "age")
+                                        {
+                                            @if (sortableTableState.Sorting.Direction == SortDirection.Ascending)
+                                            {
+                                                <span class="text-xs">↑</span>
+                                            }
+                                            else if (sortableTableState.Sorting.Direction == SortDirection.Descending)
+                                            {
+                                                <span class="text-xs">↓</span>
+                                            }
+                                        }
+                                    </div>
+                                </TableHeaderCell>
+                                <TableHeaderCell TData="Person" ColumnId="department" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground cursor-pointer select-none hover:bg-accent">
+                                    <div class="flex items-center gap-2">
+                                        <span>Department</span>
+                                        @if (sortableTableState.Sorting.SortedColumn == "department")
+                                        {
+                                            @if (sortableTableState.Sorting.Direction == SortDirection.Ascending)
+                                            {
+                                                <span class="text-xs">↑</span>
+                                            }
+                                            else if (sortableTableState.Sorting.Direction == SortDirection.Descending)
+                                            {
+                                                <span class="text-xs">↓</span>
+                                            }
+                                        }
+                                    </div>
+                                </TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody Class="[&_tr:last-child]:border-0">
+                            @foreach (var person in GetSortedPeople())
+                            {
+                                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                    <TableCell Class="p-4 align-middle">@person.Name</TableCell>
+                                    <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                                    <TableCell Class="p-4 align-middle">@person.Age</TableCell>
+                                    <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                </div>
+
+                <div class="rounded-lg border bg-card p-4">
+                    <h3 class="font-semibold mb-2">Current Sort State</h3>
+                    <div class="text-sm space-y-1">
+                        <p><span class="font-medium">Column:</span> @(sortableTableState.Sorting.SortedColumn ?? "None")</p>
+                        <p><span class="font-medium">Direction:</span> @sortableTableState.Sorting.Direction</p>
+                    </div>
+                </div>
+            </DemoBlock>
+        </DemoSection>
+
+        @* Paginated Table Example *@
+        <DemoSection Title="Paginated Table" Description="Table with pagination controls and configurable page size">
+            <DemoBlock Code="@_paginatedTableCode">
+                <div class="space-y-4">
+                    <div class="rounded-md border">
+                        <Table TData="Person" Data="@largePeopleDataset" @bind-State="@paginatedTableState"
+                               OnPageChange="@HandlePaginationChange"
+                               OnPageSizeChange="@HandlePaginationChange"
+                               Class="w-full caption-bottom text-sm">
+                            <TableHeader Class="[&_tr]:border-b">
+                                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody Class="[&_tr:last-child]:border-0">
+                                @foreach (var person in GetPaginatedData())
+                                {
+                                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                        <TableCell Class="p-4 align-middle">@person.Name</TableCell>
+                                        <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                                        <TableCell Class="p-4 align-middle">@person.Age</TableCell>
+                                        <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    </div>
+
+                    <TablePagination TData="Person" State="@paginatedTableState.Pagination"
+                                     OnPageChange="@HandlePaginationChange"
+                                     OnPageSizeChange="@HandlePaginationChange">
+                        <PaginationTemplate Context="context">
+                            <div class="flex items-center justify-between px-2">
+                                <div class="flex-1 text-sm text-muted-foreground">
+                                    @context.GetPageInfoText()
+                                </div>
+                                <div class="flex items-center space-x-6 lg:space-x-8">
+                                    <div class="flex items-center space-x-2">
+                                        <p class="text-sm font-medium">Rows per page</p>
+                                        <select @onchange="@((e) => context.ChangePageSize(int.Parse(e.Value?.ToString() ?? "10")))"
+                                                class="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm">
+                                            @foreach (var size in context.PageSizeOptions)
+                                            {
+                                                <option value="@size" selected="@(context.State.PageSize == size)">@size</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="flex w-[100px] items-center justify-center text-sm font-medium">
+                                        Page @context.State.CurrentPage of @context.State.TotalPages
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToFirstPage"
+                                                Disabled="@(!context.State.CanGoPrevious)"
+                                                AriaLabel="Go to first page">
+                                            <LucideIcon Name="chevrons-left" Size="16" />
+                                        </Button>
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToPreviousPage"
+                                                Disabled="@(!context.State.CanGoPrevious)"
+                                                AriaLabel="Go to previous page">
+                                            <LucideIcon Name="chevron-left" Size="16" />
+                                        </Button>
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToNextPage"
+                                                Disabled="@(!context.State.CanGoNext)"
+                                                AriaLabel="Go to next page">
+                                            <LucideIcon Name="chevron-right" Size="16" />
+                                        </Button>
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToLastPage"
+                                                Disabled="@(!context.State.CanGoNext)"
+                                                AriaLabel="Go to last page">
+                                            <LucideIcon Name="chevrons-right" Size="16" />
+                                        </Button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="flex w-[100px] items-center justify-center text-sm font-medium">
-                                Page @context.State.CurrentPage of @context.State.TotalPages
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToFirstPage"
-                                        Disabled="@(!context.State.CanGoPrevious)"
-                                        AriaLabel="Go to first page">
-                                    <LucideIcon Name="chevrons-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToPreviousPage"
-                                        Disabled="@(!context.State.CanGoPrevious)"
-                                        AriaLabel="Go to previous page">
-                                    <LucideIcon Name="chevron-left" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToNextPage"
-                                        Disabled="@(!context.State.CanGoNext)"
-                                        AriaLabel="Go to next page">
-                                    <LucideIcon Name="chevron-right" Size="16" />
-                                </Button>
-                                <Button Variant="ButtonVariant.Outline"
-                                        Size="ButtonSize.Icon"
-                                        OnClick="@context.GoToLastPage"
-                                        Disabled="@(!context.State.CanGoNext)"
-                                        AriaLabel="Go to last page">
-                                    <LucideIcon Name="chevrons-right" Size="16" />
-                                </Button>
-                            </div>
+                        </PaginationTemplate>
+                    </TablePagination>
+                </div>
+            </DemoBlock>
+        </DemoSection>
+
+        @* Selectable Table Example *@
+        <DemoSection Title="Selectable Table (Multi-Select)" Description="Click rows or checkboxes to select. Click header checkbox to select/deselect all. Use arrow keys to navigate and Enter/Space to select.">
+            <DemoBlock Code="@_selectableTableCode">
+                <div class="flex items-center gap-2 mb-2">
+                    <input type="checkbox"
+                           id="enableKeyboardNav"
+                           checked="@enableKeyboardNavigation"
+                           @onchange="@((e) => enableKeyboardNavigation = (bool)(e.Value ?? true))"
+                           class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary" />
+                    <label for="enableKeyboardNav" class="text-sm font-medium">Enable keyboard navigation</label>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="rounded-md border">
+                        <Table TData="Person" Data="@people" @bind-State="@selectableTableState"
+                               SelectionMode="SelectionMode.Multiple"
+                               EnableKeyboardNavigation="@enableKeyboardNavigation"
+                               OnSelectionChange="@HandleSelectionChange"
+                               Class="w-full caption-bottom text-sm">
+                            <TableHeader Class="[&_tr]:border-b">
+                                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                    <TableHeaderCell TData="Person" Class="h-12 w-12 px-4">
+                                        <input type="checkbox"
+                                               checked="@selectAllChecked"
+                                               @onchange="@((e) => { selectAllChecked = (bool)(e.Value ?? false); HandleSelectAllChanged(); })"
+                                               class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
+                                               aria-label="Select all" />
+                                    </TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-[70px]">Actions</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody Class="[&_tr:last-child]:border-0">
+                                @foreach (var person in people)
+                                {
+                                    var isSelected = selectableTableState.Selection.IsSelected(person);
+                                    <TableRow TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
+                                        <TableCell Class="w-12 px-4">
+                                            <input type="checkbox"
+                                                   checked="@isSelected"
+                                                   @onchange="@(() => ToggleRowSelection(person))"
+                                                   @onclick:stopPropagation="true"
+                                                   @onkeydown:stopPropagation="true"
+                                                   tabindex="-1"
+                                                   class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
+                                                   aria-label="@($"Select {person.Name}")" />
+                                        </TableCell>
+                                        <TableCell Class="p-4 align-middle">@person.Name</TableCell>
+                                        <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                                        <TableCell Class="p-4 align-middle">@person.Age</TableCell>
+                                        <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                                        <TableCell Class="p-4 align-middle text-right" @onclick:stopPropagation="true">
+                                            <DropdownMenuPrimitive>
+                                                <DropdownMenuTriggerPrimitive>
+                                                    <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="h-8 w-8" AriaLabel="Open menu">
+                                                        <LucideIcon Name="ellipsis" Size="16" />
+                                                    </Button>
+                                                </DropdownMenuTriggerPrimitive>
+                                                <DropdownMenuContentPrimitive Class="w-48 rounded-md border bg-popover p-1 text-popover-foreground shadow-md" Align="PopoverAlign.End">
+                                                    <DropdownMenuLabel Class="px-2 py-1.5 text-sm font-semibold">Actions</DropdownMenuLabel>
+                                                    <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                                    <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                                                               OnClick="@(() => HandleViewDetails(person))">
+                                                        <LucideIcon Name="eye" Size="16" Class="mr-2" />
+                                                        View details
+                                                    </DropdownMenuItemPrimitive>
+                                                    <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                                                               OnClick="@(() => HandleEdit(person))">
+                                                        <LucideIcon Name="pencil" Size="16" Class="mr-2" />
+                                                        Edit
+                                                    </DropdownMenuItemPrimitive>
+                                                    <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                                                               OnClick="@(() => HandleDuplicate(person))">
+                                                        <LucideIcon Name="copy" Size="16" Class="mr-2" />
+                                                        Duplicate
+                                                    </DropdownMenuItemPrimitive>
+                                                    <DropdownMenuSeparator Class="my-1 h-px bg-muted" />
+                                                    <DropdownMenuItemPrimitive Class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-destructive hover:text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground text-destructive"
+                                                                               OnClick="@(() => HandleDelete(person))">
+                                                        <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
+                                                        Delete
+                                                    </DropdownMenuItemPrimitive>
+                                                </DropdownMenuContentPrimitive>
+                                            </DropdownMenuPrimitive>
+                                        </TableCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    </div>
+
+                    <div class="rounded-lg border bg-card p-4">
+                        <h3 class="font-semibold mb-2">Selection State</h3>
+                        <div class="text-sm space-y-1">
+                            <p><span class="font-medium">Selected:</span> @selectableTableState.Selection.SelectedCount rows</p>
+                            @if (selectableTableState.Selection.SelectedCount > 0)
+                            {
+                                <div class="mt-2">
+                                    <button @onclick="@(() => { selectableTableState.Selection.Clear(); selectAllChecked = false; })"
+                                            class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-4">
+                                        Clear Selection
+                                    </button>
+                                </div>
+                            }
                         </div>
                     </div>
-                </PaginationTemplate>
-            </TablePagination>
+                </div>
+            </DemoBlock>
+        </DemoSection>
 
-            <div class="rounded-lg border bg-card p-4">
-                <h3 class="font-semibold mb-2">Search Results</h3>
-                <div class="text-sm space-y-1">
-                    <p><span class="font-medium">Query:</span> @(string.IsNullOrWhiteSpace(globalSearchFilter) ? "None" : $"\"{globalSearchFilter}\"")</p>
-                    <p><span class="font-medium">Results:</span> @GetGloballyFilteredPeople().Count() / @people.Count</p>
+        @* Combined Features Example *@
+        <DemoSection Title="All Features Combined" Description="Filtering, sorting, pagination, and selection all working together">
+            <DemoBlock Code="@_combinedTableCode">
+                <div class="space-y-4">
+                    <div class="rounded-md border">
+                        <Table TData="Person" Data="@GetSortedCombinedData()" @bind-State="@combinedTableState"
+                               SelectionMode="SelectionMode.Multiple"
+                               OnPageChange="@HandleCombinedPaginationChange"
+                               OnPageSizeChange="@HandleCombinedPaginationChange"
+                               OnSelectionChange="@HandleCombinedSelectionChange"
+                               Class="w-full caption-bottom text-sm">
+                            <TableHeader Class="[&_tr]:border-b">
+                                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                    <TableHeaderCell TData="Person" Class="h-12 w-12 px-4">
+                                        <input type="checkbox"
+                                               checked="@combinedSelectAllChecked"
+                                               @onchange="@((e) => { combinedSelectAllChecked = (bool)(e.Value ?? false); HandleCombinedSelectAllChanged(); })"
+                                               class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
+                                               aria-label="Select all on page" />
+                                    </TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
+                                                 @onclick="@(() => combinedTableState.Sorting.ToggleSort("name"))">
+                                                <span>Name</span>
+                                                @if (combinedTableState.Sorting.SortedColumn == "name")
+                                                {
+                                                    @if (combinedTableState.Sorting.Direction == SortDirection.Ascending)
+                                                    {
+                                                        <span class="text-xs">↑</span>
+                                                    }
+                                                    else if (combinedTableState.Sorting.Direction == SortDirection.Descending)
+                                                    {
+                                                        <span class="text-xs">↓</span>
+                                                    }
+                                                }
+                                            </div>
+                                            <PopoverPrimitive>
+                                                <PopoverTriggerPrimitive>
+                                                    <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedNameFilter) ? "text-primary" : "text-muted-foreground")"
+                                                            aria-label="Filter name">
+                                                        <LucideIcon Name="filter" Size="14" />
+                                                    </button>
+                                                </PopoverTriggerPrimitive>
+                                                <PopoverContentPrimitive Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                                    <div class="space-y-2">
+                                                        <h4 class="font-medium text-sm">Filter by Name</h4>
+                                                        <input type="text"
+                                                               @bind="combinedNameFilter"
+                                                               @bind:event="oninput"
+                                                               @onchange="@((e) => StateHasChanged())"
+                                                               placeholder="Enter name..."
+                                                               class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
+                                                        @if (!string.IsNullOrWhiteSpace(combinedNameFilter))
+                                                        {
+                                                            <button @onclick="@(() => { combinedNameFilter = ""; StateHasChanged(); })"
+                                                                    class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+                                                                Clear
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </PopoverContentPrimitive>
+                                            </PopoverPrimitive>
+                                        </div>
+                                    </TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
+                                                 @onclick="@(() => combinedTableState.Sorting.ToggleSort("email"))">
+                                                <span>Email</span>
+                                                @if (combinedTableState.Sorting.SortedColumn == "email")
+                                                {
+                                                    @if (combinedTableState.Sorting.Direction == SortDirection.Ascending)
+                                                    {
+                                                        <span class="text-xs">↑</span>
+                                                    }
+                                                    else if (combinedTableState.Sorting.Direction == SortDirection.Descending)
+                                                    {
+                                                        <span class="text-xs">↓</span>
+                                                    }
+                                                }
+                                            </div>
+                                            <PopoverPrimitive>
+                                                <PopoverTriggerPrimitive>
+                                                    <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedEmailFilter) ? "text-primary" : "text-muted-foreground")"
+                                                            aria-label="Filter email">
+                                                        <LucideIcon Name="filter" Size="14" />
+                                                    </button>
+                                                </PopoverTriggerPrimitive>
+                                                <PopoverContentPrimitive Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                                    <div class="space-y-2">
+                                                        <h4 class="font-medium text-sm">Filter by Email</h4>
+                                                        <input type="text"
+                                                               @bind="combinedEmailFilter"
+                                                               @bind:event="oninput"
+                                                               @onchange="@((e) => StateHasChanged())"
+                                                               placeholder="Enter email..."
+                                                               class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
+                                                        @if (!string.IsNullOrWhiteSpace(combinedEmailFilter))
+                                                        {
+                                                            <button @onclick="@(() => { combinedEmailFilter = ""; StateHasChanged(); })"
+                                                                    class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+                                                                Clear
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </PopoverContentPrimitive>
+                                            </PopoverPrimitive>
+                                        </div>
+                                    </TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
+                                                 @onclick="@(() => combinedTableState.Sorting.ToggleSort("age"))">
+                                                <span>Age</span>
+                                                @if (combinedTableState.Sorting.SortedColumn == "age")
+                                                {
+                                                    @if (combinedTableState.Sorting.Direction == SortDirection.Ascending)
+                                                    {
+                                                        <span class="text-xs">↑</span>
+                                                    }
+                                                    else if (combinedTableState.Sorting.Direction == SortDirection.Descending)
+                                                    {
+                                                        <span class="text-xs">↓</span>
+                                                    }
+                                                }
+                                            </div>
+                                            <PopoverPrimitive>
+                                                <PopoverTriggerPrimitive>
+                                                    <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedAgeFilter) ? "text-primary" : "text-muted-foreground")"
+                                                            aria-label="Filter age">
+                                                        <LucideIcon Name="filter" Size="14" />
+                                                    </button>
+                                                </PopoverTriggerPrimitive>
+                                                <PopoverContentPrimitive Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                                    <div class="space-y-2">
+                                                        <h4 class="font-medium text-sm">Filter by Age</h4>
+                                                        <input type="text"
+                                                               @bind="combinedAgeFilter"
+                                                               @bind:event="oninput"
+                                                               @onchange="@((e) => StateHasChanged())"
+                                                               placeholder="Enter age..."
+                                                               class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
+                                                        @if (!string.IsNullOrWhiteSpace(combinedAgeFilter))
+                                                        {
+                                                            <button @onclick="@(() => { combinedAgeFilter = ""; StateHasChanged(); })"
+                                                                    class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+                                                                Clear
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </PopoverContentPrimitive>
+                                            </PopoverPrimitive>
+                                        </div>
+                                    </TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <div class="flex items-center gap-2 cursor-pointer select-none hover:text-foreground flex-1"
+                                                 @onclick="@(() => combinedTableState.Sorting.ToggleSort("department"))">
+                                                <span>Department</span>
+                                                @if (combinedTableState.Sorting.SortedColumn == "department")
+                                                {
+                                                    @if (combinedTableState.Sorting.Direction == SortDirection.Ascending)
+                                                    {
+                                                        <span class="text-xs">↑</span>
+                                                    }
+                                                    else if (combinedTableState.Sorting.Direction == SortDirection.Descending)
+                                                    {
+                                                        <span class="text-xs">↓</span>
+                                                    }
+                                                }
+                                            </div>
+                                            <PopoverPrimitive>
+                                                <PopoverTriggerPrimitive>
+                                                    <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(combinedDepartmentFilter) ? "text-primary" : "text-muted-foreground")"
+                                                            aria-label="Filter department">
+                                                        <LucideIcon Name="filter" Size="14" />
+                                                    </button>
+                                                </PopoverTriggerPrimitive>
+                                                <PopoverContentPrimitive Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                                    <div class="space-y-2">
+                                                        <h4 class="font-medium text-sm">Filter by Department</h4>
+                                                        <input type="text"
+                                                               @bind="combinedDepartmentFilter"
+                                                               @bind:event="oninput"
+                                                               @onchange="@((e) => StateHasChanged())"
+                                                               placeholder="Enter department..."
+                                                               class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
+                                                        @if (!string.IsNullOrWhiteSpace(combinedDepartmentFilter))
+                                                        {
+                                                            <button @onclick="@(() => { combinedDepartmentFilter = ""; StateHasChanged(); })"
+                                                                    class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+                                                                Clear
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </PopoverContentPrimitive>
+                                            </PopoverPrimitive>
+                                        </div>
+                                    </TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody Class="[&_tr:last-child]:border-0">
+                                @foreach (var person in GetCombinedPageData())
+                                {
+                                    var isSelected = combinedTableState.Selection.IsSelected(person);
+                                    <TableRow TData="Person" Item="@person" Class="@($"border-b transition-colors hover:bg-muted/50 {(isSelected ? "bg-muted" : "")}")">
+                                        <TableCell Class="w-12 px-4">
+                                            <input type="checkbox"
+                                                   checked="@isSelected"
+                                                   @onchange="@(() => ToggleCombinedRowSelection(person))"
+                                                   @onclick:stopPropagation="true"
+                                                   @onkeydown:stopPropagation="true"
+                                                   tabindex="-1"
+                                                   class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
+                                                   aria-label="@($"Select {person.Name}")" />
+                                        </TableCell>
+                                        <TableCell Class="p-4 align-middle">@person.Name</TableCell>
+                                        <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                                        <TableCell Class="p-4 align-middle">@person.Age</TableCell>
+                                        <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    </div>
+
+                    <TablePagination TData="Person" State="@combinedTableState.Pagination"
+                                     OnPageChange="@HandleCombinedPaginationChange"
+                                     OnPageSizeChange="@HandleCombinedPaginationChange">
+                        <PaginationTemplate Context="context">
+                            <div class="flex items-center justify-between px-2">
+                                <div class="flex-1 text-sm text-muted-foreground">
+                                    @{
+                                        var selectedOnPage = combinedTableState.Selection.SelectedCount;
+                                        var pageInfo = context.GetPageInfoText();
+                                    }
+                                    @pageInfo
+                                    @if (selectedOnPage > 0)
+                                    {
+                                        <span class="ml-2">(@selectedOnPage selected)</span>
+                                    }
+                                </div>
+                                <div class="flex items-center space-x-6 lg:space-x-8">
+                                    <div class="flex items-center space-x-2">
+                                        <p class="text-sm font-medium">Rows per page</p>
+                                        <select @onchange="@((e) => context.ChangePageSize(int.Parse(e.Value?.ToString() ?? "10")))"
+                                                class="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm">
+                                            @foreach (var size in context.PageSizeOptions)
+                                            {
+                                                <option value="@size" selected="@(context.State.PageSize == size)">@size</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="flex w-[100px] items-center justify-center text-sm font-medium">
+                                        Page @context.State.CurrentPage of @context.State.TotalPages
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToFirstPage"
+                                                Disabled="@(!context.State.CanGoPrevious)"
+                                                AriaLabel="Go to first page">
+                                            <LucideIcon Name="chevrons-left" Size="16" />
+                                        </Button>
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToPreviousPage"
+                                                Disabled="@(!context.State.CanGoPrevious)"
+                                                AriaLabel="Go to previous page">
+                                            <LucideIcon Name="chevron-left" Size="16" />
+                                        </Button>
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToNextPage"
+                                                Disabled="@(!context.State.CanGoNext)"
+                                                AriaLabel="Go to next page">
+                                            <LucideIcon Name="chevron-right" Size="16" />
+                                        </Button>
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToLastPage"
+                                                Disabled="@(!context.State.CanGoNext)"
+                                                AriaLabel="Go to last page">
+                                            <LucideIcon Name="chevrons-right" Size="16" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </PaginationTemplate>
+                    </TablePagination>
+
+                    <div class="rounded-lg border bg-card p-4">
+                        <h3 class="font-semibold mb-2">Current State</h3>
+                        <div class="text-sm space-y-1">
+                            <p><span class="font-medium">Active Filters:</span> @(new[] { combinedNameFilter, combinedEmailFilter, combinedAgeFilter, combinedDepartmentFilter }.Count(f => !string.IsNullOrWhiteSpace(f)))</p>
+                            <p><span class="font-medium">Sort Column:</span> @(combinedTableState.Sorting.SortedColumn ?? "None")</p>
+                            <p><span class="font-medium">Sort Direction:</span> @combinedTableState.Sorting.Direction</p>
+                            <p><span class="font-medium">Current Page:</span> @combinedTableState.Pagination.CurrentPage / @combinedTableState.Pagination.TotalPages</p>
+                            <p><span class="font-medium">Selected Rows:</span> @combinedTableState.Selection.SelectedCount</p>
+                            <p><span class="font-medium">Filtered Results:</span> @GetSortedCombinedData().Count() / @largePeopleDataset.Count</p>
+                        </div>
+                    </div>
+                </div>
+            </DemoBlock>
+        </DemoSection>
+
+        @* Column Filtering Example *@
+        <DemoSection Title="Column Filtering" Description="Click filter icons in headers to filter by column">
+            <DemoBlock Code="@_columnFilteringCode">
+                <div class="space-y-4">
+                    <div class="rounded-md border">
+                        <Table TData="Person" Data="@GetFilteredPeople()" @bind-State="@filteredTableState"
+                               OnPageChange="@HandleFilteredPaginationChange"
+                               OnPageSizeChange="@HandleFilteredPaginationChange"
+                               Class="w-full caption-bottom text-sm">
+                            <TableHeader Class="[&_tr]:border-b">
+                                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                        <div class="flex items-center gap-2">
+                                            <span>Name</span>
+                                            <PopoverPrimitive>
+                                                <PopoverTriggerPrimitive>
+                                                    <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(nameFilter) ? "text-primary" : "text-muted-foreground")"
+                                                            aria-label="Filter name">
+                                                        <LucideIcon Name="filter" Size="14" />
+                                                    </button>
+                                                </PopoverTriggerPrimitive>
+                                                <PopoverContentPrimitive Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                                    <div class="space-y-2">
+                                                        <h4 class="font-medium text-sm">Filter by Name</h4>
+                                                        <input type="text"
+                                                               @bind="nameFilter"
+                                                               @bind:event="oninput"
+                                                               @onchange="@((e) => { filteredTableState.Pagination.Reset(); StateHasChanged(); })"
+                                                               placeholder="Enter name..."
+                                                               class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
+                                                        @if (!string.IsNullOrWhiteSpace(nameFilter))
+                                                        {
+                                                            <button @onclick="@(() => { nameFilter = ""; filteredTableState.Pagination.Reset(); StateHasChanged(); })"
+                                                                    class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+                                                                Clear
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </PopoverContentPrimitive>
+                                            </PopoverPrimitive>
+                                        </div>
+                                    </TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                        <div class="flex items-center gap-2">
+                                            <span>Email</span>
+                                            <PopoverPrimitive>
+                                                <PopoverTriggerPrimitive>
+                                                    <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(emailFilter) ? "text-primary" : "text-muted-foreground")"
+                                                            aria-label="Filter email">
+                                                        <LucideIcon Name="filter" Size="14" />
+                                                    </button>
+                                                </PopoverTriggerPrimitive>
+                                                <PopoverContentPrimitive Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                                    <div class="space-y-2">
+                                                        <h4 class="font-medium text-sm">Filter by Email</h4>
+                                                        <input type="text"
+                                                               @bind="emailFilter"
+                                                               @bind:event="oninput"
+                                                               @onchange="@((e) => { filteredTableState.Pagination.Reset(); StateHasChanged(); })"
+                                                               placeholder="Enter email..."
+                                                               class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
+                                                        @if (!string.IsNullOrWhiteSpace(emailFilter))
+                                                        {
+                                                            <button @onclick="@(() => { emailFilter = ""; filteredTableState.Pagination.Reset(); StateHasChanged(); })"
+                                                                    class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+                                                                Clear
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </PopoverContentPrimitive>
+                                            </PopoverPrimitive>
+                                        </div>
+                                    </TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                                        <div class="flex items-center gap-2">
+                                            <span>Department</span>
+                                            <PopoverPrimitive>
+                                                <PopoverTriggerPrimitive>
+                                                    <button class="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-accent @(!string.IsNullOrWhiteSpace(departmentFilter) ? "text-primary" : "text-muted-foreground")"
+                                                            aria-label="Filter department">
+                                                        <LucideIcon Name="filter" Size="14" />
+                                                    </button>
+                                                </PopoverTriggerPrimitive>
+                                                <PopoverContentPrimitive Class="w-64 p-4 bg-popover text-popover-foreground rounded-md border shadow-md" Align="PopoverAlign.Start">
+                                                    <div class="space-y-2">
+                                                        <h4 class="font-medium text-sm">Filter by Department</h4>
+                                                        <input type="text"
+                                                               @bind="departmentFilter"
+                                                               @bind:event="oninput"
+                                                               @onchange="@((e) => { filteredTableState.Pagination.Reset(); StateHasChanged(); })"
+                                                               placeholder="Enter department..."
+                                                               class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
+                                                        @if (!string.IsNullOrWhiteSpace(departmentFilter))
+                                                        {
+                                                            <button @onclick="@(() => { departmentFilter = ""; filteredTableState.Pagination.Reset(); StateHasChanged(); })"
+                                                                    class="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-3 border border-input bg-background hover:bg-accent hover:text-accent-foreground">
+                                                                Clear
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </PopoverContentPrimitive>
+                                            </PopoverPrimitive>
+                                        </div>
+                                    </TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody Class="[&_tr:last-child]:border-0">
+                                @{
+                                    var filteredPeople = GetFilteredPageData().ToList();
+                                }
+                                @if (filteredPeople.Any())
+                                {
+                                    @foreach (var person in filteredPeople)
+                                    {
+                                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                            <TableCell Class="p-4 align-middle">@person.Name</TableCell>
+                                            <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                                            <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                                        </TableRow>
+                                    }
+                                }
+                                else
+                                {
+                                    <TableRow TData="Person" Class="border-b">
+                                        <TableCell Class="p-4 align-middle text-center text-muted-foreground" colspan="3">
+                                            No results found
+                                        </TableCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    </div>
+
+                    <TablePagination TData="Person" State="@filteredTableState.Pagination"
+                                     OnPageChange="@HandleFilteredPaginationChange"
+                                     OnPageSizeChange="@HandleFilteredPaginationChange">
+                        <PaginationTemplate Context="context">
+                            <div class="flex items-center justify-between px-2">
+                                <div class="flex-1 text-sm text-muted-foreground">
+                                    @context.GetPageInfoText()
+                                </div>
+                                <div class="flex items-center space-x-6 lg:space-x-8">
+                                    <div class="flex items-center space-x-2">
+                                        <p class="text-sm font-medium">Rows per page</p>
+                                        <select @onchange="@((e) => context.ChangePageSize(int.Parse(e.Value?.ToString() ?? "10")))"
+                                                class="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm">
+                                            @foreach (var size in context.PageSizeOptions)
+                                            {
+                                                <option value="@size" selected="@(context.State.PageSize == size)">@size</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="flex w-[100px] items-center justify-center text-sm font-medium">
+                                        Page @context.State.CurrentPage of @context.State.TotalPages
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToFirstPage"
+                                                Disabled="@(!context.State.CanGoPrevious)"
+                                                AriaLabel="Go to first page">
+                                            <LucideIcon Name="chevrons-left" Size="16" />
+                                        </Button>
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToPreviousPage"
+                                                Disabled="@(!context.State.CanGoPrevious)"
+                                                AriaLabel="Go to previous page">
+                                            <LucideIcon Name="chevron-left" Size="16" />
+                                        </Button>
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToNextPage"
+                                                Disabled="@(!context.State.CanGoNext)"
+                                                AriaLabel="Go to next page">
+                                            <LucideIcon Name="chevron-right" Size="16" />
+                                        </Button>
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToLastPage"
+                                                Disabled="@(!context.State.CanGoNext)"
+                                                AriaLabel="Go to last page">
+                                            <LucideIcon Name="chevrons-right" Size="16" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </PaginationTemplate>
+                    </TablePagination>
+
+                    <div class="rounded-lg border bg-card p-4">
+                        <h3 class="font-semibold mb-2">Filter State</h3>
+                        <div class="text-sm space-y-1">
+                            <p><span class="font-medium">Active Filters:</span> @(new[] { nameFilter, emailFilter, departmentFilter }.Count(f => !string.IsNullOrWhiteSpace(f)))</p>
+                            <p><span class="font-medium">Results:</span> @GetFilteredPeople().Count() / @people.Count</p>
+                            @if (new[] { nameFilter, emailFilter, departmentFilter }.Any(f => !string.IsNullOrWhiteSpace(f)))
+                            {
+                                <button @onclick="@(() => { nameFilter = ""; emailFilter = ""; departmentFilter = ""; StateHasChanged(); })"
+                                        class="mt-2 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-4">
+                                    Clear Filters
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </DemoBlock>
+        </DemoSection>
+
+        @* Global Search Example *@
+        <DemoSection Title="Global Search" Description="Search across all columns simultaneously">
+            <DemoBlock Code="@_globalSearchCode">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-4">
+                        <input type="text"
+                               @bind="globalSearchFilter"
+                               @bind:event="oninput"
+                               @onchange="@(() => { globalSearchTableState.Pagination.Reset(); StateHasChanged(); })"
+                               placeholder="Search across all columns..."
+                               class="flex-1 h-10 px-3 rounded-md border border-input bg-background" />
+                        @if (!string.IsNullOrWhiteSpace(globalSearchFilter))
+                        {
+                            <button @onclick="@(() => { globalSearchFilter = ""; globalSearchTableState.Pagination.Reset(); StateHasChanged(); })"
+                                    class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4">
+                                Clear
+                            </button>
+                        }
+                    </div>
+
+                    <div class="rounded-md border">
+                        <Table TData="Person" Data="@GetGloballyFilteredPeople()" @bind-State="@globalSearchTableState"
+                               OnPageChange="@HandleGlobalSearchPaginationChange"
+                               OnPageSizeChange="@HandleGlobalSearchPaginationChange"
+                               Class="w-full caption-bottom text-sm">
+                            <TableHeader Class="[&_tr]:border-b">
+                                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Name</TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Email</TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Age</TableHeaderCell>
+                                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Department</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody Class="[&_tr:last-child]:border-0">
+                                @{
+                                    var globalFilteredPeople = GetGlobalSearchPageData().ToList();
+                                }
+                                @if (globalFilteredPeople.Any())
+                                {
+                                    @foreach (var person in globalFilteredPeople)
+                                    {
+                                        <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                                            <TableCell Class="p-4 align-middle">@person.Name</TableCell>
+                                            <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                                            <TableCell Class="p-4 align-middle">@person.Age</TableCell>
+                                            <TableCell Class="p-4 align-middle">@person.Department</TableCell>
+                                        </TableRow>
+                                    }
+                                }
+                                else
+                                {
+                                    <TableRow TData="Person" Class="border-b">
+                                        <TableCell Class="p-4 align-middle text-center text-muted-foreground" colspan="4">
+                                            No results found for "@globalSearchFilter"
+                                        </TableCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    </div>
+
+                    <TablePagination TData="Person" State="@globalSearchTableState.Pagination"
+                                     OnPageChange="@HandleGlobalSearchPaginationChange"
+                                     OnPageSizeChange="@HandleGlobalSearchPaginationChange">
+                        <PaginationTemplate Context="context">
+                            <div class="flex items-center justify-between px-2">
+                                <div class="flex-1 text-sm text-muted-foreground">
+                                    @context.GetPageInfoText()
+                                </div>
+                                <div class="flex items-center space-x-6 lg:space-x-8">
+                                    <div class="flex items-center space-x-2">
+                                        <p class="text-sm font-medium">Rows per page</p>
+                                        <select @onchange="@((e) => context.ChangePageSize(int.Parse(e.Value?.ToString() ?? "10")))"
+                                                class="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm">
+                                            @foreach (var size in context.PageSizeOptions)
+                                            {
+                                                <option value="@size" selected="@(context.State.PageSize == size)">@size</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="flex w-[100px] items-center justify-center text-sm font-medium">
+                                        Page @context.State.CurrentPage of @context.State.TotalPages
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToFirstPage"
+                                                Disabled="@(!context.State.CanGoPrevious)"
+                                                AriaLabel="Go to first page">
+                                            <LucideIcon Name="chevrons-left" Size="16" />
+                                        </Button>
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToPreviousPage"
+                                                Disabled="@(!context.State.CanGoPrevious)"
+                                                AriaLabel="Go to previous page">
+                                            <LucideIcon Name="chevron-left" Size="16" />
+                                        </Button>
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToNextPage"
+                                                Disabled="@(!context.State.CanGoNext)"
+                                                AriaLabel="Go to next page">
+                                            <LucideIcon Name="chevron-right" Size="16" />
+                                        </Button>
+                                        <Button Variant="ButtonVariant.Outline"
+                                                Size="ButtonSize.Icon"
+                                                OnClick="@context.GoToLastPage"
+                                                Disabled="@(!context.State.CanGoNext)"
+                                                AriaLabel="Go to last page">
+                                            <LucideIcon Name="chevrons-right" Size="16" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </PaginationTemplate>
+                    </TablePagination>
+
+                    <div class="rounded-lg border bg-card p-4">
+                        <h3 class="font-semibold mb-2">Search Results</h3>
+                        <div class="text-sm space-y-1">
+                            <p><span class="font-medium">Query:</span> @(string.IsNullOrWhiteSpace(globalSearchFilter) ? "None" : $"\"{globalSearchFilter}\"")</p>
+                            <p><span class="font-medium">Results:</span> @GetGloballyFilteredPeople().Count() / @people.Count</p>
+                        </div>
+                    </div>
+                </div>
+            </DemoBlock>
+        </DemoSection>
+
+        <DemoSection Title="Accessibility Features" Description="Built-in accessibility features following WAI-ARIA design patterns.">
+
+            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
+                <div>
+                    <h3 class="font-semibold mb-2">ARIA Attributes</h3>
+                    <ul class="space-y-2 text-sm text-muted-foreground">
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-600 dark:text-green-400">✓</span>
+                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">role="grid"</code> for screen readers</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-600 dark:text-green-400">✓</span>
+                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">aria-sort</code> indicates column sort direction</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-600 dark:text-green-400">✓</span>
+                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">aria-selected</code> indicates row selection state</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-600 dark:text-green-400">✓</span>
+                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">aria-rowcount</code> for total row count</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-600 dark:text-green-400">✓</span>
+                            <span>Focusable rows with visible focus indicator</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </div>
-        </DemoBlock>
-    </DemoSection>
+        </DemoSection>
 
-    <DemoSection
-        Title="Accessibility Features"
-        Description="Built-in accessibility features following WAI-ARIA design patterns." />
+        <DemoSection Title="Keyboard Shortcuts" Description="Navigate and interact with the table using keyboard.">
 
-    <DemoSection
-        Title="API Reference"
-        Description="Component parameters and their types.">
-        <DemoPropsTable Rows="_tableProps" />
-    </DemoSection>
+            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
+                <div class="grid gap-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium">Navigate to next row</span>
+                        <Kbd>ArrowDown</Kbd>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium">Navigate to previous row</span>
+                        <Kbd>ArrowUp</Kbd>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium">Toggle row selection</span>
+                        <Kbd>Enter / Space</Kbd>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium">Sort column</span>
+                        <span class="text-sm text-muted-foreground">Click header</span>
+                    </div>
+                </div>
+            </div>
+        </DemoSection>
 
-    <DemoPageNav />
+        <DemoSection Title="API Reference" Description="Component properties and parameters.">
+            <DemoPropsTable Rows="_tableProps" />
+        </DemoSection>
 
+        <DemoPageNav />
+    </div>
 </div>
 
 @code {
@@ -1442,158 +1475,4 @@
         public int Age { get; set; }
         public string Department { get; set; } = string.Empty;
     }
-
-    private static readonly IReadOnlyList<DemoPropRow> _tableProps =
-    [
-        new("Data",                     "IEnumerable&lt;TData&gt;",                          "—",     "The data source for the table."),
-        new("State",                    "TableState&lt;TData&gt;?",                          "—",     "The table state for controlled mode. Use with @bind-State for two-way binding."),
-        new("SelectionMode",            "SelectionMode",                                     "None",  "The selection mode: None, Single, or Multiple."),
-        new("EnableKeyboardNavigation", "bool",                                              "true",  "Enables keyboard navigation (arrow keys to navigate, Enter/Space to select)."),
-        new("ManualPagination",         "bool",                                              "false", "When true, the table will not automatically set TotalItems."),
-        new("OnSelectionChange",        "EventCallback&lt;IReadOnlyCollection&lt;TData&gt;&gt;", "—", "Callback invoked when the selection changes."),
-        new("OnSortChange",             "EventCallback&lt;(string, SortDirection)&gt;",      "—",     "Callback invoked when sorting changes."),
-        new("Item (TableRow)",          "TData?",                                            "—",     "The data item for this row. Required for selection."),
-        new("ColumnId (TableHeaderCell)","string?",                                          "—",     "Column identifier. When provided, clicking the header toggles sorting."),
-    ];
-
-    private const string _basicCode =
-        """
-        <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
-            <TableHeader Class="[&_tr]:border-b">
-                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left font-medium text-muted-foreground">Name</TableHeaderCell>
-                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left font-medium text-muted-foreground">Email</TableHeaderCell>
-                </TableRow>
-            </TableHeader>
-            <TableBody Class="[&_tr:last-child]:border-0">
-                @foreach (var person in people)
-                {
-                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
-                        <TableCell Class="p-4 align-middle">@person.Name</TableCell>
-                        <TableCell Class="p-4 align-middle">@person.Email</TableCell>
-                    </TableRow>
-                }
-            </TableBody>
-        </Table>
-        """;
-
-    private const string _rowActionsCode =
-        """
-        <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
-            ...
-            <TableBody Class="[&_tr:last-child]:border-0">
-                @foreach (var person in people)
-                {
-                    <TableRow TData="Person" Class="...">
-                        <TableCell Class="...">@person.Name</TableCell>
-                        <TableCell Class="... text-right">
-                            <DropdownMenuPrimitive>
-                                <DropdownMenuTriggerPrimitive>
-                                    <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
-                                        <LucideIcon Name="ellipsis" Size="16" />
-                                    </Button>
-                                </DropdownMenuTriggerPrimitive>
-                                <DropdownMenuContentPrimitive Class="w-48 ..." Align="PopoverAlign.End">
-                                    <DropdownMenuItemPrimitive OnClick="@(() => HandleEdit(person))">Edit</DropdownMenuItemPrimitive>
-                                    <DropdownMenuItemPrimitive OnClick="@(() => HandleDelete(person))">Delete</DropdownMenuItemPrimitive>
-                                </DropdownMenuContentPrimitive>
-                            </DropdownMenuPrimitive>
-                        </TableCell>
-                    </TableRow>
-                }
-            </TableBody>
-        </Table>
-        """;
-
-    private const string _sortableCode =
-        """
-        <Table TData="Person" Data="@GetSortedPeople()" @bind-State="@sortableTableState" Class="...">
-            <TableHeader Class="...">
-                <TableRow TData="Person" Class="...">
-                    <TableHeaderCell TData="Person" ColumnId="name" Class="... cursor-pointer hover:bg-accent">
-                        <div class="flex items-center gap-2">
-                            <span>Name</span>
-                            @if (sortableTableState.Sorting.SortedColumn == "name")
-                            {
-                                <span class="text-xs">@(sortableTableState.Sorting.Direction == SortDirection.Ascending ? "↑" : "↓")</span>
-                            }
-                        </div>
-                    </TableHeaderCell>
-                </TableRow>
-            </TableHeader>
-            ...
-        </Table>
-        """;
-
-    private const string _paginatedCode =
-        """
-        <Table TData="Person" Data="@GetPagedPeople()" @bind-State="@paginatedTableState"
-               OnPageChange="@HandlePaginationChange"
-               OnPageSizeChange="@HandlePaginationChange"
-               Class="...">
-            ...
-        </Table>
-        <TablePagination TData="Person" State="@paginatedTableState" Class="..." />
-        """;
-
-    private const string _selectableCode =
-        """
-        <Table TData="Person" Data="@people" @bind-State="@selectableTableState"
-               SelectionMode="SelectionMode.Multiple"
-               OnSelectionChange="@HandleSelectionChange"
-               Class="...">
-            <TableHeader Class="...">
-                <TableRow TData="Person" Class="...">
-                    <TableHeaderCell TData="Person" Class="...">
-                        <input type="checkbox" @bind="selectAllChecked" @onchange="ToggleSelectAll" />
-                    </TableHeaderCell>
-                    <TableHeaderCell TData="Person" Class="...">Name</TableHeaderCell>
-                </TableRow>
-            </TableHeader>
-            <TableBody Class="...">
-                @foreach (var person in people)
-                {
-                    <TableRow TData="Person" Item="@person" Class="aria-[selected=true]:bg-muted/50">
-                        <TableCell Class="...">
-                            <input type="checkbox" checked="@(selectableTableState.IsSelected(person))" />
-                        </TableCell>
-                        <TableCell Class="...">@person.Name</TableCell>
-                    </TableRow>
-                }
-            </TableBody>
-        </Table>
-        """;
-
-    private const string _combinedCode =
-        """
-        <Table TData="Person" Data="@GetSortedCombinedData()" @bind-State="@combinedTableState"
-               SelectionMode="SelectionMode.Multiple"
-               OnPageChange="@HandleCombinedPaginationChange"
-               Class="...">
-            <!-- Sortable + selectable headers -->
-            <!-- Paginated + filtered body -->
-        </Table>
-        <TablePagination TData="Person" State="@combinedTableState" Class="..." />
-        """;
-
-    private const string _columnFilterCode =
-        """
-        <!-- Filter inputs bound to local variables -->
-        <input @bind="nameFilter" @bind:event="oninput" placeholder="Filter name..." class="..." />
-
-        <!-- Table data filtered by GetFilteredPeople() -->
-        <Table TData="Person" Data="@GetFilteredPeople()" @bind-State="@filteredTableState" Class="...">
-            ...
-        </Table>
-        """;
-
-    private const string _globalSearchCode =
-        """
-        <input @bind="globalSearchFilter" @bind:event="oninput" placeholder="Search all columns..." class="..." />
-
-        <Table TData="Person" Data="@GetGloballyFilteredPeople()" @bind-State="@globalSearchTableState" Class="...">
-            ...
-        </Table>
-        """;
 }
-

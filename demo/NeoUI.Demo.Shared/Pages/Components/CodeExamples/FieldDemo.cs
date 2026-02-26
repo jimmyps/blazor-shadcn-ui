@@ -1,0 +1,278 @@
+namespace NeoUI.Demo.Shared.Pages.Components
+{
+    partial class FieldDemo
+    {
+
+        private static readonly IReadOnlyList<DemoPropRow> _fieldProps =
+            [
+                new("Orientation", "FieldOrientation", "Vertical",  "Layout orientation. Options: Vertical, Horizontal, Responsive."),
+                new("IsInvalid",   "bool",             "false",     "Marks the field as invalid, applying error styling."),
+                new("Class",       "string?",          "null",      "Additional CSS classes for the root element."),
+                new("ChildContent","RenderFragment?",  "null",      "FieldLabel, FieldContent, FieldDescription, FieldError sub-components."),
+            ];
+
+        private const string _basicCode = """
+                <Field>
+                    <FieldLabel For="username">Username</FieldLabel>
+                    <FieldContent>
+                        <Input Id="username" Type="InputType.Text" Placeholder="Enter your username" />
+                        <FieldDescription>Choose a unique username for your account.</FieldDescription>
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel For="email">Email Address</FieldLabel>
+                    <FieldContent>
+                        <Input Id="email" Type="InputType.Email" Placeholder="you@example.com" />
+                        <FieldDescription>We'll never share your email with anyone else.</FieldDescription>
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel For="password">Password</FieldLabel>
+                    <FieldContent>
+                        <Input Id="password" Type="InputType.Password" />
+                        <FieldDescription>Must be at least 8 characters long.</FieldDescription>
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel For="bio">Bio</FieldLabel>
+                    <FieldContent>
+                        <Textarea Id="bio" Placeholder="Tell us about yourself..." />
+                        <FieldDescription>Brief description for your profile. Maximum 500 characters.</FieldDescription>
+                    </FieldContent>
+                </Field>
+                """;
+
+        private const string _validationCode = """
+                <!-- Single error -->
+                <Field IsInvalid="true">
+                    <FieldLabel For="username-error">Username</FieldLabel>
+                    <FieldContent>
+                        <Input Id="username-error" Type="InputType.Text" AriaInvalid="true" />
+                        <FieldError>Username is already taken. Please choose another.</FieldError>
+                    </FieldContent>
+                </Field>
+
+                <!-- Multiple errors -->
+                <Field IsInvalid="true">
+                    <FieldLabel For="password-errors">Password</FieldLabel>
+                    <FieldContent>
+                        <Input Id="password-errors" Type="InputType.Password" AriaInvalid="true" />
+                        <FieldError Errors="passwordErrors" />
+                    </FieldContent>
+                </Field>
+
+                <!-- Invalid email -->
+                <Field IsInvalid="true">
+                    <FieldLabel For="email-invalid">Email Address</FieldLabel>
+                    <FieldContent>
+                        <Input Id="email-invalid" Type="InputType.Email" Value="invalid-email" AriaInvalid="true" />
+                        <FieldError>Please enter a valid email address.</FieldError>
+                    </FieldContent>
+                </Field>
+                """;
+
+        private const string _horizontalCode = """
+                <Field Orientation="FieldOrientation.Horizontal">
+                    <FieldLabel For="name-horizontal" Class="w-32 pt-2">Full Name</FieldLabel>
+                    <FieldContent>
+                        <Input Id="name-horizontal" Type="InputType.Text" Placeholder="John Doe" />
+                        <FieldDescription>Enter your first and last name.</FieldDescription>
+                    </FieldContent>
+                </Field>
+                <Field Orientation="FieldOrientation.Horizontal">
+                    <FieldLabel For="terms-horizontal" Class="w-32">Accept Terms</FieldLabel>
+                    <FieldContent>
+                        <div class="flex items-center gap-2">
+                            <Checkbox Id="terms-horizontal" />
+                            <FieldDescription Class="!mb-0">I agree to the terms and conditions</FieldDescription>
+                        </div>
+                    </FieldContent>
+                </Field>
+                """;
+
+        private const string _responsiveCode = """
+                <Field Orientation="FieldOrientation.Responsive">
+                    <FieldLabel For="company-responsive" Class="w-full md:w-32 md:pt-2">Company</FieldLabel>
+                    <FieldContent>
+                        <Input Id="company-responsive" Type="InputType.Text" Placeholder="Acme Inc." />
+                        <FieldDescription>Your company or organization name.</FieldDescription>
+                    </FieldContent>
+                </Field>
+                """;
+
+        private const string _groupVerticalCode = """
+                <FieldGroup Orientation="FieldGroupOrientation.Vertical">
+                    <Field>
+                        <FieldLabel For="first-name">First Name</FieldLabel>
+                        <FieldContent><Input Id="first-name" Type="InputType.Text" Placeholder="John" /></FieldContent>
+                    </Field>
+                    <Field>
+                        <FieldLabel For="last-name">Last Name</FieldLabel>
+                        <FieldContent><Input Id="last-name" Type="InputType.Text" Placeholder="Doe" /></FieldContent>
+                    </Field>
+                </FieldGroup>
+                """;
+
+        private const string _groupHorizontalCode = """
+                <FieldGroup Orientation="FieldGroupOrientation.Horizontal">
+                    <Field Class="flex-1">
+                        <FieldLabel For="city">City</FieldLabel>
+                        <FieldContent><Input Id="city" Type="InputType.Text" Placeholder="New York" /></FieldContent>
+                    </Field>
+                    <Field Class="flex-1">
+                        <FieldLabel For="state">State</FieldLabel>
+                        <FieldContent><Input Id="state" Type="InputType.Text" Placeholder="NY" /></FieldContent>
+                    </Field>
+                    <Field Class="w-32">
+                        <FieldLabel For="zip">ZIP</FieldLabel>
+                        <FieldContent><Input Id="zip" Type="InputType.Text" Placeholder="10001" /></FieldContent>
+                    </Field>
+                </FieldGroup>
+                """;
+
+        private const string _groupSeparatorCode = """
+                <FieldGroup Orientation="FieldGroupOrientation.Vertical">
+                    <Field>
+                        <FieldLabel For="account-name">Account Name</FieldLabel>
+                        <FieldContent><Input Id="account-name" Type="InputType.Text" /></FieldContent>
+                    </Field>
+                    <Field>
+                        <FieldLabel For="account-email">Account Email</FieldLabel>
+                        <FieldContent><Input Id="account-email" Type="InputType.Email" /></FieldContent>
+                    </Field>
+                    <FieldSeparator />
+                    <Field>
+                        <FieldLabel For="billing-name">Billing Name</FieldLabel>
+                        <FieldContent><Input Id="billing-name" Type="InputType.Text" /></FieldContent>
+                    </Field>
+                    <Field>
+                        <FieldLabel For="billing-address">Billing Address</FieldLabel>
+                        <FieldContent><Input Id="billing-address" Type="InputType.Text" /></FieldContent>
+                    </Field>
+                </FieldGroup>
+                """;
+
+        private const string _groupSeparatorContentCode = """
+                <FieldGroup Orientation="FieldGroupOrientation.Vertical">
+                    <Field>
+                        <FieldLabel For="email-signup">Email Address</FieldLabel>
+                        <FieldContent><Input Id="email-signup" Type="InputType.Email" Placeholder="you@example.com" /></FieldContent>
+                    </Field>
+                    <Field>
+                        <FieldLabel For="password-signup">Password</FieldLabel>
+                        <FieldContent><Input Id="password-signup" Type="InputType.Password" /></FieldContent>
+                    </Field>
+                    <FieldSeparator>Or continue with</FieldSeparator>
+                    <Field>
+                        <FieldContent>
+                            <div class="flex items-center gap-2">
+                                <Checkbox Id="google-signup" />
+                                <FieldLabel For="google-signup" Class="font-normal">Sign up with Google</FieldLabel>
+                            </div>
+                        </FieldContent>
+                    </Field>
+                </FieldGroup>
+                """;
+
+        private const string _fieldSetBasicCode = """
+                <FieldSet>
+                    <FieldLegend>Contact Information</FieldLegend>
+                    <FieldGroup>
+                        <Field>
+                            <FieldLabel For="contact-email">Email</FieldLabel>
+                            <FieldContent><Input Id="contact-email" Type="InputType.Email" /></FieldContent>
+                        </Field>
+                        <Field>
+                            <FieldLabel For="contact-phone">Phone</FieldLabel>
+                            <FieldContent><Input Id="contact-phone" Type="InputType.Tel" /></FieldContent>
+                        </Field>
+                    </FieldGroup>
+                </FieldSet>
+                """;
+
+        private const string _fieldSetRadioCode = """
+                <FieldSet>
+                    <FieldLegend>How would you like to receive notifications?</FieldLegend>
+                    <RadioGroup @bind-Value="notificationMethod" TValue="string">
+                        <FieldGroup>
+                            <Field Orientation="FieldOrientation.Horizontal">
+                                <div class="flex items-center gap-2">
+                                    <RadioGroupItem Value="@("email")" Id="notify-email" TValue="string" />
+                                    <FieldLabel For="notify-email" Class="font-normal">Email</FieldLabel>
+                                </div>
+                            </Field>
+                            <Field Orientation="FieldOrientation.Horizontal">
+                                <div class="flex items-center gap-2">
+                                    <RadioGroupItem Value="@("sms")" Id="notify-sms" TValue="string" />
+                                    <FieldLabel For="notify-sms" Class="font-normal">SMS</FieldLabel>
+                                </div>
+                            </Field>
+                        </FieldGroup>
+                    </RadioGroup>
+                    <FieldDescription Class="mt-2">We'll send important updates to your preferred channel.</FieldDescription>
+                </FieldSet>
+                """;
+
+        private const string _fieldSetComplexCode = """
+                <FieldSet>
+                    <FieldLegend>User Profile</FieldLegend>
+                    <FieldGroup>
+                        <FieldGroup Orientation="FieldGroupOrientation.Horizontal">
+                            <Field Class="flex-1">
+                                <FieldLabel For="profile-first">First Name</FieldLabel>
+                                <FieldContent><Input Id="profile-first" Type="InputType.Text" /></FieldContent>
+                            </Field>
+                            <Field Class="flex-1">
+                                <FieldLabel For="profile-last">Last Name</FieldLabel>
+                                <FieldContent><Input Id="profile-last" Type="InputType.Text" /></FieldContent>
+                            </Field>
+                        </FieldGroup>
+                        <Field>
+                            <FieldLabel For="profile-username">Username</FieldLabel>
+                            <FieldContent>
+                                <Input Id="profile-username" Type="InputType.Text" />
+                                <FieldDescription>This will be your public display name.</FieldDescription>
+                            </FieldContent>
+                        </Field>
+                        <FieldSeparator />
+                        <Field>
+                            <FieldLabel For="profile-bio">Biography</FieldLabel>
+                            <FieldContent>
+                                <Textarea Id="profile-bio" Placeholder="Tell us about yourself..." />
+                                <FieldDescription>Brief bio for your profile. Maximum 500 characters.</FieldDescription>
+                            </FieldContent>
+                        </Field>
+                        <Field Orientation="FieldOrientation.Horizontal">
+                            <div class="flex items-center gap-2">
+                                <Checkbox Id="profile-public" />
+                                <FieldLabel For="profile-public" Class="font-normal">Make profile public</FieldLabel>
+                            </div>
+                        </Field>
+                    </FieldGroup>
+                </FieldSet>
+                """;
+
+        private const string _fieldTitleCode = """
+                <Field>
+                    <FieldContent>
+                        <FieldTitle>Email Notifications</FieldTitle>
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2">
+                                <Checkbox Id="notify-updates" />
+                                <FieldLabel For="notify-updates" Class="font-normal">Product updates</FieldLabel>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <Checkbox Id="notify-security" />
+                                <FieldLabel For="notify-security" Class="font-normal">Security alerts</FieldLabel>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <Checkbox Id="notify-marketing" />
+                                <FieldLabel For="notify-marketing" Class="font-normal">Marketing emails</FieldLabel>
+                            </div>
+                        </div>
+                        <FieldDescription>Choose which emails you want to receive.</FieldDescription>
+                    </FieldContent>
+                </Field>
+                """;
+    }
+}

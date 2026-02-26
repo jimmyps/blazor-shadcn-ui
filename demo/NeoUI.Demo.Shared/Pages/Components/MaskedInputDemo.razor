@@ -23,15 +23,52 @@
                 </div>
             </ChildContent>
             <AdditionalContent>
-                <Alert Variant="AlertVariant.Default">
-                    <AlertTitle>
-                        <LucideIcon Name="circle-alert" Size="16" Class="mr-2 inline" />
-                        @@bind-Value and UpdateOn
-                    </AlertTitle>
-                    <AlertDescription>
-                        MaskedInput uses <code>@@bind-Value</code> for two-way binding. The bound value contains only the raw digit/letter characters, not the mask characters.
-                        Use <code>ShowMask="false"</code> with a <code>Placeholder</code> to show the format without the mask overlay.
-                    </AlertDescription>
+                <Alert Variant="AlertVariant.Info">
+                    <Icon><LucideIcon Name="info" Size="16" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>Optimized for Performance &amp; Best Typing Experience</AlertTitle>
+                        <AlertDescription>
+                            <p class="mb-3">
+                                By default, MaskedInput uses <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Change"</code> for better performance and UX.
+                                The bound value contains only the raw digit/letter characters, not the mask characters.
+                            </p>
+                            <Collapsible>
+                                <CollapsibleTrigger Class="inline-flex items-center gap-1 text-sm font-normal hover:underline [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                                    <span>Read more</span>
+                                    <LucideIcon Name="chevron-down" Size="14" />
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                    <div class="space-y-3 pt-3">
+                                        <div>
+                                            <p class="font-medium mb-2">Benefits:</p>
+                                            <ul class="list-disc list-inside space-y-1 ml-2 text-sm">
+                                                <li><strong>Better typing UX:</strong> No interruptions while typing — validation tooltips won't get in your way</li>
+                                                <li><strong>Better performance:</strong> Value updates and validation only run when you tab away (blur)</li>
+                                                <li><strong>Fewer re-renders:</strong> Your bound value updates once on blur, not on every keystroke</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium mb-2">UpdateOn Modes:</p>
+                                            <div class="grid gap-2 text-sm">
+                                                <div>
+                                                    <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Change"</code>
+                                                    <span class="text-muted-foreground ml-2">→ Updates on blur (default, recommended)</span>
+                                                </div>
+                                                <div>
+                                                    <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Input"</code>
+                                                    <span class="text-muted-foreground ml-2">→ Updates on every keystroke</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="text-xs text-muted-foreground flex items-start gap-1.5">
+                                            <LucideIcon Name="lightbulb" Size="14" Class="mt-0.5 flex-shrink-0" />
+                                            <span><strong>Tip:</strong> Use <code class="px-1 py-0.5 bg-muted rounded">UpdateOn="Input"</code> only when you need real-time updates (e.g., live formatting preview, instant validation), or when targeting WebAssembly where interactivity is fully client-side.</span>
+                                        </p>
+                                    </div>
+                                </CollapsibleContent>
+                            </Collapsible>
+                        </AlertDescription>
+                    </ChildContent>
                 </Alert>
             </AdditionalContent>
         </DemoBlock>
@@ -354,129 +391,4 @@
         public string? Phone { get; set; }
     }
 
-    private static readonly IReadOnlyList<DemoPropRow> _maskedInputProps =
-    [
-        new("Mask",               "string",   "—",      "Mask pattern. 0=digit, A=letter, *=any character. Other chars are literals."),
-        new("Value",              "string?",  "null",   "Current value (raw digits/letters only). Use @bind-Value for two-way binding."),
-        new("ValueChanged",       "EventCallback&lt;string?&gt;", "—", "Callback invoked when the value changes."),
-        new("ShowMask",           "bool",     "true",   "Whether to show the mask template as placeholder text."),
-        new("Placeholder",        "string?",  "null",   "Placeholder text when ShowMask is false."),
-        new("Disabled",           "bool",     "false",  "Disables the input when true."),
-        new("Readonly",           "bool",     "false",  "Makes the input read-only when true."),
-        new("Required",           "bool",     "false",  "Marks the input as required for native form validation."),
-        new("AriaInvalid",        "bool",     "false",  "Marks the input as invalid for screen readers."),
-        new("ShowValidationError","bool",     "false",  "Shows browser native validation tooltip on invalid state."),
-        new("Class",              "string?",  "null",   "Additional CSS classes appended to the input element."),
-    ];
-
-    private const string _phoneCode = """
-        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="phoneValue" />
-
-        <!-- Without mask display -->
-        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="phoneValue" ShowMask="false" Placeholder="(555) 000-0000" />
-        """;
-
-    private const string _intlPhoneCode = """
-        <MaskedInput Mask="+1 (000) 000-0000" @bind-Value="usPhoneValue" />
-        <MaskedInput Mask="+44 0000 000000" @bind-Value="ukPhoneValue" />
-        """;
-
-    private const string _ssnCode = """
-        <MaskedInput Mask="@MaskedInput.Masks.SSN" @bind-Value="ssnValue" />
-        """;
-
-    private const string _creditCardCode = """
-        <MaskedInput Mask="@MaskedInput.Masks.CreditCard" @bind-Value="cardValue" />
-        <MaskedInput Mask="00/00" @bind-Value="cardExpiry" Placeholder="MM/YY" ShowMask="false" />
-        <MaskedInput Mask="000" @bind-Value="cardCvv" Placeholder="CVV" ShowMask="false" />
-        """;
-
-    private const string _dateCode = """
-        <!-- US format -->
-        <MaskedInput Mask="@MaskedInput.Masks.Date" @bind-Value="dateValue" />
-
-        <!-- ISO format -->
-        <MaskedInput Mask="0000-00-00" @bind-Value="isoDateValue" />
-        """;
-
-    private const string _timeCode = """
-        <MaskedInput Mask="@MaskedInput.Masks.Time" @bind-Value="timeValue" />
-        <MaskedInput Mask="00:00:00" @bind-Value="timeWithSecondsValue" />
-        """;
-
-    private const string _zipCode = """
-        <MaskedInput Mask="@MaskedInput.Masks.ZIP" @bind-Value="zipValue" Placeholder="Enter ZIP" ShowMask="false" />
-        """;
-
-    private const string _zip4Code = """
-        <MaskedInput Mask="@MaskedInput.Masks.ZIP4" @bind-Value="zipPlusFourValue" ShowMask="true" />
-        """;
-
-    private const string _productCodeMaskCode = """
-        <MaskedInput Mask="AA-0000" @bind-Value="productCodeValue" Placeholder="Enter product code" ShowMask="true" />
-        """;
-
-    private const string _licensePlateMaskCode = """
-        <MaskedInput Mask="000-AAA" @bind-Value="licensePlateValue" ShowMask="true" />
-        """;
-
-    private const string _disabledCode = """
-        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" Value="5555551234" Disabled="true" ShowMask="true" />
-        """;
-
-    private const string _readonlyCode = """
-        <MaskedInput Mask="@MaskedInput.Masks.SSN" Value="123456789" Readonly="true" ShowMask="true" />
-        """;
-
-    private const string _withoutMaskCode = """
-        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS"
-            @bind-Value="phoneValueNoMask"
-            Placeholder="(000) 000-0000"
-            ShowMask="false" />
-        """;
-
-    private const string _customCode = """
-        <!-- Letters only (A = letter) -->
-        <MaskedInput Mask="AAA-000" @bind-Value="productCode" />
-
-        <!-- License plate -->
-        <MaskedInput Mask="AAA-0000" @bind-Value="licensePlate" />
-        """;
-
-    private const string _indonesianIdCode = """
-        <MaskedInput Mask="00.00.00.000000.0000"
-            @bind-Value="nikValue"
-            Placeholder="00.00.00.DDMMYY.0000"
-            ShowMask="true" />
-        """;
-
-    private const string _errorStateCode = """
-        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS"
-            @bind-Value="phoneValue"
-            AriaInvalid="true"
-            ShowMask="true" />
-        <p class="text-sm text-destructive">This phone number is invalid.</p>
-        """;
-
-    private const string _requiredStateCode = """
-        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS"
-            @bind-Value="phoneValue"
-            Required="true"
-            ShowMask="true"
-            ShowValidationError="true" />
-        """;
-
-    private const string _statesCode = """
-        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" Value="5555551234" Disabled="true" />
-        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" Value="5555551234" Readonly="true" />
-        """;
-
-    private const string _validationCode = """
-        <EditForm Model="@model" OnValidSubmit="HandleSubmit">
-            <DataAnnotationsValidator />
-            <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="model.Phone"
-                ShowMask="false" Placeholder="(555) 000-0000" Required="true" />
-            <ValidationMessage For="@(() => model.Phone)" class="text-sm text-destructive" />
-        </EditForm>
-        """;
 }
