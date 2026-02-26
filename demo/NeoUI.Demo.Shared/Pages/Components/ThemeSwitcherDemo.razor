@@ -50,7 +50,25 @@
 
     <DemoSection
         Title="Usage"
-        Description="Drop ThemeSwitcher anywhere in your layout, typically in a top-bar or sidebar footer alongside DarkModeToggle." />
+        Description="Minimal usage — drop it anywhere in your layout.">
+        <div class="space-y-4">
+            <div class="rounded-lg border bg-muted/50 p-4">
+                <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor
+
+&lt;ThemeSwitcher /&gt;</code></pre>
+            </div>
+            <p class="text-sm text-muted-foreground">
+                Typical placement is in a top-bar or sidebar footer alongside
+                <code class="text-sm bg-muted px-1 py-0.5 rounded">DarkModeToggle</code>:
+            </p>
+            <div class="rounded-lg border bg-muted/50 p-4">
+                <pre class="text-sm overflow-x-auto"><code>&lt;header class="flex items-center gap-2"&gt;
+    &lt;ThemeSwitcher /&gt;
+    &lt;DarkModeToggle /&gt;
+&lt;/header&gt;</code></pre>
+            </div>
+        </div>
+    </DemoSection>
 
     <DemoSection
         Title="Customisation"
@@ -65,7 +83,13 @@
 
     <DemoSection
         Title="Fixed Positioning"
-        Description="By default Strategy is Fixed so the popover correctly escapes any CSS stacking context (e.g. sidebars with overflow: hidden or transform). Switch to Absolute if you embed the switcher in regular document flow where fixed positioning causes layout shifts." />
+        Description="By default Strategy is Fixed so the popover correctly escapes any CSS stacking context (e.g. sidebars with overflow: hidden or transform). Switch to Absolute if you embed the switcher in regular document flow where fixed positioning causes layout shifts.">
+        <div class="rounded-lg border bg-muted/50 p-4">
+            <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor   @* for PositioningStrategy *@
+
+&lt;ThemeSwitcher Strategy="PositioningStrategy.Absolute" /&gt;</code></pre>
+        </div>
+    </DemoSection>
 
     <DemoSection
         Title="API Reference"

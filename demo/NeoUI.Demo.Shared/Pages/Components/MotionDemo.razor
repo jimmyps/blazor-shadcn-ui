@@ -6,273 +6,410 @@
 
     <DemoPageHeader
         Title="Motion"
-        Description="Animate elements with smooth, physics-based transitions using the Motion component." />
+        Description="Declarative animation system powered by Motion.dev" />
 
     <DemoSection
         Title="Fade In"
-        Description="Smoothly fade elements in when they appear.">
+        Description="Simple fade animation on appear.">
         <DemoBlock Code="@_fadeCode">
-            <div class="flex flex-wrap gap-4 items-center">
-                <Button @onclick="TriggerFade">Replay</Button>
-                @if (showFade)
-                {
-                    <Motion>
-                        <Fade />
-                        <div class="rounded-md border bg-card p-6 text-center">Fade In</div>
-                    </Motion>
-                }
-            </div>
+            <ChildContent>
+                <Motion Trigger="@MotionTrigger.OnAppear" DisableOnPrerender="true">
+                    <Presets>
+                        <FadeIn Duration="0.85" />
+                    </Presets>
+                    <ChildContent>
+                        <Card class="max-w-md">
+                            <CardHeader>
+                                <CardTitle>Animated Card</CardTitle>
+                                <CardDescription>This card fades in on page load</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <p>Content appears smoothly with a fade animation while the app is already interactive.</p>
+                            </CardContent>
+                        </Card>
+                    </ChildContent>
+                </Motion>
+            </ChildContent>
+            <AdditionalContent>
+                <Alert>
+                    <AlertDescription>
+                        <strong>Tip:</strong> Use <code class="px-1 py-0.5 bg-muted rounded">DisableOnPrerender="true"</code> when you want instant content visibility during SSR/prerender. If content is shown during prerender, it will NOT animate when the app becomes interactive, preventing jarring transitions. Animation only plays if the app was already interactive from the start.
+                    </AlertDescription>
+                </Alert>
+            </AdditionalContent>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection
         Title="Scale In with Spring"
-        Description="Scale elements in with a spring physics animation.">
+        Description="Bouncy scale animation using spring physics.">
         <DemoBlock Code="@_scaleCode">
-            <div class="flex flex-wrap gap-4 items-center">
-                <Button @onclick="TriggerScale">Replay</Button>
-                @if (showScale)
-                {
-                    <Motion>
-                        <Scale Spring="0.4" />
-                        <div class="rounded-md border bg-card p-6 text-center">Scale In</div>
+            <ChildContent>
+                <div class="flex items-center gap-4">
+                    <Button OnClick="@(() => _scaleSpringMotion?.PlayAsync())"
+                            Size="ButtonSize.Small"
+                            Variant="ButtonVariant.Outline">
+                        ▶ Play
+                    </Button>
+                    <Motion @ref="_scaleSpringMotion" Trigger="@MotionTrigger.Manual">
+                        <Presets>
+                            <ScaleIn From="0.5" />
+                            <Spring Stiffness="200" Damping="15" />
+                        </Presets>
+                        <ChildContent>
+                            <Card class="max-w-md">
+                                <CardHeader>
+                                    <CardTitle>Spring Physics</CardTitle>
+                                    <CardDescription>Natural, bouncy animation</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <p>This card scales in with spring-based easing for a more natural feel.</p>
+                                </CardContent>
+                            </Card>
+                        </ChildContent>
                     </Motion>
-                }
-            </div>
+                </div>
+            </ChildContent>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection
         Title="Slide In"
-        Description="Slide elements in from different directions.">
+        Description="Slide animations from different directions.">
         <DemoBlock Code="@_slideCode">
-            <div class="flex flex-col gap-4">
-                <div class="flex flex-wrap gap-4">
-                    <Button @onclick="TriggerSlide">Replay</Button>
-                </div>
-                @if (showSlide)
-                {
-                    <div class="grid grid-cols-2 gap-4">
-                        <Motion>
-                            <SlideUp />
-                            <div class="rounded-md border bg-card p-4 text-center text-sm">Slide Up</div>
+            <ChildContent>
+                <div class="space-y-4">
+                    <Button OnClick="@PlaySlideAnimations"
+                            Size="ButtonSize.Small"
+                            Variant="ButtonVariant.Outline">
+                        ▶ Play
+                    </Button>
+                    <div class="space-y-4">
+                        <Motion @ref="_slideLeftMotion" Trigger="@MotionTrigger.Manual">
+                            <Presets>
+                                <SlideInFromLeft Duration="0.75" Easing="MotionEasing.CubicInOut" />
+                            </Presets>
+                            <ChildContent>
+                                <Alert>
+                                    <AlertTitle>From Left (CubicInOut)</AlertTitle>
+                                    <AlertDescription>Slides in with cubic in-out effect</AlertDescription>
+                                </Alert>
+                            </ChildContent>
                         </Motion>
-                        <Motion>
-                            <SlideDown />
-                            <div class="rounded-md border bg-card p-4 text-center text-sm">Slide Down</div>
-                        </Motion>
-                        <Motion>
-                            <SlideLeft />
-                            <div class="rounded-md border bg-card p-4 text-center text-sm">Slide Left</div>
-                        </Motion>
-                        <Motion>
-                            <SlideRight />
-                            <div class="rounded-md border bg-card p-4 text-center text-sm">Slide Right</div>
+                        <Motion @ref="_slideBottomMotion" Trigger="@MotionTrigger.Manual">
+                            <Presets>
+                                <SlideInFromBottom Duration="0.75" Easing="MotionEasing.CubicOut" />
+                            </Presets>
+                            <ChildContent>
+                                <Alert>
+                                    <AlertTitle>From Bottom (CubicOut)</AlertTitle>
+                                    <AlertDescription>Slides in with smooth cubic easing</AlertDescription>
+                                </Alert>
+                            </ChildContent>
                         </Motion>
                     </div>
-                }
-            </div>
+                </div>
+            </ChildContent>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection
         Title="Combined Animations"
-        Description="Combine multiple animation presets for richer effects.">
+        Description="Combine multiple animation effects.">
         <DemoBlock Code="@_combinedCode">
-            <div class="flex flex-wrap gap-4 items-center">
-                <Button @onclick="TriggerCombined">Replay</Button>
-                @if (showCombined)
-                {
-                    <Motion>
-                        <Fade />
-                        <Scale Spring="0.3" />
-                        <SlideUp />
-                        <div class="rounded-md border bg-card p-6 text-center">Fade + Scale + Slide Up</div>
+            <ChildContent>
+                <div class="flex items-center gap-4">
+                    <Button OnClick="@(() => _combinedMotion?.PlayAsync())"
+                            Size="ButtonSize.Small"
+                            Variant="ButtonVariant.Outline">
+                        ▶ Play
+                    </Button>
+                    <Motion @ref="_combinedMotion" Trigger="@MotionTrigger.Manual">
+                        <Presets>
+                            <FadeIn Duration="0.5" />
+                            <ScaleIn From="0.6" Duration="0.5" />
+                            <SlideInFromBottom From="30" Duration="0.5" />
+                        </Presets>
+                        <ChildContent>
+                            <Card class="max-w-md">
+                                <CardHeader>
+                                    <CardTitle>Fade + Scale + Slide</CardTitle>
+                                    <CardDescription>Three animations working together</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <p>This combines fade, scale, and slide for a sophisticated entrance.</p>
+                                </CardContent>
+                            </Card>
+                        </ChildContent>
                     </Motion>
-                }
-            </div>
+                </div>
+            </ChildContent>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection
         Title="Micro-Interactions"
-        Description="Subtle animations for interactive elements like buttons.">
+        Description="Subtle animations triggered manually.">
         <DemoBlock Code="@_microCode">
-            <div class="flex flex-wrap gap-4 items-center">
-                <Button @onclick="TriggerMicro">Replay</Button>
-                @if (showMicro)
-                {
-                    <Motion>
-                        <Scale Spring="0.3" InitialScale="0.95" />
-                        <Button>
-                            <LucideIcon Name="heart" Size="16" Class="mr-2" />
-                            Like
+            <div class="flex gap-4">
+                <Motion @ref="_shakeMotion" Trigger="@MotionTrigger.Manual">
+                    <Presets>
+                        <ShakeX />
+                    </Presets>
+                    <ChildContent>
+                        <Button OnClick="@(() => _shakeMotion?.PlayAsync())">
+                            Shake Me
                         </Button>
-                    </Motion>
-                    <Motion>
-                        <Scale Spring="0.5" InitialScale="0.9" />
-                        <Button Variant="ButtonVariant.Outline">
-                            <LucideIcon Name="share-2" Size="16" Class="mr-2" />
-                            Share
+                    </ChildContent>
+                </Motion>
+                <Motion @ref="_bounceMotion" Trigger="@MotionTrigger.Manual">
+                    <Presets>
+                        <BounceOnce />
+                    </Presets>
+                    <ChildContent>
+                        <Button OnClick="@(() => _bounceMotion?.PlayAsync())" Variant="ButtonVariant.Secondary">
+                            Bounce Me
                         </Button>
-                    </Motion>
-                }
+                    </ChildContent>
+                </Motion>
             </div>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection
         Title="Pulse Animation"
-        Description="Draw attention with continuous pulse animations.">
+        Description="Continuous pulsing effect.">
         <DemoBlock Code="@_pulseCode">
-            <div class="flex flex-wrap gap-6 items-center">
-                <Button @onclick="TriggerPulse">Replay</Button>
-                @if (showPulse)
-                {
-                    <Motion>
-                        <Pulse />
-                        <Badge Variant="BadgeVariant.Destructive">Live</Badge>
+            <ChildContent>
+                <div class="flex items-center gap-4">
+                    <Button OnClick="@(() => _pulseMotion?.PlayAsync())"
+                            Size="ButtonSize.Small"
+                            Variant="ButtonVariant.Outline">
+                        ▶ Play
+                    </Button>
+                    <Motion @ref="_pulseMotion" Trigger="@MotionTrigger.Manual">
+                        <Presets>
+                            <Pulse Scale="1.05" Duration="1.0" />
+                        </Presets>
+                        <ChildContent>
+                            <Badge Variant="BadgeVariant.Destructive" Class="text-lg px-4 py-2">
+                                🔴 Live
+                            </Badge>
+                        </ChildContent>
                     </Motion>
-                    <Motion>
-                        <Pulse Repeat="3" />
-                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500 text-white text-sm font-bold">3</div>
-                    </Motion>
-                }
-            </div>
+                </div>
+            </ChildContent>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection
         Title="Scroll-Triggered Animations"
-        Description="Animate elements as they enter the viewport while scrolling.">
+        Description="Animations that trigger when scrolling into view.">
         <DemoBlock Code="@_scrollCode">
-            <ChildContent>
-                <div class="space-y-2">
-                    <p class="text-sm text-muted-foreground">Scroll down inside this container to see animations trigger.</p>
-                    <div class="h-64 overflow-y-auto border rounded-md p-4 space-y-4">
-                        <div class="h-32 flex items-center justify-center text-sm text-muted-foreground border rounded-md border-dashed">
-                            Scroll down ↓
-                        </div>
-                        @for (int i = 1; i <= 5; i++)
-                        {
-                            int index = i;
-                            <Motion Trigger="MotionTrigger.OnInView">
-                                <Fade />
-                                <SlideUp />
-                                <div class="rounded-md border bg-card p-4">
-                                    <p class="font-medium">Item @index</p>
-                                    <p class="text-sm text-muted-foreground">This item fades and slides up when scrolled into view.</p>
-                                </div>
-                            </Motion>
-                        }
-                    </div>
+            <div class="space-y-32">
+                <div class="text-muted-foreground text-center py-8">
+                    Scroll down to see animations trigger ↓
                 </div>
-            </ChildContent>
-            <AdditionalContent>
-                <p class="text-sm text-muted-foreground">
-                    Use <code>Trigger="MotionTrigger.OnInView"</code> to animate elements as they enter the viewport.
-                    This is great for landing pages and long-form content.
-                </p>
-            </AdditionalContent>
+                @for (int i = 0; i < 3; i++)
+                {
+                    var index = i;
+                    <Motion Trigger="@MotionTrigger.OnInView"
+                            InViewOptions="@(new InViewOptions { Threshold = 0.3 })">
+                        <Presets>
+                            <FadeInOnScroll />
+                            <SlideInOnScroll From="50" />
+                        </Presets>
+                        <ChildContent>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Card @(index + 1)</CardTitle>
+                                    <CardDescription>Appears when scrolled into view</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <p>This card animates in as you scroll past it.</p>
+                                </CardContent>
+                            </Card>
+                        </ChildContent>
+                    </Motion>
+                }
+            </div>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection
         Title="Staggered List"
-        Description="Animate list items one by one with a stagger delay.">
+        Description="List items animate in sequence.">
         <DemoBlock Code="@_staggerListCode">
-            <div class="space-y-2">
-                <Button @onclick="TriggerStaggerList">Replay</Button>
-                @if (showStaggerList)
-                {
-                    <Motion StaggerChildren="0.08">
-                        <ul class="space-y-2 max-w-xs">
-                            @foreach (var item in listItems)
-                            {
-                                <Motion>
-                                    <Fade />
-                                    <SlideLeft />
-                                    <li class="flex items-center gap-3 rounded-lg border p-3 bg-card">
-                                        <LucideIcon Name="check-circle-2" Size="16" Class="text-green-500 shrink-0" />
-                                        <span class="text-sm">@item</span>
-                                    </li>
-                                </Motion>
-                            }
-                        </ul>
+            <ChildContent>
+                <div class="space-y-3">
+                    <Button OnClick="@(() => _staggerListMotion?.PlayAsync())"
+                            Size="ButtonSize.Small"
+                            Variant="ButtonVariant.Outline">
+                        ▶ Play
+                    </Button>
+                    <Motion @ref="_staggerListMotion" Trigger="@MotionTrigger.Manual" StaggerChildren="0.1">
+                        @foreach (var item in _listItems)
+                        {
+                            <Motion>
+                                <Presets>
+                                    <ListItemEnter />
+                                </Presets>
+                                <ChildContent>
+                                    <Card class="mb-3">
+                                        <CardContent class="pt-6">
+                                            <p>@item</p>
+                                        </CardContent>
+                                    </Card>
+                                </ChildContent>
+                            </Motion>
+                        }
                     </Motion>
-                }
-            </div>
+                </div>
+            </ChildContent>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection
         Title="Staggered Grid"
-        Description="Animate grid items with a cascade effect.">
+        Description="Grid items animate in with delay.">
         <DemoBlock Code="@_staggerGridCode">
-            <div class="space-y-2">
-                <Button @onclick="TriggerStaggerGrid">Replay</Button>
-                @if (showStaggerGrid)
-                {
-                    <Motion StaggerChildren="0.05">
-                        <div class="grid grid-cols-3 gap-3">
-                            @foreach (var card in gridCards)
+            <ChildContent>
+                <div class="space-y-3">
+                    <Button OnClick="@(() => _staggerGridMotion?.PlayAsync())"
+                            Size="ButtonSize.Small"
+                            Variant="ButtonVariant.Outline">
+                        ▶ Play
+                    </Button>
+                    <Motion @ref="_staggerGridMotion" Trigger="@MotionTrigger.Manual" StaggerChildren="0.15">
+                        <div class="grid grid-cols-3 gap-4">
+                            @for (int i = 1; i <= 9; i++)
                             {
+                                var index = i;
                                 <Motion>
-                                    <Fade />
-                                    <Scale Spring="0.3" />
-                                    <div class="flex flex-col items-center justify-center rounded-lg border bg-card p-4 text-center aspect-square">
-                                        <LucideIcon Name="@card.Icon" Size="24" Class="mb-2 text-muted-foreground" />
-                                        <span class="text-xs font-medium">@card.Name</span>
-                                    </div>
+                                    <Presets>
+                                        <GridItemEnter Duration="0.4" />
+                                    </Presets>
+                                    <ChildContent>
+                                        <Card class="h-24 flex items-center justify-center">
+                                            <CardContent class="pt-6">
+                                                <span class="text-2xl font-bold">@index</span>
+                                            </CardContent>
+                                        </Card>
+                                    </ChildContent>
                                 </Motion>
                             }
                         </div>
                     </Motion>
-                }
-            </div>
+                </div>
+            </ChildContent>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection
         Title="Easing Functions"
-        Description="Choose from different easing functions for varied animation feels.">
+        Description="Compare different easing curves (click individual cards to replay).">
         <DemoBlock Code="@_easingCode">
-            <div class="space-y-4">
-                <Button @onclick="TriggerEasing">Replay</Button>
-                @if (showEasing)
-                {
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <p class="text-xs text-muted-foreground mb-2">Ease In</p>
-                            <Motion>
-                                <SlideLeft Easing="MotionEasing.EaseIn" />
-                                <div class="rounded-md border bg-card p-3 text-sm text-center">ease-in</div>
+            <ChildContent>
+                <div class="space-y-3">
+                    <Button OnClick="@PlayEasingComparison"
+                            Size="ButtonSize.Small"
+                            Variant="ButtonVariant.Outline">
+                        ▶ Play All
+                    </Button>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="cursor-pointer" @onclick="@(() => _linearMotion?.PlayAsync())">
+                            <Motion @ref="_linearMotion" Trigger="@MotionTrigger.Manual">
+                                <Presets>
+                                    <SlideInFromLeft Duration="0.6" Easing="MotionEasing.Linear" />
+                                </Presets>
+                                <ChildContent>
+                                    <Card class="hover:shadow-md transition-shadow">
+                                        <CardContent class="pt-4 pb-4 text-center">
+                                            <div class="text-sm font-medium">Linear</div>
+                                            <div class="text-xs text-muted-foreground mt-1">Constant speed</div>
+                                        </CardContent>
+                                    </Card>
+                                </ChildContent>
                             </Motion>
                         </div>
-                        <div>
-                            <p class="text-xs text-muted-foreground mb-2">Ease Out</p>
-                            <Motion>
-                                <SlideLeft Easing="MotionEasing.EaseOut" />
-                                <div class="rounded-md border bg-card p-3 text-sm text-center">ease-out</div>
+                        <div class="cursor-pointer" @onclick="@(() => _quadraticOutMotion?.PlayAsync())">
+                            <Motion @ref="_quadraticOutMotion" Trigger="@MotionTrigger.Manual">
+                                <Presets>
+                                    <SlideInFromLeft Duration="0.6" Easing="MotionEasing.QuadraticOut" />
+                                </Presets>
+                                <ChildContent>
+                                    <Card class="hover:shadow-md transition-shadow">
+                                        <CardContent class="pt-4 pb-4 text-center">
+                                            <div class="text-sm font-medium">QuadraticOut</div>
+                                            <div class="text-xs text-muted-foreground mt-1">Slow end</div>
+                                        </CardContent>
+                                    </Card>
+                                </ChildContent>
                             </Motion>
                         </div>
-                        <div>
-                            <p class="text-xs text-muted-foreground mb-2">Ease In Out</p>
-                            <Motion>
-                                <SlideLeft Easing="MotionEasing.EaseInOut" />
-                                <div class="rounded-md border bg-card p-3 text-sm text-center">ease-in-out</div>
+                        <div class="cursor-pointer" @onclick="@(() => _cubicOutMotion?.PlayAsync())">
+                            <Motion @ref="_cubicOutMotion" Trigger="@MotionTrigger.Manual">
+                                <Presets>
+                                    <SlideInFromLeft Duration="0.6" Easing="MotionEasing.CubicOut" />
+                                </Presets>
+                                <ChildContent>
+                                    <Card class="hover:shadow-md transition-shadow">
+                                        <CardContent class="pt-4 pb-4 text-center">
+                                            <div class="text-sm font-medium">CubicOut</div>
+                                            <div class="text-xs text-muted-foreground mt-1">Smoother</div>
+                                        </CardContent>
+                                    </Card>
+                                </ChildContent>
                             </Motion>
                         </div>
-                        <div>
-                            <p class="text-xs text-muted-foreground mb-2">Linear</p>
-                            <Motion>
-                                <SlideLeft Easing="MotionEasing.Linear" />
-                                <div class="rounded-md border bg-card p-3 text-sm text-center">linear</div>
+                        <div class="cursor-pointer" @onclick="@(() => _backOutMotion?.PlayAsync())">
+                            <Motion @ref="_backOutMotion" Trigger="@MotionTrigger.Manual">
+                                <Presets>
+                                    <SlideInFromLeft Duration="0.6" Easing="MotionEasing.BackOut" />
+                                </Presets>
+                                <ChildContent>
+                                    <Card class="hover:shadow-md transition-shadow">
+                                        <CardContent class="pt-4 pb-4 text-center">
+                                            <div class="text-sm font-medium">BackOut</div>
+                                            <div class="text-xs text-muted-foreground mt-1">Overshoot!</div>
+                                        </CardContent>
+                                    </Card>
+                                </ChildContent>
+                            </Motion>
+                        </div>
+                        <div class="cursor-pointer" @onclick="@(() => _circularOutMotion?.PlayAsync())">
+                            <Motion @ref="_circularOutMotion" Trigger="@MotionTrigger.Manual">
+                                <Presets>
+                                    <SlideInFromLeft Duration="0.6" Easing="MotionEasing.CircularOut" />
+                                </Presets>
+                                <ChildContent>
+                                    <Card class="hover:shadow-md transition-shadow">
+                                        <CardContent class="pt-4 pb-4 text-center">
+                                            <div class="text-sm font-medium">CircularOut</div>
+                                            <div class="text-xs text-muted-foreground mt-1">Smooth arc</div>
+                                        </CardContent>
+                                    </Card>
+                                </ChildContent>
+                            </Motion>
+                        </div>
+                        <div class="cursor-pointer" @onclick="@(() => _exponentialOutMotion?.PlayAsync())">
+                            <Motion @ref="_exponentialOutMotion" Trigger="@MotionTrigger.Manual">
+                                <Presets>
+                                    <SlideInFromLeft Duration="0.6" Easing="MotionEasing.ExponentialOut" />
+                                </Presets>
+                                <ChildContent>
+                                    <Card class="hover:shadow-md transition-shadow">
+                                        <CardContent class="pt-4 pb-4 text-center">
+                                            <div class="text-sm font-medium">ExponentialOut</div>
+                                            <div class="text-xs text-muted-foreground mt-1">Dramatic</div>
+                                        </CardContent>
+                                    </Card>
+                                </ChildContent>
                             </Motion>
                         </div>
                     </div>
-                }
-            </div>
+                </div>
+            </ChildContent>
         </DemoBlock>
     </DemoSection>
 
@@ -285,128 +422,195 @@
 </div>
 
 @code {
-    private bool showFade = true;
-    private bool showScale = true;
-    private bool showSlide = true;
-    private bool showCombined = true;
-    private bool showMicro = true;
-    private bool showPulse = true;
-    private bool showStaggerList = true;
-    private bool showStaggerGrid = true;
-    private bool showEasing = true;
+    // Animation references
+    private Motion? _scaleSpringMotion;
+    private Motion? _slideLeftMotion;
+    private Motion? _slideBottomMotion;
+    private Motion? _combinedMotion;
+    private Motion? _shakeMotion;
+    private Motion? _bounceMotion;
+    private Motion? _pulseMotion;
+    private Motion? _staggerListMotion;
+    private Motion? _staggerGridMotion;
 
-    private List<string> listItems = ["Design the UI", "Build components", "Write tests", "Deploy to production", "Monitor performance"];
+    // Easing comparison motions
+    private Motion? _linearMotion;
+    private Motion? _quadraticOutMotion;
+    private Motion? _cubicOutMotion;
+    private Motion? _backOutMotion;
+    private Motion? _circularOutMotion;
+    private Motion? _exponentialOutMotion;
 
-    private List<(string Icon, string Name)> gridCards =
+    private readonly List<string> _listItems =
     [
-        ("layout-dashboard", "Dashboard"), ("users", "Users"), ("settings", "Settings"),
-        ("bar-chart-3", "Analytics"), ("file-text", "Reports"), ("bell", "Notifications"),
-        ("shield", "Security"), ("database", "Database"), ("code-2", "API"),
+        "First item appears first",
+        "Second item follows shortly after",
+        "Third item comes next",
+        "Fourth item with a slight delay",
+        "Fifth item completes the sequence"
     ];
 
-    private async Task TriggerFade() { showFade = false; await Task.Delay(50); showFade = true; }
-    private async Task TriggerScale() { showScale = false; await Task.Delay(50); showScale = true; }
-    private async Task TriggerSlide() { showSlide = false; await Task.Delay(50); showSlide = true; }
-    private async Task TriggerCombined() { showCombined = false; await Task.Delay(50); showCombined = true; }
-    private async Task TriggerMicro() { showMicro = false; await Task.Delay(50); showMicro = true; }
-    private async Task TriggerPulse() { showPulse = false; await Task.Delay(50); showPulse = true; }
-    private async Task TriggerStaggerList() { showStaggerList = false; await Task.Delay(50); showStaggerList = true; }
-    private async Task TriggerStaggerGrid() { showStaggerGrid = false; await Task.Delay(50); showStaggerGrid = true; }
-    private async Task TriggerEasing() { showEasing = false; await Task.Delay(50); showEasing = true; }
+    private async Task PlaySlideAnimations()
+    {
+        if (_slideLeftMotion != null) await _slideLeftMotion.PlayAsync();
+        if (_slideBottomMotion != null) await _slideBottomMotion.PlayAsync();
+    }
+
+    private async Task PlayEasingComparison()
+    {
+        var tasks = new List<Task>();
+        if (_linearMotion != null) tasks.Add(_linearMotion.PlayAsync());
+        if (_quadraticOutMotion != null) tasks.Add(_quadraticOutMotion.PlayAsync());
+        if (_cubicOutMotion != null) tasks.Add(_cubicOutMotion.PlayAsync());
+        if (_backOutMotion != null) tasks.Add(_backOutMotion.PlayAsync());
+        if (_circularOutMotion != null) tasks.Add(_circularOutMotion.PlayAsync());
+        if (_exponentialOutMotion != null) tasks.Add(_exponentialOutMotion.PlayAsync());
+        await Task.WhenAll(tasks);
+    }
 
     private static readonly IReadOnlyList<DemoPropRow> _motionProps =
     [
-        new("Trigger",            "MotionTrigger",    "OnAppear", "Animation trigger. Options: OnAppear, OnInView."),
-        new("StaggerChildren",    "double?",          "null",     "Delay in seconds between each child animation."),
-        new("DisableOnPrerender", "bool",             "false",    "Prevents animation if content was server pre-rendered."),
-        new("ChildContent",       "RenderFragment?",  "null",     "Animation preset components and the content to animate."),
+        new("Trigger",            "MotionTrigger",   "OnAppear", "Animation trigger: OnAppear, OnInView, or Manual."),
+        new("DisableOnPrerender", "bool",            "false",    "Prevents animation if content was server pre-rendered (SSR)."),
+        new("StaggerChildren",    "double?",         "null",     "Delay in seconds between each child Motion's animation."),
+        new("InViewOptions",      "InViewOptions?",  "null",     "Options for OnInView trigger (Threshold, RootMargin)."),
+        new("Presets",            "RenderFragment?", "null",     "Preset components: FadeIn, ScaleIn, SlideInFromLeft, Spring, etc."),
+        new("ChildContent",       "RenderFragment?", "null",     "The content to animate."),
     ];
 
     private const string _fadeCode = """
-        <Motion>
-            <Fade />
-            <div class="rounded-md border bg-card p-6">Fade In</div>
+        <Motion Trigger="@MotionTrigger.OnAppear" DisableOnPrerender="true">
+            <Presets>
+                <FadeIn Duration="0.85" />
+            </Presets>
+            <ChildContent>
+                <Card>
+                    <CardHeader><CardTitle>Animated Card</CardTitle></CardHeader>
+                    <CardContent><p>Fades in on page load.</p></CardContent>
+                </Card>
+            </ChildContent>
         </Motion>
         """;
 
     private const string _scaleCode = """
-        <Motion>
-            <Scale Spring="0.4" />
-            <div class="rounded-md border bg-card p-6">Scale In</div>
+        <Motion @ref="_scaleSpringMotion" Trigger="@MotionTrigger.Manual">
+            <Presets>
+                <ScaleIn From="0.5" />
+                <Spring Stiffness="200" Damping="15" />
+            </Presets>
+            <ChildContent>
+                <Card>...</Card>
+            </ChildContent>
         </Motion>
         """;
 
     private const string _slideCode = """
-        <Motion><SlideUp /><div>Slide Up</div></Motion>
-        <Motion><SlideDown /><div>Slide Down</div></Motion>
-        <Motion><SlideLeft /><div>Slide Left</div></Motion>
-        <Motion><SlideRight /><div>Slide Right</div></Motion>
+        <Motion @ref="_slideLeftMotion" Trigger="@MotionTrigger.Manual">
+            <Presets>
+                <SlideInFromLeft Duration="0.75" Easing="MotionEasing.CubicInOut" />
+            </Presets>
+            <ChildContent>
+                <Alert>...</Alert>
+            </ChildContent>
+        </Motion>
+
+        <Motion @ref="_slideBottomMotion" Trigger="@MotionTrigger.Manual">
+            <Presets>
+                <SlideInFromBottom Duration="0.75" Easing="MotionEasing.CubicOut" />
+            </Presets>
+            <ChildContent>
+                <Alert>...</Alert>
+            </ChildContent>
+        </Motion>
         """;
 
     private const string _combinedCode = """
-        <Motion>
-            <Fade />
-            <Scale Spring="0.3" />
-            <SlideUp />
-            <div class="rounded-md border bg-card p-6">Fade + Scale + Slide Up</div>
+        <Motion @ref="_combinedMotion" Trigger="@MotionTrigger.Manual">
+            <Presets>
+                <FadeIn Duration="0.5" />
+                <ScaleIn From="0.6" Duration="0.5" />
+                <SlideInFromBottom From="30" Duration="0.5" />
+            </Presets>
+            <ChildContent>
+                <Card>...</Card>
+            </ChildContent>
         </Motion>
         """;
 
     private const string _microCode = """
-        <Motion>
-            <Scale Spring="0.3" InitialScale="0.95" />
-            <Button><LucideIcon Name="heart" Size="16" Class="mr-2" /> Like</Button>
+        <Motion @ref="_shakeMotion" Trigger="@MotionTrigger.Manual">
+            <Presets><ShakeX /></Presets>
+            <ChildContent>
+                <Button OnClick="@(() => _shakeMotion?.PlayAsync())">Shake Me</Button>
+            </ChildContent>
+        </Motion>
+
+        <Motion @ref="_bounceMotion" Trigger="@MotionTrigger.Manual">
+            <Presets><BounceOnce /></Presets>
+            <ChildContent>
+                <Button OnClick="@(() => _bounceMotion?.PlayAsync())">Bounce Me</Button>
+            </ChildContent>
         </Motion>
         """;
 
     private const string _pulseCode = """
-        <Motion>
-            <Pulse />
-            <Badge Variant="BadgeVariant.Destructive">Live</Badge>
-        </Motion>
-
-        <!-- Repeat 3 times -->
-        <Motion>
-            <Pulse Repeat="3" />
-            <div class="notification-badge">3</div>
+        <Motion @ref="_pulseMotion" Trigger="@MotionTrigger.Manual">
+            <Presets>
+                <Pulse Scale="1.05" Duration="1.0" />
+            </Presets>
+            <ChildContent>
+                <Badge Variant="BadgeVariant.Destructive">🔴 Live</Badge>
+            </ChildContent>
         </Motion>
         """;
 
     private const string _scrollCode = """
-        <!-- Animate on scroll into view -->
-        <Motion Trigger="MotionTrigger.OnInView">
-            <Fade />
-            <SlideUp />
-            <div class="rounded-md border bg-card p-4">
-                Animates when scrolled into view
-            </div>
+        <Motion Trigger="@MotionTrigger.OnInView"
+                InViewOptions="@(new InViewOptions { Threshold = 0.3 })">
+            <Presets>
+                <FadeInOnScroll />
+                <SlideInOnScroll From="50" />
+            </Presets>
+            <ChildContent>
+                <Card>
+                    <CardHeader><CardTitle>Card</CardTitle></CardHeader>
+                    <CardContent><p>Animates when scrolled into view.</p></CardContent>
+                </Card>
+            </ChildContent>
         </Motion>
         """;
 
     private const string _staggerListCode = """
-        <Motion StaggerChildren="0.08">
-            <ul class="space-y-2">
-                @foreach (var item in listItems)
-                {
-                    <Motion>
-                        <Fade />
-                        <SlideLeft />
-                        <li class="rounded-lg border p-3">@item</li>
-                    </Motion>
-                }
-            </ul>
+        <Motion @ref="_staggerListMotion" Trigger="@MotionTrigger.Manual" StaggerChildren="0.1">
+            @foreach (var item in _listItems)
+            {
+                <Motion>
+                    <Presets><ListItemEnter /></Presets>
+                    <ChildContent>
+                        <Card class="mb-3">
+                            <CardContent class="pt-6"><p>@item</p></CardContent>
+                        </Card>
+                    </ChildContent>
+                </Motion>
+            }
         </Motion>
         """;
 
     private const string _staggerGridCode = """
-        <Motion StaggerChildren="0.05">
-            <div class="grid grid-cols-3 gap-3">
-                @foreach (var card in gridCards)
+        <Motion @ref="_staggerGridMotion" Trigger="@MotionTrigger.Manual" StaggerChildren="0.15">
+            <div class="grid grid-cols-3 gap-4">
+                @for (int i = 1; i <= 9; i++)
                 {
+                    var index = i;
                     <Motion>
-                        <Fade />
-                        <Scale Spring="0.3" />
-                        <div class="rounded-lg border p-4">@card.Name</div>
+                        <Presets><GridItemEnter Duration="0.4" /></Presets>
+                        <ChildContent>
+                            <Card class="h-24 flex items-center justify-center">
+                                <CardContent class="pt-6">
+                                    <span class="text-2xl font-bold">@index</span>
+                                </CardContent>
+                            </Card>
+                        </ChildContent>
                     </Motion>
                 }
             </div>
@@ -414,9 +618,13 @@
         """;
 
     private const string _easingCode = """
-        <Motion><SlideLeft Easing="MotionEasing.EaseIn" /><div>ease-in</div></Motion>
-        <Motion><SlideLeft Easing="MotionEasing.EaseOut" /><div>ease-out</div></Motion>
-        <Motion><SlideLeft Easing="MotionEasing.EaseInOut" /><div>ease-in-out</div></Motion>
-        <Motion><SlideLeft Easing="MotionEasing.Linear" /><div>linear</div></Motion>
+        <Motion @ref="_cubicOutMotion" Trigger="@MotionTrigger.Manual">
+            <Presets>
+                <SlideInFromLeft Duration="0.6" Easing="MotionEasing.CubicOut" />
+            </Presets>
+            <ChildContent>
+                <Card><CardContent class="text-center">CubicOut</CardContent></Card>
+            </ChildContent>
+        </Motion>
         """;
 }
