@@ -3,21 +3,15 @@
 <PageTitle>Table Primitive - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-7xl">
-    <div class="space-y-3">
-        <h1 class="text-4xl font-bold tracking-tight">Table Primitive</h1>
-        <p class="text-xl text-muted-foreground">
-            Headless, unstyled table primitive with sorting, pagination, and selection capabilities.
-        </p>
-    </div>
 
-    <div class="space-y-6">
+    <DemoPageHeader
+        Title="Table Primitive"
+        Description="Headless, unstyled table primitive with sorting, pagination, and selection capabilities." />
 
-    @* Basic Table Example *@
-    <section class="space-y-4">
-        <div>
-            <h2 class="text-2xl font-semibold">Basic Table</h2>
-            <p class="text-sm text-muted-foreground">Simple table with no sorting, pagination, or selection</p>
-        </div>
+    <DemoSection
+        Title="Basic Table"
+        Description="Simple table with no sorting, pagination, or selection.">
+        <DemoBlock Code="@_basicCode">
 
         <div class="rounded-md border">
             <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
@@ -42,14 +36,13 @@
                 </TableBody>
             </Table>
         </div>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 
-    @* Row Actions Example *@
-    <section class="space-y-4">
-        <div>
-            <h2 class="text-2xl font-semibold">Row Actions</h2>
-            <p class="text-sm text-muted-foreground">Table with an actions dropdown menu for each row</p>
-        </div>
+    <DemoSection
+        Title="Row Actions"
+        Description="Table with an actions dropdown menu for each row.">
+        <DemoBlock Code="@_rowActionsCode">
 
         <div class="rounded-md border">
             <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
@@ -114,14 +107,13 @@
                 <p class="text-sm">@actionMessage</p>
             </div>
         }
-    </section>
+        </DemoBlock>
+    </DemoSection>
 
-    @* Sortable Table Example *@
-    <section class="space-y-4">
-        <div>
-            <h2 class="text-2xl font-semibold">Sortable Table</h2>
-            <p class="text-sm text-muted-foreground">Click column headers to sort. Three-state cycle: None → Ascending → Descending → None</p>
-        </div>
+    <DemoSection
+        Title="Sortable Table"
+        Description="Click column headers to sort. Three-state cycle: None → Ascending → Descending → None.">
+        <DemoBlock Code="@_sortableCode">
 
         <div class="rounded-md border">
             <Table TData="Person" Data="@GetSortedPeople()" @bind-State="@sortableTableState" Class="w-full caption-bottom text-sm">
@@ -214,14 +206,13 @@
                 <p><span class="font-medium">Direction:</span> @sortableTableState.Sorting.Direction</p>
             </div>
         </div>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 
-    @* Paginated Table Example *@
-    <section class="space-y-4">
-        <div>
-            <h2 class="text-2xl font-semibold">Paginated Table</h2>
-            <p class="text-sm text-muted-foreground">Table with pagination controls and configurable page size</p>
-        </div>
+    <DemoSection
+        Title="Paginated Table"
+        Description="Table with pagination controls and configurable page size.">
+        <DemoBlock Code="@_paginatedCode">
 
         <div class="space-y-4">
             <div class="rounded-md border">
@@ -308,14 +299,13 @@
                 </PaginationTemplate>
             </TablePagination>
         </div>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 
-    @* Selectable Table Example *@
-    <section class="space-y-4">
-        <div>
-            <h2 class="text-2xl font-semibold">Selectable Table (Multi-Select)</h2>
-            <p class="text-sm text-muted-foreground">Click rows or checkboxes to select. Click header checkbox to select/deselect all. Use arrow keys to navigate and Enter/Space to select.</p>
-        </div>
+    <DemoSection
+        Title="Selectable Table (Multi-Select)"
+        Description="Click rows or checkboxes to select. Click header checkbox to select/deselect all. Use arrow keys to navigate and Enter/Space to select.">
+        <DemoBlock Code="@_selectableCode">
 
         <div class="flex items-center gap-2 mb-2">
             <input type="checkbox"
@@ -424,14 +414,13 @@
                 </div>
             </div>
         </div>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 
-    @* Combined Features Example *@
-    <section class="space-y-4">
-        <div>
-            <h2 class="text-2xl font-semibold">All Features Combined</h2>
-            <p class="text-sm text-muted-foreground">Filtering, sorting, pagination, and selection all working together</p>
-        </div>
+    <DemoSection
+        Title="All Features Combined"
+        Description="Filtering, sorting, pagination, and selection all working together.">
+        <DemoBlock Code="@_combinedCode">
 
         <div class="space-y-4">
             <div class="rounded-md border">
@@ -734,14 +723,13 @@
                 </div>
             </div>
         </div>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 
-    @* Column Filtering Example *@
-    <section class="space-y-4">
-        <div>
-            <h2 class="text-2xl font-semibold">Column Filtering</h2>
-            <p class="text-sm text-muted-foreground">Click filter icons in headers to filter by column</p>
-        </div>
+    <DemoSection
+        Title="Column Filtering"
+        Description="Click filter icons in headers to filter by column.">
+        <DemoBlock Code="@_columnFilterCode">
 
         <div class="space-y-4">
             <div class="rounded-md border">
@@ -945,14 +933,13 @@
                 </div>
             </div>
         </div>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 
-    @* Global Search Example *@
-    <section class="space-y-4">
-        <div>
-            <h2 class="text-2xl font-semibold">Global Search</h2>
-            <p class="text-sm text-muted-foreground">Search across all columns simultaneously</p>
-        </div>
+    <DemoSection
+        Title="Global Search"
+        Description="Search across all columns simultaneously.">
+        <DemoBlock Code="@_globalSearchCode">
 
         <div class="space-y-4">
             <div class="flex items-center gap-4">
@@ -1077,177 +1064,21 @@
                 </div>
             </div>
         </div>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Accessibility Features</h2>
-                <p class="text-muted-foreground">
-                    Built-in accessibility features following WAI-ARIA design patterns.
-                </p>
-            </div>
+    <DemoSection
+        Title="Accessibility Features"
+        Description="Built-in accessibility features following WAI-ARIA design patterns." />
 
-            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
-                <div>
-                    <h3 class="font-semibold mb-2">ARIA Attributes</h3>
-                    <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">role="grid"</code> for screen readers</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">aria-sort</code> indicates column sort direction</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">aria-selected</code> indicates row selection state</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">aria-rowcount</code> for total row count</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Focusable rows with visible focus indicator</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </section>
+    <DemoSection
+        Title="API Reference"
+        Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_tableProps" />
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Keyboard Shortcuts</h2>
-                <p class="text-muted-foreground">
-                    Navigate and interact with the table using keyboard.
-                </p>
-            </div>
+    <DemoPageNav />
 
-            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
-                <div class="grid gap-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Navigate to next row</span>
-                        <Kbd>ArrowDown</Kbd>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Navigate to previous row</span>
-                        <Kbd>ArrowUp</Kbd>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Toggle row selection</span>
-                        <Kbd>Enter / Space</Kbd>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Sort column</span>
-                        <span class="text-sm text-muted-foreground">Click header</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">API Reference</h2>
-                <p class="text-muted-foreground">
-                    Component properties and parameters.
-                </p>
-            </div>
-
-            <div class="space-y-4">
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">Table</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Data</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>IEnumerable&lt;TData&gt;</code><br/>
-                                The data source for the table.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">State</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>TableState&lt;TData&gt;?</code><br/>
-                                The table state for controlled mode. Use with @@bind-State for two-way binding.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">SelectionMode</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>SelectionMode</code><br/>
-                                <strong>Default:</strong> <code>None</code><br/>
-                                The selection mode: None, Single, or Multiple.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">EnableKeyboardNavigation</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>true</code><br/>
-                                Enables keyboard navigation for table rows (arrow keys to navigate, Enter/Space to select).
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">ManualPagination</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>false</code><br/>
-                                When true, the table will not automatically set TotalItems.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">OnSelectionChange</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>EventCallback&lt;IReadOnlyCollection&lt;TData&gt;&gt;</code><br/>
-                                Callback invoked when the selection changes.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">OnSortChange</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>EventCallback&lt;(string, SortDirection)&gt;</code><br/>
-                                Callback invoked when sorting changes.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">TableRow</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Item</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>TData?</code><br/>
-                                The data item for this row. Required for selection to work.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Class</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>string?</code><br/>
-                                Additional CSS classes to apply to the row.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">TableHeaderCell</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">ColumnId</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>string?</code><br/>
-                                The column identifier. When provided, clicking the header toggles sorting.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
 </div>
 
 @code {
@@ -1611,4 +1442,158 @@
         public int Age { get; set; }
         public string Department { get; set; } = string.Empty;
     }
+
+    private static readonly IReadOnlyList<DemoPropRow> _tableProps =
+    [
+        new("Data",                     "IEnumerable&lt;TData&gt;",                          "—",     "The data source for the table."),
+        new("State",                    "TableState&lt;TData&gt;?",                          "—",     "The table state for controlled mode. Use with @bind-State for two-way binding."),
+        new("SelectionMode",            "SelectionMode",                                     "None",  "The selection mode: None, Single, or Multiple."),
+        new("EnableKeyboardNavigation", "bool",                                              "true",  "Enables keyboard navigation (arrow keys to navigate, Enter/Space to select)."),
+        new("ManualPagination",         "bool",                                              "false", "When true, the table will not automatically set TotalItems."),
+        new("OnSelectionChange",        "EventCallback&lt;IReadOnlyCollection&lt;TData&gt;&gt;", "—", "Callback invoked when the selection changes."),
+        new("OnSortChange",             "EventCallback&lt;(string, SortDirection)&gt;",      "—",     "Callback invoked when sorting changes."),
+        new("Item (TableRow)",          "TData?",                                            "—",     "The data item for this row. Required for selection."),
+        new("ColumnId (TableHeaderCell)","string?",                                          "—",     "Column identifier. When provided, clicking the header toggles sorting."),
+    ];
+
+    private const string _basicCode =
+        """
+        <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
+            <TableHeader Class="[&_tr]:border-b">
+                <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left font-medium text-muted-foreground">Name</TableHeaderCell>
+                    <TableHeaderCell TData="Person" Class="h-12 px-4 text-left font-medium text-muted-foreground">Email</TableHeaderCell>
+                </TableRow>
+            </TableHeader>
+            <TableBody Class="[&_tr:last-child]:border-0">
+                @foreach (var person in people)
+                {
+                    <TableRow TData="Person" Class="border-b transition-colors hover:bg-muted/50">
+                        <TableCell Class="p-4 align-middle">@person.Name</TableCell>
+                        <TableCell Class="p-4 align-middle">@person.Email</TableCell>
+                    </TableRow>
+                }
+            </TableBody>
+        </Table>
+        """;
+
+    private const string _rowActionsCode =
+        """
+        <Table TData="Person" Data="@people" Class="w-full caption-bottom text-sm">
+            ...
+            <TableBody Class="[&_tr:last-child]:border-0">
+                @foreach (var person in people)
+                {
+                    <TableRow TData="Person" Class="...">
+                        <TableCell Class="...">@person.Name</TableCell>
+                        <TableCell Class="... text-right">
+                            <DropdownMenuPrimitive>
+                                <DropdownMenuTriggerPrimitive>
+                                    <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
+                                        <LucideIcon Name="ellipsis" Size="16" />
+                                    </Button>
+                                </DropdownMenuTriggerPrimitive>
+                                <DropdownMenuContentPrimitive Class="w-48 ..." Align="PopoverAlign.End">
+                                    <DropdownMenuItemPrimitive OnClick="@(() => HandleEdit(person))">Edit</DropdownMenuItemPrimitive>
+                                    <DropdownMenuItemPrimitive OnClick="@(() => HandleDelete(person))">Delete</DropdownMenuItemPrimitive>
+                                </DropdownMenuContentPrimitive>
+                            </DropdownMenuPrimitive>
+                        </TableCell>
+                    </TableRow>
+                }
+            </TableBody>
+        </Table>
+        """;
+
+    private const string _sortableCode =
+        """
+        <Table TData="Person" Data="@GetSortedPeople()" @bind-State="@sortableTableState" Class="...">
+            <TableHeader Class="...">
+                <TableRow TData="Person" Class="...">
+                    <TableHeaderCell TData="Person" ColumnId="name" Class="... cursor-pointer hover:bg-accent">
+                        <div class="flex items-center gap-2">
+                            <span>Name</span>
+                            @if (sortableTableState.Sorting.SortedColumn == "name")
+                            {
+                                <span class="text-xs">@(sortableTableState.Sorting.Direction == SortDirection.Ascending ? "↑" : "↓")</span>
+                            }
+                        </div>
+                    </TableHeaderCell>
+                </TableRow>
+            </TableHeader>
+            ...
+        </Table>
+        """;
+
+    private const string _paginatedCode =
+        """
+        <Table TData="Person" Data="@GetPagedPeople()" @bind-State="@paginatedTableState"
+               OnPageChange="@HandlePaginationChange"
+               OnPageSizeChange="@HandlePaginationChange"
+               Class="...">
+            ...
+        </Table>
+        <TablePagination TData="Person" State="@paginatedTableState" Class="..." />
+        """;
+
+    private const string _selectableCode =
+        """
+        <Table TData="Person" Data="@people" @bind-State="@selectableTableState"
+               SelectionMode="SelectionMode.Multiple"
+               OnSelectionChange="@HandleSelectionChange"
+               Class="...">
+            <TableHeader Class="...">
+                <TableRow TData="Person" Class="...">
+                    <TableHeaderCell TData="Person" Class="...">
+                        <input type="checkbox" @bind="selectAllChecked" @onchange="ToggleSelectAll" />
+                    </TableHeaderCell>
+                    <TableHeaderCell TData="Person" Class="...">Name</TableHeaderCell>
+                </TableRow>
+            </TableHeader>
+            <TableBody Class="...">
+                @foreach (var person in people)
+                {
+                    <TableRow TData="Person" Item="@person" Class="aria-[selected=true]:bg-muted/50">
+                        <TableCell Class="...">
+                            <input type="checkbox" checked="@(selectableTableState.IsSelected(person))" />
+                        </TableCell>
+                        <TableCell Class="...">@person.Name</TableCell>
+                    </TableRow>
+                }
+            </TableBody>
+        </Table>
+        """;
+
+    private const string _combinedCode =
+        """
+        <Table TData="Person" Data="@GetSortedCombinedData()" @bind-State="@combinedTableState"
+               SelectionMode="SelectionMode.Multiple"
+               OnPageChange="@HandleCombinedPaginationChange"
+               Class="...">
+            <!-- Sortable + selectable headers -->
+            <!-- Paginated + filtered body -->
+        </Table>
+        <TablePagination TData="Person" State="@combinedTableState" Class="..." />
+        """;
+
+    private const string _columnFilterCode =
+        """
+        <!-- Filter inputs bound to local variables -->
+        <input @bind="nameFilter" @bind:event="oninput" placeholder="Filter name..." class="..." />
+
+        <!-- Table data filtered by GetFilteredPeople() -->
+        <Table TData="Person" Data="@GetFilteredPeople()" @bind-State="@filteredTableState" Class="...">
+            ...
+        </Table>
+        """;
+
+    private const string _globalSearchCode =
+        """
+        <input @bind="globalSearchFilter" @bind:event="oninput" placeholder="Search all columns..." class="..." />
+
+        <Table TData="Person" Data="@GetGloballyFilteredPeople()" @bind-State="@globalSearchTableState" Class="...">
+            ...
+        </Table>
+        """;
 }
+

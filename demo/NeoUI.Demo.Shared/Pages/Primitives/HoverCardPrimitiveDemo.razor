@@ -1,45 +1,31 @@
 @page "/primitives/hover-card"
+
+<PageTitle>HoverCard Primitive - NeoUI</PageTitle>
+
 <div class="space-y-8 max-w-4xl">
-    <div>
-        <h1 class="text-4xl font-bold">HoverCard Primitive</h1>
-        <p class="text-xl text-muted-foreground">
-            Headless, unstyled hover card primitive with positioning and delay controls.
-        </p>
-    </div>
 
-    <div class="space-y-6">
-        <!-- AsChild Pattern -->
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">AsChild Pattern</h2>
-                <p class="text-muted-foreground">
-                    Use AsChild to compose triggers with your own styled elements.
-                </p>
-            </div>
+    <DemoPageHeader
+        Title="HoverCard Primitive"
+        Description="Headless, unstyled hover card primitive with positioning and delay controls." />
 
+    <DemoSection
+        Title="AsChild Pattern"
+        Description="Use AsChild to compose triggers with your own styled elements.">
+        <DemoBlock Code="@_asChildCode">
             <div class="grid md:grid-cols-2 gap-6">
-                <!-- Without AsChild -->
                 <div class="space-y-3 p-4 border rounded-lg">
                     <h3 class="text-lg font-medium">Without AsChild</h3>
-                    <p class="text-sm text-muted-foreground">
-                        HoverCardTriggerPrimitive renders its own div element.
-                    </p>
+                    <p class="text-sm text-muted-foreground">HoverCardTriggerPrimitive renders its own div element.</p>
                     <HoverCardPrimitive>
-                        <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                            Hover me
-                        </HoverCardTriggerPrimitive>
+                        <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Hover me</HoverCardTriggerPrimitive>
                         <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
                             <p class="text-sm">Without AsChild hover card</p>
                         </HoverCardContentPrimitive>
                     </HoverCardPrimitive>
                 </div>
-
-                <!-- With AsChild -->
                 <div class="space-y-3 p-4 border rounded-lg">
                     <h3 class="text-lg font-medium">With AsChild</h3>
-                    <p class="text-sm text-muted-foreground">
-                        Button receives hover/focus behavior via TriggerContext.
-                    </p>
+                    <p class="text-sm text-muted-foreground">Button receives hover/focus behavior via TriggerContext.</p>
                     <HoverCardPrimitive>
                         <HoverCardTriggerPrimitive AsChild>
                             <Button Variant="ButtonVariant.Link">@@johndoe</Button>
@@ -56,192 +42,192 @@
                     </HoverCardPrimitive>
                 </div>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <h2 class="text-2xl font-semibold">Basic Usage</h2>
-        <p class="text-sm text-muted-foreground">
-            Hover over the trigger to show the hover card. Content appears after a delay.
-        </p>
+    <DemoSection
+        Title="Basic Usage"
+        Description="Hover over the trigger to show the hover card. Content appears after a delay.">
+        <DemoBlock Code="@_basicCode">
+            <div class="flex items-center gap-4">
+                <HoverCardPrimitive>
+                    <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Hover me</HoverCardTriggerPrimitive>
+                    <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[280px]">
+                        <div class="font-semibold mb-2">Hover Card Content</div>
+                        <p class="text-sm text-muted-foreground">
+                            This content appears when you hover over the trigger.
+                        </p>
+                    </HoverCardContentPrimitive>
+                </HoverCardPrimitive>
+            </div>
+        </DemoBlock>
+    </DemoSection>
 
-        <div class="flex items-center gap-4">
-            <HoverCardPrimitive>
-                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                    Hover me
-                </HoverCardTriggerPrimitive>
+    <DemoSection
+        Title="Custom Delays"
+        Description="Control the open and close delays in milliseconds.">
+        <DemoBlock Code="@_delaysCode">
+            <div class="flex items-center gap-8">
+                <HoverCardPrimitive OpenDelay="200" CloseDelay="100">
+                    <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Quick (200ms)</HoverCardTriggerPrimitive>
+                    <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+                        <p class="text-sm">Opens quickly with 200ms delay.</p>
+                    </HoverCardContentPrimitive>
+                </HoverCardPrimitive>
+                <HoverCardPrimitive OpenDelay="1000" CloseDelay="500">
+                    <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Slow (1000ms)</HoverCardTriggerPrimitive>
+                    <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+                        <p class="text-sm">Opens slowly with 1000ms delay.</p>
+                    </HoverCardContentPrimitive>
+                </HoverCardPrimitive>
+            </div>
+        </DemoBlock>
+    </DemoSection>
 
-                <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[280px]">
-                    <div class="font-semibold mb-2">Hover Card Content</div>
-                    <p class="text-sm text-muted-foreground">
-                        This content appears when you hover over the trigger. It uses the primitive component with Tailwind classes.
-                    </p>
-                </HoverCardContentPrimitive>
-            </HoverCardPrimitive>
-        </div>
-    </div>
+    <DemoSection
+        Title="Positioning"
+        Description="Control where the hover card appears relative to the trigger.">
+        <DemoBlock Code="@_positioningCode">
+            <div class="flex flex-wrap items-center gap-4">
+                <HoverCardPrimitive>
+                    <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Bottom (default)</HoverCardTriggerPrimitive>
+                    <HoverCardContentPrimitive Side="@PopoverSide.Bottom" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">Positioned at bottom</HoverCardContentPrimitive>
+                </HoverCardPrimitive>
+                <HoverCardPrimitive>
+                    <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Top</HoverCardTriggerPrimitive>
+                    <HoverCardContentPrimitive Side="@PopoverSide.Top" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">Positioned at top</HoverCardContentPrimitive>
+                </HoverCardPrimitive>
+                <HoverCardPrimitive>
+                    <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Right</HoverCardTriggerPrimitive>
+                    <HoverCardContentPrimitive Side="@PopoverSide.Right" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">Positioned at right</HoverCardContentPrimitive>
+                </HoverCardPrimitive>
+                <HoverCardPrimitive>
+                    <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Left</HoverCardTriggerPrimitive>
+                    <HoverCardContentPrimitive Side="@PopoverSide.Left" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">Positioned at left</HoverCardContentPrimitive>
+                </HoverCardPrimitive>
+            </div>
+        </DemoBlock>
+    </DemoSection>
 
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Custom Delays</h2>
-        <p class="text-sm text-muted-foreground">
-            Control the open and close delays in milliseconds.
-        </p>
-
-        <div class="flex items-center gap-8">
-            <HoverCardPrimitive OpenDelay="200" CloseDelay="100">
-                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                    Quick (200ms)
-                </HoverCardTriggerPrimitive>
-
-                <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
-                    <p class="text-sm">Opens quickly with 200ms delay.</p>
-                </HoverCardContentPrimitive>
-            </HoverCardPrimitive>
-
-            <HoverCardPrimitive OpenDelay="1000" CloseDelay="500">
-                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                    Slow (1000ms)
-                </HoverCardTriggerPrimitive>
-
-                <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
-                    <p class="text-sm">Opens slowly with 1000ms delay.</p>
-                </HoverCardContentPrimitive>
-            </HoverCardPrimitive>
-        </div>
-    </div>
-
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Positioning</h2>
-        <p class="text-sm text-muted-foreground">
-            Control where the hover card appears relative to the trigger.
-        </p>
-
-        <div class="flex flex-wrap items-center gap-4">
-            <HoverCardPrimitive>
-                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                    Bottom (default)
-                </HoverCardTriggerPrimitive>
-                <HoverCardContentPrimitive Side="@PopoverSide.Bottom" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
-                    Positioned at bottom
-                </HoverCardContentPrimitive>
-            </HoverCardPrimitive>
-
-            <HoverCardPrimitive>
-                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                    Top
-                </HoverCardTriggerPrimitive>
-                <HoverCardContentPrimitive Side="@PopoverSide.Top" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
-                    Positioned at top
-                </HoverCardContentPrimitive>
-            </HoverCardPrimitive>
-
-            <HoverCardPrimitive>
-                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                    Right
-                </HoverCardTriggerPrimitive>
-                <HoverCardContentPrimitive Side="@PopoverSide.Right" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
-                    Positioned at right
-                </HoverCardContentPrimitive>
-            </HoverCardPrimitive>
-
-            <HoverCardPrimitive>
-                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                    Left
-                </HoverCardTriggerPrimitive>
-                <HoverCardContentPrimitive Side="@PopoverSide.Left" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">
-                    Positioned at left
-                </HoverCardContentPrimitive>
-            </HoverCardPrimitive>
-        </div>
-    </div>
-
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Alignment</h2>
-        <p class="text-sm text-muted-foreground">
-            Control the alignment of the hover card relative to the trigger.
-        </p>
-
-        <div class="flex items-center gap-4">
-            <HoverCardPrimitive>
-                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                    Start Aligned
-                </HoverCardTriggerPrimitive>
-                <HoverCardContentPrimitive Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
-                    Aligned to start
-                </HoverCardContentPrimitive>
-            </HoverCardPrimitive>
-
-            <HoverCardPrimitive>
-                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                    Center Aligned
-                </HoverCardTriggerPrimitive>
-                <HoverCardContentPrimitive Side="@PopoverSide.Bottom" Align="@PopoverAlign.Center" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
-                    Centered
-                </HoverCardContentPrimitive>
-            </HoverCardPrimitive>
-
-            <HoverCardPrimitive>
-                <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                    End Aligned
-                </HoverCardTriggerPrimitive>
-                <HoverCardContentPrimitive Side="@PopoverSide.Bottom" Align="@PopoverAlign.End" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg w-[200px]">
-                    Aligned to end
-                </HoverCardContentPrimitive>
-            </HoverCardPrimitive>
-        </div>
-    </div>
-
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Rich Content Example</h2>
-        <p class="text-sm text-muted-foreground">
-            Hover cards can contain any content including images, links, and formatted text.
-        </p>
-
-        <div class="flex items-center gap-2">
-            <p class="text-sm">Hover over</p>
-            <HoverCardPrimitive>
-                <HoverCardTriggerPrimitive class="text-primary underline cursor-pointer">
-                    @@username
-                </HoverCardTriggerPrimitive>
-
-                <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[300px]">
-                    <div class="flex gap-3">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-700"></div>
-                        <div class="flex-1">
-                            <div class="font-semibold mb-1">Username</div>
-                            <p class="text-xs text-muted-foreground mb-2">
-                                Software developer interested in UI/UX design and web technologies.
-                            </p>
-                            <div class="flex gap-4 text-xs text-muted-foreground">
-                                <span><strong>1.2k</strong> followers</span>
-                                <span><strong>340</strong> following</span>
+    <DemoSection
+        Title="Rich Content Example"
+        Description="Hover cards can contain any content including images, links, and formatted text.">
+        <DemoBlock Code="@_richCode">
+            <div class="flex items-center gap-2">
+                <p class="text-sm">Hover over</p>
+                <HoverCardPrimitive>
+                    <HoverCardTriggerPrimitive class="text-primary underline cursor-pointer">@@username</HoverCardTriggerPrimitive>
+                    <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[300px]">
+                        <div class="flex gap-3">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-700"></div>
+                            <div class="flex-1">
+                                <div class="font-semibold mb-1">Username</div>
+                                <p class="text-xs text-muted-foreground mb-2">Software developer interested in UI/UX design.</p>
+                                <div class="flex gap-4 text-xs text-muted-foreground">
+                                    <span><strong>1.2k</strong> followers</span>
+                                    <span><strong>340</strong> following</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </HoverCardContentPrimitive>
-            </HoverCardPrimitive>
-            <p class="text-sm">to see their profile.</p>
-        </div>
-    </div>
+                    </HoverCardContentPrimitive>
+                </HoverCardPrimitive>
+                <p class="text-sm">to see their profile.</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
 
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Accessibility Features</h2>
-        <div class="rounded-lg border bg-card text-card-foreground p-4">
-            <h3 class="font-semibold mb-2">Interaction</h3>
-            <ul class="space-y-1 text-sm text-muted-foreground">
-                <li>Hover over trigger to show content (with configurable delay)</li>
-                <li>Move mouse away to hide content (with configurable delay)</li>
-                <li>Focus trigger with keyboard to show content immediately</li>
-                <li>Blur to hide content (with delay)</li>
-                <li>Hover over content to keep it open</li>
-            </ul>
+    <DemoSection
+        Title="Accessibility"
+        Description="role=&quot;dialog&quot; on content, aria-describedby linking content to trigger. Shows on hover and keyboard focus; hides on blur with configurable delay." />
 
-            <h3 class="font-semibold mb-2 mt-4">ARIA Attributes</h3>
-            <ul class="space-y-1 text-sm text-muted-foreground">
-                <li><code>role="dialog"</code> on content container</li>
-                <li><code>aria-describedby</code> links content to trigger</li>
-            </ul>
-        </div>
-    </div>
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_hoverCardProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+
 </div>
 
 @code {
+    private static readonly IReadOnlyList<DemoPropRow> _hoverCardProps =
+    [
+        new("OpenDelay",    "int",          "700",    "Delay in milliseconds before the hover card opens."),
+        new("CloseDelay",   "int",          "300",    "Delay in milliseconds before the hover card closes."),
+        new("Side",         "PopoverSide",  "Bottom", "On HoverCardContentPrimitive: which side to position the content."),
+        new("Align",        "PopoverAlign", "Center", "On HoverCardContentPrimitive: how to align the content."),
+        new("AsChild",      "bool",         "false",  "On HoverCardTriggerPrimitive: merges trigger behavior into child element."),
+        new("ChildContent", "RenderFragment?","—",    "Content rendered inside trigger or content primitives."),
+    ];
+
+    private const string _asChildCode =
+        """
+        <!-- Without AsChild -->
+        <HoverCardPrimitive>
+            <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Hover me</HoverCardTriggerPrimitive>
+            <HoverCardContentPrimitive class="bg-popover border rounded-lg p-4 shadow-lg w-[250px]">
+                Content here
+            </HoverCardContentPrimitive>
+        </HoverCardPrimitive>
+
+        <!-- With AsChild -->
+        <HoverCardPrimitive>
+            <HoverCardTriggerPrimitive AsChild>
+                <Button Variant="ButtonVariant.Link">@@johndoe</Button>
+            </HoverCardTriggerPrimitive>
+            <HoverCardContentPrimitive class="bg-popover border rounded-lg p-4 shadow-lg w-[250px]">
+                Content here
+            </HoverCardContentPrimitive>
+        </HoverCardPrimitive>
+        """;
+
+    private const string _basicCode =
+        """
+        <HoverCardPrimitive>
+            <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Hover me</HoverCardTriggerPrimitive>
+            <HoverCardContentPrimitive class="bg-popover border rounded-lg p-4 shadow-lg w-[280px]">
+                <div class="font-semibold mb-2">Hover Card Content</div>
+                <p class="text-sm text-muted-foreground">Content appears when you hover.</p>
+            </HoverCardContentPrimitive>
+        </HoverCardPrimitive>
+        """;
+
+    private const string _delaysCode =
+        """
+        <HoverCardPrimitive OpenDelay="200" CloseDelay="100">
+            <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Quick (200ms)</HoverCardTriggerPrimitive>
+            <HoverCardContentPrimitive class="bg-popover border rounded-lg p-4 shadow-lg w-[250px]">Opens quickly with 200ms delay.</HoverCardContentPrimitive>
+        </HoverCardPrimitive>
+
+        <HoverCardPrimitive OpenDelay="1000" CloseDelay="500">
+            <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Slow (1000ms)</HoverCardTriggerPrimitive>
+            <HoverCardContentPrimitive class="bg-popover border rounded-lg p-4 shadow-lg w-[250px]">Opens slowly with 1000ms delay.</HoverCardContentPrimitive>
+        </HoverCardPrimitive>
+        """;
+
+    private const string _positioningCode =
+        """
+        <HoverCardPrimitive>
+            <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Top</HoverCardTriggerPrimitive>
+            <HoverCardContentPrimitive Side="@PopoverSide.Top" class="bg-popover border rounded-lg p-3 shadow-lg">Positioned at top</HoverCardContentPrimitive>
+        </HoverCardPrimitive>
+        """;
+
+    private const string _richCode =
+        """
+        <HoverCardPrimitive>
+            <HoverCardTriggerPrimitive class="text-primary underline cursor-pointer">@@username</HoverCardTriggerPrimitive>
+            <HoverCardContentPrimitive class="bg-popover border rounded-lg p-4 shadow-lg w-[300px]">
+                <div class="flex gap-3">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-700"></div>
+                    <div class="flex-1">
+                        <div class="font-semibold mb-1">Username</div>
+                        <p class="text-xs text-muted-foreground mb-2">Software developer.</p>
+                        <div class="flex gap-4 text-xs text-muted-foreground">
+                            <span><strong>1.2k</strong> followers</span>
+                        </div>
+                    </div>
+                </div>
+            </HoverCardContentPrimitive>
+        </HoverCardPrimitive>
+        """;
 }
