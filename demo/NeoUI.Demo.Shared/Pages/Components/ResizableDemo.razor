@@ -188,6 +188,36 @@
         Title="Implementation Note"
         Description="Full drag-to-resize functionality requires JavaScript interop for mouse move/up event tracking. The current implementation provides component structure and styling. For production use with full drag behavior, additional JS interop would need to be added." />
 
+    <DemoSection Title="Features">
+        <ul class="list-disc list-inside space-y-2 text-sm">
+            <li>Horizontal and vertical orientations</li>
+            <li>Min/max size constraints per panel</li>
+            <li>Optional visual grip handle</li>
+            <li>Nested layouts support</li>
+            <li>OnLayoutChange event for persistence</li>
+        </ul>
+    </DemoSection>
+
+    <DemoSection Title="Installation">
+        <div class="bg-muted p-4 rounded-md">
+            <code class="text-sm">@@using NeoUI.Blazor</code>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Usage">
+        <div class="bg-muted p-4 rounded-md">
+            <pre class="text-sm overflow-x-auto"><code>&lt;ResizablePanelGroup Direction="ResizableDirection.Horizontal" Class="min-h-[200px]"&gt;
+    &lt;ResizablePanel DefaultSize="50"&gt;
+        &lt;div&gt;Left Panel&lt;/div&gt;
+    &lt;/ResizablePanel&gt;
+    &lt;ResizableHandle Index="0" WithHandle="true" /&gt;
+    &lt;ResizablePanel DefaultSize="50"&gt;
+        &lt;div&gt;Right Panel&lt;/div&gt;
+    &lt;/ResizablePanel&gt;
+&lt;/ResizablePanelGroup&gt;</code></pre>
+        </div>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_resizableProps" />
     </DemoSection>

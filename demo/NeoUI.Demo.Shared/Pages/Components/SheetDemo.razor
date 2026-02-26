@@ -274,6 +274,37 @@
         </ul>
     </DemoSection>
 
+    <DemoSection Title="Installation">
+        <div class="space-y-2">
+            <p class="text-sm text-muted-foreground">Add the following using statement to your _Imports.razor:</p>
+            <div class="bg-muted p-4 rounded-md">
+                <code class="text-sm">@@using NeoUI.Blazor</code>
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Usage">
+        <div class="bg-muted p-4 rounded-md">
+            <pre class="text-sm overflow-x-auto"><code>&lt;Sheet&gt;
+    &lt;SheetTrigger&gt;
+        &lt;Button&gt;Open&lt;/Button&gt;
+    &lt;/SheetTrigger&gt;
+    &lt;SheetContent&gt;
+        &lt;SheetHeader&gt;
+            &lt;SheetTitle&gt;Edit profile&lt;/SheetTitle&gt;
+            &lt;SheetDescription&gt;
+                Make changes to your profile here.
+            &lt;/SheetDescription&gt;
+        &lt;/SheetHeader&gt;
+        @@* Your content here *@@
+        &lt;SheetFooter&gt;
+            &lt;Button&gt;Save&lt;/Button&gt;
+        &lt;/SheetFooter&gt;
+    &lt;/SheetContent&gt;
+&lt;/Sheet&gt;</code></pre>
+        </div>
+    </DemoSection>
+
     <DemoSection Title="Different Sides" Description="Use the Side parameter to control which edge the sheet slides in from.">
         <DemoBlock Code="@_differentSidesCode">
             <div class="flex flex-wrap gap-2">

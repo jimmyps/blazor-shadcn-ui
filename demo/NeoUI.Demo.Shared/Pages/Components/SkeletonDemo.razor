@@ -195,6 +195,18 @@
     </DemoSection>
 
     <DemoSection
+        Title="Custom Styling"
+        Description="Override styles with the Class parameter for different effects.">
+        <DemoBlock Code="@_customStylingCode">
+            <div class="flex flex-col space-y-4">
+                <Skeleton Class="h-32 w-full rounded-xl" />
+                <Skeleton Class="h-4 w-full rounded-none" />
+                <Skeleton Shape="SkeletonShape.Circular" Class="h-20 w-20" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Best Practices"
         Description="Guidelines for using skeleton loading states effectively.">
         <div class="border rounded-lg p-6 space-y-3 bg-muted/50">
@@ -322,5 +334,12 @@
                 <Skeleton Class="h-[200px] w-full" />
             }
         </div>
+        """;
+
+    private const string _customStylingCode =
+        """
+        <Skeleton Class="h-32 w-full rounded-xl" />
+        <Skeleton Class="h-4 w-full rounded-none" />
+        <Skeleton Shape="SkeletonShape.Circular" Class="h-20 w-20" />
         """;
 }

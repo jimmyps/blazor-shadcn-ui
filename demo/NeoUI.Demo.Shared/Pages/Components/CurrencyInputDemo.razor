@@ -144,21 +144,54 @@
     </DemoSection>
 
     <DemoSection
-        Title="Disabled / Readonly / Required"
-        Description="Input states that affect interaction.">
-        <DemoBlock Code="@_statesCode">
+        Title="Disabled"
+        Description="Input with disabled state.">
+        <DemoBlock Code="@_disabledCode">
+            <div class="max-w-md">
+                <CurrencyInput TValue="decimal" Currency="USD" Placeholder="Disabled input" Disabled="true" Value="99.99m" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Readonly"
+        Description="Input in readonly mode - focusable but not editable.">
+        <DemoBlock Code="@_readonlyCode">
+            <div class="max-w-md">
+                <CurrencyInput TValue="decimal" Currency="EUR" Value="249.99m" Readonly="true" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Required"
+        Description="Input with HTML5 required validation.">
+        <DemoBlock Code="@_requiredCode">
+            <div class="max-w-md">
+                <form class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Amount (required)</label>
+                        <CurrencyInput TValue="decimal?" @bind-Value="requiredValue" Currency="USD" Placeholder="Enter amount" Required="true" />
+                    </div>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90">
+                        Submit
+                    </button>
+                </form>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Error State"
+        Description="Input with error visualization using aria-invalid.">
+        <DemoBlock Code="@_errorCode">
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
-                    <Label>Disabled</Label>
-                    <CurrencyInput TValue="decimal" Value="1234.56m" Currency="USD" Disabled="true" />
-                </div>
-                <div class="space-y-2">
-                    <Label>Readonly</Label>
-                    <CurrencyInput TValue="decimal" Value="1234.56m" Currency="USD" Readonly="true" />
-                </div>
-                <div class="space-y-2">
-                    <Label>Required <span class="text-destructive">*</span></Label>
-                    <CurrencyInput TValue="decimal?" @bind-Value="requiredValue" Currency="USD" Required="true" ShowValidationError="true" />
+                    <label class="text-sm font-medium">Invalid price</label>
+                    <CurrencyInput TValue="decimal" @bind-Value="errorValue" Currency="USD" AriaInvalid="true" Placeholder="This field has an error" />
+                    <p class="text-sm text-destructive">
+                        Please enter a valid amount. Current: @errorValue
+                    </p>
                 </div>
             </div>
         </DemoBlock>
@@ -210,20 +243,6 @@
                         AriaInvalid="true"
                         AriaDescribedBy="amount-error" />
                     <p id="amount-error" class="text-sm text-destructive">Amount exceeds the maximum allowed.</p>
-                </div>
-            </div>
-        </DemoBlock>
-    </DemoSection>
-
-    <DemoSection
-        Title="Error State"
-        Description="Visualize validation errors with aria-invalid styling.">
-        <DemoBlock Code="@_errorCode">
-            <div class="space-y-4 max-w-sm">
-                <div class="space-y-2">
-                    <Label>Invalid price</Label>
-                    <CurrencyInput TValue="decimal" @bind-Value="errorValue" Currency="USD" AriaInvalid="true" Placeholder="This field has an error" />
-                    <p class="text-sm text-destructive">Please enter a valid amount. Current: @errorValue</p>
                 </div>
             </div>
         </DemoBlock>
@@ -469,10 +488,22 @@
         <CurrencyInput TValue="decimal" @bind-Value="budget" Currency="USD" Min="0" Max="10000" />
         """;
 
-    private const string _statesCode = """
-        <CurrencyInput TValue="decimal" Value="1234.56m" Currency="USD" Disabled="true" />
-        <CurrencyInput TValue="decimal" Value="1234.56m" Currency="USD" Readonly="true" />
-        <CurrencyInput TValue="decimal?" @bind-Value="required" Currency="USD" Required="true" ShowValidationError="true" />
+    private const string _disabledCode = """
+        <CurrencyInput TValue="decimal" Currency="USD" Placeholder="Disabled input" Disabled="true" Value="99.99m" />
+        """;
+
+    private const string _readonlyCode = """
+        <CurrencyInput TValue="decimal" Currency="EUR" Value="249.99m" Readonly="true" />
+        """;
+
+    private const string _requiredCode = """
+        <form class="space-y-4">
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Amount (required)</label>
+                <CurrencyInput TValue="decimal?" @bind-Value="requiredValue" Currency="USD" Placeholder="Enter amount" Required="true" />
+            </div>
+            <button type="submit">Submit</button>
+        </form>
         """;
 
     private const string _validationCode = """

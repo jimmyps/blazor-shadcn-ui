@@ -10,10 +10,12 @@
 
     <DemoSection
         Title="Spotlight Command Palette"
-        Description="A production-ready command palette with glassmorphism effect. Features smooth animations, backdrop blur, and global ⌘K / Ctrl+K support.">
+        Description="A beautiful, production-ready command palette with glassmorphism effect inspired by kokonutui.com and Fumadocs. Features smooth animations, backdrop blur, and global ⌘K / Ctrl+K support.">
         <DemoBlock Code="@_spotlightCode">
             <div class="flex flex-col gap-4">
-                <div class="flex items-center gap-3 w-full max-w-md px-4 py-2.5 text-sm text-muted-foreground bg-background border border-border/40 rounded-lg shadow-sm">
+                <div
+                    aria-label="Press Cmd+K or Ctrl+K to open command palette"
+                    class="group flex items-center gap-3 w-full max-w-md px-4 py-2.5 text-sm text-muted-foreground bg-background border border-border/40 rounded-lg shadow-sm">
                     <LucideIcon Name="search" Size="16" Class="text-muted-foreground" />
                     <span class="flex-1 text-left">Press the keyboard shortcut to search...</span>
                     <div class="flex items-center gap-1">
@@ -31,6 +33,7 @@
                         <li>Glassmorphism with backdrop-blur and subtle transparency</li>
                         <li>Smooth height animations for list changes</li>
                         <li>Elegant fade-in/fade-out transitions</li>
+                        <li>Works across all pages in the demo site</li>
                         <li>Built with Dialog and Command primitives only</li>
                     </ul>
                 </div>
@@ -40,7 +43,7 @@
 
     <DemoSection
         Title="Height Animation Component"
-        Description="The HeightAnimation component provides smooth transitions when content height changes dynamically.">
+        Description="The Spotlight Command Palette above uses the reusable HeightAnimation component to provide smooth transitions when content height changes. This component can be used with any dynamic content.">
         <DemoBlock Code="@_heightAnimCode">
             <div class="rounded-lg border bg-muted/20 p-4 text-sm space-y-4">
                 <div>
@@ -52,6 +55,55 @@
                         <li><code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">--height-animation-duration</code>: Animation duration (default: 200ms)</li>
                         <li><code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">--height-animation-timing</code>: Timing function (default: cubic-bezier(0.4, 0, 0.2, 1))</li>
                     </ul>
+                </div>
+                <div>
+                    <h3 class="font-medium mb-2 flex items-center gap-2">
+                        <LucideIcon Name="code" Size="16" />
+                        Usage Example:
+                    </h3>
+                    <pre class="bg-background p-3 rounded text-xs overflow-x-auto"><code>&lt;HeightAnimation Config="@@_config"&gt;
+    &lt;Command&gt;
+        &lt;CommandInput /&gt;
+        &lt;CommandList&gt;
+            &lt;!-- Dynamic content --&gt;
+        &lt;/CommandList&gt;
+    &lt;/Command&gt;
+&lt;/HeightAnimation&gt;
+
+@@code {
+    private HeightAnimationConfig _config = new() {
+        ContentSelector = "[role=\"listbox\"]",
+        InputSelector = "[data-command-input-wrapper]"
+    };
+}</code></pre>
+                </div>
+                <div>
+                    <h3 class="font-medium mb-2 flex items-center gap-2">
+                        <LucideIcon Name="palette" Size="16" />
+                        Custom Animation Timing:
+                    </h3>
+                    <pre class="bg-background p-3 rounded text-xs overflow-x-auto"><code>.fast-animation {
+    --height-animation-duration: 150ms;
+}
+
+.bounce-animation {
+    --height-animation-timing: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}</code></pre>
+                </div>
+            </div>
+            <div class="rounded-lg border border-blue-500/20 bg-blue-500/10 p-4 text-sm mt-4">
+                <div class="flex items-start gap-2">
+                    <LucideIcon Name="info" Size="16" Class="mt-0.5 text-blue-500" />
+                    <div>
+                        <p class="font-medium text-blue-900 dark:text-blue-100">Components that benefit from HeightAnimation</p>
+                        <ul class="mt-2 space-y-1 text-blue-900/80 dark:text-blue-100/80 ml-4 list-disc">
+                            <li>Command palette with filtering</li>
+                            <li>Combobox with dynamic options</li>
+                            <li>Select dropdowns with search</li>
+                            <li>Collapsible content sections</li>
+                            <li>Any component with content that changes height dynamically</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </DemoBlock>

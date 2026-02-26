@@ -202,31 +202,78 @@
 
     <DemoSection
         Title="Validation with EditContext"
-        Description="Integrate with Blazor forms and data annotations for validation.">
+        Description="Automatic validation error display using EditContext and Data Annotations. Shows native browser tooltips, error styling, and inline messages.">
         <DemoBlock Code="@_validationCode">
-            <div class="max-w-sm">
+            <div class="max-w-md">
                 <EditForm Model="@validationModel" OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator />
+
                     <div class="space-y-4">
-                        <div class="space-y-2">
-                            <Label For="val-name">Name <span class="text-destructive">*</span></Label>
-                            <Input Type="InputType.Text" Id="val-name"
-                                @bind-Value="validationModel.Name" Placeholder="Enter your full name" />
-                            <ValidationMessage For="@(() => validationModel.Name)" class="text-sm text-destructive" />
+                        <Field>
+                            <FieldLabel For="val-username">Username</FieldLabel>
+                            <FieldContent>
+                                <NeoUI.Blazor.Input Id="val-username"
+                                       Type="InputType.Text"
+                                       @bind-Value="validationModel.Username"
+                                       ShowValidationError="true"
+                                       Placeholder="Enter username" />
+                                <FieldDescription>At least 3 characters, letters, numbers, and underscores only</FieldDescription>
+                                <ValidationMessage For="@(() => validationModel.Username)" class="text-destructive text-sm" />
+                            </FieldContent>
+                        </Field>
+
+                        <Field>
+                            <FieldLabel For="val-email">Email</FieldLabel>
+                            <FieldContent>
+                                <NeoUI.Blazor.Input Id="val-email"
+                                       Type="InputType.Email"
+                                       @bind-Value="validationModel.Email"
+                                       ShowValidationError="true"
+                                       Placeholder="your@email.com" />
+                                <ValidationMessage For="@(() => validationModel.Email)" class="text-destructive text-sm" />
+                            </FieldContent>
+                        </Field>
+
+                        <Field>
+                            <FieldLabel For="val-age">Age</FieldLabel>
+                            <FieldContent>
+                                <NeoUI.Blazor.Input Id="val-age"
+                                       Type="InputType.Number"
+                                       @bind-Value="validationModel.Age"
+                                       ShowValidationError="true" />
+                                <FieldDescription>Must be between 18 and 120</FieldDescription>
+                                <ValidationMessage For="@(() => validationModel.Age)" class="text-destructive text-sm" />
+                            </FieldContent>
+                        </Field>
+
+                        <div class="flex gap-2">
+                            <Button Type="ButtonType.Submit">Validate &amp; Submit</Button>
+                            <Button Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</Button>
                         </div>
-                        <div class="space-y-2">
-                            <Label For="val-email">Email <span class="text-destructive">*</span></Label>
-                            <Input Type="InputType.Email" Id="val-email"
-                                @bind-Value="validationModel.Email" Placeholder="name@example.com" />
-                            <ValidationMessage For="@(() => validationModel.Email)" class="text-sm text-destructive" />
-                        </div>
-                        <Button Type="ButtonType.Submit">Submit</Button>
                     </div>
                 </EditForm>
-                @if (formSubmitted)
+
+                @if (submitSuccess)
                 {
-                    <p class="mt-4 text-sm text-green-600 font-medium">Form submitted successfully!</p>
+                    <div class="mt-4 rounded-md bg-green-50 dark:bg-green-950 p-4 text-sm text-green-800 dark:text-green-200">
+                        ✓ Form submitted successfully!
+                    </div>
                 }
+
+                <div class="mt-6 rounded-md bg-muted p-4 text-sm">
+                    <h3 class="font-semibold mb-2">What happens when you submit with errors:</h3>
+                    <ol class="list-decimal list-inside space-y-1 text-muted-foreground">
+                        <li><strong>All invalid fields</strong> get red border/ring styling and inline error messages</li>
+                        <li><strong>First invalid field</strong> (Username) also gets:
+                            <ul class="list-disc list-inside ml-6 mt-1">
+                                <li>Native browser tooltip with error message</li>
+                                <li>Auto-focus (cursor ready to type)</li>
+                            </ul>
+                        </li>
+                        <li>Fix the first error and submit again → Next error gets tooltip and focus</li>
+                        <li>This prevents overwhelming users with multiple tooltips at once</li>
+                    </ol>
+                </div>
             </div>
         </DemoBlock>
     </DemoSection>
@@ -243,24 +290,43 @@
     private string? boundValue;
     private string? updateOnInputValue;
     private string? updateOnChangeValue;
-    private bool formSubmitted = false;
+    private bool submitSuccess = false;
 
     private InputValidationModel validationModel = new();
 
     private void HandleValidSubmit()
     {
-        formSubmitted = true;
+        submitSuccess = true;
+        StateHasChanged();
+
+        Task.Delay(3000).ContinueWith(_ => InvokeAsync(() =>
+        {
+            submitSuccess = false;
+            StateHasChanged();
+        }));
+    }
+
+    private void ResetForm()
+    {
+        validationModel = new InputValidationModel();
+        submitSuccess = false;
     }
 
     private class InputValidationModel
     {
-        [Required(ErrorMessage = "Name is required")]
-        [MinLength(2, ErrorMessage = "Name must be at least 2 characters")]
-        public string? Name { get; set; }
+        [Required(ErrorMessage = "Username is required")]
+        [MinLength(3, ErrorMessage = "Username must be at least 3 characters")]
+        [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "Only letters, numbers, and underscores allowed")]
+        public string? Username { get; set; }
 
         [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email address")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
         public string? Email { get; set; }
+
+        [Required(ErrorMessage = "Age is required")]
+        [RegularExpression(@"^\d+$", ErrorMessage = "Age must be a number")]
+        [Range(18, 120, ErrorMessage = "Age must be between 18 and 120")]
+        public string? Age { get; set; }
     }
 
     private static readonly IReadOnlyList<DemoPropRow> _inputProps =
@@ -344,15 +410,42 @@
         """;
 
     private const string _validationCode = """
-        <EditForm Model="@model" OnValidSubmit="HandleSubmit">
+        <EditForm Model="@validationModel" OnValidSubmit="HandleValidSubmit">
             <DataAnnotationsValidator />
             <div class="space-y-4">
-                <div class="space-y-2">
-                    <Label For="name">Name</Label>
-                    <Input Type="InputType.Text" Id="name" @bind-Value="model.Name" />
-                    <ValidationMessage For="@(() => model.Name)" class="text-sm text-destructive" />
+                <Field>
+                    <FieldLabel For="val-username">Username</FieldLabel>
+                    <FieldContent>
+                        <NeoUI.Blazor.Input Id="val-username" Type="InputType.Text"
+                               @bind-Value="validationModel.Username"
+                               ShowValidationError="true" Placeholder="Enter username" />
+                        <FieldDescription>At least 3 characters, letters, numbers, and underscores only</FieldDescription>
+                        <ValidationMessage For="@(() => validationModel.Username)" class="text-destructive text-sm" />
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel For="val-email">Email</FieldLabel>
+                    <FieldContent>
+                        <NeoUI.Blazor.Input Id="val-email" Type="InputType.Email"
+                               @bind-Value="validationModel.Email"
+                               ShowValidationError="true" Placeholder="your@email.com" />
+                        <ValidationMessage For="@(() => validationModel.Email)" class="text-destructive text-sm" />
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel For="val-age">Age</FieldLabel>
+                    <FieldContent>
+                        <NeoUI.Blazor.Input Id="val-age" Type="InputType.Number"
+                               @bind-Value="validationModel.Age"
+                               ShowValidationError="true" />
+                        <FieldDescription>Must be between 18 and 120</FieldDescription>
+                        <ValidationMessage For="@(() => validationModel.Age)" class="text-destructive text-sm" />
+                    </FieldContent>
+                </Field>
+                <div class="flex gap-2">
+                    <Button Type="ButtonType.Submit">Validate &amp; Submit</Button>
+                    <Button Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</Button>
                 </div>
-                <Button Type="ButtonType.Submit">Submit</Button>
             </div>
         </EditForm>
         """;
