@@ -14,7 +14,7 @@
         Description="A simple text input.">
         <DemoBlock Code="@_defaultCode">
             <div class="w-full max-w-sm">
-                <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Email" />
+                <Input Type="InputType.Text" Placeholder="Email" />
             </div>
         </DemoBlock>
     </DemoSection>
@@ -27,13 +27,13 @@
                 <div class="space-y-4 max-w-sm">
                     <div class="space-y-2">
                         <Label>UpdateOn Input (default)</Label>
-                        <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Type here..."
+                        <Input Type="InputType.Text" Placeholder="Type here..."
                             @bind-Value="updateOnInputValue" UpdateOn="InputUpdateMode.Input" />
                         <p class="text-sm text-muted-foreground">Value: <strong>@updateOnInputValue</strong></p>
                     </div>
                     <div class="space-y-2">
                         <Label>UpdateOn Change (on blur)</Label>
-                        <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Type then click away..."
+                        <Input Type="InputType.Text" Placeholder="Type then click away..."
                             @bind-Value="updateOnChangeValue" UpdateOn="InputUpdateMode.Change" />
                         <p class="text-sm text-muted-foreground">Value: <strong>@updateOnChangeValue</strong></p>
                     </div>
@@ -62,39 +62,39 @@
             <div class="grid grid-cols-1 gap-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>Text</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Enter text" />
+                    <Input Type="InputType.Text" Placeholder="Enter text" />
                 </div>
                 <div class="space-y-2">
                     <Label>Email</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Email" Placeholder="name@example.com" />
+                    <Input Type="InputType.Email" Placeholder="name@example.com" />
                 </div>
                 <div class="space-y-2">
                     <Label>Password</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Password" Placeholder="Enter password" />
+                    <Input Type="InputType.Password" Placeholder="Enter password" />
                 </div>
                 <div class="space-y-2">
                     <Label>Number</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Number" Placeholder="0" />
+                    <Input Type="InputType.Number" Placeholder="0" />
                 </div>
                 <div class="space-y-2">
                     <Label>Date</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Date" />
+                    <Input Type="InputType.Date" />
                 </div>
                 <div class="space-y-2">
                     <Label>Time</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Time" />
+                    <Input Type="InputType.Time" />
                 </div>
                 <div class="space-y-2">
                     <Label>URL</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Url" Placeholder="https://example.com" />
+                    <Input Type="InputType.Url" Placeholder="https://example.com" />
                 </div>
                 <div class="space-y-2">
                     <Label>Search</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Search" Placeholder="Search..." />
+                    <Input Type="InputType.Search" Placeholder="Search..." />
                 </div>
                 <div class="space-y-2">
                     <Label>Tel</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Tel" Placeholder="(555) 000-0000" />
+                    <Input Type="InputType.Tel" Placeholder="(555) 000-0000" />
                 </div>
             </div>
         </DemoBlock>
@@ -107,11 +107,11 @@
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>Upload file</Label>
-                    <NeoUI.Blazor.Input Type="InputType.File" />
+                    <Input Type="InputType.File" />
                 </div>
                 <div class="space-y-2">
                     <Label>Upload multiple files</Label>
-                    <NeoUI.Blazor.Input Type="InputType.File" multiple />
+                    <Input Type="InputType.File" multiple />
                 </div>
             </div>
         </DemoBlock>
@@ -122,7 +122,7 @@
         Description="Disabled inputs cannot be interacted with.">
         <DemoBlock Code="@_disabledCode">
             <div class="w-full max-w-sm">
-                <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Disabled input" Disabled="true" />
+                <Input Type="InputType.Text" Placeholder="Disabled input" Disabled="true" />
             </div>
         </DemoBlock>
     </DemoSection>
@@ -134,7 +134,7 @@
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>Email <span class="text-destructive">*</span></Label>
-                    <NeoUI.Blazor.Input Type="InputType.Email" Placeholder="name@example.com" Required="true" ShowValidationError="true" />
+                    <Input Type="InputType.Email" Placeholder="name@example.com" Required="true" ShowValidationError="true" />
                 </div>
             </div>
         </DemoBlock>
@@ -146,7 +146,7 @@
         <DemoBlock Code="@_withLabelCode">
             <div class="grid w-full max-w-sm items-center gap-1.5">
                 <Label For="email">Email</Label>
-                <NeoUI.Blazor.Input Type="InputType.Email" Id="email" Placeholder="Email" />
+                <Input Type="InputType.Email" Id="email" Placeholder="Email" />
             </div>
         </DemoBlock>
     </DemoSection>
@@ -158,14 +158,14 @@
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>Search</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Search" Placeholder="Search..."
+                    <Input Type="InputType.Search" Placeholder="Search..."
                         AriaLabel="Search the website"
                         AriaDescribedBy="search-hint" />
                     <p id="search-hint" class="text-sm text-muted-foreground">Type keywords to search the documentation.</p>
                 </div>
                 <div class="space-y-2">
                     <Label>Invalid field</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Text" Value="bad@email"
+                    <Input Type="InputType.Text" Value="bad@email"
                         AriaInvalid="true"
                         AriaDescribedBy="email-error" />
                     <p id="email-error" class="text-sm text-destructive">Please enter a valid email address.</p>
@@ -181,7 +181,7 @@
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>Name</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Text" @bind-Value="boundValue" Placeholder="Type your name" />
+                    <Input Type="InputType.Text" @bind-Value="boundValue" Placeholder="Type your name" />
                 </div>
                 <p class="text-sm">Value: <strong>@boundValue</strong></p>
             </div>
@@ -193,9 +193,9 @@
         Description="Apply custom CSS classes to customize the appearance.">
         <DemoBlock Code="@_customStylingCode">
             <div class="space-y-4 max-w-sm">
-                <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Rounded full" Class="rounded-full px-4" />
-                <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Large text" Class="text-lg h-14" />
-                <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Custom colors" Class="border-blue-500 focus-visible:ring-blue-500" />
+                <Input Type="InputType.Text" Placeholder="Rounded full" Class="rounded-full px-4" />
+                <Input Type="InputType.Text" Placeholder="Large text" Class="text-lg h-14" />
+                <Input Type="InputType.Text" Placeholder="Custom colors" Class="border-blue-500 focus-visible:ring-blue-500" />
             </div>
         </DemoBlock>
     </DemoSection>
@@ -210,13 +210,13 @@
                     <div class="space-y-4">
                         <div class="space-y-2">
                             <Label For="val-name">Name <span class="text-destructive">*</span></Label>
-                            <NeoUI.Blazor.Input Type="InputType.Text" Id="val-name"
+                            <Input Type="InputType.Text" Id="val-name"
                                 @bind-Value="validationModel.Name" Placeholder="Enter your full name" />
                             <ValidationMessage For="@(() => validationModel.Name)" class="text-sm text-destructive" />
                         </div>
                         <div class="space-y-2">
                             <Label For="val-email">Email <span class="text-destructive">*</span></Label>
-                            <NeoUI.Blazor.Input Type="InputType.Email" Id="val-email"
+                            <Input Type="InputType.Email" Id="val-email"
                                 @bind-Value="validationModel.Email" Placeholder="name@example.com" />
                             <ValidationMessage For="@(() => validationModel.Email)" class="text-sm text-destructive" />
                         </div>
