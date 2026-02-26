@@ -68,23 +68,33 @@
         Title="With Placeholder Content"
         Description="Use with any content, not just images.">
         <DemoBlock Code="@_placeholderCode">
-            <div class="grid grid-cols-3 gap-4 w-full">
-                <AspectRatio Ratio="1" Class="bg-muted rounded-md">
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <span class="text-sm text-muted-foreground">1:1</span>
-                    </div>
-                </AspectRatio>
-                <AspectRatio Ratio="4.0/3.0" Class="bg-muted rounded-md">
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <span class="text-sm text-muted-foreground">4:3</span>
-                    </div>
-                </AspectRatio>
-                <AspectRatio Ratio="16.0/9.0" Class="bg-muted rounded-md">
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <span class="text-sm text-muted-foreground">16:9</span>
-                    </div>
-                </AspectRatio>
-            </div>
+            <ChildContent>
+                <div class="grid grid-cols-3 gap-4 w-full">
+                    <AspectRatio Ratio="1" Class="bg-muted rounded-md">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-sm text-muted-foreground">1:1</span>
+                        </div>
+                    </AspectRatio>
+                    <AspectRatio Ratio="4.0/3.0" Class="bg-muted rounded-md">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-sm text-muted-foreground">4:3</span>
+                        </div>
+                    </AspectRatio>
+                    <AspectRatio Ratio="16.0/9.0" Class="bg-muted rounded-md">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-sm text-muted-foreground">16:9</span>
+                        </div>
+                    </AspectRatio>
+                </div>
+            </ChildContent>
+            <AdditionalContent>
+                <ul class="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                    <li>Uses the native CSS <code class="text-xs bg-muted px-1 py-0.5 rounded">aspect-ratio</code> property</li>
+                    <li>Accepts any numeric ratio as a <code class="text-xs bg-muted px-1 py-0.5 rounded">double</code> (width / height)</li>
+                    <li>Child content is positioned absolutely within the container</li>
+                    <li>Works with any child content — images, videos, or custom markup</li>
+                </ul>
+            </AdditionalContent>
         </DemoBlock>
     </DemoSection>
 
