@@ -112,6 +112,17 @@
     </DemoSection>
 
     <DemoSection
+        Title="No Clear"
+        Description="Prevent clearing by setting AllowClear to false.">
+        <DemoBlock Code="@_noClearCode">
+            <div class="space-y-2">
+                <Rating @bind-Value="noClearValue" AllowClear="false" />
+                <p class="text-sm text-muted-foreground">Value: @noClearValue</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Keyboard Support"
         Description="Use arrow keys to adjust, number keys (1-5) to set directly, or 0 to clear." />
 
@@ -131,6 +142,7 @@
     private double sizeValue = 3;
     private double maxValue = 5;
     private double clearValue = 3;
+    private double noClearValue = 3;
 
     private static readonly IReadOnlyList<DemoPropRow> _ratingProps =
     [
@@ -187,5 +199,10 @@
     private const string _clearCode =
         """
         <Rating Value="3" AllowClear="true" />
+        """;
+
+    private const string _noClearCode =
+        """
+        <Rating Value="3" AllowClear="false" />
         """;
 }

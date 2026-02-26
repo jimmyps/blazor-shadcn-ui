@@ -123,6 +123,36 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection
+        Title="In a Form"
+        Description="DateRangePicker integrated with form fields.">
+        <DemoBlock Code="@_inFormCode">
+            <div class="flex flex-col gap-4 max-w-sm">
+                <Field>
+                    <FieldLabel>Travel Dates</FieldLabel>
+                    <DateRangePicker @bind-StartDate="tripStart"
+                                     @bind-EndDate="tripEnd"
+                                     StartDateLabel="Departure"
+                                     EndDateLabel="Return"
+                                     MinDate="DateOnly.FromDateTime(DateTime.Today)"
+                                     ShowPresets="true" />
+                    <FieldDescription>Select your travel dates.</FieldDescription>
+                </Field>
+                <p class="text-sm text-muted-foreground">
+                    @if (tripStart.HasValue && tripEnd.HasValue)
+                    {
+                        var duration = tripEnd.Value.DayNumber - tripStart.Value.DayNumber + 1;
+                        <span class="font-medium">Trip duration: @duration day(s)</span>
+                    }
+                    else
+                    {
+                        <span>No dates selected</span>
+                    }
+                </p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_dateRangePickerProps" />
     </DemoSection>
@@ -143,6 +173,8 @@
     private DateOnly? endDate5;
     private DateOnly? checkIn;
     private DateOnly? checkOut;
+    private DateOnly? tripStart;
+    private DateOnly? tripEnd;
 
     private static readonly IReadOnlyList<DemoPropRow> _dateRangePickerProps =
     [
@@ -206,5 +238,19 @@
                          @bind-EndDate="endDate"
                          CaptionLayout="CalendarCaptionLayout.Dropdown"
                          ShowPresets="true" />
+        """;
+
+    private const string _inFormCode =
+        """
+        <Field>
+            <FieldLabel>Travel Dates</FieldLabel>
+            <DateRangePicker @bind-StartDate="tripStart"
+                             @bind-EndDate="tripEnd"
+                             StartDateLabel="Departure"
+                             EndDateLabel="Return"
+                             MinDate="DateOnly.FromDateTime(DateTime.Today)"
+                             ShowPresets="true" />
+            <FieldDescription>Select your travel dates.</FieldDescription>
+        </Field>
         """;
 }

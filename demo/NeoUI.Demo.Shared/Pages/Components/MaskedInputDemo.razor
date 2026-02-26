@@ -17,12 +17,12 @@
                 <div class="space-y-4 max-w-sm">
                     <div class="space-y-2">
                         <Label>Phone Number</Label>
-                        <MaskedInput Mask="(000) 000-0000" @bind-Value="phoneValue" Placeholder="Enter phone number" />
+                        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="phoneValue" Placeholder="Enter phone number" />
                         <p class="text-sm text-muted-foreground">Value (digits only): <strong>@phoneValue</strong></p>
                     </div>
                     <div class="space-y-2">
                         <Label>Without mask display</Label>
-                        <MaskedInput Mask="(000) 000-0000" @bind-Value="phoneValueNoMask" ShowMask="false" Placeholder="(555) 000-0000" />
+                        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="phoneValueNoMask" ShowMask="false" Placeholder="(555) 000-0000" />
                         <p class="text-sm text-muted-foreground">Value: <strong>@phoneValueNoMask</strong></p>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
         <DemoBlock Code="@_ssnCode">
             <div class="space-y-2 max-w-sm">
                 <Label>Social Security Number</Label>
-                <MaskedInput Mask="000-00-0000" @bind-Value="ssnValue" />
+                <MaskedInput Mask="@MaskedInput.Masks.SSN" @bind-Value="ssnValue" />
                 <p class="text-sm text-muted-foreground">Value: <strong>@ssnValue</strong></p>
             </div>
         </DemoBlock>
@@ -85,7 +85,7 @@
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>Card Number</Label>
-                    <MaskedInput Mask="0000 0000 0000 0000" @bind-Value="cardValue" />
+                    <MaskedInput Mask="@MaskedInput.Masks.CreditCard" @bind-Value="cardValue" />
                     <p class="text-sm text-muted-foreground">Value: <strong>@cardValue</strong></p>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
@@ -109,7 +109,7 @@
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>US Date (MM/DD/YYYY)</Label>
-                    <MaskedInput Mask="00/00/0000" @bind-Value="usDateValue" />
+                    <MaskedInput Mask="@MaskedInput.Masks.Date" @bind-Value="usDateValue" />
                     <p class="text-sm text-muted-foreground">Value: <strong>@usDateValue</strong></p>
                 </div>
                 <div class="space-y-2">
@@ -128,7 +128,7 @@
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>Time (HH:MM)</Label>
-                    <MaskedInput Mask="00:00" @bind-Value="timeValue" />
+                    <MaskedInput Mask="@MaskedInput.Masks.Time" @bind-Value="timeValue" />
                     <p class="text-sm text-muted-foreground">Value: <strong>@timeValue</strong></p>
                 </div>
                 <div class="space-y-2">
@@ -147,12 +147,12 @@
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>ZIP Code</Label>
-                    <MaskedInput Mask="00000" @bind-Value="zipValue" />
+                    <MaskedInput Mask="@MaskedInput.Masks.ZIP" @bind-Value="zipValue" />
                     <p class="text-sm text-muted-foreground">Value: <strong>@zipValue</strong></p>
                 </div>
                 <div class="space-y-2">
                     <Label>ZIP+4</Label>
-                    <MaskedInput Mask="00000-0000" @bind-Value="zipPlusFourValue" />
+                    <MaskedInput Mask="@MaskedInput.Masks.ZIP4" @bind-Value="zipPlusFourValue" />
                     <p class="text-sm text-muted-foreground">Value: <strong>@zipPlusFourValue</strong></p>
                 </div>
             </div>
@@ -211,11 +211,11 @@
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>Disabled</Label>
-                    <MaskedInput Mask="(000) 000-0000" Value="5555551234" Disabled="true" />
+                    <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" Value="5555551234" Disabled="true" />
                 </div>
                 <div class="space-y-2">
                     <Label>Readonly</Label>
-                    <MaskedInput Mask="(000) 000-0000" Value="5555551234" Readonly="true" />
+                    <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" Value="5555551234" Readonly="true" />
                 </div>
             </div>
         </DemoBlock>
@@ -231,7 +231,7 @@
                     <div class="space-y-4">
                         <div class="space-y-2">
                             <Label>Phone Number <span class="text-destructive">*</span></Label>
-                            <MaskedInput Mask="(000) 000-0000" @bind-Value="maskedModel.Phone" ShowMask="false" Placeholder="(555) 000-0000" Required="true" />
+                            <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="maskedModel.Phone" ShowMask="false" Placeholder="(555) 000-0000" Required="true" />
                             <ValidationMessage For="@(() => maskedModel.Phone)" class="text-sm text-destructive" />
                         </div>
                         <Button Type="ButtonType.Submit">Submit</Button>
@@ -251,7 +251,7 @@
         <DemoBlock Code="@_errorStateCode">
             <div class="space-y-2 max-w-sm">
                 <Label>Invalid Phone</Label>
-                <MaskedInput Mask="(000) 000-0000" @bind-Value="errorPhoneValue" AriaInvalid="true" ShowMask="true" />
+                <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="errorPhoneValue" AriaInvalid="true" ShowMask="true" />
                 <p class="text-sm text-destructive">This phone number is invalid.</p>
             </div>
         </DemoBlock>
@@ -264,7 +264,7 @@
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>Phone (Required) <span class="text-destructive">*</span></Label>
-                    <MaskedInput Mask="(000) 000-0000" @bind-Value="requiredPhoneValue" Required="true" ShowMask="true" ShowValidationError="true" />
+                    <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="requiredPhoneValue" Required="true" ShowMask="true" ShowValidationError="true" />
                 </div>
             </div>
         </DemoBlock>
@@ -328,10 +328,10 @@
     ];
 
     private const string _phoneCode = """
-        <MaskedInput Mask="(000) 000-0000" @bind-Value="phoneValue" />
+        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="phoneValue" />
 
         <!-- Without mask display -->
-        <MaskedInput Mask="(000) 000-0000" @bind-Value="phoneValue" ShowMask="false" Placeholder="(555) 000-0000" />
+        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="phoneValue" ShowMask="false" Placeholder="(555) 000-0000" />
         """;
 
     private const string _intlPhoneCode = """
@@ -340,31 +340,31 @@
         """;
 
     private const string _ssnCode = """
-        <MaskedInput Mask="000-00-0000" @bind-Value="ssnValue" />
+        <MaskedInput Mask="@MaskedInput.Masks.SSN" @bind-Value="ssnValue" />
         """;
 
     private const string _creditCardCode = """
-        <MaskedInput Mask="0000 0000 0000 0000" @bind-Value="cardValue" />
+        <MaskedInput Mask="@MaskedInput.Masks.CreditCard" @bind-Value="cardValue" />
         <MaskedInput Mask="00/00" @bind-Value="cardExpiry" Placeholder="MM/YY" ShowMask="false" />
         <MaskedInput Mask="000" @bind-Value="cardCvv" Placeholder="CVV" ShowMask="false" />
         """;
 
     private const string _dateCode = """
         <!-- US format -->
-        <MaskedInput Mask="00/00/0000" @bind-Value="dateValue" />
+        <MaskedInput Mask="@MaskedInput.Masks.Date" @bind-Value="dateValue" />
 
         <!-- ISO format -->
         <MaskedInput Mask="0000-00-00" @bind-Value="isoDateValue" />
         """;
 
     private const string _timeCode = """
-        <MaskedInput Mask="00:00" @bind-Value="timeValue" />
+        <MaskedInput Mask="@MaskedInput.Masks.Time" @bind-Value="timeValue" />
         <MaskedInput Mask="00:00:00" @bind-Value="timeWithSecondsValue" />
         """;
 
     private const string _zipCode = """
-        <MaskedInput Mask="00000" @bind-Value="zipValue" />
-        <MaskedInput Mask="00000-0000" @bind-Value="zipPlusFourValue" />
+        <MaskedInput Mask="@MaskedInput.Masks.ZIP" @bind-Value="zipValue" />
+        <MaskedInput Mask="@MaskedInput.Masks.ZIP4" @bind-Value="zipPlusFourValue" />
         """;
 
     private const string _customCode = """
@@ -383,7 +383,7 @@
         """;
 
     private const string _errorStateCode = """
-        <MaskedInput Mask="(000) 000-0000"
+        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS"
             @bind-Value="phoneValue"
             AriaInvalid="true"
             ShowMask="true" />
@@ -391,7 +391,7 @@
         """;
 
     private const string _requiredStateCode = """
-        <MaskedInput Mask="(000) 000-0000"
+        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS"
             @bind-Value="phoneValue"
             Required="true"
             ShowMask="true"
@@ -399,14 +399,14 @@
         """;
 
     private const string _statesCode = """
-        <MaskedInput Mask="(000) 000-0000" Value="5555551234" Disabled="true" />
-        <MaskedInput Mask="(000) 000-0000" Value="5555551234" Readonly="true" />
+        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" Value="5555551234" Disabled="true" />
+        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" Value="5555551234" Readonly="true" />
         """;
 
     private const string _validationCode = """
         <EditForm Model="@model" OnValidSubmit="HandleSubmit">
             <DataAnnotationsValidator />
-            <MaskedInput Mask="(000) 000-0000" @bind-Value="model.Phone"
+            <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="model.Phone"
                 ShowMask="false" Placeholder="(555) 000-0000" Required="true" />
             <ValidationMessage For="@(() => model.Phone)" class="text-sm text-destructive" />
         </EditForm>

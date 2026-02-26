@@ -139,6 +139,24 @@
         </div>
     </DemoSection>
 
+    <DemoSection Title="Installation">
+        <div class="bg-muted p-4 rounded-md">
+            <code class="text-sm">@@using NeoUI.Blazor</code>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Usage">
+        <div class="bg-muted p-4 rounded-md">
+            <pre class="text-sm overflow-x-auto"><code>&lt;Calendar @@bind-SelectedDate="selectedDate"
+          MinDate="DateOnly.FromDateTime(DateTime.Today)"
+          MaxDate="DateOnly.FromDateTime(DateTime.Today.AddMonths(3))" /&gt;
+
+@@code {
+    private DateOnly? selectedDate;
+}</code></pre>
+        </div>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_calendarProps" />
     </DemoSection>
