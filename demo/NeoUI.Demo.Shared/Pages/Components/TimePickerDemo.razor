@@ -54,6 +54,17 @@
     </DemoSection>
 
     <DemoSection
+        Title="30-Minute Intervals"
+        Description="Restrict minute selection to 30-minute intervals.">
+        <DemoBlock Code="@_30minCode">
+            <div class="flex flex-col gap-4">
+                <TimePicker @bind-SelectedTime="selectedTime6" MinuteStep="30" Use12Hour="true" Placeholder="Select time (30 min steps)" />
+                <p class="text-sm text-muted-foreground">Selected: @(FormatTime12Hour(selectedTime6))</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Time Range Constraints"
         Description="Time picker with minimum and maximum time constraints (9 AM - 5 PM).">
         <DemoBlock Code="@_constraintsCode">
@@ -87,6 +98,35 @@
     </DemoSection>
 
     <DemoSection
+        Title="Meeting Schedule"
+        Description="Multiple time pickers for meeting start and end times.">
+        <DemoBlock Code="@_meetingCode">
+            <div class="flex flex-col gap-4 max-w-sm">
+                <Field>
+                    <FieldLabel>Meeting Start</FieldLabel>
+                    <TimePicker @bind-SelectedTime="meetingStart" MinuteStep="15" Placeholder="Start time" />
+                </Field>
+                <Field>
+                    <FieldLabel>Meeting End</FieldLabel>
+                    <TimePicker @bind-SelectedTime="meetingEnd" MinuteStep="15" Placeholder="End time" />
+                </Field>
+                <p class="text-sm text-muted-foreground">
+                    Duration:
+                    @if (meetingStart.HasValue && meetingEnd.HasValue)
+                    {
+                        var duration = meetingEnd.Value.ToTimeSpan() - meetingStart.Value.ToTimeSpan();
+                        <span class="font-medium">@((int)duration.TotalHours) hours @duration.Minutes minutes</span>
+                    }
+                    else
+                    {
+                        <span>Select both times</span>
+                    }
+                </p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Disabled State"
         Description="A disabled time picker.">
         <DemoBlock Code="@_disabledCode">
@@ -107,8 +147,11 @@
     private TimeOnly? selectedTime3;
     private TimeOnly? selectedTime4;
     private TimeOnly? selectedTime5;
+    private TimeOnly? selectedTime6;
     private TimeOnly? selectedTime7;
     private TimeOnly? appointmentTime;
+    private TimeOnly? meetingStart;
+    private TimeOnly? meetingEnd;
 
     private static readonly IReadOnlyList<DemoPropRow> _timePickerProps =
     [
@@ -153,6 +196,11 @@
         <TimePicker @bind-SelectedTime="selectedTime" MinuteStep="15" />
         """;
 
+    private const string _30minCode =
+        """
+        <TimePicker @bind-SelectedTime="selectedTime" MinuteStep="30" Use12Hour="true" />
+        """;
+
     private const string _constraintsCode =
         """
         <TimePicker @bind-SelectedTime="selectedTime"
@@ -171,6 +219,18 @@
                         Use12Hour="true"
                         Placeholder="Select appointment time" />
             <FieldDescription>Select your preferred appointment time.</FieldDescription>
+        </Field>
+        """;
+
+    private const string _meetingCode =
+        """
+        <Field>
+            <FieldLabel>Meeting Start</FieldLabel>
+            <TimePicker @bind-SelectedTime="meetingStart" MinuteStep="15" Placeholder="Start time" />
+        </Field>
+        <Field>
+            <FieldLabel>Meeting End</FieldLabel>
+            <TimePicker @bind-SelectedTime="meetingEnd" MinuteStep="15" Placeholder="End time" />
         </Field>
         """;
 

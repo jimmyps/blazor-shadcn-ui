@@ -56,6 +56,11 @@
                     <Textarea Placeholder="Tell us about yourself..." AriaLabel="Biography" />
                     <p class="text-sm text-muted-foreground">Your bio will be displayed on your public profile.</p>
                 </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-medium leading-none">Comments</label>
+                    <Textarea Placeholder="Leave a comment..." AriaLabel="Comments" />
+                    <p class="text-sm text-muted-foreground">Share your thoughts with the community.</p>
+                </div>
             </div>
         </DemoBlock>
     </DemoSection>
@@ -84,6 +89,13 @@
                 <div class="space-y-2">
                     <label class="text-sm font-medium">With aria-label</label>
                     <Textarea AriaLabel="User feedback" Placeholder="Share your feedback..." />
+                </div>
+                <div class="space-y-2">
+                    <label id="description-label" class="text-sm font-medium">Description</label>
+                    <Textarea AriaDescribedBy="description-help" Placeholder="Describe the issue..." />
+                    <p id="description-help" class="text-sm text-muted-foreground">
+                        Please provide as much detail as possible.
+                    </p>
                 </div>
                 <div class="space-y-2">
                     <label class="text-sm font-medium">Invalid textarea (error state styling)</label>
