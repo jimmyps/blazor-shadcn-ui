@@ -47,9 +47,9 @@ All components and their enums (e.g. `ButtonVariant`, `InputType`) live in the s
 @using NeoUI.Icons.Feather     @* 286 minimalist icons *@
 ```
 
-### 2. Add CSS to your `App.razor`:
+### 2. Add CSS and scripts to your `App.razor`:
 
-NeoUI.Blazor Components come with pre-built CSS - no Tailwind setup required!
+NeoUI.Blazor Components come with pre-built CSS and a theme script — no Tailwind setup required!
 
 ```razor
 <!DOCTYPE html>
@@ -60,7 +60,10 @@ NeoUI.Blazor Components come with pre-built CSS - no Tailwind setup required!
     <base href="/" />
 
     <!-- Pre-built NeoUI.Blazor styles -->
-    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/components.css"]" />
+    <link href="@Assets["_content/NeoUI.Blazor/components.css"]" rel="stylesheet" />
+
+    <!-- Theme script: reads localStorage and applies classes before Blazor loads (prevents FOUC) -->
+    <script src="@Assets["_content/NeoUI.Blazor/js/theme.js"]"></script>
 
     <ImportMap />
     <HeadOutlet />

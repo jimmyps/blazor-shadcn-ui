@@ -89,9 +89,9 @@ dotnet add package NeoUI.Icons.Feather     # 286 icons - minimalist, stroke-base
 @* <PortalHost /> *@
 ```
 
-3. **Add CSS to your `App.razor`:**
+3. **Add CSS and scripts to your `App.razor`:**
 
-   NeoUI Components come with pre-built CSS - no Tailwind setup required!
+   NeoUI Components come with pre-built CSS and a theme script — no Tailwind setup required!
 
 ```razor
 <!DOCTYPE html>
@@ -103,7 +103,9 @@ dotnet add package NeoUI.Icons.Feather     # 286 icons - minimalist, stroke-base
     <!-- Your theme CSS variables -->
     <link rel="stylesheet" href="styles/theme.css" />
     <!-- Pre-built NeoUI styles -->
-    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/components.css"]" />
+    <link href="@Assets["_content/NeoUI.Blazor/components.css"]" rel="stylesheet" />
+    <!-- Theme script: reads localStorage and applies classes before Blazor loads (prevents FOUC) -->
+    <script src="@Assets["_content/NeoUI.Blazor/js/theme.js"]"></script>
     <HeadOutlet @rendermode="InteractiveAuto" />
 </head>
 <body>
@@ -235,7 +237,7 @@ Simply copy the CSS variables from these tools and paste them into your `wwwroot
 
 ```razor
 <link rel="stylesheet" href="styles/theme.css" />
-<link rel="stylesheet" href="_content/NeoUI.Blazor/components.css" />
+<link href="@Assets["_content/NeoUI.Blazor/components.css"]" rel="stylesheet" />
 ```
 
 That's it! NeoUI will automatically use your theme variables.
@@ -265,12 +267,15 @@ NeoUI now includes a **complete theme customization system** that allows users t
 - **LocalStorage Persistence** - User preferences saved and restored across sessions
 - **Dark/Light Mode Toggle** - Seamless switching between themes
 - **CSP-Compliant** - Uses named JavaScript functions for Content Security Policy compatibility
+- **FOUC-Free** - `theme.js` (included in NuGet package) applies saved classes before Blazor loads
 
 The theme system includes:
 - **ThemeSwitcher Component** - Visual color picker with preview swatches in a popover panel
 - **DarkModeToggle Component** - Switch with sun/moon icons for theme mode
 - **ThemeService** - C# service for programmatic theme management
 - **Tooltip Support** - Shows current theme selection on hover
+
+> **Setup:** The `theme.js` script is already included in the `App.razor` setup above. No separate initialization call is needed — it auto-applies the saved theme on script load.
 
 Example usage:
 ```razor
@@ -293,7 +298,7 @@ See the [CHANGELOG](CHANGELOG.md) for complete implementation details.
 
 **No Tailwind CSS setup required!** NeoUI Components include pre-built, production-ready CSS that ships with the NuGet package.
 
-Simply add two CSS files to your `App.razor`:
+Add the following to your `App.razor`:
 
 ```razor
 <!DOCTYPE html>
@@ -306,8 +311,11 @@ Simply add two CSS files to your `App.razor`:
     <!-- 1. Your custom theme (defines CSS variables) -->
     <link rel="stylesheet" href="styles/theme.css" />
 
-    <!-- 2. Pre-built NeoUI styles (included in NuGet package) -->
-    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/components.css"]" />
+    <!-- 2. Pre-built NeoUI styles -->
+    <link href="@Assets["_content/NeoUI.Blazor/components.css"]" rel="stylesheet" />
+
+    <!-- 3. Theme script: reads localStorage and applies classes before Blazor loads (prevents FOUC) -->
+    <script src="@Assets["_content/NeoUI.Blazor/js/theme.js"]"></script>
 
     <HeadOutlet @rendermode="InteractiveAuto" />
 </head>
