@@ -121,7 +121,7 @@
     <DemoSection
         Title="Field Groups"
         Description="Stack multiple fields using FieldGroup for consistent spacing.">
-        <DemoBlock Code="@_groupVerticalCode" Title="Vertical">
+        <DemoBlock Code="@_groupVerticalCode">
             <FieldGroup Orientation="FieldGroupOrientation.Vertical">
                 <Field>
                     <FieldLabel For="first-name">First Name</FieldLabel>
@@ -137,7 +137,7 @@
                 </Field>
             </FieldGroup>
         </DemoBlock>
-        <DemoBlock Code="@_groupHorizontalCode" Title="Horizontal">
+        <DemoBlock Code="@_groupHorizontalCode">
             <FieldGroup Orientation="FieldGroupOrientation.Horizontal">
                 <Field Class="flex-1">
                     <FieldLabel For="city">City</FieldLabel>
@@ -159,7 +159,7 @@
                 </Field>
             </FieldGroup>
         </DemoBlock>
-        <DemoBlock Code="@_groupSeparatorCode" Title="With Separator">
+        <DemoBlock Code="@_groupSeparatorCode">
             <FieldGroup Orientation="FieldGroupOrientation.Vertical">
                 <Field>
                     <FieldLabel For="account-name">Account Name</FieldLabel>
@@ -188,7 +188,7 @@
                 </Field>
             </FieldGroup>
         </DemoBlock>
-        <DemoBlock Code="@_groupSeparatorContentCode" Title="With Separator and Centered Content">
+        <DemoBlock Code="@_groupSeparatorContentCode">
             <FieldGroup Orientation="FieldGroupOrientation.Vertical">
                 <Field>
                     <FieldLabel For="email-signup">Email Address</FieldLabel>
@@ -226,7 +226,7 @@
     <DemoSection
         Title="Complex Fieldsets"
         Description="Use FieldSet and FieldLegend for semantic grouping of related controls.">
-        <DemoBlock Code="@_fieldSetBasicCode" Title="Basic">
+        <DemoBlock Code="@_fieldSetBasicCode">
             <FieldSet>
                 <FieldLegend>Contact Information</FieldLegend>
                 <FieldGroup>
@@ -245,7 +245,7 @@
                 </FieldGroup>
             </FieldSet>
         </DemoBlock>
-        <DemoBlock Code="@_fieldSetRadioCode" Title="With Radio Group">
+        <DemoBlock Code="@_fieldSetRadioCode">
             <FieldSet>
                 <FieldLegend>How would you like to receive notifications?</FieldLegend>
                 <RadioGroup @bind-Value="notificationMethod" TValue="string">
@@ -273,7 +273,7 @@
                 <FieldDescription Class="mt-2">We'll send important updates to your preferred channel.</FieldDescription>
             </FieldSet>
         </DemoBlock>
-        <DemoBlock Code="@_fieldSetComplexCode" Title="Complex Multi-Section">
+        <DemoBlock Code="@_fieldSetComplexCode">
             <FieldSet>
                 <FieldLegend>User Profile</FieldLegend>
                 <FieldGroup>
