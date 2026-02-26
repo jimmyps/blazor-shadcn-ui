@@ -2,67 +2,66 @@ namespace NeoUI.Demo.Shared.Pages.Primitives
 {
     partial class AccordionPrimitiveDemo
     {
+        private static readonly IReadOnlyList<DemoPropRow> _accordionProps =
+        [
+            new("Type",                "AccordionType",          "Single",   "Whether one or multiple items can be open at once. Options: Single, Multiple."),
+            new("CollapsiblePrimitive","bool",                   "false",    "When true in Single mode, allows closing the open item so all are closed."),
+            new("DefaultValue",        "HashSet&lt;string&gt;",  "—",        "Initial open items (uncontrolled mode)."),
+            new("Value",               "HashSet&lt;string&gt;",  "—",        "Controlled open items. Use with @bind-Value."),
+            new("ValueChanged",        "EventCallback",          "—",        "Callback invoked when the open items change."),
+            new("Value (Item)",        "string",                 "required", "On AccordionItemPrimitive: unique identifier for this item."),
+            new("Disabled",            "bool",                   "false",    "On AccordionItemPrimitive: prevents interaction when true."),
+            new("ChildContent",        "RenderFragment?",        "—",        "Content rendered inside trigger or content primitive."),
+        ];
+
         private const string _basicCode =
         """
-        <AccordionPrimitive DefaultValue="@(new HashSet<string> { "item-1" })">
-            <AccordionItemPrimitive Value="item-1">
-                <AccordionTriggerPrimitive>Is it accessible?</AccordionTriggerPrimitive>
-                <AccordionContentPrimitive>Yes.</AccordionContentPrimitive>
+        <AccordionPrimitive DefaultValue="@(new HashSet<string> { "item-1" })" class="border rounded">
+            <AccordionItemPrimitive Value="item-1" class="border-b last:border-0">
+                <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
+                    Is it accessible?
+                </AccordionTriggerPrimitive>
+                <AccordionContentPrimitive class="p-4 pt-0">
+                    Yes. It adheres to the WAI-ARIA design pattern.
+                </AccordionContentPrimitive>
             </AccordionItemPrimitive>
         </AccordionPrimitive>
         """;
 
         private const string _controlledCode =
         """
-        <AccordionPrimitive @bind-Value="controlledValue" Type="AccordionType.Single" CollapsiblePrimitive="true">
-            <AccordionItemPrimitive Value="controlled-1">
-                <AccordionTriggerPrimitive>Controlled Item 1</AccordionTriggerPrimitive>
-                <AccordionContentPrimitive>This item's state is controlled externally.</AccordionContentPrimitive>
-            </AccordionItemPrimitive>
-            <AccordionItemPrimitive Value="controlled-2">
-                <AccordionTriggerPrimitive>Controlled Item 2</AccordionTriggerPrimitive>
-                <AccordionContentPrimitive>Use the buttons above to control which item is open.</AccordionContentPrimitive>
+        <AccordionPrimitive @bind-Value="controlledValue" Type="AccordionType.Single" CollapsiblePrimitive="true" class="border rounded">
+            <AccordionItemPrimitive Value="controlled-1" class="border-b last:border-0">
+                <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
+                    Controlled Item 1
+                </AccordionTriggerPrimitive>
+                <AccordionContentPrimitive class="p-4 pt-0">
+                    This item's state is controlled externally.
+                </AccordionContentPrimitive>
             </AccordionItemPrimitive>
         </AccordionPrimitive>
         """;
 
-        private const string _keyboardCode =
+        private const string _singleCode =
         """
-        <Kbd>Tab</Kbd>
-        <Kbd>Enter</Kbd>
-        <Kbd>Space</Kbd>
-        <Kbd>↑</Kbd>
-        <Kbd>↓</Kbd>
+        <AccordionPrimitive Type="AccordionType.Single" CollapsiblePrimitive="true" class="border rounded">
+            <AccordionItemPrimitive Value="item-1" class="border-b last:border-0">
+                <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">Item 1</AccordionTriggerPrimitive>
+                <AccordionContentPrimitive class="p-4 pt-0">Content 1 - Click again to collapse.</AccordionContentPrimitive>
+            </AccordionItemPrimitive>
+        </AccordionPrimitive>
         """;
 
         private const string _multipleCode =
         """
-        <AccordionPrimitive Type="AccordionType.Multiple" DefaultValue="@(new HashSet<string> { \"multiple-1\" })">
-            <AccordionItemPrimitive Value="multiple-1">
-                <AccordionTriggerPrimitive>First Section</AccordionTriggerPrimitive>
-                <AccordionContentPrimitive>This can be open alongside other sections.</AccordionContentPrimitive>
+        <AccordionPrimitive Type="AccordionType.Multiple" class="border rounded">
+            <AccordionItemPrimitive Value="multiple-1" class="border-b last:border-0">
+                <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">First Section</AccordionTriggerPrimitive>
+                <AccordionContentPrimitive class="p-4 pt-0">This can be open alongside other sections.</AccordionContentPrimitive>
             </AccordionItemPrimitive>
-            <AccordionItemPrimitive Value="multiple-2">
-                <AccordionTriggerPrimitive>Second Section</AccordionTriggerPrimitive>
-                <AccordionContentPrimitive>Open both sections at once to see them together.</AccordionContentPrimitive>
-            </AccordionItemPrimitive>
-            <AccordionItemPrimitive Value="multiple-3">
-                <AccordionTriggerPrimitive>Third Section</AccordionTriggerPrimitive>
-                <AccordionContentPrimitive>All three can be open simultaneously in multiple mode.</AccordionContentPrimitive>
-            </AccordionItemPrimitive>
-        </AccordionPrimitive>
-        """;
-
-        private const string _singleModeCode =
-        """
-        <AccordionPrimitive Type="AccordionType.Single" CollapsiblePrimitive="true">
-            <AccordionItemPrimitive Value="item-1">
-                <AccordionTriggerPrimitive>Item 1</AccordionTriggerPrimitive>
-                <AccordionContentPrimitive>Content 1 - Click again to collapse.</AccordionContentPrimitive>
-            </AccordionItemPrimitive>
-            <AccordionItemPrimitive Value="item-2">
-                <AccordionTriggerPrimitive>Item 2</AccordionTriggerPrimitive>
-                <AccordionContentPrimitive>Content 2 - Click again to collapse.</AccordionContentPrimitive>
+            <AccordionItemPrimitive Value="multiple-2" class="border-b last:border-0">
+                <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">Second Section</AccordionTriggerPrimitive>
+                <AccordionContentPrimitive class="p-4 pt-0">Open both sections at once to see them together.</AccordionContentPrimitive>
             </AccordionItemPrimitive>
         </AccordionPrimitive>
         """;
