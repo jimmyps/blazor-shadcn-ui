@@ -1,52 +1,34 @@
 @page "/components/date-range-picker"
-<PageTitle>DateRangePicker Component - NeoUI</PageTitle>
+
+<PageTitle>Date Range Picker - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-    <div>
-        <div class="space-y-3">
-            <h2 class="text-4xl font-bold tracking-tight">DateRangePicker Component</h2>
-            <p class="text-xl text-muted-foreground">
-                Select a date range with two side-by-side calendars and optional quick presets.
-            </p>
-        </div>
-    </div>
 
-    <div class="space-y-6">
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h3 class="text-2xl font-semibold">Default</h3>
-                <p class="text-muted-foreground">
-                    Two calendars side-by-side without presets.
-                </p>
-            </div>
+    <DemoPageHeader
+        Title="Date Range Picker"
+        Description="Select a date range with two side-by-side calendars and optional quick presets." />
 
+    <DemoSection
+        Title="Default"
+        Description="Two calendars side-by-side without presets.">
+        <DemoBlock Code="@_defaultCode">
             <div class="flex flex-col gap-4">
-                <div>
-                    <DateRangePicker @bind-StartDate="startDate1" 
-                                     @bind-EndDate="endDate1" />
-                </div>
+                <DateRangePicker @bind-StartDate="startDate1" @bind-EndDate="endDate1" />
                 <p class="text-sm text-muted-foreground">
-                    From: @(startDate1?.ToString("D") ?? "None") 
+                    From: @(startDate1?.ToString("D") ?? "None")
                     <br />
                     To: @(endDate1?.ToString("D") ?? "None")
                 </p>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h3 class="text-2xl font-semibold">With Presets</h3>
-                <p class="text-muted-foreground">
-                    Quick selection with common date ranges.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="With Presets"
+        Description="Quick selection with common date ranges.">
+        <DemoBlock Code="@_presetsCode">
             <div class="flex flex-col gap-4">
-                <div>
-                    <DateRangePicker @bind-StartDate="startDate2" 
-                                     @bind-EndDate="endDate2"
-                                     ShowPresets="true" />
-                </div>
+                <DateRangePicker @bind-StartDate="startDate2" @bind-EndDate="endDate2" ShowPresets="true" />
                 <p class="text-sm text-muted-foreground">
                     From: @(startDate2?.ToString("D") ?? "None")
                     <br />
@@ -59,48 +41,38 @@
                     }
                 </p>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h3 class="text-2xl font-semibold">With Date Constraints</h3>
-                <p class="text-muted-foreground">
-                    Limit selectable dates to a specific range.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="With Date Constraints"
+        Description="Limit selectable dates to a specific range.">
+        <DemoBlock Code="@_constraintsCode">
             <div class="flex flex-col gap-4">
-                <div>
-                    <DateRangePicker @bind-StartDate="startDate3" 
-                                     @bind-EndDate="endDate3"
-                                     MinDate="DateOnly.FromDateTime(DateTime.Today.AddDays(-30))"
-                                     MaxDate="DateOnly.FromDateTime(DateTime.Today)" />
-                </div>
+                <DateRangePicker @bind-StartDate="startDate3"
+                                 @bind-EndDate="endDate3"
+                                 MinDate="DateOnly.FromDateTime(DateTime.Today.AddDays(-30))"
+                                 MaxDate="DateOnly.FromDateTime(DateTime.Today)" />
                 <p class="text-sm text-muted-foreground">
                     From: @(startDate3?.ToString("D") ?? "None")
                     <br />
                     To: @(endDate3?.ToString("D") ?? "None")
                 </p>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h3 class="text-2xl font-semibold">Custom Labels</h3>
-                <p class="text-muted-foreground">
-                    Customize the calendar labels.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="Custom Labels"
+        Description="Customize the calendar labels.">
+        <DemoBlock Code="@_customLabelsCode">
             <div class="flex flex-col gap-4">
-                <div>
-                    <DateRangePicker @bind-StartDate="checkIn" 
-                                     @bind-EndDate="checkOut"
-                                     StartDateLabel="Check-in"
-                                     EndDateLabel="Check-out"
-                                     MinDate="DateOnly.FromDateTime(DateTime.Today)"
-                                     ShowPresets="true" />
-                </div>
+                <DateRangePicker @bind-StartDate="checkIn"
+                                 @bind-EndDate="checkOut"
+                                 StartDateLabel="Check-in"
+                                 EndDateLabel="Check-out"
+                                 MinDate="DateOnly.FromDateTime(DateTime.Today)"
+                                 ShowPresets="true" />
                 <p class="text-sm text-muted-foreground">
                     Check-in: @(checkIn?.ToString("D") ?? "None")
                     <br />
@@ -113,113 +85,126 @@
                     }
                 </p>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h3 class="text-2xl font-semibold">Disable Weekends</h3>
-                <p class="text-muted-foreground">
-                    Disable specific dates with a custom function.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="Disable Weekends"
+        Description="Disable specific dates with a custom function.">
+        <DemoBlock Code="@_disableWeekendsCode">
             <div class="flex flex-col gap-4">
-                <div>
-                    <DateRangePicker @bind-StartDate="startDate4" 
-                                     @bind-EndDate="endDate4"
-                                     IsDateDisabled="IsWeekend" />
-                </div>
+                <DateRangePicker @bind-StartDate="startDate4"
+                                 @bind-EndDate="endDate4"
+                                 IsDateDisabled="IsWeekend" />
                 <p class="text-sm text-muted-foreground">
                     From: @(startDate4?.ToString("D") ?? "None")
                     <br />
                     To: @(endDate4?.ToString("D") ?? "None")
                 </p>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h3 class="text-2xl font-semibold">With Dropdown Navigation</h3>
-                <p class="text-muted-foreground">
-                    Use dropdown selects for quick month/year navigation.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="With Dropdown Navigation"
+        Description="Use dropdown selects for quick month/year navigation.">
+        <DemoBlock Code="@_dropdownCode">
             <div class="flex flex-col gap-4">
-                <div>
-                    <DateRangePicker @bind-StartDate="startDate5" 
-                                     @bind-EndDate="endDate5"
-                                     CaptionLayout="CalendarCaptionLayout.Dropdown"
-                                     ShowPresets="true" />
-                </div>
+                <DateRangePicker @bind-StartDate="startDate5"
+                                 @bind-EndDate="endDate5"
+                                 CaptionLayout="CalendarCaptionLayout.Dropdown"
+                                 ShowPresets="true" />
                 <p class="text-sm text-muted-foreground">
                     From: @(startDate5?.ToString("D") ?? "None")
                     <br />
                     To: @(endDate5?.ToString("D") ?? "None")
                 </p>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h3 class="text-2xl font-semibold">In a Form</h3>
-                <p class="text-muted-foreground">
-                    DateRangePicker integrated with form fields.
-                </p>
-            </div>
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_dateRangePickerProps" />
+    </DemoSection>
 
-            <div class="flex flex-col gap-4 max-w-sm">
-                <Field>
-                    <FieldLabel>Travel Dates</FieldLabel>
-                    <DateRangePicker @bind-StartDate="tripStart" 
-                                     @bind-EndDate="tripEnd"
-                                     StartDateLabel="Departure"
-                                     EndDateLabel="Return"
-                                     MinDate="DateOnly.FromDateTime(DateTime.Today)"
-                                     ShowPresets="true" />
-                    <FieldDescription>Select your travel dates.</FieldDescription>
-                </Field>
-                <p class="text-sm text-muted-foreground">
-                    @if (tripStart.HasValue && tripEnd.HasValue)
-                    {
-                        var duration = tripEnd.Value.DayNumber - tripStart.Value.DayNumber + 1;
-                        <span class="font-medium">Trip duration: @duration day(s)</span>
-                    }
-                    else
-                    {
-                        <span>No dates selected</span>
-                    }
-                </p>
-            </div>
-        </section>
-    </div>
+    <DemoPageNav />
 </div>
 
 @code {
     private DateOnly? startDate1;
     private DateOnly? endDate1;
-
     private DateOnly? startDate2;
     private DateOnly? endDate2;
-
     private DateOnly? startDate3;
     private DateOnly? endDate3;
-
     private DateOnly? startDate4;
     private DateOnly? endDate4;
-
     private DateOnly? startDate5;
     private DateOnly? endDate5;
-
     private DateOnly? checkIn;
     private DateOnly? checkOut;
 
-    private DateOnly? tripStart;
-    private DateOnly? tripEnd;
+    private static readonly IReadOnlyList<DemoPropRow> _dateRangePickerProps =
+    [
+        new("StartDate",        "DateOnly?",              null,    "The selected start date."),
+        new("EndDate",          "DateOnly?",              null,    "The selected end date."),
+        new("MinDate",          "DateOnly?",              null,    "The minimum selectable date."),
+        new("MaxDate",          "DateOnly?",              null,    "The maximum selectable date."),
+        new("ShowPresets",      "bool",                   "false", "When true, displays quick preset date range buttons."),
+        new("StartDateLabel",   "string?",                null,    "Label text for the start date calendar."),
+        new("EndDateLabel",     "string?",                null,    "Label text for the end date calendar."),
+        new("IsDateDisabled",   "Func<DateOnly, bool>?",  null,    "A function that returns true for dates that should be disabled."),
+        new("CaptionLayout",    "CalendarCaptionLayout",  "Buttons", "Controls the month/year navigation style. Options: Buttons, Dropdown."),
+    ];
 
-    private bool IsWeekend(DateOnly date)
-    {
-        return date.DayOfWeek == DayOfWeek.Saturday || 
-               date.DayOfWeek == DayOfWeek.Sunday;
-    }
+    private bool IsWeekend(DateOnly date) =>
+        date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday;
+
+    private const string _defaultCode =
+        """
+        <DateRangePicker @bind-StartDate="startDate" @bind-EndDate="endDate" />
+        """;
+
+    private const string _presetsCode =
+        """
+        <DateRangePicker @bind-StartDate="startDate" @bind-EndDate="endDate" ShowPresets="true" />
+        """;
+
+    private const string _constraintsCode =
+        """
+        <DateRangePicker @bind-StartDate="startDate"
+                         @bind-EndDate="endDate"
+                         MinDate="DateOnly.FromDateTime(DateTime.Today.AddDays(-30))"
+                         MaxDate="DateOnly.FromDateTime(DateTime.Today)" />
+        """;
+
+    private const string _customLabelsCode =
+        """
+        <DateRangePicker @bind-StartDate="checkIn"
+                         @bind-EndDate="checkOut"
+                         StartDateLabel="Check-in"
+                         EndDateLabel="Check-out"
+                         MinDate="DateOnly.FromDateTime(DateTime.Today)"
+                         ShowPresets="true" />
+        """;
+
+    private const string _disableWeekendsCode =
+        """
+        <DateRangePicker @bind-StartDate="startDate"
+                         @bind-EndDate="endDate"
+                         IsDateDisabled="IsWeekend" />
+
+        @code {
+            private bool IsWeekend(DateOnly date) =>
+                date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday;
+        }
+        """;
+
+    private const string _dropdownCode =
+        """
+        <DateRangePicker @bind-StartDate="startDate"
+                         @bind-EndDate="endDate"
+                         CaptionLayout="CalendarCaptionLayout.Dropdown"
+                         ShowPresets="true" />
+        """;
 }
