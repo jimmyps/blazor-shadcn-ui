@@ -152,7 +152,51 @@
 
     <DemoSection
         Title="Keyboard Navigation"
-        Description="The menubar supports full keyboard navigation with arrow keys, Enter/Space to activate, and Escape to close." />
+        Description="The menubar supports full keyboard navigation with arrow keys, Enter/Space to activate, and Escape to close.">
+        <DemoBlock Code="@_keyboardCode">
+            <div class="flex flex-col gap-4">
+                <div class="rounded-lg border bg-muted/20 p-4 text-sm">
+                    <ul class="space-y-1 text-muted-foreground list-disc list-inside">
+                        <li><Kbd>←</Kbd> / <Kbd>→</Kbd> to navigate between menus</li>
+                        <li><Kbd>↓</Kbd> to open a menu</li>
+                        <li><Kbd>↑</Kbd> / <Kbd>↓</Kbd> to navigate menu items</li>
+                        <li><Kbd>Enter</Kbd> or <Kbd>Space</Kbd> to activate an item</li>
+                        <li><Kbd>Escape</Kbd> to close the menu</li>
+                    </ul>
+                </div>
+                <Menubar>
+                    <MenubarMenu>
+                        <MenubarTrigger>First Menu</MenubarTrigger>
+                        <MenubarContent>
+                            <MenubarItem OnClick="@(() => HandleKeyboardAction("Item 1"))">Item 1</MenubarItem>
+                            <MenubarItem OnClick="@(() => HandleKeyboardAction("Item 2"))">Item 2</MenubarItem>
+                            <MenubarItem OnClick="@(() => HandleKeyboardAction("Item 3"))">Item 3</MenubarItem>
+                        </MenubarContent>
+                    </MenubarMenu>
+                    <MenubarMenu>
+                        <MenubarTrigger>Second Menu</MenubarTrigger>
+                        <MenubarContent>
+                            <MenubarItem OnClick="@(() => HandleKeyboardAction("Option A"))">Option A</MenubarItem>
+                            <MenubarItem OnClick="@(() => HandleKeyboardAction("Option B"))">Option B</MenubarItem>
+                            <MenubarItem OnClick="@(() => HandleKeyboardAction("Option C"))">Option C</MenubarItem>
+                        </MenubarContent>
+                    </MenubarMenu>
+                    <MenubarMenu>
+                        <MenubarTrigger>Third Menu</MenubarTrigger>
+                        <MenubarContent>
+                            <MenubarItem OnClick="@(() => HandleKeyboardAction("Choice X"))">Choice X</MenubarItem>
+                            <MenubarItem OnClick="@(() => HandleKeyboardAction("Choice Y"))">Choice Y</MenubarItem>
+                            <MenubarItem OnClick="@(() => HandleKeyboardAction("Choice Z"))">Choice Z</MenubarItem>
+                        </MenubarContent>
+                    </MenubarMenu>
+                </Menubar>
+                @if (!string.IsNullOrEmpty(keyboardAction))
+                {
+                    <p class="text-sm">Last keyboard action: <strong>@keyboardAction</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
 
     <DemoSection
         Title="Checkbox and Radio Items"
@@ -288,6 +332,25 @@
                     <MenubarItem OnClick="HandlePrint">
                         Print... <MenubarShortcut>⌘P</MenubarShortcut>
                     </MenubarItem>
+                </MenubarContent>
+            </MenubarMenu>
+        </Menubar>
+        """;
+
+    private const string _keyboardCode = """
+        <Menubar>
+            <MenubarMenu>
+                <MenubarTrigger>First Menu</MenubarTrigger>
+                <MenubarContent>
+                    <MenubarItem>Item 1</MenubarItem>
+                    <MenubarItem>Item 2</MenubarItem>
+                </MenubarContent>
+            </MenubarMenu>
+            <MenubarMenu>
+                <MenubarTrigger>Second Menu</MenubarTrigger>
+                <MenubarContent>
+                    <MenubarItem>Option A</MenubarItem>
+                    <MenubarItem>Option B</MenubarItem>
                 </MenubarContent>
             </MenubarMenu>
         </Menubar>

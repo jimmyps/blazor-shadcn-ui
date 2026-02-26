@@ -9,6 +9,55 @@
         Description="Fast, composable, unstyled command menu for Blazor." />
 
     <DemoSection
+        Title="Spotlight Command Palette"
+        Description="A production-ready command palette with glassmorphism effect. Features smooth animations, backdrop blur, and global ⌘K / Ctrl+K support.">
+        <DemoBlock Code="@_spotlightCode">
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center gap-3 w-full max-w-md px-4 py-2.5 text-sm text-muted-foreground bg-background border border-border/40 rounded-lg shadow-sm">
+                    <LucideIcon Name="search" Size="16" Class="text-muted-foreground" />
+                    <span class="flex-1 text-left">Press the keyboard shortcut to search...</span>
+                    <div class="flex items-center gap-1">
+                        <kbd class="px-2 py-1 text-xs bg-muted/50 border border-border/40 rounded font-mono">⌘</kbd>
+                        <kbd class="px-2 py-1 text-xs bg-muted/50 border border-border/40 rounded font-mono">K</kbd>
+                    </div>
+                </div>
+                <div class="rounded-lg border bg-muted/20 p-4 text-sm">
+                    <h3 class="font-medium mb-2 flex items-center gap-2">
+                        <LucideIcon Name="keyboard" Size="16" />
+                        Features:
+                    </h3>
+                    <ul class="space-y-1 text-muted-foreground ml-6 list-disc">
+                        <li>Global keyboard shortcut: <kbd class="px-1.5 py-0.5 text-xs bg-muted rounded">⌘K</kbd> / <kbd class="px-1.5 py-0.5 text-xs bg-muted rounded">Ctrl+K</kbd></li>
+                        <li>Glassmorphism with backdrop-blur and subtle transparency</li>
+                        <li>Smooth height animations for list changes</li>
+                        <li>Elegant fade-in/fade-out transitions</li>
+                        <li>Built with Dialog and Command primitives only</li>
+                    </ul>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Height Animation Component"
+        Description="The HeightAnimation component provides smooth transitions when content height changes dynamically.">
+        <DemoBlock Code="@_heightAnimCode">
+            <div class="rounded-lg border bg-muted/20 p-4 text-sm space-y-4">
+                <div>
+                    <h3 class="font-medium mb-2 flex items-center gap-2">
+                        <LucideIcon Name="settings" Size="16" />
+                        Customizable CSS Variables:
+                    </h3>
+                    <ul class="space-y-1 text-muted-foreground ml-6 list-disc">
+                        <li><code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">--height-animation-duration</code>: Animation duration (default: 200ms)</li>
+                        <li><code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">--height-animation-timing</code>: Timing function (default: cubic-bezier(0.4, 0, 0.2, 1))</li>
+                    </ul>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Command Palette (Overlay)"
         Description="A full command palette activated with a keyboard shortcut.">
         <DemoBlock Code="@_paletteCode">
@@ -267,6 +316,131 @@
     </DemoSection>
 
     <DemoSection
+        Title="Complex Example"
+        Description="Combining all features: groups, icons, shortcuts, and disabled items.">
+        <DemoBlock Code="@_complexCode">
+            <div class="flex flex-col gap-2">
+                <div class="rounded-lg border bg-background shadow-md w-full max-w-lg">
+                    <CommandContent OnValueChange="HandleComplexValueChange">
+                        <CommandInput Placeholder="Type a command or search..." />
+                        <CommandList>
+                            <CommandEmpty>No results found.</CommandEmpty>
+                            <CommandGroup Heading="Suggestions">
+                                <CommandItem Value="calendar">
+                                    <LucideIcon Name="calendar" Size="16" Class="mr-2" /> Calendar
+                                </CommandItem>
+                                <CommandItem Value="search-emoji">
+                                    <LucideIcon Name="smile" Size="16" Class="mr-2" /> Search Emoji
+                                </CommandItem>
+                                <CommandItem Value="calculator">
+                                    <LucideIcon Name="calculator" Size="16" Class="mr-2" /> Calculator
+                                </CommandItem>
+                            </CommandGroup>
+                            <CommandSeparator />
+                            <CommandGroup Heading="File">
+                                <CommandItem Value="new-file">
+                                    <LucideIcon Name="file-plus" Size="16" Class="mr-2" /> New File
+                                    <CommandShortcut>⌘N</CommandShortcut>
+                                </CommandItem>
+                                <CommandItem Value="open-file">
+                                    <LucideIcon Name="folder-open" Size="16" Class="mr-2" /> Open File
+                                    <CommandShortcut>⌘O</CommandShortcut>
+                                </CommandItem>
+                                <CommandItem Value="save-file">
+                                    <LucideIcon Name="save" Size="16" Class="mr-2" /> Save File
+                                    <CommandShortcut>⌘S</CommandShortcut>
+                                </CommandItem>
+                                <CommandItem Value="save-as" Disabled="true">
+                                    <LucideIcon Name="save" Size="16" Class="mr-2" /> Save As... (Disabled)
+                                    <CommandShortcut>⇧⌘S</CommandShortcut>
+                                </CommandItem>
+                            </CommandGroup>
+                            <CommandSeparator />
+                            <CommandGroup Heading="Settings">
+                                <CommandItem Value="profile">
+                                    <LucideIcon Name="user" Size="16" Class="mr-2" /> Profile
+                                    <CommandShortcut>⌘P</CommandShortcut>
+                                </CommandItem>
+                                <CommandItem Value="billing">
+                                    <LucideIcon Name="credit-card" Size="16" Class="mr-2" /> Billing
+                                    <CommandShortcut>⌘B</CommandShortcut>
+                                </CommandItem>
+                                <CommandItem Value="settings">
+                                    <LucideIcon Name="settings" Size="16" Class="mr-2" /> Settings
+                                    <CommandShortcut>⌘,</CommandShortcut>
+                                </CommandItem>
+                            </CommandGroup>
+                        </CommandList>
+                    </CommandContent>
+                </div>
+                @if (!string.IsNullOrEmpty(complexSelectedValue))
+                {
+                    <p class="mt-2 text-sm">Selected: <strong>@complexSelectedValue</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Lazy Loading (Large Lists)"
+        Description="Efficiently handle large datasets with lazy loading. Items are loaded on-demand as you scroll.">
+        <DemoBlock Code="@_lazyCode">
+            <div class="flex flex-col gap-2">
+                <div class="rounded-lg border bg-background shadow-md w-full max-w-md">
+                    <CommandContent OnValueChange="HandleLazyValueChange">
+                        <CommandInput Placeholder="@($"Search {TotalIconCount} icons...")" />
+                        <CommandList Class="max-h-[300px]">
+                            <CommandEmpty>No icons found.</CommandEmpty>
+                            <CommandVirtualizedGroup TItem="(string Name, int Index)"
+                                Heading="Lucide"
+                                Items="_lucideIcons"
+                                ItemValue="@(icon => icon.Name)"
+                                ItemSearchText="@(icon => icon.Name)"
+                                EnableLazyLoading="true">
+                                <ItemTemplate Context="icon">
+                                    <LucideIcon Name="@icon.Name" Size="16" Class="mr-2" />
+                                    <span class="flex-1">@icon.Name</span>
+                                    <span class="text-xs text-muted-foreground ml-2">#@icon.Index</span>
+                                </ItemTemplate>
+                            </CommandVirtualizedGroup>
+                            <CommandSeparator />
+                            <CommandVirtualizedGroup TItem="(string Name, int Index)"
+                                Heading="Feather"
+                                Items="_featherIcons"
+                                ItemValue="@(icon => icon.Name)"
+                                ItemSearchText="@(icon => icon.Name)"
+                                EnableLazyLoading="true">
+                                <ItemTemplate Context="icon">
+                                    <FeatherIcon Name="@icon.Name" Size="16" Class="mr-2" />
+                                    <span class="flex-1">@icon.Name</span>
+                                    <span class="text-xs text-muted-foreground ml-2">#@icon.Index</span>
+                                </ItemTemplate>
+                            </CommandVirtualizedGroup>
+                            <CommandSeparator />
+                            <CommandVirtualizedGroup TItem="(string Name, int Index)"
+                                Heading="Heroicons"
+                                Items="_heroIcons"
+                                ItemValue="@(icon => icon.Name)"
+                                ItemSearchText="@(icon => icon.Name)"
+                                EnableLazyLoading="true">
+                                <ItemTemplate Context="icon">
+                                    <HeroIcon Name="@icon.Name" Size="16" Class="mr-2" />
+                                    <span class="flex-1">@icon.Name</span>
+                                    <span class="text-xs text-muted-foreground ml-2">#@icon.Index</span>
+                                </ItemTemplate>
+                            </CommandVirtualizedGroup>
+                        </CommandList>
+                    </CommandContent>
+                </div>
+                @if (!string.IsNullOrEmpty(lazySelectedValue))
+                {
+                    <p class="mt-2 text-sm">Selected: <strong>@lazySelectedValue</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Keyboard Navigation"
         Description="Use arrow keys to navigate items, Enter to select, and Escape to close the palette." />
 
@@ -279,12 +453,26 @@
 </div>
 
 @code {
+    // Icon data for lazy loading demo
+    private static readonly (string Name, int Index)[] _lucideIcons = LucideIconData.GetAvailableIcons()
+        .Select((name, index) => (name, index))
+        .ToArray();
+    private static readonly (string Name, int Index)[] _featherIcons = FeatherIconData.GetAvailableIcons()
+        .Select((name, index) => (name, index))
+        .ToArray();
+    private static readonly (string Name, int Index)[] _heroIcons = HeroIconData.GetAvailableIcons(HeroIconVariant.Outline)
+        .Select((name, index) => (name, index))
+        .ToArray();
+    private static int TotalIconCount => _lucideIcons.Length + _featherIcons.Length + _heroIcons.Length;
+
     private bool isPaletteOpen = false;
     private string? paletteSelectedValue;
     private string? basicSelectedValue;
     private string? groupedSelectedValue;
     private string? shortcutsSelectedValue;
     private string? disabledSelectedValue;
+    private string? complexSelectedValue;
+    private string? lazySelectedValue;
 
     private void OpenPalette() => isPaletteOpen = true;
     private void ClosePalette() => isPaletteOpen = false;
@@ -300,6 +488,8 @@
     private void HandleGroupedValueChange(string value) => groupedSelectedValue = value;
     private void HandleShortcutsValueChange(string value) => shortcutsSelectedValue = value;
     private void HandleDisabledValueChange(string value) => disabledSelectedValue = value;
+    private void HandleComplexValueChange(string value) => complexSelectedValue = value;
+    private void HandleLazyValueChange(string value) => lazySelectedValue = value;
 
     private static readonly IReadOnlyList<DemoPropRow> _commandProps =
     [
@@ -310,6 +500,76 @@
         new("Heading",       "string?",                    "null",  "On CommandGroup: heading text for the group."),
         new("Placeholder",   "string?",                    "null",  "On CommandInput: placeholder text."),
     ];
+
+    private const string _spotlightCode = """
+        <!-- The SpotlightCommandPalette is registered globally in MainLayout.
+             It opens with ⌘K / Ctrl+K anywhere in the app. -->
+        <HeightAnimation Config="@_config">
+            <Command>
+                <CommandInput />
+                <CommandList>
+                    <!-- Dynamic content -->
+                </CommandList>
+            </Command>
+        </HeightAnimation>
+
+        @code {
+            private HeightAnimationConfig _config = new() {
+                ContentSelector = "[role=\"listbox\"]",
+                InputSelector = "[data-command-input-wrapper]"
+            };
+        }
+        """;
+
+    private const string _heightAnimCode = """
+        <HeightAnimation Config="@_config">
+            <Command>
+                <CommandInput />
+                <CommandList>
+                    <!-- content changes height dynamically -->
+                </CommandList>
+            </Command>
+        </HeightAnimation>
+        """;
+
+    private const string _complexCode = """
+        <CommandContent OnValueChange="HandleValueChange">
+            <CommandInput Placeholder="Type a command or search..." />
+            <CommandList>
+                <CommandEmpty>No results found.</CommandEmpty>
+                <CommandGroup Heading="Suggestions">
+                    <CommandItem Value="calendar">
+                        <LucideIcon Name="calendar" Size="16" Class="mr-2" /> Calendar
+                    </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+                <CommandGroup Heading="File">
+                    <CommandItem Value="new-file">
+                        <LucideIcon Name="file-plus" Size="16" Class="mr-2" /> New File
+                        <CommandShortcut>⌘N</CommandShortcut>
+                    </CommandItem>
+                    <CommandItem Value="save-as" Disabled="true">
+                        Save As... (Disabled)
+                        <CommandShortcut>⇧⌘S</CommandShortcut>
+                    </CommandItem>
+                </CommandGroup>
+            </CommandList>
+        </CommandContent>
+        """;
+
+    private const string _lazyCode = """
+        <CommandVirtualizedGroup TItem="(string Name, int Index)"
+            Heading="Lucide"
+            Items="_lucideIcons"
+            ItemValue="@(icon => icon.Name)"
+            ItemSearchText="@(icon => icon.Name)"
+            EnableLazyLoading="true">
+            <ItemTemplate Context="icon">
+                <LucideIcon Name="@icon.Name" Size="16" Class="mr-2" />
+                <span>@icon.Name</span>
+            </ItemTemplate>
+        </CommandVirtualizedGroup>
+        """;
 
     private const string _paletteCode = """
         <!-- Trigger button -->

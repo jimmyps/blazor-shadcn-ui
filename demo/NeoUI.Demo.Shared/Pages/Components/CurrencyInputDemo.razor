@@ -215,6 +215,140 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection
+        Title="Error State"
+        Description="Visualize validation errors with aria-invalid styling.">
+        <DemoBlock Code="@_errorCode">
+            <div class="space-y-4 max-w-sm">
+                <div class="space-y-2">
+                    <Label>Invalid price</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="errorValue" Currency="USD" AriaInvalid="true" Placeholder="This field has an error" />
+                    <p class="text-sm text-destructive">Please enter a valid amount. Current: @errorValue</p>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="International Currencies"
+        Description="Examples showcasing 40+ currencies with correct decimal places and Unicode symbols.">
+        <DemoBlock Code="@_internationalCode">
+            <div class="grid grid-cols-2 gap-4 max-w-3xl">
+                <div class="space-y-2">
+                    <Label>Canadian Dollar (CAD)</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="cadValue" Currency="CAD" />
+                    <p class="text-xs text-muted-foreground">2 decimals</p>
+                </div>
+                <div class="space-y-2">
+                    <Label>Australian Dollar (AUD)</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="audValue" Currency="AUD" />
+                    <p class="text-xs text-muted-foreground">2 decimals</p>
+                </div>
+                <div class="space-y-2">
+                    <Label>Swiss Franc (CHF)</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="chfValue" Currency="CHF" />
+                    <p class="text-xs text-muted-foreground">2 decimals</p>
+                </div>
+                <div class="space-y-2">
+                    <Label>Chinese Yuan (CNY)</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="cnyValue" Currency="CNY" />
+                    <p class="text-xs text-muted-foreground">¥ symbol, 2 decimals</p>
+                </div>
+                <div class="space-y-2">
+                    <Label>Indian Rupee (INR)</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="inrValue" Currency="INR" />
+                    <p class="text-xs text-muted-foreground">₹ symbol, 2 decimals</p>
+                </div>
+                <div class="space-y-2">
+                    <Label>Brazilian Real (BRL)</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="brlValue" Currency="BRL" />
+                    <p class="text-xs text-muted-foreground">R$ symbol, 2 decimals</p>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Special Decimal Places"
+        Description="Currencies with 0 decimals (JPY, KRW) and 3 decimals (KWD, BHD, OMR).">
+        <DemoBlock Code="@_specialDecimalsCode">
+            <div class="grid grid-cols-2 gap-4 max-w-3xl">
+                <div class="space-y-2">
+                    <Label>Japanese Yen (JPY) — 0 decimals</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="jpySpecialValue" Currency="JPY" />
+                    <p class="text-xs text-green-600 dark:text-green-400">✓ <code>¥10000</code> not <code>¥10000.00</code></p>
+                </div>
+                <div class="space-y-2">
+                    <Label>South Korean Won (KRW) — 0 decimals</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="krwValue" Currency="KRW" />
+                    <p class="text-xs text-green-600 dark:text-green-400">✓ <code>₩50000</code></p>
+                </div>
+                <div class="space-y-2">
+                    <Label>Kuwaiti Dinar (KWD) — 3 decimals</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="kwdValue" Currency="KWD" />
+                    <p class="text-xs text-green-600 dark:text-green-400">✓ Three decimal places</p>
+                </div>
+                <div class="space-y-2">
+                    <Label>Bahraini Dinar (BHD) — 3 decimals</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="bhdValue" Currency="BHD" />
+                    <p class="text-xs text-green-600 dark:text-green-400">✓ Three decimal places</p>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Symbol Positioning"
+        Description="Some currencies like Vietnamese Dong (VND) display the symbol after the amount.">
+        <DemoBlock Code="@_symbolPositionCode">
+            <div class="space-y-4 max-w-sm">
+                <div class="space-y-2">
+                    <Label>Vietnamese Dong (VND) — Symbol After</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="vndValue" Currency="VND" />
+                    <p class="text-xs text-green-600 dark:text-green-400">✓ Symbol after amount: <code>250000₫</code></p>
+                </div>
+                <div class="space-y-2">
+                    <Label>US Dollar (USD) — Symbol Before</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="usdSymbolValue" Currency="USD" />
+                    <p class="text-xs text-muted-foreground">Symbol before amount: <code>$250.00</code></p>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Unicode Currency Symbols"
+        Description="Proper Unicode symbols for international currencies.">
+        <DemoBlock Code="@_unicodeCode">
+            <div class="grid grid-cols-2 gap-4 max-w-3xl">
+                <div class="space-y-2">
+                    <Label>Thai Baht (THB) — ฿</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="thbValue" Currency="THB" />
+                </div>
+                <div class="space-y-2">
+                    <Label>Philippine Peso (PHP) — ₱</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="phpValue" Currency="PHP" />
+                </div>
+                <div class="space-y-2">
+                    <Label>Israeli Shekel (ILS) — ₪</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="ilsValue" Currency="ILS" />
+                </div>
+                <div class="space-y-2">
+                    <Label>Turkish Lira (TRY) — ₺</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="tryValue" Currency="TRY" />
+                </div>
+                <div class="space-y-2">
+                    <Label>Nigerian Naira (NGN) — ₦</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="ngnValue" Currency="NGN" />
+                </div>
+                <div class="space-y-2">
+                    <Label>Russian Ruble (RUB) — ₽</Label>
+                    <CurrencyInput TValue="decimal" @bind-Value="rubValue" Currency="RUB" />
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_currencyProps" />
     </DemoSection>
@@ -241,6 +375,27 @@
     private decimal ariaValue = 0m;
     private decimal ariaInvalidValue = 0m;
     private bool currencyFormSubmitted = false;
+
+    // New sections
+    private decimal errorValue = -10m;
+    private decimal cadValue = 120.00m;
+    private decimal audValue = 180.00m;
+    private decimal chfValue = 95.00m;
+    private decimal cnyValue = 750.00m;
+    private decimal inrValue = 8500.00m;
+    private decimal brlValue = 550.00m;
+    private decimal jpySpecialValue = 10000m;
+    private decimal krwValue = 50000m;
+    private decimal kwdValue = 123.456m;
+    private decimal bhdValue = 45.678m;
+    private decimal vndValue = 250000m;
+    private decimal usdSymbolValue = 250.00m;
+    private decimal thbValue = 3500.00m;
+    private decimal phpValue = 5500.00m;
+    private decimal ilsValue = 385.00m;
+    private decimal tryValue = 2850.00m;
+    private decimal ngnValue = 45000.00m;
+    private decimal rubValue = 9500.00m;
 
     private CurrencyInputModel currencyModel = new();
 
@@ -334,5 +489,41 @@
             Currency="USD"
             AriaLabel="Total amount in US dollars"
             AriaDescribedBy="amount-hint" />
+        """;
+
+    private const string _errorCode = """
+        <CurrencyInput TValue="decimal" @bind-Value="errorValue" Currency="USD" AriaInvalid="true" />
+        <p class="text-sm text-destructive">Please enter a valid amount.</p>
+        """;
+
+    private const string _internationalCode = """
+        <CurrencyInput TValue="decimal" @bind-Value="cadValue" Currency="CAD" />
+        <CurrencyInput TValue="decimal" @bind-Value="audValue" Currency="AUD" />
+        <CurrencyInput TValue="decimal" @bind-Value="inrValue" Currency="INR" />
+        <CurrencyInput TValue="decimal" @bind-Value="brlValue" Currency="BRL" />
+        """;
+
+    private const string _specialDecimalsCode = """
+        <!-- 0 decimal places -->
+        <CurrencyInput TValue="decimal" @bind-Value="jpyValue" Currency="JPY" />
+        <CurrencyInput TValue="decimal" @bind-Value="krwValue" Currency="KRW" />
+
+        <!-- 3 decimal places -->
+        <CurrencyInput TValue="decimal" @bind-Value="kwdValue" Currency="KWD" />
+        <CurrencyInput TValue="decimal" @bind-Value="bhdValue" Currency="BHD" />
+        """;
+
+    private const string _symbolPositionCode = """
+        <!-- Symbol after amount -->
+        <CurrencyInput TValue="decimal" @bind-Value="vndValue" Currency="VND" />
+
+        <!-- Symbol before amount -->
+        <CurrencyInput TValue="decimal" @bind-Value="usdValue" Currency="USD" />
+        """;
+
+    private const string _unicodeCode = """
+        <CurrencyInput TValue="decimal" @bind-Value="thbValue" Currency="THB" />
+        <CurrencyInput TValue="decimal" @bind-Value="phpValue" Currency="PHP" />
+        <CurrencyInput TValue="decimal" @bind-Value="tryValue" Currency="TRY" />
         """;
 }

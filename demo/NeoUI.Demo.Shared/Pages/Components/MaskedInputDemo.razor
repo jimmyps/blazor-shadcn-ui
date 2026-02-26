@@ -192,6 +192,19 @@
     </DemoSection>
 
     <DemoSection
+        Title="Indonesian National ID (KTP)"
+        Description="Indonesian National Identity Card (Kartu Tanda Penduduk) — 16 digit format with dots as separators.">
+        <DemoBlock Code="@_indonesianIdCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>NIK (Nomor Induk Kependudukan)</Label>
+                <MaskedInput Mask="00.00.00.000000.0000" @bind-Value="indonesianIdValue" Placeholder="00.00.00.DDMMYY.0000" ShowMask="true" />
+                <p class="text-sm text-muted-foreground">Value: <strong>@indonesianIdValue</strong></p>
+                <p class="text-xs text-blue-600 dark:text-blue-400">💡 Format: Province.Regency.District.BirthDate.Sequence</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Disabled / Readonly"
         Description="States that prevent user interaction.">
         <DemoBlock Code="@_statesCode">
@@ -232,6 +245,31 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection
+        Title="Error State"
+        Description="Input with error visualization using aria-invalid.">
+        <DemoBlock Code="@_errorStateCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Invalid Phone</Label>
+                <MaskedInput Mask="(000) 000-0000" @bind-Value="errorPhoneValue" AriaInvalid="true" ShowMask="true" />
+                <p class="text-sm text-destructive">This phone number is invalid.</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Required State"
+        Description="Input with HTML5 required validation.">
+        <DemoBlock Code="@_requiredStateCode">
+            <div class="space-y-4 max-w-sm">
+                <div class="space-y-2">
+                    <Label>Phone (Required) <span class="text-destructive">*</span></Label>
+                    <MaskedInput Mask="(000) 000-0000" @bind-Value="requiredPhoneValue" Required="true" ShowMask="true" ShowValidationError="true" />
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_maskedInputProps" />
     </DemoSection>
@@ -258,6 +296,9 @@
     private string? zipPlusFourValue;
     private string? productCodeValue;
     private string? licensePlateValue;
+    private string? indonesianIdValue;
+    private string? errorPhoneValue = "5551234";
+    private string? requiredPhoneValue;
     private bool maskedFormSubmitted = false;
 
     private MaskedInputModel maskedModel = new();
@@ -332,6 +373,29 @@
 
         <!-- License plate -->
         <MaskedInput Mask="AAA-0000" @bind-Value="licensePlate" />
+        """;
+
+    private const string _indonesianIdCode = """
+        <MaskedInput Mask="00.00.00.000000.0000"
+            @bind-Value="nikValue"
+            Placeholder="00.00.00.DDMMYY.0000"
+            ShowMask="true" />
+        """;
+
+    private const string _errorStateCode = """
+        <MaskedInput Mask="(000) 000-0000"
+            @bind-Value="phoneValue"
+            AriaInvalid="true"
+            ShowMask="true" />
+        <p class="text-sm text-destructive">This phone number is invalid.</p>
+        """;
+
+    private const string _requiredStateCode = """
+        <MaskedInput Mask="(000) 000-0000"
+            @bind-Value="phoneValue"
+            Required="true"
+            ShowMask="true"
+            ShowValidationError="true" />
         """;
 
     private const string _statesCode = """
