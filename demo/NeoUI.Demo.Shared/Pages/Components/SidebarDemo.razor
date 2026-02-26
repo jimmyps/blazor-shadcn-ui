@@ -1,23 +1,15 @@
 @page "/components/sidebar"
 
-<PageTitle>Sidebar Component - NeoUI</PageTitle>
+<PageTitle>Sidebar - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-    <div>
-        <div class="space-y-3">
-        <h1 class="text-4xl font-bold tracking-tight">Sidebar Component</h1>
-        <p class="text-xl text-muted-foreground">
-            A composable, themeable and customizable sidebar component.
-        </p>
-        </div>
-    </div>
 
-    <div class="space-y-6">
-    </div>
+    <DemoPageHeader
+        Title="Sidebar"
+        Description="A composable, themeable and customizable sidebar component." />
 
     <!-- Features Section -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">Features</h2>
+    <DemoSection Title="Features">
         <ul class="list-disc list-inside space-y-2 text-muted-foreground">
             <li>Responsive design - Sheet overlay on mobile, persistent sidebar on desktop</li>
             <li>Collapsible with icon-only mode</li>
@@ -28,20 +20,18 @@
             <li>Flexible composition with menu groups, submenus, and actions</li>
             <li>Full shadcn/ui compatibility</li>
         </ul>
-    </div>
+    </DemoSection>
 
     <!-- Installation Section -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">Installation</h2>
+    <DemoSection Title="Installation">
         <div class="bg-muted p-4 rounded-lg">
             <p class="text-sm text-muted-foreground mb-2">The sidebar component requires the Sheet primitive for mobile functionality.</p>
             <p class="text-sm text-muted-foreground">Add the SidebarProvider to your MainLayout.razor to enable sidebar functionality throughout your app.</p>
         </div>
-    </div>
+    </DemoSection>
 
     <!-- Collapse Mode Toggle -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">Menu Collapse Mode</h2>
+    <DemoSection Title="Menu Collapse Mode" Description="Controls how all sidebars on this page collapse.">
         <div class="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
             <span class="text-sm font-medium">Collapse Mode:</span>
             <div class="flex items-center gap-2">
@@ -58,16 +48,11 @@
             </div>
             <span class="text-xs text-muted-foreground ml-auto">Click the trigger button to see the difference</span>
         </div>
-    </div>
+    </DemoSection>
 
     <!-- Basic Example -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">Basic Sidebar</h2>
-        <p class="text-muted-foreground">A simple sidebar with menu items.</p>
-
-        <!-- Collapse Mode Toggle -->
-       
-
+    <DemoSection Title="Basic Sidebar" Description="A simple sidebar with menu items.">
+        <DemoBlock Code="@_basicCode">
         <div class="border rounded-lg p-6 bg-background">
             <div class="h-[600px] w-full border rounded-lg overflow-hidden bg-background">
                 <SidebarProvider CookieKey="sidebar:demo-basic" HeightClass="h-full">
@@ -150,13 +135,12 @@
                 </SidebarProvider>
             </div>
         </div>
-    </div>
+        </DemoBlock>
+    </DemoSection>
 
     <!-- With Navigation Example -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">With Navigation</h2>
-        <p class="text-muted-foreground">Menu items that navigate to different pages using Href property.</p>
-
+    <DemoSection Title="With Navigation" Description="Menu items that navigate to different pages using Href property.">
+        <DemoBlock Code="@_navigationCode">
         <div class="border rounded-lg p-6 bg-background">
             <div class="h-[600px] w-full border rounded-lg overflow-hidden bg-background">
                 <SidebarProvider CookieKey="sidebar:demo-navigation" HeightClass="h-full">
@@ -241,13 +225,12 @@
                 </SidebarProvider>
             </div>
         </div>
-    </div>
+        </DemoBlock>
+    </DemoSection>
 
     <!-- With Groups Example -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">With Menu Groups</h2>
-        <p class="text-muted-foreground">Organize menu items into logical groups.</p>
-
+    <DemoSection Title="With Menu Groups" Description="Organize menu items into logical groups.">
+        <DemoBlock Code="@_groupsCode">
         <div class="border rounded-lg p-6 bg-background">
             <div class="h-[600px] w-full border rounded-lg overflow-hidden bg-background">
                 <SidebarProvider CookieKey="sidebar:demo-groups" HeightClass="h-full">
@@ -342,13 +325,12 @@
                 </SidebarProvider>
             </div>
         </div>
-    </div>
+        </DemoBlock>
+    </DemoSection>
 
     <!-- With Submenus Example -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">With Submenus</h2>
-        <p class="text-muted-foreground">Nested navigation with submenu items.</p>
-
+    <DemoSection Title="With Submenus" Description="Nested navigation with submenu items.">
+        <DemoBlock Code="@_submenusCode">
         <div class="border rounded-lg p-6 bg-background">
             <div class="h-[600px] w-full border rounded-lg overflow-hidden bg-background">
                 <SidebarProvider CookieKey="sidebar:demo-submenus" HeightClass="h-full">
@@ -435,13 +417,12 @@
                 </SidebarProvider>
             </div>
         </div>
-    </div>
+        </DemoBlock>
+    </DemoSection>
 
     <!-- Floating Variant Example -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">Floating Variant</h2>
-        <p class="text-muted-foreground">Sidebar with floating appearance and rounded corners.</p>
-
+    <DemoSection Title="Floating Variant" Description="Sidebar with floating appearance and rounded corners.">
+        <DemoBlock Code="@_floatingCode">
         <div class="border rounded-lg p-6 bg-background">
             <div class="relative h-[600px] w-full border rounded-lg overflow-hidden bg-background">
                 <SidebarProvider Variant="SidebarVariant.Floating" CookieKey="sidebar:demo-floating" HeightClass="h-full">
@@ -497,13 +478,12 @@
                 </SidebarProvider>
             </div>
         </div>
-    </div>
+        </DemoBlock>
+    </DemoSection>
 
     <!-- Inset Variant Example -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">Inset Variant</h2>
-        <p class="text-muted-foreground">Sidebar with inset content area.</p>
-
+    <DemoSection Title="Inset Variant" Description="Sidebar with inset content area.">
+        <DemoBlock Code="@_insetCode">
         <div class="border rounded-lg p-6 bg-background">
             <div class="h-[600px] w-full border rounded-lg overflow-hidden bg-sidebar">
                 <SidebarProvider Variant="SidebarVariant.Inset" CookieKey="sidebar:demo-inset" HeightClass="h-full">
@@ -553,13 +533,12 @@
                 </SidebarProvider>
             </div>
         </div>
-    </div>
+        </DemoBlock>
+    </DemoSection>
 
     <!-- Collapsible to Icons Example -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">Collapsible to Icons</h2>
-        <p class="text-muted-foreground">Sidebar that collapses to show only icons with tooltips.</p>
-
+    <DemoSection Title="Collapsible to Icons" Description="Sidebar that collapses to show only icons with tooltips.">
+        <DemoBlock Code="@_collapsibleIconsCode">
         <div class="border rounded-lg p-6 bg-background">
             <div class="h-[600px] w-full border rounded-lg overflow-hidden bg-background">
                 <SidebarProvider DefaultOpen="false" HeightClass="h-full">
@@ -628,13 +607,12 @@
                 </SidebarProvider>
             </div>
         </div>
-    </div>
+        </DemoBlock>
+    </DemoSection>
 
     <!-- Tree View Example -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">Tree View</h2>
-        <p class="text-muted-foreground">Hierarchical file/folder structure with nested items.</p>
-
+    <DemoSection Title="Tree View" Description="Hierarchical file/folder structure with nested items.">
+        <DemoBlock Code="@_treeViewCode">
         <div class="border rounded-lg p-6 bg-background">
             <div class="h-[600px] w-full border rounded-lg overflow-hidden bg-background">
                 <SidebarProvider HeightClass="h-full">
@@ -727,13 +705,12 @@
                 </SidebarProvider>
             </div>
         </div>
-    </div>
+        </DemoBlock>
+    </DemoSection>
 
     <!-- With Sticky Header Example -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">With Sticky Header</h2>
-        <p class="text-muted-foreground">Site header above sidebar with coordinated layout.</p>
-
+    <DemoSection Title="With Sticky Header" Description="Site header above sidebar with coordinated layout.">
+        <DemoBlock Code="@_stickyHeaderCode">
         <div class="border rounded-lg p-6 bg-background">
             <div class="h-[600px] w-full border rounded-lg overflow-hidden bg-background">
                 <SidebarProvider HeightClass="h-full">
@@ -808,13 +785,12 @@
                 </SidebarProvider>
             </div>
         </div>
-    </div>
+        </DemoBlock>
+    </DemoSection>
 
     <!-- With Header Dropdown Example -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">With Header Dropdown</h2>
-        <p class="text-muted-foreground">Version selector dropdown in sidebar header.</p>
-
+    <DemoSection Title="With Header Dropdown" Description="Version selector dropdown in sidebar header.">
+        <DemoBlock Code="@_headerDropdownCode">
         <div class="border rounded-lg p-6 bg-background">
             <div class="h-[600px] w-full border rounded-lg overflow-hidden bg-background">
                 <SidebarProvider HeightClass="h-full">
@@ -888,13 +864,12 @@
                 </SidebarProvider>
             </div>
         </div>
-    </div>
+        </DemoBlock>
+    </DemoSection>
 
     <!-- Collapsible Submenus Example -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">Collapsible Submenus</h2>
-        <p class="text-muted-foreground">Expandable menu groups with chevron indicators.</p>
-
+    <DemoSection Title="Collapsible Submenus" Description="Expandable menu groups with chevron indicators.">
+        <DemoBlock Code="@_collapsibleSubmenusCode">
         <div class="border rounded-lg p-6 bg-background">
             <div class="h-[600px] w-full border rounded-lg overflow-hidden bg-background">
                 <SidebarProvider HeightClass="h-full">
@@ -1083,13 +1058,12 @@
                 </SidebarProvider>
             </div>
         </div>
-    </div>
+        </DemoBlock>
+    </DemoSection>
 
     <!-- 3-Level Nested Menu Example -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">3-Level Nested Menu</h2>
-        <p class="text-muted-foreground">Deep nesting with collapsible submenus at level 2.</p>
-
+    <DemoSection Title="3-Level Nested Menu" Description="Deep nesting with collapsible submenus at level 2.">
+        <DemoBlock Code="@_nestedMenuCode">
         <div class="border rounded-lg p-6 bg-background">
             <div class="h-[600px] w-full border rounded-lg overflow-hidden bg-background">
                 <SidebarProvider HeightClass="h-full">
@@ -1212,11 +1186,11 @@
                 </SidebarProvider>
             </div>
         </div>
-    </div>
+        </DemoBlock>
+    </DemoSection>
 
     <!-- Keyboard Shortcuts -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">Keyboard Shortcuts</h2>
+    <DemoSection Title="Keyboard Shortcuts">
         <div class="rounded-lg border">
             <table class="w-full">
                 <thead class="border-b bg-muted/50">
@@ -1233,110 +1207,15 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </DemoSection>
 
     <!-- API Reference -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">API Reference</h2>
-
-        <div class="space-y-6">
-            <div>
-                <h3 class="text-lg font-semibold mb-2">SidebarProvider</h3>
-                <p class="text-sm text-muted-foreground mb-3">The root provider component that manages sidebar state.</p>
-                <div class="rounded-lg border overflow-hidden">
-                    <table class="w-full">
-                        <thead class="border-b bg-muted/50">
-                            <tr>
-                                <th class="p-3 text-left font-medium">Prop</th>
-                                <th class="p-3 text-left font-medium">Type</th>
-                                <th class="p-3 text-left font-medium">Default</th>
-                                <th class="p-3 text-left font-medium">Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b">
-                                <td class="p-3"><code class="text-sm">DefaultOpen</code></td>
-                                <td class="p-3 text-sm">bool</td>
-                                <td class="p-3 text-sm">true</td>
-                                <td class="p-3 text-sm">Initial open state</td>
-                            </tr>
-                            <tr class="border-b">
-                                <td class="p-3"><code class="text-sm">Variant</code></td>
-                                <td class="p-3 text-sm">SidebarVariant</td>
-                                <td class="p-3 text-sm">Sidebar</td>
-                                <td class="p-3 text-sm">Visual variant (Sidebar, Floating, Inset)</td>
-                            </tr>
-                            <tr class="border-b">
-                                <td class="p-3"><code class="text-sm">Side</code></td>
-                                <td class="p-3 text-sm">SidebarSide</td>
-                                <td class="p-3 text-sm">Left</td>
-                                <td class="p-3 text-sm">Side to render (Left, Right)</td>
-                            </tr>
-                            <tr>
-                                <td class="p-3"><code class="text-sm">CookieKey</code></td>
-                                <td class="p-3 text-sm">string</td>
-                                <td class="p-3 text-sm">"sidebar:state"</td>
-                                <td class="p-3 text-sm">Cookie key for persistence</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div>
-                <h3 class="text-lg font-semibold mb-2">SidebarMenuButton</h3>
-                <p class="text-sm text-muted-foreground mb-3">Clickable menu item with tooltip support.</p>
-                <div class="rounded-lg border overflow-hidden">
-                    <table class="w-full">
-                        <thead class="border-b bg-muted/50">
-                            <tr>
-                                <th class="p-3 text-left font-medium">Prop</th>
-                                <th class="p-3 text-left font-medium">Type</th>
-                                <th class="p-3 text-left font-medium">Default</th>
-                                <th class="p-3 text-left font-medium">Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b">
-                                <td class="p-3"><code class="text-sm">Tooltip</code></td>
-                                <td class="p-3 text-sm">string?</td>
-                                <td class="p-3 text-sm">null</td>
-                                <td class="p-3 text-sm">Tooltip shown in collapsed state</td>
-                            </tr>
-                            <tr class="border-b">
-                                <td class="p-3"><code class="text-sm">Size</code></td>
-                                <td class="p-3 text-sm">string</td>
-                                <td class="p-3 text-sm">"default"</td>
-                                <td class="p-3 text-sm">Size variant (sm, default, lg)</td>
-                            </tr>
-                            <tr class="border-b">
-                                <td class="p-3"><code class="text-sm">Variant</code></td>
-                                <td class="p-3 text-sm">string</td>
-                                <td class="p-3 text-sm">"default"</td>
-                                <td class="p-3 text-sm">Style variant (default, outline)</td>
-                            </tr>
-                            <tr class="border-b">
-                                <td class="p-3"><code class="text-sm">IsActive</code></td>
-                                <td class="p-3 text-sm">bool</td>
-                                <td class="p-3 text-sm">false</td>
-                                <td class="p-3 text-sm">Active/selected state</td>
-                            </tr>
-                            <tr>
-                                <td class="p-3"><code class="text-sm">AsChild</code></td>
-                                <td class="p-3 text-sm">string</td>
-                                <td class="p-3 text-sm">"button"</td>
-                                <td class="p-3 text-sm">Element type (button, a)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_sidebarProps" />
+    </DemoSection>
 
     <!-- When to Use -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold border-b pb-2">When to Use</h2>
+    <DemoSection Title="When to Use">
         <div class="grid gap-4 md:grid-cols-2">
             <div class="rounded-lg border p-4 space-y-2">
                 <h3 class="font-semibold text-green-600">Use When</h3>
@@ -1358,7 +1237,9 @@
                 </ul>
             </div>
         </div>
-    </div>
+    </DemoSection>
+
+    <DemoPageNav />
 </div>
 
 @code {
@@ -1376,4 +1257,301 @@
         };
         return icons[index % icons.Length];
     }
+
+    private static readonly IReadOnlyList<DemoPropRow> _sidebarProps =
+    [
+        new("DefaultOpen",   "bool",             "true",          "On SidebarProvider: initial open state of the sidebar."),
+        new("Variant",       "SidebarVariant",   "Sidebar",       "On SidebarProvider: visual variant. Options: Sidebar, Floating, Inset."),
+        new("Side",          "SidebarSide",      "Left",          "On SidebarProvider: side to render. Options: Left, Right."),
+        new("CookieKey",     "string",           "sidebar:state", "On SidebarProvider: cookie key for state persistence."),
+        new("HeightClass",   "string?",          "null",          "On SidebarProvider: CSS height class (e.g. h-full for contained demos)."),
+        new("Collapsible",   "bool",             "true",          "On Sidebar: when true, collapses to icon-only mode; when false, hides completely."),
+        new("Tooltip",       "string?",          "null",          "On SidebarMenuButton: tooltip shown when sidebar is collapsed."),
+        new("IsActive",      "bool",             "false",         "On SidebarMenuButton: marks the item as the active/current page."),
+        new("Href",          "string?",          "null",          "On SidebarMenuButton: renders as NavLink with the given href."),
+        new("Match",         "NavLinkMatch",     "Prefix",        "On SidebarMenuButton: controls how the href is matched for active state."),
+    ];
+
+    private const string _basicCode = """
+        <SidebarProvider CookieKey="sidebar:demo" HeightClass="h-full">
+            <div class="flex h-full w-full">
+                <Sidebar Collapsible="true">
+                    <SidebarHeader>
+                        <SidebarHeaderContent>
+                            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                                <LucideIcon Name="command" Size="16" />
+                            </div>
+                            <SidebarHeaderInfo>
+                                <span class="truncate font-semibold">Acme Inc</span>
+                                <span class="truncate text-xs text-muted-foreground">Enterprise</span>
+                            </SidebarHeaderInfo>
+                        </SidebarHeaderContent>
+                    </SidebarHeader>
+                    <SidebarContent>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton Tooltip="Home">
+                                    <LucideIcon Name="house" Size="16" />
+                                    <span>Home</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton Tooltip="Inbox" IsActive="true">
+                                    <LucideIcon Name="inbox" Size="16" />
+                                    <span>Inbox</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarContent>
+                    <SidebarFooter>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton Tooltip="User Profile">
+                                    <LucideIcon Name="user" Size="16" />
+                                    <span>John Doe</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarFooter>
+                </Sidebar>
+                <SidebarInset>
+                    <header class="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+                        <SidebarTrigger />
+                        <h1 class="text-lg font-semibold">Dashboard</h1>
+                    </header>
+                </SidebarInset>
+            </div>
+        </SidebarProvider>
+        """;
+
+    private const string _navigationCode = """
+        <SidebarMenuButton Href="/" Match="NavLinkMatch.All" Tooltip="Home">
+            <LucideIcon Name="house" Size="16" />
+            <span>Home</span>
+        </SidebarMenuButton>
+
+        <SidebarMenuButton Href="/components" Match="NavLinkMatch.Prefix" Tooltip="Components">
+            <LucideIcon Name="layers" Size="16" />
+            <span>Components</span>
+        </SidebarMenuButton>
+        """;
+
+    private const string _groupsCode = """
+        <SidebarContent>
+            <SidebarGroup>
+                <SidebarGroupLabel>Platform</SidebarGroupLabel>
+                <SidebarGroupContent>
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton Tooltip="Dashboard">
+                                <LucideIcon Name="layout-dashboard" Size="16" />
+                                <span>Dashboard</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </SidebarGroupContent>
+            </SidebarGroup>
+            <SidebarSeparator />
+            <SidebarGroup>
+                <SidebarGroupLabel>Settings</SidebarGroupLabel>
+                <SidebarGroupContent>
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton Tooltip="Profile">
+                                <LucideIcon Name="user" Size="16" />
+                                <span>Profile</span>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </SidebarGroupContent>
+            </SidebarGroup>
+        </SidebarContent>
+        """;
+
+    private const string _submenusCode = """
+        <SidebarMenuItem>
+            <SidebarMenuButton Tooltip="Team">
+                <LucideIcon Name="users" Size="16" />
+                <span>Team</span>
+            </SidebarMenuButton>
+            <SidebarMenuSub>
+                <SidebarMenuSubItem>
+                    <SidebarMenuSubButton><span>Engineering</span></SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+                <SidebarMenuSubItem>
+                    <SidebarMenuSubButton><span>Design</span></SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+            </SidebarMenuSub>
+        </SidebarMenuItem>
+        """;
+
+    private const string _floatingCode = """
+        <SidebarProvider Variant="SidebarVariant.Floating" CookieKey="sidebar:floating" HeightClass="h-full">
+            <div class="flex h-full w-full relative">
+                <Sidebar Collapsible="true">
+                    <!-- sidebar content -->
+                </Sidebar>
+                <SidebarInset>
+                    <!-- main content -->
+                </SidebarInset>
+            </div>
+        </SidebarProvider>
+        """;
+
+    private const string _insetCode = """
+        <SidebarProvider Variant="SidebarVariant.Inset" CookieKey="sidebar:inset" HeightClass="h-full">
+            <div class="flex h-full w-full">
+                <Sidebar Collapsible="true">
+                    <!-- sidebar content -->
+                </Sidebar>
+                <SidebarInset>
+                    <!-- main content -->
+                </SidebarInset>
+            </div>
+        </SidebarProvider>
+        """;
+
+    private const string _collapsibleIconsCode = """
+        <!-- DefaultOpen="false" starts the sidebar collapsed to icon-only mode -->
+        <SidebarProvider DefaultOpen="false" HeightClass="h-full">
+            <div class="flex h-full w-full">
+                <Sidebar Collapsible="true">
+                    <SidebarContent>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton Tooltip="Dashboard">
+                                    <LucideIcon Name="layout-dashboard" Size="16" />
+                                    <span>Dashboard</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarContent>
+                </Sidebar>
+                <SidebarInset>
+                    <header class="flex h-16 items-center gap-2 border-b px-4">
+                        <SidebarTrigger />
+                    </header>
+                </SidebarInset>
+            </div>
+        </SidebarProvider>
+        """;
+
+    private const string _treeViewCode = """
+        <SidebarMenuItem>
+            <SidebarMenuButton Tooltip="src">
+                <LucideIcon Name="folder" Size="16" />
+                <span>src</span>
+            </SidebarMenuButton>
+            <SidebarMenuSub>
+                <SidebarMenuSubItem>
+                    <SidebarMenuSubButton>
+                        <LucideIcon Name="folder" Size="16" />
+                        <span>components</span>
+                    </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+                <SidebarMenuSubItem>
+                    <SidebarMenuSubButton>
+                        <LucideIcon Name="file-code" Size="16" />
+                        <span>index.tsx</span>
+                    </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+            </SidebarMenuSub>
+        </SidebarMenuItem>
+        """;
+
+    private const string _stickyHeaderCode = """
+        <SidebarProvider HeightClass="h-full">
+            <div class="flex h-full w-full flex-col">
+                <!-- Site Header -->
+                <header class="flex h-14 shrink-0 items-center gap-4 border-b bg-background px-6">
+                    <span class="font-semibold">Company Name</span>
+                </header>
+                <!-- Sidebar and Content -->
+                <div class="flex flex-1 overflow-hidden">
+                    <Sidebar Collapsible="true">
+                        <SidebarContent><!-- menu items --></SidebarContent>
+                    </Sidebar>
+                    <div class="flex flex-1 flex-col">
+                        <div class="flex h-16 items-center gap-2 border-b px-4">
+                            <SidebarTrigger />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </SidebarProvider>
+        """;
+
+    private const string _headerDropdownCode = """
+        <Sidebar Collapsible="true">
+            <SidebarHeader>
+                <ResponsiveHeaderDropdown @bind-SelectedVersion="selectedVersion" />
+            </SidebarHeader>
+            <SidebarContent>
+                <!-- menu groups -->
+            </SidebarContent>
+        </Sidebar>
+        """;
+
+    private const string _collapsibleSubmenusCode = """
+        <SidebarMenuItem>
+            <Collapsible>
+                <SidebarMenuButton Tooltip="Models">
+                    <LucideIcon Name="box" Size="16" />
+                    <span>Models</span>
+                    <SidebarMenuChevron>
+                        <LucideIcon Name="chevron-right" Size="16" />
+                    </SidebarMenuChevron>
+                </SidebarMenuButton>
+                <CollapsibleContent>
+                    <SidebarMenuSub>
+                        <SidebarMenuSubItem>
+                            <SidebarMenuSubButton><span>Genesis</span></SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        <SidebarMenuSubItem>
+                            <SidebarMenuSubButton><span>Explorer</span></SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                    </SidebarMenuSub>
+                </CollapsibleContent>
+            </Collapsible>
+        </SidebarMenuItem>
+        """;
+
+    private const string _nestedMenuCode = """
+        <!-- Level 1 collapsible -->
+        <SidebarMenuItem>
+            <Collapsible>
+                <SidebarMenuButton Tooltip="Projects">
+                    <LucideIcon Name="folder" Size="16" />
+                    <span>Projects</span>
+                    <SidebarMenuChevron><LucideIcon Name="chevron-right" Size="16" /></SidebarMenuChevron>
+                </SidebarMenuButton>
+                <CollapsibleContent>
+                    <SidebarMenuSub>
+                        <SidebarMenuSubItem>
+                            <SidebarMenuSubButton><span>Active Projects</span></SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        <!-- Level 2 collapsible -->
+                        <SidebarMenuSubItem>
+                            <Collapsible>
+                                <SidebarMenuSubButton>
+                                    <span>Project Settings</span>
+                                    <SidebarMenuChevron><LucideIcon Name="chevron-right" Size="16" /></SidebarMenuChevron>
+                                </SidebarMenuSubButton>
+                                <CollapsibleContent>
+                                    <SidebarMenuSub>
+                                        <SidebarMenuSubItem>
+                                            <SidebarMenuSubButton><span>General Settings</span></SidebarMenuSubButton>
+                                        </SidebarMenuSubItem>
+                                        <SidebarMenuSubItem>
+                                            <SidebarMenuSubButton><span>Access Control</span></SidebarMenuSubButton>
+                                        </SidebarMenuSubItem>
+                                    </SidebarMenuSub>
+                                </CollapsibleContent>
+                            </Collapsible>
+                        </SidebarMenuSubItem>
+                    </SidebarMenuSub>
+                </CollapsibleContent>
+            </Collapsible>
+        </SidebarMenuItem>
+        """;
 }
