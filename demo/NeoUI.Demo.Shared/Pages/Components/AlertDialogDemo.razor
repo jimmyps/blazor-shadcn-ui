@@ -140,6 +140,32 @@
     </DemoSection>
 
     <DemoSection
+        Title="Information"
+        Description="Display important information that requires acknowledgment.">
+        <DemoBlock Code="@_informationCode">
+            <AlertDialog>
+                <AlertDialogTrigger>
+                    <Button Variant="ButtonVariant.Secondary">View Terms</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Terms and Conditions</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            By continuing, you agree to our Terms of Service and Privacy Policy.
+                            We collect and use your data to provide and improve our services.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction>
+                            <Button>I Understand</Button>
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Accessibility &amp; Behavior"
         Description="Alert dialogs trap focus and require user acknowledgement. By default they cannot be dismissed by clicking outside (customizable via CloseOnClickOutside), can be closed with Escape (customizable via CloseOnEscape), trap focus within the dialog, use role=&quot;alertdialog&quot; for screen readers, and are best used for destructive or critical confirmations." />
 
@@ -217,6 +243,28 @@
                 <AlertDialogFooter>
                     <AlertDialogCancel><Button Variant="ButtonVariant.Outline">Cancel</Button></AlertDialogCancel>
                     <AlertDialogAction><Button Variant="ButtonVariant.Destructive">Delete Everything</Button></AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+        """;
+
+    private const string _informationCode =
+        """
+        <AlertDialog>
+            <AlertDialogTrigger>
+                <Button Variant="ButtonVariant.Secondary">View Terms</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Terms and Conditions</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        By continuing, you agree to our Terms of Service and Privacy Policy.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogAction>
+                        <Button>I Understand</Button>
+                    </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

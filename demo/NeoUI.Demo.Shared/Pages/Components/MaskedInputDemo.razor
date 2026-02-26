@@ -142,52 +142,67 @@
 
     <DemoSection
         Title="ZIP Code"
-        Description="Format ZIP codes in US formats.">
+        Description="Standard 5-digit ZIP code.">
         <DemoBlock Code="@_zipCode">
-            <div class="space-y-4 max-w-sm">
-                <div class="space-y-2">
-                    <Label>ZIP Code</Label>
-                    <MaskedInput Mask="@MaskedInput.Masks.ZIP" @bind-Value="zipValue" />
-                    <p class="text-sm text-muted-foreground">Value: <strong>@zipValue</strong></p>
-                </div>
-                <div class="space-y-2">
-                    <Label>ZIP+4</Label>
-                    <MaskedInput Mask="@MaskedInput.Masks.ZIP4" @bind-Value="zipPlusFourValue" />
-                    <p class="text-sm text-muted-foreground">Value: <strong>@zipPlusFourValue</strong></p>
-                </div>
+            <div class="space-y-2 max-w-sm">
+                <Label For="zip-input">ZIP Code</Label>
+                <MaskedInput
+                    @bind-Value="zipValue"
+                    Id="zip-input"
+                    Mask="@MaskedInput.Masks.ZIP"
+                    Placeholder="Enter ZIP"
+                    ShowMask="false" />
+                <p class="text-xs text-muted-foreground">Raw value: @(zipValue ?? "(empty)")</p>
             </div>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection
-        Title="Custom Masks"
-        Description="Create custom masks for specialized formats.">
-        <DemoBlock Code="@_customCode">
-            <ChildContent>
-                <div class="space-y-4 max-w-sm">
-                    <div class="space-y-2">
-                        <Label>Product Code (AAA-000)</Label>
-                        <MaskedInput Mask="AAA-000" @bind-Value="productCodeValue" />
-                        <p class="text-sm text-muted-foreground">Value: <strong>@productCodeValue</strong></p>
-                    </div>
-                    <div class="space-y-2">
-                        <Label>License Plate</Label>
-                        <MaskedInput Mask="AAA-0000" @bind-Value="licensePlateValue" />
-                        <p class="text-sm text-muted-foreground">Value: <strong>@licensePlateValue</strong></p>
-                    </div>
-                </div>
-            </ChildContent>
-            <AdditionalContent>
-                <div class="text-sm space-y-1 text-muted-foreground">
-                    <p class="font-medium text-foreground">Mask Characters:</p>
-                    <ul class="list-disc list-inside space-y-1">
-                        <li><code>0</code> — digits (0-9)</li>
-                        <li><code>A</code> — letters (a-z, A-Z)</li>
-                        <li><code>*</code> — any character</li>
-                        <li>Any other character is treated as a literal separator</li>
-                    </ul>
-                </div>
-            </AdditionalContent>
+        Title="ZIP+4 Code"
+        Description="Extended ZIP code with 4-digit extension.">
+        <DemoBlock Code="@_zip4Code">
+            <div class="space-y-2 max-w-sm">
+                <Label For="zip4-input">ZIP+4</Label>
+                <MaskedInput
+                    @bind-Value="zipPlusFourValue"
+                    Id="zip4-input"
+                    Mask="@MaskedInput.Masks.ZIP4"
+                    ShowMask="true" />
+                <p class="text-xs text-muted-foreground">Raw value: @(zipPlusFourValue ?? "(empty)")</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Custom Mask - Product Code"
+        Description="Custom pattern: AA-0000 (two letters, dash, four digits).">
+        <DemoBlock Code="@_productCodeMaskCode">
+            <div class="space-y-2 max-w-sm">
+                <Label For="product-input">Product Code</Label>
+                <MaskedInput
+                    @bind-Value="productCodeValue"
+                    Id="product-input"
+                    Mask="AA-0000"
+                    Placeholder="Enter product code"
+                    ShowMask="true" />
+                <p class="text-xs text-muted-foreground">Raw value: @(productCodeValue ?? "(empty)")</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Custom Mask - License Plate"
+        Description="Custom pattern: 000-AAA (three digits, dash, three letters).">
+        <DemoBlock Code="@_licensePlateMaskCode">
+            <div class="space-y-2 max-w-sm">
+                <Label For="plate-input">License Plate</Label>
+                <MaskedInput
+                    @bind-Value="licensePlateValue"
+                    Id="plate-input"
+                    Mask="000-AAA"
+                    ShowMask="true" />
+                <p class="text-xs text-muted-foreground">Raw value: @(licensePlateValue ?? "(empty)")</p>
+            </div>
         </DemoBlock>
     </DemoSection>
 
@@ -205,18 +220,50 @@
     </DemoSection>
 
     <DemoSection
-        Title="Disabled / Readonly"
-        Description="States that prevent user interaction.">
-        <DemoBlock Code="@_statesCode">
-            <div class="space-y-4 max-w-sm">
-                <div class="space-y-2">
-                    <Label>Disabled</Label>
-                    <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" Value="5555551234" Disabled="true" />
-                </div>
-                <div class="space-y-2">
-                    <Label>Readonly</Label>
-                    <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" Value="5555551234" Readonly="true" />
-                </div>
+        Title="Disabled State"
+        Description="Input with disabled state.">
+        <DemoBlock Code="@_disabledCode">
+            <div class="space-y-2 max-w-sm">
+                <Label For="disabled-input">Disabled Phone</Label>
+                <MaskedInput
+                    Id="disabled-input"
+                    Mask="@MaskedInput.Masks.PhoneUS"
+                    Value="5555551234"
+                    Disabled="true"
+                    ShowMask="true" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Readonly State"
+        Description="Input in readonly mode - focusable but not editable.">
+        <DemoBlock Code="@_readonlyCode">
+            <div class="space-y-2 max-w-sm">
+                <Label For="readonly-input">Readonly SSN</Label>
+                <MaskedInput
+                    Id="readonly-input"
+                    Mask="@MaskedInput.Masks.SSN"
+                    Value="123456789"
+                    Readonly="true"
+                    ShowMask="true" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Without Mask Display"
+        Description="ShowMask set to false - only shows characters as you type.">
+        <DemoBlock Code="@_withoutMaskCode">
+            <div class="space-y-2 max-w-sm">
+                <Label For="nomask-input">Phone (no mask display)</Label>
+                <MaskedInput
+                    @bind-Value="phoneValueNoMask"
+                    Id="nomask-input"
+                    Mask="@MaskedInput.Masks.PhoneUS"
+                    Placeholder="(000) 000-0000"
+                    ShowMask="false" />
+                <p class="text-xs text-muted-foreground">Raw value: @(phoneValueNoMask ?? "(empty)")</p>
             </div>
         </DemoBlock>
     </DemoSection>
@@ -363,8 +410,34 @@
         """;
 
     private const string _zipCode = """
-        <MaskedInput Mask="@MaskedInput.Masks.ZIP" @bind-Value="zipValue" />
-        <MaskedInput Mask="@MaskedInput.Masks.ZIP4" @bind-Value="zipPlusFourValue" />
+        <MaskedInput Mask="@MaskedInput.Masks.ZIP" @bind-Value="zipValue" Placeholder="Enter ZIP" ShowMask="false" />
+        """;
+
+    private const string _zip4Code = """
+        <MaskedInput Mask="@MaskedInput.Masks.ZIP4" @bind-Value="zipPlusFourValue" ShowMask="true" />
+        """;
+
+    private const string _productCodeMaskCode = """
+        <MaskedInput Mask="AA-0000" @bind-Value="productCodeValue" Placeholder="Enter product code" ShowMask="true" />
+        """;
+
+    private const string _licensePlateMaskCode = """
+        <MaskedInput Mask="000-AAA" @bind-Value="licensePlateValue" ShowMask="true" />
+        """;
+
+    private const string _disabledCode = """
+        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" Value="5555551234" Disabled="true" ShowMask="true" />
+        """;
+
+    private const string _readonlyCode = """
+        <MaskedInput Mask="@MaskedInput.Masks.SSN" Value="123456789" Readonly="true" ShowMask="true" />
+        """;
+
+    private const string _withoutMaskCode = """
+        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS"
+            @bind-Value="phoneValueNoMask"
+            Placeholder="(000) 000-0000"
+            ShowMask="false" />
         """;
 
     private const string _customCode = """

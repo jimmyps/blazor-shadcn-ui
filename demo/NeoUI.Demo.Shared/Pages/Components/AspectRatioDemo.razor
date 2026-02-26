@@ -98,6 +98,29 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection Title="Features">
+        <ul class="list-disc list-inside space-y-2 text-sm">
+            <li>Uses native CSS aspect-ratio property</li>
+            <li>Accepts any numeric ratio as double (width / height)</li>
+            <li>Content is positioned absolutely within the container</li>
+            <li>Works with any child content (images, videos, placeholders)</li>
+        </ul>
+    </DemoSection>
+
+    <DemoSection Title="Installation">
+        <div class="bg-muted p-4 rounded-md">
+            <code class="text-sm">@@using NeoUI.Blazor</code>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Usage">
+        <div class="bg-muted p-4 rounded-md">
+            <pre class="text-sm overflow-x-auto"><code>&lt;AspectRatio Ratio="16.0/9.0"&gt;
+    &lt;img src="image.jpg" class="w-full h-full object-cover" /&gt;
+&lt;/AspectRatio&gt;</code></pre>
+        </div>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_aspectRatioProps" />
     </DemoSection>

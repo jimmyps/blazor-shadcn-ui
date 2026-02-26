@@ -122,7 +122,7 @@
     </DemoSection>
 
     <DemoSection
-        Title="Accordion Style"
+        Title="Accordion Style (Multiple Collapsibles)"
         Description="Multiple collapsibles working independently.">
         <DemoBlock Code="@_accordionCode">
             <div class="max-w-md space-y-2">
@@ -251,8 +251,26 @@
     </DemoSection>
 
     <DemoSection
-        Title="Accessibility"
-        Description="The Collapsible component follows WAI-ARIA guidelines with proper keyboard navigation and ARIA attributes." />
+        Title="Accessibility Notes"
+        Description="Best practices for accessible collapsibles.">
+        <div class="border rounded-lg p-6 space-y-3 bg-muted/50">
+            <p class="text-sm">
+                ✓ <strong>Keyboard navigation:</strong> Trigger responds to Space and Enter keys.
+            </p>
+            <p class="text-sm">
+                ✓ <strong>ARIA attributes:</strong> aria-expanded reflects the current state.
+            </p>
+            <p class="text-sm">
+                ✓ <strong>Screen readers:</strong> Content uses region role and aria-hidden.
+            </p>
+            <p class="text-sm">
+                ✓ <strong>Focus management:</strong> Focus remains on trigger after expanding/collapsing.
+            </p>
+            <p class="text-sm">
+                ✓ <strong>Semantic HTML:</strong> Proper button elements for triggers.
+            </p>
+        </div>
+    </DemoSection>
 
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_collapsibleProps" />

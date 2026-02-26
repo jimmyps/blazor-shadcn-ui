@@ -232,6 +232,26 @@
         Title="Accessibility"
         Description="Semantic HTML structure with proper heading hierarchy. Sufficient color contrast (WCAG 2.1 AA). Responsive layout and dark mode compatible via CSS variables." />
 
+    <DemoSection
+        Title="Usage"
+        Description="Common card patterns and code examples.">
+        <div class="rounded-lg border bg-card p-4">
+            <h3 class="text-sm font-medium mb-2">Basic Card Structure</h3>
+            <pre class="text-xs bg-muted p-3 rounded overflow-x-auto"><code>&lt;Card&gt;
+    &lt;CardHeader&gt;
+        &lt;CardTitle&gt;Title&lt;/CardTitle&gt;
+        &lt;CardDescription&gt;Description&lt;/CardDescription&gt;
+    &lt;/CardHeader&gt;
+    &lt;CardContent&gt;
+        Content goes here
+    &lt;/CardContent&gt;
+    &lt;CardFooter&gt;
+        &lt;Button&gt;Action&lt;/Button&gt;
+    &lt;/CardFooter&gt;
+&lt;/Card&gt;</code></pre>
+        </div>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_cardProps" />
     </DemoSection>

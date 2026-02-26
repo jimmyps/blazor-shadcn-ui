@@ -218,8 +218,23 @@
     </DemoSection>
 
     <DemoSection
-        Title="Accessibility"
-        Description="Always provide descriptive alt text on AvatarImage. Use meaningful initials or icons in AvatarFallback. Avatars are purely presentational — if clickable, wrap in a button with a proper aria-label. If using status indicators, add aria-label to convey state to screen readers." />
+        Title="Accessibility Notes"
+        Description="Best practices for accessible avatars.">
+        <div class="border rounded-lg p-6 space-y-3 bg-muted/50">
+            <p class="text-sm">
+                ✓ <strong>Alt text:</strong> Always provide descriptive alt text for AvatarImage that identifies the person or entity.
+            </p>
+            <p class="text-sm">
+                ✓ <strong>Fallback content:</strong> Use meaningful initials or icons that help identify the user when images fail.
+            </p>
+            <p class="text-sm">
+                ✓ <strong>Non-interactive:</strong> Avatars are purely presentational. If clickable, wrap in a button with proper ARIA label.
+            </p>
+            <p class="text-sm">
+                ✓ <strong>Status indicators:</strong> If using status dots, consider adding aria-label to convey state to screen readers.
+            </p>
+        </div>
+    </DemoSection>
 
     <DemoSection Title="API Reference" Description="Avatar component parameters and their types.">
         <DemoPropsTable Rows="_avatarProps" />

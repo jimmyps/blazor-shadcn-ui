@@ -295,6 +295,30 @@
         </div>
     </DemoSection>
 
+    <DemoSection Title="Installation">
+        <div class="bg-muted p-4 rounded-md">
+            <code class="text-sm">@@using NeoUI.Blazor</code>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Usage">
+        <div class="bg-muted p-4 rounded-md">
+            <pre class="text-sm overflow-x-auto"><code>&lt;ContextMenu&gt;
+    &lt;ContextMenuTrigger&gt;
+        &lt;div&gt;Right click here&lt;/div&gt;
+    &lt;/ContextMenuTrigger&gt;
+    &lt;ContextMenuContent&gt;
+        &lt;ContextMenuItem OnClick="HandleCopy"&gt;
+            Copy
+            &lt;ContextMenuShortcut&gt;⌘C&lt;/ContextMenuShortcut&gt;
+        &lt;/ContextMenuItem&gt;
+        &lt;ContextMenuSeparator /&gt;
+        &lt;ContextMenuItem&gt;Delete&lt;/ContextMenuItem&gt;
+    &lt;/ContextMenuContent&gt;
+&lt;/ContextMenu&gt;</code></pre>
+        </div>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_contextMenuProps" />
     </DemoSection>

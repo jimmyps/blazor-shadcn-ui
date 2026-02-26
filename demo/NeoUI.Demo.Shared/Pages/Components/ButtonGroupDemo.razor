@@ -320,6 +320,35 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection Title="Usage Notes">
+        <div class="rounded-lg border p-6 space-y-4">
+            <div class="space-y-3">
+                <h3 class="font-semibold">Key Features</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
+                    <li>Buttons are visually connected with shared borders</li>
+                    <li>Rounded corners only appear on the outer edges</li>
+                    <li>Focus states are properly managed with z-index</li>
+                    <li>Supports both horizontal and vertical orientations</li>
+                    <li>Can nest button groups for complex layouts</li>
+                    <li>Integrates with ButtonGroupText for labels</li>
+                    <li>Integrates with ButtonGroupSeparator for dividers</li>
+                    <li>Works seamlessly with DropdownMenu and Popover components</li>
+                    <li>Works with all button variants and sizes</li>
+                </ul>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="font-semibold">Accessibility</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
+                    <li>Uses proper role="group" for screen readers</li>
+                    <li>Icon-only buttons should have aria-label attributes</li>
+                    <li>Keyboard navigation works naturally (Tab/Shift+Tab)</li>
+                    <li>Focus states are clearly visible</li>
+                </ul>
+            </div>
+        </div>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_buttonGroupProps" />
     </DemoSection>

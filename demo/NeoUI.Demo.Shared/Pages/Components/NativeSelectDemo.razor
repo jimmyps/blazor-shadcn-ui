@@ -9,7 +9,7 @@
         Description="A styled wrapper around the browser's native select element." />
 
     <DemoSection
-        Title="Basic"
+        Title="Basic Example"
         Description="A simple native select with options.">
         <DemoBlock Code="@_basicCode">
             <div class="space-y-2">
@@ -22,6 +22,23 @@
                     </NativeSelect>
                 </div>
                 <p class="text-sm text-muted-foreground">Selected: @(_selectedFruit ?? "none")</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Placeholder"
+        Description="Select with a placeholder option.">
+        <DemoBlock Code="@_placeholderCode">
+            <div class="w-[280px]">
+                <NativeSelect TValue="string" @bind-Value="_selectedCountry" Placeholder="Choose your country">
+                    <option value="us">United States</option>
+                    <option value="uk">United Kingdom</option>
+                    <option value="ca">Canada</option>
+                    <option value="au">Australia</option>
+                    <option value="de">Germany</option>
+                    <option value="fr">France</option>
+                </NativeSelect>
             </div>
         </DemoBlock>
     </DemoSection>
@@ -128,6 +145,18 @@
             <option value="banana">Banana</option>
             <option value="orange">Orange</option>
             <option value="grape">Grape</option>
+        </NativeSelect>
+        """;
+
+    private const string _placeholderCode =
+        """
+        <NativeSelect TValue="string" Placeholder="Choose your country">
+            <option value="us">United States</option>
+            <option value="uk">United Kingdom</option>
+            <option value="ca">Canada</option>
+            <option value="au">Australia</option>
+            <option value="de">Germany</option>
+            <option value="fr">France</option>
         </NativeSelect>
         """;
 
