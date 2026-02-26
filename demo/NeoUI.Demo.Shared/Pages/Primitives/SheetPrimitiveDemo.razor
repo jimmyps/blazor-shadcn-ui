@@ -1,16 +1,12 @@
 @page "/primitives/sheet"
-
 <PageTitle>Sheet Primitive - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-
     <DemoPageHeader
         Title="Sheet Primitive"
         Description="Headless, unstyled sheet primitive with slide-in animations and full accessibility support." />
 
-    <DemoSection
-        Title="AsChild Pattern"
-        Description="Use AsChild to compose triggers with your own styled elements.">
+    <DemoSection Title="AsChild Pattern" Description="Use AsChild to compose triggers with your own styled elements.">
         <DemoBlock Code="@_asChildCode">
             <div class="grid md:grid-cols-2 gap-6">
                 <div class="space-y-3 p-4 border rounded-lg">
@@ -28,6 +24,7 @@
                         </SheetPortal>
                     </SheetPrimitive>
                 </div>
+
                 <div class="space-y-3 p-4 border rounded-lg">
                     <h3 class="text-lg font-medium">With AsChild</h3>
                     <p class="text-sm text-muted-foreground">Button receives click behavior via TriggerContext.</p>
@@ -49,9 +46,7 @@
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection
-        Title="Basic Headless Primitive"
-        Description="The primitive provides behavior and accessibility without styling.">
+    <DemoSection Title="Basic Headless Primitive" Description="The primitive provides behavior and accessibility without styling.">
         <DemoBlock Code="@_basicCode">
             <div class="rounded-lg border bg-card p-6 max-w-md">
                 <SheetPrimitive>
@@ -61,85 +56,6 @@
                         <SheetContentPrimitive class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
                             <SheetTitlePrimitive class="text-lg font-semibold mb-2">Sheet Title</SheetTitlePrimitive>
                             <SheetDescriptionPrimitive class="text-sm text-muted-foreground mb-4">This is a basic sheet using the unstyled primitive components.</SheetDescriptionPrimitive>
-                            <div class="flex justify-end gap-2">
-                                <SheetClosePrimitive class="px-3 py-2 border rounded text-sm">Close</SheetClosePrimitive>
-                            </div>
-                        </SheetContentPrimitive>
-                    </SheetPortal>
-                </SheetPrimitive>
-            </div>
-        </DemoBlock>
-    </DemoSection>
-
-    <DemoSection
-        Title="Different Sides"
-        Description="Sheets can slide in from any side: top, right, bottom, or left.">
-        <DemoBlock Code="@_sidesCode">
-            <div class="flex flex-wrap gap-2">
-                <SheetPrimitive Side="SheetSide.Top">
-                    <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">Top</SheetTriggerPrimitive>
-                    <SheetPortal>
-                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                        <SheetContentPrimitive class="fixed top-0 inset-x-0 z-50 border-b bg-background p-6">
-                            <SheetTitlePrimitive class="text-lg font-semibold mb-2">Sheet from Top</SheetTitlePrimitive>
-                            <SheetDescriptionPrimitive class="text-sm text-muted-foreground">This sheet slides in from the top.</SheetDescriptionPrimitive>
-                            <SheetClosePrimitive class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClosePrimitive>
-                        </SheetContentPrimitive>
-                    </SheetPortal>
-                </SheetPrimitive>
-                <SheetPrimitive Side="SheetSide.Right">
-                    <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">Right</SheetTriggerPrimitive>
-                    <SheetPortal>
-                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                        <SheetContentPrimitive class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm border-l bg-background p-6">
-                            <SheetTitlePrimitive class="text-lg font-semibold mb-2">Sheet from Right</SheetTitlePrimitive>
-                            <SheetDescriptionPrimitive class="text-sm text-muted-foreground">Right side (default).</SheetDescriptionPrimitive>
-                            <SheetClosePrimitive class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClosePrimitive>
-                        </SheetContentPrimitive>
-                    </SheetPortal>
-                </SheetPrimitive>
-                <SheetPrimitive Side="SheetSide.Bottom">
-                    <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">Bottom</SheetTriggerPrimitive>
-                    <SheetPortal>
-                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                        <SheetContentPrimitive class="fixed bottom-0 inset-x-0 z-50 border-t bg-background p-6">
-                            <SheetTitlePrimitive class="text-lg font-semibold mb-2">Sheet from Bottom</SheetTitlePrimitive>
-                            <SheetDescriptionPrimitive class="text-sm text-muted-foreground">This sheet slides in from the bottom.</SheetDescriptionPrimitive>
-                            <SheetClosePrimitive class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClosePrimitive>
-                        </SheetContentPrimitive>
-                    </SheetPortal>
-                </SheetPrimitive>
-                <SheetPrimitive Side="SheetSide.Left">
-                    <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">Left</SheetTriggerPrimitive>
-                    <SheetPortal>
-                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                        <SheetContentPrimitive class="fixed left-0 top-0 z-50 h-full w-3/4 sm:max-w-sm border-r bg-background p-6">
-                            <SheetTitlePrimitive class="text-lg font-semibold mb-2">Sheet from Left</SheetTitlePrimitive>
-                            <SheetDescriptionPrimitive class="text-sm text-muted-foreground">This sheet slides in from the left.</SheetDescriptionPrimitive>
-                            <SheetClosePrimitive class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClosePrimitive>
-                        </SheetContentPrimitive>
-                    </SheetPortal>
-                </SheetPrimitive>
-            </div>
-        </DemoBlock>
-    </DemoSection>
-
-    <DemoSection
-        Title="Controlled State"
-        Description="Control the sheet's open state from your component code.">
-        <DemoBlock Code="@_controlledCode">
-            <div class="space-y-4">
-                <div class="flex gap-2">
-                    <button @onclick="() => isControlledOpen = true" class="px-3 py-2 border rounded text-sm">Open Sheet</button>
-                    <button @onclick="() => isControlledOpen = false" class="px-3 py-2 border rounded text-sm" disabled="@(!isControlledOpen)">Close from Outside</button>
-                </div>
-                <SheetPrimitive @bind-Open="isControlledOpen">
-                    <SheetPortal>
-                        <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                        <SheetContentPrimitive class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
-                            <SheetTitlePrimitive class="text-lg font-semibold mb-2">Controlled Sheet</SheetTitlePrimitive>
-                            <SheetDescriptionPrimitive class="text-sm text-muted-foreground mb-4">The "Close from Outside" button demonstrates external state control.</SheetDescriptionPrimitive>
-                            <p class="mb-4">Open state: <strong>@isControlledOpen</strong></p>
                             <SheetClosePrimitive class="px-3 py-2 border rounded text-sm">Close</SheetClosePrimitive>
                         </SheetContentPrimitive>
                     </SheetPortal>
@@ -148,87 +64,102 @@
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+    <DemoSection Title="Different Sides" Description="Sheets can slide in from top, right, bottom, or left.">
+        <DemoBlock Code="@_sidesCode">
+            <div class="flex flex-wrap gap-2">
+                <SheetPrimitive Side="SheetSide.Top">
+                    <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">Top</SheetTriggerPrimitive>
+                    <SheetPortal><SheetOverlay class="fixed inset-0 bg-black/50 z-50" /><SheetContentPrimitive class="fixed top-0 inset-x-0 z-50 border-b bg-background p-6"><SheetTitlePrimitive class="text-lg font-semibold mb-2">SheetPrimitive from Top</SheetTitlePrimitive><SheetClosePrimitive class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClosePrimitive></SheetContentPrimitive></SheetPortal>
+                </SheetPrimitive>
+                <SheetPrimitive Side="SheetSide.Right">
+                    <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">Right</SheetTriggerPrimitive>
+                    <SheetPortal><SheetOverlay class="fixed inset-0 bg-black/50 z-50" /><SheetContentPrimitive class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm border-l bg-background p-6"><SheetTitlePrimitive class="text-lg font-semibold mb-2">SheetPrimitive from Right</SheetTitlePrimitive><SheetClosePrimitive class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClosePrimitive></SheetContentPrimitive></SheetPortal>
+                </SheetPrimitive>
+                <SheetPrimitive Side="SheetSide.Bottom">
+                    <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">Bottom</SheetTriggerPrimitive>
+                    <SheetPortal><SheetOverlay class="fixed inset-0 bg-black/50 z-50" /><SheetContentPrimitive class="fixed bottom-0 inset-x-0 z-50 border-t bg-background p-6"><SheetTitlePrimitive class="text-lg font-semibold mb-2">SheetPrimitive from Bottom</SheetTitlePrimitive><SheetClosePrimitive class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClosePrimitive></SheetContentPrimitive></SheetPortal>
+                </SheetPrimitive>
+                <SheetPrimitive Side="SheetSide.Left">
+                    <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">Left</SheetTriggerPrimitive>
+                    <SheetPortal><SheetOverlay class="fixed inset-0 bg-black/50 z-50" /><SheetContentPrimitive class="fixed left-0 top-0 z-50 h-full w-3/4 sm:max-w-sm border-r bg-background p-6"><SheetTitlePrimitive class="text-lg font-semibold mb-2">SheetPrimitive from Left</SheetTitlePrimitive><SheetClosePrimitive class="px-3 py-2 border rounded text-sm mt-4">Close</SheetClosePrimitive></SheetContentPrimitive></SheetPortal>
+                </SheetPrimitive>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Controlled State" Description="Control the sheet's open state from your component code.">
+        <DemoBlock Code="@_controlledCode">
+            <div class="space-y-4">
+                <div class="flex gap-2">
+                    <button @onclick="() => isControlledOpen = true" class="px-3 py-2 border rounded text-sm">Open SheetPrimitive</button>
+                    <button @onclick="() => isControlledOpen = false" class="px-3 py-2 border rounded text-sm" disabled="@(!isControlledOpen)">Close from Outside</button>
+                </div>
+                <div class="rounded-lg border bg-card p-6 max-w-md">
+                    <SheetPrimitive @bind-Open="isControlledOpen">
+                        <SheetPortal>
+                            <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
+                            <SheetContentPrimitive class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
+                                <SheetTitlePrimitive class="text-lg font-semibold mb-2">Controlled SheetPrimitive</SheetTitlePrimitive>
+                                <p class="mb-4">Open state: <strong>@isControlledOpen</strong></p>
+                                <SheetClosePrimitive class="px-3 py-2 border rounded text-sm">Close</SheetClosePrimitive>
+                            </SheetContentPrimitive>
+                        </SheetPortal>
+                    </SheetPrimitive>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Accessibility Features" Description="Built-in accessibility features following WAI-ARIA design patterns.">
+        <Alert Variant="AlertVariant.Success" AccentBorder="true">
+            <Icon><LucideIcon Name="circle-check" Class="h-4 w-4" /></Icon>
+            <ChildContent>
+                <AlertTitle>Included by default</AlertTitle>
+                <AlertDescription><code class="text-xs bg-muted px-1 rounded">role=&quot;dialog&quot;</code>, title/description ARIA links, focus trap, scroll lock, and direction-aware animations.</AlertDescription>
+            </ChildContent>
+        </Alert>
+    </DemoSection>
+
+    <DemoSection Title="Keyboard Shortcuts" Description="Navigate and interact with sheets using keyboard.">
+        <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
+            <div class="grid gap-3">
+                <div class="flex items-center justify-between"><span class="text-sm font-medium">Open sheet</span><Kbd>Enter / Space</Kbd></div>
+                <div class="flex items-center justify-between"><span class="text-sm font-medium">Close sheet</span><Kbd>Escape</Kbd></div>
+                <div class="flex items-center justify-between"><span class="text-sm font-medium">Navigate between elements</span><Kbd>Tab</Kbd></div>
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component properties and parameters.">
         <DemoPropsTable Rows="_sheetProps" />
     </DemoSection>
 
-    <DemoPageNav />
+    <DemoSection Title="When to Use Primitives" Description="Choose between primitives and styled components based on your needs.">
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="rounded-lg border p-4 space-y-3">
+                <h3 class="font-semibold text-primary">Use Sheet Primitive</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Building a custom design system</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Need complete control over styling</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Want to apply your own CSS framework</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Creating unique visual designs</span></li>
+                </ul>
+            </div>
+            <div class="rounded-lg border p-4 space-y-3">
+                <h3 class="font-semibold text-primary">Use Styled Component</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Want shadcn/ui design out of the box</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Need quick implementation</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Like the default styling</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Prefer convention over configuration</span></li>
+                </ul>
+            </div>
+        </div>
+    </DemoSection>
 
+    <DemoPageNav />
 </div>
 
 @code {
-    private bool isControlledOpen = false;
-
-    private static readonly IReadOnlyList<DemoPropRow> _sheetProps =
-    [
-        new("Open",          "bool?",                     "—",              "Controls open state (controlled mode). Use with bind-Open."),
-        new("OpenChanged",   "EventCallback&lt;bool&gt;", "—",              "Callback invoked when the open state changes."),
-        new("DefaultOpen",   "bool",                      "false",          "Initial open state (uncontrolled mode)."),
-        new("Side",          "SheetSide",                 "Right",          "Which side the sheet slides in from: Top, Right, Bottom, Left."),
-        new("Modal",         "bool",                      "true",           "When true, blocks interaction with the rest of the page."),
-        new("AsChild",       "bool (on trigger/close)",   "false",          "Merges trigger/close behavior into the child element."),
-        new("CloseOnClick",  "bool (on overlay)",         "true",           "Whether clicking the overlay closes the sheet."),
-        new("CloseOnEscape", "bool (on content)",         "true",           "Whether pressing Escape closes the sheet."),
-        new("TrapFocus",     "bool (on content)",         "true",           "Whether to trap focus inside the sheet."),
-        new("LockScroll",    "bool (on content)",         "true",           "Whether to prevent body scroll when sheet is open."),
-    ];
-
-    private const string _asChildCode =
-        """
-        <!-- Without AsChild -->
-        <SheetPrimitive>
-            <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">Open</SheetTriggerPrimitive>
-            <SheetPortal>
-                <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                <SheetContentPrimitive class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
-                    <SheetTitlePrimitive class="...">Title</SheetTitlePrimitive>
-                    <SheetClosePrimitive class="...">Close</SheetClosePrimitive>
-                </SheetContentPrimitive>
-            </SheetPortal>
-        </SheetPrimitive>
-
-        <!-- With AsChild -->
-        <SheetPrimitive>
-            <SheetTriggerPrimitive AsChild>
-                <Button Variant="ButtonVariant.Outline">Open</Button>
-            </SheetTriggerPrimitive>
-            ...
-        </SheetPrimitive>
-        """;
-
-    private const string _basicCode =
-        """
-        <SheetPrimitive>
-            <SheetTriggerPrimitive class="px-3 py-2 border rounded text-sm">Open</SheetTriggerPrimitive>
-            <SheetPortal>
-                <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                <SheetContentPrimitive class="fixed right-0 top-0 z-50 h-full w-3/4 sm:max-w-sm bg-background p-6 border-l">
-                    <SheetTitlePrimitive class="text-lg font-semibold mb-2">Sheet Title</SheetTitlePrimitive>
-                    <SheetDescriptionPrimitive class="text-sm text-muted-foreground mb-4">Description here.</SheetDescriptionPrimitive>
-                    <SheetClosePrimitive class="px-3 py-2 border rounded text-sm">Close</SheetClosePrimitive>
-                </SheetContentPrimitive>
-            </SheetPortal>
-        </SheetPrimitive>
-        """;
-
-    private const string _sidesCode =
-        """
-        <SheetPrimitive Side="SheetSide.Top">...</SheetPrimitive>
-        <SheetPrimitive Side="SheetSide.Right">...</SheetPrimitive>
-        <SheetPrimitive Side="SheetSide.Bottom">...</SheetPrimitive>
-        <SheetPrimitive Side="SheetSide.Left">...</SheetPrimitive>
-        """;
-
-    private const string _controlledCode =
-        """
-        <SheetPrimitive @bind-Open="isOpen">
-            <SheetPortal>
-                <SheetOverlay class="fixed inset-0 bg-black/50 z-50" />
-                <SheetContentPrimitive class="fixed right-0 top-0 z-50 h-full ...">
-                    <SheetTitlePrimitive class="...">Title</SheetTitlePrimitive>
-                    <SheetClosePrimitive class="...">Close</SheetClosePrimitive>
-                </SheetContentPrimitive>
-            </SheetPortal>
-        </SheetPrimitive>
-        """;
+private bool isControlledOpen = false;
 }

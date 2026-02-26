@@ -1,43 +1,57 @@
 @page "/primitives/checkbox"
-
 <PageTitle>Checkbox Primitive - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-
     <DemoPageHeader
         Title="Checkbox Primitive"
         Description="Unstyled, accessible primitive component for building custom checkboxes." />
 
-    <DemoSection
-        Title="Basic Headless Primitive"
-        Description="The primitive provides behavior and accessibility without styling.">
+    <DemoSection Title="Basic Headless Primitive" Description="The primitive provides behavior and accessibility without styling.">
         <DemoBlock Code="@_basicCode">
-            <div class="rounded-lg border bg-card p-6 max-w-md">
-                <div class="flex items-center gap-3">
-                    <CheckboxPrimitive @bind-Checked="basicChecked" Id="basic" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center">
-                        @if (basicChecked)
-                        {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                        }
-                    </CheckboxPrimitive>
-                    <label for="basic">Unstyled primitive checkbox</label>
+            <ChildContent>
+                <div class="rounded-lg border bg-card p-6 max-w-md">
+                    <div class="flex items-center gap-3">
+                        <CheckboxPrimitive @bind-Checked="basicChecked" Id="basic" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center">
+                            @if (basicChecked)
+                            {
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            }
+                        </CheckboxPrimitive>
+                        <label for="basic">Unstyled primitive checkbox</label>
+                    </div>
+                    <p class="text-sm text-muted-foreground mt-2">
+                        State: <strong>@(basicChecked ? "Checked" : "Unchecked")</strong>
+                    </p>
                 </div>
-                <p class="text-sm text-muted-foreground mt-2">State: <strong>@(basicChecked ? "Checked" : "Unchecked")</strong></p>
-            </div>
+            </ChildContent>
+            <AdditionalContent>
+                <Alert Variant="AlertVariant.Info">
+                    <Icon><LucideIcon Name="info" Class="h-4 w-4" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>Behavior</AlertTitle>
+                        <AlertDescription>The checkbox state is available through two-way binding on <code class="text-xs bg-muted px-1 rounded">Checked</code> while retaining primitive semantics.</AlertDescription>
+                    </ChildContent>
+                </Alert>
+            </AdditionalContent>
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection
-        Title="Controlled State"
-        Description="Control the primitive state externally.">
+    <DemoSection Title="Controlled State" Description="Control the primitive state externally.">
         <DemoBlock Code="@_controlledCode">
             <div class="space-y-4">
                 <div class="flex gap-2">
-                    <button @onclick="@(() => controlledChecked = true)" class="px-3 py-2 border rounded text-sm">Check</button>
-                    <button @onclick="@(() => controlledChecked = false)" class="px-3 py-2 border rounded text-sm">Uncheck</button>
+                    <button @onclick="@(() => controlledChecked = true)"
+                            class="px-3 py-2 border rounded text-sm">
+                        Check
+                    </button>
+                    <button @onclick="@(() => controlledChecked = false)"
+                            class="px-3 py-2 border rounded text-sm">
+                        Uncheck
+                    </button>
                 </div>
+
                 <div class="rounded-lg border bg-card p-6 max-w-md">
                     <div class="flex items-center gap-3">
                         <CheckboxPrimitive @bind-Checked="controlledChecked" Id="controlled" class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center">
@@ -48,16 +62,16 @@
                                 </svg>
                             }
                         </CheckboxPrimitive>
-                        <label for="controlled">Controlled Checkbox (State: @(controlledChecked ? "Checked" : "Unchecked"))</label>
+                        <label for="controlled">
+                            Controlled Checkbox (State: @(controlledChecked ? "Checked" : "Unchecked"))
+                        </label>
                     </div>
                 </div>
             </div>
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection
-        Title="Indeterminate State"
-        Description="Useful for &quot;select all&quot; scenarios when only some items are selected.">
+    <DemoSection Title="Indeterminate State" Description="Useful for &quot;select all&quot; scenarios when only some items are selected.">
         <DemoBlock Code="@_indeterminateCode">
             <div class="rounded-lg border bg-card p-6 max-w-md">
                 <div class="space-y-3">
@@ -79,7 +93,7 @@
                                 </svg>
                             }
                         </CheckboxPrimitive>
-                        <label for="parent" class="font-medium">Select All</label>
+                        <label for="parent" class="font-medium">SelectPrimitive All</label>
                     </div>
                     <div class="ml-6 space-y-2">
                         <div class="flex items-center gap-3">
@@ -121,31 +135,108 @@
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection
-        Title="Accessibility"
-        Description="role=&quot;checkbox&quot;, aria-checked (true/false/mixed), data-state, and disabled attributes are automatically applied." />
+    <DemoSection Title="Accessibility Features" Description="Built-in accessibility features following WAI-ARIA design patterns.">
+        <Alert Variant="AlertVariant.Success" AccentBorder="true">
+            <Icon><LucideIcon Name="circle-check" Class="h-4 w-4" /></Icon>
+            <ChildContent>
+                <AlertTitle>Included by default</AlertTitle>
+                <AlertDescription>
+                    <code class="text-xs bg-muted px-1 rounded">role=&quot;checkbox&quot;</code>, <code class="text-xs bg-muted px-1 rounded">aria-checked</code>, indeterminate state (<code class="text-xs bg-muted px-1 rounded">mixed</code>), focus management, and disabled semantics.
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
+    </DemoSection>
+
+    <DemoSection Title="Keyboard Shortcuts" Description="Navigate and interact with checkboxes using keyboard.">
+        <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
+            <div class="grid gap-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium">Navigate to checkbox</span>
+                    <Kbd>Tab</Kbd>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium">Toggle checkbox</span>
+                    <Kbd>Space</Kbd>
+                </div>
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="When to Use Primitives" Description="Choose between primitives and styled components based on your needs.">
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="rounded-lg border p-4 space-y-3">
+                <h3 class="font-semibold text-primary">Use Checkbox Primitive</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-600 dark:text-green-400">✓</span>
+                        <span>Building a custom design system</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-600 dark:text-green-400">✓</span>
+                        <span>Need complete control over styling</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-600 dark:text-green-400">✓</span>
+                        <span>Want to apply your own CSS framework</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-600 dark:text-green-400">✓</span>
+                        <span>Creating unique visual designs</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="rounded-lg border p-4 space-y-3">
+                <h3 class="font-semibold text-primary">Use Styled Component</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-600 dark:text-blue-400">●</span>
+                        <span>Want shadcn/ui design out of the box</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-600 dark:text-blue-400">●</span>
+                        <span>Need quick implementation</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-600 dark:text-blue-400">●</span>
+                        <span>Like the default styling</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-600 dark:text-blue-400">●</span>
+                        <span>Prefer convention over configuration</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </DemoSection>
 
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_checkboxProps" />
     </DemoSection>
 
     <DemoPageNav />
-
 </div>
 
 @code {
     private bool basicChecked = false;
     private bool controlledChecked = false;
 
+    // Indeterminate state demo
     private bool child1 = true;
     private bool child2 = false;
     private bool child3 = true;
     private bool allChecked = false;
     private bool indeterminate = true;
 
-    protected override void OnInitialized() => UpdateParentState();
+    protected override void OnInitialized()
+    {
+        UpdateParentState();
+    }
 
-    private void HandleChildChanged() => UpdateParentState();
+    private void HandleChildChanged()
+    {
+        UpdateParentState();
+    }
 
     private void HandleParentChanged(bool value)
     {
@@ -159,63 +250,21 @@
     private void UpdateParentState()
     {
         var checkedCount = (child1 ? 1 : 0) + (child2 ? 1 : 0) + (child3 ? 1 : 0);
-        if (checkedCount == 0) { allChecked = false; indeterminate = false; }
-        else if (checkedCount == 3) { allChecked = true; indeterminate = false; }
-        else { allChecked = false; indeterminate = true; }
+
+        if (checkedCount == 0)
+        {
+            allChecked = false;
+            indeterminate = false;
+        }
+        else if (checkedCount == 3)
+        {
+            allChecked = true;
+            indeterminate = false;
+        }
+        else
+        {
+            allChecked = false;
+            indeterminate = true;
+        }
     }
-
-    private static readonly IReadOnlyList<DemoPropRow> _checkboxProps =
-    [
-        new("Checked",              "bool",                     "false", "Whether the checkbox is checked. Use with @bind-Checked."),
-        new("CheckedChanged",       "EventCallback&lt;bool&gt;","—",     "Callback invoked when the checked state changes."),
-        new("Indeterminate",        "bool",                     "false", "Sets the checkbox to indeterminate state. Sets aria-checked=&quot;mixed&quot;."),
-        new("IndeterminateChanged", "EventCallback&lt;bool&gt;","—",     "Callback invoked when the indeterminate state changes."),
-        new("Disabled",             "bool",                     "false", "Prevents toggling when true."),
-        new("Id",                   "string?",                  "—",     "Unique identifier for label association."),
-        new("ChildContent",         "RenderFragment?",          "—",     "Content rendered inside the checkbox (typically a checkmark icon)."),
-    ];
-
-    private const string _basicCode =
-        """
-        <CheckboxPrimitive @bind-Checked="isChecked" Id="basic"
-                           class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center">
-            @if (isChecked)
-            {
-                <svg ...><polyline points="20 6 9 17 4 12"></polyline></svg>
-            }
-        </CheckboxPrimitive>
-        <label for="basic">Unstyled primitive checkbox</label>
-        """;
-
-    private const string _controlledCode =
-        """
-        <button @onclick="@(() => controlledChecked = true)">Check</button>
-        <button @onclick="@(() => controlledChecked = false)">Uncheck</button>
-
-        <CheckboxPrimitive @bind-Checked="controlledChecked" Id="controlled"
-                           class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center">
-            @if (controlledChecked) { <svg ...>...</svg> }
-        </CheckboxPrimitive>
-        """;
-
-    private const string _indeterminateCode =
-        """
-        <CheckboxPrimitive Checked="@allChecked"
-                           Indeterminate="@indeterminate"
-                           CheckedChanged="@HandleParentChanged"
-                           Id="parent"
-                           class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center">
-            @if (allChecked) { /* check mark */ }
-            else if (indeterminate) { /* minus mark */ }
-        </CheckboxPrimitive>
-        <label for="parent">Select All</label>
-
-        <CheckboxPrimitive Checked="@child1"
-                           CheckedChanged="@(v => { child1 = v; HandleChildChanged(); })"
-                           Id="child1"
-                           class="h-5 w-5 border rounded cursor-pointer flex items-center justify-center">
-            @if (child1) { <svg ...>...</svg> }
-        </CheckboxPrimitive>
-        <label for="child1">Option 1</label>
-        """;
 }

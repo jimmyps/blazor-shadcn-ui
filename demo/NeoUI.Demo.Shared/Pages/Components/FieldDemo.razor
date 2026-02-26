@@ -344,51 +344,6 @@
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection Title="Usage Notes">
-        <div class="rounded-lg border p-6 space-y-4">
-            <div class="space-y-3">
-                <h3 class="font-semibold">Key Features</h3>
-                <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                    <li>Flexible layout with vertical, horizontal, and responsive orientations</li>
-                    <li>Automatic error state styling via data-invalid attribute</li>
-                    <li>Proper role="group" for accessibility</li>
-                    <li>Support for descriptions and multiple error messages</li>
-                    <li>FieldSet and FieldLegend for semantic grouping</li>
-                    <li>FieldGroup for consistent spacing of multiple fields</li>
-                    <li>FieldSeparator for visual section dividers</li>
-                    <li>Container query support for responsive layouts</li>
-                </ul>
-            </div>
-
-            <div class="space-y-3">
-                <h3 class="font-semibold">Components</h3>
-                <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                    <li><strong>Field</strong> - Main container with orientation support</li>
-                    <li><strong>FieldLabel</strong> - Label element with for attribute</li>
-                    <li><strong>FieldContent</strong> - Flex column wrapper for controls and descriptions</li>
-                    <li><strong>FieldDescription</strong> - Helper text with muted styling</li>
-                    <li><strong>FieldError</strong> - Error message container with destructive styling</li>
-                    <li><strong>FieldSet</strong> - Semantic fieldset element for grouping</li>
-                    <li><strong>FieldLegend</strong> - Legend for fieldsets with variant options</li>
-                    <li><strong>FieldGroup</strong> - Layout wrapper for stacking fields</li>
-                    <li><strong>FieldSeparator</strong> - Visual divider with optional centered content</li>
-                    <li><strong>FieldTitle</strong> - Title element for complex field layouts</li>
-                </ul>
-            </div>
-
-            <div class="space-y-3">
-                <h3 class="font-semibold">Accessibility</h3>
-                <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                    <li>Use FieldLabel with proper 'for' attribute to associate with inputs</li>
-                    <li>FieldDescription should have an ID for aria-describedby</li>
-                    <li>FieldError should have an ID for aria-describedby on invalid inputs</li>
-                    <li>FieldSet provides semantic grouping for related controls</li>
-                    <li>All components render proper semantic HTML elements</li>
-                </ul>
-            </div>
-        </div>
-    </DemoSection>
-
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_fieldProps" />
     </DemoSection>

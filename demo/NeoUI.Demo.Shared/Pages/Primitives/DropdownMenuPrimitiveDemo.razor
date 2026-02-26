@@ -1,16 +1,12 @@
 @page "/primitives/dropdown-menu"
-
 <PageTitle>DropdownMenu Primitive - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-
     <DemoPageHeader
         Title="DropdownMenu Primitive"
         Description="Headless, unstyled dropdown menu primitive with full accessibility support." />
 
-    <DemoSection
-        Title="AsChild Pattern"
-        Description="Use AsChild to compose triggers with your own styled elements.">
+    <DemoSection Title="AsChild Pattern" Description="Use AsChild to compose triggers with your own styled elements.">
         <DemoBlock Code="@_asChildCode">
             <div class="grid md:grid-cols-2 gap-6">
                 <div class="space-y-3 p-4 border rounded-lg">
@@ -24,15 +20,13 @@
                         </DropdownMenuContentPrimitive>
                     </DropdownMenuPrimitive>
                 </div>
+
                 <div class="space-y-3 p-4 border rounded-lg">
                     <h3 class="text-lg font-medium">With AsChild</h3>
                     <p class="text-sm text-muted-foreground">Button receives click behavior via TriggerContext.</p>
                     <DropdownMenuPrimitive>
                         <DropdownMenuTriggerPrimitive AsChild>
-                            <Button Variant="ButtonVariant.Outline">
-                                Open Menu
-                                <LucideIcon Name="chevron-down" Size="16" Class="ml-2" />
-                            </Button>
+                            <Button Variant="ButtonVariant.Outline">Open Menu<LucideIcon Name="chevron-down" Size="16" Class="ml-2" /></Button>
                         </DropdownMenuTriggerPrimitive>
                         <DropdownMenuContentPrimitive class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
                             <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</DropdownMenuItemPrimitive>
@@ -44,9 +38,7 @@
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection
-        Title="Basic Headless Primitive"
-        Description="The primitive provides behavior and accessibility without styling.">
+    <DemoSection Title="Basic Headless Primitive" Description="The primitive provides behavior and accessibility without styling.">
         <DemoBlock Code="@_basicCode">
             <div class="rounded-lg border bg-card p-6 max-w-md">
                 <DropdownMenuPrimitive>
@@ -62,15 +54,14 @@
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection
-        Title="Controlled State"
-        Description="Control the menu's open state from your component code.">
+    <DemoSection Title="Controlled State" Description="Control the menu's open state from your component code.">
         <DemoBlock Code="@_controlledCode">
             <div class="space-y-4">
                 <div class="flex gap-2">
                     <button @onclick="() => isOpen = !isOpen" class="px-3 py-2 border rounded text-sm">Toggle Menu</button>
                     <span class="text-sm text-muted-foreground self-center">State: @(isOpen ? "Open" : "Closed")</span>
                 </div>
+
                 <div class="rounded-lg border bg-card p-6 max-w-md">
                     <DropdownMenuPrimitive @bind-Open="isOpen">
                         <DropdownMenuTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">Controlled Menu</DropdownMenuTriggerPrimitive>
@@ -80,6 +71,7 @@
                             <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent" OnClick="@(() => HandleItemClick("Item 3"))">Item 3</DropdownMenuItemPrimitive>
                         </DropdownMenuContentPrimitive>
                     </DropdownMenuPrimitive>
+
                     @if (!string.IsNullOrEmpty(lastClicked))
                     {
                         <p class="text-sm text-muted-foreground mt-3">Last clicked: @lastClicked</p>
@@ -89,9 +81,25 @@
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection
-        Title="Positioning Options"
-        Description="Position the menu on different sides with alignment control.">
+    <DemoSection Title="Keyboard Navigation" Description="Full keyboard navigation with arrow keys, Home/End, Enter/Space, and Escape.">
+        <DemoBlock Code="@_keyboardNavCode">
+            <div class="rounded-lg border bg-card p-6 max-w-md">
+                <DropdownMenuPrimitive>
+                    <DropdownMenuTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">Keyboard Test Menu</DropdownMenuTriggerPrimitive>
+                    <DropdownMenuContentPrimitive class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
+                        <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">First Item</DropdownMenuItemPrimitive>
+                        <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Second Item</DropdownMenuItemPrimitive>
+                        <DropdownMenuItemPrimitive class="px-2 py-1.5 rounded opacity-50 cursor-not-allowed" Disabled="true">Disabled Item</DropdownMenuItemPrimitive>
+                        <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Third Item</DropdownMenuItemPrimitive>
+                        <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Last Item</DropdownMenuItemPrimitive>
+                    </DropdownMenuContentPrimitive>
+                </DropdownMenuPrimitive>
+                <p class="text-sm text-muted-foreground mt-3">Try keyboard navigation!</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Positioning Options" Description="Position the menu on different sides with alignment control.">
         <DemoBlock Code="@_positioningCode">
             <div class="rounded-lg border bg-card p-6">
                 <div class="flex gap-4 flex-wrap">
@@ -102,9 +110,18 @@
                             <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</DropdownMenuItemPrimitive>
                         </DropdownMenuContentPrimitive>
                     </DropdownMenuPrimitive>
+
                     <DropdownMenuPrimitive>
                         <DropdownMenuTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">Top Center</DropdownMenuTriggerPrimitive>
                         <DropdownMenuContentPrimitive Side="@PopoverSide.Top" Align="@PopoverAlign.Center" class="min-w-32 p-1 border rounded-md bg-popover shadow-md">
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</DropdownMenuItemPrimitive>
+                            <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</DropdownMenuItemPrimitive>
+                        </DropdownMenuContentPrimitive>
+                    </DropdownMenuPrimitive>
+
+                    <DropdownMenuPrimitive>
+                        <DropdownMenuTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">Right End</DropdownMenuTriggerPrimitive>
+                        <DropdownMenuContentPrimitive Side="@PopoverSide.Right" Align="@PopoverAlign.End" class="min-w-32 p-1 border rounded-md bg-popover shadow-md">
                             <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 1</DropdownMenuItemPrimitive>
                             <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item 2</DropdownMenuItemPrimitive>
                         </DropdownMenuContentPrimitive>
@@ -114,82 +131,61 @@
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection
-        Title="Accessibility"
-        Description="role=&quot;menu&quot;, aria-expanded, roving tab index, and full arrow key navigation are automatically applied." />
+    <DemoSection Title="Accessibility Features" Description="Built-in accessibility features following WAI-ARIA design patterns.">
+        <Alert Variant="AlertVariant.Success" AccentBorder="true">
+            <Icon><LucideIcon Name="circle-check" Class="h-4 w-4" /></Icon>
+            <ChildContent>
+                <AlertTitle>Included by default</AlertTitle>
+                <AlertDescription>Menu ARIA roles, keyboard navigation, focus management, and outside-click close behavior are included out of the box.</AlertDescription>
+            </ChildContent>
+        </Alert>
+    </DemoSection>
 
-    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+    <DemoSection Title="Keyboard Shortcuts" Description="Navigate and interact with menus using keyboard.">
+        <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
+            <div class="flex items-center justify-between"><span class="text-sm font-medium">Open menu</span><Kbd>Enter / Space</Kbd></div>
+            <div class="flex items-center justify-between"><span class="text-sm font-medium">Navigate items</span><Kbd>Arrow Keys</Kbd></div>
+            <div class="flex items-center justify-between"><span class="text-sm font-medium">First / Last item</span><Kbd>Home / End</Kbd></div>
+            <div class="flex items-center justify-between"><span class="text-sm font-medium">Close menu</span><Kbd>Escape</Kbd></div>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component properties and parameters.">
         <DemoPropsTable Rows="_dropdownMenuProps" />
     </DemoSection>
 
-    <DemoPageNav />
+    <DemoSection Title="When to Use Primitives" Description="Choose between primitives and styled components based on your needs.">
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="rounded-lg border p-4 space-y-3">
+                <h3 class="font-semibold text-primary">Use DropdownMenu Primitive</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Building a custom design system</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Need complete control over styling</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Want to apply your own CSS framework</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Creating unique visual designs</span></li>
+                </ul>
+            </div>
+            <div class="rounded-lg border p-4 space-y-3">
+                <h3 class="font-semibold text-primary">Use Styled Component</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Want shadcn/ui design out of the box</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Need quick implementation</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Like the default styling</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Prefer convention over configuration</span></li>
+                </ul>
+            </div>
+        </div>
+    </DemoSection>
 
+    <DemoPageNav />
 </div>
 
 @code {
-    private bool isOpen = false;
+private bool isOpen = false;
     private string? lastClicked;
 
-    private void HandleItemClick(string item) => lastClicked = item;
-
-    private static readonly IReadOnlyList<DemoPropRow> _dropdownMenuProps =
-    [
-        new("Open",         "bool?",                    "—",      "Controls whether the menu is open (controlled mode)."),
-        new("OpenChanged",  "EventCallback&lt;bool&gt;","—",      "Callback invoked when the open state changes."),
-        new("Side",         "PopoverSide",              "Bottom", "On DropdownMenuContentPrimitive: which side to position the content."),
-        new("Align",        "PopoverAlign",             "Start",  "On DropdownMenuContentPrimitive: how to align the content relative to the trigger."),
-        new("OnClick",      "EventCallback",            "—",      "On DropdownMenuItemPrimitive: callback invoked when the item is clicked."),
-        new("Disabled",     "bool",                     "false",  "On DropdownMenuItemPrimitive: whether the item is disabled."),
-        new("ChildContent", "RenderFragment?",           "—",      "Content rendered inside trigger or content primitives."),
-    ];
-
-    private const string _asChildCode =
-        """
-        <!-- Without AsChild -->
-        <DropdownMenuPrimitive>
-            <DropdownMenuTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer">Open Menu</DropdownMenuTriggerPrimitive>
-            <DropdownMenuContentPrimitive class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
-                <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item</DropdownMenuItemPrimitive>
-            </DropdownMenuContentPrimitive>
-        </DropdownMenuPrimitive>
-
-        <!-- With AsChild -->
-        <DropdownMenuPrimitive>
-            <DropdownMenuTriggerPrimitive AsChild>
-                <Button Variant="ButtonVariant.Outline">Open Menu</Button>
-            </DropdownMenuTriggerPrimitive>
-            <DropdownMenuContentPrimitive class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
-                <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Item</DropdownMenuItemPrimitive>
-            </DropdownMenuContentPrimitive>
-        </DropdownMenuPrimitive>
-        """;
-
-    private const string _basicCode =
-        """
-        <DropdownMenuPrimitive>
-            <DropdownMenuTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">Open Menu</DropdownMenuTriggerPrimitive>
-            <DropdownMenuContentPrimitive class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
-                <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Profile</DropdownMenuItemPrimitive>
-                <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Settings</DropdownMenuItemPrimitive>
-                <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent">Logout</DropdownMenuItemPrimitive>
-            </DropdownMenuContentPrimitive>
-        </DropdownMenuPrimitive>
-        """;
-
-    private const string _controlledCode =
-        """
-        <DropdownMenuPrimitive @bind-Open="isOpen">
-            <DropdownMenuTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">Controlled Menu</DropdownMenuTriggerPrimitive>
-            <DropdownMenuContentPrimitive class="min-w-48 p-1 border rounded-md bg-popover shadow-md">
-                <DropdownMenuItemPrimitive class="px-2 py-1.5 cursor-pointer rounded hover:bg-accent" OnClick="@(() => HandleItemClick("Item 1"))">Item 1</DropdownMenuItemPrimitive>
-            </DropdownMenuContentPrimitive>
-        </DropdownMenuPrimitive>
-        """;
-
-    private const string _positioningCode =
-        """
-        <DropdownMenuContentPrimitive Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" class="...">
-            <!-- items -->
-        </DropdownMenuContentPrimitive>
-        """;
+    private void HandleItemClick(string item)
+    {
+        lastClicked = item;
+    }
 }
