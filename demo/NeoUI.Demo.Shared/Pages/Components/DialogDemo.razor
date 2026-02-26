@@ -1695,7 +1695,7 @@
     private static readonly IReadOnlyList<DemoPropRow> _dialogProps =
     [
         new("Open",           "bool",                      "false",  "Controls the open state of the dialog. Use @bind-Open for two-way binding."),
-        new("OpenChanged",    "EventCallback&lt;bool&gt;", "—",      "Fired when the open state changes. Paired with Open for two-way binding."),
+        new("OpenChanged",    "EventCallback<bool>","—",      "Fired when the open state changes. Paired with Open for two-way binding."),
         new("ShowClose",      "bool",                      "true",   "On DialogContent: when false, hides the default X close button in the top-right corner."),
         new("Class",          "string?",                   "null",   "Additional CSS classes. Use max-w-* on DialogContent to customize width."),
         new("Variant",        "DialogContentVariant",      "Default","On DialogContent: style variant. Use Form for scrollable form layouts."),
