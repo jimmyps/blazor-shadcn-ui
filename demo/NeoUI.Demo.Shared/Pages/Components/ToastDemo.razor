@@ -118,6 +118,36 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection Title="Features">
+        <ul class="list-disc list-inside space-y-2 text-sm">
+            <li>Multiple variants: Default, Success, Warning, Error, Info</li>
+            <li>Two sizes: Default and Compact</li>
+            <li>Auto variant icons (Success ✓, Error ✗, Warning ⚠, Info ℹ)</li>
+            <li>Pause on hover (prevents auto-dismiss while reading)</li>
+            <li>Programmatic API via IToastService</li>
+            <li>Auto-dismiss with configurable duration</li>
+            <li>Optional action buttons</li>
+            <li>Toast stacking with MaxToasts limit</li>
+            <li>Configurable viewport position</li>
+            <li>Accessible with ARIA live regions</li>
+        </ul>
+    </DemoSection>
+
+    <DemoSection Title="Setup" Description="Register the service and add the provider to your layout.">
+        <div class="space-y-4">
+            <p class="text-sm text-muted-foreground">1. Register the service in Program.cs:</p>
+            <div class="bg-muted p-4 rounded-md">
+                <code class="text-sm">builder.Services.AddSingleton&lt;IToastService, ToastService&gt;();</code>
+            </div>
+            <p class="text-sm text-muted-foreground">2. Add ToastProvider to your layout:</p>
+            <div class="bg-muted p-4 rounded-md">
+                <pre class="text-sm overflow-x-auto"><code>&lt;ToastProvider Position="ToastPosition.BottomRight"&gt;
+    @@Body
+&lt;/ToastProvider&gt;</code></pre>
+            </div>
+        </div>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_toastProps" />
     </DemoSection>

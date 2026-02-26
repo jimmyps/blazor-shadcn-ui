@@ -121,6 +121,10 @@
                     <Label For="colored-label-input" Class="text-blue-600 dark:text-blue-400">Colored Label</Label>
                     <Input Id="colored-label-input" />
                 </div>
+                <div class="space-y-2">
+                    <Label For="uppercase-label-input" Class="uppercase tracking-wide">Uppercase Label</Label>
+                    <Input Id="uppercase-label-input" />
+                </div>
             </div>
         </DemoBlock>
     </DemoSection>
@@ -186,8 +190,16 @@
     </DemoSection>
 
     <DemoSection
-        Title="Accessibility"
-        Description="Always use the For attribute to associate labels with form controls. Descriptive text helps screen reader users understand the purpose of each field." />
+        Title="Accessibility Notes"
+        Description="Best practices for accessible labels.">
+        <div class="border rounded-lg p-6 space-y-3 bg-muted/50">
+            <p class="text-sm">✓ <strong>Always use For attribute:</strong> Associate labels with form controls explicitly.</p>
+            <p class="text-sm">✓ <strong>Descriptive text:</strong> Labels should clearly describe the form field's purpose.</p>
+            <p class="text-sm">✓ <strong>Required indicators:</strong> Use visual indicators for required fields, but also use HTML5 required attribute.</p>
+            <p class="text-sm">✓ <strong>Help text:</strong> Place additional context below the input using aria-describedby.</p>
+            <p class="text-sm">✓ <strong>Error messages:</strong> Link errors to inputs with aria-describedby for screen readers.</p>
+        </div>
+    </DemoSection>
 
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_labelProps" />
@@ -250,6 +262,7 @@
         <Label For="input" Class="text-lg font-bold">Large Bold Label</Label>
         <Label For="input" Class="text-xs text-muted-foreground font-normal">Small Muted Label</Label>
         <Label For="input" Class="text-blue-600">Colored Label</Label>
+        <Label For="input" Class="uppercase tracking-wide">Uppercase Label</Label>
         """;
 
     private const string _withDescriptionsCode =

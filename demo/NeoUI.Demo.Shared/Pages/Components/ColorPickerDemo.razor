@@ -32,6 +32,17 @@
     </DemoSection>
 
     <DemoSection
+        Title="Canvas + Presets Only"
+        Description="No RGB inputs, just canvas gradient and quick color swatches.">
+        <DemoBlock Code="@_presetsOnlyCode">
+            <div class="max-w-[160px]">
+                <ColorPicker @bind-Color="presetsOnlyColor" ShowInputs="false" />
+                <p class="text-xs text-muted-foreground mt-2">Selected: @presetsOnlyColor</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Minimal Picker"
         Description="Canvas and sliders only - no RGB inputs or preset swatches.">
         <DemoBlock Code="@_minimalCode">
@@ -76,6 +87,17 @@
     </DemoSection>
 
     <DemoSection
+        Title="RGBA Format"
+        Description="RGB with alpha: rgba(r, g, b, a).">
+        <DemoBlock Code="@_rgbaCode">
+            <div class="max-w-[250px]">
+                <ColorPicker @bind-Color="rgbaColor" Format="ColorFormat.RGB" ShowAlpha="true" />
+                <p class="text-xs text-muted-foreground mt-2">Selected: @rgbaColor</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Disabled State"
         Description="A disabled color picker that cannot be changed.">
         <DemoBlock Code="@_disabledCode">
@@ -114,6 +136,30 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection
+        Title="All Formats Side by Side"
+        Description="Compare different color format outputs with the same visual picker.">
+        <DemoBlock Code="@_comparisonCode">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <h3 class="text-sm font-medium mb-2">Hex</h3>
+                    <ColorPicker @bind-Color="comparisonColor" />
+                    <p class="text-xs text-muted-foreground mt-1">@comparisonColor</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium mb-2">RGB</h3>
+                    <ColorPicker @bind-Color="comparisonColorRgb" Format="ColorFormat.RGB" />
+                    <p class="text-xs text-muted-foreground mt-1">@comparisonColorRgb</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium mb-2">HSL</h3>
+                    <ColorPicker @bind-Color="comparisonColorHsl" Format="ColorFormat.HSL" />
+                    <p class="text-xs text-muted-foreground mt-1">@comparisonColorHsl</p>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_colorPickerProps" />
     </DemoSection>
@@ -125,10 +171,15 @@
     private string? hexColor = "#3B82F6";
     private string? largeColor = "#EC4899";
     private string? minimalColor = "#10B981";
+    private string? presetsOnlyColor = "#F59E0B";
     private string? rgbColor = "rgb(239, 68, 68)";
     private string? hslColor = "hsl(142, 71%, 45%)";
     private string? alphaColor = "#8B5CF6AA";
+    private string? rgbaColor = "rgba(236, 72, 153, 0.75)";
     private string? disabledColor = "#6B7280";
+    private string? comparisonColor = "#EC4899";
+    private string? comparisonColorRgb = "rgb(236, 72, 153)";
+    private string? comparisonColorHsl = "hsl(330, 81%, 60%)";
     private string? submitMessage;
 
     private FormModel formModel = new();
@@ -185,6 +236,23 @@
     private const string _disabledCode =
         """
         <ColorPicker @bind-Color="color" Disabled="true" />
+        """;
+
+    private const string _presetsOnlyCode =
+        """
+        <ColorPicker @bind-Color="color" ShowInputs="false" />
+        """;
+
+    private const string _rgbaCode =
+        """
+        <ColorPicker @bind-Color="color" Format="ColorFormat.RGB" ShowAlpha="true" />
+        """;
+
+    private const string _comparisonCode =
+        """
+        <ColorPicker @bind-Color="hexColor" />
+        <ColorPicker @bind-Color="rgbColor" Format="ColorFormat.RGB" />
+        <ColorPicker @bind-Color="hslColor" Format="ColorFormat.HSL" />
         """;
 
     private const string _formCode =

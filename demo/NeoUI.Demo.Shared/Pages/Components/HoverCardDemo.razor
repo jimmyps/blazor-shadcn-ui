@@ -138,6 +138,49 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection
+        Title="Definition Tooltip"
+        Description="Provide definitions or explanations for technical terms.">
+        <DemoBlock Code="@_definitionCode">
+            <div class="text-sm max-w-2xl">
+                <p>
+                    The component uses
+                    <HoverCard OpenDelay="200">
+                        <HoverCardTrigger Class="border-b border-dashed border-primary cursor-help">
+                            Floating UI
+                        </HoverCardTrigger>
+                        <HoverCardContent>
+                            <div class="space-y-2">
+                                <h4 class="text-sm font-semibold">Floating UI</h4>
+                                <p class="text-sm text-muted-foreground">
+                                    A low-level library for positioning floating elements like tooltips, popovers, and dropdowns. It provides smart positioning with collision detection and automatic adjustments.
+                                </p>
+                                <a href="https://floating-ui.com" target="_blank" class="text-xs text-primary hover:underline">
+                                    Learn more →
+                                </a>
+                            </div>
+                        </HoverCardContent>
+                    </HoverCard>
+                    for intelligent positioning with automatic collision detection and
+                    <HoverCard OpenDelay="200">
+                        <HoverCardTrigger Class="border-b border-dashed border-primary cursor-help">
+                            ARIA attributes
+                        </HoverCardTrigger>
+                        <HoverCardContent>
+                            <div class="space-y-2">
+                                <h4 class="text-sm font-semibold">ARIA Attributes</h4>
+                                <p class="text-sm text-muted-foreground">
+                                    Accessible Rich Internet Applications (ARIA) attributes help make web content more accessible to people using assistive technologies like screen readers.
+                                </p>
+                            </div>
+                        </HoverCardContent>
+                    </HoverCard>
+                    for screen reader compatibility.
+                </p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_hoverCardProps" />
     </DemoSection>
@@ -192,6 +235,17 @@
             <HoverCardContent>
                 <h4 class="text-sm font-semibold">John Doe</h4>
                 <p class="text-sm text-muted-foreground">Full-stack developer.</p>
+            </HoverCardContent>
+        </HoverCard>
+        """;
+
+    private const string _definitionCode =
+        """
+        <HoverCard OpenDelay="200">
+            <HoverCardTrigger Class="border-b border-dashed border-primary cursor-help">Floating UI</HoverCardTrigger>
+            <HoverCardContent>
+                <h4 class="text-sm font-semibold">Floating UI</h4>
+                <p class="text-sm text-muted-foreground">Smart positioning library with collision detection.</p>
             </HoverCardContent>
         </HoverCard>
         """;

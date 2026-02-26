@@ -228,6 +228,29 @@
     </DemoSection>
 
     <DemoSection
+        Title="With Smooth Animations"
+        Description="Add CSS transitions for smooth expand/collapse effects.">
+        <DemoBlock Code="@_animationsCode">
+            <div class="max-w-md">
+                <Collapsible Class="border rounded-lg overflow-hidden">
+                    <div class="px-4 py-3">
+                        <CollapsibleTrigger Class="flex w-full items-center justify-between rounded-md hover:bg-accent hover:text-accent-foreground [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                            <span>Animated Content</span>
+                            <LucideIcon Name="chevron-down" Size="16" />
+                        </CollapsibleTrigger>
+                    </div>
+                    <CollapsibleContent Class="px-4 pb-4 transition-all duration-300 ease-in-out">
+                        <div class="text-sm animate-in fade-in duration-500">
+                            <p class="mb-2">This content animates smoothly when expanding and collapsing.</p>
+                            <p class="text-muted-foreground">CSS transitions create a polished user experience.</p>
+                        </div>
+                    </CollapsibleContent>
+                </Collapsible>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Accessibility"
         Description="The Collapsible component follows WAI-ARIA guidelines with proper keyboard navigation and ARIA attributes." />
 
@@ -380,6 +403,21 @@
             </div>
             <CollapsibleContent Class="px-4 pb-4">
                 <!-- feature list -->
+            </CollapsibleContent>
+        </Collapsible>
+        """;
+
+    private const string _animationsCode = """
+        <Collapsible Class="border rounded-lg overflow-hidden">
+            <div class="px-4 py-3">
+                <CollapsibleTrigger Class="flex w-full items-center justify-between rounded-md hover:bg-accent [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                    <span>Animated Content</span>
+                    <LucideIcon Name="chevron-down" Size="16" />
+                </CollapsibleTrigger>
+            </div>
+            <CollapsibleContent Class="px-4 pb-4 transition-all duration-300 ease-in-out">
+                <p class="text-sm mb-2">This content animates smoothly when expanding and collapsing.</p>
+                <p class="text-sm text-muted-foreground">CSS transitions create a polished user experience.</p>
             </CollapsibleContent>
         </Collapsible>
         """;

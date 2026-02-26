@@ -261,6 +261,66 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection Title="Features">
+        <ul class="list-disc list-inside space-y-2 text-sm">
+            <li>Slides in from any side (top, right, bottom, left)</li>
+            <li>Full keyboard navigation support</li>
+            <li>Focus is automatically trapped within the sheet</li>
+            <li>Can be controlled or uncontrolled</li>
+            <li>Manages screen reader announcements with ARIA</li>
+            <li>Scroll lock on body when sheet is open</li>
+            <li>Smooth slide animations with fade overlay</li>
+            <li>Respects prefers-reduced-motion</li>
+        </ul>
+    </DemoSection>
+
+    <DemoSection Title="Different Sides" Description="Use the Side parameter to control which edge the sheet slides in from.">
+        <DemoBlock Code="@_differentSidesCode">
+            <div class="flex flex-wrap gap-2">
+                <Sheet Side="SheetSide.Left">
+                    <SheetTrigger AsChild>
+                        <Button Variant="ButtonVariant.Outline">Left</Button>
+                    </SheetTrigger>
+                    <SheetContent>
+                        <SheetHeader>
+                            <SheetTitle>Left Sheet</SheetTitle>
+                        </SheetHeader>
+                    </SheetContent>
+                </Sheet>
+                <Sheet>
+                    <SheetTrigger AsChild>
+                        <Button Variant="ButtonVariant.Outline">Right</Button>
+                    </SheetTrigger>
+                    <SheetContent>
+                        <SheetHeader>
+                            <SheetTitle>Right Sheet</SheetTitle>
+                        </SheetHeader>
+                    </SheetContent>
+                </Sheet>
+                <Sheet Side="SheetSide.Top">
+                    <SheetTrigger AsChild>
+                        <Button Variant="ButtonVariant.Outline">Top</Button>
+                    </SheetTrigger>
+                    <SheetContent>
+                        <SheetHeader>
+                            <SheetTitle>Top Sheet</SheetTitle>
+                        </SheetHeader>
+                    </SheetContent>
+                </Sheet>
+                <Sheet Side="SheetSide.Bottom">
+                    <SheetTrigger AsChild>
+                        <Button Variant="ButtonVariant.Outline">Bottom</Button>
+                    </SheetTrigger>
+                    <SheetContent>
+                        <SheetHeader>
+                            <SheetTitle>Bottom Sheet</SheetTitle>
+                        </SheetHeader>
+                    </SheetContent>
+                </Sheet>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_sheetProps" />
     </DemoSection>
@@ -413,5 +473,12 @@
                 </SheetHeader>
             </SheetContent>
         </Sheet>
+        """;
+
+    private const string _differentSidesCode = """
+        <Sheet Side="SheetSide.Left"><!-- slides in from left --></Sheet>
+        <Sheet><!-- slides in from right (default) --></Sheet>
+        <Sheet Side="SheetSide.Top"><!-- slides in from top --></Sheet>
+        <Sheet Side="SheetSide.Bottom"><!-- slides in from bottom --></Sheet>
         """;
 }
