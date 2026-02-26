@@ -1,0 +1,107 @@
+@namespace BlazorUI.Components.Chart
+
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the radar grid shape.
+    /// </summary>
+    [Parameter]
+    public RadarShape Shape { get; set; } = RadarShape.Polygon;
+    
+    /// <summary>
+    /// Gets or sets the number of split levels (concentric grid lines).
+    /// </summary>
+    [Parameter]
+    public int SplitNumber { get; set; } = 5;
+    
+    /// <summary>
+    /// Gets or sets the radar radius relative to container (e.g., "75%", "200").
+    /// </summary>
+    [Parameter]
+    public string Radius { get; set; } = "75%";
+    
+    /// <summary>
+    /// Gets or sets the center position [x, y] (e.g., ["50%", "50%"]).
+    /// </summary>
+    [Parameter]
+    public string[]? Center { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to show axis lines (spokes).
+    /// </summary>
+    [Parameter]
+    public bool ShowAxisLine { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets whether to show split lines (rings).
+    /// </summary>
+    [Parameter]
+    public bool ShowSplitLine { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the axis line color.
+    /// </summary>
+    [Parameter]
+    public string? AxisLineColor { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the axis line width.
+    /// </summary>
+    [Parameter]
+    public int? AxisLineWidth { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the split line color.
+    /// </summary>
+    [Parameter]
+    public string? SplitLineColor { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the split line width.
+    /// </summary>
+    [Parameter]
+    public int? SplitLineWidth { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to show radar indicator labels (axis names like "Coding", "Design", etc.).
+    /// </summary>
+    [Parameter]
+    public bool ShowIndicatorLabels { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the text color for radar indicator labels. Supports CSS variables like 'var(--foreground)'.
+    /// </summary>
+    [Parameter]
+    public string? IndicatorColor { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the font size for radar indicator labels.
+    /// </summary>
+    [Parameter]
+    public int? IndicatorFontSize { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the font weight for radar indicator labels (e.g., "normal", "bold").
+    /// </summary>
+    [Parameter]
+    public string? IndicatorFontWeight { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the child content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterRadarGrid(this); } catch { }
+        }
+    }
+}

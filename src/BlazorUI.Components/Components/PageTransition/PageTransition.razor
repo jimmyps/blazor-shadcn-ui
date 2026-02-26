@@ -1,0 +1,151 @@
+@using Microsoft.AspNetCore.Components.Routing
+@using BlazorUI.Components.RenderState
+@using BlazorUI.Components.Motion
+@inject NavigationManager Nav
+@implements IDisposable
+@namespace BlazorUI.Components
+
+@*
+    PageTransition Component
+    
+    Wraps page content with smooth transitions during navigation.
+    Respects render lifecycle state to avoid transitions during SSR/prerender.
+    
+    Usage in Layout:
+    
+    <RenderStateProvider>
+        <PageTransition>
+            @Body
+        </PageTransition>
+    </RenderStateProvider>
+    
+    Features:
+    - Automatic fade transitions on page navigation
+    - Respects SSR/prerendering (no transitions during initial load)
+    - Only animates on enhanced (SPA) navigation  
+    - Leverages the Motion component for smooth animations
+    - Configurable duration, easing, and animation type
+*@
+
+@if (DisableAnimation || !_shouldAnimate)
+{
+    @* No animation wrapper - render content directly *@
+    <div @key="@_currentUri" class="@Class">
+        @ChildContent
+    </div>
+}
+else
+{
+    @* Wrap with Motion for animated transitions *@
+    <Motion @key="@_currentUri" 
+            Trigger="@MotionTrigger.OnAppear" 
+            Class="@Class"
+            DisableOnPrerender="true">
+        <Presets>
+            <FadeIn From="@FromOpacity" To="@ToOpacity" Duration="@Duration" />
+            @if (EnableSlide)
+            {
+                <SlideInFromBottom From="@SlideDistance" Duration="@Duration" />
+            }
+        </Presets>
+        <ChildContent>
+            @ChildContent
+        </ChildContent>
+    </Motion>
+}
+
+@code {
+    private string? _currentUri;
+    private bool _shouldAnimate = false;
+
+    /// <summary>
+    /// The page content to wrap with transitions.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// The render context from RenderStateProvider.
+    /// Used to detect when it's safe to animate.
+    /// </summary>
+    [CascadingParameter]
+    public AppRenderContext? RenderContext { get; set; }
+
+    /// <summary>
+    /// Disable all page transition animations. Default: false
+    /// Useful for debugging or user preference.
+    /// </summary>
+    [Parameter]
+    public bool DisableAnimation { get; set; } = false;
+
+    /// <summary>
+    /// Duration of the transition in seconds. Default: 0.25
+    /// </summary>
+    [Parameter]
+    public double Duration { get; set; } = 0.25;
+
+    /// <summary>
+    /// Starting opacity for fade transition. Default: 0
+    /// </summary>
+    [Parameter]
+    public double FromOpacity { get; set; } = 0;
+
+    /// <summary>
+    /// Ending opacity for fade transition. Default: 1
+    /// </summary>
+    [Parameter]
+    public double ToOpacity { get; set; } = 1;
+
+    /// <summary>
+    /// Enable slide animation in addition to fade. Default: false
+    /// </summary>
+    [Parameter]
+    public bool EnableSlide { get; set; } = false;
+
+    /// <summary>
+    /// Slide distance in pixels when EnableSlide is true. Default: 10
+    /// </summary>
+    [Parameter]
+    public int SlideDistance { get; set; } = 10;
+
+    /// <summary>
+    /// Additional CSS classes to apply to the transition container.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _currentUri = Nav.Uri;
+        Nav.LocationChanged += OnLocationChanged;
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Only animate if we're interactive, not hydrating, and animations are enabled
+        _shouldAnimate = !DisableAnimation && 
+                        RenderContext?.IsInteractive == true && 
+                        RenderContext?.IsHydrating == false;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        // Update current URI to trigger re-render with new key
+        _currentUri = e.Location;
+        
+        // Enable animations for future navigations once we're interactive
+        if (!DisableAnimation && 
+            RenderContext?.IsInteractive == true && 
+            RenderContext?.IsHydrating == false)
+        {
+            _shouldAnimate = true;
+        }
+        
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        Nav.LocationChanged -= OnLocationChanged;
+    }
+}

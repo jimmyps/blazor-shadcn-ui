@@ -1,0 +1,81 @@
+@namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Chart.Series
+@inherits SeriesBase
+
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the area color (legacy, use Fill instead).
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether emphasis is enabled.
+    /// </summary>
+    [Parameter]
+    public bool Emphasis { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the focus behavior.
+    /// </summary>
+    [Parameter]
+    public Focus Focus { get; set; } = Focus.None;
+    
+    /// <summary>
+    /// Gets or sets whether to show dots at data points.
+    /// </summary>
+    [Parameter]
+    public bool ShowDots { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the line width in pixels.
+    /// </summary>
+    [Parameter]
+    public int LineWidth { get; set; } = 1;
+    
+    /// <summary>
+    /// Gets or sets the opacity for the area fill (0.0 to 1.0).
+    /// Maps to series.areaStyle.opacity. If Fill.Opacity is also set, Fill.Opacity takes precedence.
+    /// </summary>
+    [Parameter]
+    public double? Opacity { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the stack group ID for stacked areas.
+    /// </summary>
+    [Parameter]
+    public string? StackId { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the interpolation type for the area.
+    /// </summary>
+    [Parameter]
+    public InterpolationType Interpolation { get; set; } = InterpolationType.Natural;
+    
+    /// <summary>
+    /// Gets the registered Fill component.
+    /// </summary>
+    public Fill? Fill { get; private set; }
+    
+    /// <summary>
+    /// Registers a Fill component.
+    /// </summary>
+    public void RegisterFill(Fill fill)
+    {
+        Fill = fill;
+    }
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterArea(this); } catch { }
+        }
+    }
+}

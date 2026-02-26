@@ -1,0 +1,56 @@
+@namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Chart.Series
+@inherits SeriesBase
+
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the bar color (legacy, use Fill instead).
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether emphasis is enabled.
+    /// </summary>
+    [Parameter]
+    public bool Emphasis { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the focus behavior.
+    /// </summary>
+    [Parameter]
+    public Focus Focus { get; set; } = Focus.None;
+    
+    /// <summary>
+    /// Gets or sets the stack group ID for stacked bars.
+    /// </summary>
+    [Parameter]
+    public string? StackId { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the border radius for bar corners.
+    /// </summary>
+    [Parameter]
+    public int? Radius { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the opacity for the bars (0.0 to 1.0).
+    /// Maps to series.itemStyle.opacity.
+    /// </summary>
+    [Parameter]
+    public double? Opacity { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterBar(this); } catch { }
+        }
+    }
+}

@@ -1,0 +1,122 @@
+@namespace BlazorUI.Components.Chart
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to show the Y axis.
+    /// </summary>
+    [Parameter]
+    public bool Show { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the data key for Y axis values.
+    /// </summary>
+    [Parameter]
+    public string? DataKey { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the scale type for the axis.
+    /// </summary>
+    [Parameter]
+    public AxisScale Scale { get; set; } = AxisScale.Auto;
+    
+    /// <summary>
+    /// Gets or sets the position of the Y axis (left or right).
+    /// Maps to yAxis.position.
+    /// </summary>
+    [Parameter]
+    public YAxisPosition Position { get; set; } = YAxisPosition.Left;
+    
+    /// <summary>
+    /// Gets or sets the minimum value for the axis.
+    /// Maps to yAxis.min.
+    /// </summary>
+    [Parameter]
+    public double? Min { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the maximum value for the axis.
+    /// Maps to yAxis.max.
+    /// </summary>
+    [Parameter]
+    public double? Max { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the interval of axis ticks.
+    /// Maps to yAxis.interval.
+    /// </summary>
+    [Parameter]
+    public double? Interval { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to show the axis line.
+    /// </summary>
+    [Parameter]
+    public bool AxisLine { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets whether to show tick lines.
+    /// </summary>
+    [Parameter]
+    public bool TickLine { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the color of the axis line.
+    /// Maps to axisLine.lineStyle.color.
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the width of the axis line in pixels.
+    /// Maps to axisLine.lineStyle.width.
+    /// </summary>
+    [Parameter]
+    public int? Width { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the color of the tick lines.
+    /// Maps to axisTick.lineStyle.color.
+    /// </summary>
+    [Parameter]
+    public string? TickColor { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the width of the tick lines in pixels.
+    /// Maps to axisTick.lineStyle.width.
+    /// </summary>
+    [Parameter]
+    public int? TickWidth { get; set; }
+
+    /// <summary>
+    /// Gets or sets the child content for nested components (e.g., AxisLabel).
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Gets the registered AxisLabel component, if any.
+    /// </summary>
+    public AxisLabel? AxisLabelComponent { get; private set; }
+
+    /// <summary>
+    /// Registers an AxisLabel child component.
+    /// </summary>
+    public void RegisterAxisLabel(AxisLabel axisLabel)
+    {
+        AxisLabelComponent = axisLabel;
+    }
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterYAxis(this); } catch { }
+        }
+    }
+}

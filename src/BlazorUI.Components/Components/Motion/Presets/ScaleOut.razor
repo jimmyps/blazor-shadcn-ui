@@ -1,0 +1,44 @@
+@inherits MotionPresetBase
+@namespace BlazorUI.Components.Motion
+
+@*
+    ScaleOut Preset - Scale element out from full size to small
+*@
+
+@code {
+    /// <summary>
+    /// Starting scale (0-1+). Default: 1
+    /// </summary>
+    [Parameter]
+    public double From { get; set; } = 1;
+
+    /// <summary>
+    /// Ending scale (0-1+). Default: 0.8
+    /// </summary>
+    [Parameter]
+    public double To { get; set; } = 0.8;
+
+    /// <summary>
+    /// Duration in seconds. Default: 0.2
+    /// </summary>
+    [Parameter]
+    public double Duration { get; set; } = 0.2;
+
+    public override List<MotionKeyframe> GetKeyframes()
+    {
+        return new List<MotionKeyframe>
+        {
+            new MotionKeyframe { Scale = From },
+            new MotionKeyframe { Scale = To }
+        };
+    }
+
+    public override MotionOptions? GetOptions()
+    {
+        return new MotionOptions
+        {
+            Duration = Duration,
+            Easing = MotionEasing.EaseIn
+        };
+    }
+}

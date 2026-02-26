@@ -1,0 +1,103 @@
+@namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Chart.Series
+@inherits SeriesBase
+
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the line color (legacy, use Fill instead).
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether emphasis is enabled.
+    /// </summary>
+    [Parameter]
+    public bool Emphasis { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the focus behavior.
+    /// </summary>
+    [Parameter]
+    public Focus Focus { get; set; } = Focus.None;
+    
+    /// <summary>
+    /// Gets or sets whether to show dots at data points.
+    /// </summary>
+    [Parameter]
+    public bool ShowDots { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the size of dots/symbols at data points in pixels.
+    /// Maps to series.symbolSize.
+    /// </summary>
+    [Parameter]
+    public int DotSize { get; set; } = 4;
+    
+    /// <summary>
+    /// Gets or sets the shape of dots/symbols at data points.
+    /// Maps to series.symbol.
+    /// </summary>
+    [Parameter]
+    public SymbolShape DotShape { get; set; } = SymbolShape.EmptyCircle;
+    
+    /// <summary>
+    /// Gets or sets the line width in pixels.
+    /// </summary>
+    [Parameter]
+    public int LineWidth { get; set; } = 1;
+    
+    /// <summary>
+    /// Gets or sets the opacity for the line (0.0 to 1.0).
+    /// Maps to series.lineStyle.opacity or itemStyle.opacity.
+    /// </summary>
+    [Parameter]
+    public double? Opacity { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether the line should be dashed.
+    /// </summary>
+    [Parameter]
+    public bool Dashed { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the interpolation type for the line.
+    /// </summary>
+    [Parameter]
+    public InterpolationType Interpolation { get; set; } = InterpolationType.Natural;
+    
+    /// <summary>
+    /// Gets the registered Fill component.
+    /// </summary>
+    public Fill? Fill { get; private set; }
+    
+    /// <summary>
+    /// Registers a Fill component.
+    /// </summary>
+    public void RegisterFill(Fill fill)
+    {
+        Fill = fill;
+    }
+    
+    protected override void OnInitialized()
+    {
+        // Register with parent chart
+        if (Parent != null)
+        {
+            try
+            {
+                Parent.RegisterLine(this);
+            }
+            catch
+            {
+                // Parent doesn't support Line series
+            }
+        }
+    }
+}

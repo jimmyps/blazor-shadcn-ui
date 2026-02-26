@@ -25,6 +25,8 @@ dotnet add package NeoUI.Blazor
 This package automatically includes:
 - `NeoUI.Blazor.Primitives` - Headless primitives providing behavior and accessibility
 - `NeoUI.Icons.Lucide` - 1,640+ beautiful icons
+- `NeoUI.Icons.Heroicons` - 1,288 icons across 4 variants
+- `NeoUI.Icons.Feather` - 286 minimalist icons
 - Pre-built CSS - No Tailwind setup required!
 
 ## 🚀 Quick Start
@@ -33,14 +35,21 @@ This package automatically includes:
 
 ```razor
 @using NeoUI.Blazor
-@using NeoUI.Icons.Lucide
 ```
 
 All components and their enums (e.g. `ButtonVariant`, `InputType`) live in the single `NeoUI.Blazor` namespace. If you use chart components, also add `@using NeoUI.Blazor.Charts`.
 
-### 2. Add CSS to your `App.razor`:
+**Optional icon packages** — add whichever you need:
 
-NeoUI.Blazor Components come with pre-built CSS - no Tailwind setup required!
+```razor
+@using NeoUI.Icons.Lucide      @* 1,640+ icons *@
+@using NeoUI.Icons.Heroicons   @* 1,288 icons across 4 variants *@
+@using NeoUI.Icons.Feather     @* 286 minimalist icons *@
+```
+
+### 2. Add CSS and scripts to your `App.razor`:
+
+NeoUI.Blazor Components come with pre-built CSS and a theme script — no Tailwind setup required!
 
 ```razor
 <!DOCTYPE html>
@@ -51,7 +60,10 @@ NeoUI.Blazor Components come with pre-built CSS - no Tailwind setup required!
     <base href="/" />
 
     <!-- Pre-built NeoUI.Blazor styles -->
-    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/components.css"]" />
+    <link href="@Assets["_content/NeoUI.Blazor/components.css"]" rel="stylesheet" />
+
+    <!-- Theme script: reads localStorage and applies classes before Blazor loads (prevents FOUC) -->
+    <script src="@Assets["_content/NeoUI.Blazor/js/theme.js"]"></script>
 
     <ImportMap />
     <HeadOutlet />

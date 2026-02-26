@@ -1,0 +1,27 @@
+@namespace BlazorUI.Components.Motion
+
+@*
+    Presets Container Component
+    
+    Container for animation preset components (FadeIn, ScaleIn, Spring, etc.).
+    Presets are collected and applied to the parent Motion component.
+*@
+
+@ChildContent
+
+@code {
+    /// <summary>
+    /// Preset components to apply (FadeIn, ScaleIn, Spring, etc.).
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [CascadingParameter]
+    private Motion? ParentMotion { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Presets are collected by individual preset components
+        // This component just acts as a logical container
+    }
+}

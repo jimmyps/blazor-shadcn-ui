@@ -1,0 +1,13 @@
+@namespace BlazorUI.Components.Chart
+
+<p class="chart-description text-sm text-muted-foreground">
+    @ChildContent
+</p>
+
+@code {
+    /// <summary>
+    /// Gets or sets the child content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

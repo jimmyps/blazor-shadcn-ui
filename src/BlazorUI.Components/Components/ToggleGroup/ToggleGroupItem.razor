@@ -1,0 +1,11 @@
+@namespace BlazorUI.Components.ToggleGroup
+
+<button 
+    type="button"
+    role="@(ParentGroup?.Type == ToggleGroupType.Single ? "radio" : "checkbox")"
+    aria-checked="@IsSelected"
+    disabled="@(Disabled || ParentGroup?.Disabled == true)"
+    @onclick="OnClickAsync"
+    class="@CssClass">
+    @ChildContent
+</button>

@@ -1,0 +1,59 @@
+@inherits MotionPresetBase
+@namespace BlazorUI.Components.Motion
+
+@*
+    Spring Preset - Apply spring physics to the animation
+    
+    This preset modifies the easing of other animations to use spring physics
+    for a natural, bouncy feel.
+*@
+
+@code {
+    /// <summary>
+    /// Mass of the spring. Higher = slower. Default: 1.0
+    /// </summary>
+    [Parameter]
+    public double Mass { get; set; } = 1.0;
+
+    /// <summary>
+    /// Stiffness of the spring. Higher = snappier. Default: 100
+    /// </summary>
+    [Parameter]
+    public double Stiffness { get; set; } = 100;
+
+    /// <summary>
+    /// Damping ratio. Higher = less oscillation. Default: 10
+    /// </summary>
+    [Parameter]
+    public double Damping { get; set; } = 10;
+
+    /// <summary>
+    /// Initial velocity. Default: 0
+    /// </summary>
+    [Parameter]
+    public double Velocity { get; set; } = 0;
+
+    /// <summary>
+    /// Bounce amount (0-1). Alternative to stiffness/damping.
+    /// </summary>
+    [Parameter]
+    public double? Bounce { get; set; }
+
+    public override List<MotionKeyframe> GetKeyframes()
+    {
+        // Spring doesn't define keyframes, it modifies timing
+        return new List<MotionKeyframe>();
+    }
+
+    public override SpringOptions? GetSpringOptions()
+    {
+        return new SpringOptions
+        {
+            Mass = Mass,
+            Stiffness = Stiffness,
+            Damping = Damping,
+            Velocity = Velocity,
+            Bounce = Bounce
+        };
+    }
+}

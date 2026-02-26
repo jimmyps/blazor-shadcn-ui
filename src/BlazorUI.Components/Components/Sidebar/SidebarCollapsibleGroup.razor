@@ -1,0 +1,120 @@
+@namespace BlazorUI.Components.Sidebar
+@using BlazorUI.Components.Collapsible
+@using BlazorUI.Components.Services
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.DependencyInjection
+@inject CollapsibleStateService StateService
+@inject IServiceProvider ServiceProvider
+@inject PersistentComponentState PersistentState
+@implements IDisposable
+
+@*
+    SidebarCollapsibleGroup - A wrapper component that manages collapsible state persistence.
+    
+    Automatically persists open/closed state using PersistentComponentState for seamless SSR→Client handover,
+    localStorage (client-side) and cookies (SSR fallback).
+    
+    Usage:
+    <SidebarCollapsibleGroup StateKey="sidebar-menu-name" DefaultOpen="false">
+        <CollapsibleTrigger>...</CollapsibleTrigger>
+        <CollapsibleContent>...</CollapsibleContent>
+    </SidebarCollapsibleGroup>
+*@
+
+<Collapsible Open="@_isOpen" OpenChanged="@OnIsOpenChanged">
+    @ChildContent
+</Collapsible>
+
+@code {
+    /// <summary>
+    /// Unique key for storing this collapsible's state.
+    /// Should be unique across the application (e.g., "sidebar-primitives-menu").
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required string StateKey { get; set; }
+
+    /// <summary>
+    /// Default open state when no saved state exists.
+    /// </summary>
+    [Parameter]
+    public bool DefaultOpen { get; set; } = false;
+
+    /// <summary>
+    /// Child content (typically CollapsibleTrigger and CollapsibleContent).
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private bool _isOpen = false;
+    private PersistingComponentStateSubscription _persistingSubscription;
+
+    protected override void OnInitialized()
+    {
+        // Try to get IHttpContextAccessor - it's only available in Server/SSR, not in WebAssembly
+        var httpContextAccessor = ServiceProvider.GetService<IHttpContextAccessor>();
+        
+        // Try to restore state from persistent component state (client-side after prerender)
+        var persistenceKey = $"SidebarCollapsible_{StateKey}";
+        if (PersistentState.TryTakeFromJson<bool>(persistenceKey, out var persistedOpen))
+        {
+            _isOpen = persistedOpen;
+        }
+        // Otherwise try to read from cookie during server-side rendering (only available in Server/SSR)
+        else if (httpContextAccessor?.HttpContext != null)
+        {
+            var cookieKey = CollapsibleStateService.KeyPrefix + StateKey;
+            
+            // URL-encode the cookie key to match how JavaScript sets it
+            var encodedCookieKey = Uri.EscapeDataString(cookieKey);
+            
+            var cookies = httpContextAccessor.HttpContext.Request.Cookies;
+            string? cookieValue = null;
+            
+            if (cookies.TryGetValue(encodedCookieKey, out var encodedValue))
+            {
+                cookieValue = Uri.UnescapeDataString(encodedValue);
+            }
+            else if (cookies.TryGetValue(cookieKey, out var plainValue))
+            {
+                cookieValue = plainValue;
+            }
+            
+            _isOpen = (cookieValue != null && bool.TryParse(cookieValue, out var savedOpen))
+                ? savedOpen
+                : DefaultOpen;
+        }
+        else
+        {
+            _isOpen = DefaultOpen;
+        }
+
+        // Register a callback to persist the state during prerendering
+        _persistingSubscription = PersistentState.RegisterOnPersisting(PersistState);
+    }
+
+    private Task PersistState()
+    {
+        var persistenceKey = $"SidebarCollapsible_{StateKey}";
+        PersistentState.PersistAsJson(persistenceKey, _isOpen);
+        return Task.CompletedTask;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // No longer needed - state is seamlessly handed over via PersistentComponentState
+        // Keeping this empty for potential future client-side only scenarios
+        await Task.CompletedTask;
+    }
+
+    private async Task OnIsOpenChanged(bool newValue)
+    {
+        _isOpen = newValue;
+        await StateService.SetStateAsync(StateKey, newValue);
+    }
+
+    public void Dispose()
+    {
+        _persistingSubscription.Dispose();
+    }
+}

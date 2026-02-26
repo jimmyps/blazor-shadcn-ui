@@ -1,0 +1,241 @@
+@namespace BlazorUI.Primitives.DropdownMenu
+@inject IJSRuntime JSRuntime
+@implements IDropdownMenuItem
+@implements IDisposable
+
+@* Dropdown menu item - represents an individual menu action *@
+<div @ref="_itemRef"
+     role="menuitem"
+     tabindex="@(Disabled ? -1 : -1)"
+     aria-disabled="@Disabled.ToString().ToLowerInvariant()"
+     data-disabled="@(Disabled ? "true" : null)"
+     @onclick="HandleClick"
+     @onkeydown="HandleKeyDown"
+     @onkeydown:preventDefault="true"
+     @onmouseenter="HandleMouseEnter"
+     @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter]
+    private DropdownMenuContext Context { get; set; } = null!;
+
+    [CascadingParameter(Name = "DropdownMenuContentContext")]
+    private DropdownMenuContent? ContentContext { get; set; }
+    
+    [CascadingParameter(Name = "ParentSubContext")]
+    private DropdownMenuSubContext? ParentSubContext { get; set; }
+    
+    [CascadingParameter]
+    private DropdownMenuSubContent? SubContentContext { get; set; }
+
+    private ElementReference _itemRef;
+    private IJSObjectReference? _keyboardNavModule;
+    private bool _keyboardNavModuleLoaded = false;
+
+    /// <summary>
+    /// The content to display inside the menu item.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional attributes to apply to the menu item element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Whether the menu item is disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    /// <summary>
+    /// Custom click handler. If provided, this is called when the item is clicked.
+    /// The menu will close after the handler executes unless CloseOnSelect is false.
+    /// </summary>
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    /// <summary>
+    /// Whether to close the dropdown menu when this item is selected.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool CloseOnSelect { get; set; } = true;
+
+    protected override void OnInitialized()
+    {
+        if (Context == null)
+        {
+            throw new InvalidOperationException(
+                "DropdownMenuItem must be used within a DropdownMenu component. " +
+                "Ensure DropdownMenuItem is a child of a DropdownMenu component.");
+        }
+
+        // Register this item with the appropriate content for keyboard navigation
+        // If we're inside a submenu, register with the submenu content
+        // Otherwise, register with the root menu content
+        if (SubContentContext != null)
+        {
+            SubContentContext.RegisterMenuItem(this);
+        }
+        else
+        {
+            ContentContext?.RegisterMenuItem(this);
+        }
+    }
+
+    private async Task HandleClick(MouseEventArgs args)
+    {
+        if (Disabled) return;
+
+        // Invoke custom click handler if provided
+        if (OnClick.HasDelegate)
+        {
+            await OnClick.InvokeAsync(args);
+        }
+
+        // Close the dropdown menu if configured
+        if (CloseOnSelect && Context != null)
+        {
+            Context.Close();
+        }
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs args)
+    {
+        if (Disabled) return;
+
+        // Enter or Space to activate
+        if (args.Key == "Enter" || args.Key == " ")
+        {
+            _ = ClickAsync();
+        }
+    }
+
+    private async void HandleMouseEnter(MouseEventArgs args)
+    {
+        // Track if there was an active submenu that we're closing
+        bool hadActiveSubmenu = false;
+        
+        // Close any active submenu when hovering over this item
+        // If we're inside a submenu (ParentSubContext exists), close nested submenus of that parent
+        // If we're at root level, close any active submenu from the root context
+        if (ParentSubContext != null)
+        {
+            // We're inside a submenu - close any nested submenus
+            hadActiveSubmenu = ParentSubContext.ActiveSubMenu != null;
+            ParentSubContext.CloseActiveSubMenu();
+        }
+        else
+        {
+            // We're at root level - close active submenu from root context
+            hadActiveSubmenu = Context?.ActiveSubMenu != null;
+            Context?.CloseActiveSubMenu();
+        }
+        
+        // Restore focus to the menu container when we closed a submenu
+        // This enables keyboard navigation to continue working
+        if (hadActiveSubmenu)
+        {
+            // Focus the parent menu container (SubContent or root Content)
+            if (SubContentContext != null)
+            {
+                await SubContentContext.FocusContainerAsync();
+            }
+            else if (ContentContext != null)
+            {
+                await ContentContext.FocusContainerAsync();
+            }
+        }
+    }
+
+    // IDropdownMenuItem implementation
+    public async Task FocusAsync()
+    {
+        await FocusElementAsync(_itemRef, "menu item");
+    }
+
+    public async Task ClickAsync()
+    {
+        if (Disabled) return;
+        await HandleClick(new MouseEventArgs());
+    }
+
+    /// <summary>
+    /// Focuses an element using JavaScript with fallback to C# focus.
+    /// Lazy-loads the keyboard-nav module on first use.
+    /// </summary>
+    private async Task<bool> FocusElementAsync(ElementReference element, string elementName = "element")
+    {
+        // Lazy-load keyboard nav module on first focus attempt
+        if (!_keyboardNavModuleLoaded)
+        {
+            try
+            {
+                _keyboardNavModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/keyboard-nav.js");
+                _keyboardNavModuleLoaded = true;
+            }
+            catch
+            {
+                // Module load failed, will use C# fallback
+            }
+        }
+
+        // Try JavaScript focus first
+        if (_keyboardNavModule != null)
+        {
+            try
+            {
+                var focused = await _keyboardNavModule.InvokeAsync<bool>("focusElement", element);
+                if (focused)
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                // JS focus failed, will try C# fallback
+            }
+        }
+
+        // Fallback to C# focus
+        try
+        {
+            await element.FocusAsync();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Unregister this item when disposed
+        if (SubContentContext != null)
+        {
+            SubContentContext.UnregisterMenuItem(this);
+        }
+        else
+        {
+            ContentContext?.UnregisterMenuItem(this);
+        }
+
+        // Cleanup keyboard nav module
+        if (_keyboardNavModule != null)
+        {
+            try
+            {
+                _keyboardNavModule.DisposeAsync();
+            }
+            catch { }
+            _keyboardNavModule = null;
+        }
+    }
+}

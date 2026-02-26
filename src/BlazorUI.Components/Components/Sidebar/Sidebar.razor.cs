@@ -1,0 +1,268 @@
+using BlazorUI.Primitives.Sheet;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
+using System;
+
+namespace BlazorUI.Components.Sidebar;
+
+/// <summary>
+/// Represents the main sidebar navigation component with responsive behavior and state management.
+/// </summary>
+public partial class Sidebar : ComponentBase, IDisposable
+{
+    /// <summary>
+    /// Gets the cascaded sidebar context from the parent SidebarProvider.
+    /// </summary>
+    [CascadingParameter]
+    private SidebarContext? Context { get; set; }
+
+    /// <summary>
+    /// Gets or sets the navigation manager for routing operations.
+    /// </summary>
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
+    private SidebarContext? _subscribedContext;
+
+    /// <summary>
+    /// The content to render inside the sidebar.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes to apply to the sidebar.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Collapsible behavior: icon-only when collapsed, full width when expanded.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool Collapsible { get; set; } = true;
+
+    /// <summary>
+    /// Whether menu items should automatically detect their active state based on current URL.
+    /// When enabled, all SidebarMenuButton and SidebarMenuSubButton components will automatically
+    /// highlight based on whether their Href matches the current route.
+    /// Default is false.
+    /// </summary>
+    [Parameter]
+    public bool AutoDetectActive { get; set; } = false;
+
+    /// <summary>
+    /// Additional attributes to apply to the sidebar element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool _isNavigationListenerActive = false;
+
+    /// <summary>
+    /// Gets or sets whether the sidebar is open on mobile devices.
+    /// </summary>
+    private bool MobileOpen
+    {
+        get => Context?.OpenMobile ?? false;
+        set
+        {
+            if (Context != null)
+            {
+                Context.SetOpenMobile(value);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the sheet side based on sidebar configuration.
+    /// </summary>
+    private SheetSide GetSheetSide()
+    {
+        return Context?.Side == SidebarSide.Right
+            ? SheetSide.Right
+            : SheetSide.Left;
+    }
+
+    /// <summary>
+    /// Gets the CSS classes for desktop sidebar rendering.
+    /// </summary>
+    private string GetDesktopClasses()
+    {
+        var baseClasses = "group peer hidden md:flex flex-col text-sidebar-foreground shrink-0";
+
+        // Variant-specific classes
+        var variantClasses = Context?.Variant switch
+        {
+            SidebarVariant.Floating => "bg-sidebar border border-sidebar-border rounded-lg shadow-lg data-[state=closed]:border-0 data-[state=closed]:shadow-none",
+            SidebarVariant.Inset => "bg-sidebar",
+            _ => "bg-sidebar border-r border-sidebar-border data-[state=closed]:border-0"
+        };
+
+        // Side-specific positioning
+        var sideClasses = Context?.Side == SidebarSide.Right
+            ? "border-r-0 border-l data-[state=closed]:border-0"
+            : "";
+
+        // Width and transition classes
+        var widthClasses = Collapsible
+            ? "w-[var(--sidebar-width)] transition-[width] duration-200 ease-linear data-[state=collapsed]:w-[var(--sidebar-width-icon)]"
+            : "w-[var(--sidebar-width)] transition-[width,opacity] duration-200 ease-linear data-[state=closed]:w-0 data-[state=closed]:opacity-0 overflow-hidden";
+
+        // Variant-specific layout classes with independent scrolling
+        var layoutClasses = Context?.Variant switch
+        {
+            SidebarVariant.Floating => "fixed top-2 bottom-2 z-10 h-[calc(100vh-1rem)] overflow-y-auto",
+            SidebarVariant.Inset => "relative h-full overflow-y-auto",
+            _ => "sticky top-0 h-screen overflow-y-auto"
+        };
+
+        // Add left/right positioning for floating/default variants
+        if (Context?.Variant != SidebarVariant.Inset)
+        {
+            if (Context?.Variant == SidebarVariant.Floating)
+            {
+                layoutClasses += Context?.Side == SidebarSide.Right ? " right-2" : " left-2";
+            }
+            else
+            {
+                layoutClasses += Context?.Side == SidebarSide.Right ? " right-0" : " left-0";
+            }
+        }
+
+        return Utilities.ClassNames.cn(
+            baseClasses,
+            variantClasses,
+            sideClasses,
+            widthClasses,
+            layoutClasses,
+            Class
+        );
+    }
+
+    /// <summary>
+    /// Gets the CSS classes for mobile sidebar rendering.
+    /// </summary>
+    private string GetMobileClasses()
+    {
+        return Utilities.ClassNames.cn(
+            "w-[var(--sidebar-width)] bg-sidebar p-0 flex flex-col overflow-y-auto",
+            "[&>button]:hidden", // Hide the default Sheet close button
+            Class
+        );
+    }
+
+    /// <summary>
+    /// Gets the data-state attribute value based on sidebar state.
+    /// </summary>
+    private string GetDataState()
+    {
+        if (Context == null) return "collapsed";
+
+        if (Context.Open) return "expanded";
+
+        // When not open: return "collapsed" if Collapsible (shows icons), "closed" if not Collapsible (fully hidden)
+        return Collapsible ? "collapsed" : "closed";
+    }
+
+    /// <inheritdoc/>
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        // Only resubscribe if context reference changed
+        if (Context != _subscribedContext)
+        {
+            // Unsubscribe from old context
+            if (_subscribedContext != null)
+            {
+                _subscribedContext.StateChanged -= OnContextStateChanged;
+            }
+
+            // Subscribe to new context
+            if (Context != null)
+            {
+                Context.StateChanged += OnContextStateChanged;
+
+                // Update the context with AutoDetectActive setting
+                Context.SetAutoDetectActive(AutoDetectActive);
+            }
+
+            _subscribedContext = Context;
+
+            // Set up or tear down navigation listener based on AutoDetectActive
+            SetupNavigationListener();
+        }
+    }
+
+    /// <summary>
+    /// Sets up or tears down the navigation listener based on AutoDetectActive setting.
+    /// </summary>
+    private void SetupNavigationListener()
+    {
+        if (AutoDetectActive && !_isNavigationListenerActive)
+        {
+            // Enable navigation tracking
+            NavigationManager.LocationChanged += OnLocationChanged;
+            _isNavigationListenerActive = true;
+
+            // Set initial path
+            UpdateCurrentPath();
+        }
+        else if (!AutoDetectActive && _isNavigationListenerActive)
+        {
+            // Disable navigation tracking
+            NavigationManager.LocationChanged -= OnLocationChanged;
+            _isNavigationListenerActive = false;
+        }
+        else if (AutoDetectActive && _isNavigationListenerActive)
+        {
+            // Already listening, just update the current path
+            UpdateCurrentPath();
+        }
+    }
+
+    /// <summary>
+    /// Handles navigation location changes to update current path for active state detection.
+    /// </summary>
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        UpdateCurrentPath();
+    }
+
+    /// <summary>
+    /// Updates the current path in the context for active state detection.
+    /// </summary>
+    private void UpdateCurrentPath()
+    {
+        if (Context == null) return;
+
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        Context.SetCurrentPath(uri.AbsolutePath);
+    }
+
+    /// <summary>
+    /// Handles context state changes and triggers re-rendering.
+    /// </summary>
+    private void OnContextStateChanged(object? sender, EventArgs e)
+    {
+        // Force re-render when sidebar state changes
+        StateHasChanged();
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        if (_subscribedContext != null)
+        {
+            _subscribedContext.StateChanged -= OnContextStateChanged;
+            _subscribedContext = null;
+        }
+
+        if (_isNavigationListenerActive)
+        {
+            NavigationManager.LocationChanged -= OnLocationChanged;
+        }
+    }
+}

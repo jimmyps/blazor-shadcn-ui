@@ -1,0 +1,39 @@
+@namespace BlazorUI.Components.Typography
+
+@switch (Variant)
+{
+    case TypographyVariant.H1:
+        <h1 class="@CssClass">@ChildContent</h1>
+        break;
+    case TypographyVariant.H2:
+        <h2 class="@CssClass">@ChildContent</h2>
+        break;
+    case TypographyVariant.H3:
+        <h3 class="@CssClass">@ChildContent</h3>
+        break;
+    case TypographyVariant.H4:
+        <h4 class="@CssClass">@ChildContent</h4>
+        break;
+    case TypographyVariant.Blockquote:
+        <blockquote class="@CssClass">@ChildContent</blockquote>
+        break;
+    case TypographyVariant.InlineCode:
+        <code class="@CssClass">@ChildContent</code>
+        break;
+    case TypographyVariant.Lead:
+        <p class="@CssClass">@ChildContent</p>
+        break;
+    case TypographyVariant.Large:
+        <div class="@CssClass">@ChildContent</div>
+        break;
+    case TypographyVariant.Small:
+        <small class="@CssClass">@ChildContent</small>
+        break;
+    case TypographyVariant.Muted:
+        <p class="@CssClass">@ChildContent</p>
+        break;
+    case TypographyVariant.P:
+    default:
+        <p class="@CssClass">@ChildContent</p>
+        break;
+}

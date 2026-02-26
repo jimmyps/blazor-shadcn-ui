@@ -1,0 +1,158 @@
+@namespace BlazorUI.Components.FileUpload
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="@WrapperClass" @ref="_dropZoneRef">
+    <div class="@DropZoneCssClass"
+         @ondrop="HandleDrop"
+         @ondragover="HandleDragOver"
+         @ondragleave="HandleDragLeave"
+         @ondragenter="HandleDragEnter">
+        
+        <InputFile id="@Id"
+                   @ref="_inputFileRef"
+                   OnChange="HandleFileSelected"
+                   multiple="@Multiple"
+                   accept="@Accept"
+                   disabled="@Disabled"
+                   class="hidden" />
+        
+        <label for="@Id" class="@LabelCssClass">
+            <div class="flex flex-col items-center justify-center gap-2 text-center p-6">
+                @if (!Disabled)
+                {
+                    <svg class="w-10 h-10 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                }
+                else
+                {
+                    <svg class="w-10 h-10 text-muted-foreground opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                }
+                
+                <div class="space-y-1">
+                    <p class="text-sm font-medium @(Disabled ? "text-muted-foreground" : "")">
+                        @DropZoneText
+                    </p>
+                    @if (!string.IsNullOrEmpty(Accept))
+                    {
+                        <p class="text-xs text-muted-foreground">
+                            Accepted: @Accept
+                        </p>
+                    }
+                    @if (MaxFileSize > 0)
+                    {
+                        <p class="text-xs text-muted-foreground">
+                            Max size: @FormatFileSize(MaxFileSize)
+                        </p>
+                    }
+                    @if (MaxFiles.HasValue)
+                    {
+                        <p class="text-xs text-muted-foreground">
+                            Max files: @MaxFiles
+                        </p>
+                    }
+                </div>
+            </div>
+        </label>
+    </div>
+
+    @if (_validationError != null)
+    {
+        <p class="text-sm text-destructive mt-2" role="alert" aria-live="polite">
+            @_validationError
+        </p>
+    }
+
+    @if (Files?.Any() == true)
+    {
+        <div class="mt-4 space-y-2">
+            <div class="flex items-center justify-between">
+                <p class="text-sm font-medium">
+                    Files (@Files.Count@(MaxFiles.HasValue ? $"/{MaxFiles}" : ""))
+                </p>
+                <p class="text-xs text-muted-foreground">
+                    Total: @FormatFileSize(Files.Sum(f => f.Size))
+                </p>
+            </div>
+            
+            <div class="space-y-2">
+                @foreach (var (file, index) in Files.Select((f, i) => (f, i)))
+                {
+                    <div class="@FileCssClass">
+                        <div class="flex items-start gap-3 flex-1 min-w-0">
+                            @if (ShowPreview && IsImageFile(file))
+                            {
+                                <div class="flex-shrink-0">
+                                    <img src="@GetPreviewUrl(file)" 
+                                         alt="@file.Name" 
+                                         class="w-12 h-12 object-cover rounded border border-border" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="flex-shrink-0 w-12 h-12 rounded border border-border bg-muted flex items-center justify-center">
+                                    @{
+                                        var iconType = GetFileIconType(file);
+                                        if (iconType == "pdf")
+                                        {
+                                            <svg class="w-6 h-6 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                            </svg>
+                                        }
+                                        else if (iconType == "word")
+                                        {
+                                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                        }
+                                        else if (iconType == "excel")
+                                        {
+                                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                                            </svg>
+                                        }
+                                        else
+                                        {
+                                            <svg class="w-6 h-6 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                            </svg>
+                                        }
+                                    }
+                                </div>
+                            }
+                            
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium truncate">@file.Name</p>
+                                <p class="text-xs text-muted-foreground">
+                                    @FormatFileSize(file.Size)
+                                </p>
+                                
+                                @if (ShowProgress && _uploadProgress.ContainsKey(index))
+                                {
+                                    <div class="mt-2">
+                                        <div class="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+                                            <div class="h-full bg-primary transition-all duration-300" 
+                                                 style="width: @(_uploadProgress[index])%"></div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        
+                        <button type="button"
+                                @onclick="() => RemoveFile(index)"
+                                disabled="@Disabled"
+                                class="flex-shrink-0 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                aria-label="Remove @file.Name">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

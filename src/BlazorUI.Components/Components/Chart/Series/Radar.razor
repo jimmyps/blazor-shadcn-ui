@@ -1,0 +1,56 @@
+@namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Chart.Series
+@inherits SeriesBase
+
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the series color (legacy, use Fill instead).
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether emphasis is enabled.
+    /// </summary>
+    [Parameter]
+    public bool Emphasis { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the focus behavior.
+    /// </summary>
+    [Parameter]
+    public Focus Focus { get; set; } = Focus.None;
+    
+    /// <summary>
+    /// Gets or sets whether to fill the radar area.
+    /// </summary>
+    [Parameter]
+    public bool FillArea { get; set; } = false;
+    
+    /// <summary>
+    /// Gets or sets the area fill opacity (0.0 to 1.0).
+    /// Only applies when FillArea is true.
+    /// </summary>
+    [Parameter]
+    public double? AreaOpacity { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the line width in pixels.
+    /// </summary>
+    [Parameter]
+    public int LineWidth { get; set; } = 2;
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterRadar(this); } catch { }
+        }
+    }
+}

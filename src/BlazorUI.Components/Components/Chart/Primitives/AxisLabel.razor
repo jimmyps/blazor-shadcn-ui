@@ -1,0 +1,116 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to show axis labels.
+    /// </summary>
+    [Parameter]
+    public bool? Show { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the rotation angle in degrees (clockwise). Common value: -45.
+    /// </summary>
+    [Parameter]
+    public int? Rotate { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the formatter string. Can be an ECharts template string or JavaScript function.
+    /// Examples: "{value}", "function(value) { return value + '%'; }"
+    /// </summary>
+    [Parameter]
+    public string? Formatter { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the interval for showing labels. Shows every Nth label.
+    /// </summary>
+    [Parameter]
+    public int? Interval { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to render labels inside the chart area.
+    /// </summary>
+    [Parameter]
+    public bool? Inside { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the distance to the axis line in pixels.
+    /// </summary>
+    [Parameter]
+    public int? Margin { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to hide overlapping labels.
+    /// </summary>
+    [Parameter]
+    public bool? HideOverlap { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the label color. CSS variable or hex color.
+    /// </summary>
+    [Parameter]
+    public string? Color { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the font size in pixels.
+    /// </summary>
+    [Parameter]
+    public int? FontSize { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the font family.
+    /// </summary>
+    [Parameter]
+    public string? FontFamily { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the font weight. E.g., "normal", "bold", "600".
+    /// </summary>
+    [Parameter]
+    public string? FontWeight { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the line height in pixels.
+    /// </summary>
+    [Parameter]
+    public int? LineHeight { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the horizontal text alignment. E.g., "left", "center", "right".
+    /// </summary>
+    [Parameter]
+    public string? Align { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the vertical text alignment. E.g., "top", "middle", "bottom".
+    /// </summary>
+    [Parameter]
+    public string? VerticalAlign { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the overflow behavior. E.g., "truncate", "break", "breakAll".
+    /// </summary>
+    [Parameter]
+    public string? Overflow { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the maximum width for label text.
+    /// </summary>
+    [Parameter]
+    public int? Width { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the ellipsis character for truncated text.
+    /// </summary>
+    [Parameter]
+    public string? Ellipsis { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterAxisLabel(this); } catch { }
+        }
+    }
+}

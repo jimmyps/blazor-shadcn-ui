@@ -1,0 +1,55 @@
+@namespace BlazorUI.Components.Chart
+
+@code {
+    [CascadingParameter] private dynamic? Parent { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the grid type (Circle or Polygon).
+    /// </summary>
+    [Parameter]
+    public PolarGridType Type { get; set; } = PolarGridType.Circle;
+    
+    /// <summary>
+    /// Gets or sets whether to show the grid.
+    /// </summary>
+    [Parameter]
+    public bool Show { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets the grid line color.
+    /// </summary>
+    [Parameter]
+    public string? Stroke { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the grid line width.
+    /// </summary>
+    [Parameter]
+    public int? StrokeWidth { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the number of split levels (concentric rings).
+    /// </summary>
+    [Parameter]
+    public int SplitNumber { get; set; } = 5;
+    
+    /// <summary>
+    /// Gets or sets whether to show the angle axis line.
+    /// </summary>
+    [Parameter]
+    public bool ShowAxisLine { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets whether to show split lines.
+    /// </summary>
+    [Parameter]
+    public bool ShowSplitLine { get; set; } = true;
+    
+    protected override void OnInitialized()
+    {
+        if (Parent != null)
+        {
+            try { Parent.RegisterPolarGrid(this); } catch { }
+        }
+    }
+}

@@ -1,0 +1,21 @@
+/* Fuchsia Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-fuchsia {
+    --primary: oklch(0.6100 0.2770 328.0000);
+    --primary-foreground: oklch(0.9850 0.0180 328.3630);
+    --ring: oklch(0.6100 0.2770 328.0000);
+    --sidebar-primary: oklch(0.6100 0.2770 328.0000);
+    --sidebar-primary-foreground: oklch(0.9850 0.0180 328.3630);
+    --sidebar-ring: oklch(0.6100 0.2770 328.0000);
+  }
+
+  :root.primary-fuchsia.dark {
+    --primary: oklch(0.7470 0.2350 328.3630);
+    --primary-foreground: oklch(0.9850 0.0180 328.3630);
+    --ring: oklch(0.7470 0.2350 328.3630);
+    --sidebar-primary: oklch(0.7470 0.2350 328.3630);
+    --sidebar-primary-foreground: oklch(0.9850 0.0180 328.3630);
+    --sidebar-ring: oklch(0.7470 0.2350 328.3630);
+  }
+}

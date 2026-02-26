@@ -1,0 +1,75 @@
+@namespace BlazorUI.Components.Chart
+@using BlazorUI.Components.Utilities
+
+<div class="@ContainerClass" style="height: @(Height)px; width: 100%;">
+    <div class="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
+        @if (ShowIcon)
+        {
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-50">
+                <line x1="12" x2="12" y1="20" y2="10"/>
+                <line x1="18" x2="18" y1="20" y2="4"/>
+                <line x1="6" x2="6" y1="20" y2="16"/>
+            </svg>
+        }
+        @if (Content != null)
+        {
+            @Content
+        }
+        else
+        {
+            <div class="text-center">
+                <p class="text-sm font-medium">@Title</p>
+                @if (!string.IsNullOrEmpty(Description))
+                {
+                    <p class="text-xs text-muted-foreground mt-1">@Description</p>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the height of the empty state in pixels.
+    /// </summary>
+    [Parameter]
+    public int Height { get; set; } = 350;
+    
+    /// <summary>
+    /// Gets or sets the title text to display.
+    /// </summary>
+    [Parameter]
+    public string Title { get; set; } = "No data available";
+    
+    /// <summary>
+    /// Gets or sets the description text to display.
+    /// </summary>
+    [Parameter]
+    public string? Description { get; set; }
+    
+    /// <summary>
+    /// Gets or sets whether to show the chart icon.
+    /// </summary>
+    [Parameter]
+    public bool ShowIcon { get; set; } = true;
+    
+    /// <summary>
+    /// Gets or sets custom content to display instead of the default message.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? Content { get; set; }
+    
+    /// <summary>
+    /// Gets or sets additional CSS classes.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+    
+    /// <summary>
+    /// Gets the computed CSS classes for the container.
+    /// </summary>
+    private string ContainerClass => ClassNames.cn(
+        "chart-empty-state",
+        Class
+    );
+}
