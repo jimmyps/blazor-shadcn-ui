@@ -350,10 +350,10 @@
 
     private static readonly IReadOnlyList<DemoPropRow> _multiSelectProps =
     [
-        new("Items", "IEnumerable&lt;TItem&gt;", "—", "The list of items to display."),
-        new("Values", "IEnumerable&lt;TValue&gt;?", "null", "Selected values. Use @bind-Values for two-way binding."),
-        new("ValueSelector", "Func&lt;TItem, TValue&gt;", "—", "Function to get the value from an item."),
-        new("DisplaySelector", "Func&lt;TItem, string&gt;", "—", "Function to get the display label from an item."),
+        new("Items", "IEnumerable<TItem>", "—", "The list of items to display."),
+        new("Values", "IEnumerable<TValue>?", "null", "Selected values. Use @bind-Values for two-way binding."),
+        new("ValueSelector", "Func<TItem, TValue>", "—", "Function to get the value from an item."),
+        new("DisplaySelector", "Func<TItem, string>", "—", "Function to get the display label from an item."),
         new("Placeholder", "string?", "null", "Placeholder text when nothing is selected."),
         new("SearchPlaceholder", "string?", "null", "Placeholder text in the search input."),
         new("EmptyMessage", "string?", "null", "Message shown when no items match the search."),

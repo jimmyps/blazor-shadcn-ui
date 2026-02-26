@@ -271,9 +271,9 @@
 
     private static readonly IReadOnlyList<DemoPropRow> _dataTableProps =
     [
-        new("Data", "IEnumerable&lt;TData&gt;", "—", "The data source for the table."),
+        new("Data", "IEnumerable<TData>", "—", "The data source for the table."),
         new("SelectionMode", "DataTableSelectionMode", "None", "Row selection mode: None, Single, Multiple."),
-        new("SelectedItems", "IReadOnlyCollection&lt;TData&gt;", "—", "Currently selected items. Use @bind-SelectedItems for two-way binding."),
+        new("SelectedItems", "IReadOnlyCollection<TData>", "—", "Currently selected items. Use @bind-SelectedItems for two-way binding."),
         new("EnableKeyboardNavigation", "bool", "true", "Enables arrow key navigation and Enter/Space to select rows."),
         new("ShowToolbar", "bool", "true", "Whether to show the toolbar (search + column visibility)."),
         new("ShowPagination", "bool", "true", "Whether to show pagination controls."),
@@ -285,11 +285,11 @@
 
     private static readonly IReadOnlyList<DemoPropRow> _dataTableColumnProps =
     [
-        new("Property", "Func&lt;TData, TValue&gt;", "—", "Expression to get the column value."),
+        new("Property", "Func<TData, TValue>", "—", "Expression to get the column value."),
         new("Header", "string", "—", "Column header text."),
         new("Sortable", "bool", "false", "Whether the column is sortable."),
         new("Alignment", "ColumnAlignment", "Left", "Cell alignment: Left, Center, Right."),
-        new("CellTemplate", "RenderFragment&lt;TData&gt;?", "null", "Custom cell render template."),
+        new("CellTemplate", "RenderFragment<TData>?", "null", "Custom cell render template."),
         new("Visible", "bool", "true", "Whether the column is visible."),
     ];
 
