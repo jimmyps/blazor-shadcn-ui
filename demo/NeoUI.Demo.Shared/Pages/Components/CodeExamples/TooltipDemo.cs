@@ -3,27 +3,17 @@ namespace NeoUI.Demo.Shared.Pages.Components
     partial class TooltipDemo
     {
 
-        private static readonly IReadOnlyList<DemoPropRow> _providerProps =
+        private static readonly IReadOnlyList<DemoPropRow> _tooltipAllProps =
             [
-                new("DelayDuration",     "int",  "700", "Duration in ms before tooltips appear."),
-                new("SkipDelayDuration", "int",  "300", "Duration before showing subsequent tooltips without delay."),
-            ];
-
-        private static readonly IReadOnlyList<DemoPropRow> _tooltipProps =
-            [
-                new("Placement", "PopoverPlacement", "Top", "Tooltip position: Top, Bottom, Left, Right, and variants."),
-            ];
-
-        private static readonly IReadOnlyList<DemoPropRow> _triggerProps =
-            [
-                new("AsChild",   "bool",    "false", "When true, passes trigger behavior to the child component instead of wrapping it."),
-                new("Focusable", "bool",    "true",  "Whether to add tabindex=\"0\" for keyboard focus."),
-                new("Class",     "string?", null,    "Additional CSS classes."),
-            ];
-
-        private static readonly IReadOnlyList<DemoPropRow> _contentProps =
-            [
-                new("Class", "string?", null, "Additional CSS classes for the tooltip content container."),
+                // TooltipProvider
+                new("DelayDuration",     "int",              "700",   "<strong>TooltipProvider</strong> — Duration in ms before tooltips appear."),
+                new("SkipDelayDuration", "int",              "300",   "<strong>TooltipProvider</strong> — Duration before showing subsequent tooltips without delay."),
+                // Tooltip
+                new("Placement",         "PopoverPlacement", "Top",   "<strong>Tooltip</strong> — Tooltip position: Top, Bottom, Left, Right, and variants."),
+                // TooltipTrigger
+                new("AsChild",           "bool",             "false", "<strong>TooltipTrigger</strong> — When true, passes trigger behavior to the child component instead of wrapping it."),
+                new("Focusable",         "bool",             "true",  "<strong>TooltipTrigger</strong> — Whether to add tabindex=\"0\" for keyboard focus."),
+                new("Class",             "string?",          null,    "<strong>TooltipTrigger / TooltipContent</strong> — Additional CSS classes."),
             ];
 
         private const string _asChildCode =
