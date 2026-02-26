@@ -43,6 +43,29 @@
     </DemoSection>
 
     <DemoSection
+        Title="Toolbar Features"
+        Description="The toolbar provides quick access to formatting options. You can also use keyboard shortcuts.">
+        <DemoBlock Code="@_toolbarCode">
+            <ChildContent>
+                <MarkdownEditor @bind-Value="toolbarDemoValue" Placeholder="Try out the toolbar features..." />
+            </ChildContent>
+            <AdditionalContent>
+                <div class="rounded-lg border p-4 space-y-3">
+                    <h3 class="font-semibold text-sm">Available Formatting</h3>
+                    <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
+                        <li><strong>Bold</strong> — Select text and click B or press <Kbd>Ctrl+B</Kbd></li>
+                        <li><em>Italic</em> — Select text and click I or press <Kbd>Ctrl+I</Kbd></li>
+                        <li><u>Underline</u> — Select text and click U or press <Kbd>Ctrl+U</Kbd></li>
+                        <li>Headings — Use the heading dropdown to set H1, H2, H3, or normal text</li>
+                        <li>Bullet List — Click the bullet list icon to add list items</li>
+                        <li>Numbered List — Click the numbered list icon for ordered lists</li>
+                    </ul>
+                </div>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Pre-populated Content"
         Description="The editor can be initialized with existing markdown content.">
         <DemoBlock Code="@_prePopulatedCode">
@@ -104,6 +127,7 @@
 @code {
     private string? basicValue;
     private string? labeledValue;
+    private string? toolbarDemoValue;
     private string? feedbackValue;
     private bool submitted;
 
@@ -141,6 +165,11 @@ Enjoy writing!";
         """
         <Label For="editor">Description</Label>
         <MarkdownEditor @bind-Value="value" Id="editor" Placeholder="Enter a description..." />
+        """;
+
+    private const string _toolbarCode =
+        """
+        <MarkdownEditor @bind-Value="toolbarDemoValue" Placeholder="Try out the toolbar features..." />
         """;
 
     private const string _prePopulatedCode =
