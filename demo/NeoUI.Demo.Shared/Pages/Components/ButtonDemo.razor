@@ -1,314 +1,18 @@
 @page "/components/button"
 
-<PageTitle>Button Component - NeoUI</PageTitle>
+<PageTitle>Button - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-    <div>
-        <div class="space-y-3">
-        <h1 class="text-4xl font-bold tracking-tight">Button Component</h1>
-        <p class="text-xl text-muted-foreground">
-            Displays a button or a component that looks like a button.
-        </p>
-        </div>
-    </div>
 
-    <div class="space-y-6">
-    </div>
+    <DemoPageHeader
+        Title="Button"
+        Description="Displays a button or a component that looks like a button." />
 
-    <!-- All Variants -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Variants</h2>
-            <p class="text-sm text-muted-foreground">
-                All six button variants matching shadcn/ui design system.
-            </p>
-        </div>
-        <div class="flex flex-wrap gap-4">
-            <Button Variant="ButtonVariant.Default">Default</Button>
-            <Button Variant="ButtonVariant.Destructive">Destructive</Button>
-            <Button Variant="ButtonVariant.Outline">Outline</Button>
-            <Button Variant="ButtonVariant.Secondary">Secondary</Button>
-            <Button Variant="ButtonVariant.Ghost">Ghost</Button>
-            <Button Variant="ButtonVariant.Link">Link</Button>
-        </div>
-    </div>
-
-    <!-- All Sizes -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Sizes</h2>
-            <p class="text-sm text-muted-foreground">
-                Six size options including icon-only variants.
-            </p>
-        </div>
-        <div class="flex flex-wrap gap-4 items-center">
-            <Button Size="ButtonSize.Small">Small</Button>
-            <Button Size="ButtonSize.Default">Default</Button>
-            <Button Size="ButtonSize.Large">Large</Button>
-            <Button Size="ButtonSize.Icon" AriaLabel="Icon button">
-                <LucideIcon Name="arrow-right" Size="16" />
-            </Button>
-            <Button Size="ButtonSize.IconSmall" AriaLabel="Small icon button">
-                <LucideIcon Name="minus" Size="14" />
-            </Button>
-            <Button Size="ButtonSize.IconLarge" AriaLabel="Large icon button">
-                <LucideIcon Name="arrow-right" Size="18" />
-            </Button>
-        </div>
-    </div>
-
-    <!-- Icon Buttons with Text -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Buttons with Icons</h2>
-            <p class="text-sm text-muted-foreground">
-                Buttons with icons at start or end position (RTL-aware).
-            </p>
-        </div>
-        <div class="space-y-4">
-            <div class="space-y-2">
-                <h3 class="text-lg font-medium">Icon at Start</h3>
-                <div class="flex flex-wrap gap-4">
-                    <Button IconPosition="IconPosition.Start">
-                        <Icon>
-                            <LucideIcon Name="arrow-left" Size="16" />
-                        </Icon>
-                        <ChildContent>Back</ChildContent>
-                    </Button>
-                    <Button IconPosition="IconPosition.Start" Variant="ButtonVariant.Outline">
-                        <Icon>
-                            <LucideIcon Name="search" Size="16" />
-                        </Icon>
-                        <ChildContent>Search</ChildContent>
-                    </Button>
-                </div>
-            </div>
-            <div class="space-y-2">
-                <h3 class="text-lg font-medium">Icon at End</h3>
-                <div class="flex flex-wrap gap-4">
-                    <Button IconPosition="IconPosition.End">
-                        <Icon>
-                            <LucideIcon Name="arrow-right" Size="16" />
-                        </Icon>
-                        <ChildContent>Next</ChildContent>
-                    </Button>
-                    <Button IconPosition="IconPosition.End" Variant="ButtonVariant.Secondary">
-                        <Icon>
-                            <LucideIcon Name="external-link" Size="16" />
-                        </Icon>
-                        <ChildContent>External Link</ChildContent>
-                    </Button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- RTL Support -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">RTL (Right-to-Left) Support</h2>
-            <p class="text-sm text-muted-foreground">
-                Icon positioning automatically flips in RTL layouts.
-            </p>
-        </div>
-        <div class="flex gap-4 items-center mb-4">
-            <button @onclick="ToggleRTL" class="px-4 py-2 rounded border border-input bg-background hover:bg-accent">
-                Toggle RTL (@(isRTL ? "RTL" : "LTR"))
-            </button>
-        </div>
-        <div dir="@(isRTL ? "rtl" : "ltr")" class="p-6 bg-card rounded-lg border">
-            <div class="flex flex-wrap gap-4">
-                <Button IconPosition="IconPosition.Start">
-                    <Icon>
-                        <LucideIcon Name="arrow-left" Size="16" />
-                    </Icon>
-                    <ChildContent>Back (Start)</ChildContent>
-                </Button>
-                <Button IconPosition="IconPosition.End">
-                    <Icon>
-                        <LucideIcon Name="arrow-right" Size="16" />
-                    </Icon>
-                    <ChildContent>Next (End)</ChildContent>
-                </Button>
-            </div>
-            <p class="text-sm text-muted-foreground mt-4">
-                Note: In RTL mode, "Start" icons appear on the right, "End" icons on the left.
-            </p>
-        </div>
-    </div>
-
-    <!-- Disabled States -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Disabled State</h2>
-            <p class="text-sm text-muted-foreground">
-                Buttons with reduced opacity and no pointer events.
-            </p>
-        </div>
-        <div class="flex flex-wrap gap-4">
-            <Button Disabled="true">Default Disabled</Button>
-            <Button Variant="ButtonVariant.Destructive" Disabled="true">Destructive Disabled</Button>
-            <Button Variant="ButtonVariant.Outline" Disabled="true">Outline Disabled</Button>
-            <Button Variant="ButtonVariant.Secondary" Disabled="true">Secondary Disabled</Button>
-            <Button Variant="ButtonVariant.Ghost" Disabled="true">Ghost Disabled</Button>
-            <Button Variant="ButtonVariant.Link" Disabled="true">Link Disabled</Button>
-        </div>
-    </div>
-
-    <!-- Interactive Example -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Interactive</h2>
-            <p class="text-sm text-muted-foreground">
-                Click handlers and event callbacks.
-            </p>
-        </div>
-        <div class="space-y-4">
-            <div class="flex gap-4 items-center">
-                <Button OnClick="HandleClick">Click Me</Button>
-                <span class="text-sm">@clickMessage</span>
-            </div>
-            <div class="flex gap-4 items-center">
-                <Button OnClick="IncrementCounter">
-                    Clicked @counter times
-                </Button>
-                <Button Variant="ButtonVariant.Outline" OnClick="ResetCounter">Reset</Button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Form Button Types -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Button Types</h2>
-            <p class="text-sm text-muted-foreground">
-                Different HTML button type attributes (submit, reset, button).
-            </p>
-        </div>
-        <div class="flex flex-wrap gap-4">
-            <Button Type="ButtonType.Button">Type: Button</Button>
-            <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Type: Submit</Button>
-            <Button Type="ButtonType.Reset" Variant="ButtonVariant.Secondary">Type: Reset</Button>
-        </div>
-    </div>
-
-    <!-- LinkButton Component -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">LinkButton (Semantic Links)</h2>
-            <p class="text-sm text-muted-foreground">
-                Use LinkButton for navigation - renders as &lt;a&gt; tag styled as a button for better semantics and SEO.
-            </p>
-        </div>
-        <div class="space-y-4">
-            <div class="space-y-2">
-                <h3 class="text-lg font-medium">All Variants</h3>
-                <div class="flex flex-wrap gap-4">
-                    <LinkButton Href="/" Variant="ButtonVariant.Default">Home (Default)</LinkButton>
-                    <LinkButton Href="/" Variant="ButtonVariant.Outline">Home (Outline)</LinkButton>
-                    <LinkButton Href="/" Variant="ButtonVariant.Secondary">Home (Secondary)</LinkButton>
-                    <LinkButton Href="/" Variant="ButtonVariant.Ghost">Home (Ghost)</LinkButton>
-                    <LinkButton Href="/" Variant="ButtonVariant.Link">Home (Link)</LinkButton>
-                </div>
-            </div>
-
-            <div class="space-y-2">
-                <h3 class="text-lg font-medium">With Icons</h3>
-                <div class="flex flex-wrap gap-4">
-                    <LinkButton Href="/components" IconPosition="IconPosition.Start">
-                        <Icon>
-                            <LucideIcon Name="arrow-left" Size="16" />
-                        </Icon>
-                        <ChildContent>Back to Components</ChildContent>
-                    </LinkButton>
-                    <LinkButton Href="https://neoui.io" Target="_blank" Variant="ButtonVariant.Outline" IconPosition="IconPosition.End">
-                        <Icon>
-                            <LucideIcon Name="external-link" Size="16" />
-                        </Icon>
-                        <ChildContent>NeoUI Website</ChildContent>
-                    </LinkButton>
-                </div>
-            </div>
-
-            <div class="space-y-2">
-                <h3 class="text-lg font-medium">External Links</h3>
-                <div class="flex flex-wrap gap-4">
-                    <LinkButton Href="https://blazor.net" Target="_blank">
-                        Blazor Docs
-                    </LinkButton>
-                    <LinkButton Href="https://tailwindcss.com" Target="_blank" Variant="ButtonVariant.Secondary">
-                        Tailwind CSS
-                    </LinkButton>
-                </div>
-                <p class="text-xs text-muted-foreground">
-                    Tip: Use Target="_blank" to open links in a new tab
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- When to Use Button vs LinkButton -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Button vs LinkButton</h2>
-            <p class="text-sm text-muted-foreground">
-                Choose the right component for better semantics and accessibility.
-            </p>
-        </div>
-        <div class="grid md:grid-cols-2 gap-4">
-            <div class="p-4 border rounded-lg space-y-3">
-                <h3 class="text-lg font-semibold text-green-600 dark:text-green-400">✓ Use Button</h3>
-                <ul class="text-sm space-y-2 list-disc list-inside text-muted-foreground">
-                    <li>Form submissions</li>
-                    <li>Opening modals/dialogs</li>
-                    <li>Triggering state changes</li>
-                    <li>Any action that doesn't navigate</li>
-                </ul>
-                <div class="pt-2">
-                    <Button Variant="ButtonVariant.Default" OnClick="HandleClick">Submit Form</Button>
-                </div>
-            </div>
-            <div class="p-4 border rounded-lg space-y-3">
-                <h3 class="text-lg font-semibold text-blue-600 dark:text-blue-400">✓ Use LinkButton</h3>
-                <ul class="text-sm space-y-2 list-disc list-inside text-muted-foreground">
-                    <li>Navigation to pages</li>
-                    <li>External links</li>
-                    <li>SEO-important links</li>
-                    <li>Any action that changes URL</li>
-                </ul>
-                <div class="pt-2">
-                    <LinkButton Href="/architecture" Variant="ButtonVariant.Default">View Architecture</LinkButton>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Custom Styling -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Custom Classes</h2>
-            <p class="text-sm text-muted-foreground">
-                Buttons with additional CSS classes via Class parameter.
-            </p>
-        </div>
-        <div class="space-y-2">
-            <Button Class="w-full">Full Width Button</Button>
-            <div class="flex flex-wrap gap-4">
-                <Button Class="shadow-lg">With Shadow</Button>
-                <Button Variant="ButtonVariant.Outline" Class="border-2 border-blue-500">Custom Border</Button>
-            </div>
-        </div>
-    </div>
-
-    <!-- All Variants in Dark Mode -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Dark Mode</h2>
-            <p class="text-sm text-muted-foreground">
-                Toggle dark mode above to test all variants in dark theme.
-            </p>
-        </div>
-        <div class="p-6 bg-card rounded-lg border">
+    <!-- Variants -->
+    <DemoSection
+        Title="Variants"
+        Description="All six button variants matching shadcn/ui design system.">
+        <DemoBlock Code="@_variantsCode">
             <div class="flex flex-wrap gap-4">
                 <Button Variant="ButtonVariant.Default">Default</Button>
                 <Button Variant="ButtonVariant.Destructive">Destructive</Button>
@@ -317,44 +21,266 @@
                 <Button Variant="ButtonVariant.Ghost">Ghost</Button>
                 <Button Variant="ButtonVariant.Link">Link</Button>
             </div>
-        </div>
-    </div>
+        </DemoBlock>
+    </DemoSection>
 
-    <!-- Accessibility Notes -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Accessibility</h2>
-            <p class="text-sm text-muted-foreground">
-                Keyboard navigation and screen reader support.
-            </p>
-        </div>
-        <div class="space-y-2 text-sm">
-            <p>✓ Tab key focuses buttons in sequence</p>
-            <p>✓ Enter and Space keys activate focused buttons</p>
-            <p>✓ Disabled buttons are not focusable (tabindex="-1")</p>
-            <p>✓ ARIA attributes set correctly (aria-label, aria-disabled)</p>
-            <p>✓ Focus ring appears on keyboard focus (focus-visible:ring-2)</p>
-            <p>✓ Color contrast meets WCAG 2.1 AA standards</p>
-            <p>✓ Semantic HTML button element with proper role</p>
-            <p>✓ Screen readers announce button text and state correctly</p>
-        </div>
-    </div>
+    <!-- Sizes -->
+    <DemoSection
+        Title="Sizes"
+        Description="Six size options including icon-only variants.">
+        <DemoBlock Code="@_sizesCode">
+            <div class="flex flex-wrap gap-4 items-center">
+                <Button Size="ButtonSize.Small">Small</Button>
+                <Button Size="ButtonSize.Default">Default</Button>
+                <Button Size="ButtonSize.Large">Large</Button>
+                <Button Size="ButtonSize.Icon" AriaLabel="Icon button">
+                    <LucideIcon Name="arrow-right" Size="16" />
+                </Button>
+                <Button Size="ButtonSize.IconSmall" AriaLabel="Small icon button">
+                    <LucideIcon Name="minus" Size="14" />
+                </Button>
+                <Button Size="ButtonSize.IconLarge" AriaLabel="Large icon button">
+                    <LucideIcon Name="arrow-right" Size="18" />
+                </Button>
+            </div>
+        </DemoBlock>
+    </DemoSection>
 
-    <!-- Browser Compatibility -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Browser Compatibility</h2>
-            <p class="text-sm text-muted-foreground">
-                Tested and verified across modern browsers.
-            </p>
-        </div>
-        <div class="space-y-2 text-sm">
-            <p>✓ Chrome 120+ (tested)</p>
-            <p>✓ Firefox 120+ (tested)</p>
-            <p>✓ Edge 120+ (tested)</p>
-            <p>✓ Safari 17+ (compatible)</p>
-        </div>
-    </div>
+    <!-- Buttons with Icons -->
+    <DemoSection
+        Title="Buttons with Icons"
+        Description="Buttons with icons at start or end position (RTL-aware).">
+        <DemoBlock Code="@_iconsCode">
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <h3 class="text-lg font-medium">Icon at Start</h3>
+                    <div class="flex flex-wrap gap-4">
+                        <Button IconPosition="IconPosition.Start">
+                            <Icon>
+                                <LucideIcon Name="arrow-left" Size="16" />
+                            </Icon>
+                            <ChildContent>Back</ChildContent>
+                        </Button>
+                        <Button IconPosition="IconPosition.Start" Variant="ButtonVariant.Outline">
+                            <Icon>
+                                <LucideIcon Name="search" Size="16" />
+                            </Icon>
+                            <ChildContent>Search</ChildContent>
+                        </Button>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-lg font-medium">Icon at End</h3>
+                    <div class="flex flex-wrap gap-4">
+                        <Button IconPosition="IconPosition.End">
+                            <Icon>
+                                <LucideIcon Name="arrow-right" Size="16" />
+                            </Icon>
+                            <ChildContent>Next</ChildContent>
+                        </Button>
+                        <Button IconPosition="IconPosition.End" Variant="ButtonVariant.Secondary">
+                            <Icon>
+                                <LucideIcon Name="external-link" Size="16" />
+                            </Icon>
+                            <ChildContent>External Link</ChildContent>
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- RTL Support -->
+    <DemoSection
+        Title="RTL Support"
+        Description="Icon positioning automatically flips in RTL layouts.">
+        <DemoBlock Code="@_rtlCode">
+            <ChildContent>
+                <div class="flex gap-4 items-center mb-4">
+                    <button @onclick="ToggleRTL" class="px-4 py-2 rounded border border-input bg-background hover:bg-accent">
+                        Toggle RTL (@(isRTL ? "RTL" : "LTR"))
+                    </button>
+                </div>
+                <div dir="@(isRTL ? "rtl" : "ltr")" class="p-6 bg-card rounded-lg border">
+                    <div class="flex flex-wrap gap-4">
+                        <Button IconPosition="IconPosition.Start">
+                            <Icon>
+                                <LucideIcon Name="arrow-left" Size="16" />
+                            </Icon>
+                            <ChildContent>Back (Start)</ChildContent>
+                        </Button>
+                        <Button IconPosition="IconPosition.End">
+                            <Icon>
+                                <LucideIcon Name="arrow-right" Size="16" />
+                            </Icon>
+                            <ChildContent>Next (End)</ChildContent>
+                        </Button>
+                    </div>
+                </div>
+            </ChildContent>
+            <AdditionalContent>
+                <p class="text-sm text-muted-foreground">
+                    In RTL mode, <code class="text-xs bg-muted px-1 py-0.5 rounded">IconPosition.Start</code> icons appear on the right and <code class="text-xs bg-muted px-1 py-0.5 rounded">IconPosition.End</code> icons appear on the left.
+                </p>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Disabled State -->
+    <DemoSection
+        Title="Disabled State"
+        Description="Buttons with reduced opacity and no pointer events.">
+        <DemoBlock Code="@_disabledCode">
+            <div class="flex flex-wrap gap-4">
+                <Button Disabled="true">Default Disabled</Button>
+                <Button Variant="ButtonVariant.Destructive" Disabled="true">Destructive Disabled</Button>
+                <Button Variant="ButtonVariant.Outline" Disabled="true">Outline Disabled</Button>
+                <Button Variant="ButtonVariant.Secondary" Disabled="true">Secondary Disabled</Button>
+                <Button Variant="ButtonVariant.Ghost" Disabled="true">Ghost Disabled</Button>
+                <Button Variant="ButtonVariant.Link" Disabled="true">Link Disabled</Button>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Interactive -->
+    <DemoSection
+        Title="Interactive"
+        Description="Click handlers and event callbacks.">
+        <DemoBlock Code="@_interactiveCode">
+            <div class="space-y-4">
+                <div class="flex gap-4 items-center">
+                    <Button OnClick="HandleClick">Click Me</Button>
+                    <span class="text-sm">@clickMessage</span>
+                </div>
+                <div class="flex gap-4 items-center">
+                    <Button OnClick="IncrementCounter">
+                        Clicked @counter times
+                    </Button>
+                    <Button Variant="ButtonVariant.Outline" OnClick="ResetCounter">Reset</Button>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Button Types -->
+    <DemoSection
+        Title="Button Types"
+        Description="Different HTML button type attributes (submit, reset, button).">
+        <DemoBlock Code="@_typesCode">
+            <div class="flex flex-wrap gap-4">
+                <Button Type="ButtonType.Button">Type: Button</Button>
+                <Button Type="ButtonType.Submit" Variant="ButtonVariant.Default">Type: Submit</Button>
+                <Button Type="ButtonType.Reset" Variant="ButtonVariant.Secondary">Type: Reset</Button>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- LinkButton -->
+    <DemoSection
+        Title="LinkButton (Semantic Links)"
+        Description="Use LinkButton for navigation — renders as an &lt;a&gt; tag styled as a button for better semantics and SEO.">
+        <DemoBlock Code="@_linkButtonCode">
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <h3 class="text-lg font-medium">All Variants</h3>
+                    <div class="flex flex-wrap gap-4">
+                        <LinkButton Href="/" Variant="ButtonVariant.Default">Home (Default)</LinkButton>
+                        <LinkButton Href="/" Variant="ButtonVariant.Outline">Home (Outline)</LinkButton>
+                        <LinkButton Href="/" Variant="ButtonVariant.Secondary">Home (Secondary)</LinkButton>
+                        <LinkButton Href="/" Variant="ButtonVariant.Ghost">Home (Ghost)</LinkButton>
+                        <LinkButton Href="/" Variant="ButtonVariant.Link">Home (Link)</LinkButton>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-lg font-medium">With Icons</h3>
+                    <div class="flex flex-wrap gap-4">
+                        <LinkButton Href="/components" IconPosition="IconPosition.Start">
+                            <Icon>
+                                <LucideIcon Name="arrow-left" Size="16" />
+                            </Icon>
+                            <ChildContent>Back to Components</ChildContent>
+                        </LinkButton>
+                        <LinkButton Href="https://neoui.io" Target="_blank" Variant="ButtonVariant.Outline" IconPosition="IconPosition.End">
+                            <Icon>
+                                <LucideIcon Name="external-link" Size="16" />
+                            </Icon>
+                            <ChildContent>NeoUI Website</ChildContent>
+                        </LinkButton>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="text-lg font-medium">External Links</h3>
+                    <div class="flex flex-wrap gap-4">
+                        <LinkButton Href="https://blazor.net" Target="_blank">Blazor Docs</LinkButton>
+                        <LinkButton Href="https://tailwindcss.com" Target="_blank" Variant="ButtonVariant.Secondary">Tailwind CSS</LinkButton>
+                    </div>
+                    <p class="text-xs text-muted-foreground">Tip: Use Target="_blank" to open links in a new tab</p>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Button vs LinkButton -->
+    <DemoSection
+        Title="Button vs LinkButton"
+        Description="Choose the right component for better semantics and accessibility.">
+        <DemoBlock Code="@_comparisonCode">
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="p-4 border rounded-lg space-y-3">
+                    <h3 class="text-lg font-semibold text-green-600 dark:text-green-400">✓ Use Button</h3>
+                    <ul class="text-sm space-y-2 list-disc list-inside text-muted-foreground">
+                        <li>Form submissions</li>
+                        <li>Opening modals/dialogs</li>
+                        <li>Triggering state changes</li>
+                        <li>Any action that doesn't navigate</li>
+                    </ul>
+                    <div class="pt-2">
+                        <Button Variant="ButtonVariant.Default">Submit Form</Button>
+                    </div>
+                </div>
+                <div class="p-4 border rounded-lg space-y-3">
+                    <h3 class="text-lg font-semibold text-blue-600 dark:text-blue-400">✓ Use LinkButton</h3>
+                    <ul class="text-sm space-y-2 list-disc list-inside text-muted-foreground">
+                        <li>Navigation to pages</li>
+                        <li>External links</li>
+                        <li>SEO-important links</li>
+                        <li>Any action that changes URL</li>
+                    </ul>
+                    <div class="pt-2">
+                        <LinkButton Href="/architecture" Variant="ButtonVariant.Default">View Architecture</LinkButton>
+                    </div>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Custom Classes -->
+    <DemoSection
+        Title="Custom Classes"
+        Description="Buttons with additional CSS classes via the Class parameter.">
+        <DemoBlock Code="@_customClassCode">
+            <div class="space-y-2">
+                <Button Class="w-full">Full Width Button</Button>
+                <div class="flex flex-wrap gap-4">
+                    <Button Class="shadow-lg">With Shadow</Button>
+                    <Button Variant="ButtonVariant.Outline" Class="border-2 border-blue-500">Custom Border</Button>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Accessibility -->
+    <DemoSection
+        Title="Accessibility"
+        Description="Keyboard navigation and screen reader support: Tab focuses buttons in sequence; Enter and Space activate focused buttons; disabled buttons are excluded from tab order; AriaLabel supports icon-only buttons; focus ring appears on keyboard focus; color contrast meets WCAG 2.1 AA." />
+
+    <!-- API Reference -->
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable ComponentName="Button" Rows="_buttonProps" />
+        <DemoPropsTable ComponentName="LinkButton" Rows="_linkButtonProps" />
+    </DemoSection>
+
+    <DemoPageNav />
 </div>
 
 @code {
@@ -384,4 +310,149 @@
     {
         isRTL = !isRTL;
     }
+
+    private static readonly IReadOnlyList<DemoPropRow> _buttonProps =
+    [
+        new("Variant",      "ButtonVariant",   "Default", "Visual style: Default, Destructive, Outline, Secondary, Ghost, Link."),
+        new("Size",         "ButtonSize",       "Default", "Size: Small, Default, Large, Icon, IconSmall, IconLarge."),
+        new("Type",         "ButtonType",       "Button",  "HTML button type: Button, Submit, Reset."),
+        new("Disabled",     "bool",             "false",   "Whether the button is non-interactive."),
+        new("IconPosition", "IconPosition?",    null,      "Where to place the icon: Start or End."),
+        new("AriaLabel",    "string?",          null,      "Accessible label for icon-only buttons."),
+        new("Class",        "string?",          null,      "Additional CSS classes."),
+        new("OnClick",      "EventCallback",    "—",       "Click event callback."),
+    ];
+
+    private static readonly IReadOnlyList<DemoPropRow> _linkButtonProps =
+    [
+        new("Href",         "string",           "—",       "The URL to navigate to."),
+        new("Target",       "string?",          null,      "Link target, e.g. \"_blank\" for new tab."),
+        new("Variant",      "ButtonVariant",    "Default", "Same variants as Button."),
+        new("Size",         "ButtonSize",       "Default", "Same sizes as Button."),
+        new("IconPosition", "IconPosition?",    null,      "Where to place the icon."),
+        new("Class",        "string?",          null,      "Additional CSS classes."),
+    ];
+
+    private const string _variantsCode =
+        """
+        <Button Variant="ButtonVariant.Default">Default</Button>
+        <Button Variant="ButtonVariant.Destructive">Destructive</Button>
+        <Button Variant="ButtonVariant.Outline">Outline</Button>
+        <Button Variant="ButtonVariant.Secondary">Secondary</Button>
+        <Button Variant="ButtonVariant.Ghost">Ghost</Button>
+        <Button Variant="ButtonVariant.Link">Link</Button>
+        """;
+
+    private const string _sizesCode =
+        """
+        <Button Size="ButtonSize.Small">Small</Button>
+        <Button Size="ButtonSize.Default">Default</Button>
+        <Button Size="ButtonSize.Large">Large</Button>
+        <Button Size="ButtonSize.Icon" AriaLabel="Icon button">
+            <LucideIcon Name="arrow-right" Size="16" />
+        </Button>
+        <Button Size="ButtonSize.IconSmall" AriaLabel="Small icon button">
+            <LucideIcon Name="minus" Size="14" />
+        </Button>
+        <Button Size="ButtonSize.IconLarge" AriaLabel="Large icon button">
+            <LucideIcon Name="arrow-right" Size="18" />
+        </Button>
+        """;
+
+    private const string _iconsCode =
+        """
+        <Button IconPosition="IconPosition.Start">
+            <Icon><LucideIcon Name="arrow-left" Size="16" /></Icon>
+            <ChildContent>Back</ChildContent>
+        </Button>
+        <Button IconPosition="IconPosition.Start" Variant="ButtonVariant.Outline">
+            <Icon><LucideIcon Name="search" Size="16" /></Icon>
+            <ChildContent>Search</ChildContent>
+        </Button>
+
+        <Button IconPosition="IconPosition.End">
+            <Icon><LucideIcon Name="arrow-right" Size="16" /></Icon>
+            <ChildContent>Next</ChildContent>
+        </Button>
+        <Button IconPosition="IconPosition.End" Variant="ButtonVariant.Secondary">
+            <Icon><LucideIcon Name="external-link" Size="16" /></Icon>
+            <ChildContent>External Link</ChildContent>
+        </Button>
+        """;
+
+    private const string _rtlCode =
+        """
+        <div dir="rtl" class="p-6 bg-card rounded-lg border">
+            <div class="flex flex-wrap gap-4">
+                <Button IconPosition="IconPosition.Start">
+                    <Icon><LucideIcon Name="arrow-left" Size="16" /></Icon>
+                    <ChildContent>Back (Start)</ChildContent>
+                </Button>
+                <Button IconPosition="IconPosition.End">
+                    <Icon><LucideIcon Name="arrow-right" Size="16" /></Icon>
+                    <ChildContent>Next (End)</ChildContent>
+                </Button>
+            </div>
+        </div>
+        """;
+
+    private const string _disabledCode =
+        """
+        <Button Disabled="true">Default Disabled</Button>
+        <Button Variant="ButtonVariant.Destructive" Disabled="true">Destructive Disabled</Button>
+        <Button Variant="ButtonVariant.Outline" Disabled="true">Outline Disabled</Button>
+        <Button Variant="ButtonVariant.Secondary" Disabled="true">Secondary Disabled</Button>
+        <Button Variant="ButtonVariant.Ghost" Disabled="true">Ghost Disabled</Button>
+        <Button Variant="ButtonVariant.Link" Disabled="true">Link Disabled</Button>
+        """;
+
+    private const string _interactiveCode =
+        """
+        <Button OnClick="HandleClick">Click Me</Button>
+        <span class="text-sm">@clickMessage</span>
+
+        <Button OnClick="IncrementCounter">Clicked @counter times</Button>
+        <Button Variant="ButtonVariant.Outline" OnClick="ResetCounter">Reset</Button>
+        """;
+
+    private const string _typesCode =
+        """
+        <Button Type="ButtonType.Button">Type: Button</Button>
+        <Button Type="ButtonType.Submit">Type: Submit</Button>
+        <Button Type="ButtonType.Reset" Variant="ButtonVariant.Secondary">Type: Reset</Button>
+        """;
+
+    private const string _linkButtonCode =
+        """
+        <LinkButton Href="/" Variant="ButtonVariant.Default">Home (Default)</LinkButton>
+        <LinkButton Href="/" Variant="ButtonVariant.Outline">Home (Outline)</LinkButton>
+        <LinkButton Href="/" Variant="ButtonVariant.Secondary">Home (Secondary)</LinkButton>
+
+        <LinkButton Href="/components" IconPosition="IconPosition.Start">
+            <Icon><LucideIcon Name="arrow-left" Size="16" /></Icon>
+            <ChildContent>Back to Components</ChildContent>
+        </LinkButton>
+        <LinkButton Href="https://neoui.io" Target="_blank" Variant="ButtonVariant.Outline" IconPosition="IconPosition.End">
+            <Icon><LucideIcon Name="external-link" Size="16" /></Icon>
+            <ChildContent>NeoUI Website</ChildContent>
+        </LinkButton>
+
+        <LinkButton Href="https://blazor.net" Target="_blank">Blazor Docs</LinkButton>
+        """;
+
+    private const string _comparisonCode =
+        """
+        <!-- Actions that do not navigate -->
+        <Button Variant="ButtonVariant.Default">Submit Form</Button>
+
+        <!-- Navigation and links -->
+        <LinkButton Href="/architecture" Variant="ButtonVariant.Default">View Architecture</LinkButton>
+        """;
+
+    private const string _customClassCode =
+        """
+        <Button Class="w-full">Full Width Button</Button>
+        <Button Class="shadow-lg">With Shadow</Button>
+        <Button Variant="ButtonVariant.Outline" Class="border-2 border-blue-500">Custom Border</Button>
+        """;
 }
