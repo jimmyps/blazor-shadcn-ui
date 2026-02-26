@@ -20,11 +20,6 @@
                         <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="phoneValue" Placeholder="Enter phone number" />
                         <p class="text-sm text-muted-foreground">Value (digits only): <strong>@phoneValue</strong></p>
                     </div>
-                    <div class="space-y-2">
-                        <Label>Without mask display</Label>
-                        <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="phoneValueNoMask" ShowMask="false" Placeholder="(555) 000-0000" />
-                        <p class="text-sm text-muted-foreground">Value: <strong>@phoneValueNoMask</strong></p>
-                    </div>
                 </div>
             </ChildContent>
             <AdditionalContent>
