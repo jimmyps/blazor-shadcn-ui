@@ -335,7 +335,7 @@ public static class ComponentRegistry
             new("chart/pie",        "Pie Chart",        "Pie and donut charts with labels and legends",                                  "chart-pie",             C, CH, IsSubPage: true),
             new("chart/scatter",    "Scatter Chart",    "Scatter plots for correlation and distribution data",                           "scatter-chart",         C, CH, IsSubPage: true),
             new("chart/radar",      "Radar Chart",      "Spider/radar charts for multi-dimensional data comparison",                     "radar",                 C, CH, IsSubPage: true),
-            new("chart/radial",     "Radial Bar Chart", "Circular progress bars arranged radially — ideal for KPIs and gauges",          "gauge",                 C, CH, IsSubPage: true),
+            // new("chart/radial",     "Radial Bar Chart", "Circular progress bars arranged radially — ideal for KPIs and gauges",          "gauge",                 C, CH, IsSubPage: true),
             new("chart/composed",   "Composed Chart",   "Combine multiple chart types in a single visualization",                        "layers",                C, CH, IsSubPage: true),
 
             // ── Animation ─────────────────────────────────────────────────

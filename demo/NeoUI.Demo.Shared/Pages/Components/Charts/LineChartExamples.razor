@@ -1,4 +1,4 @@
-﻿@page "/components/chart/line"
+@page "/components/chart/line"
 @using NeoUI.Blazor.Charts
 
 <PageTitle>Line Chart - NeoUI</PageTitle>
@@ -15,7 +15,7 @@
         <DemoBlock Code="@_interactiveCode">
             <div class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
                     <div class="grid flex-1 gap-1">
-                        <p class="text-xl font-semibold">Line Chart â€” Interactive</p>
+                        <p class="text-xl font-semibold">Line Chart — Interactive</p>
                         <p class="text-sm text-muted-foreground">Showing trends for the @(timeRanges.TryGetValue(timeRange, out var description) ? description.ToLower() : "last 3 months")</p>
                     </div>
                     <Select @bind-Value="@timeRange" TValue="string" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
