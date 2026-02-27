@@ -1,202 +1,179 @@
 @page "/components/alert-dialog"
-<PageTitle>Alert Dialog Component - NeoUI</PageTitle>
+
+<PageTitle>Alert Dialog - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-    <div>
-        <div class="space-y-3">
-            <h1 class="text-4xl font-bold tracking-tight">Alert Dialog Component</h1>
-            <p class="text-xl text-muted-foreground">
-                A modal dialog that interrupts the user with important content and expects a response.
-            </p>
-        </div>
-    </div>
 
-    <!-- Basic Alert Dialog -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Basic</h2>
-            <p class="text-sm text-muted-foreground">
-                A simple alert dialog with a destructive action.
-            </p>
-        </div>
-        <AlertDialog>
-            <AlertDialogTrigger>
-                <Button Variant="ButtonVariant.Outline">Show Dialog</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete your account
-                        and remove your data from our servers.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel>
-                        <Button Variant="ButtonVariant.Outline">Cancel</Button>
-                    </AlertDialogCancel>
-                    <AlertDialogAction>
-                        <Button Variant="ButtonVariant.Destructive">Continue</Button>
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-    </div>
+    <DemoPageHeader
+        Title="Alert Dialog"
+        Description="A modal dialog that interrupts the user with important content and expects a response." />
 
-    <!-- Confirmation Dialog -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Confirmation</h2>
-            <p class="text-sm text-muted-foreground">
-                Use for confirming non-destructive actions.
-            </p>
-        </div>
-        <AlertDialog>
-            <AlertDialogTrigger>
-                <Button>Save Changes</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Save your changes?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        Your changes will be saved to your profile. You can edit them at any time.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel>
-                        <Button Variant="ButtonVariant.Outline">Cancel</Button>
-                    </AlertDialogCancel>
-                    <AlertDialogAction>
-                        <Button @onclick="HandleSave">Save</Button>
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-        @if (saveMessage != null)
-        {
-            <p class="text-sm text-muted-foreground">@saveMessage</p>
-        }
-    </div>
+    <DemoSection
+        Title="Basic"
+        Description="A simple alert dialog with a destructive action.">
+        <DemoBlock Code="@_basicCode">
+            <AlertDialog>
+                <AlertDialogTrigger>
+                    <Button Variant="ButtonVariant.Outline">Show Dialog</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your account
+                            and remove your data from our servers.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>
+                            <Button Variant="ButtonVariant.Outline">Cancel</Button>
+                        </AlertDialogCancel>
+                        <AlertDialogAction>
+                            <Button Variant="ButtonVariant.Destructive">Continue</Button>
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </DemoBlock>
+    </DemoSection>
 
-    <!-- Warning Dialog -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Warning</h2>
-            <p class="text-sm text-muted-foreground">
-                Alert the user about potentially dangerous actions.
-            </p>
-        </div>
-        <AlertDialog>
-            <AlertDialogTrigger>
-                <Button Variant="ButtonVariant.Destructive">Delete All Data</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Delete all data?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        This will permanently delete all your data including:
-                        <ul class="list-disc list-inside mt-2 space-y-1">
-                            <li>All projects and files</li>
-                            <li>Team members and permissions</li>
-                            <li>Billing information</li>
-                        </ul>
-                        This action cannot be undone.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel>
-                        <Button Variant="ButtonVariant.Outline">Cancel</Button>
-                    </AlertDialogCancel>
-                    <AlertDialogAction>
-                        <Button Variant="ButtonVariant.Destructive" @onclick="HandleDeleteAll">Delete Everything</Button>
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-        @if (deleteMessage != null)
-        {
-            <p class="text-sm text-destructive">@deleteMessage</p>
-        }
-    </div>
+    <DemoSection
+        Title="Confirmation"
+        Description="Use for confirming non-destructive actions.">
+        <DemoBlock Code="@_confirmCode">
+            <div class="space-y-2">
+                <AlertDialog>
+                    <AlertDialogTrigger>
+                        <Button>Save Changes</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Save your changes?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Your changes will be saved to your profile. You can edit them at any time.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>
+                                <Button Variant="ButtonVariant.Outline">Cancel</Button>
+                            </AlertDialogCancel>
+                            <AlertDialogAction>
+                                <Button @onclick="HandleSave">Save</Button>
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+                @if (saveMessage != null)
+                {
+                    <p class="text-sm text-muted-foreground">@saveMessage</p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
 
-    <!-- Controlled State -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Controlled State</h2>
-            <p class="text-sm text-muted-foreground">
-                Control the open state programmatically with @@bind-Open.
-            </p>
-        </div>
-        <div class="flex items-center gap-4">
-            <Button OnClick="@(() => isControlledOpen = true)">Open Dialog</Button>
-            <span class="text-sm text-muted-foreground">
-                Dialog is: @(isControlledOpen ? "Open" : "Closed")
-            </span>
-        </div>
-        <AlertDialog @bind-Open="isControlledOpen">
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Controlled Dialog</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        This dialog's open state is controlled by a parent component.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel>
-                        <Button Variant="ButtonVariant.Outline">Close</Button>
-                    </AlertDialogCancel>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-    </div>
+    <DemoSection
+        Title="Warning"
+        Description="Alert the user about potentially dangerous actions.">
+        <DemoBlock Code="@_warningCode">
+            <div class="space-y-2">
+                <AlertDialog>
+                    <AlertDialogTrigger>
+                        <Button Variant="ButtonVariant.Destructive">Delete All Data</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Delete all data?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This will permanently delete all your data including:
+                                <ul class="list-disc list-inside mt-2 space-y-1">
+                                    <li>All projects and files</li>
+                                    <li>Team members and permissions</li>
+                                    <li>Billing information</li>
+                                </ul>
+                                This action cannot be undone.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>
+                                <Button Variant="ButtonVariant.Outline">Cancel</Button>
+                            </AlertDialogCancel>
+                            <AlertDialogAction>
+                                <Button Variant="ButtonVariant.Destructive" @onclick="HandleDeleteAll">Delete Everything</Button>
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+                @if (deleteMessage != null)
+                {
+                    <p class="text-sm text-destructive">@deleteMessage</p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
 
-    <!-- Information Dialog -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Information</h2>
-            <p class="text-sm text-muted-foreground">
-                Display important information that requires acknowledgment.
-            </p>
-        </div>
-        <AlertDialog>
-            <AlertDialogTrigger>
-                <Button Variant="ButtonVariant.Secondary">View Terms</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Terms and Conditions</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        By continuing, you agree to our Terms of Service and Privacy Policy.
-                        We collect and use your data to provide and improve our services.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogAction>
-                        <Button>I Understand</Button>
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-    </div>
+    <DemoSection
+        Title="Controlled State"
+        Description="Control the open state programmatically with the bind-Open parameter.">
+        <DemoBlock Code="@_controlledCode">
+            <div class="flex items-center gap-4">
+                <Button OnClick="@(() => isControlledOpen = true)">Open Dialog</Button>
+                <span class="text-sm text-muted-foreground">
+                    Dialog is: @(isControlledOpen ? "Open" : "Closed")
+                </span>
+            </div>
+            <AlertDialog @bind-Open="isControlledOpen">
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Controlled Dialog</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This dialog's open state is controlled by a parent component.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>
+                            <Button Variant="ButtonVariant.Outline">Close</Button>
+                        </AlertDialogCancel>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </DemoBlock>
+    </DemoSection>
 
-    <!-- Accessibility -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Accessibility & Behavior</h2>
-            <p class="text-sm text-muted-foreground">
-                Alert dialogs trap focus and require user acknowledgement. By default:
-            </p>
-        </div>
-        <div class="border rounded-lg p-6 space-y-3 bg-muted/50">
-            <ul class="text-sm space-y-2">
-                <li>• <strong>Cannot be dismissed by clicking outside</strong> (customizable via <code class="text-xs bg-muted px-1 py-0.5 rounded">CloseOnClickOutside</code>)</li>
-                <li>• <strong>Can be closed with Escape key</strong> for accessibility (customizable via <code class="text-xs bg-muted px-1 py-0.5 rounded">CloseOnEscape</code>)</li>
-                <li>• <strong>Traps focus</strong> within the dialog</li>
-                <li>• Uses <code class="text-xs bg-muted px-1 py-0.5 rounded">role="alertdialog"</code> for screen readers</li>
-                <li>• Use for destructive or critical confirmations that require user attention</li>
-            </ul>
-        </div>
-    </div>
+    <DemoSection
+        Title="Information"
+        Description="Display important information that requires acknowledgment.">
+        <DemoBlock Code="@_informationCode">
+            <AlertDialog>
+                <AlertDialogTrigger>
+                    <Button Variant="ButtonVariant.Secondary">View Terms</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Terms and Conditions</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            By continuing, you agree to our Terms of Service and Privacy Policy.
+                            We collect and use your data to provide and improve our services.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction>
+                            <Button>I Understand</Button>
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Accessibility &amp; Behavior"
+        Description="Alert dialogs trap focus and require user acknowledgement. By default they cannot be dismissed by clicking outside (customizable via CloseOnClickOutside), can be closed with Escape (customizable via CloseOnEscape), trap focus within the dialog, use role=&quot;alertdialog&quot; for screen readers, and are best used for destructive or critical confirmations." />
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_alertDialogProps" />
+    </DemoSection>
+
+    <DemoPageNav />
 </div>
 
 @code {

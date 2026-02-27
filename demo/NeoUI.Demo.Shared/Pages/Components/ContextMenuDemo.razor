@@ -1,451 +1,327 @@
 @page "/components/context-menu"
-<PageTitle>Context Menu Component - NeoUI</PageTitle>
+
+<PageTitle>Context Menu - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-    <div>
-        <div class="space-y-3">
-            <h1 class="text-4xl font-bold tracking-tight">Context Menu Component</h1>
-            <p class="text-xl text-muted-foreground">
-                Displays a menu to the user — such as a set of actions or functions — triggered by right-clicking.
-            </p>
-        </div>
-    </div>
 
-    <div class="space-y-6">
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Default</h2>
-                <p class="text-muted-foreground">
-                    Right-click the area below to open the context menu.
-                </p>
-            </div>
+    <DemoPageHeader
+        Title="Context Menu"
+        Description="Displays a menu to the user — such as a set of actions or functions — triggered by a button or right-click." />
 
+    <DemoSection
+        Title="Default"
+        Description="Right-click the area below to open the context menu.">
+        <DemoBlock Code="@_defaultCode">
             <ContextMenu>
-                <ContextMenuTrigger>
-                    <div class="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
-                        Right click here
-                    </div>
-                </ContextMenuTrigger>
-                <ContextMenuContent>
-                    <ContextMenuItem OnClick="@(() => Console.WriteLine("Back"))">
-                        Back
-                        <ContextMenuShortcut>⌘[</ContextMenuShortcut>
-                    </ContextMenuItem>
-                    <ContextMenuItem Disabled="true">
-                        Forward
-                        <ContextMenuShortcut>⌘]</ContextMenuShortcut>
-                    </ContextMenuItem>
-                    <ContextMenuItem>
-                        Reload
-                        <ContextMenuShortcut>⌘R</ContextMenuShortcut>
-                    </ContextMenuItem>
-                    <ContextMenuSeparator />
-                    <ContextMenuItem>
-                        Save As...
-                        <ContextMenuShortcut>⇧⌘S</ContextMenuShortcut>
-                    </ContextMenuItem>
-                    <ContextMenuItem>Print...</ContextMenuItem>
-                </ContextMenuContent>
-            </ContextMenu>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">With Icons</h2>
-                <p class="text-muted-foreground">
-                    Add Lucide icons to menu items for better visual hierarchy.
-                </p>
-            </div>
-
-            <ContextMenu>
-                <ContextMenuTrigger>
-                    <div class="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
-                        Right click for icon menu
-                    </div>
+                <ContextMenuTrigger Class="flex h-[150px] w-full items-center justify-center rounded-md border border-dashed text-sm cursor-context-menu select-none">
+                    Right click here
                 </ContextMenuTrigger>
                 <ContextMenuContent Class="w-64">
-                    <ContextMenuLabel>Actions</ContextMenuLabel>
+                    <ContextMenuItem OnClick="@(() => HandleAction("Back"))">Back</ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleAction("Forward"))" Disabled="true">Forward</ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleAction("Reload"))">Reload</ContextMenuItem>
                     <ContextMenuSeparator />
-                    <ContextMenuItem OnClick="@(() => HandleIconsAction("Edit"))">
-                        <LucideIcon Name="pencil" Size="16" Class="mr-2" />
-                        Edit
-                        <ContextMenuShortcut>⌘E</ContextMenuShortcut>
-                    </ContextMenuItem>
-                    <ContextMenuItem OnClick="@(() => HandleIconsAction("Duplicate"))">
-                        <LucideIcon Name="copy" Size="16" Class="mr-2" />
-                        Duplicate
-                        <ContextMenuShortcut>⌘D</ContextMenuShortcut>
-                    </ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleAction("Save As"))">Save As...</ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleAction("Print"))">Print...</ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleAction("Cast"))">Cast to Device</ContextMenuItem>
                     <ContextMenuSeparator />
-                    <ContextMenuItem OnClick="@(() => HandleIconsAction("Share"))">
-                        <LucideIcon Name="share" Size="16" Class="mr-2" />
-                        Share
-                    </ContextMenuItem>
-                    <ContextMenuItem OnClick="@(() => HandleIconsAction("Download"))">
-                        <LucideIcon Name="download" Size="16" Class="mr-2" />
-                        Download
-                    </ContextMenuItem>
-                    <ContextMenuSeparator />
-                    <ContextMenuItem OnClick="@(() => HandleIconsAction("Archive"))">
-                        <LucideIcon Name="archive" Size="16" Class="mr-2" />
-                        Archive
-                    </ContextMenuItem>
-                    <ContextMenuItem OnClick="@(() => HandleIconsAction("Delete"))" Class="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950">
-                        <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
-                        Delete
-                        <ContextMenuShortcut>⌫</ContextMenuShortcut>
-                    </ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleAction("View Source"))">View Page Source</ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleAction("Inspect"))">Inspect</ContextMenuItem>
                 </ContextMenuContent>
             </ContextMenu>
-
-            @if (!string.IsNullOrEmpty(iconsAction))
+            @if (!string.IsNullOrEmpty(lastAction))
             {
-                <p class="text-sm">Last action: <strong>@iconsAction</strong></p>
+                <p class="mt-2 text-sm">Last action: <strong>@lastAction</strong></p>
             }
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">With Labels and Groups</h2>
-                <p class="text-muted-foreground">
-                    Organize menu items into groups with labels.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="With Icons"
+        Description="Add Lucide icons to context menu items for improved usability.">
+        <DemoBlock Code="@_iconsCode">
             <ContextMenu>
-                <ContextMenuTrigger>
-                    <div class="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
-                        Right click for file actions
-                    </div>
+                <ContextMenuTrigger Class="flex h-[150px] w-full items-center justify-center rounded-md border border-dashed text-sm cursor-context-menu select-none">
+                    Right click for icon menu
                 </ContextMenuTrigger>
-                <ContextMenuContent Class="w-64">
-                    <ContextMenuLabel>File Actions</ContextMenuLabel>
-                    <ContextMenuSeparator />
-                    <ContextMenuItem>
-                        New File
-                        <ContextMenuShortcut>⌘N</ContextMenuShortcut>
+                <ContextMenuContent Class="w-56">
+                    <ContextMenuItem OnClick="@(() => HandleIconsAction("Open"))">
+                        <LucideIcon Name="folder-open" Size="16" Class="mr-2" /> Open
                     </ContextMenuItem>
-                    <ContextMenuItem>
-                        Open
-                        <ContextMenuShortcut>⌘O</ContextMenuShortcut>
+                    <ContextMenuItem OnClick="@(() => HandleIconsAction("Edit"))">
+                        <LucideIcon Name="pencil" Size="16" Class="mr-2" /> Edit
                     </ContextMenuItem>
-                    <ContextMenuSeparator />
-                    <ContextMenuLabel>Edit</ContextMenuLabel>
-                    <ContextMenuSeparator />
-                    <ContextMenuItem>
-                        Cut
-                        <ContextMenuShortcut>⌘X</ContextMenuShortcut>
-                    </ContextMenuItem>
-                    <ContextMenuItem>
-                        Copy
+                    <ContextMenuItem OnClick="@(() => HandleIconsAction("Copy"))">
+                        <LucideIcon Name="copy" Size="16" Class="mr-2" /> Copy
                         <ContextMenuShortcut>⌘C</ContextMenuShortcut>
                     </ContextMenuItem>
-                    <ContextMenuItem>
-                        Paste
+                    <ContextMenuItem OnClick="@(() => HandleIconsAction("Paste"))">
+                        <LucideIcon Name="clipboard-paste" Size="16" Class="mr-2" /> Paste
                         <ContextMenuShortcut>⌘V</ContextMenuShortcut>
                     </ContextMenuItem>
-                </ContextMenuContent>
-            </ContextMenu>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">With Destructive Item</h2>
-                <p class="text-muted-foreground">
-                    Highlight dangerous actions with custom styling.
-                </p>
-            </div>
-
-            <ContextMenu>
-                <ContextMenuTrigger>
-                    <div class="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm bg-muted/50">
-                        Right click on this card
-                    </div>
-                </ContextMenuTrigger>
-                <ContextMenuContent>
-                    <ContextMenuItem>
-                        Edit
-                        <ContextMenuShortcut>⌘E</ContextMenuShortcut>
-                    </ContextMenuItem>
-                    <ContextMenuItem>
-                        Duplicate
-                        <ContextMenuShortcut>⌘D</ContextMenuShortcut>
-                    </ContextMenuItem>
                     <ContextMenuSeparator />
-                    <ContextMenuItem>Archive</ContextMenuItem>
-                    <ContextMenuSeparator />
-                    <ContextMenuItem Class="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950">
-                        Delete
+                    <ContextMenuItem OnClick="@(() => HandleIconsAction("Delete"))" Class="text-destructive focus:text-destructive">
+                        <LucideIcon Name="trash-2" Size="16" Class="mr-2" /> Delete
                         <ContextMenuShortcut>⌫</ContextMenuShortcut>
                     </ContextMenuItem>
                 </ContextMenuContent>
             </ContextMenu>
-        </section>
+            @if (!string.IsNullOrEmpty(iconsAction))
+            {
+                <p class="mt-2 text-sm">Last action: <strong>@iconsAction</strong></p>
+            }
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">With Inset Items</h2>
-                <p class="text-muted-foreground">
-                    Use inset for items without icons to align with other items.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="With Labels and Groups"
+        Description="Organize menu items using labels and separators.">
+        <DemoBlock Code="@_groupsCode">
             <ContextMenu>
-                <ContextMenuTrigger>
-                    <div class="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
-                        Right click here
-                    </div>
+                <ContextMenuTrigger Class="flex h-[150px] w-full items-center justify-center rounded-md border border-dashed text-sm cursor-context-menu select-none">
+                    Right click for grouped menu
                 </ContextMenuTrigger>
-                <ContextMenuContent>
-                    <ContextMenuItem Inset="true">
-                        Profile
-                        <ContextMenuShortcut>⇧⌘P</ContextMenuShortcut>
-                    </ContextMenuItem>
-                    <ContextMenuItem Inset="true">
-                        Billing
-                        <ContextMenuShortcut>⌘B</ContextMenuShortcut>
-                    </ContextMenuItem>
-                    <ContextMenuItem Inset="true">
-                        Settings
-                        <ContextMenuShortcut>⌘S</ContextMenuShortcut>
-                    </ContextMenuItem>
+                <ContextMenuContent Class="w-56">
+                    <ContextMenuLabel>File Operations</ContextMenuLabel>
                     <ContextMenuSeparator />
-                    <ContextMenuItem Inset="true">
-                        Log out
-                        <ContextMenuShortcut>⇧⌘Q</ContextMenuShortcut>
+                    <ContextMenuItem OnClick="@(() => HandleGroupsAction("New"))">New File</ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleGroupsAction("Open"))">Open...</ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuLabel>Edit Operations</ContextMenuLabel>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem OnClick="@(() => HandleGroupsAction("Cut"))">Cut</ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleGroupsAction("Copy"))">Copy</ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleGroupsAction("Paste"))">Paste</ContextMenuItem>
+                </ContextMenuContent>
+            </ContextMenu>
+            @if (!string.IsNullOrEmpty(groupsAction))
+            {
+                <p class="mt-2 text-sm">Last action: <strong>@groupsAction</strong></p>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Destructive Item"
+        Description="Destructive actions are styled to draw attention to their danger.">
+        <DemoBlock Code="@_destructiveCode">
+            <ContextMenu>
+                <ContextMenuTrigger Class="flex h-[150px] w-full items-center justify-center rounded-md border border-dashed text-sm cursor-context-menu select-none">
+                    Right click for destructive actions
+                </ContextMenuTrigger>
+                <ContextMenuContent Class="w-64">
+                    <ContextMenuItem OnClick="@(() => HandleDestructiveAction("Edit"))">Edit</ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleDestructiveAction("Duplicate"))">Duplicate</ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem OnClick="@(() => HandleDestructiveAction("Archive"))">Archive</ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleDestructiveAction("Move to Trash"))" Class="text-destructive focus:text-destructive">
+                        Move to Trash
                     </ContextMenuItem>
                 </ContextMenuContent>
             </ContextMenu>
-        </section>
+            @if (!string.IsNullOrEmpty(destructiveAction))
+            {
+                <p class="mt-2 text-sm">Last action: <strong>@destructiveAction</strong></p>
+            }
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">On Image</h2>
-                <p class="text-muted-foreground">
-                    Context menu on an image element.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="With Inset Items"
+        Description="Use Inset to align items that don't have an icon with items that do.">
+        <DemoBlock Code="@_insetCode">
             <ContextMenu>
-                <ContextMenuTrigger>
-                    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=400&dpr=2&q=80"
-                         alt="Photo"
-                         class="w-[300px] h-[200px] object-cover rounded-md cursor-default" />
+                <ContextMenuTrigger Class="flex h-[150px] w-full items-center justify-center rounded-md border border-dashed text-sm cursor-context-menu select-none">
+                    Right click for inset demo
                 </ContextMenuTrigger>
-                <ContextMenuContent>
-                    <ContextMenuItem>Save Image As...</ContextMenuItem>
-                    <ContextMenuItem>Copy Image</ContextMenuItem>
-                    <ContextMenuItem>Copy Image Address</ContextMenuItem>
+                <ContextMenuContent Class="w-64">
+                    <ContextMenuItem OnClick="@(() => HandleInsetAction("Back"))">
+                        <LucideIcon Name="chevron-left" Size="16" Class="mr-2" /> Back
+                    </ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleInsetAction("Forward"))" Disabled="true" Inset="true">Forward</ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleInsetAction("Reload"))" Inset="true">Reload</ContextMenuItem>
                     <ContextMenuSeparator />
-                    <ContextMenuItem>Open Image in New Tab</ContextMenuItem>
+                    <ContextMenuLabel Inset="true">Developer Tools</ContextMenuLabel>
+                    <ContextMenuItem OnClick="@(() => HandleInsetAction("Inspect"))" Inset="true">Inspect Element</ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleInsetAction("Console"))" Inset="true">Developer Console</ContextMenuItem>
                 </ContextMenuContent>
             </ContextMenu>
-        </section>
+            @if (!string.IsNullOrEmpty(insetAction))
+            {
+                <p class="mt-2 text-sm">Last action: <strong>@insetAction</strong></p>
+            }
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Features</h2>
-            </div>
-            <ul class="list-disc list-inside space-y-2 text-sm">
-                <li>Opens on right-click (contextmenu event)</li>
-                <li>Positioned at mouse cursor location</li>
-                <li>Closes on outside click or Escape key</li>
-                <li>Full keyboard navigation (↑/↓, Enter, Escape)</li>
-                <li>Support for disabled items</li>
-                <li>Keyboard shortcut hints</li>
-                <li>Separator and label components</li>
-            </ul>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Keyboard Navigation</h2>
-            </div>
-            <div class="grid gap-2 text-sm">
-                <div class="flex gap-4">
-                    <kbd class="px-2 py-1 bg-muted rounded">↑/↓</kbd>
-                    <span>Navigate items</span>
-                </div>
-                <div class="flex gap-4">
-                    <kbd class="px-2 py-1 bg-muted rounded">Enter/Space</kbd>
-                    <span>Select item</span>
-                </div>
-                <div class="flex gap-4">
-                    <kbd class="px-2 py-1 bg-muted rounded">Escape</kbd>
-                    <span>Close menu</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Installation</h2>
-            </div>
-
-            <div class="bg-muted p-4 rounded-md">
-                <code class="text-sm">@@using NeoUI.Blazor</code>
-            </div>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Usage</h2>
-            </div>
-
-            <div class="bg-muted p-4 rounded-md">
-                <pre class="text-sm overflow-x-auto"><code>&lt;ContextMenu&gt;
-    &lt;ContextMenuTrigger&gt;
-        &lt;div&gt;Right click here&lt;/div&gt;
-    &lt;/ContextMenuTrigger&gt;
-    &lt;ContextMenuContent&gt;
-        &lt;ContextMenuItem OnClick="HandleCopy"&gt;
-            Copy
-            &lt;ContextMenuShortcut&gt;⌘C&lt;/ContextMenuShortcut&gt;
-        &lt;/ContextMenuItem&gt;
-        &lt;ContextMenuSeparator /&gt;
-        &lt;ContextMenuItem&gt;Delete&lt;/ContextMenuItem&gt;
-    &lt;/ContextMenuContent&gt;
-&lt;/ContextMenu&gt;</code></pre>
-            </div>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">With Checkbox Items</h2>
-                <p class="text-muted-foreground">
-                    Toggle preferences directly from the context menu.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="On Image"
+        Description="Context menus can be triggered on any element, including images.">
+        <DemoBlock Code="@_imageCode">
             <ContextMenu>
                 <ContextMenuTrigger>
-                    <div class="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
-                        Right click for view options
-                    </div>
+                    <img
+                        alt="placeholder"
+                        class="rounded-md cursor-context-menu select-none w-[300px]"
+                        src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
+                         />
                 </ContextMenuTrigger>
-                <ContextMenuContent>
+                <ContextMenuContent Class="w-64">
+                    <ContextMenuItem OnClick="@(() => HandleImageAction("Open"))">Open Image in New Tab</ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleImageAction("Save"))">Save Image As...</ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem OnClick="@(() => HandleImageAction("Copy"))">Copy Image</ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleImageAction("Copy Link"))">Copy Image Link</ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem OnClick="@(() => HandleImageAction("Inspect"))">Inspect</ContextMenuItem>
+                </ContextMenuContent>
+            </ContextMenu>
+            @if (!string.IsNullOrEmpty(imageAction))
+            {
+                <p class="mt-2 text-sm">Last action: <strong>@imageAction</strong></p>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Checkbox Items"
+        Description="Toggle states using checkbox menu items.">
+        <DemoBlock Code="@_checkboxCode">
+            <ContextMenu>
+                <ContextMenuTrigger Class="flex h-[150px] w-full items-center justify-center rounded-md border border-dashed text-sm cursor-context-menu select-none">
+                    Right click for checkbox items
+                </ContextMenuTrigger>
+                <ContextMenuContent Class="w-56">
                     <ContextMenuLabel>View Options</ContextMenuLabel>
                     <ContextMenuSeparator />
-                    <ContextMenuCheckboxItem @bind-Checked="@showHidden">
-                        Show Hidden Files
-                    </ContextMenuCheckboxItem>
-                    <ContextMenuCheckboxItem @bind-Checked="@showExtensions">
-                        Show File Extensions
-                    </ContextMenuCheckboxItem>
-                    <ContextMenuCheckboxItem @bind-Checked="@compactView">
-                        Compact View
-                    </ContextMenuCheckboxItem>
+                    <ContextMenuCheckboxItem @bind-Checked="@showToolbar">Show Toolbar</ContextMenuCheckboxItem>
+                    <ContextMenuCheckboxItem @bind-Checked="@showSidebar">Show Sidebar</ContextMenuCheckboxItem>
+                    <ContextMenuCheckboxItem @bind-Checked="@showStatusBar">Show Status Bar</ContextMenuCheckboxItem>
                 </ContextMenuContent>
             </ContextMenu>
-
-            <div class="text-sm space-x-4">
-                <span>Hidden: <strong>@(showHidden ? "Shown" : "Hidden")</strong></span>
-                <span>Extensions: <strong>@(showExtensions ? "Shown" : "Hidden")</strong></span>
-                <span>Compact: <strong>@(compactView ? "Yes" : "No")</strong></span>
+            <div class="mt-2 flex gap-4 text-sm">
+                <span>Toolbar: <strong>@(showToolbar ? "on" : "off")</strong></span>
+                <span>Sidebar: <strong>@(showSidebar ? "on" : "off")</strong></span>
+                <span>Status Bar: <strong>@(showStatusBar ? "on" : "off")</strong></span>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">With Radio Items</h2>
-                <p class="text-muted-foreground">
-                    Select from mutually exclusive options.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="With Radio Items"
+        Description="Single-selection using radio menu items.">
+        <DemoBlock Code="@_radioCode">
             <ContextMenu>
-                <ContextMenuTrigger>
-                    <div class="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
-                        Right click to select sort order
-                    </div>
+                <ContextMenuTrigger Class="flex h-[150px] w-full items-center justify-center rounded-md border border-dashed text-sm cursor-context-menu select-none">
+                    Right click for radio items
                 </ContextMenuTrigger>
-                <ContextMenuContent>
-                    <ContextMenuLabel>Sort By</ContextMenuLabel>
+                <ContextMenuContent Class="w-56">
+                    <ContextMenuLabel>View Mode</ContextMenuLabel>
                     <ContextMenuSeparator />
-                    <ContextMenuRadioGroup TValue="string" @bind-Value="@sortOrder">
-                        <ContextMenuRadioItem TValue="string" Value="@("name")">Name</ContextMenuRadioItem>
-                        <ContextMenuRadioItem TValue="string" Value="@("date")">Date Modified</ContextMenuRadioItem>
-                        <ContextMenuRadioItem TValue="string" Value="@("size")">Size</ContextMenuRadioItem>
-                        <ContextMenuRadioItem TValue="string" Value="@("type")">Type</ContextMenuRadioItem>
+                    <ContextMenuRadioGroup TValue="string" @bind-Value="@selectedViewMode">
+                        <ContextMenuRadioItem TValue="string" Value="@("grid")">Grid View</ContextMenuRadioItem>
+                        <ContextMenuRadioItem TValue="string" Value="@("list")">List View</ContextMenuRadioItem>
+                        <ContextMenuRadioItem TValue="string" Value="@("compact")">Compact View</ContextMenuRadioItem>
                     </ContextMenuRadioGroup>
                 </ContextMenuContent>
             </ContextMenu>
+            <p class="mt-2 text-sm">View mode: <strong>@selectedViewMode</strong></p>
+        </DemoBlock>
+    </DemoSection>
 
-            <p class="text-sm">Sort order: <strong>@sortOrder</strong></p>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">With Submenus</h2>
-                <p class="text-muted-foreground">
-                    Organize complex options in nested menus.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="With Submenus"
+        Description="Organize complex menus with nested submenus.">
+        <DemoBlock Code="@_submenuCode">
             <ContextMenu>
-                <ContextMenuTrigger>
-                    <div class="flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm">
-                        Right click for share options
-                    </div>
+                <ContextMenuTrigger Class="flex h-[150px] w-full items-center justify-center rounded-md border border-dashed text-sm cursor-context-menu select-none">
+                    Right click for submenu
                 </ContextMenuTrigger>
-                <ContextMenuContent>
-                    <ContextMenuItem OnClick="@(() => HandleContextAction("Copy"))">
-                        Copy
-                        <ContextMenuShortcut>⌘C</ContextMenuShortcut>
-                    </ContextMenuItem>
+                <ContextMenuContent Class="w-64">
+                    <ContextMenuItem OnClick="@(() => HandleSubmenuAction("Open"))">Open</ContextMenuItem>
+                    <ContextMenuSub>
+                        <ContextMenuSubTrigger>Open With</ContextMenuSubTrigger>
+                        <ContextMenuSubContent Class="w-48">
+                            <ContextMenuItem OnClick="@(() => HandleSubmenuAction("Browser"))">Browser</ContextMenuItem>
+                            <ContextMenuItem OnClick="@(() => HandleSubmenuAction("VS Code"))">VS Code</ContextMenuItem>
+                            <ContextMenuItem OnClick="@(() => HandleSubmenuAction("Other"))">Other...</ContextMenuItem>
+                        </ContextMenuSubContent>
+                    </ContextMenuSub>
                     <ContextMenuSeparator />
                     <ContextMenuSub>
                         <ContextMenuSubTrigger>Share</ContextMenuSubTrigger>
                         <ContextMenuSubContent>
-                            <ContextMenuItem OnClick="@(() => HandleContextAction("Share: Email"))">
-                                Email
-                            </ContextMenuItem>
-                            <ContextMenuItem OnClick="@(() => HandleContextAction("Share: Slack"))">
-                                Slack
-                            </ContextMenuItem>
-                            <ContextMenuItem OnClick="@(() => HandleContextAction("Share: Teams"))">
-                                Microsoft Teams
-                            </ContextMenuItem>
-                            <ContextMenuSeparator />
-                            <ContextMenuSub>
-                                <ContextMenuSubTrigger>Social</ContextMenuSubTrigger>
-                                <ContextMenuSubContent>
-                                    <ContextMenuItem OnClick="@(() => HandleContextAction("Share: Twitter"))">Twitter</ContextMenuItem>
-                                    <ContextMenuItem OnClick="@(() => HandleContextAction("Share: Facebook"))">Facebook</ContextMenuItem>
-                                    <ContextMenuItem OnClick="@(() => HandleContextAction("Share: LinkedIn"))">LinkedIn</ContextMenuItem>
-                                </ContextMenuSubContent>
-                            </ContextMenuSub>
+                            <ContextMenuItem OnClick="@(() => HandleSubmenuAction("Email"))">Email</ContextMenuItem>
+                            <ContextMenuItem OnClick="@(() => HandleSubmenuAction("Copy Link"))">Copy Link</ContextMenuItem>
                         </ContextMenuSubContent>
                     </ContextMenuSub>
                     <ContextMenuSeparator />
-                    <ContextMenuItem OnClick="@(() => HandleContextAction("Delete"))" Class="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950">
-                        Delete
-                        <ContextMenuShortcut>⌫</ContextMenuShortcut>
-                    </ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => HandleSubmenuAction("Delete"))" Class="text-destructive focus:text-destructive">Delete</ContextMenuItem>
                 </ContextMenuContent>
             </ContextMenu>
-
-            @if (!string.IsNullOrEmpty(contextAction))
+            @if (!string.IsNullOrEmpty(submenuAction))
             {
-                <p class="text-sm">Last action: <strong>@contextAction</strong></p>
+                <p class="mt-2 text-sm">Last action: <strong>@submenuAction</strong></p>
             }
-        </section>
-    </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Features">
+        <ul class="list-disc list-inside space-y-2 text-sm">
+            <li>Opens on right-click (contextmenu event)</li>
+            <li>Positioned at mouse cursor location</li>
+            <li>Closes on outside click or Escape key</li>
+            <li>Full keyboard navigation (↑/↓, Enter, Escape)</li>
+            <li>Support for disabled items</li>
+            <li>Keyboard shortcut hints</li>
+            <li>Separator and label components</li>
+        </ul>
+    </DemoSection>
+
+    <DemoSection Title="Keyboard Navigation">
+        <div class="grid gap-2 text-sm">
+            <div class="flex gap-4">
+                <kbd class="px-2 py-1 bg-muted rounded">↑/↓</kbd>
+                <span>Navigate items</span>
+            </div>
+            <div class="flex gap-4">
+                <kbd class="px-2 py-1 bg-muted rounded">Enter/Space</kbd>
+                <span>Select item</span>
+            </div>
+            <div class="flex gap-4">
+                <kbd class="px-2 py-1 bg-muted rounded">Escape</kbd>
+                <span>Close menu</span>
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_contextMenuProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+
 </div>
 
 @code {
-    // Checkbox state
-    private bool showHidden = false;
-    private bool showExtensions = true;
-    private bool compactView = false;
-
-    // Radio state
-    private string? sortOrder = "name";
-
-    // Action tracking
+    private string? lastAction;
     private string? iconsAction;
-    private string? contextAction;
+    private string? groupsAction;
+    private string? destructiveAction;
+    private string? insetAction;
+    private string? imageAction;
+    private string? submenuAction;
 
+    private bool showToolbar = true;
+    private bool showSidebar = false;
+    private bool showStatusBar = true;
+    private string selectedViewMode = "grid";
+
+    private void HandleAction(string action) => lastAction = action;
     private void HandleIconsAction(string action) => iconsAction = action;
-    private void HandleContextAction(string action) => contextAction = action;
+    private void HandleGroupsAction(string action) => groupsAction = action;
+    private void HandleDestructiveAction(string action) => destructiveAction = action;
+    private void HandleInsetAction(string action) => insetAction = action;
+    private void HandleImageAction(string action) => imageAction = action;
+    private void HandleSubmenuAction(string action) => submenuAction = action;
+
 }

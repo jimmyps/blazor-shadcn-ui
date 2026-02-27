@@ -1,28 +1,35 @@
 @page "/components/chart/bar"
 @using NeoUI.Blazor.Charts
-<PageTitle>Chart Components - Bar Chart</PageTitle>
 
-<div class="space-y-8">
-    @* Hero - Interactive Bar Chart with Date Filter *@
-    <Card>
-        <CardHeader Class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
-            <div class="grid flex-1 gap-1">
-                <CardTitle Class="text-xl">Bar Chart - Interactive</CardTitle>
-                <CardDescription>Showing sales data for the @(timeRanges.TryGetValue(timeRange, out var description) ? description.ToLower() : "last 30 days")</CardDescription>
+<PageTitle>Bar Chart - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-6xl">
+
+    <DemoPageHeader
+        Title="Bar Chart"
+        Description="Vertical and horizontal bar charts with grouping, stacking, labels, and 100% expansion. Supports mixed bar + line charts via ComposedChart." />
+
+    <DemoSection
+        Title="Interactive"
+        Description="A live bar chart with time-range filtering.">
+        <DemoBlock Code="@_interactiveCode">
+            <div class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
+                    <div class="grid flex-1 gap-1">
+                        <p class="text-xl font-semibold">Bar Chart — Interactive</p>
+                        <p class="text-sm text-muted-foreground">Showing sales data for the @(timeRanges.TryGetValue(timeRange, out var description) ? description.ToLower() : "last 30 days")</p>
+                    </div>
+                    <Select @bind-Value="@timeRange" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
+                        <SelectTrigger>
+                            <SelectValue Placeholder="Last 30 days" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            @foreach (var range in timeRanges)
+                            {
+                                <SelectItem Value="@range.Key" Text="@range.Value">@range.Value</SelectItem>
+                            }
+                        </SelectContent>
+                    </Select>
             </div>
-            <Select @bind-Value="@timeRange" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
-                <SelectTrigger>
-                    <SelectValue Placeholder="Last 30 days" />
-                </SelectTrigger>
-                <SelectContent>
-                    @foreach (var range in timeRanges)
-                    {
-                        <SelectItem Value="@range.Key" Text="@range.Value">@range.Value</SelectItem>
-                    }
-                </SelectContent>
-            </Select>
-        </CardHeader>
-        <CardContent Class="p-6 pt-2 sm:px-6 sm:pt-6">
             <ChartContainer Height="250" Class="w-full">
                 <BarChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
                     <Grid Vertical="false" Stroke="var(--border)" />
@@ -38,17 +45,14 @@
                     <Bar DataKey="mobile" Name="Mobile" Radius="4" Color="var(--chart-2)" />
                 </BarChart>
             </ChartContainer>
-        </CardContent>
-    </Card>
 
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
-        @* Default Bar Chart *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Bar Chart</CardTitle>
-                <CardDescription>Default bar chart</CardDescription>
-            </CardHeader>
-            <CardContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Variants" Description="Core bar chart configurations.">
+        <div class="grid gap-6 md:grid-cols-2">
+
+            <DemoBlock Code="@_defaultCode">
                 <ChartContainer Height="200">
                     <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -63,16 +67,9 @@
                         <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-1)" />
                     </BarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Horizontal Bar Chart *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Horizontal Bars</CardTitle>
-                <CardDescription>Horizontal orientation</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_horizontalCode">
                 <ChartContainer Height="200">
                     <BarChart Data="@simpleData" Layout="BarLayout.Horizontal" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -87,16 +84,9 @@
                         <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-2)" />
                     </BarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Multiple Bars *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Multiple Bars</CardTitle>
-                <CardDescription>Side-by-side bars</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_multipleCode">
                 <ChartContainer Height="200">
                     <BarChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -112,16 +102,9 @@
                         <Bar DataKey="product2" Name="Product B" Radius="4" Color="var(--chart-2)" />
                     </BarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Stacked Bar Chart *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Stacked Bars</CardTitle>
-                <CardDescription>Stacked bar chart</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_stackedCode">
                 <ChartContainer Height="200">
                     <BarChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -137,16 +120,9 @@
                         <Bar DataKey="product2" Name="Product B" StackId="total" Radius="4" Color="var(--chart-2)" />
                     </BarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Bar with Labels (MVP+ Feature) *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">With Labels</CardTitle>
-                <CardDescription>Data labels on bars</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_withLabelsCode">
                 <ChartContainer Height="200">
                     <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -163,16 +139,9 @@
                         </Bar>
                     </BarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Bar with Custom Labels (MVP+ Feature) *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Custom Labels</CardTitle>
-                <CardDescription>Custom label formatting</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_customLabelsCode">
                 <ChartContainer Height="200">
                     <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -189,16 +158,9 @@
                         </Bar>
                     </BarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* 100% Stacked Bars (MVP+ Feature) *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">100% Stacked</CardTitle>
-                <CardDescription>Percentage stacking</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_expandedCode">
                 <ChartContainer Height="200">
                     <BarChart Data="@multiData" StackOffset="StackOffset.Expand" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -214,16 +176,9 @@
                         <Bar DataKey="product2" Name="Product B" StackId="total" Radius="4" Color="var(--chart-2)" />
                     </BarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Active Bar (Emphasis) *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Active/Hover</CardTitle>
-                <CardDescription>Hover emphasis effect</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_activeCode">
                 <ChartContainer Height="200">
                     <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -238,16 +193,9 @@
                         <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-5)" />
                     </BarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Mixed (Bar + Line) *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Mixed Chart</CardTitle>
-                <CardDescription>Bar and line combined</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_mixedCode">
                 <ChartContainer Height="200">
                     <ComposedChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -263,16 +211,9 @@
                         <Line DataKey="product2" Name="Product B" Color="var(--chart-2)" />
                     </ComposedChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Negative Values *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Negative Values</CardTitle>
-                <CardDescription>Bars with positive and negative</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_negativeCode">
                 <ChartContainer Height="200">
                     <BarChart Data="@negativeData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -287,9 +228,17 @@
                         <Bar DataKey="value" Name="Profit/Loss" Radius="4" Color="var(--chart-3)" />
                     </BarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
-    </div>
+            </DemoBlock>
+
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="API Reference">
+        <DemoPropsTable Rows="@_barChartProps" />
+    </DemoSection>
+
+    <DemoPageSubNav />
+
 </div>
 
 @code {

@@ -2,6 +2,56 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-2-27 – Demo Site Revamp: Data-Driven Registry, `Demo*` Infrastructure & Full Page Conversion
+
+> **Demo-only change.** No library component APIs were modified. All changes are contained within `demo/NeoUI.Demo.Shared`.
+
+---
+
+### ✨ Feature: Component Registry
+
+A single, centralized `ComponentRegistry` now drives all demo-site navigation surfaces — eliminating scattered hardcoded lists.
+
+- Registry entries carry: slug, title, description, icon name, category/tags, and tier (`Component` vs `Primitive`)
+- Stable ordering used for **prev/next** navigation across all ~80 demo pages
+- Helper methods: find entry by route/slug, get prev/next entry, enumerate grouped items
+- All three navigation surfaces now read from the registry:
+  - **Left sidebar** menu
+  - **`/components` index page** (card grid)
+  - **Spotlight Command Palette** (global search)
+
+---
+
+### ✨ Feature: `Demo*` Infrastructure Components
+
+A suite of reusable, consistently-named demo-scaffolding components added to `demo/NeoUI.Demo.Shared`:
+
+| Component | Purpose |
+|---|---|
+| `DemoPageHeader` | Page title + description banner |
+| `DemoSection` | Titled section with optional description |
+| `DemoBlock` | Live preview / code tab switcher |
+| `DemoCopyButton` | One-click copy for code snippets |
+| `DemoPropsTable` | API reference table (`DemoPropRow` rows) |
+| `DemoPageNav` | Zero-config prev/next navigation (derives context from registry) |
+
+Breadcrumnb navigation is also wired into the top bar in `MainLayout`, showing the active page context and prev/next buttons when browsing any demo page.
+
+---
+
+### ✨ Feature: All Demo Pages Converted to `Demo*` Pattern
+
+All **~80 component and primitive demo pages** have been converted from ad-hoc `<section>` / `<h2>` markup to the standardised `Demo*` structure, following the `AlertDemo.razor` reference implementation:
+
+- `DemoPageHeader` replaces the old inline title/description
+- Each example group is wrapped in `DemoSection` + `DemoBlock` (live preview + syntax-highlighted code tab)
+- API reference table (`DemoPropsTable`) added to every page
+- All related code snippets and demo-viewer related codes are placed in CodeExamples subfolder, providing clean examples in the razor file.
+- `DemoPageNav` appended to every page (prev/next, zero-config)
+- Cosmetic label improvements applied where appropriate (e.g. `"DatePicker Component"` → `"Date Picker"`, `"Basic Examples"` → `"Basic"`)
+
+---
+
 ## 2026-2-24 – RC Namespace Flattening & Brand Rename: `BlazorUI.*` → `NeoUI.*`
 
 > **Breaking change.** Every package ID, namespace, filename, CSS class, JS token, localStorage key, and CI/CD reference has been updated to the new `NeoUI.*` scheme. See migration notes below.
