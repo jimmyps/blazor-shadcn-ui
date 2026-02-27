@@ -80,9 +80,6 @@ namespace NeoUI.Demo.Shared.Pages.Components
             """
             <!-- Theme JS — must come before Blazor boots to prevent FOUC -->
             <script src="_content/NeoUI.Blazor/js/theme.js"></script>
-            <script>
-                window.theme.initialize();
-            </script>
             """;
 
         private const string _serviceRegistrationCode =
