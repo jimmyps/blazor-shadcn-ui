@@ -1,0 +1,106 @@
+@* DemoPageSubNav — prev/next navigation within a component category.
+   Navigates across all entries in the category in definition order, treating
+   the root (non-sub-page) entry as "Overview". Place at the bottom of any chart
+   sub-page (and on the chart overview page itself). *@
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+@if (_prev is not null || _next is not null)
+{
+    <div class="flex items-start justify-between mt-10 pt-6 border-t gap-4">
+        @if (_prev is not null)
+        {
+            <a href="/@_prev.Route"
+               class="group flex flex-col items-start gap-1 p-3 rounded-lg border hover:border-primary hover:bg-accent transition-colors no-underline min-w-0 flex-1 max-w-[calc(50%-0.5rem)]">
+                <span class="flex items-center gap-1 text-xs text-muted-foreground">
+                    <LucideIcon Name="arrow-left" Size="12" />
+                    Previous
+                </span>
+                <span class="font-medium text-sm group-hover:text-primary truncate w-full">@GetDisplayTitle(_prev)</span>
+            </a>
+        }
+        else
+        {
+            <span class="flex-1" />
+        }
+
+        @if (_next is not null)
+        {
+            <a href="/@_next.Route"
+               class="group flex flex-col items-end gap-1 p-3 rounded-lg border hover:border-primary hover:bg-accent transition-colors no-underline min-w-0 flex-1 max-w-[calc(50%-0.5rem)] ml-auto">
+                <span class="flex items-center gap-1 text-xs text-muted-foreground">
+                    Next
+                    <LucideIcon Name="arrow-right" Size="12" />
+                </span>
+                <span class="font-medium text-sm group-hover:text-primary truncate w-full text-right">@GetDisplayTitle(_next)</span>
+            </a>
+        }
+    </div>
+}
+
+@code {
+    /// <summary>The category to navigate within. Defaults to Charts. Ignored when <see cref="ParentSlug"/> is set.</summary>
+    [Parameter] public ComponentCategoryInfo Category { get; set; } = ComponentCategories.Charts;
+
+    /// <summary>
+    /// When set, navigates within all entries sharing this parent slug (e.g. "datagrid").
+    /// Takes precedence over <see cref="Category"/>.
+    /// </summary>
+    [Parameter] public string? ParentSlug { get; set; }
+
+    private ComponentRegistryEntry? _prev;
+    private ComponentRegistryEntry? _next;
+
+    private IReadOnlyList<ComponentRegistryEntry> GetEntries()
+    {
+        if (ParentSlug is not null)
+        {
+            return ComponentRegistry.All
+                .Where(e => e.Tier == ComponentTier.Component &&
+                            (e.Slug == ParentSlug || e.Slug.StartsWith(ParentSlug + "/")))
+                .ToList()
+                .AsReadOnly();
+        }
+        return ComponentRegistry.All
+            .Where(e => e.Tier == ComponentTier.Component && e.Category == Category)
+            .ToList()
+            .AsReadOnly();
+    }
+
+    private static string GetDisplayTitle(ComponentRegistryEntry e) =>
+        !e.IsSubPage ? "Overview" : e.Title;
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += OnLocationChanged;
+        Refresh();
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        Refresh();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void Refresh()
+    {
+        var entries = GetEntries();
+        var relative = Normalize(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        var idx = -1;
+        for (var i = 0; i < entries.Count; i++)
+        {
+            if (Normalize(entries[i].Route).Equals(relative, StringComparison.OrdinalIgnoreCase))
+            {
+                idx = i;
+                break;
+            }
+        }
+        _prev = idx > 0 ? entries[idx - 1] : null;
+        _next = idx >= 0 && idx < entries.Count - 1 ? entries[idx + 1] : null;
+    }
+
+    private static string Normalize(string route) =>
+        route.TrimStart('/').Split('#')[0].ToLowerInvariant();
+
+    public void Dispose() => NavigationManager.LocationChanged -= OnLocationChanged;
+}

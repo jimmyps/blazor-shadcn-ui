@@ -8,63 +8,66 @@
     <DemoSection Title="Custom ID Field"
                  Description="Configure the ID field for stable row identification across data updates, sorting, and pagination. This is critical for maintaining selection state when data changes.">
         <DemoBlock Code="@_customIdFieldCode">
-            <Alert Variant="AlertVariant.Info">
-                <Icon>
-                    <LucideIcon Name="info" Size="16" />
-                </Icon>
-                <ChildContent>
-                    <AlertTitle>Why IdField Matters</AlertTitle>
-                    <AlertDescription>
-                        <ul class="list-disc list-inside space-y-1">
-                            <li>Selection persists across data updates and pagination</li>
-                            <li>Rows maintain stable identity during sorting/filtering</li>
-                            <li>Default is "Id" (C# convention) - works with most models</li>
-                            <li>Customize for models with different primary key names</li>
-                        </ul>
-                    </AlertDescription>
-                </ChildContent>
-            </Alert>
+            <ChildContent>
+                <div class="flex gap-2 mb-4">
+                    <Button Size="ButtonSize.Small" OnClick="UpdateProductData">
+                        Update Data (Selection Persists)
+                    </Button>
+                    <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ShuffleProducts">
+                        Shuffle Order (Selection Persists)
+                    </Button>
+                </div>
 
-            <div class="flex gap-2 mt-2 mb-4">
-                <Button Size="ButtonSize.Small" OnClick="UpdateProductData">
-                    Update Data (Selection Persists)
-                </Button>
-                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ShuffleProducts">
-                    Shuffle Order (Selection Persists)
-                </Button>
-            </div>
+                <DataGrid @ref="_grid1" Items="@products" 
+                      SelectionMode="DataGridSelectionMode.Multiple" 
+                      IdField="ProductId"
+                      @bind-SelectedItems="@selectedProducts">
+                    <Columns>
+                        <DataGridColumn Field="ProductId" Header="Product ID" Width="120px" />
+                        <DataGridColumn Field="Name" Header="Product Name" />
+                        <DataGridColumn Field="Category" Header="Category" Width="150px" />
+                        <DataGridColumn Field="Price" Header="Price" Width="120px" DataFormatString="{0:C}" />
+                        <DataGridColumn Field="Stock" Header="Stock" Width="100px" />
+                    </Columns>
+                </DataGrid>
 
-            <DataGrid @ref="_grid1" Items="@products" 
-                  SelectionMode="DataGridSelectionMode.Multiple" 
-                  IdField="ProductId"
-                  @bind-SelectedItems="@selectedProducts">
-                <Columns>
-                    <DataGridColumn Field="ProductId" Header="Product ID" Width="120px" />
-                    <DataGridColumn Field="Name" Header="Product Name" />
-                    <DataGridColumn Field="Category" Header="Category" Width="150px" />
-                    <DataGridColumn Field="Price" Header="Price" Width="120px" DataFormatString="{0:C}" />
-                    <DataGridColumn Field="Stock" Header="Stock" Width="100px" />
-                </Columns>
-            </DataGrid>
-
-            <div class="mt-4 space-y-2">
-                <p class="text-sm text-muted-foreground">
-                    @selectedProducts.Count product(s) selected
-                </p>
-                @if (selectedProducts.Count > 0)
-                {
-                    <div class="flex gap-2">
-                        @foreach (var product in selectedProducts.Take(5))
-                        {
-                            <Badge Variant="BadgeVariant.Secondary">@product.Name</Badge>
-                        }
-                        @if (selectedProducts.Count > 5)
-                        {
-                            <Badge Variant="BadgeVariant.Outline">+@(selectedProducts.Count - 5) more</Badge>
-                        }
-                    </div>
-                }
-            </div>
+                <div class="mt-4 space-y-2">
+                    <p class="text-sm text-muted-foreground">
+                        @selectedProducts.Count product(s) selected
+                    </p>
+                    @if (selectedProducts.Count > 0)
+                    {
+                        <div class="flex gap-2">
+                            @foreach (var product in selectedProducts.Take(5))
+                            {
+                                <Badge Variant="BadgeVariant.Secondary">@product.Name</Badge>
+                            }
+                            @if (selectedProducts.Count > 5)
+                            {
+                                <Badge Variant="BadgeVariant.Outline">+@(selectedProducts.Count - 5) more</Badge>
+                            }
+                        </div>
+                    }
+                </div>
+            </ChildContent>
+            <AdditionalContent>
+                <Alert Variant="AlertVariant.Info">
+                    <Icon>
+                        <LucideIcon Name="info" Size="16" />
+                    </Icon>
+                    <ChildContent>
+                        <AlertTitle>Why IdField Matters</AlertTitle>
+                        <AlertDescription>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>Selection persists across data updates and pagination</li>
+                                <li>Rows maintain stable identity during sorting/filtering</li>
+                                <li>Default is "Id" (C# convention) - works with most models</li>
+                                <li>Customize for models with different primary key names</li>
+                            </ul>
+                        </AlertDescription>
+                    </ChildContent>
+                </Alert>
+            </AdditionalContent>
         </DemoBlock>
     </DemoSection>
 
@@ -170,55 +173,60 @@
     <DemoSection Title="Tracked Observable Collection (Automatic Delta Updates)"
                  Description="DataGrid automatically detects and applies delta changes when using TrackedObservableCollection. Only changed rows are updated - no full grid refresh needed!">
         <DemoBlock Code="@_trackedObservableCode">
-            <Alert Variant="AlertVariant.Info">
-                <Icon>
-                    <LucideIcon Name="zap" Size="16" />
-                </Icon>
-                <ChildContent>
-                    <AlertTitle>Performance Benefits</AlertTitle>
-                    <AlertDescription>
-                        <ul class="list-disc list-inside space-y-1">
-                            <li><strong>Delta Updates:</strong> Only modified rows are re-rendered (not entire grid)</li>
-                            <li><strong>Selection Preserved:</strong> Row selection survives data changes automatically</li>
-                            <li><strong>Natural Mutations:</strong> Modify items directly, then call NotifyItemsChanged()</li>
-                            <li><strong>Batching:</strong> Multiple rapid changes are batched together (100ms window)</li>
-                            <li><strong>Efficient:</strong> Uses AG Grid's transaction API for minimal DOM updates</li>
-                        </ul>
-                    </AlertDescription>
-                </ChildContent>
-            </Alert>
+            <ChildContent>
+                <div class="flex gap-2 mb-4">
+                    <Button Size="ButtonSize.Small" OnClick="DeleteSelectedObservable">
+                        Delete Selected (@selectedObservableOrders.Count)
+                    </Button>
+                    <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="AddRandomOrder">
+                        Add Random Order
+                    </Button>
+                    <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="UpdateRandomOrder">
+                        Update Random Order
+                    </Button>
+                </div>
 
-            <div class="flex gap-2 mt-2 mb-4">
-                <Button Size="ButtonSize.Small" OnClick="DeleteSelectedObservable">
-                    Delete Selected (@selectedObservableOrders.Count)
-                </Button>
-                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="AddRandomOrder">
-                    Add Random Order
-                </Button>
-                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="UpdateRandomOrder">
-                    Update Random Order
-                </Button>
-            </div>
+                <DataGrid Items="@observableOrders" 
+                      SelectionMode="DataGridSelectionMode.Multiple" 
+                      @bind-SelectedItems="@selectedObservableOrders">
+                    <Columns>
+                        <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                        <DataGridColumn Field="Customer" Header="Customer" />
+                        <DataGridColumn Field="Status" Header="Status" Width="130px" />
+                        <DataGridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+                    </Columns>
+                </DataGrid>
 
-            <DataGrid Items="@observableOrders" 
-                  SelectionMode="DataGridSelectionMode.Multiple" 
-                  @bind-SelectedItems="@selectedObservableOrders">
-                <Columns>
-                    <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
-                    <DataGridColumn Field="Customer" Header="Customer" />
-                    <DataGridColumn Field="Status" Header="Status" Width="130px" />
-                    <DataGridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
-                </Columns>
-            </DataGrid>
-
-            <div class="flex items-center gap-2 mt-4">
-                <span class="text-sm text-muted-foreground">
-                    @selectedObservableOrders.Count of @observableOrders.Count row(s) selected
-                </span>
-            </div>
+                <div class="flex items-center gap-2 mt-4">
+                    <span class="text-sm text-muted-foreground">
+                        @selectedObservableOrders.Count of @observableOrders.Count row(s) selected
+                    </span>
+                </div>
+            </ChildContent>
+            <AdditionalContent>
+                <Alert Variant="AlertVariant.Info">
+                    <Icon>
+                        <LucideIcon Name="zap" Size="16" />
+                    </Icon>
+                    <ChildContent>
+                        <AlertTitle>Performance Benefits</AlertTitle>
+                        <AlertDescription>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li><strong>Delta Updates:</strong> Only modified rows are re-rendered (not entire grid)</li>
+                                <li><strong>Selection Preserved:</strong> Row selection survives data changes automatically</li>
+                                <li><strong>Natural Mutations:</strong> Modify items directly, then call NotifyItemsChanged()</li>
+                                <li><strong>Batching:</strong> Multiple rapid changes are batched together (100ms window)</li>
+                                <li><strong>Efficient:</strong> Uses AG Grid's transaction API for minimal DOM updates</li>
+                            </ul>
+                        </AlertDescription>
+                    </ChildContent>
+                </Alert>
+            </AdditionalContent>
         </DemoBlock>
     </DemoSection>
 </div>
+
+<DemoPageSubNav ParentSlug="datagrid" />
 
 @code {
 
@@ -397,105 +405,5 @@
         public int Stock { get; set; }
     }
 
-    private const string _customIdFieldCode = """
-// Model with custom ID field
-public class Product
-{
-    public Guid ProductId { get; set; }  // ← Custom ID field
-    public string Name { get; set; }
-    public decimal Price { get; set; }
-}
-
-<Grid Items="@products" 
-      SelectionMode="DataGridSelectionMode.Multiple"
-      IdField="ProductId"
-      @bind-SelectedItems="@selectedProducts">
-    <Columns>
-        <DataGridColumn Field="ProductId" Header="ID" />
-        <DataGridColumn Field="Name" Header="Product" />
-    </Columns>
-</Grid>
-""";
-
-    private const string _singleSelectionCode = """
-<Grid Items="@orders" 
-      SelectionMode="DataGridSelectionMode.Single" 
-      @bind-SelectedItems="@selectedOrders">
-    <Columns>...</Columns>
-</Grid>
-
-@if (selectedOrders.Count > 0)
-{
-    var order = selectedOrders.First();
-    <p>Selected: @order.Customer</p>
-}
-""";
-
-    private const string _multiSelectionCode = """
-<Grid Items="@orders" 
-      SelectionMode="DataGridSelectionMode.Multiple" 
-      @bind-SelectedItems="@selectedOrders">
-    <Columns>...</Columns>
-</Grid>
-
-<Button OnClick="DeleteSelected">Delete Selected</Button>
-
-@code {
-    private void DeleteSelected()
-    {
-        orders.RemoveAll(o => selectedOrders.Contains(o));
-        selectedOrders = Array.Empty<Order>();
-    }
-}
-""";
-
-    private const string _controlledSelectionCode = """
-<Button OnClick="SelectHighValueOrders">Select High Value</Button>
-
-<Grid Items="@orders" 
-      SelectionMode="DataGridSelectionMode.Multiple"
-      @bind-SelectedItems="@selectedItems">
-    <Columns>...</Columns>
-</Grid>
-
-@code {
-    private IReadOnlyCollection<Order> selectedItems = Array.Empty<Order>();
-
-    private void SelectHighValueOrders()
-    {
-        selectedItems = orders.Where(o => o.Amount > 5000).ToList();
     }
 
-    private void ClearSelection()
-    {
-        selectedItems = Array.Empty<Order>();
-    }
-}
-""";
-
-    private const string _trackedObservableCode = """
-@using NeoUI.Blazor
-
-@code {
-    // Use TrackedObservableCollection for automatic delta updates
-    private TrackedObservableCollection<Order> orders = new();
-    private IReadOnlyCollection<Order> selectedOrders = Array.Empty<Order>();
-
-    private void DeleteSelected()
-    {
-        foreach (var order in selectedOrders.ToList())
-        {
-            orders.Remove(order);  // ← Triggers CollectionChanged event
-        }
-        selectedOrders = Array.Empty<Order>();
-    }
-
-    private void UpdateOrder()
-    {
-        var order = orders[Random.Shared.Next(orders.Count)];
-        order.Amount = Random.Shared.Next(100, 10000);
-        orders.NotifyItemsChanged(order);  // ← Triggers ItemsChanged event → Grid.transaction
-    }
-}
-""";
-}

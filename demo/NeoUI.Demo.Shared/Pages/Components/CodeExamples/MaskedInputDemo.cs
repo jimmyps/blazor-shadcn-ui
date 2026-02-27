@@ -20,9 +20,6 @@ namespace NeoUI.Demo.Shared.Pages.Components
 
         private const string _phoneCode = """
                 <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="phoneValue" />
-
-                <!-- Without mask display -->
-                <MaskedInput Mask="@MaskedInput.Masks.PhoneUS" @bind-Value="phoneValue" ShowMask="false" Placeholder="(555) 000-0000" />
                 """;
 
         private const string _intlPhoneCode = """

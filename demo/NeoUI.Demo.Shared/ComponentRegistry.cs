@@ -167,6 +167,38 @@ public static class ComponentRegistry
     }
 
     /// <summary>
+    /// Get the previous and next entries within the same parent-slug group.
+    /// Used for sub-page navigation within a section (e.g. chart/* or datagrid/*).
+    /// The parent overview entry is treated as the first item in the group.
+    /// Returns (null, null) when the route is not found or has no neighbours.
+    /// </summary>
+    public static (ComponentRegistryEntry? Prev, ComponentRegistryEntry? Next) GetSubPageGroupNeighbors(string route)
+    {
+        var normalized = NormalizeRoute(route);
+        var entry = FindByRoute(normalized);
+        if (entry is null) return (null, null);
+
+        // Derive parent slug: "datagrid" from "datagrid/basic", or self if already the parent
+        var parentSlug = entry.Slug.Contains('/') ? entry.Slug[..entry.Slug.IndexOf('/')] : entry.Slug;
+
+        // Collect the parent + all sub-pages in definition order
+        var group = _all
+            .Where(e => e.Tier == entry.Tier &&
+                        (e.Slug == parentSlug || e.Slug.StartsWith(parentSlug + "/")))
+            .ToList();
+
+        for (var i = 0; i < group.Count; i++)
+        {
+            if (!group[i].Route.Equals(normalized, StringComparison.OrdinalIgnoreCase))
+                continue;
+            var prev = i > 0 ? group[i - 1] : null;
+            var next = i < group.Count - 1 ? group[i + 1] : null;
+            return (prev, next);
+        }
+        return (null, null);
+    }
+
+    /// <summary>
     /// All navigable entries as a flat alphabetical list: all components A–Z,
     /// then all primitives A–Z — matching the sidebar collapsible order.
     /// Sub-pages are excluded.
@@ -303,6 +335,7 @@ public static class ComponentRegistry
             new("chart/pie",        "Pie Chart",        "Pie and donut charts with labels and legends",                                  "chart-pie",             C, CH, IsSubPage: true),
             new("chart/scatter",    "Scatter Chart",    "Scatter plots for correlation and distribution data",                           "scatter-chart",         C, CH, IsSubPage: true),
             new("chart/radar",      "Radar Chart",      "Spider/radar charts for multi-dimensional data comparison",                     "radar",                 C, CH, IsSubPage: true),
+            new("chart/radial",     "Radial Bar Chart", "Circular progress bars arranged radially — ideal for KPIs and gauges",          "gauge",                 C, CH, IsSubPage: true),
             new("chart/composed",   "Composed Chart",   "Combine multiple chart types in a single visualization",                        "layers",                C, CH, IsSubPage: true),
 
             // ── Animation ─────────────────────────────────────────────────

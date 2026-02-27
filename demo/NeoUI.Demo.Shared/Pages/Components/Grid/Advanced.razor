@@ -24,6 +24,8 @@
     </DemoSection>
 </div>
 
+<DemoPageSubNav ParentSlug="datagrid" />
+
 @code {
     private List<Order> orders = new();
 
@@ -32,14 +34,5 @@
         orders = GridDemoData.GenerateOrders(50);
     }
 
-    private const string _flexColumnCode = """
-<Grid Items="@orders">
-    <Columns>
-        <DataGridColumn Field="Id" Width="100px" />
-        <DataGridColumn Field="Customer" MinWidth="150px" />
-        <DataGridColumn Field="Status" Width="120px" />
-        <DataGridColumn Field="OrderDate" MinWidth="150px" />
-    </Columns>
-</Grid>
-""";
-}
+    }
+
