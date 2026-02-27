@@ -99,8 +99,13 @@
         _next = idx >= 0 && idx < entries.Count - 1 ? entries[idx + 1] : null;
     }
 
-    private static string Normalize(string route) =>
-        route.TrimStart('/').Split('#')[0].ToLowerInvariant();
+    private static string Normalize(string route)
+    {
+        var path = route.TrimStart('/');
+        // Strip query string and hash fragment to make route comparison robust
+        path = path.Split('?', '#')[0];
+        return path.ToLowerInvariant();
+    }
 
     public void Dispose() => NavigationManager.LocationChanged -= OnLocationChanged;
 }
