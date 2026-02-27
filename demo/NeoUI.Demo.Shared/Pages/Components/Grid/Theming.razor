@@ -221,49 +221,10 @@
         </div>
         </DemoBlock>
     </DemoSection>
-
-    <DemoSection Title="Usage Examples"
-                 Description="How to use the three-level customization system">
-        <DemoBlock>
-    <!-- Code Example -->
-    <Card>
-        <CardHeader>
-            <CardTitle Class="text-xl">Usage Examples</CardTitle>
-            <CardDescription>How to use the three-level customization system</CardDescription>
-        </CardHeader>
-        <CardContent>
-            <pre class="bg-muted p-4 rounded-md overflow-x-auto text-sm"><code>@@* Level 1: High-Level Presets *@@
-&lt;Grid TItem="Order" Items="@@orders" 
-      Density="DataGridDensity.Compact" 
-      VisualStyle="DataGridStyle.Striped"&gt;
-    &lt;Columns&gt;...&lt;/Columns&gt;
-&lt;/Grid&gt;
-
-@@* Level 2: Fine-Grained Parameters *@@
-&lt;Grid TItem="Order" Items="@@orders"&gt;
-    &lt;DataGridThemeParameters
-        AccentColor="#ff6b6b"
-        BorderRadius="8"
-        RowHeight="48"
-    /&gt;
-    &lt;Columns&gt;...&lt;/Columns&gt;
-&lt;/Grid&gt;
-
-@@* Level 3: Advanced CSS (not shown, use style or Class parameter) *@@
-&lt;Grid TItem="Order" Items="@@orders" Class="my-custom-grid"&gt;
-    &lt;Columns&gt;...&lt;/Columns&gt;
-&lt;/Grid&gt;
-
-&lt;style&gt;
-.my-custom-grid {
-  --ag-cell-horizontal-padding: 20px;
-}
-&lt;/style&gt;</code></pre>
-        </CardContent>
-    </Card>
-        </DemoBlock>
-    </DemoSection>
 </div>
+
+<DemoPageSubNav ParentSlug="datagrid" />
+
 @code {
     private DataGridTheme selectedTheme = DataGridTheme.Shadcn;
     private List<Order> orders = new();
