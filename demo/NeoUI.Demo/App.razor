@@ -6,39 +6,39 @@
     <base href="/" />
     <ResourcePreloader />
 
-    <!-- Assets from referenced Razor Class Libraries use _content/ -->
-    <link href="_content/NeoUI.Blazor/components.css" rel="stylesheet" />
-    
+    <!-- RCL assets via _content/ — @Assets provides fingerprinting for cache-busting -->
+    <link href="@Assets["_content/NeoUI.Blazor/components.css"]" rel="stylesheet" />
+
     <!-- Assets from Client project's wwwroot now served from root -->
     <link rel="stylesheet" href="@Assets["css/app.css"]" />
-    
+
     <!-- Base color themes -->
     <!-- In production app, include only one that you actually use -->
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/zinc.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/slate.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/gray.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/neutral.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/stone.css" />
-    
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/base/zinc.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/base/slate.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/base/gray.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/base/neutral.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/base/stone.css"]" />
+
     <!-- Primary color themes -->
     <!-- In production app, include only one that you actually use -->
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/red.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/rose.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/orange.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/amber.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/yellow.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/lime.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/green.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/emerald.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/teal.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/cyan.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/sky.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/blue.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/indigo.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/violet.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/purple.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/fuchsia.css" />
-    <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/pink.css" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/red.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/rose.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/orange.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/amber.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/yellow.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/lime.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/green.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/emerald.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/teal.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/cyan.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/sky.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/blue.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/indigo.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/violet.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/purple.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/fuchsia.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/pink.css"]" />
     <ImportMap />
     <!-- AG Grid Enterprise imports -->
     <DataGridImportMap />
@@ -46,12 +46,7 @@
     <HeadOutlet />
 
     <!-- Theme management JavaScript -->
-    <script src="_content/NeoUI.Blazor/js/theme.js"></script>
-
-    <script>
-        // Initialize theme before Blazor loads to prevent FOUC
-        window.theme.initialize();
-    </script>
+    <script src="@Assets["_content/NeoUI.Blazor/js/theme.js"]"></script>
 </head>
 <body>
     <Routes @rendermode="InteractiveAuto" />
