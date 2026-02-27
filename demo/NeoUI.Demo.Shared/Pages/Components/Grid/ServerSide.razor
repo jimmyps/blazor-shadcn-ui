@@ -65,16 +65,9 @@
         </ChildContent>
     </Alert>
 
-    @* Demo 2: Simulated Server-Side Sorting and Filtering *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Server-Side Sorting & Filtering (Simulated)</h2>
-            <p class="text-muted-foreground">
-                Demonstrates how to implement server-side sorting and filtering with a mock dataset.
-                The paging is infinite scrolling, notice that more rows will be retrieved as needed.
-            </p>
-        </div>
-
+    <DemoSection Title="Server-Side Sorting &amp; Filtering (Simulated)"
+                 Description="Demonstrates how to implement server-side sorting and filtering with a mock dataset. The paging is infinite scrolling, notice that more rows will be retrieved as needed.">
+        <DemoBlock Code="@_serverSideSimulatedCode">
         <Alert Variant="AlertVariant.Info">
             <Icon>
                 <LucideIcon Name="zap" Size="16" />
@@ -133,62 +126,12 @@
                 <pre class="text-xs bg-muted p-2 rounded mt-1">@lastRequestParams</pre>
             </div>
         </div>
+        </DemoBlock>
+    </DemoSection>
 
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Implementation Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>private async Task&lt;DataGridDataResponse&lt;Product&gt;&gt; HandleSimulatedServerDataRequest(
-    DataGridDataRequest&lt;Product&gt; request)
-{
-    // Simulate network delay
-    await Task.Delay(300);
-    
-    // Start with full dataset (simulate database query)
-    var query = allProducts.AsQueryable();
-    
-    // Apply server-side filtering
-    foreach (var filter in request.FilterDescriptors)
-    {
-        query = ApplyFilter(query, filter);
-    }
-    
-    // Get total count after filtering
-    var totalCount = query.Count();
-    
-    // Apply server-side sorting
-    if (request.SortDescriptors.Any())
-    {
-        var sort = request.SortDescriptors.First();
-        query = ApplySorting(query, sort);
-    }
-    
-    // Apply pagination
-    var pagedData = query
-        .Skip(request.StartIndex)
-        .Take(request.Count)
-        .ToList();
-    
-    return new DataGridDataResponse&lt;Product&gt;
-    {
-        Items = pagedData,
-        TotalCount = totalCount
-    };
-}</code></pre>
-            </div>
-        </details>
-    </section>
-
-    @* Demo 3: Movie Database (TMDb API) *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">🎬 Movie Database (TMDb API)</h2>
-            <p class="text-muted-foreground">
-                Full-featured server-side DataGrid with sorting, filtering, and pagination using The Movie Database API.
-            </p>
-        </div>
-
+    <DemoSection Title="Movie Database (TMDb API)"
+                 Description="Full-featured server-side DataGrid with sorting, filtering, and pagination using The Movie Database API.">
+        <DemoBlock Code="@_movieDbCode">
         @* API Key Configuration *@
         <Alert Variant="AlertVariant.Muted">
             <Icon>
@@ -354,56 +297,11 @@
                 <pre class="text-xs bg-muted p-2 rounded mt-1">@lastMovieQueryParams</pre>
             </div>
         </div>
+        </DemoBlock>
+    </DemoSection>
 
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Implementation Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>private async Task&lt;DataGridDataResponse&lt;Movie&gt;&gt; HandleMovieDataRequest(
-    DataGridDataRequest&lt;Movie&gt; request)
-{
-    isMovieLoading = true;
-    StateHasChanged();
-    
-    try
-    {
-        // Build TMDb API URL with parameters
-        var page = (request.StartIndex / request.Count) + 1;
-        var sortBy = MapSortField(request.SortDescriptors.FirstOrDefault());
-        
-        var url = $"https://api.themoviedb.org/3/discover/movie?page={page}";
-        if (!string.IsNullOrEmpty(sortBy)) url += $"&sort_by={sortBy}";
-        if (appliedFilterYear.HasValue) url += $"&primary_release_year={appliedFilterYear}";
-        if (appliedFilterRating.HasValue) url += $"&vote_average.gte={appliedFilterRating}";
-        if (!string.IsNullOrEmpty(appliedFilterGenre)) url += $"&with_genres={appliedFilterGenre}";
-        
-        // Call TMDb API
-        var response = await CallTmdbApiAsync&lt;TmdbDiscoverResponse&gt;(url);
-        
-        // Map to DataGrid response
-        return new DataGridDataResponse&lt;Movie&gt;
-        {
-            Items = response.Results.Select(MapToMovie),
-            TotalCount = response.TotalResults
-        };
-    }
-    finally
-    {
-        isMovieLoading = false;
-        StateHasChanged();
-    }
-}</code></pre>
-            </div>
-        </details>
-    </section>
-
-    @* Performance Comparison *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">When to Use Server-Side Row Model</h2>
-        </div>
-
+    <DemoSection Title="When to Use Server-Side Row Model">
+        <DemoBlock Code="@_whenToUseServerSideCode">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="rounded-lg border p-4">
                 <h3 class="font-semibold mb-2 text-green-600 dark:text-green-400">✅ Use Server-Side When:</h3>
@@ -446,9 +344,9 @@
                 </AlertDescription>
             </ChildContent>
         </Alert>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 </div>
-
 @code {
     private DataGrid<Product> simulatedGrid = null!;
     private DataGrid<Movie> movieGrid = null!;
@@ -953,4 +851,62 @@
         public double Popularity { get; set; }
         public int GenreId { get; set; } // Genre ID matching TMDb genre IDs
     }
+
+    private const string _serverSideSimulatedCode = """
+private async Task<DataGridDataResponse<Product>> HandleSimulatedServerDataRequest(
+    DataGridDataRequest<Product> request)
+{
+    // Simulate network delay
+    await Task.Delay(300);
+
+    var query = allProducts.AsQueryable();
+
+    foreach (var filter in request.FilterDescriptors)
+        query = ApplyFilter(query, filter);
+
+    var totalCount = query.Count();
+
+    if (request.SortDescriptors.Any())
+        query = ApplySorting(query, request.SortDescriptors.First());
+
+    var pagedData = query.Skip(request.StartIndex).Take(request.Count).ToList();
+
+    return new DataGridDataResponse<Product>
+    {
+        Items = pagedData,
+        TotalCount = totalCount
+    };
+}
+""";
+
+    private const string _movieDbCode = """
+private async Task<DataGridDataResponse<Movie>> HandleMovieDataRequest(
+    DataGridDataRequest<Movie> request)
+{
+    isMovieLoading = true;
+    StateHasChanged();
+
+    try
+    {
+        var page = (request.StartIndex / request.Count) + 1;
+        var sortBy = MapSortField(request.SortDescriptors.FirstOrDefault());
+        var url = $"https://api.themoviedb.org/3/discover/movie?page={page}";
+
+        var response = await CallTmdbApiAsync<TmdbDiscoverResponse>(url);
+
+        return new DataGridDataResponse<Movie>
+        {
+            Items = response.Results.Select(MapToMovie),
+            TotalCount = response.TotalResults
+        };
+    }
+    finally
+    {
+        isMovieLoading = false;
+        StateHasChanged();
+    }
+}
+""";
+
+    private const string _whenToUseServerSideCode = "";
 }

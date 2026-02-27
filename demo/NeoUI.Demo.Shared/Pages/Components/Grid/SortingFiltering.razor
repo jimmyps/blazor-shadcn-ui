@@ -4,235 +4,107 @@
 <PageTitle>Grid Components - Sorting & Filtering Examples</PageTitle>
 
 <div class="space-y-8">
-    @* Demo 13: Column Sorting *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Column Sorting</h2>
-            <p class="text-muted-foreground">
-                Click column headers to sort ascending/descending/none.
-            </p>
-        </div>
+    <DemoSection Title="Column Sorting"
+                 Description="Click column headers to sort ascending/descending/none.">
+        <DemoBlock Code="@_columnSortingCode">
+            <DataGrid Items="@sortingOrders">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer" Sortable="true" />
+                    <DataGridColumn Field="Status" Header="Status" Sortable="true" Width="130px" />
+                    <DataGridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
+                    <DataGridColumn Field="OrderDate" Header="Order Date" Sortable="true" Width="140px" />
+                </Columns>
+            </DataGrid>
+        </DemoBlock>
+    </DemoSection>
 
-        <DataGrid Items="@sortingOrders">
-            <Columns>
-                <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
-                <DataGridColumn Field="Customer" Header="Customer" Sortable="true" />
-                <DataGridColumn Field="Status" Header="Status" Sortable="true" Width="130px" />
-                <DataGridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
-                <DataGridColumn Field="OrderDate" Header="Order Date" Sortable="true" Width="140px" />
-            </Columns>
-        </DataGrid>
-
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders"&gt;
-    &lt;Columns&gt;
-        &lt;DataGridColumn Field="Id" Header="Order ID" Sortable="true" /&gt;
-        &lt;DataGridColumn Field="Customer" Header="Customer" Sortable="true" /&gt;
-        &lt;DataGridColumn Field="Amount" Header="Amount" Sortable="true" /&gt;
-    &lt;/Columns&gt;
-&lt;/Grid&gt;</code></pre>
+    <DemoSection Title="Controlled Sorting State"
+                 Description="External sort controls with programmatic state management.">
+        <DemoBlock Code="@_controlledSortingCode">
+            <div class="flex gap-2 mb-4">
+                <Button Size="ButtonSize.Small" OnClick="@(() => SortByAmount())">Sort by Amount (High to Low)</Button>
+                <Button Size="ButtonSize.Small" OnClick="@(() => SortByDate())">Sort by Date (Newest First)</Button>
+                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearSort">Clear Sort</Button>
             </div>
-        </details>
-    </section>
 
-    @* Demo 14: Controlled Sorting *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Controlled Sorting State</h2>
-            <p class="text-muted-foreground">
-                External sort controls with programmatic state management.
-            </p>
-        </div>
+            <DataGrid Items="@controlledSortOrders" @bind-State="@sortState">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer" Sortable="true" />
+                    <DataGridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
+                    <DataGridColumn Field="OrderDate" Header="Order Date" Sortable="true" Width="140px" />
+                </Columns>
+            </DataGrid>
 
-        <div class="flex gap-2 mb-4">
-            <Button Size="ButtonSize.Small" OnClick="@(() => SortByAmount())">Sort by Amount (High to Low)</Button>
-            <Button Size="ButtonSize.Small" OnClick="@(() => SortByDate())">Sort by Date (Newest First)</Button>
-            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearSort">Clear Sort</Button>
-        </div>
-
-        <DataGrid Items="@controlledSortOrders" @bind-State="@sortState">
-            <Columns>
-                <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
-                <DataGridColumn Field="Customer" Header="Customer" Sortable="true" />
-                <DataGridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
-                <DataGridColumn Field="OrderDate" Header="Order Date" Sortable="true" Width="140px" />
-            </Columns>
-        </DataGrid>
-
-        @if (sortState.SortDescriptors.Any())
-        {
-            <div class="text-sm text-muted-foreground">
-                Current sort: @sortState.SortDescriptors[0].Field (@sortState.SortDescriptors[0].Direction)
-            </div>
-        }
-
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" @@bind-State="@@gridState"&gt;
-    &lt;Columns&gt;
-        &lt;DataGridColumn Field="Amount" Sortable="true" /&gt;
-    &lt;/Columns&gt;
-&lt;/Grid&gt;
-
-@@code {
-    private DataGridState gridState = new();
-    
-    private void SortByAmount()
-    {
-        // ✅ Natural object mutation - hash-based change detection
-        gridState.SortDescriptors.Clear();
-        gridState.SortDescriptors.Add(new DataGridSortDescriptor
-        {
-            Field = "Amount",
-            Direction = DataGridSortDirection.Descending
-        });
-    }
-}</code></pre>
-            </div>
-        </details>
-    </section>
-
-    @* Demo 15: Column Filtering *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Column Filtering</h2>
-            <p class="text-muted-foreground">
-                Text filter inputs in column headers for client-side filtering.
-            </p>
-        </div>
-
-        <DataGrid Items="@filteringOrders">
-            <Columns>
-                <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
-                <DataGridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
-                <DataGridColumn Field="Status" Header="Status" Sortable="true" Filterable="true" Width="130px" />
-                <DataGridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
-            </Columns>
-        </DataGrid>
-
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders"&gt;
-    &lt;Columns&gt;
-        &lt;DataGridColumn Field="Customer" Sortable="true" Filterable="true" /&gt;
-    &lt;/Columns&gt;
-&lt;/Grid&gt;</code></pre>
-            </div>
-        </details>
-    </section>
-
-    @* Demo 16: Controlled Filtering *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Controlled Filtering State</h2>
-            <p class="text-muted-foreground">
-                External filter controls with custom dropdown and programmatic state.
-            </p>
-        </div>
-
-        <div class="flex gap-2 mb-4">
-            <Select @bind-Value="@statusFilter" Class="w-[180px]">
-                <SelectTrigger>
-                    <SelectValue Placeholder="Filter by Status" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem Value="@(-1)" TValue="int" Text="All Statuses">All Statuses</SelectItem>
-                    <SelectItem Value="@((int)OrderStatus.Pending)" TValue="int" Text="Pending">Pending</SelectItem>
-                    <SelectItem Value="@((int)OrderStatus.Processing)" TValue="int" Text="Processing">Processing</SelectItem>
-                    <SelectItem Value="@((int)OrderStatus.Shipped)" TValue="int" Text="Shipped">Shipped</SelectItem>
-                    <SelectItem Value="@((int)OrderStatus.Delivered)" TValue="int" Text="Delivered">Delivered</SelectItem>
-                    <SelectItem Value="@((int)OrderStatus.Cancelled)" TValue="int" Text="Cancelled">Cancelled</SelectItem>
-                </SelectContent>
-            </Select>
-            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearFilters">Clear Filters</Button>
-        </div>
-
-        <DataGrid Items="@controlledFilterOrders" @bind-State="@filterState" SuppressHeaderMenus="true">
-            <Columns>
-                <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
-                <DataGridColumn Field="Customer" Header="Customer" />
-                <DataGridColumn Field="Status" Header="Status" Width="130px" Filterable="true">
-                    <CellTemplate Context="order">
-                        <Badge Variant="@GetStatusVariant(order.Status)">
-                            @order.Status
-                        </Badge>
-                    </CellTemplate>
-
-                </DataGridColumn>
-                <DataGridColumn Field="Amount" Header="Amount" Width="120px" />
-            </Columns>
-        </DataGrid>
-
-        @if (filterState.FilterDescriptors.Any())
-        {
-            <div class="text-sm text-muted-foreground">
-                Active filters: @filterState.FilterDescriptors.Count
-            </div>
-        }
-
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" @@bind-State="@@filterState" SuppressHeaderMenus="true"&gt;
-    &lt;Columns&gt;
-        &lt;DataGridColumn Field="Status" /&gt;
-    &lt;/Columns&gt;
-&lt;/Grid&gt;
-
-&lt;Select @@bind-Value="statusFilter"&gt;
-    &lt;SelectItem Value="@@(-1)" TValue="int"&gt;All Statuses&lt;/SelectItem&gt;
-    &lt;SelectItem Value="@@((int)OrderStatus.Pending)" TValue="int"&gt;Pending&lt;/SelectItem&gt;
-    &lt;!-- ... other status values ... --&gt;
-&lt;/Select&gt;
-
-@@code {
-    private DataGridState filterState = new();
-    private int _statusFilter = -1;  // -1 = all
-    private int statusFilter 
-    { 
-        get => _statusFilter;
-        set 
-        {
-            if (_statusFilter != value)
+            @if (sortState.SortDescriptors.Any())
             {
-                _statusFilter = value;
-                ApplyStatusFilter(value);
+                <div class="text-sm text-muted-foreground">
+                    Current sort: @sortState.SortDescriptors[0].Field (@sortState.SortDescriptors[0].Direction)
+                </div>
             }
-        }
-    }
-    
-    private void ApplyStatusFilter(int value)
-    {
-        // ✅ Natural object mutation - hash-based change detection
-        filterState.FilterDescriptors.Clear();
-        if (value >= 0)  // -1 = all, 0+ = enum values
-        {
-            filterState.FilterDescriptors.Add(new DataGridFilterDescriptor
-            {
-                Field = "Status",
-                Operator = DataGridFilterOperator.Equals,
-                Value = value  // Pass enum value as int - JS will detect as number filter
-            });
-        }
-    }
-}</code></pre>
-            </div>
-        </details>
-    </section>
-</div>
+        </DemoBlock>
+    </DemoSection>
 
+    <DemoSection Title="Column Filtering"
+                 Description="Text filter inputs in column headers for client-side filtering.">
+        <DemoBlock Code="@_columnFilteringCode">
+            <DataGrid Items="@filteringOrders">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
+                    <DataGridColumn Field="Status" Header="Status" Sortable="true" Filterable="true" Width="130px" />
+                    <DataGridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
+                </Columns>
+            </DataGrid>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Controlled Filtering State"
+                 Description="External filter controls with custom dropdown and programmatic state.">
+        <DemoBlock Code="@_controlledFilteringCode">
+            <div class="flex gap-2 mb-4">
+                <Select @bind-Value="@statusFilter" Class="w-[180px]">
+                    <SelectTrigger>
+                        <SelectValue Placeholder="Filter by Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem Value="@(-1)" TValue="int" Text="All Statuses">All Statuses</SelectItem>
+                        <SelectItem Value="@((int)OrderStatus.Pending)" TValue="int" Text="Pending">Pending</SelectItem>
+                        <SelectItem Value="@((int)OrderStatus.Processing)" TValue="int" Text="Processing">Processing</SelectItem>
+                        <SelectItem Value="@((int)OrderStatus.Shipped)" TValue="int" Text="Shipped">Shipped</SelectItem>
+                        <SelectItem Value="@((int)OrderStatus.Delivered)" TValue="int" Text="Delivered">Delivered</SelectItem>
+                        <SelectItem Value="@((int)OrderStatus.Cancelled)" TValue="int" Text="Cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                </Select>
+                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ClearFilters">Clear Filters</Button>
+            </div>
+
+            <DataGrid Items="@controlledFilterOrders" @bind-State="@filterState" SuppressHeaderMenus="true">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer" />
+                    <DataGridColumn Field="Status" Header="Status" Width="130px" Filterable="true">
+                        <CellTemplate Context="order">
+                            <Badge Variant="@GetStatusVariant(order.Status)">
+                                @order.Status
+                            </Badge>
+                        </CellTemplate>
+
+                    </DataGridColumn>
+                    <DataGridColumn Field="Amount" Header="Amount" Width="120px" />
+                </Columns>
+            </DataGrid>
+
+            @if (filterState.FilterDescriptors.Any())
+            {
+                <div class="text-sm text-muted-foreground">
+                    Active filters: @filterState.FilterDescriptors.Count
+                </div>
+            }
+        </DemoBlock>
+    </DemoSection>
+</div>
 @code {
     // Separate data sources for each grid to prevent conflicts
     private List<Order> sortingOrders = new();
@@ -323,4 +195,89 @@
         statusFilter = -1;
         filterState.FilterDescriptors.Clear();
     }
+
+    private const string _columnSortingCode = """
+<Grid Items="@orders">
+    <Columns>
+        <DataGridColumn Field="Id" Header="Order ID" Sortable="true" />
+        <DataGridColumn Field="Customer" Header="Customer" Sortable="true" />
+        <DataGridColumn Field="Amount" Header="Amount" Sortable="true" />
+    </Columns>
+</Grid>
+""";
+
+    private const string _controlledSortingCode = """
+<Grid Items="@orders" @bind-State="@gridState">
+    <Columns>
+        <DataGridColumn Field="Amount" Sortable="true" />
+    </Columns>
+</Grid>
+
+@code {
+    private DataGridState gridState = new();
+
+    private void SortByAmount()
+    {
+        gridState.SortDescriptors.Clear();
+        gridState.SortDescriptors.Add(new DataGridSortDescriptor
+        {
+            Field = "Amount",
+            Direction = DataGridSortDirection.Descending
+        });
+    }
+}
+""";
+
+    private const string _columnFilteringCode = """
+<Grid Items="@orders">
+    <Columns>
+        <DataGridColumn Field="Customer" Sortable="true" Filterable="true" />
+    </Columns>
+</Grid>
+""";
+
+    private const string _controlledFilteringCode = """
+<Grid Items="@orders" @bind-State="@filterState" SuppressHeaderMenus="true">
+    <Columns>
+        <DataGridColumn Field="Status" />
+    </Columns>
+</Grid>
+
+<Select @bind-Value="statusFilter">
+    <SelectItem Value="@(-1)" TValue="int">All Statuses</SelectItem>
+    <SelectItem Value="@((int)OrderStatus.Pending)" TValue="int">Pending</SelectItem>
+    <!-- ... other status values ... -->
+</Select>
+
+@code {
+    private DataGridState filterState = new();
+    private int _statusFilter = -1;
+    private int statusFilter
+    {
+        get => _statusFilter;
+        set
+        {
+            if (_statusFilter != value)
+            {
+                _statusFilter = value;
+                ApplyStatusFilter(value);
+            }
+        }
+    }
+
+    private void ApplyStatusFilter(int value)
+    {
+        filterState.FilterDescriptors.Clear();
+        if (value >= 0)
+        {
+            filterState.FilterDescriptors.Add(new DataGridFilterDescriptor
+            {
+                Field = "Status",
+                Operator = DataGridFilterOperator.Equals,
+                Value = value
+            });
+        }
+    }
+}
+""";
 }

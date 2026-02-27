@@ -11,16 +11,10 @@
         </p>
     </div>
 
-    <!-- Level 1: High-Level Presets -->
-    <section class="space-y-4">
-        <div>
-            <h3 class="text-2xl font-semibold mb-2">Level 1: High-Level Presets</h3>
-            <p class="text-muted-foreground mb-4">
-                Use Theme, Density, and VisualStyle parameters for quick customization.
-            </p>
-        </div>
-
-        <div class="grid gap-4 md:grid-cols-2">
+    <DemoSection Title="Level 1: High-Level Presets"
+                 Description="Use Theme, Density, and VisualStyle parameters for quick customization.">
+        <DemoBlock Code="@_level1PresetsCode">
+            <div class="grid gap-4 md:grid-cols-2">
             <!-- Compact Striped -->
             <Card>
                 <CardHeader>
@@ -63,18 +57,13 @@
                 </CardContent>
             </Card>
         </div>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 
-    <!-- Level 2: Fine-Grained Parameters -->
-    <section class="space-y-4">
-        <div>
-            <h3 class="text-2xl font-semibold mb-2">Level 2: Fine-Grained Parameters</h3>
-            <p class="text-muted-foreground mb-4">
-                Override specific theme settings with DataGridThemeParameters component.
-            </p>
-        </div>
-
-        <div class="grid gap-4 md:grid-cols-2">
+    <DemoSection Title="Level 2: Fine-Grained Parameters"
+                 Description="Override specific theme settings with DataGridThemeParameters component.">
+        <DemoBlock Code="@_level2FineGrainedCode">
+            <div class="grid gap-4 md:grid-cols-2">
             <!-- Custom Accent Color -->
             <Card>
                 <CardHeader>
@@ -124,18 +113,13 @@
                 </CardContent>
             </Card>
         </div>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 
-    <!-- Theme Comparison -->
-    <section class="space-y-4">
-        <div>
-            <h3 class="text-2xl font-semibold mb-2">Theme Comparison</h3>
-            <p class="text-muted-foreground mb-4">
-                Compare Shadcn theme with AG Grid's built-in themes.
-            </p>
-        </div>
-
-        <div class="flex gap-4 items-center mb-4">
+    <DemoSection Title="Theme Comparison"
+                 Description="Compare Shadcn theme with AG Grid&apos;s built-in themes.">
+        <DemoBlock Code="@_themeComparisonCode">
+            <div class="flex gap-4 items-center mb-4">
             <Label>Select Theme:</Label>
             <div class="flex gap-2 flex-wrap">
                 <Button 
@@ -185,18 +169,13 @@
                 </DataGrid>
             </CardContent>
         </Card>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 
-    <!-- Precedence Demonstration -->
-    <section class="space-y-4">
-        <div>
-            <h3 class="text-2xl font-semibold mb-2">Precedence Demonstration</h3>
-            <p class="text-muted-foreground mb-4">
-                DataGridThemeParameters overrides Density presets. Compact sets rowHeight=28, but we override it to 50.
-            </p>
-        </div>
-
-        <div class="grid gap-4 md:grid-cols-2">
+    <DemoSection Title="Precedence Demonstration"
+                 Description="DataGridThemeParameters overrides Density presets. Compact sets rowHeight=28, but we override it to 50.">
+        <DemoBlock Code="@_precedenceCode">
+            <div class="grid gap-4 md:grid-cols-2">
             <!-- Standard Compact -->
             <Card>
                 <CardHeader>
@@ -240,8 +219,13 @@
                 </CardContent>
             </Card>
         </div>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 
+    <DemoSection Title="Usage Examples"
+                 Description="How to use the three-level customization system">
+        <DemoBlock Code="@_usageExamplesCode">
+            
     <!-- Code Example -->
     <Card>
         <CardHeader>
@@ -278,8 +262,9 @@
 &lt;/style&gt;</code></pre>
         </CardContent>
     </Card>
+        </DemoBlock>
+    </DemoSection>
 </div>
-
 @code {
     private DataGridTheme selectedTheme = DataGridTheme.Shadcn;
     private List<Order> orders = new();
@@ -308,4 +293,10 @@
         public decimal Price { get; set; }
         public int Stock { get; set; }
     }
+
+    private const string _level1PresetsCode = "";
+    private const string _level2FineGrainedCode = "";
+    private const string _themeComparisonCode = "";
+    private const string _precedenceCode = "";
+    private const string _usageExamplesCode = "";
 }

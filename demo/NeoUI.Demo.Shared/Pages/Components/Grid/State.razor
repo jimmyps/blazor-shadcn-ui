@@ -7,103 +7,63 @@
 <PageTitle>Grid Components - State Management Examples</PageTitle>
 
 <div class="space-y-8">
-    @* Demo 17: State Persistence *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">State Persistence</h2>
-            <p class="text-muted-foreground">
-                Save grid state (sort, filter, column order/width) to localStorage and restore on page load.
-            </p>
-        </div>
-
-        <div class="flex gap-2 mb-4">
-            <Button Size="ButtonSize.Small" OnClick="SaveState">Save State</Button>
-            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ResetState">Reset to Default</Button>
-            @if (stateSaved)
-            {
-                <span class="text-sm text-green-600 dark:text-green-400 self-center">✓ State saved!</span>
-            }
-        </div>
-
-        <DataGrid Items="@stateOrders" @bind-State="@gridState" @ref="stateGridRef">
-            <Columns>
-                <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
-                <DataGridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
-                <DataGridColumn Field="Status" Header="Status" Sortable="true" Filterable="true" Width="130px" />
-                <DataGridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
-                <DataGridColumn Field="OrderDate" Header="Order Date" Sortable="true" Filterable="true" Width="140px" />
-            </Columns>
-        </DataGrid>
-
-        <div class="text-sm text-muted-foreground">
-            Try sorting, filtering, or resizing columns, then click "Save State". Refresh the page to see state restored.
-        </div>
-
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>private Grid&lt;Order&gt; gridRef = default!;
-
-[Inject] private IJSRuntime JS { get; set; }
-private DataGridState gridState = new();
-
-protected override async Task OnInitializedAsync()
-{
-    var json = await JS.InvokeAsync&lt;string&gt;("localStorage.getItem", "gridState");
-    if (!string.IsNullOrEmpty(json))
-    {
-        gridState = JsonSerializer.Deserialize&lt;DataGridState&gt;(json) ?? new();
-    }
-}
-
-private async Task SaveState()
-{
-    // ✅ Get actual state from AG DataGrid
-    gridState = await gridRef.GetStateAsync();
-    
-    var json = JsonSerializer.Serialize(gridState);
-    await JS.InvokeVoidAsync("localStorage.setItem", "gridState", json);
-}</code></pre>
+    <DemoSection Title="State Persistence"
+                 Description="Save grid state (sort, filter, column order/width) to localStorage and restore on page load.">
+        <DemoBlock Code="@_statePersistenceCode">
+            <div class="flex gap-2 mb-4">
+                <Button Size="ButtonSize.Small" OnClick="SaveState">Save State</Button>
+                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ResetState">Reset to Default</Button>
+                @if (stateSaved)
+                {
+                    <span class="text-sm text-green-600 dark:text-green-400 self-center">✓ State saved!</span>
+                }
             </div>
-        </details>
-    </section>
 
-    @* Demo 18: State Export/Import *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">State Export/Import</h2>
-            <p class="text-muted-foreground">
-                Export grid state as JSON file and import from uploaded JSON.
-            </p>
-        </div>
+            <DataGrid Items="@stateOrders" @bind-State="@gridState" @ref="stateGridRef">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
+                    <DataGridColumn Field="Status" Header="Status" Sortable="true" Filterable="true" Width="130px" />
+                    <DataGridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
+                    <DataGridColumn Field="OrderDate" Header="Order Date" Sortable="true" Filterable="true" Width="140px" />
+                </Columns>
+            </DataGrid>
 
-        <div class="flex gap-2 mb-4">
-            <Button Size="ButtonSize.Small" OnClick="ExportState">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                Export State
-            </Button>
-            <label class="inline-flex items-center gap-2">
-                <span class="cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
+            <div class="text-sm text-muted-foreground">
+                Try sorting, filtering, or resizing columns, then click "Save State". Refresh the page to see state restored.
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="State Export/Import"
+                 Description="Export grid state as JSON file and import from uploaded JSON.">
+        <DemoBlock Code="@_stateExportCode">
+            <div class="flex gap-2 mb-4">
+                <Button Size="ButtonSize.Small" OnClick="ExportState">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
-                    Import State
-                </span>
-                <input type="file" accept=".json" @onchange="ImportState" class="hidden" />
-            </label>
-        </div>
+                    Export State
+                </Button>
+                <label class="inline-flex items-center gap-2">
+                    <span class="cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        Import State
+                    </span>
+                    <input type="file" accept=".json" @onchange="ImportState" class="hidden" />
+                </label>
+            </div>
 
-        <DataGrid Items="@exportOrders" @bind-State="@exportState" @ref="exportGridRef">
-            <Columns>
-                <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
-                <DataGridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
-                <DataGridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
-            </Columns>
-        </DataGrid>
+            <DataGrid Items="@exportOrders" @bind-State="@exportState" @ref="exportGridRef">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Filterable="true" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer" Sortable="true" Filterable="true" />
+                    <DataGridColumn Field="Amount" Header="Amount" Sortable="true" Filterable="true" Width="120px" />
+                </Columns>
+            </DataGrid>
+        </DemoBlock>
 
         <details class="mt-4 rounded-lg border">
             <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
@@ -113,30 +73,8 @@ private async Task SaveState()
                 <pre class="overflow-auto text-xs max-h-96">@stateJson</pre>
             </div>
         </details>
-
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>private async Task ExportState()
-{
-    var json = JsonSerializer.Serialize(gridState, new JsonSerializerOptions { WriteIndented = true });
-    var bytes = Encoding.UTF8.GetBytes(json);
-    var base64 = Convert.ToBase64String(bytes);
-    await JS.InvokeVoidAsync("downloadFile", "grid-state.json", base64);
-}
-
-private async Task ImportState(ChangeEventArgs e)
-{
-    // Read file and deserialize to DataGridState
-    gridState = JsonSerializer.Deserialize&lt;DataGridState&gt;(json) ?? new();
-}</code></pre>
-            </div>
-        </details>
-    </section>
+    </DemoSection>
 </div>
-
 @code {
     // Separate data sources for each grid to prevent conflicts
     private List<Order> stateOrders = new();
@@ -312,4 +250,45 @@ private async Task ImportState(ChangeEventArgs e)
         // Note: File import requires InputFile component for full implementation
         // This is a simplified demo
     }
+
+    private const string _statePersistenceCode = """
+private Grid<Order> gridRef = default!;
+
+[Inject] private IJSRuntime JS { get; set; }
+private DataGridState gridState = new();
+
+protected override async Task OnInitializedAsync()
+{
+    var json = await JS.InvokeAsync<string>("localStorage.getItem", "gridState");
+    if (!string.IsNullOrEmpty(json))
+    {
+        gridState = JsonSerializer.Deserialize<DataGridState>(json) ?? new();
+    }
+}
+
+private async Task SaveState()
+{
+    // ✅ Get actual state from AG DataGrid
+    gridState = await gridRef.GetStateAsync();
+
+    var json = JsonSerializer.Serialize(gridState);
+    await JS.InvokeVoidAsync("localStorage.setItem", "gridState", json);
+}
+""";
+
+    private const string _stateExportCode = """
+private async Task ExportState()
+{
+    var json = JsonSerializer.Serialize(gridState, new JsonSerializerOptions { WriteIndented = true });
+    var bytes = Encoding.UTF8.GetBytes(json);
+    var base64 = Convert.ToBase64String(bytes);
+    await JS.InvokeVoidAsync("downloadFile", "grid-state.json", base64);
+}
+
+private async Task ImportState(ChangeEventArgs e)
+{
+    // Read file and deserialize to DataGridState
+    gridState = JsonSerializer.Deserialize<DataGridState>(json) ?? new();
+}
+""";
 }

@@ -4,47 +4,24 @@
 <PageTitle>Grid Components - Advanced Examples</PageTitle>
 
 <div class="space-y-8">
-    @* Demo 19: Flexible Column Sizing *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Flexible Column Sizing</h2>
-            <p class="text-muted-foreground">
-                Responsive columns using flex sizing with MinWidth constraints that adapt to container width.
-            </p>
-        </div>
-
-        <DataGrid Items="@orders.Take(15).ToList()">
-            <Columns>
-                <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
-                <DataGridColumn Field="Customer" Header="Customer" MinWidth="150px" />
-                <DataGridColumn Field="Status" Header="Status" Width="120px" />
-                <DataGridColumn Field="Amount" Header="Amount" Width="120px" />
-                <DataGridColumn Field="OrderDate" Header="Order Date" MinWidth="150px" />
-                <DataGridColumn Field="ShipTo" Header="Ship To" MinWidth="150px" />
-            </Columns>
-        </DataGrid>
-
+    <DemoSection Title="Flexible Column Sizing"
+                 Description="Responsive columns using flex sizing with MinWidth constraints that adapt to container width.">
+        <DemoBlock Code="@_flexColumnCode">
+            <DataGrid Items="@orders.Take(15).ToList()">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer" MinWidth="150px" />
+                    <DataGridColumn Field="Status" Header="Status" Width="120px" />
+                    <DataGridColumn Field="Amount" Header="Amount" Width="120px" />
+                    <DataGridColumn Field="OrderDate" Header="Order Date" MinWidth="150px" />
+                    <DataGridColumn Field="ShipTo" Header="Ship To" MinWidth="150px" />
+                </Columns>
+            </DataGrid>
+        </DemoBlock>
         <div class="text-sm text-muted-foreground">
             Resize your browser window to see columns with MinWidth adapt proportionally while fixed-width columns stay constant.
         </div>
-
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders"&gt;
-    &lt;Columns&gt;
-        &lt;DataGridColumn Field="Id" Width="100px" /&gt; @* Fixed width *@
-        &lt;DataGridColumn Field="Customer" MinWidth="150px" /&gt; @* Flex with min constraint *@
-        &lt;DataGridColumn Field="Status" Width="120px" /&gt; @* Fixed width *@
-        &lt;DataGridColumn Field="OrderDate" MinWidth="150px" /&gt; @* Flex with min constraint *@
-    &lt;/Columns&gt;
-&lt;/Grid&gt;</code></pre>
-            </div>
-        </details>
-    </section>
-
+    </DemoSection>
 </div>
 
 @code {
@@ -54,4 +31,15 @@
     {
         orders = GridDemoData.GenerateOrders(50);
     }
+
+    private const string _flexColumnCode = """
+<Grid Items="@orders">
+    <Columns>
+        <DataGridColumn Field="Id" Width="100px" />
+        <DataGridColumn Field="Customer" MinWidth="150px" />
+        <DataGridColumn Field="Status" Width="120px" />
+        <DataGridColumn Field="OrderDate" MinWidth="150px" />
+    </Columns>
+</Grid>
+""";
 }
