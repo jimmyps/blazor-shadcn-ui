@@ -35,7 +35,7 @@ A suite of reusable, consistently-named demo-scaffolding components added to `de
 | `DemoPropsTable` | API reference table (`DemoPropRow` rows) |
 | `DemoPageNav` | Zero-config prev/next navigation (derives context from registry) |
 
-Breadcrumnb navigation is also wired into the top bar in `MainLayout`, showing the active page context and prev/next buttons when browsing any demo page.
+Breadcrumb navigation is also wired into the top bar in `MainLayout`, showing the active page context and prev/next buttons when browsing any demo page.
 
 ---
 
