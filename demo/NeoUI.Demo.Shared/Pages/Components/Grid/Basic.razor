@@ -212,7 +212,31 @@
 </div>
 """;
 
-    private const string _visualStylesCode = "";
+    private const string _visualStylesCode = """
+<DataGrid Items="@orders" VisualStyle="DataGridStyle.Striped">
+    <Columns>...</Columns>
+</DataGrid>
 
-    private const string _densityCode = "";
+<DataGrid Items="@orders" VisualStyle="DataGridStyle.Bordered">
+    <Columns>...</Columns>
+</DataGrid>
+
+<DataGrid Items="@orders" VisualStyle="DataGridStyle.Minimal">
+    <Columns>...</Columns>
+</DataGrid>
+""";
+
+    private const string _densityCode = """
+<DataGrid Items="@orders" Density="DataGridDensity.Compact">
+    <Columns>...</Columns>
+</DataGrid>
+
+<DataGrid Items="@orders" Density="DataGridDensity.Comfortable">
+    <Columns>...</Columns>
+</DataGrid>
+
+<DataGrid Items="@orders" Density="DataGridDensity.Spacious">
+    <Columns>...</Columns>
+</DataGrid>
+""";
 }
