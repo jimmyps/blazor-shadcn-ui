@@ -2,6 +2,141 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-2-28 – Demo Solution Polish: Blazor UX Improvements & Project Cleanup
+
+> **Demo-only change.** No library component APIs were modified. All changes are contained within the `demo/` projects.
+
+---
+
+### 🏗️ Infrastructure: Demo Project Restructure for v3 Release
+
+The demo solution has been reorganised into dedicated, purpose-named host projects so each render mode can be started directly without configuration switching:
+
+| Project | Render Mode | HTTPS Port |
+|---|---|---|
+| `NeoUI.Demo.Auto` | Interactive Auto (Server + WASM) | 7172 |
+| `NeoUI.Demo.Auto.Client` | WASM satellite for Auto | — |
+| `NeoUI.Demo.Server` | Interactive Server only | 7173 |
+| `NeoUI.Demo.Wasm` | Standalone WebAssembly | 7174 |
+
+- `NeoUI.Demo` and `NeoUI.Demo.Client` have been renamed to `NeoUI.Demo.Auto` and `NeoUI.Demo.Auto.Client` respectively.
+- `NeoUI.Demo.Server` and `NeoUI.Demo.Wasm` are new projects created from scratch.
+- All shared `wwwroot` assets (`css/`, `images/`, `styles/`, `favicon.png`) have been moved from the old Client project into `NeoUI.Demo.Shared/wwwroot` with `StaticWebAssetBasePath="."` so every host project picks them up at root path automatically.
+- The Tailwind CSS build target has been consolidated into `NeoUI.Demo.Shared.csproj`.
+
+---
+
+### 🏗️ Infrastructure: `NeoUI.Demo.Auto.Client` Workaround Removed
+
+With `NeoUI.Demo.Wasm` now a dedicated standalone project, the temporary workaround in `NeoUI.Demo.Auto.Client` is no longer needed:
+
+- Removed the `RemoveIndexHtmlFromStaticAssets` MSBuild target that excluded `wwwroot/index.html` from static assets when the client project was used as a satellite WASM project
+- Removed the `ResolveStaticWebAssetsInputsDependsOn` override
+- Deleted `NeoUI.Demo.Auto.Client/wwwroot/index.html` — the dedicated `NeoUI.Demo.Wasm` project owns its own `index.html`
+
+---
+
+### 🏗️ Infrastructure: Tailwind Config Restored to Correct Location
+
+The `tailwind.config.js` for the demo was restored to its correct location at `demo/NeoUI.Demo.Shared/tailwind.config.js` (project root), matching the `@config "../../tailwind.config.js"` reference in `wwwroot/css/app-input.css`:
+
+- Content paths corrected: `../../src/NeoUI.Blazor/**/*`, `../../src/NeoUI.Blazor.Primitives/**/*`, and all icon libraries resolve correctly from the Shared project root
+- Removed a stale `../NeoUI.Demo.Shared/**/*` entry that pointed to a non-existent path
+
+---
+
+### ✨ Feature: Polished `blazor-error-ui` Across All Host Projects
+
+The default plain-text Blazor error UI strip has been replaced with a polished themed bottom-bar notification in all three host projects:
+
+- **`NeoUI.Demo.Auto/App.razor`** — themed bottom bar in `<body>`
+- **`NeoUI.Demo.Server/App.razor`** — same treatment
+- **`NeoUI.Demo.Wasm/wwwroot/index.html`** — same treatment (inline styles, no Tailwind dependency so it renders even if Blazor itself crashes)
+
+Design: fixed bottom bar with a destructive icon badge, error message, a styled Reload link, and a dismiss button — all using CSS variables (`--card`, `--border`, `--destructive`, `--foreground`, etc.) from the loaded theme.
+
+---
+
+### ✨ Feature: Reconnect Modal for Auto & Server
+
+A polished `ReconnectModal` component (using the native `<dialog>` element) has been added to `NeoUI.Demo.Auto` and `NeoUI.Demo.Server`. It replaces the browser default reconnect UI with a fully themed modal:
+
+| State | UI |
+|---|---|
+| Reconnecting (first attempt) | Pulsing animation + "Reconnecting…" message |
+| Retrying | Live countdown via `components-seconds-to-next-attempt` |
+| Failed | Destructive icon + Retry Connection button |
+| Paused | Pause icon + Resume Session button |
+| Resume Failed | Destructive icon + prompt to reload |
+
+- `ReconnectModal.razor` — pure Tailwind markup, scoped `<style>` block for state visibility management and `@keyframes` animations, driven entirely by CSS classes Blazor sets on `#components-reconnect-modal`
+- `ReconnectModal.razor.js` — ES module handling `components-reconnect-state-changed` events, `Blazor.reconnect()` / `Blazor.resumeCircuit()` retry logic, and visibility-change auto-retry
+
+> Note: the reconnect modal is Server/Auto-specific (SignalR circuit reconnection). `NeoUI.Demo.Wasm` intentionally does not include it.
+
+---
+
+### ✨ Feature: `Error.razor` Page for `NeoUI.Demo.Wasm`
+
+A polished `/Error` page has been added to `NeoUI.Demo.Wasm`, adapted from the business template:
+
+- Uses NeoUI components: `Card`, `Alert` (destructive variant), `Button`
+- Shows Request ID block (sourced from `Activity.Current?.Id`) when available
+- "Go Home" and "Reload Page" action buttons
+- **Adapted for WASM**: removed `[CascadingParameter] HttpContext?` (not available in WebAssembly) and removed the server-specific "Development Mode / ASPNETCORE_ENVIRONMENT" guidance card
+
+---
+
+## 2026-2-27 – Demo Site Revamp: Data-Driven Registry, `Demo*` Infrastructure & Full Page Conversion
+
+> **Demo-only change.** No library component APIs were modified. All changes are contained within `demo/NeoUI.Demo.Shared`.
+
+---
+
+### ✨ Feature: Component Registry
+
+A single, centralized `ComponentRegistry` now drives all demo-site navigation surfaces — eliminating scattered hardcoded lists.
+
+- Registry entries carry: slug, title, description, icon name, category/tags, and tier (`Component` vs `Primitive`)
+- Stable ordering used for **prev/next** navigation across all ~80 demo pages
+- Helper methods: find entry by route/slug, get prev/next entry, enumerate grouped items
+- All three navigation surfaces now read from the registry:
+  - **Left sidebar** menu
+  - **`/components` index page** (card grid)
+  - **Spotlight Command Palette** (global search)
+
+---
+
+### ✨ Feature: `Demo*` Infrastructure Components
+
+A suite of reusable, consistently-named demo-scaffolding components added to `demo/NeoUI.Demo.Shared`:
+
+| Component | Purpose |
+|---|---|
+| `DemoPageHeader` | Page title + description banner |
+| `DemoSection` | Titled section with optional description |
+| `DemoBlock` | Live preview / code tab switcher |
+| `DemoCopyButton` | One-click copy for code snippets |
+| `DemoPropsTable` | API reference table (`DemoPropRow` rows) |
+| `DemoPageNav` | Zero-config prev/next navigation (derives context from registry) |
+
+Breadcrumb navigation is also wired into the top bar in `MainLayout`, showing the active page context and prev/next buttons when browsing any demo page.
+
+---
+
+### ✨ Feature: All Demo Pages Converted to `Demo*` Pattern
+
+All **~80 component and primitive demo pages** have been converted from ad-hoc `<section>` / `<h2>` markup to the standardised `Demo*` structure, following the `AlertDemo.razor` reference implementation:
+
+- `DemoPageHeader` replaces the old inline title/description
+- Each example group is wrapped in `DemoSection` + `DemoBlock` (live preview + syntax-highlighted code tab)
+- API reference table (`DemoPropsTable`) added to every page
+- All related code snippets and demo-viewer related codes are placed in CodeExamples subfolder, providing clean examples in the razor file.
+- `DemoPageNav` appended to every page (prev/next, zero-config)
+- Cosmetic label improvements applied where appropriate (e.g. `"DatePicker Component"` → `"Date Picker"`, `"Basic Examples"` → `"Basic"`)
+
+---
+
 ## 2026-2-24 – RC Namespace Flattening & Brand Rename: `BlazorUI.*` → `NeoUI.*`
 
 > **Breaking change.** Every package ID, namespace, filename, CSS class, JS token, localStorage key, and CI/CD reference has been updated to the new `NeoUI.*` scheme. See migration notes below.

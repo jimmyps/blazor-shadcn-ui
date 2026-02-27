@@ -1,225 +1,153 @@
 @page "/primitives/tabs"
+<PageTitle>Tabs Primitive - NeoUI</PageTitle>
+
 <div class="space-y-8 max-w-4xl">
-    <div>
-        <h1 class="text-4xl font-bold">Tabs Primitive</h1>
-        <p class="text-xl text-muted-foreground">
-            Headless, unstyled tabs primitive with full keyboard navigation and accessibility support.
-        </p>
-    </div>
+    <DemoPageHeader
+        Title="Tabs Primitive"
+        Description="Headless, unstyled tabs primitive with full keyboard navigation and accessibility support." />
 
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Basic Usage</h2>
-        <p class="text-sm text-muted-foreground">
-            A simple tabs implementation with minimal inline styles. Use arrow keys to navigate between tabs.
-        </p>
-
-        <TabsPrimitive DefaultValue="tab1">
-            <TabsListPrimitive class="flex gap-1 p-1 bg-muted rounded-md w-fit">
-                <TabsTriggerPrimitive Value="tab1" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm aria-[selected=true]:bg-background aria-[selected=true]:shadow-sm">
-                    Tab 1
-                </TabsTriggerPrimitive>
-                <TabsTriggerPrimitive Value="tab2" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm aria-[selected=true]:bg-background aria-[selected=true]:shadow-sm">
-                    Tab 2
-                </TabsTriggerPrimitive>
-                <TabsTriggerPrimitive Value="tab3" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm aria-[selected=true]:bg-background aria-[selected=true]:shadow-sm">
-                    Tab 3
-                </TabsTriggerPrimitive>
-            </TabsListPrimitive>
-
-            <TabsContentPrimitive Value="tab1" class="p-4 mt-2 border border-border rounded-md">
-                <h3 class="font-semibold mb-2">Tab 1 Content</h3>
-                <p>This is the content for the first tab. Navigate using arrow keys or click to switch tabs.</p>
-            </TabsContentPrimitive>
-
-            <TabsContentPrimitive Value="tab2" class="p-4 mt-2 border border-border rounded-md">
-                <h3 class="font-semibold mb-2">Tab 2 Content</h3>
-                <p>This is the content for the second tab. The primitive handles all keyboard navigation automatically.</p>
-            </TabsContentPrimitive>
-
-            <TabsContentPrimitive Value="tab3" class="p-4 mt-2 border border-border rounded-md">
-                <h3 class="font-semibold mb-2">Tab 3 Content</h3>
-                <p>This is the content for the third tab. Press Home/End to jump to first/last tab.</p>
-            </TabsContentPrimitive>
-        </TabsPrimitive>
-    </div>
-
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Controlled Tabs</h2>
-        <p class="text-sm text-muted-foreground">
-            Control the active tab from your component code using @@bind-Value.
-        </p>
-
-        <div class="flex gap-2 mb-4">
-            <button @onclick='() => controlledValue = "account"'
-                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
-                Show Account
-            </button>
-            <button @onclick='() => controlledValue = "password"'
-                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">
-                Show Password
-            </button>
-        </div>
-
-        <p class="text-xs text-muted-foreground">Current tab: <strong>@controlledValue</strong></p>
-
-        <TabsPrimitive @bind-Value="controlledValue">
-            <TabsListPrimitive class="flex gap-1 p-1 bg-muted rounded-md w-fit">
-                <TabsTriggerPrimitive Value="account" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                    Account
-                </TabsTriggerPrimitive>
-                <TabsTriggerPrimitive Value="password" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                    Password
-                </TabsTriggerPrimitive>
-            </TabsListPrimitive>
-
-            <TabsContentPrimitive Value="account" class="p-4 mt-2 border border-border rounded-md">
-                <h3 class="font-semibold mb-2">Account Settings</h3>
-                <p>Make changes to your account here.</p>
-            </TabsContentPrimitive>
-
-            <TabsContentPrimitive Value="password" class="p-4 mt-2 border border-border rounded-md">
-                <h3 class="font-semibold mb-2">Password Settings</h3>
-                <p>Change your password here.</p>
-            </TabsContentPrimitive>
-        </TabsPrimitive>
-    </div>
-
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Vertical Tabs</h2>
-        <p class="text-sm text-muted-foreground">
-            Tabs can be arranged vertically. Use arrow up/down keys to navigate.
-        </p>
-
-        <TabsPrimitive DefaultValue="general" Orientation="TabsOrientation.Vertical">
-            <div class="flex gap-4">
-                <TabsListPrimitive class="flex flex-col gap-1 p-1 bg-muted rounded-md w-[150px]">
-                    <TabsTriggerPrimitive Value="general" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm text-left data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                        General
-                    </TabsTriggerPrimitive>
-                    <TabsTriggerPrimitive Value="security" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm text-left data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                        Security
-                    </TabsTriggerPrimitive>
-                    <TabsTriggerPrimitive Value="notifications" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm text-left data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                        Notifications
-                    </TabsTriggerPrimitive>
+    <DemoSection Title="Basic Usage" Description="A simple tabs implementation with minimal inline styles.">
+        <DemoBlock Code="@_basicCode">
+            <TabsPrimitive DefaultValue="tab1">
+                <TabsListPrimitive class="flex gap-1 p-1 bg-muted rounded-md w-fit">
+                    <TabsTriggerPrimitive Value="tab1" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm aria-[selected=true]:bg-background aria-[selected=true]:shadow-sm">Tab 1</TabsTriggerPrimitive>
+                    <TabsTriggerPrimitive Value="tab2" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm aria-[selected=true]:bg-background aria-[selected=true]:shadow-sm">Tab 2</TabsTriggerPrimitive>
+                    <TabsTriggerPrimitive Value="tab3" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm aria-[selected=true]:bg-background aria-[selected=true]:shadow-sm">Tab 3</TabsTriggerPrimitive>
                 </TabsListPrimitive>
 
-                <div class="flex-1">
-                    <TabsContentPrimitive Value="general" class="p-4 border border-border rounded-md">
-                        <h3 class="font-semibold mb-2">General Settings</h3>
-                        <p>Configure general application settings.</p>
-                    </TabsContentPrimitive>
+                <TabsContentPrimitive Value="tab1" class="p-4 mt-2 border border-border rounded-md">
+                    <h3 class="font-semibold mb-2">Tab 1 Content</h3>
+                    <p>This is the content for the first tab. Navigate using arrow keys or click to switch tabs.</p>
+                </TabsContentPrimitive>
+                <TabsContentPrimitive Value="tab2" class="p-4 mt-2 border border-border rounded-md">
+                    <h3 class="font-semibold mb-2">Tab 2 Content</h3>
+                    <p>This is the content for the second tab. The primitive handles all keyboard navigation automatically.</p>
+                </TabsContentPrimitive>
+                <TabsContentPrimitive Value="tab3" class="p-4 mt-2 border border-border rounded-md">
+                    <h3 class="font-semibold mb-2">Tab 3 Content</h3>
+                    <p>This is the content for the third tab. Press Home/End to jump to first/last tab.</p>
+                </TabsContentPrimitive>
+            </TabsPrimitive>
+        </DemoBlock>
+    </DemoSection>
 
-                    <TabsContentPrimitive Value="security" class="p-4 border border-border rounded-md">
-                        <h3 class="font-semibold mb-2">Security Settings</h3>
-                        <p>Manage your security preferences.</p>
-                    </TabsContentPrimitive>
-
-                    <TabsContentPrimitive Value="notifications" class="p-4 border border-border rounded-md">
-                        <h3 class="font-semibold mb-2">Notification Settings</h3>
-                        <p>Control how you receive notifications.</p>
-                    </TabsContentPrimitive>
-                </div>
+    <DemoSection Title="Controlled Tabs" Description="Control the active tab from your component code using <code class=&quot;text-xs bg-muted px-1 rounded&quot;>&amp;#64;bind-Value</code>.">
+        <DemoBlock Code="@_controlledCode">
+            <div class="flex gap-2 mb-4">
+                <button @onclick='() => controlledValue = "account"' class="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">Show Account</button>
+                <button @onclick='() => controlledValue = "password"' class="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">Show Password</button>
             </div>
-        </TabsPrimitive>
-    </div>
 
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Manual Activation Mode</h2>
-        <p class="text-sm text-muted-foreground">
-            In manual mode, tabs must be clicked or activated with Enter/Space. Arrow keys only move focus.
-        </p>
+            <p class="text-xs text-muted-foreground">Current tab: <strong>@controlledValue</strong></p>
 
-        <TabsPrimitive DefaultValue="overview" ActivationMode="TabsActivationMode.Manual">
-            <TabsListPrimitive class="flex gap-1 p-1 bg-muted rounded-md w-fit">
-                <TabsTriggerPrimitive Value="overview" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                    Overview
-                </TabsTriggerPrimitive>
-                <TabsTriggerPrimitive Value="analytics" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                    Analytics
-                </TabsTriggerPrimitive>
-                <TabsTriggerPrimitive Value="reports" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                    Reports
-                </TabsTriggerPrimitive>
-            </TabsListPrimitive>
+            <TabsPrimitive @bind-Value="controlledValue">
+                <TabsListPrimitive class="flex gap-1 p-1 bg-muted rounded-md w-fit">
+                    <TabsTriggerPrimitive Value="account" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">Account</TabsTriggerPrimitive>
+                    <TabsTriggerPrimitive Value="password" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">Password</TabsTriggerPrimitive>
+                </TabsListPrimitive>
+                <TabsContentPrimitive Value="account" class="p-4 mt-2 border border-border rounded-md"><h3 class="font-semibold mb-2">Account Settings</h3><p>Make changes to your account here.</p></TabsContentPrimitive>
+                <TabsContentPrimitive Value="password" class="p-4 mt-2 border border-border rounded-md"><h3 class="font-semibold mb-2">Password Settings</h3><p>Change your password here.</p></TabsContentPrimitive>
+            </TabsPrimitive>
+        </DemoBlock>
+    </DemoSection>
 
-            <TabsContentPrimitive Value="overview" class="p-4 mt-2 border border-border rounded-md">
-                <h3 class="font-semibold mb-2">Overview</h3>
-                <p>Use arrow keys to move focus, then press Enter or Space to activate a tab.</p>
-            </TabsContentPrimitive>
+    <DemoSection Title="Vertical Tabs" Description="Tabs can be arranged vertically. Use arrow up/down keys to navigate.">
+        <DemoBlock Code="@_verticalCode">
+            <TabsPrimitive DefaultValue="general" Orientation="TabsOrientation.Vertical">
+                <div class="flex gap-4">
+                    <TabsListPrimitive class="flex flex-col gap-1 p-1 bg-muted rounded-md w-[150px]">
+                        <TabsTriggerPrimitive Value="general" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm text-left data-[state=active]:bg-background data-[state=active]:shadow-sm">General</TabsTriggerPrimitive>
+                        <TabsTriggerPrimitive Value="security" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm text-left data-[state=active]:bg-background data-[state=active]:shadow-sm">Security</TabsTriggerPrimitive>
+                        <TabsTriggerPrimitive Value="notifications" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm text-left data-[state=active]:bg-background data-[state=active]:shadow-sm">Notifications</TabsTriggerPrimitive>
+                    </TabsListPrimitive>
+                    <div class="flex-1">
+                        <TabsContentPrimitive Value="general" class="p-4 border border-border rounded-md"><h3 class="font-semibold mb-2">General Settings</h3><p>Configure general application settings.</p></TabsContentPrimitive>
+                        <TabsContentPrimitive Value="security" class="p-4 border border-border rounded-md"><h3 class="font-semibold mb-2">Security Settings</h3><p>Manage your security preferences.</p></TabsContentPrimitive>
+                        <TabsContentPrimitive Value="notifications" class="p-4 border border-border rounded-md"><h3 class="font-semibold mb-2">Notification Settings</h3><p>Control how you receive notifications.</p></TabsContentPrimitive>
+                    </div>
+                </div>
+            </TabsPrimitive>
+        </DemoBlock>
+    </DemoSection>
 
-            <TabsContentPrimitive Value="analytics" class="p-4 mt-2 border border-border rounded-md">
-                <h3 class="font-semibold mb-2">Analytics</h3>
-                <p>View your analytics data here.</p>
-            </TabsContentPrimitive>
+    <DemoSection Title="Manual Activation Mode" Description="Arrow keys move focus only; Enter/Space activates tabs.">
+        <DemoBlock Code="@_manualCode">
+            <TabsPrimitive DefaultValue="overview" ActivationMode="TabsActivationMode.Manual">
+                <TabsListPrimitive class="flex gap-1 p-1 bg-muted rounded-md w-fit">
+                    <TabsTriggerPrimitive Value="overview" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">Overview</TabsTriggerPrimitive>
+                    <TabsTriggerPrimitive Value="analytics" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">Analytics</TabsTriggerPrimitive>
+                    <TabsTriggerPrimitive Value="reports" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">Reports</TabsTriggerPrimitive>
+                </TabsListPrimitive>
+                <TabsContentPrimitive Value="overview" class="p-4 mt-2 border border-border rounded-md"><h3 class="font-semibold mb-2">Overview</h3><p>Use arrow keys to move focus, then press Enter or Space to activate a tab.</p></TabsContentPrimitive>
+                <TabsContentPrimitive Value="analytics" class="p-4 mt-2 border border-border rounded-md"><h3 class="font-semibold mb-2">Analytics</h3><p>View your analytics data here.</p></TabsContentPrimitive>
+                <TabsContentPrimitive Value="reports" class="p-4 mt-2 border border-border rounded-md"><h3 class="font-semibold mb-2">Reports</h3><p>Generate and download reports.</p></TabsContentPrimitive>
+            </TabsPrimitive>
+        </DemoBlock>
+    </DemoSection>
 
-            <TabsContentPrimitive Value="reports" class="p-4 mt-2 border border-border rounded-md">
-                <h3 class="font-semibold mb-2">Reports</h3>
-                <p>Generate and download reports.</p>
-            </TabsContentPrimitive>
-        </TabsPrimitive>
-    </div>
+    <DemoSection Title="Disabled Tab" Description="Disabled tabs are skipped in keyboard navigation.">
+        <DemoBlock Code="@_disabledCode">
+            <TabsPrimitive DefaultValue="enabled1">
+                <TabsListPrimitive class="flex gap-1 p-1 bg-muted rounded-md w-fit">
+                    <TabsTriggerPrimitive Value="enabled1" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">Enabled 1</TabsTriggerPrimitive>
+                    <TabsTriggerPrimitive Value="disabled" Disabled="true" class="px-4 py-2 border-none bg-transparent cursor-not-allowed rounded text-sm opacity-50">Disabled</TabsTriggerPrimitive>
+                    <TabsTriggerPrimitive Value="enabled2" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">Enabled 2</TabsTriggerPrimitive>
+                </TabsListPrimitive>
+                <TabsContentPrimitive Value="enabled1" class="p-4 mt-2 border border-border rounded-md"><p>First enabled tab content.</p></TabsContentPrimitive>
+                <TabsContentPrimitive Value="enabled2" class="p-4 mt-2 border border-border rounded-md"><p>Second enabled tab content.</p></TabsContentPrimitive>
+            </TabsPrimitive>
+        </DemoBlock>
+    </DemoSection>
 
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Disabled Tab</h2>
-        <p class="text-sm text-muted-foreground">
-            Tabs can be disabled. Keyboard navigation will skip over disabled tabs.
-        </p>
+    <DemoSection Title="Accessibility Features" Description="Built-in accessibility features following WAI-ARIA patterns.">
+        <Alert Variant="AlertVariant.Success" AccentBorder="true">
+            <Icon><LucideIcon Name="circle-check" Class="h-4 w-4" /></Icon>
+            <ChildContent>
+                <AlertTitle>Included by default</AlertTitle>
+                <AlertDescription>
+                    <code class="text-xs bg-muted px-1 rounded">role=&quot;tablist&quot;</code>, <code class="text-xs bg-muted px-1 rounded">role=&quot;tab&quot;</code>, <code class="text-xs bg-muted px-1 rounded">role=&quot;tabpanel&quot;</code>, roving focus, and orientation-aware keyboard navigation.
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
+    </DemoSection>
 
-        <TabsPrimitive DefaultValue="enabled1">
-            <TabsListPrimitive class="flex gap-1 p-1 bg-muted rounded-md w-fit">
-                <TabsTriggerPrimitive Value="enabled1" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                    Enabled 1
-                </TabsTriggerPrimitive>
-                <TabsTriggerPrimitive Value="disabled" Disabled="true" class="px-4 py-2 border-none bg-transparent cursor-not-allowed rounded text-sm opacity-50">
-                    Disabled
-                </TabsTriggerPrimitive>
-                <TabsTriggerPrimitive Value="enabled2" class="px-4 py-2 border-none bg-transparent cursor-pointer rounded text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                    Enabled 2
-                </TabsTriggerPrimitive>
-            </TabsListPrimitive>
-
-            <TabsContentPrimitive Value="enabled1" class="p-4 mt-2 border border-border rounded-md">
-                <p>First enabled tab content. Try using arrow keys - they'll skip the disabled tab.</p>
-            </TabsContentPrimitive>
-
-            <TabsContentPrimitive Value="disabled" class="p-4 mt-2 border border-border rounded-md">
-                <p>This content won't be shown because the tab is disabled.</p>
-            </TabsContentPrimitive>
-
-            <TabsContentPrimitive Value="enabled2" class="p-4 mt-2 border border-border rounded-md">
-                <p>Second enabled tab content.</p>
-            </TabsContentPrimitive>
-        </TabsPrimitive>
-    </div>
-
-    <div class="space-y-6">
-        <h2 class="text-2xl font-semibold">Accessibility Features</h2>
-        <div class="rounded-lg border bg-card text-card-foreground p-4">
-            <h3 class="font-semibold mb-2">Keyboard Navigation</h3>
-            <ul class="space-y-1 text-sm text-muted-foreground">
-                <li><Kbd>Tab</Kbd> - Focus the tab list</li>
-                <li><Kbd>Arrow Left/Right</Kbd> - Navigate between tabs (horizontal)</li>
-                <li><Kbd>Arrow Up/Down</Kbd> - Navigate between tabs (vertical)</li>
-                <li><Kbd>Home</Kbd> - Jump to first tab</li>
-                <li><Kbd>End</Kbd> - Jump to last tab</li>
-                <li><Kbd>Enter/Space</Kbd> - Activate focused tab (manual mode)</li>
-            </ul>
-
-            <h3 class="font-semibold mb-2 mt-4">ARIA Attributes</h3>
-            <ul class="space-y-1 text-sm text-muted-foreground">
-                <li><code>role="tablist"</code> on the tabs list</li>
-                <li><code>role="tab"</code> on each tab trigger</li>
-                <li><code>role="tabpanel"</code> on each tab content</li>
-                <li><code>aria-selected</code> indicates the active tab</li>
-                <li><code>aria-controls</code> links trigger to content panel</li>
-                <li><code>aria-labelledby</code> links content to trigger</li>
-                <li><code>aria-orientation</code> indicates horizontal or vertical layout</li>
-            </ul>
+    <DemoSection Title="Keyboard Shortcuts" Description="Navigate and interact with tabs using keyboard.">
+        <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
+            <div class="flex items-center justify-between"><span class="text-sm font-medium">Focus tab list</span><Kbd>Tab</Kbd></div>
+            <div class="flex items-center justify-between"><span class="text-sm font-medium">Navigate tabs</span><Kbd>Arrow Keys</Kbd></div>
+            <div class="flex items-center justify-between"><span class="text-sm font-medium">Jump first/last</span><Kbd>Home / End</Kbd></div>
+            <div class="flex items-center justify-between"><span class="text-sm font-medium">Activate tab (manual mode)</span><Kbd>Enter / Space</Kbd></div>
         </div>
-    </div>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_tabsProps" />
+    </DemoSection>
+
+    <DemoSection Title="When to Use Primitives" Description="Choose between primitives and styled components based on your needs.">
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="rounded-lg border p-4 space-y-3">
+                <h3 class="font-semibold text-primary">Use Tabs Primitive</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Building a custom design system</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Need complete control over styling</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Custom keyboard/focus UX requirements</span></li>
+                </ul>
+            </div>
+            <div class="rounded-lg border p-4 space-y-3">
+                <h3 class="font-semibold text-primary">Use Styled Component</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Need quick implementation</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Prefer default shadcn/ui look</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Convention over configuration</span></li>
+                </ul>
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoPageNav />
 </div>
 
 @code {
-    private string? controlledValue = "account";
+private string? controlledValue = "account";
 }

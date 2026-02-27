@@ -1,16 +1,18 @@
 @page "/components/chart/composed"
 @using NeoUI.Blazor.Charts
-<PageTitle>Chart Components - Composed Chart</PageTitle>
 
-<div class="space-y-8">
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
-        @* Revenue & Target *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Revenue & Target</CardTitle>
-                <CardDescription>Actual revenue vs monthly target</CardDescription>
-            </CardHeader>
-            <CardContent>
+<PageTitle>Composed Chart - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-6xl">
+
+    <DemoPageHeader
+        Title="Composed Chart"
+        Description="Combine Bar, Line, and Area series in a single chart canvas. Ideal for overlaying trends on volume data, forecasting, and KPI dashboards." />
+
+    <DemoSection Title="Variants" Description="Core composed chart configurations.">
+        <div class="grid gap-6 md:grid-cols-2">
+
+            <DemoBlock Code="@_revenueTargetCode">
                 <ChartContainer Height="200">
                     <ComposedChart Data="@revenueData">
                         <Grid Stroke="var(--border)" />
@@ -26,16 +28,9 @@
                         <Line DataKey="target" Name="Target" Color="var(--chart-2)" />
                     </ComposedChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Sales Forecast *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Sales Forecast</CardTitle>
-                <CardDescription>Sales with forecast trend</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_salesForecastCode">
                 <ChartContainer Height="200">
                     <ComposedChart Data="@salesData">
                         <Grid Stroke="var(--border)" />
@@ -51,16 +46,9 @@
                         <Line DataKey="forecast" Name="Forecast" Dashed="true" Color="var(--chart-2)" />
                     </ComposedChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Inventory Management *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Inventory Levels</CardTitle>
-                <CardDescription>Stock levels with reorder points</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_inventoryCode">
                 <ChartContainer Height="200">
                     <ComposedChart Data="@inventoryData">
                         <Grid Stroke="var(--border)" />
@@ -77,16 +65,9 @@
                         <Area DataKey="safety" Name="Safety Stock" Opacity="0.3" Color="var(--chart-2)" />
                     </ComposedChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Customer Metrics *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Customer Metrics</CardTitle>
-                <CardDescription>New customers with retention rate</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_customerMetricsCode">
                 <ChartContainer Height="200">
                     <ComposedChart Data="@customerData">
                         <Grid Stroke="var(--border)" />
@@ -102,16 +83,9 @@
                         <Line DataKey="retention" Name="Retention Rate" Color="var(--chart-5)" />
                     </ComposedChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Financial Dashboard *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Financial Overview</CardTitle>
-                <CardDescription>Revenue, expenses, and profit margin</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_financialCode">
                 <ChartContainer Height="200">
                     <ComposedChart Data="@financialData">
                         <Grid Stroke="var(--border)" />
@@ -128,16 +102,9 @@
                         <Area DataKey="profit" Name="Profit Margin" Opacity="0.3" Color="var(--chart-2)" />
                     </ComposedChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Marketing ROI *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Marketing ROI</CardTitle>
-                <CardDescription>Ad spend vs conversions</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_marketingROICode">
                 <ChartContainer Height="200">
                     <ComposedChart Data="@marketingData">
                         <Grid Stroke="var(--border)" />
@@ -153,16 +120,9 @@
                         <Line DataKey="conversions" Name="Conversions" Color="var(--chart-1)" />
                     </ComposedChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Website Analytics *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Website Analytics</CardTitle>
-                <CardDescription>Page views, bounce rate, engagement</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_analyticsCode">
                 <ChartContainer Height="200">
                     <ComposedChart Data="@analyticsData">
                         <Grid Stroke="var(--border)" />
@@ -179,16 +139,9 @@
                         <Area DataKey="engagement" Name="Engagement" Opacity="0.3" Color="var(--chart-4)" />
                     </ComposedChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* KPIs with Thresholds *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">KPIs & Thresholds</CardTitle>
-                <CardDescription>Actual performance vs target goals</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_kpiThresholdsCode">
                 <ChartContainer Height="200">
                     <ComposedChart Data="@kpiData">
                         <Grid Stroke="var(--border)" />
@@ -204,9 +157,17 @@
                         <Line DataKey="threshold" Name="Threshold" Dashed="true" Color="var(--chart-3)" />
                     </ComposedChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
-    </div>
+            </DemoBlock>
+
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="API Reference">
+        <DemoPropsTable Rows="@_composedChartProps" />
+    </DemoSection>
+
+    <DemoPageSubNav />
+
 </div>
 
 @code {

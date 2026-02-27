@@ -1,0 +1,169 @@
+<script type="module" src="@Assets["Components/ReconnectModal.razor.js"]"></script>
+
+<!-- Blazor Reconnect Modal - Modern Dialog (Pure Tailwind) -->
+<dialog id="components-reconnect-modal" data-nosnippet class="bg-transparent backdrop:bg-black/40 backdrop:backdrop-blur-sm fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 outline-none focus:outline-none overflow-hidden">
+    <div class="bg-card border border-border rounded-xl shadow-2xl w-[24rem] max-w-[90vw] p-0 m-0">
+        <div class="p-6 flex flex-col items-center gap-4">
+
+            <!-- Loading Animation (rejoining/retrying states) -->
+            <div class="components-rejoining-animation" aria-hidden="true">
+                <div class="absolute border-4 border-primary rounded-full opacity-100 animate-ping"></div>
+                <div class="absolute border-4 border-primary rounded-full opacity-100 animate-ping" style="animation-delay: -0.5s;"></div>
+            </div>
+
+            <!-- First Attempt Message -->
+            <div class="components-reconnect-first-attempt-visible text-center">
+                <h3 class="font-semibold text-base mb-2 text-foreground">Reconnecting...</h3>
+                <p class="text-sm text-muted-foreground">Attempting to rejoin the server</p>
+            </div>
+
+            <!-- Retrying Message -->
+            <div class="components-reconnect-repeated-attempt-visible text-center">
+                <h3 class="font-semibold text-base mb-2 text-foreground">Connection Lost</h3>
+                <p class="text-sm text-muted-foreground">
+                    Retrying in <span id="components-seconds-to-next-attempt" class="font-mono font-semibold text-primary"></span> seconds
+                </p>
+            </div>
+
+            <!-- Failed Message -->
+            <div class="components-reconnect-failed-visible text-center">
+                <div class="flex h-12 w-12 mx-auto mb-3 shrink-0 items-center justify-center rounded-full bg-destructive/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-destructive">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-base mb-2 text-foreground">Connection Failed</h3>
+                <p class="text-sm text-muted-foreground">Failed to rejoin the server.<br />Please retry or reload the page.</p>
+            </div>
+
+            <!-- Failed Button -->
+            <button id="components-reconnect-button"
+                    class="components-reconnect-failed-visible inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                </svg>
+                Retry Connection
+            </button>
+
+            <!-- Paused Message -->
+            <div class="components-pause-visible text-center">
+                <div class="flex h-12 w-12 mx-auto mb-3 shrink-0 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-950/50">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-700 dark:text-yellow-400">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-base mb-2 text-foreground">Session Paused</h3>
+                <p class="text-sm text-muted-foreground">The session has been paused by the server</p>
+            </div>
+
+            <!-- Resume Button -->
+            <button id="components-resume-button"
+                    class="components-pause-visible inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                Resume Session
+            </button>
+
+            <!-- Resume Failed Message -->
+            <div class="components-resume-failed-visible text-center">
+                <div class="flex h-12 w-12 mx-auto mb-3 shrink-0 items-center justify-center rounded-full bg-destructive/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-destructive">
+                        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                        <path d="M12 9v4"></path>
+                        <path d="M12 17h.01"></path>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-base mb-2 text-foreground">Resume Failed</h3>
+                <p class="text-sm text-muted-foreground">Failed to resume the session.<br />Please reload the page.</p>
+            </div>
+
+        </div>
+    </div>
+</dialog>
+
+<style>
+    /* State visibility management */
+    .components-reconnect-first-attempt-visible,
+    .components-reconnect-repeated-attempt-visible,
+    .components-reconnect-failed-visible,
+    .components-pause-visible,
+    .components-resume-failed-visible,
+    .components-rejoining-animation {
+        display: none;
+    }
+
+    #components-reconnect-modal.components-reconnect-show .components-reconnect-first-attempt-visible,
+    #components-reconnect-modal.components-reconnect-show .components-rejoining-animation,
+    #components-reconnect-modal.components-reconnect-paused .components-pause-visible,
+    #components-reconnect-modal.components-reconnect-resume-failed .components-resume-failed-visible,
+    #components-reconnect-modal.components-reconnect-retrying,
+    #components-reconnect-modal.components-reconnect-retrying .components-reconnect-repeated-attempt-visible,
+    #components-reconnect-modal.components-reconnect-retrying .components-rejoining-animation,
+    #components-reconnect-modal.components-reconnect-failed,
+    #components-reconnect-modal.components-reconnect-failed .components-reconnect-failed-visible {
+        display: block;
+    }
+
+    /* Modal animations */
+    #components-reconnect-modal {
+        opacity: 0;
+        transition: display 0.3s allow-discrete, overlay 0.3s allow-discrete, opacity 0.3s;
+    }
+
+    #components-reconnect-modal[open] {
+        opacity: 1;
+    }
+
+    #components-reconnect-modal::backdrop {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    /* Loading animation */
+    .components-rejoining-animation {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin-bottom: 0.5rem;
+    }
+
+    .components-rejoining-animation div {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 0;
+        height: 0;
+        animation: rejoiningPulse 1.5s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+
+    .components-rejoining-animation div:nth-child(2) {
+        animation-delay: -0.5s;
+    }
+
+    @@keyframes rejoiningPulse {
+        0%, 4.9% {
+            top: 40px; left: 40px;
+            width: 0; height: 0;
+            opacity: 0;
+        }
+        5% {
+            top: 40px; left: 40px;
+            width: 0; height: 0;
+            opacity: 1;
+        }
+        100% {
+            top: 0; left: 0;
+            width: 80px; height: 80px;
+            opacity: 0;
+        }
+    }
+</style>

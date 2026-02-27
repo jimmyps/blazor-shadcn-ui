@@ -3,60 +3,60 @@
 
 <PageTitle>Dialog Service - NeoUI</PageTitle>
 
-<div class="space-y-6 max-w-4xl">
-    <div>
-        <h1 class="text-3xl font-bold">Dialog Service</h1>
-        <p class="text-muted-foreground">Programmatic dialogs, alerts, and confirmations with async/await API</p>
-    </div>
+<div class="space-y-8 max-w-4xl">
 
-    @if (!string.IsNullOrEmpty(_lastResult))
-    {
-        <Alert Variant="AlertVariant.Default" Class="bg-blue-50 border-blue-200">
-            <AlertDescription class="text-blue-800">@_lastResult</AlertDescription>
-        </Alert>
-    }
+    <DemoPageHeader
+        Title="Dialog Service"
+        Description="Programmatic dialogs, alerts, and confirmations with async/await API." />
 
-    <Card>
-        <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common dialog patterns with one-liner API</CardDescription>
-        </CardHeader>
-        <CardContent class="space-y-4">
-            <div class="flex flex-wrap gap-2">
-                <Button Variant="ButtonVariant.Destructive" OnClick="ShowDeleteConfirmation">
-                    <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
-                    Delete Item
-                </Button>
-                <Button Variant="ButtonVariant.Destructive" OnClick="ShowRemoveConfirmation">
-                    <LucideIcon Name="unlink" Size="16" Class="mr-2" />
-                    Remove Item
-                </Button>
-                <Button Variant="ButtonVariant.Outline" OnClick="ShowWarning">
-                    <LucideIcon Name="alert-triangle" Size="16" Class="mr-2" />
-                    Warning
-                </Button>
-                <Button Variant="ButtonVariant.Default" OnClick="ShowInfo">
-                    <LucideIcon Name="info" Size="16" Class="mr-2" />
-                    Info
-                </Button>
-                <Button Variant="ButtonVariant.Default" OnClick="ShowSuccess">
-                    <LucideIcon Name="check-circle" Size="16" Class="mr-2" />
-                    Success
-                </Button>
-                <Button Variant="ButtonVariant.Destructive" OnClick="ShowError">
-                    <LucideIcon Name="alert-circle" Size="16" Class="mr-2" />
-                    Error
-                </Button>
-            </div>
-        </CardContent>
-    </Card>
+    <DemoSection
+        Title="Quick Actions"
+        Description="Common dialog patterns with one-liner API.">
+        <DemoBlock Code="@_quickActionsCode">
+            <ChildContent>
+                <div class="flex flex-wrap gap-2">
+                    <Button Variant="ButtonVariant.Destructive" OnClick="ShowDeleteConfirmation">
+                        <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
+                        Delete Item
+                    </Button>
+                    <Button Variant="ButtonVariant.Destructive" OnClick="ShowRemoveConfirmation">
+                        <LucideIcon Name="unlink" Size="16" Class="mr-2" />
+                        Remove Item
+                    </Button>
+                    <Button Variant="ButtonVariant.Outline" OnClick="ShowWarning">
+                        <LucideIcon Name="alert-triangle" Size="16" Class="mr-2" />
+                        Warning
+                    </Button>
+                    <Button Variant="ButtonVariant.Default" OnClick="ShowInfo">
+                        <LucideIcon Name="info" Size="16" Class="mr-2" />
+                        Info
+                    </Button>
+                    <Button Variant="ButtonVariant.Default" OnClick="ShowSuccess">
+                        <LucideIcon Name="check-circle" Size="16" Class="mr-2" />
+                        Success
+                    </Button>
+                    <Button Variant="ButtonVariant.Destructive" OnClick="ShowError">
+                        <LucideIcon Name="alert-circle" Size="16" Class="mr-2" />
+                        Error
+                    </Button>
+                </div>
+                @if (!string.IsNullOrEmpty(_lastResult))
+                {
+                    <Alert Variant="AlertVariant.Default" Class="mt-4">
+                        <AlertDescription>@_lastResult</AlertDescription>
+                    </Alert>
+                }
+            </ChildContent>
+            <AdditionalContent>
+                <p class="text-sm text-muted-foreground">Click any button above to trigger a dialog. The result will appear below the buttons.</p>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
 
-    <Card>
-        <CardHeader>
-            <CardTitle>Custom Dialogs</CardTitle>
-            <CardDescription>Advanced configurations with DialogOptions</CardDescription>
-        </CardHeader>
-        <CardContent class="space-y-4">
+    <DemoSection
+        Title="Custom Dialogs"
+        Description="Advanced configurations with DialogOptions.">
+        <DemoBlock Code="@_customDialogsCode">
             <div class="flex flex-wrap gap-2">
                 <Button Variant="ButtonVariant.Outline" OnClick="ShowYesNo">
                     Yes/No Dialog
@@ -68,90 +68,37 @@
                     Custom Dialog
                 </Button>
             </div>
-        </CardContent>
-    </Card>
+        </DemoBlock>
+    </DemoSection>
 
-    <Card>
-        <CardHeader>
-            <CardTitle>Architecture</CardTitle>
-            <CardDescription>How DialogService works under the hood</CardDescription>
-        </CardHeader>
-        <CardContent>
-            <div class="space-y-4">
-                <div>
-                    <h4 class="font-semibold mb-2">Setup Required</h4>
-                    <p class="text-sm text-muted-foreground mb-2">
-                        DialogService uses the <code class="bg-muted px-1.5 py-0.5 rounded text-xs">AlertDialog</code> component 
-                        wrapped in <code class="bg-muted px-1.5 py-0.5 rounded text-xs">DialogHost</code>. 
-                        Add DialogHost once in your root layout to enable dialogs throughout your app:
-                    </p>
-                    <pre class="bg-muted p-4 rounded-md text-sm overflow-x-auto"><code>&lt;!-- In MainLayout.razor or App.razor --&gt;
-&lt;DialogHost /&gt;
-
-&lt;!-- Your app content --&gt;
-@@Body</code></pre>
+    <DemoSection
+        Title="Architecture"
+        Description="DialogService uses the AlertDialog component wrapped in DialogHost. Add DialogHost once in your root layout to enable dialogs throughout your app.">
+        <DemoBlock Code="@_architectureCode">
+            <ChildContent>
+                <div class="space-y-4 text-sm text-muted-foreground">
+                    <p>Add <code class="bg-muted px-1.5 py-0.5 rounded text-xs">DialogHost</code> to your <code class="bg-muted px-1.5 py-0.5 rounded text-xs">MainLayout.razor</code> or <code class="bg-muted px-1.5 py-0.5 rounded text-xs">App.razor</code>:</p>
+                    <p>Register <code class="bg-muted px-1.5 py-0.5 rounded text-xs">DialogService</code> in <code class="bg-muted px-1.5 py-0.5 rounded text-xs">Program.cs</code>:</p>
+                    <pre class="bg-muted p-3 rounded-md text-xs overflow-x-auto"><code>builder.Services.AddScoped&lt;DialogService&gt;();</code></pre>
                 </div>
+            </ChildContent>
+            <AdditionalContent>
+                <ul class="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                    <li>Consistent dialog interface across all pages and components</li>
+                    <li>No need to manage dialog state in each component</li>
+                    <li>Single DialogHost handles all dialogs — no duplicate overlays</li>
+                    <li>Built on top of accessible AlertDialog primitive</li>
+                    <li>Async/await API makes dialog flows easy to read</li>
+                </ul>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
 
-                <div>
-                    <h4 class="font-semibold mb-2">Service Registration</h4>
-                    <p class="text-sm text-muted-foreground mb-2">
-                        Register DialogService in your DI container:
-                    </p>
-                    <pre class="bg-muted p-4 rounded-md text-sm overflow-x-auto"><code>// In Program.cs
-builder.Services.AddScoped&lt;DialogService&gt;();</code></pre>
-                </div>
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_dialogServiceProps" />
+    </DemoSection>
 
-                <div>
-                    <h4 class="font-semibold mb-2">Benefits</h4>
-                    <ul class="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-                        <li>Consistent dialog interface across all pages and components</li>
-                        <li>No need to manage dialog state in each component</li>
-                        <li>Single DialogHost handles all dialogs - no duplicate overlays</li>
-                        <li>Built on top of accessible AlertDialog primitive</li>
-                        <li>Async/await API makes dialog flows easy to read</li>
-                    </ul>
-                </div>
-            </div>
-        </CardContent>
-    </Card>
-
-    <Card>
-        <CardHeader>
-            <CardTitle>Usage Examples</CardTitle>
-        </CardHeader>
-        <CardContent>
-            <div class="space-y-4">
-                <div>
-                    <h4 class="font-semibold mb-2">Delete Confirmation (One-liner)</h4>
-                    <pre class="bg-muted p-4 rounded-md text-sm overflow-x-auto"><code>if (await Dialog.ConfirmDeleteAsync("User Account"))
-{
-    // User confirmed - delete the item
-    await DeleteUser();
-}</code></pre>
-                </div>
-
-                <div>
-                    <h4 class="font-semibold mb-2">Custom Dialog</h4>
-                    <pre class="bg-muted p-4 rounded-md text-sm overflow-x-auto"><code>var result = await Dialog.ShowAsync(new DialogOptions
-{
-    Title = "Save Changes?",
-    Message = "Do you want to save your changes?",
-    Icon = "save",
-    Variant = DialogVariant.Warning,
-    Buttons = DialogButtons.YesNoCancel,
-    ConfirmText = "Save",
-    CancelText = "Don't Save",
-    AlternateText = "Cancel"
-});
-
-if (result == DialogResult.Confirmed)
-{
-    await SaveChanges();
-}</code></pre>
-                </div>
-            </div>
-        </CardContent>
-    </Card>
+    <DemoPageNav />
 </div>
 
 @code {
@@ -163,10 +110,7 @@ if (result == DialogResult.Confirmed)
             "User Account",
             "This will permanently delete the user and all associated data. This action cannot be undone."
         );
-        
-        _lastResult = confirmed 
-            ? "✅ User confirmed deletion" 
-            : "❌ User cancelled deletion";
+        _lastResult = confirmed ? "✅ User confirmed deletion" : "❌ User cancelled deletion";
     }
 
     private async Task ShowRemoveConfirmation()
@@ -175,10 +119,7 @@ if (result == DialogResult.Confirmed)
             "External Login",
             "You will need to re-link it if you want to use it again for authentication."
         );
-        
-        _lastResult = confirmed 
-            ? "✅ User confirmed removal" 
-            : "❌ User cancelled removal";
+        _lastResult = confirmed ? "✅ User confirmed removal" : "❌ User cancelled removal";
     }
 
     private async Task ShowWarning()
@@ -187,10 +128,7 @@ if (result == DialogResult.Confirmed)
             "Unsaved Changes",
             "You have unsaved changes. Are you sure you want to leave this page?"
         );
-        
-        _lastResult = confirmed 
-            ? "✅ User chose to continue" 
-            : "❌ User stayed on page";
+        _lastResult = confirmed ? "✅ User chose to continue" : "❌ User stayed on page";
     }
 
     private async Task ShowInfo()
@@ -200,7 +138,6 @@ if (result == DialogResult.Confirmed)
             "Your session will expire in 5 minutes. Please save your work.",
             icon: "info"
         );
-        
         _lastResult = "ℹ️ Info alert shown";
     }
 
@@ -210,7 +147,6 @@ if (result == DialogResult.Confirmed)
             "Changes Saved",
             "Your changes have been saved successfully!"
         );
-        
         _lastResult = "✅ Success message shown";
     }
 
@@ -220,7 +156,6 @@ if (result == DialogResult.Confirmed)
             "Error Occurred",
             "Failed to save changes. Please try again or contact support."
         );
-        
         _lastResult = "❌ Error message shown";
     }
 
@@ -236,10 +171,7 @@ if (result == DialogResult.Confirmed)
             ConfirmText = "Yes",
             CancelText = "No"
         });
-        
-        _lastResult = result == DialogResult.Confirmed 
-            ? "✅ User selected Yes" 
-            : "❌ User selected No";
+        _lastResult = result == DialogResult.Confirmed ? "✅ User selected Yes" : "❌ User selected No";
     }
 
     private async Task ShowThreeWay()
@@ -255,7 +187,6 @@ if (result == DialogResult.Confirmed)
             CancelText = "Don't Save",
             AlternateText = "Cancel"
         });
-        
         _lastResult = result switch
         {
             DialogResult.Confirmed => "💾 User chose to Save",
@@ -277,9 +208,7 @@ if (result == DialogResult.Confirmed)
             ConfirmText = "Awesome!",
             CancelText = "Maybe Later"
         });
-        
-        _lastResult = result == DialogResult.Confirmed 
-            ? "🌟 User clicked Awesome!" 
-            : "⏰ User clicked Maybe Later";
+        _lastResult = result == DialogResult.Confirmed ? "🌟 User clicked Awesome!" : "⏰ User clicked Maybe Later";
     }
+
 }

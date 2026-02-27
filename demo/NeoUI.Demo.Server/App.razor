@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <ResourcePreloader />
+
+    <link href="@Assets["_content/NeoUI.Blazor/components.css"]" rel="stylesheet" />
+
+    <!-- Assets from NeoUI.Demo.Shared wwwroot (StaticWebAssetBasePath=.) served at root -->
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Demo.Shared/css/app.css"]" />
+
+    <!-- Base color themes -->
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/base/zinc.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/base/slate.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/base/gray.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/base/neutral.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/base/stone.css"]" />
+
+    <!-- Primary color themes -->
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/red.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/rose.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/orange.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/amber.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/yellow.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/lime.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/green.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/emerald.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/teal.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/cyan.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/sky.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/blue.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/indigo.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/violet.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/purple.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/fuchsia.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/pink.css"]" />
+    <ImportMap />
+    <DataGridImportMap />
+    <link rel="icon" type="image/png" href="@Assets["_content/NeoUI.Demo.Shared/favicon.png"]" />
+    <HeadOutlet />
+
+    <script src="@Assets["_content/NeoUI.Blazor/js/theme.js"]"></script>
+</head>
+<body>
+    <Routes @rendermode="InteractiveServer" />
+
+    <ReconnectModal />
+
+    <div id="blazor-error-ui" style="display:none; position:fixed; bottom:0; left:0; right:0; z-index:9999;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:0.75rem 1.25rem; background-color:var(--card); border-top:1px solid var(--border); box-shadow:0 -4px 24px rgba(0,0,0,0.08);">
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+                <div style="display:flex; height:2rem; width:2rem; flex-shrink:0; align-items:center; justify-content:center; border-radius:9999px; background-color:color-mix(in srgb, var(--destructive) 10%, transparent);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--destructive);">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </div>
+                <span style="font-size:0.875rem; color:var(--foreground); font-weight:500;">An unhandled error has occurred.</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+                <a href="." class="reload" style="display:inline-flex; align-items:center; gap:0.375rem; font-size:0.875rem; font-weight:500; color:var(--primary); text-decoration:none; padding:0.375rem 0.75rem; border-radius:0.375rem; border:1px solid var(--border); background-color:var(--background);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                    </svg>
+                    Reload
+                </a>
+                <button class="dismiss" style="display:inline-flex; align-items:center; justify-content:center; width:2rem; height:2rem; border-radius:0.375rem; border:1px solid var(--border); background:transparent; color:var(--muted-foreground); cursor:pointer; font-size:1rem; line-height:1;">✕</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
+    <script>
+        window.toggleDarkMode = () => document.documentElement.classList.toggle('dark');
+        window.isDarkModeEnabled = () => document.documentElement.classList.contains('dark');
+    </script>
+</body>
+</html>

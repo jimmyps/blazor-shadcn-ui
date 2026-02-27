@@ -2,38 +2,22 @@
 <PageTitle>Select Primitive - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-    <div class="space-y-8 max-w-4xl">
-        <!-- Header -->
-        <div class="space-y-2">
-            <h1 class="text-4xl font-bold tracking-tight">Select Primitive</h1>
-            <p class="text-lg text-muted-foreground">
-                Headless, unstyled select component with full keyboard navigation and ARIA support.
-            </p>
-        </div>
+    <DemoPageHeader
+        Title="Select Primitive"
+        Description="Headless, unstyled select component with full keyboard navigation and ARIA support." />
 
-        <!-- Features -->
-        <div class="rounded-lg border border-border bg-card p-6">
-            <h2 class="text-xl font-semibold mb-4">Features</h2>
-            <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
-                <li>Generic TValue support for type-safe values</li>
-                <li>Full keyboard navigation (Arrow keys, Home, End, Enter, Space, Escape)</li>
-                <li>Mouse hover integration with keyboard focus</li>
-                <li>Controlled and uncontrolled modes</li>
-                <li>ARIA attributes (role, aria-expanded, aria-activedescendant)</li>
-                <li>Click-outside to close</li>
-                <li>Item registration for navigation</li>
-                <li>Disabled state support</li>
-            </ul>
-        </div>
+    <DemoSection Title="Features" Description="Core capabilities of the select primitive.">
+        <Alert Variant="AlertVariant.Info" AccentBorder="true">
+            <Icon><LucideIcon Name="info" Class="h-4 w-4" /></Icon>
+            <ChildContent>
+                <AlertTitle>Capabilities</AlertTitle>
+                <AlertDescription>Generic <code class="text-xs bg-muted px-1 rounded">TValue</code>, keyboard navigation, controlled/uncontrolled modes, ARIA attributes, click-outside close, and disabled support.</AlertDescription>
+            </ChildContent>
+        </Alert>
+    </DemoSection>
 
-        <!-- Basic Example -->
-        <div class="space-y-6">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold tracking-tight">Basic Example</h2>
-                <p class="text-sm text-muted-foreground">
-                    Minimal unstyled primitive (add your own styles)
-                </p>
-            </div>
+    <DemoSection Title="Basic Example" Description="Minimal unstyled primitive (add your own styles).">
+        <DemoBlock Code="@_basicCode">
             <div class="rounded-lg border border-border bg-card p-6">
                 <div class="w-[280px]">
                     <SelectPrimitive TValue="string" @bind-Value="basicValue" style="position: relative;">
@@ -42,32 +26,19 @@
                             <span>▼</span>
                         </SelectTriggerPrimitive>
                         <SelectContentPrimitive TValue="string" class="z-50 mt-1 w-full border border-border rounded-md bg-popover shadow-md">
-                            <SelectItemPrimitive TValue="string" Value="@("apple")" TextValue="Apple" class="px-3 py-2 cursor-pointer hover:bg-accent">
-                                Apple
-                            </SelectItemPrimitive>
-                            <SelectItemPrimitive TValue="string" Value="@("banana")" TextValue="Banana" class="px-3 py-2 cursor-pointer hover:bg-accent">
-                                Banana
-                            </SelectItemPrimitive>
-                            <SelectItemPrimitive TValue="string" Value="@("orange")" TextValue="Orange" class="px-3 py-2 cursor-pointer hover:bg-accent">
-                                Orange
-                            </SelectItemPrimitive>
-                            <SelectItemPrimitive TValue="string" Value="@("grape")" TextValue="Grape" class="px-3 py-2 cursor-pointer hover:bg-accent">
-                                Grape
-                            </SelectItemPrimitive>
+                            <SelectItemPrimitive TValue="string" Value="@("apple")" TextValue="Apple" class="px-3 py-2 cursor-pointer hover:bg-accent">Apple</SelectItemPrimitive>
+                            <SelectItemPrimitive TValue="string" Value="@("banana")" TextValue="Banana" class="px-3 py-2 cursor-pointer hover:bg-accent">Banana</SelectItemPrimitive>
+                            <SelectItemPrimitive TValue="string" Value="@("orange")" TextValue="Orange" class="px-3 py-2 cursor-pointer hover:bg-accent">Orange</SelectItemPrimitive>
+                            <SelectItemPrimitive TValue="string" Value="@("grape")" TextValue="Grape" class="px-3 py-2 cursor-pointer hover:bg-accent">Grape</SelectItemPrimitive>
                         </SelectContentPrimitive>
                     </SelectPrimitive>
                 </div>
             </div>
-        </div>
+        </DemoBlock>
+    </DemoSection>
 
-        <!-- Controlled Example -->
-        <div class="space-y-6">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold tracking-tight">Controlled Example</h2>
-                <p class="text-sm text-muted-foreground">
-                    Parent component controls the selected value
-                </p>
-            </div>
+    <DemoSection Title="Controlled Example" Description="Parent component controls the selected value.">
+        <DemoBlock Code="@_controlledCode">
             <div class="rounded-lg border border-border bg-card p-6">
                 <div class="space-y-6">
                     <div class="w-[280px]">
@@ -77,39 +48,22 @@
                                 <span>▼</span>
                             </SelectTriggerPrimitive>
                             <SelectContentPrimitive TValue="string" class="z-50 mt-1 w-full max-h-60 overflow-auto border border-border rounded-md bg-popover shadow-md">
-                                <SelectItemPrimitive TValue="string" Value="@("Strawberry")" class="px-3 py-2 cursor-pointer hover:bg-accent">
-                                    🍓 Strawberry
-                                </SelectItemPrimitive>
-                                <SelectItemPrimitive TValue="string" Value="@("Watermelon")" class="px-3 py-2 cursor-pointer hover:bg-accent">
-                                    🍉 Watermelon
-                                </SelectItemPrimitive>
-                                <SelectItemPrimitive TValue="string" Value="@("Pineapple")" class="px-3 py-2 cursor-pointer hover:bg-accent">
-                                    🍍 Pineapple
-                                </SelectItemPrimitive>
-                                <SelectItemPrimitive TValue="string" Value="@("Mango")" class="px-3 py-2 cursor-pointer hover:bg-accent">
-                                    🥭 Mango
-                                </SelectItemPrimitive>
+                                <SelectItemPrimitive TValue="string" Value="@("Strawberry")" class="px-3 py-2 cursor-pointer hover:bg-accent">🍓 Strawberry</SelectItemPrimitive>
+                                <SelectItemPrimitive TValue="string" Value="@("Watermelon")" class="px-3 py-2 cursor-pointer hover:bg-accent">🍉 Watermelon</SelectItemPrimitive>
+                                <SelectItemPrimitive TValue="string" Value="@("Pineapple")" class="px-3 py-2 cursor-pointer hover:bg-accent">🍍 Pineapple</SelectItemPrimitive>
+                                <SelectItemPrimitive TValue="string" Value="@("Mango")" class="px-3 py-2 cursor-pointer hover:bg-accent">🥭 Mango</SelectItemPrimitive>
                             </SelectContentPrimitive>
                         </SelectPrimitive>
                     </div>
-                    <div class="text-sm text-muted-foreground">
-                        Current value: <span class="font-mono">@(string.IsNullOrEmpty(controlledValue) ? "null" : controlledValue)</span>
-                    </div>
-                    <button @onclick="@(() => controlledValue = "Mango")" class="px-4 py-2 text-sm border border-border rounded-md hover:bg-accent">
-                        Set to Mango
-                    </button>
+                    <div class="text-sm text-muted-foreground">Current value: <span class="font-mono">@(string.IsNullOrEmpty(controlledValue) ? "null" : controlledValue)</span></div>
+                    <button @onclick="@(() => controlledValue = "Mango")" class="px-4 py-2 text-sm border border-border rounded-md hover:bg-accent">Set to Mango</button>
                 </div>
             </div>
-        </div>
+        </DemoBlock>
+    </DemoSection>
 
-        <!-- Disabled State -->
-        <div class="space-y-6">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold tracking-tight">Disabled State</h2>
-                <p class="text-sm text-muted-foreground">
-                    Select with disabled state
-                </p>
-            </div>
+    <DemoSection Title="Disabled State" Description="Select with disabled state.">
+        <DemoBlock Code="@_disabledCode">
             <div class="rounded-lg border border-border bg-card p-6">
                 <div class="w-[280px]">
                     <SelectPrimitive TValue="string" Disabled="true" DefaultValue="@("disabled")" style="position: relative;">
@@ -118,23 +72,16 @@
                             <span>▼</span>
                         </SelectTriggerPrimitive>
                         <SelectContentPrimitive TValue="string" class="z-50 mt-1 w-full border border-border rounded-md bg-popover shadow-md">
-                            <SelectItemPrimitive TValue="string" Value="@("disabled")" class="px-3 py-2">
-                                This won't open
-                            </SelectItemPrimitive>
+                            <SelectItemPrimitive TValue="string" Value="@("disabled")" class="px-3 py-2">This won't open</SelectItemPrimitive>
                         </SelectContentPrimitive>
                     </SelectPrimitive>
                 </div>
             </div>
-        </div>
+        </DemoBlock>
+    </DemoSection>
 
-        <!-- Keyboard Navigation -->
-        <div class="space-y-6">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold tracking-tight">Keyboard Navigation</h2>
-                <p class="text-sm text-muted-foreground">
-                    Full keyboard support with all standard keys
-                </p>
-            </div>
+    <DemoSection Title="Keyboard Navigation" Description="Full keyboard support with all standard keys.">
+        <DemoBlock Code="@_keyboardCode">
             <div class="rounded-lg border border-border bg-card p-6">
                 <div class="space-y-6">
                     <div class="w-[280px]">
@@ -147,9 +94,7 @@
                                 @for (int i = 1; i <= 10; i++)
                                 {
                                     var value = i;
-                                    <SelectItemPrimitive TValue="int" Value="@value" class="px-3 py-2 cursor-pointer hover:bg-accent data-[focused=true]:bg-accent">
-                                        Item @value
-                                    </SelectItemPrimitive>
+                                    <SelectItemPrimitive TValue="int" Value="@value" class="px-3 py-2 cursor-pointer hover:bg-accent data-[focused=true]:bg-accent">Item @value</SelectItemPrimitive>
                                 }
                             </SelectContentPrimitive>
                         </SelectPrimitive>
@@ -163,38 +108,41 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </DemoBlock>
+    </DemoSection>
 
-        <!-- API Reference -->
-        <div class="space-y-6">
-            <h2 class="text-2xl font-semibold tracking-tight">API Reference</h2>
+    <DemoSection Title="API Reference" Description="Component properties and parameters.">
+        <DemoPropsTable Rows="_selectProps" />
+    </DemoSection>
 
-            <div class="rounded-lg border border-border bg-card p-6">
-                <h3 class="text-lg font-semibold mb-2">SelectPrimitive&lt;TValue&gt;</h3>
-                <div class="text-sm text-muted-foreground space-y-2">
-                    <p><code>Value</code> - Currently selected value (controlled)</p>
-                    <p><code>ValueChanged</code> - Event callback when value changes</p>
-                    <p><code>DefaultValue</code> - Initial value (uncontrolled)</p>
-                    <p><code>Open</code> - Whether dropdown is open (controlled)</p>
-                    <p><code>OpenChanged</code> - Event callback when open state changes</p>
-                    <p><code>Disabled</code> - Whether select is disabled</p>
-                </div>
+    <DemoSection Title="When to Use Primitives" Description="Choose between primitives and styled components based on your needs.">
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="rounded-lg border p-4 space-y-3">
+                <h3 class="font-semibold text-primary">Use Select Primitive</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Building a custom design system</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Need complete control over styling</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Want to apply your own CSS framework</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Creating unique visual designs</span></li>
+                </ul>
             </div>
-
-            <div class="rounded-lg border border-border bg-card p-6">
-                <h3 class="text-lg font-semibold mb-2">SelectItemPrimitive&lt;TValue&gt;</h3>
-                <div class="text-sm text-muted-foreground space-y-2">
-                    <p><code>Value</code> - Value this item represents (required)</p>
-                    <p><code>TextValue</code> - Optional display text override</p>
-                    <p><code>Disabled</code> - Whether this item is disabled</p>
-                </div>
+            <div class="rounded-lg border p-4 space-y-3">
+                <h3 class="font-semibold text-primary">Use Styled Component</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Want shadcn/ui design out of the box</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Need quick implementation</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Like the default styling</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Prefer convention over configuration</span></li>
+                </ul>
             </div>
         </div>
-    </div>
+    </DemoSection>
+
+    <DemoPageNav />
 </div>
 
 @code {
-    private string? basicValue = "apple";
+private string? basicValue = "apple";
     private string? controlledValue = "";
     private int keyboardValue = 1;
 

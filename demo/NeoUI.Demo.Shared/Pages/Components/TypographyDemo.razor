@@ -1,58 +1,70 @@
 @page "/components/typography"
-<PageTitle>Typography Component - NeoUI</PageTitle>
+
+<PageTitle>Typography - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-    <div>
-        <div class="space-y-3">
-            <h1 class="text-4xl font-bold tracking-tight">Typography Component</h1>
-            <p class="text-xl text-muted-foreground">
-                Semantic text styling with consistent typography.
-            </p>
-        </div>
-    </div>
 
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold">Headings</h2>
-        <div class="space-y-4">
-            <Typography Variant="TypographyVariant.H1">Heading 1</Typography>
-            <Typography Variant="TypographyVariant.H2">Heading 2</Typography>
-            <Typography Variant="TypographyVariant.H3">Heading 3</Typography>
-            <Typography Variant="TypographyVariant.H4">Heading 4</Typography>
-        </div>
-    </div>
+    <DemoPageHeader
+        Title="Typography"
+        Description="Semantic text styling with consistent typography." />
 
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold">Body Text</h2>
-        <div class="space-y-4">
-            <Typography Variant="TypographyVariant.P">
-                This is a paragraph with default styling. It uses the P variant which provides proper line height and spacing.
-            </Typography>
-            <Typography Variant="TypographyVariant.Lead">
-                This is lead text, slightly larger and perfect for introductions or important paragraphs.
-            </Typography>
-            <Typography Variant="TypographyVariant.Large">
-                This is large text for emphasis.
-            </Typography>
-            <Typography Variant="TypographyVariant.Small">
-                This is small text for fine print or secondary information.
-            </Typography>
-            <Typography Variant="TypographyVariant.Muted">
-                This is muted text with reduced opacity for de-emphasized content.
-            </Typography>
-        </div>
-    </div>
+    <DemoSection
+        Title="Headings"
+        Description="Four heading levels with proportional sizing and weight.">
+        <DemoBlock Code="@_headingsCode">
+            <div class="space-y-4">
+                <Typography Variant="TypographyVariant.H1">Heading 1</Typography>
+                <Typography Variant="TypographyVariant.H2">Heading 2</Typography>
+                <Typography Variant="TypographyVariant.H3">Heading 3</Typography>
+                <Typography Variant="TypographyVariant.H4">Heading 4</Typography>
+            </div>
+        </DemoBlock>
+    </DemoSection>
 
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold">Special Elements</h2>
-        <div class="space-y-4">
-            <Typography Variant="TypographyVariant.Blockquote">
-                "The only way to do great work is to love what you do." - Steve Jobs
-            </Typography>
-            <div>
+    <DemoSection
+        Title="Body Text"
+        Description="Paragraph and utility text variants for content hierarchy.">
+        <DemoBlock Code="@_bodyCode">
+            <div class="space-y-4">
                 <Typography Variant="TypographyVariant.P">
-                    Inline code example: <Typography Variant="TypographyVariant.InlineCode">npm install neoui</Typography>
+                    This is a paragraph with default styling. It uses the P variant which provides proper line height and spacing.
+                </Typography>
+                <Typography Variant="TypographyVariant.Lead">
+                    This is lead text, slightly larger and perfect for introductions or important paragraphs.
+                </Typography>
+                <Typography Variant="TypographyVariant.Large">
+                    This is large text for emphasis.
+                </Typography>
+                <Typography Variant="TypographyVariant.Small">
+                    This is small text for fine print or secondary information.
+                </Typography>
+                <Typography Variant="TypographyVariant.Muted">
+                    This is muted text with reduced opacity for de-emphasized content.
                 </Typography>
             </div>
-        </div>
-    </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Special Elements"
+        Description="Blockquote and inline code for rich content formatting.">
+        <DemoBlock Code="@_specialCode">
+            <div class="space-y-4">
+                <Typography Variant="TypographyVariant.Blockquote">
+                    "The only way to do great work is to love what you do." - Steve Jobs
+                </Typography>
+                <div>
+                    <Typography Variant="TypographyVariant.P">
+                        Inline code example: <Typography Variant="TypographyVariant.InlineCode">npm install neoui</Typography>
+                    </Typography>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_typographyProps" />
+    </DemoSection>
+
+    <DemoPageNav />
 </div>

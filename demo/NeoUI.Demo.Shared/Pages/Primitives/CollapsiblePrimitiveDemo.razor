@@ -2,25 +2,13 @@
 <PageTitle>Collapsible Primitive - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-    <div>
-        <div class="space-y-3">
-            <h1 class="text-4xl font-bold tracking-tight">Collapsible Primitive</h1>
-            <p class="text-xl text-muted-foreground">
-                Unstyled, accessible primitive component for building custom collapsibles.
-            </p>
-        </div>
-    </div>
+    <DemoPageHeader
+        Title="Collapsible Primitive"
+        Description="Unstyled, accessible primitive component for building custom collapsibles." />
 
-    <div class="space-y-6">
         <!-- AsChild Pattern -->
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">AsChild Pattern</h2>
-                <p class="text-muted-foreground">
-                    Use AsChild to compose triggers with your own styled elements.
-                </p>
-            </div>
-
+    <DemoSection Title="AsChild Pattern" Description="Use AsChild to compose triggers with your own styled elements.">
+        <DemoBlock Code="@_asChildCode">
             <div class="grid md:grid-cols-2 gap-6">
                 <!-- Without AsChild -->
                 <div class="space-y-3 p-4 border rounded-lg">
@@ -57,16 +45,11 @@
                     </CollapsiblePrimitive>
                 </div>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Basic Headless Primitive</h2>
-                <p class="text-muted-foreground">
-                    The primitive provides behavior and accessibility without styling.
-                </p>
-            </div>
-
+    <DemoSection Title="Basic Headless Primitive" Description="The primitive provides behavior and accessibility without styling.">
+        <DemoBlock Code="@_basicCode">
             <div class="rounded-lg border bg-card p-6 max-w-md">
                 <CollapsiblePrimitive>
                     <CollapsibleTriggerPrimitive class="cursor-pointer">
@@ -77,16 +60,11 @@
                     </CollapsibleContentPrimitive>
                 </CollapsiblePrimitive>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Controlled State</h2>
-                <p class="text-muted-foreground">
-                    Control the primitive state externally.
-                </p>
-            </div>
-
+    <DemoSection Title="Controlled State" Description="Control the primitive state externally.">
+        <DemoBlock Code="@_controlledCode">
             <div class="space-y-4">
                 <div class="flex gap-2">
                     <button @onclick="@(() => isPrimitiveOpen = true)"
@@ -110,145 +88,45 @@
                     </CollapsiblePrimitive>
                 </div>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Accessibility Features</h2>
-                <p class="text-muted-foreground">
-                    Built-in accessibility features following WAI-ARIA design patterns.
-                </p>
-            </div>
+    <DemoSection Title="Accessibility Features" Description="Built-in accessibility features following WAI-ARIA design patterns.">
+        <Alert Variant="AlertVariant.Success" AccentBorder="true">
+            <Icon><LucideIcon Name="circle-check" Class="h-4 w-4" /></Icon>
+            <ChildContent>
+                <AlertTitle>Included by default</AlertTitle>
+                <AlertDescription>
+                    <code class="text-xs bg-muted px-1 rounded">aria-expanded</code>, <code class="text-xs bg-muted px-1 rounded">data-state</code>, <code class="text-xs bg-muted px-1 rounded">role=&quot;region&quot;</code>, focus and disabled behavior.
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
+    </DemoSection>
 
-            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
-                <div>
-                    <h3 class="font-semibold mb-2">ARIA Attributes</h3>
-                    <ul class="space-y-2 text-sm text-muted-foreground">
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">aria-expanded</code> automatically applied to trigger</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">data-state</code> attribute for CSS styling (open|closed)</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span><code class="text-xs bg-muted px-1 py-0.5 rounded">role="region"</code> on content with proper aria-hidden</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Focus management with visible focus indicators</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-green-600 dark:text-green-400">✓</span>
-                            <span>Proper disabled attribute and behavior</span>
-                        </li>
-                    </ul>
+    <DemoSection Title="Keyboard Shortcuts" Description="Navigate and interact with collapsibles using keyboard.">
+        <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
+            <div class="grid gap-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium">Navigate to trigger</span>
+                    <Kbd>Tab</Kbd>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium">Toggle collapsible</span>
+                    <span class="flex gap-1">
+                        <Kbd>Space</Kbd>
+                        <Kbd>Enter</Kbd>
+                    </span>
                 </div>
             </div>
-        </section>
+        </div>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Keyboard Shortcuts</h2>
-                <p class="text-muted-foreground">
-                    Navigate and interact with collapsibles using keyboard.
-                </p>
-            </div>
+    <DemoSection Title="API Reference" Description="Component properties and parameters.">
+        <DemoPropsTable Rows="_collapsibleProps" />
+    </DemoSection>
 
-            <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
-                <div class="grid gap-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Navigate to trigger</span>
-                        <Kbd>Tab</Kbd>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium">Toggle collapsible</span>
-                        <span class="flex gap-1">
-                            <Kbd>Space</Kbd>
-                            <Kbd>Enter</Kbd>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">API Reference</h2>
-                <p class="text-muted-foreground">
-                    Component properties and parameters.
-                </p>
-            </div>
-
-            <div class="space-y-4">
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">CollapsiblePrimitive</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Open</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>false</code><br/>
-                                Controls whether the collapsible is expanded. Supports two-way binding with @@bind-Open.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">OpenChanged</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>EventCallback&lt;bool&gt;</code><br/>
-                                Callback invoked when the open state changes.
-                            </p>
-                        </div>
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">Disabled</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>bool</code><br/>
-                                <strong>Default:</strong> <code>false</code><br/>
-                                Prevents toggling when true.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">CollapsibleTriggerPrimitive</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">ChildContent</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>RenderFragment?</code><br/>
-                                Content rendered inside the trigger button.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="rounded-lg border p-4">
-                    <h3 class="font-semibold mb-3">CollapsibleContentPrimitive</h3>
-                    <div class="space-y-3 text-sm">
-                        <div>
-                            <code class="text-xs bg-muted px-1 py-0.5 rounded">ChildContent</code>
-                            <p class="text-muted-foreground mt-1">
-                                <strong>Type:</strong> <code>RenderFragment?</code><br/>
-                                Content to be shown/hidden when collapsible is toggled.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">When to Use Primitives</h2>
-                <p class="text-muted-foreground">
-                    Choose between primitives and styled components based on your needs.
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-4">
+    <DemoSection Title="When to Use Primitives" Description="Choose between primitives and styled components based on your needs.">
+        <div class="grid md:grid-cols-2 gap-4">
                 <div class="rounded-lg border p-4 space-y-3">
                     <h3 class="font-semibold text-primary">Use Collapsible Primitive</h3>
                     <ul class="space-y-2 text-sm text-muted-foreground">
@@ -293,10 +171,11 @@
                     </ul>
                 </div>
             </div>
-        </section>
-    </div>
+    </DemoSection>
+
+    <DemoPageNav />
 </div>
 
 @code {
-    private bool isPrimitiveOpen = false;
+private bool isPrimitiveOpen = false;
 }

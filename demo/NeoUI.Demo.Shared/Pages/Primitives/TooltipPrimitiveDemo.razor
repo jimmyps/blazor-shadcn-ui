@@ -1,277 +1,183 @@
 @page "/primitives/tooltip"
 <PageTitle>Tooltip Primitive - NeoUI</PageTitle>
 
-<div class="space-y-6">
-    <div class="space-y-3">
-        <h1 class="text-4xl font-bold">Tooltip Primitive</h1>
-        <p class="text-xl text-muted-foreground">
-            Headless, unstyled tooltip primitive with full accessibility support and positioning.
-        </p>
-    </div>
+<div class="space-y-8 max-w-4xl">
+    <DemoPageHeader
+        Title="Tooltip Primitive"
+        Description="Headless, unstyled tooltip primitive with full accessibility support and positioning." />
 
-    <div class="space-y-6">
-        <!-- AsChild Pattern -->
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">AsChild Pattern</h2>
-                <p class="text-muted-foreground">
-                    Use AsChild to compose triggers with your own styled elements.
-                </p>
-            </div>
-
+    <DemoSection Title="AsChild Pattern" Description="Use AsChild to compose triggers with your own styled elements.">
+        <DemoBlock Code="@_asChildCode">
             <div class="grid md:grid-cols-2 gap-6">
-                <!-- Without AsChild -->
                 <div class="space-y-3 p-4 border rounded-lg">
                     <h3 class="text-lg font-medium">Without AsChild</h3>
-                    <p class="text-sm text-muted-foreground">
-                        TooltipTriggerPrimitive renders its own span element.
-                    </p>
+                    <p class="text-sm text-muted-foreground">TooltipTriggerPrimitive renders its own span element.</p>
                     <TooltipPrimitive>
-                        <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                            Hover me
-                        </TooltipTriggerPrimitive>
-                        <TooltipContentPrimitive class="px-4 py-2 border rounded bg-card shadow-lg">
-                            Without AsChild tooltip
-                        </TooltipContentPrimitive>
+                        <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Hover me</TooltipTriggerPrimitive>
+                        <TooltipContentPrimitive class="px-4 py-2 border rounded bg-card shadow-lg">Without AsChild tooltip</TooltipContentPrimitive>
                     </TooltipPrimitive>
                 </div>
 
-                <!-- With AsChild -->
                 <div class="space-y-3 p-4 border rounded-lg">
                     <h3 class="text-lg font-medium">With AsChild</h3>
-                    <p class="text-sm text-muted-foreground">
-                        Button receives hover/focus behavior via TriggerContext.
-                    </p>
+                    <p class="text-sm text-muted-foreground">Button receives hover/focus behavior via TriggerContext.</p>
                     <TooltipPrimitive>
                         <TooltipTriggerPrimitive AsChild>
                             <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Icon">
                                 <LucideIcon Name="info" Size="16" />
                             </Button>
                         </TooltipTriggerPrimitive>
-                        <TooltipContentPrimitive class="px-4 py-2 border rounded bg-card shadow-lg">
-                            With AsChild tooltip
-                        </TooltipContentPrimitive>
+                        <TooltipContentPrimitive class="px-4 py-2 border rounded bg-card shadow-lg">With AsChild tooltip</TooltipContentPrimitive>
                     </TooltipPrimitive>
                 </div>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <!-- Basic Example -->
-        <section class="space-y-4">
-            <h2 class="text-2xl font-semibold">Basic Primitive Example</h2>
-            <p class="text-muted-foreground">
-                This demonstrates the Tooltip primitive with minimal styling.
-                All behavior (hover, focus, delay, positioning) is built-in.
-            </p>
-
+    <DemoSection Title="Basic Primitive Example" Description="Basic tooltip behavior with minimal styling.">
+        <DemoBlock Code="@_basicCode">
             <div class="rounded-lg border bg-card p-6 max-w-md">
                 <TooltipPrimitive>
-                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                        Hover me
-                    </TooltipTriggerPrimitive>
-
-                    <TooltipContentPrimitive class="px-4 py-2 border rounded bg-card shadow-lg">
-                        This is a tooltip
-                    </TooltipContentPrimitive>
+                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Hover me</TooltipTriggerPrimitive>
+                    <TooltipContentPrimitive class="px-4 py-2 border rounded bg-card shadow-lg">This is a tooltip</TooltipContentPrimitive>
                 </TooltipPrimitive>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <!-- Controlled State Example -->
-        <section class="space-y-4">
-            <h2 class="text-2xl font-semibold">Controlled State</h2>
-            <p class="text-muted-foreground">
-                The primitive supports controlled mode where parent component manages open state.
-            </p>
-
+    <DemoSection Title="Controlled State" Description="Control tooltip open state from your component code.">
+        <DemoBlock Code="@_controlledCode">
             <div class="space-y-4">
                 <div class="flex items-center gap-4">
-                    <button @onclick="() => isOpen = !isOpen" class="px-4 py-2 border rounded">
-                        External Toggle
-                    </button>
-                    <span class="text-sm text-muted-foreground">
-                        State: @(isOpen ? "Open" : "Closed")
-                    </span>
+                    <button @onclick="() => isOpen = !isOpen" class="px-4 py-2 border rounded">External Toggle</button>
+                    <span class="text-sm text-muted-foreground">State: @(isOpen ? "Open" : "Closed")</span>
                 </div>
 
                 <TooltipPrimitive @bind-Open="isOpen">
-                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                        Controlled TooltipPrimitive
-                    </TooltipTriggerPrimitive>
-
-                    <TooltipContentPrimitive class="px-4 py-2 border rounded bg-card shadow-lg">
-                        This tooltip is controlled externally
-                    </TooltipContentPrimitive>
+                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Controlled TooltipPrimitive</TooltipTriggerPrimitive>
+                    <TooltipContentPrimitive class="px-4 py-2 border rounded bg-card shadow-lg">This tooltip is controlled externally</TooltipContentPrimitive>
                 </TooltipPrimitive>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <!-- Positioning Example -->
-        <section class="space-y-4">
-            <h2 class="text-2xl font-semibold">Positioning</h2>
-            <p class="text-muted-foreground">
-                The primitive supports configurable side and alignment via PositioningService.
-            </p>
-
+    <DemoSection Title="Positioning" Description="Configure side and alignment options.">
+        <DemoBlock Code="@_positioningCode">
             <div class="rounded-lg border bg-card p-6 flex gap-4 flex-wrap">
                 <TooltipPrimitive>
-                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                        Top
-                    </TooltipTriggerPrimitive>
-                    <TooltipContentPrimitive Side="@PopoverSide.Top" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
-                        Top positioned
-                    </TooltipContentPrimitive>
+                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Top</TooltipTriggerPrimitive>
+                    <TooltipContentPrimitive Side="@PopoverSide.Top" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">Top positioned</TooltipContentPrimitive>
                 </TooltipPrimitive>
 
                 <TooltipPrimitive>
-                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                        Bottom
-                    </TooltipTriggerPrimitive>
-                    <TooltipContentPrimitive Side="@PopoverSide.Bottom" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
-                        Bottom positioned
-                    </TooltipContentPrimitive>
+                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Bottom</TooltipTriggerPrimitive>
+                    <TooltipContentPrimitive Side="@PopoverSide.Bottom" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">Bottom positioned</TooltipContentPrimitive>
                 </TooltipPrimitive>
 
                 <TooltipPrimitive>
-                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                        Left
-                    </TooltipTriggerPrimitive>
-                    <TooltipContentPrimitive Side="@PopoverSide.Left" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
-                        Left positioned
-                    </TooltipContentPrimitive>
+                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Left</TooltipTriggerPrimitive>
+                    <TooltipContentPrimitive Side="@PopoverSide.Left" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">Left positioned</TooltipContentPrimitive>
                 </TooltipPrimitive>
 
                 <TooltipPrimitive>
-                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                        Right
-                    </TooltipTriggerPrimitive>
-                    <TooltipContentPrimitive Side="@PopoverSide.Right" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
-                        Right positioned
-                    </TooltipContentPrimitive>
+                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Right</TooltipTriggerPrimitive>
+                    <TooltipContentPrimitive Side="@PopoverSide.Right" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">Right positioned</TooltipContentPrimitive>
                 </TooltipPrimitive>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <!-- Delay Duration Example -->
-        <section class="space-y-4">
-            <h2 class="text-2xl font-semibold">Delay Duration</h2>
-            <p class="text-muted-foreground">
-                Configure show and hide delays for the tooltip.
-            </p>
-
+    <DemoSection Title="Delay Duration" Description="Configure show delay duration.">
+        <DemoBlock Code="@_delayCode">
             <div class="rounded-lg border bg-card p-6 flex gap-4 flex-wrap">
                 <TooltipPrimitive DelayDuration="0">
-                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                        Instant (0ms)
-                    </TooltipTriggerPrimitive>
-                    <TooltipContentPrimitive class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
-                        Shows immediately
-                    </TooltipContentPrimitive>
+                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Instant (0ms)</TooltipTriggerPrimitive>
+                    <TooltipContentPrimitive class="px-2 py-1 border rounded bg-card shadow-lg text-sm">Shows immediately</TooltipContentPrimitive>
                 </TooltipPrimitive>
 
                 <TooltipPrimitive DelayDuration="700">
-                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                        Default (700ms)
-                    </TooltipTriggerPrimitive>
-                    <TooltipContentPrimitive class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
-                        Shows after 700ms
-                    </TooltipContentPrimitive>
+                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Default (700ms)</TooltipTriggerPrimitive>
+                    <TooltipContentPrimitive class="px-2 py-1 border rounded bg-card shadow-lg text-sm">Shows after 700ms</TooltipContentPrimitive>
                 </TooltipPrimitive>
 
                 <TooltipPrimitive DelayDuration="1500">
-                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                        Slow (1500ms)
-                    </TooltipTriggerPrimitive>
-                    <TooltipContentPrimitive class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
-                        Shows after 1.5 seconds
-                    </TooltipContentPrimitive>
+                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Slow (1500ms)</TooltipTriggerPrimitive>
+                    <TooltipContentPrimitive class="px-2 py-1 border rounded bg-card shadow-lg text-sm">Shows after 1.5 seconds</TooltipContentPrimitive>
                 </TooltipPrimitive>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <!-- Alignment Example -->
-        <section class="space-y-4">
-            <h2 class="text-2xl font-semibold">Alignment Options</h2>
-            <p class="text-muted-foreground">
-                Align the tooltip relative to the trigger (start, center, end).
-            </p>
-
+    <DemoSection Title="Alignment Options" Description="Align tooltip relative to trigger.">
+        <DemoBlock Code="@_alignCode">
             <div class="rounded-lg border bg-card p-6 flex gap-4 flex-wrap">
                 <TooltipPrimitive>
-                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                        Top Start
-                    </TooltipTriggerPrimitive>
-                    <TooltipContentPrimitive Side="@PopoverSide.Top" Align="@PopoverAlign.Start" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
-                        Aligned to start
-                    </TooltipContentPrimitive>
+                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Top Start</TooltipTriggerPrimitive>
+                    <TooltipContentPrimitive Side="@PopoverSide.Top" Align="@PopoverAlign.Start" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">Aligned to start</TooltipContentPrimitive>
                 </TooltipPrimitive>
 
                 <TooltipPrimitive>
-                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                        Top Center
-                    </TooltipTriggerPrimitive>
-                    <TooltipContentPrimitive Side="@PopoverSide.Top" Align="@PopoverAlign.Center" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
-                        Centered (default)
-                    </TooltipContentPrimitive>
+                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Top Center</TooltipTriggerPrimitive>
+                    <TooltipContentPrimitive Side="@PopoverSide.Top" Align="@PopoverAlign.Center" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">Centered (default)</TooltipContentPrimitive>
                 </TooltipPrimitive>
 
                 <TooltipPrimitive>
-                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">
-                        Top End
-                    </TooltipTriggerPrimitive>
-                    <TooltipContentPrimitive Side="@PopoverSide.Top" Align="@PopoverAlign.End" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
-                        Aligned to end
-                    </TooltipContentPrimitive>
+                    <TooltipTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Top End</TooltipTriggerPrimitive>
+                    <TooltipContentPrimitive Side="@PopoverSide.Top" Align="@PopoverAlign.End" class="px-2 py-1 border rounded bg-card shadow-lg text-sm">Aligned to end</TooltipContentPrimitive>
                 </TooltipPrimitive>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <!-- Focus and Accessibility -->
-        <section class="space-y-4">
-            <h2 class="text-2xl font-semibold">Focus and Accessibility</h2>
-            <p class="text-muted-foreground">
-                The primitive automatically handles focus and keyboard accessibility.
-            </p>
+    <DemoSection Title="Accessibility Features" Description="Built-in accessibility and focus behavior.">
+        <Alert Variant="AlertVariant.Success" AccentBorder="true">
+            <Icon><LucideIcon Name="circle-check" Class="h-4 w-4" /></Icon>
+            <ChildContent>
+                <AlertTitle>Included by default</AlertTitle>
+                <AlertDescription>
+                    <code class="text-xs bg-muted px-1 rounded">role=&quot;tooltip&quot;</code>, <code class="text-xs bg-muted px-1 rounded">aria-describedby</code>, focus-triggered open behavior, and delayed hover interaction.
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
+    </DemoSection>
 
-            <div class="space-y-4">
-                <p class="text-sm">
-                    Try tabbing to the triggers below to see tooltips appear on focus:
-                </p>
-                <div class="flex gap-4">
-                    <TooltipPrimitive>
-                        <TooltipTriggerPrimitive Focusable="true" class="px-4 py-2 border rounded cursor-pointer">
-                            Focusable trigger
-                        </TooltipTriggerPrimitive>
-                        <TooltipContentPrimitive class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
-                            Shows on focus
-                        </TooltipContentPrimitive>
-                    </TooltipPrimitive>
+    <DemoSection Title="Keyboard Shortcuts" Description="Navigate and interact with tooltips using keyboard.">
+        <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
+            <div class="flex items-center justify-between"><span class="text-sm font-medium">Focus trigger</span><Kbd>Tab</Kbd></div>
+            <div class="flex items-center justify-between"><span class="text-sm font-medium">Show tooltip</span><Kbd>Hover / Focus</Kbd></div>
+            <div class="flex items-center justify-between"><span class="text-sm font-medium">Hide tooltip</span><Kbd>Blur / Mouse Leave</Kbd></div>
+        </div>
+    </DemoSection>
 
-                    <TooltipPrimitive>
-                        <TooltipTriggerPrimitive Focusable="true" class="px-4 py-2 border rounded cursor-pointer">
-                            Another trigger
-                        </TooltipTriggerPrimitive>
-                        <TooltipContentPrimitive class="px-2 py-1 border rounded bg-card shadow-lg text-sm">
-                            Also shows on focus
-                        </TooltipContentPrimitive>
-                    </TooltipPrimitive>
-                </div>
-            </div>
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_tooltipProps" />
+    </DemoSection>
 
-            <div class="bg-muted p-4 rounded-md space-y-2">
-                <h3 class="font-semibold">Accessibility Features:</h3>
-                <ul class="text-sm space-y-1">
-                    <li><Kbd>Tab</Kbd> - Navigate to trigger</li>
-                    <li><Kbd>Hover</Kbd> - Show tooltip on mouse over</li>
-                    <li><strong>ARIA:</strong> role="tooltip" and aria-describedby for screen readers</li>
-                    <li><strong>Delay:</strong> 700ms default delay prevents accidental tooltips</li>
-                    <li><strong>Scoped IDs:</strong> Unique IDs for multiple tooltips on same page</li>
+    <DemoSection Title="When to Use Primitives" Description="Choose between primitives and styled components based on your needs.">
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="rounded-lg border p-4 space-y-3">
+                <h3 class="font-semibold text-primary">Use Tooltip Primitive</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Building a custom design system</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Need complete control over styling</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Custom positioning and delay behavior</span></li>
                 </ul>
             </div>
-        </section>
-    </div>
+
+            <div class="rounded-lg border p-4 space-y-3">
+                <h3 class="font-semibold text-primary">Use Styled Component</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Need quick implementation</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Prefer default tooltip styling</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Convention over configuration</span></li>
+                </ul>
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoPageNav />
 </div>
 
 @code {
-    private bool isOpen = false;
+private bool isOpen = false;
 }
