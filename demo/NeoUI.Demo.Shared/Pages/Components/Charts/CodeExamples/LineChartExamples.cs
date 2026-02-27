@@ -23,38 +23,34 @@ partial class LineChartExamples
 
     private const string _interactiveCode =
         """
-        <Card>
-            <CardHeader Class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
-                <div class="grid flex-1 gap-1">
-                    <CardTitle>Line Chart — Interactive</CardTitle>
-                    <CardDescription>Showing trends for the last 3 months</CardDescription>
-                </div>
-                <Select @bind-Value="@timeRange" TValue="string" Class="w-[160px] rounded-lg sm:ml-auto">
-                    <SelectTrigger><SelectValue Placeholder="Last 3 months" /></SelectTrigger>
-                    <SelectContent>
-                        @foreach (var range in timeRanges)
-                        {
-                            <SelectItem Value="@range.Key" TValue="string" Text="@range.Value">@range.Value</SelectItem>
-                        }
-                    </SelectContent>
-                </Select>
-            </CardHeader>
-            <CardContent Class="p-6 pt-2">
-                <ChartContainer Height="250" Class="w-full">
-                    <LineChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
-                        <Grid Vertical="false" Stroke="var(--border)" />
-                        <XAxis DataKey="date" TickLine="false" Color="var(--border)">
-                            <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
-                        </XAxis>
-                        <YAxis Show="false" TickLine="false"><AxisLabel Show="false" /></YAxis>
-                        <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" Formatter="@tooltipFormatter" />
-                        <Legend TextColor="var(--foreground)" />
-                        <Line DataKey="desktop" Name="Desktop" Color="var(--chart-1)" />
-                        <Line DataKey="mobile" Name="Mobile" Color="var(--chart-2)" />
-                    </LineChart>
-                </ChartContainer>
-            </CardContent>
-        </Card>
+        <div class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
+            <div class="grid flex-1 gap-1">
+                <p class="text-xl font-semibold">Line Chart — Interactive</p>
+                <p class="text-sm text-muted-foreground">Showing trends for the last 3 months</p>
+            </div>
+            <Select @bind-Value="@timeRange" TValue="string" Class="w-[160px] rounded-lg sm:ml-auto">
+                <SelectTrigger><SelectValue Placeholder="Last 3 months" /></SelectTrigger>
+                <SelectContent>
+                    @foreach (var range in timeRanges)
+                    {
+                        <SelectItem Value="@range.Key" TValue="string" Text="@range.Value">@range.Value</SelectItem>
+                    }
+                </SelectContent>
+            </Select>
+        </div>
+        <ChartContainer Height="250" Class="w-full">
+            <LineChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
+                <Grid Vertical="false" Stroke="var(--border)" />
+                <XAxis DataKey="date" TickLine="false" Color="var(--border)">
+                    <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
+                </XAxis>
+                <YAxis Show="false" TickLine="false"><AxisLabel Show="false" /></YAxis>
+                <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" Formatter="@tooltipFormatter" />
+                <Legend TextColor="var(--foreground)" />
+                <Line DataKey="desktop" Name="Desktop" Color="var(--chart-1)" />
+                <Line DataKey="mobile" Name="Mobile" Color="var(--chart-2)" />
+            </LineChart>
+        </ChartContainer>
         """;
 
     private const string _defaultCode =

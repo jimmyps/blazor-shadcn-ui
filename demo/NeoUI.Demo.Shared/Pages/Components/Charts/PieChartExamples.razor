@@ -15,7 +15,7 @@
         <DemoBlock Code="@_interactiveCode">
             <div class="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
                     <div class="grid flex-1 gap-1">
-                        <p class="font-semibold">Pie Chart — Interactive</p>
+                        <p class="text-xl font-semibold">Pie Chart — Interactive</p>
                                         <p class="text-sm text-muted-foreground">Showing browser usage statistics for @(monthDescriptions.TryGetValue(selectedMonth, out var description) ? description.ToLower() : "January")</p>
                                     </div>
                                     <Select @bind-Value="@selectedMonth" Class="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">

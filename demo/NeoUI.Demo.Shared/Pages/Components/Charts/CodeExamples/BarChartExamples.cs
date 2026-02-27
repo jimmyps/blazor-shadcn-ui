@@ -21,38 +21,34 @@ partial class BarChartExamples
 
     private const string _interactiveCode =
         """
-        <Card>
-            <CardHeader Class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
-                <div class="grid flex-1 gap-1">
-                    <CardTitle>Bar Chart — Interactive</CardTitle>
-                    <CardDescription>Showing sales data for the last 30 days</CardDescription>
-                </div>
-                <Select @bind-Value="@timeRange" Class="w-[160px] rounded-lg sm:ml-auto">
-                    <SelectTrigger><SelectValue Placeholder="Last 30 days" /></SelectTrigger>
-                    <SelectContent>
-                        @foreach (var range in timeRanges)
-                        {
-                            <SelectItem Value="@range.Key" Text="@range.Value">@range.Value</SelectItem>
-                        }
-                    </SelectContent>
-                </Select>
-            </CardHeader>
-            <CardContent Class="p-6 pt-2">
-                <ChartContainer Height="250" Class="w-full">
-                    <BarChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
-                        <Grid Vertical="false" Stroke="var(--border)" />
-                        <XAxis DataKey="date" TickLine="false" Color="var(--border)">
-                            <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
-                        </XAxis>
-                        <YAxis Show="false" TickLine="false"><AxisLabel Show="false" /></YAxis>
-                        <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Shadow" />
-                        <Legend TextColor="var(--foreground)" />
-                        <Bar DataKey="desktop" Name="Desktop" Radius="4" Color="var(--chart-1)" />
-                        <Bar DataKey="mobile" Name="Mobile" Radius="4" Color="var(--chart-2)" />
-                    </BarChart>
-                </ChartContainer>
-            </CardContent>
-        </Card>
+        <div class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
+            <div class="grid flex-1 gap-1">
+                <p class="text-xl font-semibold">Bar Chart — Interactive</p>
+                <p class="text-sm text-muted-foreground">Showing sales data for the last 30 days</p>
+            </div>
+            <Select @bind-Value="@timeRange" Class="w-[160px] rounded-lg sm:ml-auto">
+                <SelectTrigger><SelectValue Placeholder="Last 30 days" /></SelectTrigger>
+                <SelectContent>
+                    @foreach (var range in timeRanges)
+                    {
+                        <SelectItem Value="@range.Key" Text="@range.Value">@range.Value</SelectItem>
+                    }
+                </SelectContent>
+            </Select>
+        </div>
+        <ChartContainer Height="250" Class="w-full">
+            <BarChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
+                <Grid Vertical="false" Stroke="var(--border)" />
+                <XAxis DataKey="date" TickLine="false" Color="var(--border)">
+                    <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
+                </XAxis>
+                <YAxis Show="false" TickLine="false"><AxisLabel Show="false" /></YAxis>
+                <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Shadow" />
+                <Legend TextColor="var(--foreground)" />
+                <Bar DataKey="desktop" Name="Desktop" Radius="4" Color="var(--chart-1)" />
+                <Bar DataKey="mobile" Name="Mobile" Radius="4" Color="var(--chart-2)" />
+            </BarChart>
+        </ChartContainer>
         """;
 
     private const string _defaultCode =

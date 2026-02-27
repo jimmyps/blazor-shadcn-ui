@@ -22,34 +22,30 @@ partial class PieChartExamples
 
     private const string _interactiveCode =
         """
-        <Card>
-            <CardHeader Class="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-                <div class="grid flex-1 gap-1">
-                    <CardTitle>Pie Chart — Interactive</CardTitle>
-                    <CardDescription>Showing browser usage statistics for January</CardDescription>
-                </div>
-                <Select @bind-Value="@selectedMonth" Class="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
-                    <SelectTrigger><SelectValue Placeholder="January" /></SelectTrigger>
-                    <SelectContent>
-                        @foreach (var month in monthDescriptions)
-                        {
-                            <SelectItem Value="@month.Key" Text="@month.Value">@month.Value</SelectItem>
-                        }
-                    </SelectContent>
-                </Select>
-            </CardHeader>
-            <CardContent Class="px-2 pt-4 sm:px-6 sm:pt-6">
-                <ChartContainer Height="250" Class="w-full">
-                    <PieChart Data="@FilteredBrowserData">
-                        <ChartTooltip />
-                        <Legend Show="false" />
-                        <Pie DataKey="value" NameKey="name" Color="var(--chart-1)">
-                            <LabelList Color="var(--muted-foreground)" />
-                        </Pie>
-                    </PieChart>
-                </ChartContainer>
-            </CardContent>
-        </Card>
+        <div class="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+            <div class="grid flex-1 gap-1">
+                <p class="text-xl font-semibold">Pie Chart — Interactive</p>
+                <p class="text-sm text-muted-foreground">Showing browser usage statistics for January</p>
+            </div>
+            <Select @bind-Value="@selectedMonth" Class="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
+                <SelectTrigger><SelectValue Placeholder="January" /></SelectTrigger>
+                <SelectContent>
+                    @foreach (var month in monthDescriptions)
+                    {
+                        <SelectItem Value="@month.Key" Text="@month.Value">@month.Value</SelectItem>
+                    }
+                </SelectContent>
+            </Select>
+        </div>
+        <ChartContainer Height="250" Class="w-full">
+            <PieChart Data="@FilteredBrowserData">
+                <ChartTooltip />
+                <Legend Show="false" />
+                <Pie DataKey="value" NameKey="name" Color="var(--chart-1)">
+                    <LabelList Color="var(--muted-foreground)" />
+                </Pie>
+            </PieChart>
+        </ChartContainer>
         """;
 
     private const string _simpleCode =
