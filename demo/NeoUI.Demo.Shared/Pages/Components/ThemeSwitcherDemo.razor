@@ -105,7 +105,81 @@
 
     <DemoSection
         Title="App.razor Setup"
-        Description="Add stylesheet links for the core CSS, base color themes, and primary color themes. Include the theme JS script before Blazor boots to prevent FOUC. Register ThemeService via AddNeoUIComponents() in Program.cs." />
+        Description="Add the following to the &lt;head&gt; of App.razor (Blazor Web) or index.html (Blazor WASM):">
+        <div class="space-y-6">
+
+            <div class="space-y-2">
+                <h3 class="text-base font-semibold">1 — Core stylesheet</h3>
+                <p class="text-sm text-muted-foreground">The main NeoUI stylesheet provides all component styles and CSS variables.</p>
+                <div class="relative rounded-lg border bg-muted/50 overflow-hidden">
+                    <pre class="text-sm overflow-x-auto p-4"><code>@_coreStylesheetCode</code></pre>
+                    <DemoCopyButton Text="@_coreStylesheetCode" Class="absolute top-2 right-2" />
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="text-base font-semibold">2 — Base color stylesheets</h3>
+                <p class="text-sm text-muted-foreground">
+                    Each base color scheme is a separate CSS file.
+                    <strong>In production include only the ones you actually offer to users</strong> — if your app only uses Zinc, ship only <code class="text-sm bg-muted px-1 py-0.5 rounded">zinc.css</code>.
+                </p>
+                <div class="relative rounded-lg border bg-muted/50 overflow-hidden">
+                    <pre class="text-sm overflow-x-auto p-4"><code>@_baseColorsCode</code></pre>
+                    <DemoCopyButton Text="@_baseColorsCode" Class="absolute top-2 right-2" />
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="text-base font-semibold">3 — Primary color stylesheets</h3>
+                <p class="text-sm text-muted-foreground">
+                    Same rule applies — only include the accent colors your app exposes. Omitting unused files reduces the CSS bundle size.
+                </p>
+                <div class="relative rounded-lg border bg-muted/50 overflow-hidden">
+                    <pre class="text-sm overflow-x-auto p-4"><code>@_primaryColorsCode</code></pre>
+                    <DemoCopyButton Text="@_primaryColorsCode" Class="absolute top-2 right-2" />
+                </div>
+                <Alert Variant="AlertVariant.Warning">
+                    <Icon>
+                        <LucideIcon Name="triangle-alert" Class="h-4 w-4" />
+                    </Icon>
+                    <ChildContent>
+                        <AlertTitle>Production tip — trim unused theme files</AlertTitle>
+                        <AlertDescription>
+                            If your application only allows a fixed set of themes (e.g. Zinc base + Blue or Green accent),
+                            include only those CSS files. Each file is small but shipping all 22 stylesheets adds unnecessary
+                            weight for apps with a locked-down theme palette.
+                        </AlertDescription>
+                    </ChildContent>
+                </Alert>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="text-base font-semibold">4 — Theme JavaScript</h3>
+                <p class="text-sm text-muted-foreground">
+                    The theme script must load <em>before</em> Blazor initializes to avoid a flash of unstyled content (FOUC).
+                    Place both tags at the end of <code class="text-sm bg-muted px-1 py-0.5 rounded">&lt;head&gt;</code>, after the stylesheets.
+                </p>
+                <div class="relative rounded-lg border bg-muted/50 overflow-hidden">
+                    <pre class="text-sm overflow-x-auto p-4"><code>@_themeJsCode</code></pre>
+                    <DemoCopyButton Text="@_themeJsCode" Class="absolute top-2 right-2" />
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="text-base font-semibold">5 — Service registration</h3>
+                <p class="text-sm text-muted-foreground">
+                    <code class="text-sm bg-muted px-1 py-0.5 rounded">ThemeService</code> is registered automatically when you call
+                    <code class="text-sm bg-muted px-1 py-0.5 rounded">AddNeoUIComponents()</code> in
+                    <code class="text-sm bg-muted px-1 py-0.5 rounded">Program.cs</code>.
+                </p>
+                <div class="relative rounded-lg border bg-muted/50 overflow-hidden">
+                    <pre class="text-sm overflow-x-auto p-4"><code>@_serviceRegistrationCode</code></pre>
+                    <DemoCopyButton Text="@_serviceRegistrationCode" Class="absolute top-2 right-2" />
+                </div>
+            </div>
+
+        </div>
+    </DemoSection>
 
     <DemoPageNav />
 

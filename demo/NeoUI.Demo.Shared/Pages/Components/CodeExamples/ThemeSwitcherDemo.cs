@@ -40,5 +40,56 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 <!-- Narrower popover panel -->
                 <ThemeSwitcher PopoverContentClass="!w-72" />
                 """;
+
+        private const string _coreStylesheetCode =
+            """<link href="_content/NeoUI.Blazor/components.css" rel="stylesheet" />""";
+
+        private const string _baseColorsCode =
+            """
+            <!-- Base color themes (include only those you need) -->
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/zinc.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/slate.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/gray.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/neutral.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/stone.css" />
+            """;
+
+        private const string _primaryColorsCode =
+            """
+            <!-- Primary color themes (include only those you need) -->
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/red.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/rose.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/orange.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/amber.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/yellow.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/lime.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/green.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/emerald.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/teal.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/cyan.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/sky.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/blue.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/indigo.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/violet.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/purple.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/fuchsia.css" />
+            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/pink.css" />
+            """;
+
+        private const string _themeJsCode =
+            """
+            <!-- Theme JS — must come before Blazor boots to prevent FOUC -->
+            <script src="_content/NeoUI.Blazor/js/theme.js"></script>
+            <script>
+                window.theme.initialize();
+            </script>
+            """;
+
+        private const string _serviceRegistrationCode =
+            """
+            // Program.cs
+            builder.Services.AddNeoUIPrimitives();
+            builder.Services.AddNeoUIComponents(); // registers ThemeService
+            """;
     }
 }
