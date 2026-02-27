@@ -2,6 +2,9 @@
 
 NeoUI uses CSS custom properties (variables) for theming, following the [shadcn/ui](https://ui.shadcn.com) design system. This allows complete customization of colors, typography, and sizing without modifying component code.
 
+> [!NOTE]
+> For pre-built themes shipped with NeoUI and the latest updates, visit **[neoui.io/docs/theming](https://neoui.io/docs/theming)**.
+
 ## Quick Start
 
 1. Create a theme CSS file (e.g., `wwwroot/styles/themes/my-theme.css`)

@@ -27,4 +27,11 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.2" />
   </ItemGroup>
 
+
+  <!-- Build Tailwind CSS (skipped in CI if tailwindcss.exe not available) -->
+  <Target Name="BuildTailwindCSS" BeforeTargets="BeforeBuild" Condition="Exists('$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe')">
+    <Message Text="Building Tailwind CSS..." Importance="high" />
+    <Exec Command="$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe -i wwwroot/css/app-input.css -o wwwroot/css/app.css" />
+  </Target>
+
 </Project>

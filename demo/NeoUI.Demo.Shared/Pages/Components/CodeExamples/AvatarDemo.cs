@@ -24,7 +24,7 @@ namespace NeoUI.Demo.Shared.Pages.Components
         private const string _basicCode =
                 """
                 <Avatar>
-                    <AvatarImage Source="/images/avatar-icon.png" Alt="James" />
+                    <AvatarImage Source="_content/NeoUI.Demo.Shared/images/avatar-icon.png" Alt="James" />
                     <AvatarFallback>SH</AvatarFallback>
                 </Avatar>
 

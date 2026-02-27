@@ -3,7 +3,9 @@ module.exports = {
   darkMode: ["class"],
   content: [
     './**/*.{razor,html,cs}',
-    '../NeoUI.Demo.Shared/**/*.{razor,html,cs}',
+    '../NeoUI.Demo.Auto/**/*.{razor,html,cs}',
+    '../NeoUI.Demo.Server/**/*.{razor,html,cs}',
+    '../NeoUI.Demo.Wasm/**/*.{razor,html,cs}',
     '../../src/NeoUI.Blazor/**/*.{razor,html,cs}',
     '../../src/NeoUI.Blazor.Primitives/**/*.{razor,html,cs}',
     '../../src/NeoUI.Icons.Lucide/**/*.{razor,html,cs}',
