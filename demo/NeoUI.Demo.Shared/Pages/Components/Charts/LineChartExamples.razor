@@ -13,11 +13,10 @@
         Title="Interactive"
         Description="A live line chart with time-range filtering and a custom tooltip formatter.">
         <DemoBlock Code="@_interactiveCode">
-            <Card>
-                <CardHeader Class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
+            <div class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
                     <div class="grid flex-1 gap-1">
-                        <CardTitle Class="text-xl">Line Chart â€” Interactive</CardTitle>
-                        <CardDescription>Showing trends for the @(timeRanges.TryGetValue(timeRange, out var description) ? description.ToLower() : "last 3 months")</CardDescription>
+                        <p class="text-xl font-semibold">Line Chart â€” Interactive</p>
+                        <p class="text-sm text-muted-foreground">Showing trends for the @(timeRanges.TryGetValue(timeRange, out var description) ? description.ToLower() : "last 3 months")</p>
                     </div>
                     <Select @bind-Value="@timeRange" TValue="string" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
                         <SelectTrigger>
@@ -30,25 +29,23 @@
                             }
                         </SelectContent>
                     </Select>
-                </CardHeader>
-                <CardContent Class="p-6 pt-2 sm:px-6 sm:pt-6">
-                    <ChartContainer Height="250" Class="w-full">
-                        <LineChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
-                            <Grid Vertical="false" Stroke="var(--border)" />
-                            <XAxis DataKey="date" TickLine="false" Color="var(--border)">
-                                <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
-                            </XAxis>
-                            <YAxis Show="false" TickLine="false">
-                                <AxisLabel Show="false" />
-                            </YAxis>
-                            <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" Formatter="@tooltipFormatter" />
-                            <Legend TextColor="var(--foreground)" />
-                            <Line DataKey="desktop" Name="Desktop" Color="var(--chart-1)" />
-                            <Line DataKey="mobile" Name="Mobile" Color="var(--chart-2)" />
-                        </LineChart>
-                    </ChartContainer>
-                </CardContent>
-            </Card>
+            </div>
+            <ChartContainer Height="250" Class="w-full">
+                <LineChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
+                    <Grid Vertical="false" Stroke="var(--border)" />
+                    <XAxis DataKey="date" TickLine="false" Color="var(--border)">
+                        <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
+                    </XAxis>
+                    <YAxis Show="false" TickLine="false">
+                        <AxisLabel Show="false" />
+                    </YAxis>
+                    <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" Formatter="@tooltipFormatter" />
+                    <Legend TextColor="var(--foreground)" />
+                    <Line DataKey="desktop" Name="Desktop" Color="var(--chart-1)" />
+                    <Line DataKey="mobile" Name="Mobile" Color="var(--chart-2)" />
+                </LineChart>
+            </ChartContainer>
+
         </DemoBlock>
     </DemoSection>
 
@@ -56,260 +53,180 @@
         <div class="grid gap-6 md:grid-cols-2">
 
             <DemoBlock Code="@_defaultCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Line Chart</CardTitle>
-                        <CardDescription>Default line chart</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend Show="false" />
-                                <Line DataKey="sales" Name="Sales" Color="var(--chart-1)" />
-                            </LineChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Sales" Color="var(--chart-1)" />
+                    </LineChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_multipleCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Multiple Lines</CardTitle>
-                        <CardDescription>Multiple line series with custom interval</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <LineChart Data="@multiData" Padding="@(new Padding(6, 0, 32, 0))">
-                                <Grid Show="false" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Interval="100" Position="YAxisPosition.Right" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend TextColor="var(--foreground)" VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Circle" />
-                                <Line DataKey="product1" Name="Product A" Color="var(--chart-1)" />
-                                <Line DataKey="product2" Name="Product B" Color="var(--chart-2)" />
-                            </LineChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <LineChart Data="@multiData" Padding="@(new Padding(6, 0, 32, 0))">
+                        <Grid Show="false" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Interval="100" Position="YAxisPosition.Right" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend TextColor="var(--foreground)" VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Circle" />
+                        <Line DataKey="product1" Name="Product A" Color="var(--chart-1)" />
+                        <Line DataKey="product2" Name="Product B" Color="var(--chart-2)" />
+                    </LineChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_withDotsCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">With Dots</CardTitle>
-                        <CardDescription>Visible data point markers</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend Show="false" />
-                                <Line DataKey="sales" Name="Sales" ShowDots="true" Color="var(--chart-3)" />
-                            </LineChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Sales" ShowDots="true" Color="var(--chart-3)" />
+                    </LineChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_customDotColorsCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Custom Dot Colors</CardTitle>
-                        <CardDescription>Different colored dots</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <LineChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend TextColor="var(--foreground)" />
-                                <Line DataKey="product1" Name="Product A" ShowDots="true" Color="var(--chart-1)" />
-                                <Line DataKey="product2" Name="Product B" ShowDots="true" Color="var(--chart-2)" />
-                            </LineChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <LineChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Line DataKey="product1" Name="Product A" ShowDots="true" Color="var(--chart-1)" />
+                        <Line DataKey="product2" Name="Product B" ShowDots="true" Color="var(--chart-2)" />
+                    </LineChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_customDotsCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Custom Dots</CardTitle>
-                        <CardDescription>Styled data points</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend Show="false" />
-                                <Line DataKey="sales" Name="Sales" ShowDots="true" DotSize="8"
-                                      DotShape="SymbolShape.Diamond" Color="var(--chart-4)" />
-                            </LineChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Sales" ShowDots="true" DotSize="8"
+                              DotShape="SymbolShape.Diamond" Color="var(--chart-4)" />
+                    </LineChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_linearCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Linear</CardTitle>
-                        <CardDescription>Linear interpolation</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend Show="false" />
-                                <Line DataKey="sales" Name="Sales" Interpolation="InterpolationType.Linear" Color="var(--chart-5)" />
-                            </LineChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Sales" Interpolation="InterpolationType.Linear" Color="var(--chart-5)" />
+                    </LineChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_stepCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Step Line</CardTitle>
-                        <CardDescription>Step interpolation</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend Show="false" />
-                                <Line DataKey="sales" Name="Sales" Interpolation="InterpolationType.Step" Color="var(--chart-1)" />
-                            </LineChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Sales" Interpolation="InterpolationType.Step" Color="var(--chart-1)" />
+                    </LineChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_withLabelsCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">With Labels</CardTitle>
-                        <CardDescription>Data labels on points</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend Show="false" />
-                                <Line DataKey="sales" Name="Sales" ShowDots="true" ShowLabel="true" LabelPosition="LabelPosition.Top" Color="var(--chart-2)">
-                                    <LabelList Position="LabelPosition.Top" Formatter="{c}" FontSize="10" Color="#666" />
-                                </Line>
-                            </LineChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Sales" ShowDots="true" ShowLabel="true" LabelPosition="LabelPosition.Top" Color="var(--chart-2)">
+                            <LabelList Position="LabelPosition.Top" Formatter="{c}" FontSize="10" Color="#666" />
+                        </Line>
+                    </LineChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_customLabelsCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Custom Labels</CardTitle>
-                        <CardDescription>Custom label formatting</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend Show="false" />
-                                <Line DataKey="sales" Name="Sales" ShowDots="true" ShowLabel="true" Color="var(--chart-3)">
-                                    <LabelList Position="LabelPosition.Top" Formatter="function(params) { return '$' + params.value; }" FontSize="9" Color="#2563eb" />
-                                </Line>
-                            </LineChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Sales" ShowDots="true" ShowLabel="true" Color="var(--chart-3)">
+                            <LabelList Position="LabelPosition.Top" Formatter="function(params) { return '$' + params.value; }" FontSize="9" Color="#2563eb" />
+                        </Line>
+                    </LineChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_dashedCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Dashed Line</CardTitle>
-                        <CardDescription>Dashed line style</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend Show="false" />
-                                <Line DataKey="sales" Name="Forecast" Dashed="true" ShowDots="true" Color="var(--chart-4)" />
-                            </LineChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Line DataKey="sales" Name="Forecast" Dashed="true" ShowDots="true" Color="var(--chart-4)" />
+                    </LineChart>
+                </ChartContainer>
             </DemoBlock>
 
         </div>

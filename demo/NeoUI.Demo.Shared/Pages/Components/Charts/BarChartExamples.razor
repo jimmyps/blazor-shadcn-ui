@@ -13,11 +13,10 @@
         Title="Interactive"
         Description="A live bar chart with time-range filtering.">
         <DemoBlock Code="@_interactiveCode">
-            <Card>
-                <CardHeader Class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
+            <div class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
                     <div class="grid flex-1 gap-1">
-                        <CardTitle Class="text-xl">Bar Chart â€” Interactive</CardTitle>
-                        <CardDescription>Showing sales data for the @(timeRanges.TryGetValue(timeRange, out var description) ? description.ToLower() : "last 30 days")</CardDescription>
+                        <p class="text-xl font-semibold">Bar Chart â€” Interactive</p>
+                        <p class="text-sm text-muted-foreground">Showing sales data for the @(timeRanges.TryGetValue(timeRange, out var description) ? description.ToLower() : "last 30 days")</p>
                     </div>
                     <Select @bind-Value="@timeRange" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
                         <SelectTrigger>
@@ -30,25 +29,23 @@
                             }
                         </SelectContent>
                     </Select>
-                </CardHeader>
-                <CardContent Class="p-6 pt-2 sm:px-6 sm:pt-6">
-                    <ChartContainer Height="250" Class="w-full">
-                        <BarChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
-                            <Grid Vertical="false" Stroke="var(--border)" />
-                            <XAxis DataKey="date" TickLine="false" Color="var(--border)">
-                                <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
-                            </XAxis>
-                            <YAxis Show="false" TickLine="false">
-                                <AxisLabel Show="false" />
-                            </YAxis>
-                            <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Shadow" />
-                            <Legend TextColor="var(--foreground)" />
-                            <Bar DataKey="desktop" Name="Desktop" Radius="4" Color="var(--chart-1)" />
-                            <Bar DataKey="mobile" Name="Mobile" Radius="4" Color="var(--chart-2)" />
-                        </BarChart>
-                    </ChartContainer>
-                </CardContent>
-            </Card>
+            </div>
+            <ChartContainer Height="250" Class="w-full">
+                <BarChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
+                    <Grid Vertical="false" Stroke="var(--border)" />
+                    <XAxis DataKey="date" TickLine="false" Color="var(--border)">
+                        <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
+                    </XAxis>
+                    <YAxis Show="false" TickLine="false">
+                        <AxisLabel Show="false" />
+                    </YAxis>
+                    <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Shadow" />
+                    <Legend TextColor="var(--foreground)" />
+                    <Bar DataKey="desktop" Name="Desktop" Radius="4" Color="var(--chart-1)" />
+                    <Bar DataKey="mobile" Name="Mobile" Radius="4" Color="var(--chart-2)" />
+                </BarChart>
+            </ChartContainer>
+
         </DemoBlock>
     </DemoSection>
 
@@ -56,261 +53,181 @@
         <div class="grid gap-6 md:grid-cols-2">
 
             <DemoBlock Code="@_defaultCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Bar Chart</CardTitle>
-                        <CardDescription>Default bar chart</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend Show="false" />
-                                <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-1)" />
-                            </BarChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-1)" />
+                    </BarChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_horizontalCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Horizontal Bars</CardTitle>
-                        <CardDescription>Horizontal orientation</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <BarChart Data="@simpleData" Layout="BarLayout.Horizontal" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="sales" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend Show="false" />
-                                <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-2)" />
-                            </BarChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <BarChart Data="@simpleData" Layout="BarLayout.Horizontal" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="sales" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-2)" />
+                    </BarChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_multipleCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Multiple Bars</CardTitle>
-                        <CardDescription>Side-by-side bars</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <BarChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend TextColor="var(--foreground)" />
-                                <Bar DataKey="product1" Name="Product A" Radius="4" Color="var(--chart-1)" />
-                                <Bar DataKey="product2" Name="Product B" Radius="4" Color="var(--chart-2)" />
-                            </BarChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <BarChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Bar DataKey="product1" Name="Product A" Radius="4" Color="var(--chart-1)" />
+                        <Bar DataKey="product2" Name="Product B" Radius="4" Color="var(--chart-2)" />
+                    </BarChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_stackedCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Stacked Bars</CardTitle>
-                        <CardDescription>Stacked bar chart</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <BarChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend TextColor="var(--foreground)" />
-                                <Bar DataKey="product1" Name="Product A" StackId="total" Radius="4" Color="var(--chart-1)" />
-                                <Bar DataKey="product2" Name="Product B" StackId="total" Radius="4" Color="var(--chart-2)" />
-                            </BarChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <BarChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Bar DataKey="product1" Name="Product A" StackId="total" Radius="4" Color="var(--chart-1)" />
+                        <Bar DataKey="product2" Name="Product B" StackId="total" Radius="4" Color="var(--chart-2)" />
+                    </BarChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_withLabelsCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">With Labels</CardTitle>
-                        <CardDescription>Data labels on bars</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend Show="false" />
-                                <Bar DataKey="sales" Name="Sales" Radius="4" ShowLabel="true" LabelPosition="LabelPosition.Top" Color="var(--chart-3)">
-                                    <LabelList Position="LabelPosition.Top" Formatter="{c}" FontSize="11" Color="#666" />
-                                </Bar>
-                            </BarChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Bar DataKey="sales" Name="Sales" Radius="4" ShowLabel="true" LabelPosition="LabelPosition.Top" Color="var(--chart-3)">
+                            <LabelList Position="LabelPosition.Top" Formatter="{c}" FontSize="11" Color="#666" />
+                        </Bar>
+                    </BarChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_customLabelsCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Custom Labels</CardTitle>
-                        <CardDescription>Custom label formatting</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend Show="false" />
-                                <Bar DataKey="sales" Name="Sales" Radius="4" ShowLabel="true" Color="var(--chart-4)">
-                                    <LabelList Position="LabelPosition.Inside" Formatter="function(params) { return '$' + params.value; }" FontSize="10" Color="#fff" />
-                                </Bar>
-                            </BarChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Bar DataKey="sales" Name="Sales" Radius="4" ShowLabel="true" Color="var(--chart-4)">
+                            <LabelList Position="LabelPosition.Inside" Formatter="function(params) { return '$' + params.value; }" FontSize="10" Color="#fff" />
+                        </Bar>
+                    </BarChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_expandedCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">100% Stacked</CardTitle>
-                        <CardDescription>Percentage stacking</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <BarChart Data="@multiData" StackOffset="StackOffset.Expand" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip Formatter="function(params) { return params.seriesName + ': ' + params.value.toFixed(1) + '%'; }" />
-                                <Legend TextColor="var(--foreground)" />
-                                <Bar DataKey="product1" Name="Product A" StackId="total" Radius="4" Color="var(--chart-1)" />
-                                <Bar DataKey="product2" Name="Product B" StackId="total" Radius="4" Color="var(--chart-2)" />
-                            </BarChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <BarChart Data="@multiData" StackOffset="StackOffset.Expand" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip Formatter="function(params) { return params.seriesName + ': ' + params.value.toFixed(1) + '%'; }" />
+                        <Legend TextColor="var(--foreground)" />
+                        <Bar DataKey="product1" Name="Product A" StackId="total" Radius="4" Color="var(--chart-1)" />
+                        <Bar DataKey="product2" Name="Product B" StackId="total" Radius="4" Color="var(--chart-2)" />
+                    </BarChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_activeCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Active / Hover</CardTitle>
-                        <CardDescription>Hover emphasis effect</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend Show="false" />
-                                <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-5)" />
-                            </BarChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-5)" />
+                    </BarChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_mixedCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Mixed Chart</CardTitle>
-                        <CardDescription>Bar and line combined</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <ComposedChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend TextColor="var(--foreground)" />
-                                <Bar DataKey="product1" Name="Product A" Radius="4" Color="var(--chart-1)" />
-                                <Line DataKey="product2" Name="Product B" Color="var(--chart-2)" />
-                            </ComposedChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <ComposedChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Bar DataKey="product1" Name="Product A" Radius="4" Color="var(--chart-1)" />
+                        <Line DataKey="product2" Name="Product B" Color="var(--chart-2)" />
+                    </ComposedChart>
+                </ChartContainer>
             </DemoBlock>
 
             <DemoBlock Code="@_negativeCode">
-                <Card>
-                    <CardHeader Class="pb-2">
-                        <CardTitle Class="text-xl">Negative Values</CardTitle>
-                        <CardDescription>Bars with positive and negative</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer Height="200">
-                            <BarChart Data="@negativeData" Padding="ChartDefaults.DefaultPadding">
-                                <Grid Stroke="var(--border)" />
-                                <XAxis DataKey="month" Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </XAxis>
-                                <YAxis Color="var(--border)">
-                                    <AxisLabel Color="var(--muted-foreground)" />
-                                </YAxis>
-                                <ChartTooltip />
-                                <Legend Show="false" />
-                                <Bar DataKey="value" Name="Profit/Loss" Radius="4" Color="var(--chart-3)" />
-                            </BarChart>
-                        </ChartContainer>
-                    </CardContent>
-                </Card>
+                <ChartContainer Height="200">
+                    <BarChart Data="@negativeData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Bar DataKey="value" Name="Profit/Loss" Radius="4" Color="var(--chart-3)" />
+                    </BarChart>
+                </ChartContainer>
             </DemoBlock>
 
         </div>
