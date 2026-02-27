@@ -1,34 +1,40 @@
 @page "/primitives/popover"
-
 <PageTitle>Popover Primitive - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-
     <DemoPageHeader
         Title="Popover Primitive"
         Description="Headless, unstyled popover primitive with full positioning control." />
 
-    <DemoSection
-        Title="AsChild Pattern"
-        Description="Use AsChild to compose triggers with your own styled elements.">
+        <!-- AsChild Pattern -->
+    <DemoSection Title="AsChild Pattern" Description="Use AsChild to compose triggers with your own styled elements.">
         <DemoBlock Code="@_asChildCode">
             <div class="grid md:grid-cols-2 gap-6">
+                <!-- Without AsChild -->
                 <div class="space-y-3 p-4 border rounded-lg">
                     <h3 class="text-lg font-medium">Without AsChild</h3>
-                    <p class="text-sm text-muted-foreground">PopoverTriggerPrimitive renders its own button element.</p>
+                    <p class="text-sm text-muted-foreground">
+                        PopoverTriggerPrimitive renders its own button element.
+                    </p>
                     <PopoverPrimitive>
-                        <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">Open Popover</PopoverTriggerPrimitive>
+                        <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                            Open PopoverPrimitive
+                        </PopoverTriggerPrimitive>
                         <PopoverContentPrimitive class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
                             <p class="text-sm">Without AsChild content</p>
                         </PopoverContentPrimitive>
                     </PopoverPrimitive>
                 </div>
+
+                <!-- With AsChild -->
                 <div class="space-y-3 p-4 border rounded-lg">
                     <h3 class="text-lg font-medium">With AsChild</h3>
-                    <p class="text-sm text-muted-foreground">Button receives click behavior via TriggerContext.</p>
+                    <p class="text-sm text-muted-foreground">
+                        Button receives click behavior via TriggerContext.
+                    </p>
                     <PopoverPrimitive>
                         <PopoverTriggerPrimitive AsChild>
-                            <Button Variant="ButtonVariant.Outline">Open Popover</Button>
+                            <Button Variant="ButtonVariant.Outline">Open PopoverPrimitive</Button>
                         </PopoverTriggerPrimitive>
                         <PopoverContentPrimitive class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
                             <p class="text-sm">With AsChild content</p>
@@ -39,17 +45,19 @@
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection
-        Title="Basic Headless Primitive"
-        Description="The primitive provides behavior and accessibility without styling.">
+    <DemoSection Title="Basic Headless Primitive" Description="The primitive provides behavior and accessibility without styling.">
         <DemoBlock Code="@_basicCode">
             <div class="rounded-lg border bg-card p-6 max-w-md">
                 <PopoverPrimitive>
-                    <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">Open Popover</PopoverTriggerPrimitive>
+                    <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                        Open PopoverPrimitive
+                    </PopoverTriggerPrimitive>
                     <PopoverContentPrimitive class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
                         <div class="space-y-2">
-                            <h4 class="font-medium leading-none">Primitive Popover</h4>
-                            <p class="text-sm text-muted-foreground">This is a headless popover primitive with basic styling.</p>
+                            <h4 class="font-medium leading-none">Primitive PopoverPrimitive</h4>
+                            <p class="text-sm text-muted-foreground">
+                                This is a headless popover primitive with basic styling.
+                            </p>
                         </div>
                     </PopoverContentPrimitive>
                 </PopoverPrimitive>
@@ -57,15 +65,19 @@
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection
-        Title="Controlled State"
-        Description="Control the popover's open state from your component code.">
+    <DemoSection Title="Controlled State" Description="Control the popover's open state from your component code.">
         <DemoBlock Code="@_controlledCode">
             <div class="space-y-4">
                 <div class="flex gap-2">
-                    <button @onclick="() => isOpen = !isOpen" class="px-3 py-2 border rounded text-sm">Toggle Popover</button>
-                    <span class="text-sm text-muted-foreground self-center">State: @(isOpen ? "Open" : "Closed")</span>
+                    <button @onclick="() => isOpen = !isOpen"
+                            class="px-3 py-2 border rounded text-sm">
+                        Toggle PopoverPrimitive
+                    </button>
+                    <span class="text-sm text-muted-foreground self-center">
+                        State: @(isOpen ? "Open" : "Closed")
+                    </span>
                 </div>
+
                 <div class="rounded-lg border bg-card p-6 max-w-md">
                     <PopoverPrimitive @bind-Open="isOpen">
                         <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
@@ -73,7 +85,9 @@
                         </PopoverTriggerPrimitive>
                         <PopoverContentPrimitive class="z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
                             <p class="text-sm">Controlled by parent state: @isOpen</p>
-                            <button @onclick="() => isOpen = false" class="mt-2 text-sm text-primary underline-offset-4 hover:underline">Close from content</button>
+                            <button @onclick="() => isOpen = false" class="mt-2 text-sm text-primary underline-offset-4 hover:underline">
+                                Close from content
+                            </button>
                         </PopoverContentPrimitive>
                     </PopoverPrimitive>
                 </div>
@@ -81,99 +95,125 @@
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection
-        Title="Positioning Options"
-        Description="Position the popover on different sides of the trigger.">
+    <DemoSection Title="Positioning Options" Description="Position the popover on different sides of the trigger.">
         <DemoBlock Code="@_positioningCode">
             <div class="rounded-lg border bg-card p-6">
                 <div class="flex gap-4">
                     <PopoverPrimitive>
-                        <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">Top</PopoverTriggerPrimitive>
-                        <PopoverContentPrimitive Side="@PopoverSide.Top" class="z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md"><p class="text-sm">Positioned on top</p></PopoverContentPrimitive>
+                        <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                            Top
+                        </PopoverTriggerPrimitive>
+                        <PopoverContentPrimitive Side="@PopoverSide.Top" class="z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+                            <p class="text-sm">Positioned on top</p>
+                        </PopoverContentPrimitive>
                     </PopoverPrimitive>
+
                     <PopoverPrimitive>
-                        <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">Right</PopoverTriggerPrimitive>
-                        <PopoverContentPrimitive Side="@PopoverSide.Right" class="z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md"><p class="text-sm">Positioned on right</p></PopoverContentPrimitive>
+                        <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                            Right
+                        </PopoverTriggerPrimitive>
+                        <PopoverContentPrimitive Side="@PopoverSide.Right" class="z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+                            <p class="text-sm">Positioned on right</p>
+                        </PopoverContentPrimitive>
                     </PopoverPrimitive>
+
                     <PopoverPrimitive>
-                        <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">Left</PopoverTriggerPrimitive>
-                        <PopoverContentPrimitive Side="@PopoverSide.Left" class="z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md"><p class="text-sm">Positioned on left</p></PopoverContentPrimitive>
+                        <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
+                            Left
+                        </PopoverTriggerPrimitive>
+                        <PopoverContentPrimitive Side="@PopoverSide.Left" class="z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md">
+                            <p class="text-sm">Positioned on left</p>
+                        </PopoverContentPrimitive>
                     </PopoverPrimitive>
                 </div>
             </div>
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection
-        Title="Accessibility"
-        Description="Proper role and aria-expanded are applied. Escape closes the popover, clicking outside closes it, and focus is managed automatically." />
+    <DemoSection Title="Accessibility Features" Description="Built-in accessibility features following WAI-ARIA design patterns.">
+        <Alert Variant="AlertVariant.Success" AccentBorder="true">
+            <Icon><LucideIcon Name="circle-check" Class="h-4 w-4" /></Icon>
+            <ChildContent>
+                <AlertTitle>Included by default</AlertTitle>
+                <AlertDescription>
+                    Proper ARIA attributes, Escape key behavior, outside-click close behavior, and focus management.
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
+    </DemoSection>
 
-    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+    <DemoSection Title="Keyboard Shortcuts" Description="Navigate and interact with popovers using keyboard.">
+        <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">Open popover</span>
+                <Kbd>Click / Enter</Kbd>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">Close popover</span>
+                <Kbd>Escape</Kbd>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-medium">Navigate to trigger</span>
+                <Kbd>Tab</Kbd>
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component properties and parameters.">
         <DemoPropsTable Rows="_popoverProps" />
     </DemoSection>
 
-    <DemoPageNav />
+    <DemoSection Title="When to Use Primitives" Description="Choose between primitives and styled components based on your needs.">
+        <div class="grid md:grid-cols-2 gap-4">
+                <div class="rounded-lg border p-4 space-y-3">
+                    <h3 class="font-semibold text-primary">Use Popover Primitive</h3>
+                    <ul class="space-y-2 text-sm text-muted-foreground">
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-600 dark:text-green-400">✓</span>
+                            <span>Building a custom design system</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-600 dark:text-green-400">✓</span>
+                            <span>Need complete control over styling</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-600 dark:text-green-400">✓</span>
+                            <span>Want to apply your own CSS framework</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-600 dark:text-green-400">✓</span>
+                            <span>Creating unique visual designs</span>
+                        </li>
+                    </ul>
+                </div>
 
+                <div class="rounded-lg border p-4 space-y-3">
+                    <h3 class="font-semibold text-primary">Use Styled Component</h3>
+                    <ul class="space-y-2 text-sm text-muted-foreground">
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-600 dark:text-blue-400">●</span>
+                            <span>Want shadcn/ui design out of the box</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-600 dark:text-blue-400">●</span>
+                            <span>Need quick implementation</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-600 dark:text-blue-400">●</span>
+                            <span>Like the default styling</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-600 dark:text-blue-400">●</span>
+                            <span>Prefer convention over configuration</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+    </DemoSection>
+
+    <DemoPageNav />
 </div>
 
 @code {
-    private bool isOpen = false;
-
-    private static readonly IReadOnlyList<DemoPropRow> _popoverProps =
-    [
-        new("Open",         "bool?",                    "—",      "Controls whether the popover is open (controlled mode)."),
-        new("OpenChanged",  "EventCallback&lt;bool&gt;","—",      "Callback invoked when the open state changes."),
-        new("Side",         "PopoverSide",              "Bottom", "On PopoverContentPrimitive: which side to position the content."),
-        new("Align",        "PopoverAlign",             "Center", "On PopoverContentPrimitive: how to align the content relative to the trigger."),
-        new("AsChild",      "bool",                     "false",  "On PopoverTriggerPrimitive: merges trigger behavior into child element."),
-        new("ChildContent", "RenderFragment?",           "—",      "Content rendered inside trigger or content primitives."),
-    ];
-
-    private const string _asChildCode =
-        """
-        <!-- Without AsChild -->
-        <PopoverPrimitive>
-            <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer">Open Popover</PopoverTriggerPrimitive>
-            <PopoverContentPrimitive class="z-50 w-72 rounded-md border bg-popover p-4 shadow-md">Content</PopoverContentPrimitive>
-        </PopoverPrimitive>
-
-        <!-- With AsChild -->
-        <PopoverPrimitive>
-            <PopoverTriggerPrimitive AsChild>
-                <Button Variant="ButtonVariant.Outline">Open Popover</Button>
-            </PopoverTriggerPrimitive>
-            <PopoverContentPrimitive class="z-50 w-72 rounded-md border bg-popover p-4 shadow-md">Content</PopoverContentPrimitive>
-        </PopoverPrimitive>
-        """;
-
-    private const string _basicCode =
-        """
-        <PopoverPrimitive>
-            <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">Open Popover</PopoverTriggerPrimitive>
-            <PopoverContentPrimitive class="z-50 w-72 rounded-md border bg-popover p-4 shadow-md">
-                <h4 class="font-medium leading-none">Primitive Popover</h4>
-                <p class="text-sm text-muted-foreground">Headless popover with basic styling.</p>
-            </PopoverContentPrimitive>
-        </PopoverPrimitive>
-        """;
-
-    private const string _controlledCode =
-        """
-        <PopoverPrimitive @bind-Open="isOpen">
-            <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">
-                @(isOpen ? "Close" : "Open") Controlled
-            </PopoverTriggerPrimitive>
-            <PopoverContentPrimitive class="z-50 w-72 rounded-md border bg-popover p-4 shadow-md">
-                <p class="text-sm">Controlled by parent state: @isOpen</p>
-            </PopoverContentPrimitive>
-        </PopoverPrimitive>
-        """;
-
-    private const string _positioningCode =
-        """
-        <PopoverPrimitive>
-            <PopoverTriggerPrimitive class="px-3 py-2 border rounded text-sm cursor-pointer hover:bg-accent">Top</PopoverTriggerPrimitive>
-            <PopoverContentPrimitive Side="@PopoverSide.Top" class="z-50 w-64 rounded-md border bg-popover p-4 shadow-md">Positioned on top</PopoverContentPrimitive>
-        </PopoverPrimitive>
-        """;
+private bool isOpen = false;
 }

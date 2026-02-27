@@ -12,12 +12,10 @@
         Title="Default"
         Description="A basic calendar for date selection.">
         <DemoBlock Code="@_defaultCode">
-            <div class="flex flex-col gap-4">
-                <Calendar @bind-SelectedDate="selectedDate1" />
-                <p class="text-sm text-muted-foreground">
-                    Selected: @(selectedDate1?.ToString("D") ?? "None")
-                </p>
-            </div>
+            <Calendar @bind-SelectedDate="selectedDate1" />
+            <p class="text-sm text-muted-foreground mt-4">
+                Selected: @(selectedDate1?.ToString("D") ?? "None")
+            </p>
         </DemoBlock>
     </DemoSection>
 
@@ -25,12 +23,10 @@
         Title="Dropdown Mode"
         Description="Use dropdown selects for quick month and year navigation.">
         <DemoBlock Code="@_dropdownCode">
-            <div class="flex flex-col gap-4">
-                <Calendar @bind-SelectedDate="selectedDate5" CaptionLayout="CalendarCaptionLayout.Dropdown" />
-                <p class="text-sm text-muted-foreground">
-                    Selected: @(selectedDate5?.ToString("D") ?? "None")
-                </p>
-            </div>
+            <Calendar @bind-SelectedDate="selectedDate5" CaptionLayout="CalendarCaptionLayout.Dropdown" />
+            <p class="text-sm text-muted-foreground mt-4">
+                Selected: @(selectedDate5?.ToString("D") ?? "None")
+            </p>
         </DemoBlock>
     </DemoSection>
 
@@ -38,16 +34,14 @@
         Title="With Date Constraints"
         Description="Limit selection to a specific date range.">
         <DemoBlock Code="@_constraintsCode">
-            <div class="flex flex-col gap-4">
-                <Calendar @bind-SelectedDate="selectedDate2"
-                          MinDate="DateOnly.FromDateTime(DateTime.Today)"
-                          MaxDate="DateOnly.FromDateTime(DateTime.Today.AddMonths(3))" />
-                <p class="text-sm text-muted-foreground">
-                    Selected: @(selectedDate2?.ToString("D") ?? "None")
-                    <br />
-                    <span class="text-xs">Range: Today to 3 months from now</span>
-                </p>
-            </div>
+            <Calendar @bind-SelectedDate="selectedDate2"
+                      MinDate="DateOnly.FromDateTime(DateTime.Today)"
+                      MaxDate="DateOnly.FromDateTime(DateTime.Today.AddMonths(3))" />
+            <p class="text-sm text-muted-foreground mt-4">
+                Selected: @(selectedDate2?.ToString("D") ?? "None")
+                <br />
+                <span class="text-xs">Range: Today to 3 months from now</span>
+            </p>
         </DemoBlock>
     </DemoSection>
 
@@ -55,14 +49,12 @@
         Title="Disable Weekends"
         Description="Use a custom function to disable specific dates.">
         <DemoBlock Code="@_disableWeekendsCode">
-            <div class="flex flex-col gap-4">
-                <Calendar @bind-SelectedDate="selectedDate3" IsDateDisabled="IsWeekend" />
-                <p class="text-sm text-muted-foreground">
-                    Selected: @(selectedDate3?.ToString("D") ?? "None")
-                    <br />
-                    <span class="text-xs">Weekends are disabled</span>
-                </p>
-            </div>
+            <Calendar @bind-SelectedDate="selectedDate3" IsDateDisabled="IsWeekend" />
+            <p class="text-sm text-muted-foreground mt-4">
+                Selected: @(selectedDate3?.ToString("D") ?? "None")
+                <br />
+                <span class="text-xs">Weekends are disabled</span>
+            </p>
         </DemoBlock>
     </DemoSection>
 
@@ -70,14 +62,12 @@
         Title="With Initial Month"
         Description="Start with a specific month displayed.">
         <DemoBlock Code="@_initialMonthCode">
-            <div class="flex flex-col gap-4">
-                <Calendar @bind-SelectedDate="selectedDate4" InitialMonth="new DateOnly(2025, 12, 1)" />
-                <p class="text-sm text-muted-foreground">
-                    Selected: @(selectedDate4?.ToString("D") ?? "None")
-                    <br />
-                    <span class="text-xs">Starts at December 2025</span>
-                </p>
-            </div>
+            <Calendar @bind-SelectedDate="selectedDate4" InitialMonth="new DateOnly(2025, 12, 1)" />
+            <p class="text-sm text-muted-foreground mt-4">
+                Selected: @(selectedDate4?.ToString("D") ?? "None")
+                <br />
+                <span class="text-xs">Starts at December 2025</span>
+            </p>
         </DemoBlock>
     </DemoSection>
 
@@ -85,16 +75,56 @@
         Title="Side by Side"
         Description="Multiple calendars for comparison or date range selection.">
         <DemoBlock Code="@_sideBySideCode">
-            <div class="space-y-2">
-                <div class="flex gap-4">
-                    <Calendar @bind-SelectedDate="rangeStart" />
-                    <Calendar @bind-SelectedDate="rangeEnd" />
-                </div>
-                <p class="text-sm text-muted-foreground">
-                    From: @(rangeStart?.ToString("D") ?? "None") — To: @(rangeEnd?.ToString("D") ?? "None")
-                </p>
+            <div class="flex gap-4">
+                <Calendar @bind-SelectedDate="rangeStart" />
+                <Calendar @bind-SelectedDate="rangeEnd" />
             </div>
+            <p class="text-sm text-muted-foreground mt-2">
+                From: @(rangeStart?.ToString("D") ?? "None") — To: @(rangeEnd?.ToString("D") ?? "None")
+            </p>
         </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Features">
+        <ul class="list-disc list-inside space-y-2 text-sm">
+            <li>Single date selection with @@bind-SelectedDate</li>
+            <li>MinDate and MaxDate constraints</li>
+            <li>Custom date disabling via IsDateDisabled function</li>
+            <li>Month navigation with previous/next buttons</li>
+            <li>Dropdown mode for quick month/year selection</li>
+            <li>Culture-aware formatting and first day of week</li>
+            <li>ARIA grid roles for accessibility</li>
+            <li>Full keyboard navigation support</li>
+        </ul>
+    </DemoSection>
+
+    <DemoSection Title="Keyboard Navigation">
+        <div class="grid gap-2 text-sm">
+            <div class="flex gap-4">
+                <kbd class="px-2 py-1 bg-muted rounded">←/→</kbd>
+                <span>Previous/Next day</span>
+            </div>
+            <div class="flex gap-4">
+                <kbd class="px-2 py-1 bg-muted rounded">↑/↓</kbd>
+                <span>Previous/Next week</span>
+            </div>
+            <div class="flex gap-4">
+                <kbd class="px-2 py-1 bg-muted rounded">Home/End</kbd>
+                <span>First/Last day of month</span>
+            </div>
+            <div class="flex gap-4">
+                <kbd class="px-2 py-1 bg-muted rounded">PageUp/PageDown</kbd>
+                <span>Previous/Next month</span>
+            </div>
+            <div class="flex gap-4">
+                <kbd class="px-2 py-1 bg-muted rounded">Shift+PageUp/PageDown</kbd>
+                <span>Previous/Next year</span>
+            </div>
+            <div class="flex gap-4">
+                <kbd class="px-2 py-1 bg-muted rounded">Enter/Space</kbd>
+                <span>Select date</span>
+            </div>
+        </div>
     </DemoSection>
 
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
@@ -113,57 +143,7 @@
     private DateOnly? rangeStart;
     private DateOnly? rangeEnd;
 
-    private static readonly IReadOnlyList<DemoPropRow> _calendarProps =
-    [
-        new("SelectedDate",    "DateOnly?",             null,      "The currently selected date."),
-        new("MinDate",         "DateOnly?",             null,      "The minimum selectable date."),
-        new("MaxDate",         "DateOnly?",             null,      "The maximum selectable date."),
-        new("InitialMonth",    "DateOnly?",             null,      "The month displayed when the calendar first renders."),
-        new("IsDateDisabled",  "Func<DateOnly, bool>?", null,      "A function that returns true for dates that should be disabled."),
-        new("CaptionLayout",   "CalendarCaptionLayout", "Buttons", "Controls month/year navigation style. Options: Buttons, Dropdown."),
-        new("Class",           "string?",               null,      "Additional CSS classes appended to the root element."),
-    ];
-
     private bool IsWeekend(DateOnly date) =>
         date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday;
 
-    private const string _defaultCode =
-        """
-        <Calendar @bind-SelectedDate="selectedDate" />
-        """;
-
-    private const string _dropdownCode =
-        """
-        <Calendar @bind-SelectedDate="selectedDate" CaptionLayout="CalendarCaptionLayout.Dropdown" />
-        """;
-
-    private const string _constraintsCode =
-        """
-        <Calendar @bind-SelectedDate="selectedDate"
-                  MinDate="DateOnly.FromDateTime(DateTime.Today)"
-                  MaxDate="DateOnly.FromDateTime(DateTime.Today.AddMonths(3))" />
-        """;
-
-    private const string _disableWeekendsCode =
-        """
-        <Calendar @bind-SelectedDate="selectedDate" IsDateDisabled="IsWeekend" />
-
-        @code {
-            private bool IsWeekend(DateOnly date) =>
-                date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday;
-        }
-        """;
-
-    private const string _initialMonthCode =
-        """
-        <Calendar @bind-SelectedDate="selectedDate" InitialMonth="new DateOnly(2025, 12, 1)" />
-        """;
-
-    private const string _sideBySideCode =
-        """
-        <div class="flex gap-4">
-            <Calendar @bind-SelectedDate="rangeStart" />
-            <Calendar @bind-SelectedDate="rangeEnd" />
-        </div>
-        """;
 }

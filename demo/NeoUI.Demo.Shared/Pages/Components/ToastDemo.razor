@@ -40,10 +40,15 @@
         Title="Multiple Toasts"
         Description="Toasts stack automatically when triggered in sequence.">
         <DemoBlock Code="@_multipleCode">
-            <div class="flex gap-2 flex-wrap">
-                <Button Variant="ButtonVariant.Outline" @onclick="ShowMultipleToasts">Show Multiple Toasts</Button>
-                <Button Variant="ButtonVariant.Outline" @onclick="DismissAllToasts">Dismiss All</Button>
-            </div>
+            <Button Variant="ButtonVariant.Outline" @onclick="ShowMultipleToasts">Show Multiple Toasts</Button>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Dismiss All"
+        Description="Clear all active toasts.">
+        <DemoBlock Code="@_dismissAllCode">
+            <Button Variant="ButtonVariant.Outline" @onclick="DismissAllToasts">Dismiss All</Button>
         </DemoBlock>
     </DemoSection>
 
@@ -116,6 +121,36 @@
                 </ul>
             </AdditionalContent>
         </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Features">
+        <ul class="list-disc list-inside space-y-2 text-sm">
+            <li>Multiple variants: Default, Success, Warning, Error, Info</li>
+            <li>Two sizes: Default and Compact</li>
+            <li>Auto variant icons (Success ✓, Error ✗, Warning ⚠, Info ℹ)</li>
+            <li>Pause on hover (prevents auto-dismiss while reading)</li>
+            <li>Programmatic API via IToastService</li>
+            <li>Auto-dismiss with configurable duration</li>
+            <li>Optional action buttons</li>
+            <li>Toast stacking with MaxToasts limit</li>
+            <li>Configurable viewport position</li>
+            <li>Accessible with ARIA live regions</li>
+        </ul>
+    </DemoSection>
+
+    <DemoSection Title="Setup" Description="Register the service and add the provider to your layout.">
+        <div class="space-y-4">
+            <p class="text-sm text-muted-foreground">1. Register the service in Program.cs:</p>
+            <div class="bg-muted p-4 rounded-md">
+                <code class="text-sm">builder.Services.AddSingleton&lt;IToastService, ToastService&gt;();</code>
+            </div>
+            <p class="text-sm text-muted-foreground">2. Add ToastProvider to your layout:</p>
+            <div class="bg-muted p-4 rounded-md">
+                <pre class="text-sm overflow-x-auto"><code>&lt;ToastProvider Position="ToastPosition.BottomRight"&gt;
+    @@Body
+&lt;/ToastProvider&gt;</code></pre>
+            </div>
+        </div>
     </DemoSection>
 
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
@@ -271,129 +306,4 @@
         });
     }
 
-    private static readonly IReadOnlyList<DemoPropRow> _toastProps =
-    [
-        new("Title",        "string",       "—",      "Toast title text."),
-        new("Description",  "string?",      "null",   "Additional detail text shown below the title."),
-        new("Variant",      "ToastVariant", "Default","Visual style. Options: Default, Success, Warning, Error, Info."),
-        new("Size",         "ToastSize",    "Default","Toast size. Options: Default, Compact."),
-        new("Duration",     "TimeSpan",     "5s",     "How long the toast stays visible before auto-dismissing."),
-        new("ActionLabel",  "string?",      "null",   "Text for the optional action button."),
-        new("OnAction",     "Action?",      "null",   "Callback invoked when the action button is clicked."),
-        new("ShowIcon",     "bool",         "true",   "Whether to show the variant icon."),
-        new("PauseOnHover", "bool",         "true",   "Whether to pause auto-dismiss when hovering over the toast."),
-    ];
-
-    private const string _defaultCode = """
-        @inject IToastService ToastService
-
-        <Button @onclick="ShowToast">Show Toast</Button>
-
-        @code {
-            private void ShowToast()
-            {
-                ToastService.Show("Notification", "This is a default toast message.");
-            }
-        }
-        """;
-
-    private const string _actionCode = """
-        private void ShowToastWithAction()
-        {
-            ToastService.Show(new ToastOptions
-            {
-                Title = "Event scheduled",
-                Description = "Your meeting has been scheduled for tomorrow at 10 AM.",
-                ActionLabel = "Undo",
-                OnAction = () => ToastService.Info("Undone", "The event has been cancelled."),
-                Duration = TimeSpan.FromSeconds(8)
-            });
-        }
-        """;
-
-    private const string _durationCode = """
-        // Short: 2 seconds
-        ToastService.Show("Quick message", "Disappears in 2 seconds.", ToastVariant.Default, TimeSpan.FromSeconds(2));
-
-        // Long: 10 seconds
-        ToastService.Show("Long message", "Stays for 10 seconds.", ToastVariant.Default, TimeSpan.FromSeconds(10));
-        """;
-
-    private const string _multipleCode = """
-        ToastService.Info("First", "This is the first toast.");
-        ToastService.Success("Second", "This is the second toast.");
-        ToastService.Warning("Third", "This is the third toast.");
-
-        // Dismiss all
-        ToastService.DismissAll();
-        """;
-
-    private const string _variantsCode = """
-        ToastService.Show("Default", "Standard notification.");
-        ToastService.Success("Success!", "Your changes have been saved.");
-        ToastService.Error("Error", "Something went wrong.");
-        ToastService.Warning("Warning", "This action cannot be undone.");
-        ToastService.Info("Info", "You can customize the toast duration.");
-        """;
-
-    private const string _sizesCode = """
-        // Default size
-        ToastService.Show(new ToastOptions
-        {
-            Title = "Default Size",
-            Variant = ToastVariant.Success,
-            Size = ToastSize.Default
-        });
-
-        // Compact size
-        ToastService.Show(new ToastOptions
-        {
-            Title = "Compact Size",
-            Variant = ToastVariant.Info,
-            Size = ToastSize.Compact
-        });
-        """;
-
-    private const string _iconsCode = """
-        // With icon (default)
-        ToastService.Show(new ToastOptions { Title = "With Icon", Variant = ToastVariant.Success, ShowIcon = true });
-
-        // Without icon
-        ToastService.Show(new ToastOptions { Title = "Without Icon", Variant = ToastVariant.Warning, ShowIcon = false });
-        """;
-
-    private const string _pauseCode = """
-        // Pauses on hover (default)
-        ToastService.Show(new ToastOptions
-        {
-            Title = "Pause on Hover",
-            Variant = ToastVariant.Info,
-            PauseOnHover = true,
-            Duration = TimeSpan.FromSeconds(5)
-        });
-
-        // Always counts down
-        ToastService.Show(new ToastOptions
-        {
-            Title = "No Pause",
-            Variant = ToastVariant.Warning,
-            PauseOnHover = false,
-            Duration = TimeSpan.FromSeconds(5)
-        });
-        """;
-
-    private const string _customCode = """
-        ToastService.Show(new ToastOptions
-        {
-            Title = "Fully Customized",
-            Description = "Compact size, custom icon, pause on hover, and action button.",
-            Variant = ToastVariant.Success,
-            Size = ToastSize.Compact,
-            ShowIcon = true,
-            PauseOnHover = true,
-            ActionLabel = "View Details",
-            OnAction = () => ToastService.Info("Details", "Action button clicked!"),
-            Duration = TimeSpan.FromSeconds(8)
-        });
-        """;
 }

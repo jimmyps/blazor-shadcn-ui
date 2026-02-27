@@ -37,8 +37,8 @@
         <span class="sm:hidden text-sm font-medium truncate text-foreground">@_segments[^1].Label</span>
     }
 
-    @* Compact prev/next — only on registered non-sub-page component/primitive routes; hidden on mobile *@
-    @if (_currentEntry is not null && !_currentEntry.IsSubPage)
+    @* Compact prev/next — on all registered component/primitive routes (including sub-pages); hidden on mobile *@
+    @if (_currentEntry is not null)
     {
         <div class="hidden sm:flex items-center shrink-0 ml-1">
             @if (_prev is not null)
@@ -52,7 +52,7 @@
                             <LucideIcon Name="arrow-left" Size="14" />
                         </Button>
                     </TooltipTrigger>
-                    <TooltipContent Side="PopoverSide.Bottom">← @_prev.Title</TooltipContent>
+                    <TooltipContent Side="PopoverSide.Bottom">← @GetNavTitle(_prev)</TooltipContent>
                 </Tooltip>
             }
             else
@@ -74,7 +74,7 @@
                             <LucideIcon Name="arrow-right" Size="14" />
                         </Button>
                     </TooltipTrigger>
-                    <TooltipContent Side="PopoverSide.Bottom">@_next.Title →</TooltipContent>
+                    <TooltipContent Side="PopoverSide.Bottom">@GetNavTitle(_next) →</TooltipContent>
                 </Tooltip>
             }
             else
@@ -113,10 +113,19 @@
         _segments = BuildSegments(relative);
 
         _currentEntry = ComponentRegistry.FindByRoute(relative);
-        (_prev, _next) = _currentEntry is { IsSubPage: false }
-            ? ComponentRegistry.GetNeighbors(relative)
+        (_prev, _next) = _currentEntry is not null
+            ? (_currentEntry.IsSubPage
+                ? ComponentRegistry.GetSubPageGroupNeighbors(relative)
+                : ComponentRegistry.GetNeighbors(relative))
             : (null, null);
     }
+
+    /// <summary>
+    /// Label to show in the tooltip: when navigating within a sub-page group,
+    /// the parent overview entry is labelled "Overview" rather than its registry title.
+    /// </summary>
+    private string GetNavTitle(ComponentRegistryEntry entry) =>
+        _currentEntry?.IsSubPage == true && !entry.IsSubPage ? "Overview" : entry.Title;
 
     private static List<Segment> BuildSegments(string route)
     {

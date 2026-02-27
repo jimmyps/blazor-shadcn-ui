@@ -50,7 +50,25 @@
 
     <DemoSection
         Title="Usage"
-        Description="Drop ThemeSwitcher anywhere in your layout, typically in a top-bar or sidebar footer alongside DarkModeToggle." />
+        Description="Minimal usage — drop it anywhere in your layout.">
+        <div class="space-y-4">
+            <div class="rounded-lg border bg-muted/50 p-4">
+                <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor
+
+&lt;ThemeSwitcher /&gt;</code></pre>
+            </div>
+            <p class="text-sm text-muted-foreground">
+                Typical placement is in a top-bar or sidebar footer alongside
+                <code class="text-sm bg-muted px-1 py-0.5 rounded">DarkModeToggle</code>:
+            </p>
+            <div class="rounded-lg border bg-muted/50 p-4">
+                <pre class="text-sm overflow-x-auto"><code>&lt;header class="flex items-center gap-2"&gt;
+    &lt;ThemeSwitcher /&gt;
+    &lt;DarkModeToggle /&gt;
+&lt;/header&gt;</code></pre>
+            </div>
+        </div>
+    </DemoSection>
 
     <DemoSection
         Title="Customisation"
@@ -65,7 +83,13 @@
 
     <DemoSection
         Title="Fixed Positioning"
-        Description="By default Strategy is Fixed so the popover correctly escapes any CSS stacking context (e.g. sidebars with overflow: hidden or transform). Switch to Absolute if you embed the switcher in regular document flow where fixed positioning causes layout shifts." />
+        Description="By default Strategy is Fixed so the popover correctly escapes any CSS stacking context (e.g. sidebars with overflow: hidden or transform). Switch to Absolute if you embed the switcher in regular document flow where fixed positioning causes layout shifts.">
+        <div class="rounded-lg border bg-muted/50 p-4">
+            <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor   @* for PositioningStrategy *@
+
+&lt;ThemeSwitcher Strategy="PositioningStrategy.Absolute" /&gt;</code></pre>
+        </div>
+    </DemoSection>
 
     <DemoSection
         Title="API Reference"
@@ -104,41 +128,4 @@
         ThemeService.OnThemeChanged -= HandleThemeChanged;
     }
 
-    private static readonly IReadOnlyList<DemoPropRow> _themeSwitcherProps =
-    [
-        new("TriggerClass", "string?", "null", "Additional CSS classes merged onto the trigger Button."),
-        new("PopoverContentClass", "string?", "null", "Additional CSS classes merged onto the PopoverContent panel."),
-        new("Align", "PopoverAlign", "End", "Popover alignment relative to trigger."),
-        new("Strategy", "PositioningStrategy", "Fixed", "Use Fixed inside transformed/overflow-hidden containers; Absolute otherwise."),
-        new("ZIndex", "int", "ZIndexLevels.PopoverContent", "Z-index for the popover panel."),
-    ];
-
-    private static readonly IReadOnlyList<DemoPropRow> _themeServiceProps =
-    [
-        new("CurrentBaseColor", "BaseColor", "—", "Currently active base color scheme."),
-        new("CurrentPrimaryColor", "PrimaryColor", "—", "Currently active primary accent color."),
-        new("IsDarkMode", "bool", "—", "Whether dark mode is currently active."),
-        new("OnThemeChanged", "event Action", "—", "Fired whenever the theme changes."),
-        new("InitializeAsync()", "Task", "—", "Reads persisted preferences from localStorage."),
-        new("SetBaseColorAsync(BaseColor)", "Task", "—", "Changes and persists the base color scheme."),
-        new("SetPrimaryColorAsync(PrimaryColor)", "Task", "—", "Changes and persists the primary accent color."),
-        new("SetThemeAsync(bool)", "Task", "—", "Toggles dark mode and persists the preference."),
-    ];
-
-    private const string _demoCode = """
-        <ThemeSwitcher Align="PopoverAlign.Start" />
-        <DarkModeToggle />
-        """;
-
-    private const string _darkModeToggleCode = """
-        <DarkModeToggle />
-        """;
-
-    private const string _customisationCode = """
-        <!-- Extra ring on trigger -->
-        <ThemeSwitcher TriggerClass="rounded-full ring-2 ring-primary ring-offset-2 ring-offset-background" />
-
-        <!-- Narrower popover panel -->
-        <ThemeSwitcher PopoverContentClass="!w-72" />
-        """;
 }

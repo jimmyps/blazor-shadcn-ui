@@ -27,33 +27,41 @@
                             <p class="mb-3">
                                 By default, NumericInput uses <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Change"</code> for better performance and UX.
                             </p>
-                            <div class="space-y-3">
-                                <div>
-                                    <p class="font-medium mb-2">Benefits:</p>
-                                    <ul class="list-disc list-inside space-y-1 ml-2 text-sm">
-                                        <li><strong>Better typing UX:</strong> No interruptions while typing — validation tooltips won't get in your way</li>
-                                        <li><strong>Better performance:</strong> Value updates and validation only run when you tab away (blur)</li>
-                                        <li><strong>Fewer re-renders:</strong> Your bound value updates once on blur, not on every keystroke</li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <p class="font-medium mb-2">UpdateOn Modes:</p>
-                                    <div class="grid gap-2 text-sm">
+                            <Collapsible>
+                                <CollapsibleTrigger Class="inline-flex items-center gap-1 text-sm font-normal hover:underline [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                                    <span>Read more</span>
+                                    <LucideIcon Name="chevron-down" Size="14" />
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                    <div class="space-y-3 pt-3">
                                         <div>
-                                            <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Change"</code>
-                                            <span class="text-muted-foreground ml-2">→ Updates on blur (default, recommended)</span>
+                                            <p class="font-medium mb-2">Benefits:</p>
+                                            <ul class="list-disc list-inside space-y-1 ml-2 text-sm">
+                                                <li><strong>Better typing UX:</strong> No interruptions while typing — validation tooltips won't get in your way</li>
+                                                <li><strong>Better performance:</strong> Value updates and validation only run when you tab away (blur)</li>
+                                                <li><strong>Fewer re-renders:</strong> Your bound value updates once on blur, not on every keystroke</li>
+                                            </ul>
                                         </div>
                                         <div>
-                                            <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Input"</code>
-                                            <span class="text-muted-foreground ml-2">→ Updates on every keystroke</span>
+                                            <p class="font-medium mb-2">UpdateOn Modes:</p>
+                                            <div class="grid gap-2 text-sm">
+                                                <div>
+                                                    <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Change"</code>
+                                                    <span class="text-muted-foreground ml-2">→ Updates on blur (default, recommended)</span>
+                                                </div>
+                                                <div>
+                                                    <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Input"</code>
+                                                    <span class="text-muted-foreground ml-2">→ Updates on every keystroke</span>
+                                                </div>
+                                            </div>
                                         </div>
+                                        <p class="text-xs text-muted-foreground flex items-start gap-1.5">
+                                            <LucideIcon Name="lightbulb" Size="14" Class="mt-0.5 flex-shrink-0" />
+                                            <span><strong>Tip:</strong> Use <code class="px-1 py-0.5 bg-muted rounded">UpdateOn="Input"</code> only when you need real-time updates (e.g. live calculation, instant range validation), or when targeting WebAssembly where interactivity is fully client-side.</span>
+                                        </p>
                                     </div>
-                                </div>
-                                <p class="text-xs text-muted-foreground flex items-start gap-1.5">
-                                    <LucideIcon Name="lightbulb" Size="14" Class="mt-0.5 flex-shrink-0" />
-                                    <span><strong>Tip:</strong> Use <code class="px-1 py-0.5 bg-muted rounded">UpdateOn="Input"</code> only when you need real-time updates (e.g. live calculation, instant range validation), or when targeting WebAssembly where interactivity is fully client-side.</span>
-                                </p>
-                            </div>
+                                </CollapsibleContent>
+                            </Collapsible>
                         </AlertDescription>
                     </ChildContent>
                 </Alert>
@@ -81,6 +89,18 @@
                 <label class="text-sm font-medium">Percentage</label>
                 <NumericInput TValue="double" @bind-Value="percentage" Placeholder="0.0" Step="0.1" Min="0" Max="100" />
                 <p class="text-xs text-muted-foreground">Current value: @percentage%</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Float Input"
+        Description="Single precision floating point input.">
+        <DemoBlock Code="@_floatCode">
+            <div class="max-w-md space-y-2">
+                <label class="text-sm font-medium">Rating</label>
+                <NumericInput TValue="float" @bind-Value="rating" Placeholder="0.0" Step="0.1" Min="0" Max="5" />
+                <p class="text-xs text-muted-foreground">Current value: @rating</p>
             </div>
         </DemoBlock>
     </DemoSection>
@@ -126,6 +146,24 @@
     </DemoSection>
 
     <DemoSection
+        Title="With Label"
+        Description="Inputs with labels and helper text.">
+        <DemoBlock Code="@_withLabelCode">
+            <div class="max-w-md space-y-4">
+                <div class="space-y-2">
+                    <label for="amount-input" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                        Amount
+                    </label>
+                    <NumericInput TValue="decimal" @bind-Value="amount" Id="amount-input" Placeholder="0.00" Step="0.01" AriaLabel="Amount" />
+                    <p class="text-sm text-muted-foreground">
+                        Current value: @amount.ToString("C")
+                    </p>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Error State"
         Description="Input with error visualization using aria-invalid.">
         <DemoBlock Code="@_errorCode">
@@ -158,63 +196,10 @@
     private int quantity = 10;
     private decimal price = 29.99m;
     private double percentage = 75.5;
+    private float rating = 4.5f;
+    private decimal amount = 100.00m;
     private int age = 25;
     private int requiredQuantity;
     private int errorValue = -1;
 
-    private static readonly IReadOnlyList<DemoPropRow> _numericInputProps =
-    [
-        new("TValue",      "numeric type",    "-",      "The numeric type: int, decimal, double, float, long, etc."),
-        new("Value",       "TValue",          "0",      "The current numeric value."),
-        new("Min",         "TValue?",         null,     "Minimum allowed value."),
-        new("Max",         "TValue?",         null,     "Maximum allowed value."),
-        new("Step",        "TValue?",         null,     "The increment/decrement step value."),
-        new("Placeholder", "string?",         null,     "Placeholder text shown when the input is empty."),
-        new("Disabled",    "bool",            "false",  "When true, the input is non-interactive."),
-        new("Readonly",    "bool",            "false",  "When true, the input is focusable but not editable."),
-        new("Required",    "bool",            "false",  "When true, marks the field as required."),
-        new("AriaInvalid", "bool",            "false",  "When true, applies aria-invalid for error state styling."),
-        new("UpdateOn",    "UpdateOnMode",    "Change", "When to update bound value. Change = on blur, Input = on every keystroke."),
-        new("Class",       "string?",         null,     "Additional CSS classes appended to the root element."),
-    ];
-
-    private const string _intCode =
-        """
-        <NumericInput TValue="int" @bind-Value="quantity" Placeholder="Enter quantity..." />
-        """;
-
-    private const string _decimalCode =
-        """
-        <NumericInput TValue="decimal" @bind-Value="price" Placeholder="0.00" Step="0.01" Min="0" Max="10000" />
-        """;
-
-    private const string _doubleCode =
-        """
-        <NumericInput TValue="double" @bind-Value="percentage" Placeholder="0.0" Step="0.1" Min="0" Max="100" />
-        """;
-
-    private const string _constraintsCode =
-        """
-        <NumericInput TValue="int" @bind-Value="age" Min="18" Max="120" Step="1" Placeholder="Enter age" />
-        """;
-
-    private const string _disabledCode =
-        """
-        <NumericInput TValue="int" Value="42" Disabled="true" />
-        """;
-
-    private const string _requiredCode =
-        """
-        <NumericInput TValue="int" @bind-Value="quantity" Placeholder="Enter quantity" Required="true" Min="1" />
-        """;
-
-    private const string _errorCode =
-        """
-        <NumericInput TValue="int" @bind-Value="value" AriaInvalid="true" Placeholder="This field has an error" />
-        """;
-
-    private const string _readonlyCode =
-        """
-        <NumericInput TValue="decimal" Value="99.99m" Readonly="true" />
-        """;
 }

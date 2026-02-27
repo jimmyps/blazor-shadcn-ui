@@ -1,28 +1,36 @@
 @page "/components/chart/area"
 @using NeoUI.Blazor.Charts
-<PageTitle>Chart Components - Area Chart</PageTitle>
 
-<div class="space-y-8">
-    @* Hero - Interactive Area Chart with Date Filter *@
-    <Card>
-        <CardHeader Class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
-            <div class="grid flex-1 gap-1">
-                <CardTitle Class="text-xl">Area Chart - Interactive</CardTitle>
-                <CardDescription>Showing total visitors for the @(timeRanges.TryGetValue(timeRange, out var description) ? description.ToLower() : "last 3 months")</CardDescription>
+<PageTitle>Area Chart - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-6xl">
+
+    <DemoPageHeader
+        Title="Area Chart"
+        Description="Smooth area charts with gradient fills and optional stacking. Ideal for trends over time." />
+
+    <!-- Interactive -->
+    <DemoSection
+        Title="Interactive"
+        Description="A live area chart with time-range filtering. Uses gradient fills and stacked areas.">
+        <DemoBlock Code="@_interactiveCode">
+            <div class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
+                    <div class="grid flex-1 gap-1">
+                        <p class="text-xl font-semibold">Area Chart — Interactive</p>
+                        <p class="text-sm text-muted-foreground">Showing total visitors for the @(timeRanges.TryGetValue(timeRange, out var description) ? description.ToLower() : "last 3 months")</p>
+                    </div>
+                    <Select @bind-Value="@timeRange" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
+                        <SelectTrigger>
+                            <SelectValue Placeholder="Last 3 months" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            @foreach (var range in timeRanges)
+                            {
+                                <SelectItem Value="@range.Key" Text="@range.Value">@range.Value</SelectItem>
+                            }
+                        </SelectContent>
+                    </Select>
             </div>
-            <Select @bind-Value="@timeRange" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
-                <SelectTrigger>
-                    <SelectValue Placeholder="Last 3 months" />
-                </SelectTrigger>
-                <SelectContent>
-                    @foreach (var range in timeRanges)
-                    {
-                        <SelectItem Value="@range.Key" Text="@range.Value">@range.Value</SelectItem>
-                    }
-                </SelectContent>
-            </Select>
-        </CardHeader>
-        <CardContent Class="p-6 pt-2 sm:px-6 sm:pt-6">
             <ChartContainer Height="250" Class="w-full">
                 <AreaChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
                     <Grid Vertical="false" Stroke="var(--border)" />
@@ -52,17 +60,15 @@
                     </Area>
                 </AreaChart>
             </ChartContainer>
-        </CardContent>
-    </Card>
 
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
-        @* Default Area Chart *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Area Chart</CardTitle>
-                <CardDescription>Default area chart</CardDescription>
-            </CardHeader>
-            <CardContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Variants -->
+    <DemoSection Title="Variants" Description="Core area chart configurations.">
+        <div class="grid gap-6 md:grid-cols-2">
+
+            <DemoBlock Code="@_defaultCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Show="false" />
@@ -77,16 +83,9 @@
                         <Area DataKey="sales" Name="Sales" Color="var(--chart-1)" />
                     </AreaChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Stacked Area Chart *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Stacked Area</CardTitle>
-                <CardDescription>Multiple stacked areas</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_stackedCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Show="false" />
@@ -100,19 +99,11 @@
                         <Legend TextColor="var(--foreground)" />
                         <Area DataKey="product1" Name="Product A" StackId="total" Color="var(--chart-1)" />
                         <Area DataKey="product2" Name="Product B" StackId="total" Color="var(--chart-2)" />
-                        <Area DataKey="product3" Name="Product C" StackId="total" Color="var(--chart-3)" />
                     </AreaChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Area with Gradient *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Gradient Fill</CardTitle>
-                <CardDescription>Area with linear gradient and shadow cursor highlight</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_gradientCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Show="false" />
@@ -134,40 +125,9 @@
                         </Area>
                     </AreaChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Area with Axes *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">With Custom Axes</CardTitle>
-                <CardDescription>Customized axis display</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <ChartContainer Height="200">
-                    <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Show="false" />
-                        <XAxis DataKey="month" Show="true" AxisLine="true" TickLine="true" Color="var(--border)">
-                            <AxisLabel Color="var(--muted-foreground)" />
-                        </XAxis>
-                        <YAxis Show="true" Position="YAxisPosition.Right" AxisLine="true" TickLine="true" Color="var(--border)">
-                            <AxisLabel Color="var(--muted-foreground)" />
-                        </YAxis>
-                        <ChartTooltip />
-                        <Legend Show="false" />
-                        <Area DataKey="sales" Name="Sales" Color="var(--chart-2)" Opacity="0.8" />
-                    </AreaChart>
-                </ChartContainer>
-            </CardContent>
-        </Card>
-
-        @* Area with Legend *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">With Legend</CardTitle>
-                <CardDescription>Custom legend positioning</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_withLegendCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@multiData" Padding="@(new Padding(6, 0, 32, 0))">
                         <Grid Show="false" />
@@ -183,16 +143,9 @@
                         <Area DataKey="product2" Name="Product B" Color="var(--chart-2)" />
                     </AreaChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Multiple Independent Areas *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Multiple Areas</CardTitle>
-                <CardDescription>Non-stacked multiple areas</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_multipleCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Show="false" />
@@ -208,16 +161,9 @@
                         <Area DataKey="product2" Name="Product B" Color="var(--chart-2)" />
                     </AreaChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Area with Dots *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">With Data Points</CardTitle>
-                <CardDescription>Area with visible dots</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_withDotsCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Show="false" />
@@ -232,16 +178,9 @@
                         <Area DataKey="sales" Name="Sales" ShowDots="true" Color="var(--chart-3)" />
                     </AreaChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Area with Grid *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">With Grid</CardTitle>
-                <CardDescription>Custom grid display</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_withGridCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Horizontal="true" Vertical="false" Stroke="var(--border)" />
@@ -256,16 +195,26 @@
                         <Area DataKey="sales" Name="Sales" Color="var(--chart-4)" />
                     </AreaChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Linear Interpolation *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Linear</CardTitle>
-                <CardDescription>Linear interpolation with custom line width</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_customAxesCode">
+                <ChartContainer Height="200">
+                    <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
+                        <Grid Show="false" />
+                        <XAxis DataKey="month" Show="true" AxisLine="true" TickLine="true" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <YAxis Show="true" Position="YAxisPosition.Right" AxisLine="true" TickLine="true" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </YAxis>
+                        <ChartTooltip />
+                        <Legend Show="false" />
+                        <Area DataKey="sales" Name="Sales" Color="var(--chart-2)" Opacity="0.8" />
+                    </AreaChart>
+                </ChartContainer>
+            </DemoBlock>
+
+            <DemoBlock Code="@_linearCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Show="false" />
@@ -280,16 +229,9 @@
                         <Area DataKey="sales" Name="Sales" LineWidth="3" Color="var(--chart-5)" />
                     </AreaChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Step Interpolation (MVP+ Feature) *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Step Area</CardTitle>
-                <CardDescription>Step interpolation</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_stepCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Show="false" />
@@ -304,16 +246,9 @@
                         <Area DataKey="sales" Name="Sales" Interpolation="InterpolationType.Step" Color="var(--chart-1)" />
                     </AreaChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Stacked Expand - 100% Stacking (MVP+ Feature) *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">100% Stacked</CardTitle>
-                <CardDescription>Percentage stacking</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_expandedCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@multiData" StackOffset="StackOffset.Expand" Padding="ChartDefaults.DefaultPadding">
                         <Grid Show="false" />
@@ -330,9 +265,18 @@
                         <Area DataKey="product3" Name="Product C" StackId="total" Color="var(--chart-3)" />
                     </AreaChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
-    </div>
+            </DemoBlock>
+
+        </div>
+    </DemoSection>
+
+    <!-- API Reference -->
+    <DemoSection Title="API Reference">
+        <DemoPropsTable Rows="@_areaChartProps" />
+    </DemoSection>
+
+    <DemoPageSubNav />
+
 </div>
 
 @code {

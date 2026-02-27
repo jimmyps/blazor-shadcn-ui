@@ -131,6 +131,11 @@
                                 </SidebarMenuButton>
                                 <CollapsibleContent>
                                     <SidebarMenuSub>
+                                        <SidebarMenuSubItem>
+                                            <SidebarMenuSubButton Href="components/chart" Match="NavLinkMatch.All">
+                                                <span>Overview</span>
+                                            </SidebarMenuSubButton>
+                                        </SidebarMenuSubItem>
                                         @foreach (var entry in ComponentRegistry.Components.Where(e => e.Category == ComponentCategories.Charts && e.IsSubPage))
                                         {
                                             <SidebarMenuSubItem>

@@ -14,7 +14,7 @@
         <DemoBlock Code="@_basicCode">
             <div class="max-w-md space-y-2">
                 <Label For="basic-input">Your Name</Label>
-                <NeoUI.Blazor.Input Id="basic-input" Placeholder="Enter your name" />
+                <Input Id="basic-input" Placeholder="Enter your name" />
             </div>
         </DemoBlock>
     </DemoSection>
@@ -26,19 +26,19 @@
             <div class="max-w-md space-y-6">
                 <div class="space-y-2">
                     <Label For="email-field">Email Address</Label>
-                    <NeoUI.Blazor.Input Id="email-field" Type="InputType.Email" Placeholder="you@example.com" />
+                    <Input Id="email-field" Type="InputType.Email" Placeholder="you@example.com" />
                 </div>
                 <div class="space-y-2">
                     <Label For="password-field">Password</Label>
-                    <NeoUI.Blazor.Input Id="password-field" Type="InputType.Password" Placeholder="••••••••" />
+                    <Input Id="password-field" Type="InputType.Password" Placeholder="••••••••" />
                 </div>
                 <div class="space-y-2">
                     <Label For="url-field">Website URL</Label>
-                    <NeoUI.Blazor.Input Id="url-field" Type="InputType.Url" Placeholder="https://example.com" />
+                    <Input Id="url-field" Type="InputType.Url" Placeholder="https://example.com" />
                 </div>
                 <div class="space-y-2">
                     <Label For="date-field">Birth Date</Label>
-                    <NeoUI.Blazor.Input Id="date-field" Type="InputType.Date" />
+                    <Input Id="date-field" Type="InputType.Date" />
                 </div>
             </div>
         </DemoBlock>
@@ -53,13 +53,13 @@
                     <Label For="required-username">
                         Username <span class="text-destructive">*</span>
                     </Label>
-                    <NeoUI.Blazor.Input Id="required-username" Required Placeholder="Enter username" />
+                    <Input Id="required-username" Required Placeholder="Enter username" />
                 </div>
                 <div class="space-y-2">
                     <Label For="required-email">
                         Email <Badge Variant="BadgeVariant.Destructive" Class="ml-2 text-[10px] px-1 py-0">Required</Badge>
                     </Label>
-                    <NeoUI.Blazor.Input Id="required-email" Type="InputType.Email" Required Placeholder="you@example.com" />
+                    <Input Id="required-email" Type="InputType.Email" Required Placeholder="you@example.com" />
                 </div>
             </div>
         </DemoBlock>
@@ -92,7 +92,7 @@
         <DemoBlock Code="@_disabledCode">
             <div class="max-w-md space-y-6">
                 <div class="space-y-2">
-                    <NeoUI.Blazor.Input Id="disabled-input" Disabled Class="peer" />
+                    <Input Id="disabled-input" Disabled Class="peer" />
                     <Label For="disabled-input">Disabled Field Label</Label>
                     <p class="text-xs text-muted-foreground">Notice how the label appears muted when the input is disabled.</p>
                 </div>
@@ -111,15 +111,19 @@
             <div class="max-w-md space-y-6">
                 <div class="space-y-2">
                     <Label For="large-label-input" Class="text-lg font-bold">Large Bold Label</Label>
-                    <NeoUI.Blazor.Input Id="large-label-input" />
+                    <Input Id="large-label-input" />
                 </div>
                 <div class="space-y-2">
                     <Label For="small-label-input" Class="text-xs text-muted-foreground font-normal">Small Muted Label</Label>
-                    <NeoUI.Blazor.Input Id="small-label-input" />
+                    <Input Id="small-label-input" />
                 </div>
                 <div class="space-y-2">
                     <Label For="colored-label-input" Class="text-blue-600 dark:text-blue-400">Colored Label</Label>
-                    <NeoUI.Blazor.Input Id="colored-label-input" />
+                    <Input Id="colored-label-input" />
+                </div>
+                <div class="space-y-2">
+                    <Label For="uppercase-label-input" Class="uppercase tracking-wide">Uppercase Label</Label>
+                    <Input Id="uppercase-label-input" />
                 </div>
             </div>
         </DemoBlock>
@@ -132,14 +136,14 @@
             <div class="max-w-md space-y-6">
                 <div class="space-y-2">
                     <Label For="display-name">Display Name</Label>
-                    <NeoUI.Blazor.Input Id="display-name" Placeholder="John Doe" />
+                    <Input Id="display-name" Placeholder="John Doe" />
                     <p class="text-xs text-muted-foreground">
                         This is your public display name. It can be your real name or a pseudonym.
                     </p>
                 </div>
                 <div class="space-y-2">
                     <Label For="bio">Bio</Label>
-                    <NeoUI.Blazor.Input Id="bio" Placeholder="Tell us about yourself" />
+                    <Input Id="bio" Placeholder="Tell us about yourself" />
                     <p class="text-xs text-muted-foreground">Brief description for your profile. Max 160 characters.</p>
                 </div>
             </div>
@@ -153,15 +157,15 @@
             <div class="max-w-md border rounded-lg p-6 space-y-6">
                 <div class="space-y-2">
                     <Label For="form-name">Full Name <span class="text-destructive">*</span></Label>
-                    <NeoUI.Blazor.Input Id="form-name" Required Placeholder="John Doe" />
+                    <Input Id="form-name" Required Placeholder="John Doe" />
                 </div>
                 <div class="space-y-2">
                     <Label For="form-email">Email Address <span class="text-destructive">*</span></Label>
-                    <NeoUI.Blazor.Input Id="form-email" Type="InputType.Email" Required Placeholder="john@example.com" />
+                    <Input Id="form-email" Type="InputType.Email" Required Placeholder="john@example.com" />
                 </div>
                 <div class="space-y-2">
                     <Label For="form-phone">Phone Number</Label>
-                    <NeoUI.Blazor.Input Id="form-phone" Type="InputType.Tel" Placeholder="+1 (555) 123-4567" />
+                    <Input Id="form-phone" Type="InputType.Tel" Placeholder="+1 (555) 123-4567" />
                 </div>
                 <Separator />
                 <div class="space-y-3">
@@ -186,8 +190,16 @@
     </DemoSection>
 
     <DemoSection
-        Title="Accessibility"
-        Description="Always use the For attribute to associate labels with form controls. Descriptive text helps screen reader users understand the purpose of each field." />
+        Title="Accessibility Notes"
+        Description="Best practices for accessible labels.">
+        <div class="border rounded-lg p-6 space-y-3 bg-muted/50">
+            <p class="text-sm">✓ <strong>Always use For attribute:</strong> Associate labels with form controls explicitly.</p>
+            <p class="text-sm">✓ <strong>Descriptive text:</strong> Labels should clearly describe the form field's purpose.</p>
+            <p class="text-sm">✓ <strong>Required indicators:</strong> Use visual indicators for required fields, but also use HTML5 required attribute.</p>
+            <p class="text-sm">✓ <strong>Help text:</strong> Place additional context below the input using aria-describedby.</p>
+            <p class="text-sm">✓ <strong>Error messages:</strong> Link errors to inputs with aria-describedby for screen readers.</p>
+        </div>
+    </DemoSection>
 
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_labelProps" />
@@ -195,80 +207,3 @@
 
     <DemoPageNav />
 </div>
-
-@code {
-    private static readonly IReadOnlyList<DemoPropRow> _labelProps =
-    [
-        new("For",          "string?",          null, "The ID of the form element this label is associated with (maps to htmlFor). Clicking the label will focus the associated control."),
-        new("Class",        "string?",          null, "Additional CSS classes to apply to the label element."),
-        new("ChildContent", "RenderFragment?",  null, "The content to display inside the label (text, icons, indicators, etc.)."),
-    ];
-
-    private const string _basicCode =
-        """
-        <Label For="name-input">Your Name</Label>
-        <Input Id="name-input" Placeholder="Enter your name" />
-        """;
-
-    private const string _formFieldsCode =
-        """
-        <div class="space-y-2">
-            <Label For="email-field">Email Address</Label>
-            <Input Id="email-field" Type="InputType.Email" Placeholder="you@example.com" />
-        </div>
-
-        <div class="space-y-2">
-            <Label For="password-field">Password</Label>
-            <Input Id="password-field" Type="InputType.Password" Placeholder="••••••••" />
-        </div>
-        """;
-
-    private const string _requiredCode =
-        """
-        <Label For="required-field">
-            Username <span class="text-destructive">*</span>
-        </Label>
-        <Input Id="required-field" Required Placeholder="Enter username" />
-        """;
-
-    private const string _checkboxCode =
-        """
-        <div class="flex items-center space-x-2">
-            <Checkbox Id="terms-checkbox" />
-            <Label For="terms-checkbox" Class="cursor-pointer">Accept terms and conditions</Label>
-        </div>
-        """;
-
-    private const string _disabledCode =
-        """
-        <Input Id="disabled-input" Disabled Class="peer" />
-        <Label For="disabled-input">Disabled Field Label</Label>
-        """;
-
-    private const string _customCode =
-        """
-        <Label For="input" Class="text-lg font-bold">Large Bold Label</Label>
-        <Label For="input" Class="text-xs text-muted-foreground font-normal">Small Muted Label</Label>
-        <Label For="input" Class="text-blue-600">Colored Label</Label>
-        """;
-
-    private const string _withDescriptionsCode =
-        """
-        <div class="space-y-2">
-            <Label For="display-name">Display Name</Label>
-            <Input Id="display-name" Placeholder="John Doe" />
-            <p class="text-xs text-muted-foreground">
-                This is your public display name.
-            </p>
-        </div>
-        """;
-
-    private const string _completeFormCode =
-        """
-        <Label For="form-name">Full Name <span class="text-destructive">*</span></Label>
-        <Input Id="form-name" Required Placeholder="John Doe" />
-
-        <Label For="form-email">Email Address <span class="text-destructive">*</span></Label>
-        <Input Id="form-email" Type="InputType.Email" Required Placeholder="john@example.com" />
-        """;
-}

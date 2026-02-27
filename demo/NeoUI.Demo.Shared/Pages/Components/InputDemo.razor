@@ -14,7 +14,7 @@
         Description="A simple text input.">
         <DemoBlock Code="@_defaultCode">
             <div class="w-full max-w-sm">
-                <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Email" />
+                <Input Type="InputType.Text" Placeholder="Email" />
             </div>
         </DemoBlock>
     </DemoSection>
@@ -27,29 +27,65 @@
                 <div class="space-y-4 max-w-sm">
                     <div class="space-y-2">
                         <Label>UpdateOn Input (default)</Label>
-                        <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Type here..."
+                        <Input Type="InputType.Text" Placeholder="Type here..."
                             @bind-Value="updateOnInputValue" UpdateOn="InputUpdateMode.Input" />
                         <p class="text-sm text-muted-foreground">Value: <strong>@updateOnInputValue</strong></p>
                     </div>
                     <div class="space-y-2">
                         <Label>UpdateOn Change (on blur)</Label>
-                        <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Type then click away..."
+                        <Input Type="InputType.Text" Placeholder="Type then click away..."
                             @bind-Value="updateOnChangeValue" UpdateOn="InputUpdateMode.Change" />
                         <p class="text-sm text-muted-foreground">Value: <strong>@updateOnChangeValue</strong></p>
                     </div>
                 </div>
             </ChildContent>
             <AdditionalContent>
-                <Alert Variant="AlertVariant.Default">
-                    <AlertTitle>
-                        <LucideIcon Name="circle-alert" Size="16" Class="mr-2 inline" />
-                        @@bind-Value and UpdateOn
-                    </AlertTitle>
-                    <AlertDescription>
-                        When using <code>@@bind-Value</code>, the <code>UpdateOn</code> parameter controls when the bound property is updated.
-                        Use <code>InputUpdateMode.Input</code> for real-time updates on every keystroke, or
-                        <code>InputUpdateMode.Change</code> to update only when the input loses focus.
-                    </AlertDescription>
+                <Alert Variant="AlertVariant.Info">
+                    <Icon><LucideIcon Name="info" Size="16" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>Optimized for Performance &amp; Best Typing Experience</AlertTitle>
+                        <AlertDescription>
+                            <p class="mb-3">
+                                By default, CurrencyInput uses <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Change"</code> for better performance and UX.
+                                The displayed value is automatically formatted based on the <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">Currency</code> and <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">Culture</code> parameters.
+                            </p>
+                            <Collapsible>
+                                <CollapsibleTrigger Class="inline-flex items-center gap-1 text-sm font-normal hover:underline [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                                    <span>Read more</span>
+                                    <LucideIcon Name="chevron-down" Size="14" />
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                    <div class="space-y-3 pt-3">
+                                        <div>
+                                            <p class="font-medium mb-2">Benefits:</p>
+                                            <ul class="list-disc list-inside space-y-1 ml-2 text-sm">
+                                                <li><strong>Better typing UX:</strong> No interruptions while typing — validation tooltips won't get in your way</li>
+                                                <li><strong>Better performance:</strong> Value updates and validation only run when you tab away (blur)</li>
+                                                <li><strong>Fewer re-renders:</strong> Your bound value updates once on blur, not on every keystroke</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium mb-2">UpdateOn Modes:</p>
+                                            <div class="grid gap-2 text-sm">
+                                                <div>
+                                                    <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Change"</code>
+                                                    <span class="text-muted-foreground ml-2">→ Updates on blur (default, recommended)</span>
+                                                </div>
+                                                <div>
+                                                    <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">UpdateOn="Input"</code>
+                                                    <span class="text-muted-foreground ml-2">→ Updates on every keystroke</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="text-xs text-muted-foreground flex items-start gap-1.5">
+                                            <LucideIcon Name="lightbulb" Size="14" Class="mt-0.5 flex-shrink-0" />
+                                            <span><strong>Tip:</strong> Use <code class="px-1 py-0.5 bg-muted rounded">UpdateOn="Input"</code> only when you need real-time updates (e.g., live total calculation, instant feedback), or when targeting WebAssembly where interactivity is fully client-side.</span>
+                                        </p>
+                                    </div>
+                                </CollapsibleContent>
+                            </Collapsible>
+                        </AlertDescription>
+                    </ChildContent>
                 </Alert>
             </AdditionalContent>
         </DemoBlock>
@@ -62,39 +98,39 @@
             <div class="grid grid-cols-1 gap-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>Text</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Enter text" />
+                    <Input Type="InputType.Text" Placeholder="Enter text" />
                 </div>
                 <div class="space-y-2">
                     <Label>Email</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Email" Placeholder="name@example.com" />
+                    <Input Type="InputType.Email" Placeholder="name@example.com" />
                 </div>
                 <div class="space-y-2">
                     <Label>Password</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Password" Placeholder="Enter password" />
+                    <Input Type="InputType.Password" Placeholder="Enter password" />
                 </div>
                 <div class="space-y-2">
                     <Label>Number</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Number" Placeholder="0" />
+                    <Input Type="InputType.Number" Placeholder="0" />
                 </div>
                 <div class="space-y-2">
                     <Label>Date</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Date" />
+                    <Input Type="InputType.Date" />
                 </div>
                 <div class="space-y-2">
                     <Label>Time</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Time" />
+                    <Input Type="InputType.Time" />
                 </div>
                 <div class="space-y-2">
                     <Label>URL</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Url" Placeholder="https://example.com" />
+                    <Input Type="InputType.Url" Placeholder="https://example.com" />
                 </div>
                 <div class="space-y-2">
                     <Label>Search</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Search" Placeholder="Search..." />
+                    <Input Type="InputType.Search" Placeholder="Search..." />
                 </div>
                 <div class="space-y-2">
                     <Label>Tel</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Tel" Placeholder="(555) 000-0000" />
+                    <Input Type="InputType.Tel" Placeholder="(555) 000-0000" />
                 </div>
             </div>
         </DemoBlock>
@@ -107,11 +143,11 @@
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>Upload file</Label>
-                    <NeoUI.Blazor.Input Type="InputType.File" />
+                    <Input Type="InputType.File" />
                 </div>
                 <div class="space-y-2">
                     <Label>Upload multiple files</Label>
-                    <NeoUI.Blazor.Input Type="InputType.File" multiple />
+                    <Input Type="InputType.File" multiple />
                 </div>
             </div>
         </DemoBlock>
@@ -122,7 +158,7 @@
         Description="Disabled inputs cannot be interacted with.">
         <DemoBlock Code="@_disabledCode">
             <div class="w-full max-w-sm">
-                <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Disabled input" Disabled="true" />
+                <Input Type="InputType.Text" Placeholder="Disabled input" Disabled="true" />
             </div>
         </DemoBlock>
     </DemoSection>
@@ -134,7 +170,7 @@
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>Email <span class="text-destructive">*</span></Label>
-                    <NeoUI.Blazor.Input Type="InputType.Email" Placeholder="name@example.com" Required="true" ShowValidationError="true" />
+                    <Input Type="InputType.Email" Placeholder="name@example.com" Required="true" ShowValidationError="true" />
                 </div>
             </div>
         </DemoBlock>
@@ -146,7 +182,7 @@
         <DemoBlock Code="@_withLabelCode">
             <div class="grid w-full max-w-sm items-center gap-1.5">
                 <Label For="email">Email</Label>
-                <NeoUI.Blazor.Input Type="InputType.Email" Id="email" Placeholder="Email" />
+                <Input Type="InputType.Email" Id="email" Placeholder="Email" />
             </div>
         </DemoBlock>
     </DemoSection>
@@ -158,14 +194,14 @@
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>Search</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Search" Placeholder="Search..."
+                    <Input Type="InputType.Search" Placeholder="Search..."
                         AriaLabel="Search the website"
                         AriaDescribedBy="search-hint" />
                     <p id="search-hint" class="text-sm text-muted-foreground">Type keywords to search the documentation.</p>
                 </div>
                 <div class="space-y-2">
                     <Label>Invalid field</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Text" Value="bad@email"
+                    <Input Type="InputType.Text" Value="bad@email"
                         AriaInvalid="true"
                         AriaDescribedBy="email-error" />
                     <p id="email-error" class="text-sm text-destructive">Please enter a valid email address.</p>
@@ -181,7 +217,7 @@
             <div class="space-y-4 max-w-sm">
                 <div class="space-y-2">
                     <Label>Name</Label>
-                    <NeoUI.Blazor.Input Type="InputType.Text" @bind-Value="boundValue" Placeholder="Type your name" />
+                    <Input Type="InputType.Text" @bind-Value="boundValue" Placeholder="Type your name" />
                 </div>
                 <p class="text-sm">Value: <strong>@boundValue</strong></p>
             </div>
@@ -193,40 +229,87 @@
         Description="Apply custom CSS classes to customize the appearance.">
         <DemoBlock Code="@_customStylingCode">
             <div class="space-y-4 max-w-sm">
-                <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Rounded full" Class="rounded-full px-4" />
-                <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Large text" Class="text-lg h-14" />
-                <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Custom colors" Class="border-blue-500 focus-visible:ring-blue-500" />
+                <Input Type="InputType.Text" Placeholder="Rounded full" Class="rounded-full px-4" />
+                <Input Type="InputType.Text" Placeholder="Large text" Class="text-lg h-14" />
+                <Input Type="InputType.Text" Placeholder="Custom colors" Class="border-blue-500 focus-visible:ring-blue-500" />
             </div>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection
         Title="Validation with EditContext"
-        Description="Integrate with Blazor forms and data annotations for validation.">
+        Description="Automatic validation error display using EditContext and Data Annotations. Shows native browser tooltips, error styling, and inline messages.">
         <DemoBlock Code="@_validationCode">
-            <div class="max-w-sm">
+            <div class="max-w-md">
                 <EditForm Model="@validationModel" OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator />
+
                     <div class="space-y-4">
-                        <div class="space-y-2">
-                            <Label For="val-name">Name <span class="text-destructive">*</span></Label>
-                            <NeoUI.Blazor.Input Type="InputType.Text" Id="val-name"
-                                @bind-Value="validationModel.Name" Placeholder="Enter your full name" />
-                            <ValidationMessage For="@(() => validationModel.Name)" class="text-sm text-destructive" />
+                        <Field>
+                            <FieldLabel For="val-username">Username</FieldLabel>
+                            <FieldContent>
+                                <NeoUI.Blazor.Input Id="val-username"
+                                       Type="InputType.Text"
+                                       @bind-Value="validationModel.Username"
+                                       ShowValidationError="true"
+                                       Placeholder="Enter username" />
+                                <FieldDescription>At least 3 characters, letters, numbers, and underscores only</FieldDescription>
+                                <ValidationMessage For="@(() => validationModel.Username)" class="text-destructive text-sm" />
+                            </FieldContent>
+                        </Field>
+
+                        <Field>
+                            <FieldLabel For="val-email">Email</FieldLabel>
+                            <FieldContent>
+                                <NeoUI.Blazor.Input Id="val-email"
+                                       Type="InputType.Email"
+                                       @bind-Value="validationModel.Email"
+                                       ShowValidationError="true"
+                                       Placeholder="your@email.com" />
+                                <ValidationMessage For="@(() => validationModel.Email)" class="text-destructive text-sm" />
+                            </FieldContent>
+                        </Field>
+
+                        <Field>
+                            <FieldLabel For="val-age">Age</FieldLabel>
+                            <FieldContent>
+                                <NeoUI.Blazor.Input Id="val-age"
+                                       Type="InputType.Number"
+                                       @bind-Value="validationModel.Age"
+                                       ShowValidationError="true" />
+                                <FieldDescription>Must be between 18 and 120</FieldDescription>
+                                <ValidationMessage For="@(() => validationModel.Age)" class="text-destructive text-sm" />
+                            </FieldContent>
+                        </Field>
+
+                        <div class="flex gap-2">
+                            <Button Type="ButtonType.Submit">Validate &amp; Submit</Button>
+                            <Button Variant="ButtonVariant.Outline" OnClick="ResetForm">Reset</Button>
                         </div>
-                        <div class="space-y-2">
-                            <Label For="val-email">Email <span class="text-destructive">*</span></Label>
-                            <NeoUI.Blazor.Input Type="InputType.Email" Id="val-email"
-                                @bind-Value="validationModel.Email" Placeholder="name@example.com" />
-                            <ValidationMessage For="@(() => validationModel.Email)" class="text-sm text-destructive" />
-                        </div>
-                        <Button Type="ButtonType.Submit">Submit</Button>
                     </div>
                 </EditForm>
-                @if (formSubmitted)
+
+                @if (submitSuccess)
                 {
-                    <p class="mt-4 text-sm text-green-600 font-medium">Form submitted successfully!</p>
+                    <div class="mt-4 rounded-md bg-green-50 dark:bg-green-950 p-4 text-sm text-green-800 dark:text-green-200">
+                        ✓ Form submitted successfully!
+                    </div>
                 }
+
+                <div class="mt-6 rounded-md bg-muted p-4 text-sm">
+                    <h3 class="font-semibold mb-2">What happens when you submit with errors:</h3>
+                    <ol class="list-decimal list-inside space-y-1 text-muted-foreground">
+                        <li><strong>All invalid fields</strong> get red border/ring styling and inline error messages</li>
+                        <li><strong>First invalid field</strong> (Username) also gets:
+                            <ul class="list-disc list-inside ml-6 mt-1">
+                                <li>Native browser tooltip with error message</li>
+                                <li>Auto-focus (cursor ready to type)</li>
+                            </ul>
+                        </li>
+                        <li>Fix the first error and submit again → Next error gets tooltip and focus</li>
+                        <li>This prevents overwhelming users with multiple tooltips at once</li>
+                    </ol>
+                </div>
             </div>
         </DemoBlock>
     </DemoSection>
@@ -243,117 +326,43 @@
     private string? boundValue;
     private string? updateOnInputValue;
     private string? updateOnChangeValue;
-    private bool formSubmitted = false;
+    private bool submitSuccess = false;
 
     private InputValidationModel validationModel = new();
 
     private void HandleValidSubmit()
     {
-        formSubmitted = true;
+        submitSuccess = true;
+        StateHasChanged();
+
+        Task.Delay(3000).ContinueWith(_ => InvokeAsync(() =>
+        {
+            submitSuccess = false;
+            StateHasChanged();
+        }));
+    }
+
+    private void ResetForm()
+    {
+        validationModel = new InputValidationModel();
+        submitSuccess = false;
     }
 
     private class InputValidationModel
     {
-        [Required(ErrorMessage = "Name is required")]
-        [MinLength(2, ErrorMessage = "Name must be at least 2 characters")]
-        public string? Name { get; set; }
+        [Required(ErrorMessage = "Username is required")]
+        [MinLength(3, ErrorMessage = "Username must be at least 3 characters")]
+        [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "Only letters, numbers, and underscores allowed")]
+        public string? Username { get; set; }
 
         [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email address")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
         public string? Email { get; set; }
+
+        [Required(ErrorMessage = "Age is required")]
+        [RegularExpression(@"^\d+$", ErrorMessage = "Age must be a number")]
+        [Range(18, 120, ErrorMessage = "Age must be between 18 and 120")]
+        public string? Age { get; set; }
     }
 
-    private static readonly IReadOnlyList<DemoPropRow> _inputProps =
-    [
-        new("Type",               "InputType",   "Text",   "HTML input type. Options: Text, Email, Password, Number, Date, File, Search, Tel, Url, Time."),
-        new("Value",              "string?",     "null",   "Current value. Use @bind-Value for two-way binding."),
-        new("Placeholder",        "string?",     "null",   "Placeholder text shown when input is empty."),
-        new("Disabled",           "bool",        "false",  "Disables the input when true."),
-        new("Required",           "bool",        "false",  "Marks the input as required for native form validation."),
-        new("UpdateOn",           "InputUpdateMode", "Input", "When to update the bound value. Options: Input (every keystroke), Change (on blur)."),
-        new("ShowValidationError","bool",        "false",  "Shows browser native validation tooltip on invalid state."),
-        new("AriaLabel",          "string?",     "null",   "ARIA label for accessibility when no visible label exists."),
-        new("AriaDescribedBy",    "string?",     "null",   "ID of element that describes this input."),
-        new("AriaInvalid",        "bool",        "false",  "Marks the input as invalid for screen readers."),
-        new("Class",              "string?",     "null",   "Additional CSS classes appended to the input element."),
-    ];
-
-    private const string _defaultCode = """
-        <Input Type="InputType.Text" Placeholder="Email" />
-        """;
-
-    private const string _updateOnCode = """
-        <!-- Updates on every keystroke -->
-        <Input Type="InputType.Text" @bind-Value="value" UpdateOn="InputUpdateMode.Input" />
-
-        <!-- Updates only when field loses focus -->
-        <Input Type="InputType.Text" @bind-Value="value" UpdateOn="InputUpdateMode.Change" />
-        """;
-
-    private const string _typesCode = """
-        <Input Type="InputType.Text" Placeholder="Enter text" />
-        <Input Type="InputType.Email" Placeholder="name@example.com" />
-        <Input Type="InputType.Password" Placeholder="Enter password" />
-        <Input Type="InputType.Number" Placeholder="0" />
-        <Input Type="InputType.Date" />
-        <Input Type="InputType.File" />
-        """;
-
-    private const string _fileCode = """
-        <Input Type="InputType.File" />
-        <Input Type="InputType.File" multiple />
-        """;
-
-    private const string _disabledCode = """
-        <Input Type="InputType.Text" Placeholder="Disabled input" Disabled="true" />
-        """;
-
-    private const string _requiredCode = """
-        <Input Type="InputType.Email" Placeholder="name@example.com" Required="true" ShowValidationError="true" />
-        """;
-
-    private const string _withLabelCode = """
-        <div class="grid w-full max-w-sm items-center gap-1.5">
-            <Label For="email">Email</Label>
-            <Input Type="InputType.Email" Id="email" Placeholder="Email" />
-        </div>
-        """;
-
-    private const string _ariaCode = """
-        <Input Type="InputType.Search"
-            AriaLabel="Search the website"
-            AriaDescribedBy="search-hint" />
-
-        <Input Type="InputType.Text"
-            AriaInvalid="true"
-            AriaDescribedBy="email-error" />
-        """;
-
-    private const string _bindingCode = """
-        <Input Type="InputType.Text" @bind-Value="name" Placeholder="Type your name" />
-        <p>Value: @name</p>
-
-        @code {
-            private string? name;
-        }
-        """;
-
-    private const string _customStylingCode = """
-        <Input Type="InputType.Text" Placeholder="Rounded full" Class="rounded-full px-4" />
-        <Input Type="InputType.Text" Placeholder="Large text" Class="text-lg h-14" />
-        """;
-
-    private const string _validationCode = """
-        <EditForm Model="@model" OnValidSubmit="HandleSubmit">
-            <DataAnnotationsValidator />
-            <div class="space-y-4">
-                <div class="space-y-2">
-                    <Label For="name">Name</Label>
-                    <Input Type="InputType.Text" Id="name" @bind-Value="model.Name" />
-                    <ValidationMessage For="@(() => model.Name)" class="text-sm text-destructive" />
-                </div>
-                <Button Type="ButtonType.Submit">Submit</Button>
-            </div>
-        </EditForm>
-        """;
 }

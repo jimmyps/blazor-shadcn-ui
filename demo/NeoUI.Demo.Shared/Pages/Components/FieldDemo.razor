@@ -6,39 +6,39 @@
 
     <DemoPageHeader
         Title="Field"
-        Description="A flexible form field component that handles layout, labels, hints, and validation states." />
+        Description="Combine labels, controls, and help text to compose accessible form fields." />
 
     <DemoSection
         Title="Basic Forms"
-        Description="Combine Field with various form controls.">
+        Description="Simple form fields with labels, inputs, and descriptions using vertical layout (default).">
         <DemoBlock Code="@_basicCode">
-            <div class="space-y-4 max-w-sm">
+            <div class="space-y-6">
                 <Field>
-                    <FieldLabel>Username</FieldLabel>
+                    <FieldLabel For="username">Username</FieldLabel>
                     <FieldContent>
-                        <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Enter username" />
-                    </FieldContent>
-                    <FieldHint>Must be at least 3 characters.</FieldHint>
-                </Field>
-                <Field>
-                    <FieldLabel>Email</FieldLabel>
-                    <FieldContent>
-                        <NeoUI.Blazor.Input Type="InputType.Email" Placeholder="name@example.com" />
+                        <Input Id="username" Type="InputType.Text" Placeholder="Enter your username" />
+                        <FieldDescription>Choose a unique username for your account.</FieldDescription>
                     </FieldContent>
                 </Field>
                 <Field>
-                    <FieldLabel>Role</FieldLabel>
+                    <FieldLabel For="email">Email Address</FieldLabel>
                     <FieldContent>
-                        <Select TValue="string" @bind-Value="selectedRole">
-                            <SelectTrigger>
-                                <SelectValue Placeholder="Select a role..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem Value="@("admin")" TValue="string">Admin</SelectItem>
-                                <SelectItem Value="@("editor")" TValue="string">Editor</SelectItem>
-                                <SelectItem Value="@("viewer")" TValue="string">Viewer</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <Input Id="email" Type="InputType.Email" Placeholder="you@example.com" />
+                        <FieldDescription>We'll never share your email with anyone else.</FieldDescription>
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel For="password">Password</FieldLabel>
+                    <FieldContent>
+                        <Input Id="password" Type="InputType.Password" />
+                        <FieldDescription>Must be at least 8 characters long.</FieldDescription>
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel For="bio">Bio</FieldLabel>
+                    <FieldContent>
+                        <Textarea Id="bio" Placeholder="Tell us about yourself..." />
+                        <FieldDescription>Brief description for your profile. Maximum 500 characters.</FieldDescription>
                     </FieldContent>
                 </Field>
             </div>
@@ -47,22 +47,33 @@
 
     <DemoSection
         Title="Validation Examples"
-        Description="Show valid and invalid states with appropriate messages.">
+        Description="Display error states and validation messages using FieldError.">
         <DemoBlock Code="@_validationCode">
-            <div class="space-y-4 max-w-sm">
-                <Field IsInvalid="false">
-                    <FieldLabel>Username</FieldLabel>
+            <div class="space-y-6">
+                <Field IsInvalid="true">
+                    <FieldLabel For="username-error">Username</FieldLabel>
                     <FieldContent>
-                        <NeoUI.Blazor.Input Type="InputType.Text" Value="johndoe" />
+                        <Input Id="username-error" Type="InputType.Text" Placeholder="Enter your username" AriaInvalid="true" />
+                        <FieldError>
+                            Username is already taken. Please choose another.
+                        </FieldError>
                     </FieldContent>
-                    <FieldHint>Username is available.</FieldHint>
                 </Field>
                 <Field IsInvalid="true">
-                    <FieldLabel>Email</FieldLabel>
+                    <FieldLabel For="password-errors">Password</FieldLabel>
                     <FieldContent>
-                        <NeoUI.Blazor.Input Type="InputType.Email" Value="not-valid" AriaInvalid="true" />
+                        <Input Id="password-errors" Type="InputType.Password" AriaInvalid="true" />
+                        <FieldError Errors="passwordErrors" />
                     </FieldContent>
-                    <FieldError>Please enter a valid email address.</FieldError>
+                </Field>
+                <Field IsInvalid="true">
+                    <FieldLabel For="email-invalid">Email Address</FieldLabel>
+                    <FieldContent>
+                        <Input Id="email-invalid" Type="InputType.Email" Value="invalid-email" AriaInvalid="true" />
+                        <FieldError>
+                            Please enter a valid email address.
+                        </FieldError>
+                    </FieldContent>
                 </Field>
             </div>
         </DemoBlock>
@@ -70,34 +81,23 @@
 
     <DemoSection
         Title="Horizontal Orientation"
-        Description="Display label and field side by side with horizontal layout.">
+        Description="Place labels beside controls using horizontal orientation.">
         <DemoBlock Code="@_horizontalCode">
-            <div class="space-y-4 max-w-lg">
+            <div class="space-y-6">
                 <Field Orientation="FieldOrientation.Horizontal">
-                    <FieldLabel>Name</FieldLabel>
+                    <FieldLabel For="name-horizontal" Class="w-32 pt-2">Full Name</FieldLabel>
                     <FieldContent>
-                        <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Enter your name" />
+                        <Input Id="name-horizontal" Type="InputType.Text" Placeholder="John Doe" />
+                        <FieldDescription>Enter your first and last name.</FieldDescription>
                     </FieldContent>
                 </Field>
                 <Field Orientation="FieldOrientation.Horizontal">
-                    <FieldLabel>Email</FieldLabel>
+                    <FieldLabel For="terms-horizontal" Class="w-32">Accept Terms</FieldLabel>
                     <FieldContent>
-                        <NeoUI.Blazor.Input Type="InputType.Email" Placeholder="name@example.com" />
-                    </FieldContent>
-                </Field>
-                <Field Orientation="FieldOrientation.Horizontal">
-                    <FieldLabel>Department</FieldLabel>
-                    <FieldContent>
-                        <Select TValue="string" @bind-Value="selectedDept">
-                            <SelectTrigger>
-                                <SelectValue Placeholder="Select a department..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem Value="@("engineering")" TValue="string">Engineering</SelectItem>
-                                <SelectItem Value="@("design")" TValue="string">Design</SelectItem>
-                                <SelectItem Value="@("marketing")" TValue="string">Marketing</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <div class="flex items-center gap-2">
+                            <Checkbox Id="terms-horizontal" />
+                            <FieldDescription Class="!mb-0">I agree to the terms and conditions</FieldDescription>
+                        </div>
                     </FieldContent>
                 </Field>
             </div>
@@ -106,118 +106,241 @@
 
     <DemoSection
         Title="Responsive Orientation"
-        Description="Switch between vertical and horizontal based on screen size.">
+        Description="Automatically switch from vertical to horizontal at medium breakpoint using container queries.">
         <DemoBlock Code="@_responsiveCode">
-            <div class="space-y-4 max-w-lg">
-                <Field Orientation="FieldOrientation.Responsive">
-                    <FieldLabel>Username</FieldLabel>
-                    <FieldContent>
-                        <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Enter username" />
-                    </FieldContent>
-                    <FieldHint>Vertical on mobile, horizontal on larger screens.</FieldHint>
-                </Field>
-                <Field Orientation="FieldOrientation.Responsive">
-                    <FieldLabel>Bio</FieldLabel>
-                    <FieldContent>
-                        <textarea
-                            class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            placeholder="Tell us about yourself..."
-                            rows="3"></textarea>
-                    </FieldContent>
-                </Field>
-            </div>
+            <Field Orientation="FieldOrientation.Responsive">
+                <FieldLabel For="company-responsive" Class="w-full md:w-32 md:pt-2">Company</FieldLabel>
+                <FieldContent>
+                    <Input Id="company-responsive" Type="InputType.Text" Placeholder="Acme Inc." />
+                    <FieldDescription>Your company or organization name.</FieldDescription>
+                </FieldContent>
+            </Field>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection
         Title="Field Groups"
-        Description="Group related fields together using FieldGroup.">
-        <DemoBlock Code="@_groupCode">
-            <div class="max-w-sm">
-                <FieldGroup>
-                    <FieldGroupTitle>Personal Information</FieldGroupTitle>
-                    <FieldGroupDescription>Your basic profile details.</FieldGroupDescription>
-                    <Field>
-                        <FieldLabel>First Name</FieldLabel>
-                        <FieldContent>
-                            <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="John" />
-                        </FieldContent>
-                    </Field>
-                    <Field>
-                        <FieldLabel>Last Name</FieldLabel>
-                        <FieldContent>
-                            <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="Doe" />
-                        </FieldContent>
-                    </Field>
-                    <Field>
-                        <FieldLabel>Date of Birth</FieldLabel>
-                        <FieldContent>
-                            <NeoUI.Blazor.Input Type="InputType.Date" />
-                        </FieldContent>
-                    </Field>
-                </FieldGroup>
-            </div>
+        Description="Stack multiple fields using FieldGroup for consistent spacing.">
+        <DemoBlock Code="@_groupVerticalCode">
+            <FieldGroup Orientation="FieldGroupOrientation.Vertical">
+                <Field>
+                    <FieldLabel For="first-name">First Name</FieldLabel>
+                    <FieldContent>
+                        <Input Id="first-name" Type="InputType.Text" Placeholder="John" />
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel For="last-name">Last Name</FieldLabel>
+                    <FieldContent>
+                        <Input Id="last-name" Type="InputType.Text" Placeholder="Doe" />
+                    </FieldContent>
+                </Field>
+            </FieldGroup>
+        </DemoBlock>
+        <DemoBlock Code="@_groupHorizontalCode">
+            <FieldGroup Orientation="FieldGroupOrientation.Horizontal">
+                <Field Class="flex-1">
+                    <FieldLabel For="city">City</FieldLabel>
+                    <FieldContent>
+                        <Input Id="city" Type="InputType.Text" Placeholder="New York" />
+                    </FieldContent>
+                </Field>
+                <Field Class="flex-1">
+                    <FieldLabel For="state">State</FieldLabel>
+                    <FieldContent>
+                        <Input Id="state" Type="InputType.Text" Placeholder="NY" />
+                    </FieldContent>
+                </Field>
+                <Field Class="w-32">
+                    <FieldLabel For="zip">ZIP</FieldLabel>
+                    <FieldContent>
+                        <Input Id="zip" Type="InputType.Text" Placeholder="10001" />
+                    </FieldContent>
+                </Field>
+            </FieldGroup>
+        </DemoBlock>
+        <DemoBlock Code="@_groupSeparatorCode">
+            <FieldGroup Orientation="FieldGroupOrientation.Vertical">
+                <Field>
+                    <FieldLabel For="account-name">Account Name</FieldLabel>
+                    <FieldContent>
+                        <Input Id="account-name" Type="InputType.Text" />
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel For="account-email">Account Email</FieldLabel>
+                    <FieldContent>
+                        <Input Id="account-email" Type="InputType.Email" />
+                    </FieldContent>
+                </Field>
+                <FieldSeparator />
+                <Field>
+                    <FieldLabel For="billing-name">Billing Name</FieldLabel>
+                    <FieldContent>
+                        <Input Id="billing-name" Type="InputType.Text" />
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel For="billing-address">Billing Address</FieldLabel>
+                    <FieldContent>
+                        <Input Id="billing-address" Type="InputType.Text" />
+                    </FieldContent>
+                </Field>
+            </FieldGroup>
+        </DemoBlock>
+        <DemoBlock Code="@_groupSeparatorContentCode">
+            <FieldGroup Orientation="FieldGroupOrientation.Vertical">
+                <Field>
+                    <FieldLabel For="email-signup">Email Address</FieldLabel>
+                    <FieldContent>
+                        <Input Id="email-signup" Type="InputType.Email" Placeholder="you@example.com" />
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldLabel For="password-signup">Password</FieldLabel>
+                    <FieldContent>
+                        <Input Id="password-signup" Type="InputType.Password" />
+                    </FieldContent>
+                </Field>
+                <FieldSeparator>Or continue with</FieldSeparator>
+                <Field>
+                    <FieldContent>
+                        <div class="flex items-center gap-2">
+                            <Checkbox Id="google-signup" />
+                            <FieldLabel For="google-signup" Class="font-normal">Sign up with Google</FieldLabel>
+                        </div>
+                    </FieldContent>
+                </Field>
+                <Field>
+                    <FieldContent>
+                        <div class="flex items-center gap-2">
+                            <Checkbox Id="github-signup" />
+                            <FieldLabel For="github-signup" Class="font-normal">Sign up with GitHub</FieldLabel>
+                        </div>
+                    </FieldContent>
+                </Field>
+            </FieldGroup>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection
-        Title="FieldSets"
-        Description="Visually contained groups of fields with border and title.">
-        <DemoBlock Code="@_fieldSetCode">
-            <div class="max-w-sm">
-                <FieldSet>
-                    <FieldSetLegend>Contact Information</FieldSetLegend>
+        Title="Complex Fieldsets"
+        Description="Use FieldSet and FieldLegend for semantic grouping of related controls.">
+        <DemoBlock Code="@_fieldSetBasicCode">
+            <FieldSet>
+                <FieldLegend>Contact Information</FieldLegend>
+                <FieldGroup>
                     <Field>
-                        <FieldLabel>Phone</FieldLabel>
+                        <FieldLabel For="contact-email">Email</FieldLabel>
                         <FieldContent>
-                            <NeoUI.Blazor.Input Type="InputType.Tel" Placeholder="(555) 000-0000" />
+                            <Input Id="contact-email" Type="InputType.Email" />
                         </FieldContent>
                     </Field>
                     <Field>
-                        <FieldLabel>Address</FieldLabel>
+                        <FieldLabel For="contact-phone">Phone</FieldLabel>
                         <FieldContent>
-                            <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="123 Main St" />
+                            <Input Id="contact-phone" Type="InputType.Tel" />
                         </FieldContent>
                     </Field>
+                </FieldGroup>
+            </FieldSet>
+        </DemoBlock>
+        <DemoBlock Code="@_fieldSetRadioCode">
+            <FieldSet>
+                <FieldLegend>How would you like to receive notifications?</FieldLegend>
+                <RadioGroup @bind-Value="notificationMethod" TValue="string">
+                    <FieldGroup>
+                        <Field Orientation="FieldOrientation.Horizontal">
+                            <div class="flex items-center gap-2">
+                                <RadioGroupItem Value="@("email")" Id="notify-email" TValue="string" />
+                                <FieldLabel For="notify-email" Class="font-normal">Email</FieldLabel>
+                            </div>
+                        </Field>
+                        <Field Orientation="FieldOrientation.Horizontal">
+                            <div class="flex items-center gap-2">
+                                <RadioGroupItem Value="@("sms")" Id="notify-sms" TValue="string" />
+                                <FieldLabel For="notify-sms" Class="font-normal">SMS</FieldLabel>
+                            </div>
+                        </Field>
+                        <Field Orientation="FieldOrientation.Horizontal">
+                            <div class="flex items-center gap-2">
+                                <RadioGroupItem Value="@("push")" Id="notify-push" TValue="string" />
+                                <FieldLabel For="notify-push" Class="font-normal">Push Notifications</FieldLabel>
+                            </div>
+                        </Field>
+                    </FieldGroup>
+                </RadioGroup>
+                <FieldDescription Class="mt-2">We'll send important updates to your preferred channel.</FieldDescription>
+            </FieldSet>
+        </DemoBlock>
+        <DemoBlock Code="@_fieldSetComplexCode">
+            <FieldSet>
+                <FieldLegend>User Profile</FieldLegend>
+                <FieldGroup>
+                    <FieldGroup Orientation="FieldGroupOrientation.Horizontal">
+                        <Field Class="flex-1">
+                            <FieldLabel For="profile-first">First Name</FieldLabel>
+                            <FieldContent>
+                                <Input Id="profile-first" Type="InputType.Text" />
+                            </FieldContent>
+                        </Field>
+                        <Field Class="flex-1">
+                            <FieldLabel For="profile-last">Last Name</FieldLabel>
+                            <FieldContent>
+                                <Input Id="profile-last" Type="InputType.Text" />
+                            </FieldContent>
+                        </Field>
+                    </FieldGroup>
                     <Field>
-                        <FieldLabel>City</FieldLabel>
+                        <FieldLabel For="profile-username">Username</FieldLabel>
                         <FieldContent>
-                            <NeoUI.Blazor.Input Type="InputType.Text" Placeholder="New York" />
+                            <Input Id="profile-username" Type="InputType.Text" />
+                            <FieldDescription>This will be your public display name.</FieldDescription>
                         </FieldContent>
                     </Field>
-                </FieldSet>
-            </div>
+                    <FieldSeparator />
+                    <Field>
+                        <FieldLabel For="profile-bio">Biography</FieldLabel>
+                        <FieldContent>
+                            <Textarea Id="profile-bio" Placeholder="Tell us about yourself..." />
+                            <FieldDescription>Brief bio for your profile. Maximum 500 characters.</FieldDescription>
+                        </FieldContent>
+                    </Field>
+                    <Field Orientation="FieldOrientation.Horizontal">
+                        <div class="flex items-center gap-2">
+                            <Checkbox Id="profile-public" />
+                            <FieldLabel For="profile-public" Class="font-normal">Make profile public</FieldLabel>
+                        </div>
+                    </Field>
+                </FieldGroup>
+            </FieldSet>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection
         Title="Field with Title"
-        Description="Use FieldTitle for section headings within a form.">
+        Description="Use FieldTitle for headings within FieldContent.">
         <DemoBlock Code="@_fieldTitleCode">
-            <div class="max-w-sm space-y-6">
-                <FieldTitle Title="Account Settings" Description="Manage your account details and preferences." />
-                <Field>
-                    <FieldLabel>Username</FieldLabel>
-                    <FieldContent>
-                        <NeoUI.Blazor.Input Type="InputType.Text" Value="john_doe" />
-                    </FieldContent>
-                </Field>
-                <Field>
-                    <FieldLabel>Language</FieldLabel>
-                    <FieldContent>
-                        <Select TValue="string" @bind-Value="selectedLang">
-                            <SelectTrigger>
-                                <SelectValue Placeholder="Select language..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem Value="@("en")" TValue="string">English</SelectItem>
-                                <SelectItem Value="@("fr")" TValue="string">French</SelectItem>
-                                <SelectItem Value="@("de")" TValue="string">German</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </FieldContent>
-                </Field>
-            </div>
+            <Field>
+                <FieldContent>
+                    <FieldTitle>Email Notifications</FieldTitle>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <Checkbox Id="notify-updates" />
+                            <FieldLabel For="notify-updates" Class="font-normal">Product updates</FieldLabel>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <Checkbox Id="notify-security" />
+                            <FieldLabel For="notify-security" Class="font-normal">Security alerts</FieldLabel>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <Checkbox Id="notify-marketing" />
+                            <FieldLabel For="notify-marketing" Class="font-normal">Marketing emails</FieldLabel>
+                        </div>
+                    </div>
+                    <FieldDescription>Choose which emails you want to receive.</FieldDescription>
+                </FieldContent>
+            </Field>
         </DemoBlock>
     </DemoSection>
 
@@ -230,101 +353,13 @@
 </div>
 
 @code {
-    private string? selectedRole;
-    private string? selectedDept;
-    private string? selectedLang;
+    private List<string> passwordErrors = new()
+    {
+        "Password must be at least 8 characters long",
+        "Password must contain at least one uppercase letter",
+        "Password must contain at least one number"
+    };
 
-    private static readonly IReadOnlyList<DemoPropRow> _fieldProps =
-    [
-        new("Orientation", "FieldOrientation", "Vertical",   "Layout orientation. Options: Vertical, Horizontal, Responsive."),
-        new("IsInvalid",   "bool",             "false",      "Marks the field as invalid, applying error styling."),
-        new("Class",       "string?",          "null",       "Additional CSS classes for the root element."),
-        new("ChildContent","RenderFragment?",  "null",       "FieldLabel, FieldContent, FieldHint, FieldError sub-components."),
-    ];
+    private string? notificationMethod = "email";
 
-    private const string _basicCode = """
-        <Field>
-            <FieldLabel>Username</FieldLabel>
-            <FieldContent>
-                <Input Type="InputType.Text" Placeholder="Enter username" />
-            </FieldContent>
-            <FieldHint>Must be at least 3 characters.</FieldHint>
-        </Field>
-        """;
-
-    private const string _validationCode = """
-        <!-- Valid state -->
-        <Field IsInvalid="false">
-            <FieldLabel>Username</FieldLabel>
-            <FieldContent>
-                <Input Type="InputType.Text" Value="johndoe" />
-            </FieldContent>
-            <FieldHint>Username is available.</FieldHint>
-        </Field>
-
-        <!-- Invalid state -->
-        <Field IsInvalid="true">
-            <FieldLabel>Email</FieldLabel>
-            <FieldContent>
-                <Input Type="InputType.Email" Value="not-valid" AriaInvalid="true" />
-            </FieldContent>
-            <FieldError>Please enter a valid email address.</FieldError>
-        </Field>
-        """;
-
-    private const string _horizontalCode = """
-        <Field Orientation="FieldOrientation.Horizontal">
-            <FieldLabel>Name</FieldLabel>
-            <FieldContent>
-                <Input Type="InputType.Text" Placeholder="Enter your name" />
-            </FieldContent>
-        </Field>
-        """;
-
-    private const string _responsiveCode = """
-        <Field Orientation="FieldOrientation.Responsive">
-            <FieldLabel>Username</FieldLabel>
-            <FieldContent>
-                <Input Type="InputType.Text" Placeholder="Enter username" />
-            </FieldContent>
-            <FieldHint>Vertical on mobile, horizontal on larger screens.</FieldHint>
-        </Field>
-        """;
-
-    private const string _groupCode = """
-        <FieldGroup>
-            <FieldGroupTitle>Personal Information</FieldGroupTitle>
-            <FieldGroupDescription>Your basic profile details.</FieldGroupDescription>
-            <Field>
-                <FieldLabel>First Name</FieldLabel>
-                <FieldContent><Input Type="InputType.Text" Placeholder="John" /></FieldContent>
-            </Field>
-            <Field>
-                <FieldLabel>Last Name</FieldLabel>
-                <FieldContent><Input Type="InputType.Text" Placeholder="Doe" /></FieldContent>
-            </Field>
-        </FieldGroup>
-        """;
-
-    private const string _fieldSetCode = """
-        <FieldSet>
-            <FieldSetLegend>Contact Information</FieldSetLegend>
-            <Field>
-                <FieldLabel>Phone</FieldLabel>
-                <FieldContent><Input Type="InputType.Tel" Placeholder="(555) 000-0000" /></FieldContent>
-            </Field>
-            <Field>
-                <FieldLabel>Address</FieldLabel>
-                <FieldContent><Input Type="InputType.Text" Placeholder="123 Main St" /></FieldContent>
-            </Field>
-        </FieldSet>
-        """;
-
-    private const string _fieldTitleCode = """
-        <FieldTitle Title="Account Settings" Description="Manage your account details and preferences." />
-        <Field>
-            <FieldLabel>Username</FieldLabel>
-            <FieldContent><Input Type="InputType.Text" Value="john_doe" /></FieldContent>
-        </Field>
-        """;
 }
