@@ -22,11 +22,11 @@
     {
         var option = new EChartsOption
         {
-            Grid = BuildGrid(),
-            Legend = BuildLegend(),
-            Tooltip = BuildTooltip(),
-            XAxis = BuildXAxis(),
-            YAxis = BuildYAxis(),
+            Grid    = _grid    != null ? BuildGrid()    : null,
+            Legend  = _legend  != null ? BuildLegend()  : null,
+            Tooltip = _tooltip != null ? BuildTooltip() : null,
+            XAxis   = _xAxis   != null ? BuildXAxis()   : null,
+            YAxis   = _yAxis   != null ? BuildYAxis()   : null,
             Series = BuildSeries(),
             Animation = EnableAnimation,
             AnimationDuration = EnableAnimation ? AnimationDuration : 0,
@@ -41,13 +41,12 @@
     
     private EChartsAxis BuildXAxis()
     {
-        var xAxis = _xAxis ?? new XAxis();
-        var axis = BuildAxis(xAxis, null, true);
+        var axis = BuildAxis(_xAxis, null, true);
         
         // For line charts, X axis is typically category with labels from data
-        if (!string.IsNullOrEmpty(xAxis.DataKey))
+        if (!string.IsNullOrEmpty(_xAxis!.DataKey))
         {
-            axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
+            axis.Data = DataExtractor.GetStringValues(Data, _xAxis.DataKey);
         }
         
         return axis;
@@ -55,8 +54,7 @@
     
     private EChartsAxis BuildYAxis()
     {
-        var yAxis = _yAxis ?? new YAxis();
-        return BuildAxis(null, yAxis, false);
+        return BuildAxis(null, _yAxis, false);
     }
     
     private List<EChartsSeries> BuildSeries()
